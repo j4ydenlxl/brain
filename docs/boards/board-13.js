@@ -157,7 +157,31 @@ phase('Build')
 const SKIP = new Set((args && Array.isArray(args.skip)) ? args.skip : [])
 const active = ITEMS.filter(it => !SKIP.has(it.key))
 if (SKIP.size) log(`skipped this launch (deferred, not dropped): ${[...SKIP].join(', ')}`)
-const first = (await pipeline(active, it => buildVerifyFix(it, 'BOARD 13'))).filter(Boolean).map(summarise)
+// Two lanes. CPU items build at once. Items that need Ollama build only after the queue waiter says the public chain has released it (the waiter is the lowest-level work on the board: Sonnet 5 at low effort, his 21:51 allowance).
+const cpuItems = active.filter(it => !it.ollama)
+const queueItems = active.filter(it => it.ollama)
+
+const WAIT_SCHEMA = { type: 'object', properties: { released: { type: 'boolean' }, how: { type: 'string', enum: ['verdict', 'stale', 'already-free', 'gave-up'] }, cut: { type: 'boolean' }, printed: { type: 'string' } }, required: ['released', 'how', 'cut', 'printed'] }
+const waiterPrompt = `You are the QUEUE WAITER of BOARD 13 in ${ROOT}. Ollama (localhost:11434) is ONE queue and Board 11's detached public chain owns it: one hidden cmd.exe (its process id is in bench/verdicts/public/whole-chain.cmd.txt and in bench/verdicts/public-launch.json under chain.launchedAs) runs three steps in sequence through tools/budget.mjs: GSM8K 1319 records on qwen3:1.7b (journal bench/verdicts/public/gsm8k-public_1.jsonl, verdict bench/verdicts/public-gsm8k.json when whole), then HumanEval 161 (verdict bench/verdicts/public-humaneval.json), then GSM8K on qwen3:30b-a3b, a run of about 40 hours that the orchestrator has decided to CUT (it is re-launched with --resume on a later board when the queue is idle).
+YOUR JOB and nothing else: wait until the queue is released, then return. Never call Ollama. Never edit a file outside bench/verdicts/public/. Never touch the chain before HumanEval's verdict exists.
+FIRST: if bench/verdicts/public/chain-cut.txt already exists, or no file under bench/verdicts/public/ was written in the last 20 minutes and no bench/public.mjs process is running, return released true, how already-free, cut false.
+LOOP: one Bash call at a time, timeout 590000 ms, exactly this shape from the tree root: until [ -f bench/verdicts/public-humaneval.json ] || ! find bench/verdicts/public -type f -mmin -20 | grep -q .; do sleep 30; done; wc -l bench/verdicts/public/*.jsonl; ls -lt --time-style=+%H:%M bench/verdicts/public | head -3    ... and repeat the call while it times out (each call is one poll window; keep your own notes short: the line counts and the newest mtime).
+WHEN public-humaneval.json EXISTS: the chain has started step 3. Kill the whole chain tree by the cmd process id from whole-chain.cmd.txt (taskkill /PID <id> /T /F); Ollama itself stays up (never kill ollama.exe or ollama_llama_server.exe). Wait 10 s, then confirm with PowerShell that no process whose CommandLine contains public.mjs remains (Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*public.mjs*' }); if one remains, kill it by pid. Write bench/verdicts/public/chain-cut.txt with the ISO time, the pids killed, the 30b journal's line count at the cut (0 if none), and the sentence: cut by Board 13's queue waiter so the board's math and code items can use the queue; re-launch with --resume on a later board. Return released true, how verdict, cut true.
+WHEN THE NEWEST FILE IS STALE (20 minutes with no write) and public-humaneval.json does not exist: the chain died or finished early. Write chain-cut.txt saying so with the last journal line counts, kill nothing, return released true, how stale, cut false.
+If you have polled for more than 30 hours, return released false, how gave-up, with the tallies. printed holds the last tallies you saw.`
+
+const waitThenBuild = async () => {
+  if (!queueItems.length) return []
+  const w = await run(waiterPrompt, { label: 'wait:queue', phase: 'Build', model: 'claude-sonnet-5', effort: 'low', schema: WAIT_SCHEMA })
+  log(`queue waiter: ${w ? `released=${w.released} how=${w.how} cut=${w.cut}` : 'returned nothing; the queue items run with the queue check in their own prompts'}`)
+  return (await pipeline(queueItems, it => buildVerifyFix(it, 'BOARD 13'))).filter(Boolean).map(summarise)
+}
+// parallel() is a barrier here on purpose: the rows stage needs every lane's verdicts.
+const lanes = await parallel([
+  async () => (await pipeline(cpuItems, it => buildVerifyFix(it, 'BOARD 13'))).filter(Boolean).map(summarise),
+  waitThenBuild,
+])
+const first = lanes.flatMap(l => l || [])
 log(`${active.length} items done: ${first.filter(r => r.verified).length} verified, ${first.filter(r => r.barMet).length} bars met, ${first.filter(r => r.waitedForQueue).length} waited for the queue`)
 
 // Barrier justified: the rows item reads every landed verdict's field names.
