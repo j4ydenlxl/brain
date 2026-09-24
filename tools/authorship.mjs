@@ -206,7 +206,7 @@ export function perSourcePerDay(lines = []) {
 }
 
 /** The printed lines of one run. */
-export function renderShare(s, { authoredRel = AUTHORED_REL, boardsRel = BOARDS_REL, authoredInfo = null, boardsInfo = null, missing = [], perDay = null, ledgerRel = LEDGER_DIR_REL } = {}) {
+export function renderShare(s, { authoredRel = AUTHORED_REL, boardsRel = BOARDS_REL, authoredInfo = null, boardsInfo = null, missing = [], stale = [], perDay = null, ledgerRel = LEDGER_DIR_REL } = {}) {
   const L = [];
   L.push('authorship: organism-authored kept patches over (all kept patches + files landed by boards)');
   L.push('  authored  ' + authoredRel + ': ' + (authoredInfo && !authoredInfo.present ? 'absent, 0 lines' : s.kept + ' kept (' + s.organism + ' organism, ' + s.given + ' given)' + (authoredInfo && authoredInfo.bad ? ', ' + authoredInfo.bad + ' unreadable lines' : '')));
@@ -225,7 +225,8 @@ export function renderShare(s, { authoredRel = AUTHORED_REL, boardsRel = BOARDS_
     L.push('  per source per day (' + ledgerRel + '/<date>.jsonl, live runs only)' + (perDay.length ? ':' : ': no decision lines'));
     for (const r of perDay) L.push('    ' + r.day + '  ' + r.source.padEnd(8) + '  candidates ' + r.candidates + '  proposed ' + r.proposed + '  kept ' + r.kept);
   }
-  if (missing.length) L.push('  NOT IN THE DENOMINATOR: ' + missing.map((m) => 'board ' + m.board + ' (' + m.source + ')').join(', ') + ' has a source and no entry: node tools/authorship.mjs --derive N --commits SHA --write-boards');
+  if (missing.length) L.push('  NOT IN THE DENOMINATOR: ' + missing.map((m) => 'board ' + m.board + ' (' + m.source + ')').join(', ') + ' has a source and no entry: node tools/authorship.mjs --fill --write-boards derives it once it LANDED (or --derive N --commits SHA --write-boards)');
+  if (stale.length) L.push('  STALE: ' + stale.map((x) => 'board ' + x.board + ' says launched false and ' + x.landed.source + ' says it LANDED').join('; ') + ': node tools/authorship.mjs --fill --write-boards');
   L.push('SHARE (cumulative): numerator ' + s.numerator + ' organism-authored kept patches, denominator ' + s.denominator + ' (' + s.kept + ' kept patches + ' + s.boardFiles + ' board files) = ' + fmtShare(s.numerator, s.denominator));
   return L.join('\n');
 }
@@ -542,14 +543,30 @@ export function main(argv = process.argv.slice(2), now = new Date()) {
     return { derived: entry, text, verdict: null, out: null, json: !!o.json };
   }
 
+  if (o.fill) {
+    const b0 = readBoards(boardsFile);
+    const rows = fillBoards({ root, boards: b0.boards });
+    const L = ['fill: ' + rel(boardsFile) + ' holds ' + b0.boards.length + ' entries; board sources with no entry or launched false: ' + rows.length];
+    for (const r of rows) L.push('  board ' + r.board + ': ' + (r.action === 'derive' ? 'DERIVED, ' + r.entry.files.length + ' files, at ' + r.entry.at + ' from ' + r.entry.atSource + '; ' : 'left as it is: ') + r.why);
+    const derived = rows.filter((r) => r.action === 'derive');
+    if (o['write-boards'] && derived.length) {
+      let arr = [];
+      for (const r of derived) arr = upsertBoard(boardsFile, r.entry);
+      L.push('wrote ' + rel(boardsFile) + ' (' + arr.length + ' boards: ' + arr.map((x) => x.board).join(', ') + ')');
+    } else if (derived.length) L.push('nothing written: --write-boards puts the ' + derived.length + ' derived ' + (derived.length === 1 ? 'entry' : 'entries') + ' into ' + rel(boardsFile));
+    else L.push('nothing to derive');
+    return { filled: rows, text: L.join('\n'), verdict: null, out: null, json: !!o.json };
+  }
+
   const a = readAuthored(authoredFile);
   const b = readBoards(boardsFile);
   const s = computeShare({ authored: a.lines, boards: b.boards, now });
   const missing = o.boards ? [] : missingBoards(root, b.boards);
+  const stale = o.boards ? [] : staleBoards(root, b.boards);
   const ledgerDir = path.join(root, ...LEDGER_DIR_REL.split('/'));
   const led = readLedgers(ledgerDir);
   const perDay = perSourcePerDay(led.lines);
-  const text = renderShare(s, { authoredRel: rel(authoredFile), boardsRel: rel(boardsFile), authoredInfo: a, boardsInfo: b, missing, perDay, ledgerRel: rel(ledgerDir) });
+  const text = renderShare(s, { authoredRel: rel(authoredFile), boardsRel: rel(boardsFile), authoredInfo: a, boardsInfo: b, missing, stale, perDay, ledgerRel: rel(ledgerDir) });
   const command = 'node tools/authorship.mjs' + (argv.length ? ' ' + argv.join(' ') : '');
   const lastWeek = s.weeks.at(-1) || null;
   const barMet = !!lastWeek && lastWeek.share === 1;
@@ -565,11 +582,13 @@ export function main(argv = process.argv.slice(2), now = new Date()) {
       + '. The latest week, ' + (lastWeek ? lastWeek.week + ', holds ' + fmtShare(lastWeek.numerator, lastWeek.denominator) : 'none, holds nothing') + ', so the P15 bar (100 percent per week) is ' + (barMet ? 'MET' : 'NOT MET') + '. '
       + (s.lastBoard ? 'The last launched board is ' + s.lastBoard.board + ' at ' + s.lastBoard.at + ', ' + (s.daysSinceLastBoard === null ? 'n/a' : s.daysSinceLastBoard.toFixed(2)) + ' days before this run. ' : '')
       + (missing.length ? 'Board sources with no entry, so not yet in the denominator: ' + missing.map((m) => m.board).join(', ') + '. ' : '')
+      + (stale.length ? 'Entries that say launched false while docs/LOG.md says the board LANDED: ' + stale.map((x) => x.board + ' (' + x.landed.source + ')').join(', ') + '. ' : '')
       + 'The share reads only these two files (the per source per day rows read the ledgers in ' + rel(ledgerDir) + '); a board that has not yet been appended to ' + rel(boardsFile) + ' is not in the denominator, and a patch the autopilot reverted or refused is in neither.',
     numerator: s.numerator, denominator: s.denominator, share: s.share,
     organism: s.organism, given: s.given, kept: s.kept, boardFiles: s.boardFiles,
     boards: s.boards, weeks: s.weeks, undated: s.undated,
     lastBoard: s.lastBoard, daysSinceLastBoard: s.daysSinceLastBoard, missingBoards: missing,
+    staleBoards: stale.map((x) => ({ board: x.board, landed: x.landed.source, at: x.landed.at })),
     perSourcePerDay: perDay,
     sources: {
       authored: { file: rel(authoredFile), present: a.present, lines: a.lines.length, bad: a.bad },
@@ -584,7 +603,7 @@ export function main(argv = process.argv.slice(2), now = new Date()) {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const r = main();
-    if (r.json) console.log(JSON.stringify(r.verdict || r.derived, null, 2));
+    if (r.json) console.log(JSON.stringify(r.verdict || r.derived || r.filled, null, 2));
     else console.log(r.text + (r.out ? '\nwrote ' + path.relative(process.cwd(), r.out).replaceAll('\\', '/') : ''));
   } catch (e) {
     console.error('authorship: ' + String(e && e.message || e));

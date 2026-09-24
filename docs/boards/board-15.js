@@ -2,7 +2,7 @@ export const meta = {
   name: 'board-15-finish-undone-work',
   description: 'BOARD 15 FINISH UNDONE WORK, his 2026-09-24 14:55 order verbatim: "Time is approaching until my claude sub is ending self improving is extremely important it should be able to finish undone work". Every unfinished board item becomes a gap with its brief; the organism's own answer chain (model cell last, provenance counted) attempts a brief end to end on a copy through the same walls; the solved-program memory answers at nanoseconds toward the 400B row (his 15:05 order); partial bars resume on the idle queue; a generated HANDOFF says how it all runs with no Claude; the organism writes its own next board; then an UNDONE block on the ladder and a HANDOFF row on the gate',
   phases: [
-    { title: 'Build', detail: 'wave 1: boards, ns, handoff (model off) and brief (the organism's own chain, the only Ollama consumer); wave 2: resume (the only Ollama consumer) and nextboard (model off)' },
+    { title: 'Build', detail: 'wave 1: boards, ns, handoff (model off) and brief (the organism\'s own chain, the only Ollama consumer); wave 2: resume (the only Ollama consumer) and nextboard (model off)' },
     { title: 'Verify', detail: 'Opus 5.5 re-runs each bar and checks file ownership' },
     { title: 'Fix', detail: 'one Opus 5.5 fix per failed verify, then a second verify' },
     { title: 'Rows', detail: 'one builder adds the UNDONE block to the ladder and the HANDOFF row to the gate, then verify' },
@@ -157,7 +157,7 @@ async function buildVerifyFix(it, board) {
 }
 
 phase('Build')
-log('BOARD 15 FINISH UNDONE WORK: wave 1 is boards, ns and handoff (model off) beside brief (the organism's own chain, the only Ollama consumer); wave 2 is resume (the only Ollama consumer) beside nextboard (model off); then rows')
+log('BOARD 15 FINISH UNDONE WORK: wave 1 is boards, ns and handoff (model off) beside brief (the organism\'s own chain, the only Ollama consumer); wave 2 is resume (the only Ollama consumer) beside nextboard (model off); then rows')
 const SKIP = new Set((args && Array.isArray(args.skip)) ? args.skip : [])
 const active = ITEMS.filter(it => !SKIP.has(it.key))
 if (SKIP.size) log(`skipped this launch (deferred, not dropped): ${[...SKIP].join(', ')}`)
