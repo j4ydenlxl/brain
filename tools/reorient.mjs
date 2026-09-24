@@ -28,7 +28,7 @@ let source = 'startup';
 try { source = JSON.parse(readFileSync(0, 'utf8') || '{}').source || source; } catch {}
 
 const sh = (cmd) => {
-  try { return execSync(cmd, { cwd: ROOT, encoding: 'utf8', timeout: 10000, stdio: ['ignore', 'pipe', 'ignore'] }).trim(); }
+  try { return execSync(cmd, { cwd: path.join(ROOT, 'brain'), encoding: 'utf8', timeout: 10000, stdio: ['ignore', 'pipe', 'ignore'] }).trim(); }
   catch { return ''; }
 };
 const emit = (text) => {
@@ -47,7 +47,7 @@ out.push('# ⛔ BRAIN: READ brain/MANUAL.md IN FULL BEFORE ANY ACTION. HIS WORDS
 out.push('- New project (2026-09-16). NOT the trader, NOT the browser, NOT Wick. Old data must not leak in.');
 out.push('- HE authors the WHAT; I own the HOW. Never reinterpret, never shrink, never a falsification engine.');
 out.push('- Cells → circuits → regions → connectome. Generations (time × amount × scale × cells). Self-improving. Own LLM. Tokens → quanta.');
-out.push('- Research phase: NO subagents. Build: Opus 5.5 (claude-opus-5-5) builds and fixes, NEVER Opus 5; Sonnet 5 verifies and small work; Fable 5.1 hardest only. No fleets, no Haiku.');
+out.push('- Research phase: NO subagents. Build: Opus 5.5 (claude-opus-5-5) builds and fixes, NEVER Opus 5; Sonnet 5 at most for low-level work (his 21:51); Fable 5.1 hardest only. No fleets, no Haiku.');
 out.push('- P9 context economy (his 2026-09-23 order, 133M cache reads): batch tool calls, extract with node, never cat a file over 20 KB into context, history lives in brain/docs/LOG.md.');
 out.push('- Never one-shot. Checkpoint. Never stop. Never quote a number a command did not print. No em-dashes in prose.');
 out.push('- Update §B of MANUAL.md at every checkpoint, after re-reading §A. Fewest tokens.');
@@ -69,20 +69,25 @@ const cap = (s, n, fromEnd) => {
   if (s.length <= n) return s;
   return fromEnd ? '…(older lines cut)\n' + s.slice(-n) : s.slice(0, n) + '\n…(cut)';
 };
-out.push(`## §B as of ${new Date().toISOString()} (${event}, source=${source})`);
-out.push(cap(objectives, 3200, false));
+const stIdx = sectionB.indexOf('### STATE');
+const state = stIdx >= 0 ? sectionB.slice(stIdx).trim() : '';
+out.push(`## STATE of brain/MANUAL.md as of ${new Date().toISOString()} (${event}, source=${source}); HIS ORDERS first, then KILLED ideas, then the orchestrator's ASSUMPTIONS each with its test`);
+out.push(cap(state, 9000, false));
+out.push('');
+out.push('## §B objectives (head)');
+out.push(cap(stIdx >= 0 ? objectives.slice(0, stIdx) : objectives, 1500, false));
 out.push('');
 const LOG = path.join(ROOT, 'brain', 'docs', 'LOG.md');
 let tail = progress;
 try { const ll = readFileSync(LOG, 'utf8').split(String.fromCharCode(10)).filter(l => l.startsWith('- ')); tail = '### Last 3 lines of docs/LOG.md (' + ll.length + ' lines in all)' + String.fromCharCode(10) + ll.slice(-3).join(String.fromCharCode(10)); } catch {}
-out.push(cap(tail, 2600, true));
+out.push(cap(tail, 1400, true));
 out.push('');
 
 out.push('## Live state read from disk (trust over any summary)');
 const branch = sh('git rev-parse --abbrev-ref HEAD');
-const dirty = sh('git status --short -- brain').split('\n').filter(Boolean).length;
+const dirty = sh('git status --short').split('\n').filter(Boolean).length;
 const head = sh('git log --oneline -1');
-out.push(`- branch ${branch || '?'}, HEAD ${head || '?'}, ${dirty} uncommitted path(s) under brain/`);
+out.push(`- branch ${branch || '?'}, HEAD ${head || '?'}, ${dirty} uncommitted path(s) in brain's own repository`);
 const procs = sh(`powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \\"Name='node.exe'\\" | Where-Object { $_.CommandLine -match 'brain' -and $_.CommandLine -notmatch 'reorient' } | ForEach-Object { $_.ProcessId.ToString() + ' ' + $_.CommandLine }"`);
 if (procs) {
   out.push('- live brain processes (do not kill, do not relaunch a duplicate):');
@@ -91,6 +96,6 @@ if (procs) {
   out.push('- no brain/ node processes running');
 }
 out.push('');
-out.push('FIRST ACTION: read brain/MANUAL.md in full (about 52 KB: §A his words verbatim, §B objectives + STATE). Then continue from STATE. Do not read docs/LOG.md in full.');
+out.push("FIRST ACTION: read brain/MANUAL.md in full (about 80 KB: §A his words verbatim with every orchestrator gloss labelled ORCHESTRATOR'S READING; §B objectives + STATE). STATE separates HIS ORDERS (clock order) from the ideas he KILLED and from the orchestrator's ASSUMPTIONS, each with the test that decides it: test them, never inherit them. Then continue from STATE. Do not read docs/LOG.md in full.");
 
 emit(out.join('\n'));
