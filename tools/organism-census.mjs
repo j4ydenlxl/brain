@@ -39,6 +39,13 @@
 //        [--knockout cells-001.mjs] [--no-knockout] [--no-knockout-tasks] [--tasks off] [--no-kernels] [--partial]
 //        [--progress N] [--min-free-mb M] [--tag name]
 //   node tools/organism-census.mjs --all [--ticks 200] [--max-cells 50000]
+//   node tools/organism-census.mjs --static --seed organism/scale-52000 [--horizon 16] [--tasks off]
+//        walks every line and loads nothing (staticCensus below): census-scale-static.json, and for
+//        the seed genome/emit.mjs --prune wrote from it, census-scale-pruned.json
+//   node tools/organism-census.mjs --sample 0.02 --seed organism/scale-52000 [--horizon 16]
+//        [--batch-cells 80000] [--cap-mb 5000] [--max-batches N] [--sample-seed census] [--no-reduce]
+//        runs a seeded sample of cells exactly on their cones (sampledCensus below):
+//        census-scale-sampled-partial.json, isTheBar false (the measurement beside the static bar)
 //
 // Verdicts: organism/gen-0 writes bench/verdicts/census.json, any other seed
 // census-<name>.json, isTheBar true. A run with --partial, --no-knockout or --tasks off writes
@@ -52,17 +59,18 @@
 // false) holding every sample taken: the record of where an organism stopped fitting in RAM.
 // Run under node --expose-gc, every sample follows a full collection. --tag t writes
 // census[-seed]-t-partial.json (isTheBar false), so a diagnostic run overwrites nothing.
-import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync, statSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync, statSync, openSync, readSync, writeSync, closeSync, rmSync, mkdtempSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
-import { freemem, totalmem } from 'node:os';
+import { freemem, totalmem, tmpdir } from 'node:os';
 import { heapStats } from '../core/simd.mjs';
 import { dropPayload } from '../core/signal.mjs';
 import { getKind, DEFAULT_POLICY } from '../core/cell.mjs';
 import '../cells/all.mjs';
 import { loadOrganism, verify, readManifest } from '../genome/load.mjs';
-import { liveBits } from '../genome/emit.mjs';
+import { liveBits, eachLine, declArgs, cellHashRow, edgeHashRow, seedFiles } from '../genome/emit.mjs';
+import { edgeFault } from '../genome/wire.mjs';
 import { install as installKernels } from '../runtime/kernels.mjs';
 import {
   generateAlgebra, solveAlgebra, gradeAlgebra, algebraCellsOf,
@@ -691,7 +699,7 @@ export function planSeed(st, { taskSeed = 'census' } = {}) {
   if (sn.cells.fit) taskTicks += 2 * sq.length;
   const pickIds = [...new Set([...Object.values(an.cells), ...Object.values(sn.cells)])];
   return {
-    nC, nE, ids, idx, kinds, kindOf, regions, regionOf, circuitOf, period, fileOf, src, dst, delay, sp, dp,
+    nC, nE, ids, idx, kinds, kindOf, regions, regionOf, circuits: circuitList, circuitOf, period, fileOf, src, dst, delay, sp, dp,
     regionsDecl, declared: { regions: nr, circuits: nk, cellsPerFile, edgesPerFile }, lines, present,
     picks: { algebra: an.cells, sequence: sn.cells, missing: { algebra: an.missing, sequence: sn.missing }, cells: pickIds.map((id) => idx.get(id)) },
     taskTicks, parseMs: Math.round(now() - t0),
@@ -1211,6 +1219,610 @@ function printPrune(log, cmp) {
   log('  bar        ' + (cmp.met ? 'MET' : 'MISSED') + ': ' + Object.entries(cmp.checks).map(([k, v]) => k + ' ' + v).join(', '));
 }
 
+// ---------------------------------------------------------------- the static census (never loads the seed)
+// An exact shard of organism/scale-52000 must load a 43 GB backward cone, so the census that
+// walks all 5 million lines cannot run the organism. It reads it instead: every emitted file
+// line by line through a fixed buffer (genome/emit.mjs eachLine), one Map from cell id to index
+// and a few typed arrays per cell in memory, and the edges written once to a binary file of
+// (source, destination, delay) triples in the OS temp dir, 12 bytes an edge. The closure then
+// runs in passes over that file until a pass changes nothing:
+//
+//   THE STATIC RULE. A periodic cell runs at tick 0 whatever its input (core/clock.mjs:
+//   t % period === 0); an event cell runs only when mail reaches it. So a cell can run only if
+//   a path of edges leads to it from a periodic cell (or from a cell the hosted problems inject
+//   into, tasks/host.mjs), and an edge can deliver only if its source can run. A declaration is
+//   live by the static rule when it is such a cell, such an edge, or a region or circuit that
+//   holds such a cell. Everything else is dead code no drive and no hosted problem can reach.
+//
+// The static rule is an UPPER BOUND on what runs: reachable is not ran, and a reachable cell
+// may never fire. The sampled census (below) measures the gap. The same passes compute the
+// earliest tick a cell could run, 1 + delay per edge from the periodic cells at tick 0, which
+// bounds what any run of H ticks can reach.
+//
+// The walk also recomputes the seed's content hash (genome/wire.mjs contentHash) from the lines
+// (genome/emit.mjs cellHashRow, edgeHashRow) and checks every edge's ports (edgeFault): when
+// the hash equals the manifest's, the lines walked are exactly the organism the loader builds.
+
+const STATIC_CHUNK = 1 << 18; // triples per read or write: 3 MB
+const INF32 = 0x7fffffff;
+
+/** Every Int32 triple of a file, in order, through one fixed buffer. */
+function eachTriple(file, n, fn) {
+  const ab = new ArrayBuffer(STATIC_CHUNK * 12);
+  const b = Buffer.from(ab), v = new Int32Array(ab);
+  const fd = openSync(file, 'r');
+  try {
+    let e = 0;
+    while (e < n) {
+      const k = Math.min(STATIC_CHUNK, n - e);
+      const got = readSync(fd, b, 0, k * 12, e * 12);
+      if (got !== k * 12) throw new Error('census: short read of the edge file at edge ' + e);
+      for (let q = 0; q < k; q++) fn(v[3 * q], v[3 * q + 1], v[3 * q + 2], e + q);
+      e += k;
+    }
+  } finally { closeSync(fd); }
+}
+
+/**
+ * The static census of an emitted seed: never imports it, never builds a Brain.
+ * @param {string} dir the seed directory
+ * @param {object} [o] { tasks: count the hosted problems' cells as sources (default true),
+ *   horizon: report the cells that could run within this many ticks (default 16),
+ *   scratchDir: where the edge file goes (default the OS temp dir), log }
+ */
+export function staticCensus(dir, { tasks = true, taskSeed = 'census', horizon = 16, scratchDir = null, log = () => {} } = {}) {
+  const w0 = now();
+  const abs = path.resolve(BRAIN_ROOT, dir);
+  const manifest = readManifest(abs);
+  const { cells: cellFiles, edges: edgeFiles } = seedFiles(abs);
+  const nC = manifest.counts.cells, nE = manifest.counts.edges;
+  let peakMB = 0;
+  const rss = () => { const r = mb(process.memoryUsage.rss()); if (r > peakMB) peakMB = r; return r; };
+  rss();
+  const lines = {};
+  const h = createHash('sha256');
+  h.update('brain.genome.v1\n');
+  h.update('cells ' + nC + '\n');
+  // regions.mjs: the r() and k() lines
+  const rNames = [], kKeys = [];
+  lines['regions.mjs'] = eachLine(path.join(abs, 'regions.mjs'), (l) => {
+    if (l.startsWith('r(')) rNames.push(declArgs(l, 'r(')[0]);
+    else if (l.startsWith('k(')) { const a = declArgs(l, 'k('); kKeys.push(a[0] + '/' + a[1]); }
+  });
+  // cells: id to index, kind, region, circuit, periodic, and the hash rows
+  const idOf = new Map();
+  const kinds = [], kindId = new Map(), kindPorts = [];
+  const regions = [], regionId = new Map(), circuits = [], circuitId = new Map();
+  const intern = (map, list, key) => { let v = map.get(key); if (v === undefined) { v = list.length; list.push(key); map.set(key, v); } return v; };
+  const kindOf = new Uint16Array(nC), regionOf = new Uint16Array(nC), circuitOf = new Int32Array(nC);
+  const periodic = new Uint8Array(nC);
+  const roleKinds = new Set([...ALGEBRA_ROLES, ...SEQUENCE_ROLES].map((r) => r.kind));
+  const roleCells = [];
+  const cellsPerFile = [];
+  let g = 0;
+  const t1 = now();
+  for (const f of cellFiles) {
+    const before = g;
+    lines[f] = eachLine(path.join(abs, f), (l) => {
+      if (!l.startsWith('c(')) return;
+      const a = declArgs(l, 'c(');
+      const [id, kind, region, circuit, params, policy] = a;
+      if (g >= nC) throw new Error('census: ' + f + ' declares more cells than the manifest counts (' + nC + ')');
+      if (idOf.has(id)) throw new Error('census: ' + f + ' declares cell ' + id + ' a second time');
+      idOf.set(id, g);
+      let ki = kindId.get(kind);
+      if (ki === undefined) { const K = getKind(kind); ki = kinds.length; kinds.push(K.name); kindPorts.push(K.ports); kindId.set(kind, ki); }
+      kindOf[g] = ki;
+      regionOf[g] = intern(regionId, regions, region || 'default');
+      circuitOf[g] = intern(circuitId, circuits, (region || 'default') + '/' + (circuit || 'default'));
+      const p = policy && policy.period !== undefined ? policy.period : DEFAULT_POLICY.period;
+      periodic[g] = p === 'event' ? 0 : 1;
+      h.update(cellHashRow(...a));
+      if (tasks && roleKinds.has(kind)) roleCells.push({ id, kind, params: { ...(getKind(kind).defaults || {}), ...(params || {}) }, policy: { period: p } });
+      g++;
+      if ((g & 65535) === 0) rss();
+    });
+    cellsPerFile.push(g - before);
+  }
+  if (g !== nC) throw new Error('census: ' + rel(abs) + ' declares ' + g + ' cells, its manifest counts ' + nC);
+  rss();
+  const cellsMs = now() - t1;
+  // edges: hash rows, port legality, in-degree, and the triple file
+  h.update('edges ' + nE + '\n');
+  const tmp = mkdtempSync(path.join(scratchDir || tmpdir(), 'census-static-'));
+  const triFile = path.join(tmp, 'edges.i32');
+  try {
+    const inDeg = new Int32Array(nC);
+    const edgesPerFile = [];
+    let ge = 0, faults = 0;
+    const faultSamples = [];
+    const t2 = now();
+    {
+      const ab = new ArrayBuffer(STATIC_CHUNK * 12);
+      const wb = Buffer.from(ab), wv = new Int32Array(ab);
+      const fd = openSync(triFile, 'w');
+      let nb = 0;
+      const flush = () => { if (nb) { writeSync(fd, wb, 0, nb * 12); nb = 0; } };
+      const U16 = new Uint16Array(1);
+      try {
+        for (const f of edgeFiles) {
+          const before = ge;
+          lines[f] = eachLine(path.join(abs, f), (l) => {
+            if (!l.startsWith('e(')) return;
+            const x = declArgs(l, 'e(');
+            const s = idOf.get(x[0]), d = idOf.get(x[1]);
+            if (s === undefined || d === undefined) throw new Error('census: ' + f + ': an edge names an undeclared cell (' + x[0] + ' -> ' + x[1] + ')');
+            if (ge >= nE) throw new Error('census: ' + rel(abs) + ' declares more edges than its manifest counts (' + nE + ')');
+            const fault = edgeFault({ id: x[0], ports: kindPorts[kindOf[s]] }, { id: x[1], ports: kindPorts[kindOf[d]] }, x[2], x[3]);
+            if (fault) { faults++; if (faultSamples.length < 5) faultSamples.push({ edge: ge, file: f, fault }); }
+            h.update(edgeHashRow(...x));
+            U16[0] = x[5];
+            wv[3 * nb] = s; wv[3 * nb + 1] = d; wv[3 * nb + 2] = U16[0]; nb++;
+            if (nb === STATIC_CHUNK) flush();
+            inDeg[d]++;
+            ge++;
+            if ((ge & 262143) === 0) rss();
+          });
+          edgesPerFile.push(ge - before);
+        }
+        flush();
+      } finally { closeSync(fd); }
+    }
+    if (ge !== nE) throw new Error('census: ' + rel(abs) + ' declares ' + ge + ' edges, its manifest counts ' + nE);
+    const edgesMs = now() - t2;
+    const hash = h.digest('hex');
+    rss();
+    // the other files: counted, never parsed
+    const present = readdirSync(abs).filter((f) => statSync(path.join(abs, f)).isFile()).sort();
+    for (const f of present) if (lines[f] === undefined) lines[f] = eachLine(path.join(abs, f), () => {});
+    // the hosted problems' cells (tasks/host.mjs nameCells on the same cells in the same order)
+    let hosted = [], picks = null;
+    if (tasks) {
+      const pseudo = { cells: roleCells };
+      const an = nameCells(pseudo, ALGEBRA_ROLES), sn = nameCells(pseudo, SEQUENCE_ROLES);
+      hosted = [...new Set([...Object.values(an.cells), ...Object.values(sn.cells)])].filter(Boolean);
+      picks = { algebra: an.cells, sequence: sn.cells, missing: { algebra: an.missing, sequence: sn.missing } };
+    }
+    // the closure, in passes over the triple file until a pass changes nothing
+    const reach = new Uint8Array(nC), fT = new Int32Array(nC).fill(INF32);
+    let nPeriodic = 0;
+    for (let i = 0; i < nC; i++) if (periodic[i]) { reach[i] = 1; fT[i] = 0; nPeriodic++; }
+    let hostedOnly = 0;
+    for (const id of hosted) { const i = idOf.get(id); if (!reach[i]) hostedOnly++; reach[i] = 1; }
+    const t3 = now();
+    const passes = [];
+    for (;;) {
+      let marked = 0, lowered = 0;
+      eachTriple(triFile, nE, (s, d, dl) => {
+        if (reach[s] && !reach[d]) { reach[d] = 1; marked++; }
+        const fs0 = fT[s];
+        if (fs0 !== INF32) { const nd = fs0 + 1 + dl; if (nd < fT[d]) { fT[d] = nd; lowered++; } }
+      });
+      passes.push({ marked, lowered });
+      rss();
+      if (!marked && !lowered) break;
+      if (passes.length > nC + 1) throw new Error('census: the closure did not settle in ' + passes.length + ' passes');
+    }
+    const closureMs = now() - t3;
+    // the verdict of the rule, per cell and per edge
+    let reachable = 0, deadZeroIn = 0, deadFedByDead = 0, withinH = 0, timedReach = 0;
+    const deadByKind = new Map();
+    const hist = new Map();
+    for (let i = 0; i < nC; i++) {
+      if (fT[i] !== INF32) { timedReach++; hist.set(fT[i], (hist.get(fT[i]) || 0) + 1); if (fT[i] <= horizon - 1) withinH++; }
+      if (reach[i]) { reachable++; continue; }
+      if (inDeg[i] === 0) deadZeroIn++; else deadFedByDead++;
+      const k = kinds[kindOf[i]];
+      deadByKind.set(k, (deadByKind.get(k) || 0) + 1);
+    }
+    const eBits = new Uint8Array((nE + 7) >> 3);
+    let liveEdges = 0, deadIntoLive = 0, closureBroken = 0;
+    const liveEdgesPerFile = new Array(edgeFiles.length).fill(0);
+    { let fi = 0, end = edgesPerFile[0] || 0;
+      eachTriple(triFile, nE, (s, d, dl, e) => {
+        while (e >= end && fi < edgeFiles.length - 1) { fi++; end += edgesPerFile[fi]; }
+        if (reach[s]) { eBits[e >> 3] |= 1 << (e & 7); liveEdges++; liveEdgesPerFile[fi]++; if (!reach[d]) closureBroken++; }
+        else if (reach[d]) deadIntoLive++;
+      }); }
+    if (closureBroken) throw new Error('census: ' + closureBroken + ' live edges lead into a cell the closure left dead');
+    const liveCellsPerFile = []; { let lo = 0; for (const n of cellsPerFile) { let v = 0; for (let i = lo; i < lo + n; i++) v += reach[i]; liveCellsPerFile.push(v); lo += n; } }
+    const liveRegionNames = new Set(), liveCircuitKeys = new Set();
+    for (let i = 0; i < nC; i++) if (reach[i]) { liveRegionNames.add(regions[regionOf[i]]); liveCircuitKeys.add(circuits[circuitOf[i]]); }
+    const regionsLive = rNames.filter((n) => liveRegionNames.has(n)).length;
+    const circuitsLive = kKeys.filter((k) => liveCircuitKeys.has(k)).length;
+    const seed = { dir: abs, name: path.basename(abs), manifest, files: { present, cells: cellFiles, edges: edgeFiles, lines }, declared: { regions: rNames.length, circuits: kKeys.length, cellsPerFile, edgesPerFile } };
+    const arm = { regionsLive, circuitsLive, raw: { cellLive: (i) => reach[i] === 1, edgeLive: (e) => ((eBits[e >> 3] >> (e & 7)) & 1) === 1 } };
+    const lc = lineCensus(seed, arm);
+    const indexed = ['index.mjs', 'regions.mjs', 'manifest.json', ...cellFiles, ...edgeFiles];
+    const notWalked = present.filter((f) => !indexed.includes(f));
+    const manifestFileLines = lines['manifest.json'];
+    const manifestCount = { lines: manifest.counts.lines, loadBearing: lc.loadBearing - manifestFileLines, fraction: frac(lc.loadBearing - manifestFileLines, manifest.counts.lines), agrees: manifest.counts.lines === lc.loaded - manifestFileLines };
+    const liveCells = liveBits(nC, (i) => reach[i] === 1);
+    const liveEdgeBits = { n: nE, count: liveEdges, encoding: liveCells.encoding, b64: Buffer.from(eBits).toString('base64') };
+    const histRows = [...hist.entries()].sort((a, b) => a[0] - b[0]);
+    rss();
+    const out = {
+      mode: 'static', seed, lines: lc, manifestCount,
+      files: { present: present.length, walked: indexed.filter((f) => present.includes(f)).length, notWalked, cellFiles: cellFiles.length, edgeFiles: edgeFiles.length },
+      whole: notWalked.length === 0 && g === nC && ge === nE,
+      hash: { streamed: hash, manifest: manifest.hash, match: hash === manifest.hash },
+      legality: { illegalEdges: faults, samples: faultSamples },
+      sources: { periodic: nPeriodic, hosted: hosted.length, hostedNotPeriodic: hostedOnly, tasks, picks },
+      closure: { passes: passes.length, perPass: passes, edgeFileBytes: nE * 12, edgeFile: 'OS temp dir, removed when the census ends' },
+      cells: {
+        declared: nC, reachable, dead: nC - reachable, deadZeroInDegree: deadZeroIn, deadFedOnlyByDeadCells: deadFedByDead,
+        deadByKind: Object.fromEntries([...deadByKind.entries()].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))),
+        periodic: nPeriodic, event: nC - nPeriodic,
+      },
+      edges: { declared: nE, live: liveEdges, dead: nE - liveEdges, deadIntoReachableCell: deadIntoLive, deadIntoDeadCell: nE - liveEdges - deadIntoLive },
+      regions: { declared: rNames.length, live: regionsLive }, circuits: { declared: kKeys.length, live: circuitsLive },
+      timing: { horizon, withinHorizon: withinH, reachableFromPeriodic: timedReach, earliestTick: Object.fromEntries(histRows.map(([k, n]) => [k, n])), maxEarliestTick: histRows.length ? histRows[histRows.length - 1][0] : null },
+      perFile: lc.perFile.map((r, i) => ({ ...r, dead: r.declarations - r.live })),
+      kinds: kinds.length,
+      live: { manifestHash: manifest.hash, phases: 'the static rule: reachable from a periodic cell' + (tasks ? ' or a hosted problem cell' : '') + ' through the edge lists; nothing was run', cells: liveCells, edges: liveEdgeBits },
+      hosted,
+      memoryMB: { peakRssSampled: peakMB, processPeakWorkingSet: mb(process.resourceUsage().maxRSS * 1024) },
+      ms: { cells: Math.round(cellsMs), edges: Math.round(edgesMs), closure: Math.round(closureMs), wall: Math.round(now() - w0) },
+    };
+    return out;
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+}
+
+function printStatic(log, r) {
+  const l = r.lines, c = r.cells, e = r.edges, s = r.sources;
+  log('static census of ' + rel(r.seed.dir) + ': ' + r.files.walked + ' of ' + r.files.present + ' files walked line by line, never loaded' + (r.files.notWalked.length ? ' (not walked: ' + r.files.notWalked.join(', ') + ')' : ''));
+  log('  hash       streamed ' + r.hash.streamed.slice(0, 16) + ', manifest ' + String(r.hash.manifest).slice(0, 16) + ': ' + (r.hash.match ? 'MATCH, the lines walked are the organism the loader builds' : 'MISMATCH'));
+  log('  legality   ' + r.legality.illegalEdges + ' illegal edges of ' + e.declared + ' (genome/wire.mjs edgeFault on every e() line)');
+  log('  sources    ' + s.periodic + ' periodic cells (due at tick 0 whatever their input)' + (s.tasks ? ' + ' + s.hostedNotPeriodic + ' hosted problem cells not already periodic (' + s.hosted + ' picked)' : ''));
+  log('  closure    ' + r.closure.passes + ' passes over a ' + r.closure.edgeFileBytes + ' byte edge file (Int32 source, destination, delay per edge); cells marked per pass ' + r.closure.perPass.map((p) => p.marked).join(', '));
+  log('  cells      declared ' + c.declared + ', reachable ' + c.reachable + ' (' + pct(c.reachable, c.declared) + '%), dead ' + c.dead + ': no edge in ' + c.deadZeroInDegree + ', fed only by dead cells ' + c.deadFedOnlyByDeadCells);
+  log('             dead by kind: ' + Object.entries(c.deadByKind).slice(0, 12).map(([k, n]) => k + ' ' + n).join(', ') + (Object.keys(c.deadByKind).length > 12 ? ', ...' : ''));
+  log('  edges      declared ' + e.declared + ', both ends reachable ' + e.live + ' (' + pct(e.live, e.declared) + '%), dead ' + e.dead + ' (their source is dead; ' + e.deadIntoReachableCell + ' of them lead into a reachable cell)');
+  log('  regions    ' + r.regions.live + ' of ' + r.regions.declared + ' hold a reachable cell; circuits ' + r.circuits.live + ' of ' + r.circuits.declared);
+  const tk = r.timing;
+  log('  timing     earliest tick a cell could run (1 + delay per edge from the periodic cells at tick 0): within ' + tk.horizon + ' ticks ' + tk.withinHorizon + ' (' + pct(tk.withinHorizon, c.declared) + '%), ever ' + tk.reachableFromPeriodic + ', latest ' + tk.maxEarliestTick);
+  for (const f of r.perFile) log('  file       ' + f.file.padEnd(14) + ' lines ' + String(f.lines).padStart(6) + ', declarations ' + String(f.declarations).padStart(6) + ', live ' + String(f.live).padStart(6) + ', dead ' + String(f.dead).padStart(6));
+  log('  lines      present ' + l.present + ', walked ' + l.loaded + '; declarations ' + l.declarations + ' = ' + r.regions.declared + ' regions + ' + r.circuits.declared + ' circuits + ' + c.declared + ' cells + ' + e.declared + ' edges; structure ' + l.structure + ' = ' + l.loaded + ' - ' + l.declarations);
+  log('  live       ' + l.liveDeclarations + ' = ' + r.regions.live + ' regions + ' + r.circuits.live + ' circuits + ' + c.reachable + ' cells + ' + e.live + ' edges; dead declarations ' + l.deadDeclarations);
+  log('  load bearing (static rule) = live ' + l.liveDeclarations + ' + structure ' + l.structure + ' = ' + l.loadBearing + ' of ' + l.loaded + ' lines = ' + pct(l.loadBearing, l.loaded) + '%');
+  log('             over the manifest count (every file but manifest.json, the gate way): ' + r.manifestCount.loadBearing + ' of ' + r.manifestCount.lines + ' = ' + pct(r.manifestCount.loadBearing, r.manifestCount.lines) + '%');
+  log('  memory     peak rss ' + r.memoryMB.peakRssSampled + ' MB sampled, process peak working set ' + r.memoryMB.processPeakWorkingSet + ' MB');
+  log('  time       ' + (r.ms.wall / 1000).toFixed(1) + ' s (cells ' + (r.ms.cells / 1000).toFixed(1) + ' s, edges ' + (r.ms.edges / 1000).toFixed(1) + ' s, closure ' + (r.ms.closure / 1000).toFixed(1) + ' s)');
+}
+
+export function staticStatement(r) {
+  const l = r.lines, c = r.cells, e = r.edges;
+  return 'The static census walked all ' + r.files.walked + ' files of ' + rel(r.seed.dir) + ' (' + l.loaded + ' physical lines, ' + r.manifestCount.lines + ' by the manifest count) line by line without loading the organism, in ' + (r.ms.wall / 1000).toFixed(1) + ' s at a peak working set of ' + r.memoryMB.processPeakWorkingSet + ' MB; its streamed content hash ' + (r.hash.match ? 'equals' : 'DIFFERS FROM') + ' the manifest hash and ' + r.legality.illegalEdges + ' edges are illegal. '
+    + 'By the static rule (a cell is live when a path of edges reaches it from one of the ' + r.sources.periodic + ' periodic cells' + (r.sources.tasks ? ' or ' + r.sources.hosted + ' hosted problem cells' : '') + ', an edge when its source is live, a region or circuit when it holds a live cell; ' + r.closure.passes + ' closure passes) ' + c.reachable + ' of ' + c.declared + ' cells (' + pct(c.reachable, c.declared) + ' percent) and ' + e.live + ' of ' + e.declared + ' edges (' + pct(e.live, e.declared) + ' percent) are live; ' + c.dead + ' cells are dead (' + c.deadZeroInDegree + ' with no edge in, ' + c.deadFedOnlyByDeadCells + ' fed only by dead cells). '
+    + 'Load bearing = ' + l.liveDeclarations + ' live declarations + ' + l.structure + ' structure lines = ' + l.loadBearing + ' of ' + l.loaded + ' lines (' + pct(l.loadBearing, l.loaded) + ' percent; ' + r.manifestCount.loadBearing + ' of ' + r.manifestCount.lines + ' by the manifest count), with ' + l.deadDeclarations + ' dead declarations. '
+    + 'The static rule is an upper bound: reachable is not ran, and at a ' + r.timing.horizon + ' tick horizon only ' + r.timing.withinHorizon + ' cells could run at all.';
+}
+
+export function staticVerdictOf(r, { command, isTheBar }) {
+  return {
+    bench: 'census', mode: 'static', at: new Date().toISOString(), command, node: process.version, isTheBar,
+    statement: staticStatement(r),
+    seed: rel(r.seed.dir),
+    rule: 'a cell is live when a path of edges reaches it from a periodic cell (due at tick 0 whatever its input)' + (r.sources.tasks ? ' or from a cell the hosted algebra and sequence problems inject into' : '') + '; an edge is live when its source is live (then both ends are); a region or circuit is live when it holds a live cell. Nothing is run: this is an upper bound on what runs.',
+    whole: r.whole, files: r.files, hash: r.hash, legality: r.legality,
+    lines: { ...r.lines, perFile: undefined }, manifestCount: r.manifestCount,
+    arithmetic: {
+      declarations: r.lines.declarations + ' = ' + r.regions.declared + ' regions + ' + r.circuits.declared + ' circuits + ' + r.cells.declared + ' cells + ' + r.edges.declared + ' edges',
+      live: r.lines.liveDeclarations + ' = ' + r.regions.live + ' + ' + r.circuits.live + ' + ' + r.cells.reachable + ' + ' + r.edges.live,
+      structure: r.lines.structure + ' = ' + r.lines.loaded + ' walked lines - ' + r.lines.declarations + ' declarations',
+      loadBearing: r.lines.loadBearing + ' = ' + r.lines.liveDeclarations + ' + ' + r.lines.structure + '; share ' + r.lines.loadBearing + ' / ' + r.lines.loaded + ' = ' + r.lines.fractionLoadBearing,
+      manifestCount: r.manifestCount.loadBearing + ' = ' + r.lines.loadBearing + ' - ' + r.seed.files.lines['manifest.json'] + ' manifest.json lines; share ' + r.manifestCount.loadBearing + ' / ' + r.manifestCount.lines + ' = ' + r.manifestCount.fraction,
+    },
+    sources: r.sources, closure: r.closure,
+    cells: r.cells, edges: r.edges, regions: r.regions, circuits: r.circuits, timing: r.timing,
+    perFile: r.perFile,
+    memoryMB: r.memoryMB, ms: r.ms,
+    live: r.live, hosted: r.hosted,
+  };
+}
+
+// ---------------------------------------------------------------- the sampled census
+// The static rule says what COULD run. The sampled census measures what DOES, exactly, on a
+// seeded 2 percent of the cells: each sampled cell is run with its backward cone at a short
+// horizon (runShard, the sharded census's exact shard, tasks off), so it does exactly what it
+// does in the whole organism over those ticks. The cone is cut further without losing
+// exactness: a cell u enters the cone of c only when f(u) + b(u) <= L, where f(u) is the
+// earliest tick u could run (from the periodic cells at tick 0, 1 + delay per edge) and b(u)
+// its travel time to c. A cell outside that set cannot run early enough for anything it sends
+// to reach c by tick L; every cell on a shortest path from a kept cell also satisfies the
+// inequality (f grows by at most the edge it crosses while b shrinks by exactly it), so the
+// kept set is closed. The sampled cells are run in batches whose cones' union stays under a
+// size, each batch freed before the next.
+
+function seededUniform(seed) {
+  const b = createHash('sha256').update(String(seed)).digest();
+  let a = b.readUInt32LE(0), c = b.readUInt32LE(4), d = b.readUInt32LE(8), e = b.readUInt32LE(12);
+  return () => {
+    // sfc32
+    const t = (((a + c) | 0) + e) | 0;
+    e = (e + 1) | 0;
+    a = c ^ (c >>> 9);
+    c = (d + (d << 3)) | 0;
+    d = (d << 21) | (d >>> 11);
+    d = (d + t) | 0;
+    return (t >>> 0) / 4294967296;
+  };
+}
+
+/** k of n indices drawn without replacement by a seeded partial Fisher-Yates, ascending. */
+export function drawSample(n, k, seed) {
+  if (!(k >= 0 && k <= n)) throw new Error('census: cannot draw ' + k + ' of ' + n);
+  const rnd = seededUniform(seed);
+  const idx = new Int32Array(n);
+  for (let i = 0; i < n; i++) idx[i] = i;
+  for (let i = 0; i < k; i++) { const j = i + Math.floor(rnd() * (n - i)); const t = idx[i]; idx[i] = idx[j]; idx[j] = t; }
+  return Int32Array.from(idx.subarray(0, k)).sort();
+}
+
+const Z95 = 1.959963984540054;
+/** The Wilson score interval for x successes of n, 95 percent by default. */
+export function wilson(x, n, z = Z95) {
+  if (!n) return { x, n, p: null, lo: null, hi: null };
+  const p = x / n, z2 = z * z, den = 1 + z2 / n;
+  const mid = (p + z2 / (2 * n)) / den;
+  const hw = (z * Math.sqrt(p * (1 - p) / n + z2 / (4 * n * n))) / den;
+  return { x, n, p, lo: Math.max(0, mid - hw), hi: Math.min(1, mid + hw) };
+}
+
+/** A ratio over clusters (a sampled cell and its out-edges) with its linearised 95 percent interval. */
+export function clusterRatio(ys, ms, z = Z95) {
+  const n = ys.length;
+  let Y = 0, M = 0;
+  for (let i = 0; i < n; i++) { Y += ys[i]; M += ms[i]; }
+  if (!M || n < 2) return { y: Y, m: M, clusters: n, r: M ? Y / M : null, lo: null, hi: null };
+  const r = Y / M;
+  let s2 = 0;
+  for (let i = 0; i < n; i++) { const d = ys[i] - r * ms[i]; s2 += d * d; }
+  s2 /= n - 1;
+  const se = Math.sqrt(s2 / n) / (M / n);
+  return { y: Y, m: M, clusters: n, r, se, lo: Math.max(0, r - z * se), hi: Math.min(1, r + z * se) };
+}
+
+/**
+ * Run a seeded sample of cells exactly, each on its (reduced) backward cone at a short horizon.
+ * @param {string} dir
+ * @param {object} [o] { fraction (0.02), sampleSeed ('census'), horizon in ticks (16),
+ *   batchCells: the most cells one batch loads (80000), capMB per batch (5000), reduce (true),
+ *   maxBatches: stop after this many (a timing run, never the whole sample), kernels, log }
+ */
+export async function sampledCensus(dir, { fraction = 0.02, sampleSeed = 'census', horizon = 16, batchCells = 80000, capMB = 5000, reduce = true, maxBatches = Infinity, kernels = true, log = () => {} } = {}) {
+  if (kernels) installKernels();
+  const w0 = now();
+  const st = seedText(dir);
+  const plan = planSeed(st);
+  const { nC, nE, src, dst, delay, period } = plan;
+  const L = horizon - 1;
+  // forward and backward adjacency
+  const csr = (key) => {
+    const start = new Int32Array(nC + 1);
+    for (let e = 0; e < nE; e++) start[key[e] + 1]++;
+    for (let i = 0; i < nC; i++) start[i + 1] += start[i];
+    const fill = start.slice(0, nC), list = new Int32Array(nE);
+    for (let e = 0; e < nE; e++) list[fill[key[e]]++] = e;
+    return { start, list };
+  };
+  const fw = csr(src), bw = csr(dst);
+  // f: the earliest tick each cell could run, from the periodic cells at tick 0
+  const f = new Int32Array(nC).fill(INF32);
+  { const B = [[]];
+    for (let i = 0; i < nC; i++) if (period[i] !== -1) { f[i] = 0; B[0].push(i); }
+    for (let d = 0; d < B.length; d++) {
+      const bucket = B[d]; if (!bucket) continue;
+      for (const v of bucket) {
+        if (f[v] !== d) continue;
+        for (let q = fw.start[v]; q < fw.start[v + 1]; q++) {
+          const e = fw.list[q], u = dst[e], nd = d + 1 + delay[e];
+          if (nd < f[u]) { f[u] = nd; (B[nd] || (B[nd] = [])).push(u); }
+        }
+      }
+      B[d] = null;
+    } }
+  // the static rule on this plan (tasks off: the periodic cells are the only sources)
+  const staticCells = { reachable: 0, withinHorizon: 0 };
+  for (let i = 0; i < nC; i++) { if (f[i] !== INF32) staticCells.reachable++; if (f[i] <= L) staticCells.withinHorizon++; }
+  let staticEdges = 0; for (let e = 0; e < nE; e++) if (f[src[e]] !== INF32) staticEdges++;
+  // the sample and its cones
+  const k = Math.round(fraction * nC);
+  const sample = drawSample(nC, k, sampleSeed);
+  const dist = new Int32Array(nC).fill(NEVER);
+  const touched = [];
+  const buckets = Array.from({ length: L + 1 }, () => []);
+  const coneOf = (c) => {
+    for (const t of touched) dist[t] = NEVER;
+    touched.length = 0;
+    for (const b of buckets) b.length = 0;
+    dist[c] = 0; touched.push(c); buckets[0].push(c);
+    for (let d = 0; d <= L; d++) {
+      for (const v of buckets[d]) {
+        if (dist[v] !== d) continue;
+        for (let q = bw.start[v]; q < bw.start[v + 1]; q++) {
+          const e = bw.list[q], u = src[e], nd = d + 1 + delay[e];
+          if (nd > L || nd >= dist[u]) continue;
+          if (reduce && (f[u] === INF32 || f[u] + nd > L)) continue;
+          if (dist[u] === NEVER) touched.push(u);
+          dist[u] = nd; buckets[nd].push(u);
+        }
+      }
+    }
+    return touched;
+  };
+  // batches: consecutive sampled cells while the union of their cones stays under batchCells
+  const t0 = now();
+  const batches = [];
+  const coneSizes = new Int32Array(k);
+  { const inU = new Uint8Array(nC); let members = [], cur = [];
+    const flush = () => { if (!cur.length) return; batches.push({ cells: cur, union: members.length }); for (const x of members) inU[x] = 0; members = []; cur = []; };
+    for (let s = 0; s < k; s++) {
+      const cl = coneOf(sample[s]);
+      coneSizes[s] = cl.length;
+      let add = 0; for (const x of cl) if (!inU[x]) add++;
+      if (cur.length && members.length + add > batchCells) flush();
+      for (const x of cl) if (!inU[x]) { inU[x] = 1; members.push(x); }
+      cur.push(sample[s]);
+    }
+    flush(); }
+  const planMs = now() - t0;
+  const sortedSizes = Int32Array.from(coneSizes).sort();
+  const q = (p) => (k ? sortedSizes[Math.min(k - 1, Math.floor(p * k))] : null);
+  const cones = { median: q(0.5), p90: q(0.9), max: k ? sortedSizes[k - 1] : null, sum: sortedSizes.reduce((a, b) => a + b, 0) };
+  log('sampled census of ' + rel(st.dir) + ': ' + k + ' of ' + nC + ' cells (' + pct(k, nC) + '%, seed ' + JSON.stringify(sampleSeed) + '), each run exactly on its backward cone at ' + horizon + ' ticks (0 to ' + L + '), tasks off');
+  log('  cones      ' + (reduce ? 'reduced (f(u) + b(u) <= ' + L + ')' : 'full') + ': median ' + cones.median + ', p90 ' + cones.p90 + ', max ' + cones.max + ' cells; ' + batches.length + ' batches of at most ' + batchCells + ' cells, ' + batches.reduce((a, b) => a + b.union, 0) + ' cells loaded in all; planned in ' + (planMs / 1000).toFixed(1) + ' s; rss ' + mb(process.memoryUsage.rss()) + ' MB');
+  // run the batches
+  const into = {
+    runs: new Int32Array(nC), driveRuns: new Int32Array(nC), fired: new Int32Array(nC), errs: new Int32Array(nC), skips: new Int32Array(nC),
+    signals: new Uint32Array(nC), driveSignals: new Uint32Array(nC), seenCell: new Uint8Array(nC),
+    hits: new Uint32Array(nE), driveHits: new Uint32Array(nE), used: new Uint8Array(nE), seenEdge: new Uint8Array(nE),
+  };
+  const rows = [];
+  const owned = new Uint8Array(nC), inR = new Uint8Array(nC), loadE = new Uint8Array(nE);
+  for (let bi = 0; bi < batches.length && bi < maxBatches; bi++) {
+    const b = batches[bi];
+    owned.fill(0); inR.fill(0); loadE.fill(0);
+    for (const c of b.cells) { owned[c] = 1; for (const x of coneOf(c)) inR[x] = 1; }
+    let nLoadE = 0;
+    for (let e = 0; e < nE; e++) if (inR[src[e]] && inR[dst[e]]) { loadE[e] = 1; nLoadE++; }
+    const r = await runShard(st, plan, { owned, inR, loadE, nLoadE }, { ticks: horizon, tasks: false, L, capMB, label: 'batch ' + bi, into });
+    const row = { batch: bi, owned: b.cells.length, loadedCells: b.union, loadedEdges: nLoadE, grown: r.grown, errors: r.errors, peakRssMB: r.peakRssMB, wallMs: r.wallMs, mailDropped: r.mailDropped, phantomRefused: r.phantomRefused };
+    rows.push(row);
+    log('  batch ' + String(bi).padStart(3) + '  owns ' + row.owned + ', loads ' + row.loadedCells + ' cells and ' + row.loadedEdges + ' edges; grown ' + row.grown + ', peak rss ' + row.peakRssMB + ' MB, ' + (row.wallMs / 1000).toFixed(1) + ' s');
+  }
+  const ranBatches = rows.length, complete = ranBatches === batches.length;
+  // the sampled cells that were run, and what they did
+  const measured = [];
+  for (let bi = 0; bi < ranBatches; bi++) for (const c of batches[bi].cells) measured.push(c);
+  let ran = 0, fired = 0, reach = 0, within = 0, ranNotWithin = 0, ranNotReach = 0, withinNotRan = 0, errored = 0;
+  const ys = [], ms = [], sys = [];
+  for (const c of measured) {
+    if (!into.seenCell[c]) throw new Error('census: sampled cell ' + plan.ids[c] + ' was not tallied');
+    const r = into.runs[c] > 0, fi = into.fired[c] > 0, re = f[c] !== INF32, wi = f[c] <= L;
+    ran += r; fired += fi; reach += re; within += wi; errored += into.errs[c] > 0;
+    if (r && !wi) ranNotWithin++;
+    if (r && !re) ranNotReach++;
+    if (wi && !r) withinNotRan++;
+    let y = 0, m = 0;
+    for (let q2 = fw.start[c]; q2 < fw.start[c + 1]; q2++) { const e = fw.list[q2]; m++; if (into.hits[e] > 0) y++; }
+    ys.push(y); ms.push(m); sys.push(re ? m : 0);
+  }
+  const n = measured.length;
+  const shares = {
+    ran: wilson(ran, n), fired: wilson(fired, n),
+    staticReachable: wilson(reach, n), staticWithinHorizon: wilson(within, n),
+    edgesDelivered: clusterRatio(ys, ms), edgesStaticLive: clusterRatio(sys, ms),
+  };
+  // lines: the static rule on the whole seed, and the dynamic estimate from the sample
+  const declRegions = plan.declared.regions, declCircuits = plan.declared.circuits;
+  const loadedFiles = ['index.mjs', 'regions.mjs', 'manifest.json', ...st.cellFiles, ...st.edgeFiles];
+  const loadedLines = loadedFiles.reduce((a, x) => a + (plan.lines[x] || 0), 0);
+  const declarations = declRegions + declCircuits + nC + nE;
+  const structure = loadedLines - declarations;
+  const liveRegionNames = new Set(), liveCircuitKeys = new Set();
+  for (let i = 0; i < nC; i++) if (f[i] !== INF32) { liveRegionNames.add(plan.regions[plan.regionOf[i]]); liveCircuitKeys.add(plan.circuits[plan.circuitOf[i]]); }
+  let rLive = 0, kLive = 0;
+  for (const [t, a] of plan.regionsDecl) { if (t === 'r' && liveRegionNames.has(a[0])) rLive++; if (t === 'k' && liveCircuitKeys.has(a[0] + '/' + a[1])) kLive++; }
+  // static (tasks off, so the periodic cells are the only sources) and the dynamic estimate: the
+  // sampled ran share times the cells, the delivered share times the edges, and the regions and
+  // circuits the static rule keeps (an upper bound: the sample cannot tell which circuit ran)
+  const staticLive = rLive + kLive + staticCells.reachable + staticEdges;
+  const est = (pc, pe) => (pc === null || pe === null ? null : rLive + kLive + pc * nC + pe * nE);
+  const dynLive = { p: est(shares.ran.p, shares.edgesDelivered.r), lo: est(shares.ran.lo, shares.edgesDelivered.lo), hi: est(shares.ran.hi, shares.edgesDelivered.hi) };
+  const share = (x) => (x === null ? null : Number(((x + structure) / loadedLines).toFixed(6)));
+  const lineShares = {
+    static: { liveDeclarations: staticLive, loadBearing: staticLive + structure, fraction: share(staticLive) },
+    dynamic: { liveDeclarations: dynLive.p === null ? null : Math.round(dynLive.p), fraction: share(dynLive.p), lo: share(dynLive.lo), hi: share(dynLive.hi) },
+  };
+
+  const out = {
+    mode: 'sampled', seed: { dir: st.dir, name: st.name, manifestHash: st.manifest.hash }, horizon, L, fraction, sampleSeed, reduce, batchCells, capMB,
+    sample: { drawn: k, measured: n, complete, batches: batches.length, batchesRun: ranBatches },
+    cones, shares, errored,
+    agreement: { ranNotWithinHorizon: ranNotWithin, ranNotReachable: ranNotReach, withinHorizonNotRan: withinNotRan, reachableNotRan: reach - (ran - ranNotReach) },
+    wholeStatic: { cells: nC, edges: nE, reachable: staticCells.reachable, withinHorizon: staticCells.withinHorizon, liveEdges: staticEdges },
+    lines: { loaded: loadedLines, declarations, structure, regionsDeclared: declRegions, circuitsDeclared: declCircuits, regionsLive: rLive, circuitsLive: kLive, ...lineShares },
+    batches: rows, exact: rows.every((x) => x.grown === 0),
+    memoryMB: { peakRssPerBatchMax: rows.length ? Math.max(...rows.map((x) => x.peakRssMB)) : null, processPeakWorkingSet: mb(process.resourceUsage().maxRSS * 1024), capPerBatch: capMB },
+    ms: { plan: Math.round(planMs), wall: Math.round(now() - w0) },
+    raw: { measured, runs: into.runs, fired: into.fired, hits: into.hits, f },
+  };
+  return out;
+}
+
+// the static census of the 5 million line seed is bench/verdicts/census-scale-static.json, and of
+// the seed pruned by it census-scale-pruned.json
+const staticBase = (name) => (name === 'scale-52000' ? 'census-scale-static' : name === 'scale-52000-pruned' ? 'census-scale-pruned' : 'census-' + name + '-static');
+const sampledBase = (name) => (name === 'scale-52000' ? 'census-scale-sampled' : 'census-' + name + '-sampled');
+const pc = (x) => (x === null || x === undefined ? 'n/a' : (100 * x).toFixed(2) + '%');
+const ci = (o, key = 'p') => pc(o[key]) + ' (95% ' + pc(o.lo) + ' to ' + pc(o.hi) + ')';
+
+/** A pruned seed's static census against the static census it was pruned by. */
+export function staticPruneComparison(b, a, pruned, file) {
+  const side = (v) => ({
+    lines: v.lines.loaded, manifestLines: v.manifestCount.lines, declarations: v.lines.declarations,
+    liveDeclarations: v.lines.liveDeclarations, deadDeclarations: v.lines.deadDeclarations,
+    deadShare: frac(v.lines.deadDeclarations, v.lines.declarations),
+    fractionLoadBearing: v.lines.fractionLoadBearing, cells: v.cells.declared, reachableCells: v.cells.reachable, edges: v.edges.declared, liveEdges: v.edges.live,
+  });
+  const before = { file, at: b.at, ...side(b) }, after = side(a);
+  const checks = {
+    fewerLines: after.lines < before.lines,
+    keptEveryLiveCell: after.cells === before.reachableCells && after.reachableCells === before.reachableCells,
+    keptEveryLiveEdge: after.edges === before.liveEdges && after.liveEdges === before.liveEdges,
+    noDeadDeclarationLeft: after.deadDeclarations === 0,
+    loadBearingShareRose: after.fractionLoadBearing > before.fractionLoadBearing,
+  };
+  const statement = 'Against ' + file + ', the static census this seed was pruned by: lines ' + before.lines + ' to ' + after.lines + ' (manifest count ' + before.manifestLines + ' to ' + after.manifestLines + '), dead declarations ' + before.deadDeclarations + ' of ' + before.declarations + ' (dead share ' + before.deadShare + ') to ' + after.deadDeclarations + ' of ' + after.declarations + ' (dead share ' + after.deadShare + '), load bearing share ' + before.fractionLoadBearing + ' to ' + after.fractionLoadBearing + '; cells ' + before.cells + ' to ' + after.cells + ' (' + before.reachableCells + ' were live), edges ' + before.edges + ' to ' + after.edges + ' (' + before.liveEdges + ' were live).';
+  return { before, after, checks, pruned: { from: pruned.from, fromHash: pruned.fromHash, rule: pruned.rule, streamed: pruned.streamed, cells: pruned.cells, edges: pruned.edges, kept: pruned.kept }, statement };
+}
+
+function printStaticPrune(log, cmp) {
+  const b = cmp.before, a = cmp.after;
+  log('  prune      before: ' + b.file + ' (' + b.at + '); after: this census');
+  log('  lines      ' + b.lines + ' -> ' + a.lines + ' (' + signed(a.lines - b.lines) + '); manifest count ' + b.manifestLines + ' -> ' + a.manifestLines);
+  log('  dead share ' + b.deadDeclarations + '/' + b.declarations + ' = ' + b.deadShare + ' -> ' + a.deadDeclarations + '/' + a.declarations + ' = ' + a.deadShare + '; load bearing share ' + b.fractionLoadBearing + ' -> ' + a.fractionLoadBearing);
+  log('  checks     ' + Object.entries(cmp.checks).map(([k, v]) => k + ' ' + v).join(', '));
+}
+
+function printSampled(log, r, sv, sf) {
+  const s = r.shares, n = r.sample.measured, H = r.horizon;
+  log('  sample     ' + n + ' of ' + r.sample.drawn + ' drawn cells measured (' + r.sample.batchesRun + ' of ' + r.sample.batches + ' batches)' + (r.sample.complete ? '' : '; INCOMPLETE, a timing run'));
+  log('  ran        ' + s.ran.x + ' of ' + n + ' sampled cells ran within ' + H + ' ticks: ' + ci(s.ran) + ' (Wilson)');
+  log('  fired      ' + s.fired.x + ' of ' + n + ' emitted at least once: ' + ci(s.fired));
+  log('  edges      ' + s.edgesDelivered.y + ' of the ' + s.edgesDelivered.m + ' out-edges of the sampled cells delivered: ' + ci(s.edgesDelivered, 'r') + ' (ratio over ' + s.edgesDelivered.clusters + ' cells as clusters)');
+  log('  check      ran but not reachable within ' + H + ' ticks by the static rule: ' + r.agreement.ranNotWithinHorizon + '; ran but not reachable at all: ' + r.agreement.ranNotReachable + ' (the static rule bounds the run cell by cell); reachable within ' + H + ' ticks and did not run: ' + r.agreement.withinHorizonNotRan);
+  log('  side by side, cells: static reachable ' + ci(s.staticReachable) + ' | static within ' + H + ' ticks ' + ci(s.staticWithinHorizon) + ' | ran ' + ci(s.ran) + ' | fired ' + ci(s.fired));
+  log('               whole seed, static: reachable ' + r.wholeStatic.reachable + '/' + r.wholeStatic.cells + ' = ' + pct(r.wholeStatic.reachable, r.wholeStatic.cells) + '%, within ' + H + ' ticks ' + r.wholeStatic.withinHorizon + '/' + r.wholeStatic.cells + ' = ' + pct(r.wholeStatic.withinHorizon, r.wholeStatic.cells) + '%');
+  log('               edges: static live ' + ci(s.edgesStaticLive, 'r') + ' | delivered ' + ci(s.edgesDelivered, 'r'));
+  log('               lines: static load bearing ' + pc(r.lines.static.fraction) + ' (whole seed, periodic sources only)' + (sv ? ', ' + pc(sv.lines.fractionLoadBearing) + ' in ' + rel(sf) + ' (with the hosted cells)' : '') + ' | dynamic estimate at ' + H + ' ticks ' + pc(r.lines.dynamic.fraction) + ' (95% ' + pc(r.lines.dynamic.lo) + ' to ' + pc(r.lines.dynamic.hi) + ')');
+  log('  exact      ' + (r.exact ? 'yes: no batch grew an edge, so every sampled cell did exactly what it does in the whole organism over ticks 0 to ' + r.L : 'NO: a batch grew edges by co-activation'));
+  log('  memory     peak rss per batch up to ' + r.memoryMB.peakRssPerBatchMax + ' MB (cap ' + r.memoryMB.capPerBatch + '), process peak working set ' + r.memoryMB.processPeakWorkingSet + ' MB; wall ' + (r.ms.wall / 1000).toFixed(1) + ' s');
+}
+
+export function sampledStatement(r, sv, staticFile) {
+  const s = r.shares, H = r.horizon, n = r.sample.measured;
+  return 'The sampled census drew ' + r.sample.drawn + ' of ' + r.wholeStatic.cells + ' cells of ' + rel(r.seed.dir) + ' (fraction ' + r.fraction + ', seed ' + JSON.stringify(r.sampleSeed) + ') and ran ' + n + ' of them' + (r.sample.complete ? '' : ' (an incomplete timing run)') + ' exactly, each on its backward cone at a ' + H + ' tick horizon, in ' + r.sample.batchesRun + ' batches of at most ' + r.batchCells + ' cells under a ' + r.capMB + ' MB cap per batch' + (r.exact ? ', no batch growing an edge' : ', NOT exact: a batch grew edges') + '. '
+    + s.ran.x + ' of ' + n + ' ran (' + pc(s.ran.p) + ', 95% Wilson ' + pc(s.ran.lo) + ' to ' + pc(s.ran.hi) + '), ' + s.fired.x + ' emitted (' + pc(s.fired.p) + ', ' + pc(s.fired.lo) + ' to ' + pc(s.fired.hi) + '), and ' + s.edgesDelivered.y + ' of their ' + s.edgesDelivered.m + ' out-edges delivered (' + pc(s.edgesDelivered.r) + ', ' + pc(s.edgesDelivered.lo) + ' to ' + pc(s.edgesDelivered.hi) + '). '
+    + 'On the same cells the static rule says ' + pc(s.staticReachable.p) + ' reachable and ' + pc(s.staticWithinHorizon.p) + ' reachable within ' + H + ' ticks; ' + r.agreement.ranNotWithinHorizon + ' cells ran outside the static bound. '
+    + 'Lines: static load bearing ' + pc(r.lines.static.fraction) + (sv ? ' (' + pc(sv.lines.fractionLoadBearing) + ' in ' + staticFile + ')' : '') + ' against a dynamic estimate of ' + pc(r.lines.dynamic.fraction) + ' (' + pc(r.lines.dynamic.lo) + ' to ' + pc(r.lines.dynamic.hi) + ') at ' + H + ' ticks, the regions and circuits counted by the static rule.';
+}
+
+export function sampledVerdictOf(r, { command, staticVerdict = null, staticFile = null }) {
+  return {
+    bench: 'census', mode: 'sampled', at: new Date().toISOString(), command, node: process.version, isTheBar: false,
+    statement: sampledStatement(r, staticVerdict, staticFile),
+    seed: rel(r.seed.dir), manifestHash: r.seed.manifestHash, horizon: { ticks: r.horizon, lastTick: r.L }, fraction: r.fraction, sampleSeed: r.sampleSeed,
+    method: 'a seeded partial Fisher-Yates draw of cells; each sampled cell loaded with its backward cone (reduced to the cells u with f(u) + b(u) <= L, f the earliest tick u could run from the periodic cells at tick 0, b its travel time to the sampled cell) and run by runShard, the exact shard of the sharded census, tasks off; ran and fired shares with Wilson 95 percent intervals, the delivered share of the sampled cells\' out-edges with a cluster ratio interval',
+    sample: r.sample, cones: r.cones, shares: r.shares, agreement: r.agreement, wholeStatic: r.wholeStatic, lines: r.lines,
+    staticVerdict: staticFile, exact: r.exact, errored: r.errored,
+    batches: r.batches, memoryMB: r.memoryMB, ms: r.ms, reduce: r.reduce, batchCells: r.batchCells, capMB: r.capMB,
+  };
+}
+
 // ---------------------------------------------------------------- CLI
 async function main(argv) {
   const opt = (k, d) => { const i = argv.indexOf('--' + k); return i >= 0 && argv[i + 1] !== undefined && !argv[i + 1].startsWith('--') ? argv[i + 1] : d; };
@@ -1228,6 +1840,68 @@ async function main(argv) {
   const ratioFrom = opt('ratio-from', DEFAULT_RATIO_FROM);
   const tag = String(opt('tag', '')).replace(/[^a-z0-9-]/gi, '');
   mkdirSync(outDir, { recursive: true });
+
+  // ---- static: walk every line of the seed, load nothing (the census of the 5 million lines)
+  if (has('static')) {
+    const seedDir = opt('seed', 'organism/gen-0');
+    const name = path.basename(path.resolve(BRAIN_ROOT, seedDir));
+    const log = (s) => process.stdout.write(s + '\n');
+    const r = staticCensus(seedDir, { tasks, horizon: Number(opt('horizon', 16)) });
+    printStatic(log, r);
+    const partial = has('partial') || tag !== '' || !tasks || !r.whole || !r.hash.match;
+    const v = staticVerdictOf(r, { command, isTheBar: !partial });
+    const base = staticBase(name);
+    // a seed genome/emit.mjs --prune wrote from a static census is compared with that census,
+    // and with the exact sharded attempt on it when one was refused
+    const pr = r.seed.manifest.genome && r.seed.manifest.genome.pruned;
+    if (pr && pr.census && pr.census.file) {
+      const srcFile = path.resolve(BRAIN_ROOT, pr.census.file);
+      if (existsSync(srcFile)) {
+        const b = JSON.parse(readFileSync(srcFile, 'utf8'));
+        if (b.mode === 'static') {
+          v.prune = staticPruneComparison(b, v, pr, pr.census.file);
+          printStaticPrune(log, v.prune);
+          v.statement += ' ' + v.prune.statement;
+        }
+      }
+      const refusedFile = path.join(outDir, verdictName(name, true, 'refused', shardedBase(name)));
+      if (existsSync(refusedFile)) {
+        const x = JSON.parse(readFileSync(refusedFile, 'utf8'));
+        v.exactAttempt = { file: rel(refusedFile), at: x.at, command: x.command, error: x.error, lastTick: x.horizon && x.horizon.lastTick, shards: (x.shards || []).map((s) => ({ shard: s.shard, ownedCells: s.ownedCells, cone: s.cone, loadedCells: s.loadedCells, loadedEdges: s.loadedEdges, estimateMB: s.estimateMB })) };
+        log('  exact      refused first (' + v.exactAttempt.file + ', ' + x.at + '): ' + v.exactAttempt.shards.map((s) => 'shard ' + s.shard + ' cone ' + s.cone + ' cells, estimate ' + s.estimateMB + ' MB').join('; ') + ', over the ' + (x.capMB || 8000) + ' MB cap; so the static census walked it instead');
+        v.statement += ' The exact sharded census was tried first and refused before loading anything (' + v.exactAttempt.file + ': ' + v.exactAttempt.shards.map((s) => 'shard ' + s.shard + ' estimated at ' + s.estimateMB + ' MB').join(', ') + '), so this static census is the mode that walked the whole pruned seed.';
+      }
+    }
+    const file = path.join(outDir, verdictName(name, partial, tag, base));
+    writeFileSync(file, JSON.stringify(v, null, 2) + '\n');
+    log('  ' + v.statement);
+    log('wrote ' + rel(file) + ' (isTheBar ' + v.isTheBar + ', ' + (JSON.stringify(v).length / 1024).toFixed(0) + ' KB)');
+    return;
+  }
+
+  // ---- sampled: a seeded fraction of the cells, each run exactly on its cone at a short horizon
+  if (has('sample')) {
+    const fraction = Number(opt('sample', 0.02));
+    if (!(fraction > 0 && fraction <= 1)) throw new Error('census: --sample takes a fraction in (0, 1]');
+    const seedDir = opt('seed', 'organism/gen-0');
+    const name = path.basename(path.resolve(BRAIN_ROOT, seedDir));
+    const log = (s) => process.stdout.write(s + '\n');
+    const maxBatches = has('max-batches') ? Number(opt('max-batches', 0)) : Infinity;
+    const r = await sampledCensus(seedDir, {
+      fraction, sampleSeed: opt('sample-seed', 'census'), horizon: Number(opt('horizon', 16)),
+      batchCells: Number(opt('batch-cells', 80000)), capMB: Number(opt('cap-mb', 5000)), reduce: !has('no-reduce'), maxBatches, kernels, log,
+    });
+    const sf = path.join(outDir, verdictName(name, false, '', staticBase(name)));
+    const sv = existsSync(sf) ? JSON.parse(readFileSync(sf, 'utf8')) : null;
+    printSampled(log, r, sv, sf);
+    const v = sampledVerdictOf(r, { command, staticVerdict: sv, staticFile: sv ? rel(sf) : null });
+    const file = path.join(outDir, verdictName(name, true, tag || (r.sample.complete ? '' : 'timing'), sampledBase(name)));
+    delete v.raw;
+    writeFileSync(file, JSON.stringify(v, null, 2) + '\n');
+    log('  ' + v.statement);
+    log('wrote ' + rel(file) + ' (isTheBar false: the sampled census is the measurement beside the bar, not the bar; ' + (JSON.stringify(v).length / 1024).toFixed(0) + ' KB)');
+    return;
+  }
 
   // ---- sharded: N cells files at a time, never the whole seed at once
   if (has('shard-files')) {

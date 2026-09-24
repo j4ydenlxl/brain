@@ -16,8 +16,13 @@
 //       Wilson 95 as the verdicts store it, instances under the health window, the P15 rows
 //       each from its file, and the board on the real verdicts held to their own fields.
 //   (o) and (p) the rows item verdict node bench/ladder.mjs --rows writes: met only when the
-//       board, a GREEN gate with its three rows and the ladder tests all hold; a gate that started
-//       before a file this item owns changed is STALE; rows.json is written once.
+//       board with its three Board 12 blocks, a GREEN gate with its five rows and the ladder and
+//       gate tests all hold; a gate that started before a file this item owns changed is STALE;
+//       rows.json is written once.
+//   (q) to (s) the Board 12 blocks on hand written verdicts: MULTIPLYING, AUTHORED (the share,
+//       patches per source per day, days since the last board) and KNOWLEDGE, each printing
+//       "not measured" for a missing verdict, PARTIAL for a -partial one, and n/a, never 0, for
+//       a number the verdict does not carry.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, writeFileSync, statSync, readFileSync, mkdirSync } from 'node:fs';
@@ -30,6 +35,7 @@ import {
   deltaPercent, targetLine, compositeOf, healthColumn, COLUMNS, ACCURACY_COLUMNS, UNLOCK_FLOOR, TARGET,
   boardOf, boardLines, runBoard, classOf, classesOf, wilson95, armsOf, recordsOf, isPartialVerdict, armSeparation,
   instancesOf, substrateOf, authoredOf, bytesPerPointOf, improvementOf, HIS_RATE,
+  multiplyOf, multiplyingLines, authoredLines, lastBoardOf, perSourcePerDayOf, knowledgeOf, knowledgeLines, narrowReasons,
 } from '../bench/ladder.mjs';
 import { ANSWER_PROVENANCE as PROVENANCE } from '../act/prompt.mjs';
 import { ALIVE_WINDOW_MS } from '../daemon/health.mjs';
@@ -518,6 +524,16 @@ test('(n) the board on the real verdicts equals their fields, and runBoard write
       assert.ok(printed.some((l) => l.startsWith(s.name + '  ' + (s.status === 'PARTIAL' ? 'PARTIAL' : 'whole'))), s.key + ' printed with its status');
     }
     assert.ok(printed.some((l) => l.startsWith('wrote ')));
+    // the three Board 12 blocks are printed, and each number is its verdict's field or not measured
+    for (const b of ['MULTIPLYING', 'AUTHORED', 'KNOWLEDGE']) assert.ok(printed.some((l) => l.startsWith(b)), b + ' printed');
+    const mv = (() => { try { return JSON.parse(readFileSync(path.join(ROOT, 'bench', 'verdicts', 'multiply.json'), 'utf8')); } catch { return null; } })();
+    if (mv) {
+      assert.equal(doc.board.multiplying.bar.populationFresh, mv.bar.populationFresh);
+      assert.equal(doc.board.multiplying.bar.singleFresh, mv.bar.singleFresh);
+      assert.equal(doc.board.multiplying.population.duplications, mv.arms.population.duplications);
+    } else assert.ok(printed.some((l) => l.startsWith('MULTIPLYING: not measured') || l.includes('multiply-partial.json, PARTIAL')));
+    const kv = (() => { try { return JSON.parse(readFileSync(path.join(ROOT, 'bench', 'verdicts', 'knowledge.json'), 'utf8')); } catch { return null; } })();
+    if (kv) assert.equal(doc.board.knowledge.sources[0].primary.held, kv.breadth.held);
   } finally { rmSync(dir, { recursive: true, force: true }); }
   const after = (() => { try { return statSync(real).mtimeMs; } catch { return null; } })();
   assert.equal(after, before, 'bench/verdicts/ladder.json is untouched by a test');
@@ -532,14 +548,29 @@ const T = (s) => Date.parse('2026-09-24T' + s + 'Z');
 function rowsInputs() {
   const line = (label, ok) => label + (ok ? ' GREEN' : ' RED') + ': a row line';
   return {
-    ladder: { at: '2026-09-24T01:00:00.000Z', command: 'node bench/ladder.mjs', isTheBar: true, board: { sets: [{ name: 'GSM8K', status: 'PARTIAL' }, { name: 'ARC-AGI-1 evaluation', status: 'whole' }] } },
+    ladder: {
+      at: '2026-09-24T01:00:00.000Z', command: 'node bench/ladder.mjs', isTheBar: true,
+      board: {
+        sets: [{ name: 'GSM8K', status: 'PARTIAL' }, { name: 'ARC-AGI-1 evaluation', status: 'whole' }],
+        multiplying: { source: 'bench/verdicts/multiply.json' },
+        authored: { source: null, reason: 'none', perSourcePerDay: { rows: [] }, lastBoard: { newest: null } },
+        knowledge: { sources: [{ name: 'simplewiki', status: 'not measured' }] },
+      },
+    },
     gate: {
       command: 'node bench/gate.mjs', startedAt: '2026-09-24T02:00:00.000Z', at: '2026-09-24T02:05:12.000Z', verdict: 'GREEN',
       testsPassed: 2, testsTotal: 2, assertionsPassed: 37, assertionsFailed: 0, emDash: [], badImports: [],
       tests: [{ file: 'test/a.test.mjs', exit: 0, budget: { outcome: 'exit', peakRssMb: 88.5 } }, { file: 'test/b.test.mjs', exit: 0, budget: { outcome: 'exit', peakRssMb: 91.25 } }],
-      rows: { budget: { ok: true, line: line('BUDGET', true) }, compress: { ok: true, line: line('COMPRESS', true) }, hisData: { ok: true, line: line('HIS DATA', true) } },
+      rows: {
+        budget: { ok: true, line: line('BUDGET', true) }, compress: { ok: true, line: line('COMPRESS', true) }, hisData: { ok: true, line: line('HIS DATA', true) },
+        loadBearing: { ok: true, line: line('LOAD-BEARING', true) }, boundary: { ok: true, line: line('BOUNDARY', true) },
+      },
     },
-    tests: { file: 'test/ladder.test.mjs', pass: 17, fail: 0, total: 17, exit: 0, ms: 6421, budget: { outcome: 'exit', peakRssMb: 612.75 } },
+    tests: [
+      { file: 'test/ladder.test.mjs', pass: 17, fail: 0, total: 17, exit: 0, ms: 6421, budget: { outcome: 'exit', peakRssMb: 612.75 } },
+      { file: 'test/gate.test.mjs', pass: 6, fail: 0, total: 6, exit: 0, ms: 4210, budget: { outcome: 'exit', peakRssMb: 140.5 } },
+      { file: 'test/gate-rows.test.mjs', pass: 9, fail: 0, total: 9, exit: 0, ms: 1730, budget: { outcome: 'exit', peakRssMb: 96.25 } },
+    ],
     owned: [{ file: 'bench/ladder.mjs', mtimeMs: T('00:30:00') }, { file: 'bench/gate.mjs', mtimeMs: T('00:31:00') }, { file: 'notes/ladder.md', mtimeMs: T('00:59:00') }],
     at: '2026-09-24T03:00:00.000Z',
   };
@@ -601,16 +632,36 @@ test('(o) the rows verdict: met only when board, GREEN gate and tests all hold, 
   assert.deepEqual(red.doc.parts.gate.redRows, ['BUDGET', 'HIS DATA']);
   assert.deepEqual(statementNumbersInFields(red.doc), [], 'a statement number that is no field');
 
-  // the ladder tests failing, or a row missing from the gate, each misses the bar on its own
-  const tf = rowsInputs(); tf.tests.fail = 1; tf.tests.pass = 16; tf.tests.exit = 1;
-  assert.equal(rowsVerdictOf(tf).met, false);
+  // a test file failing, one not run, a row missing from the gate, a red new row, or a block
+  // missing from the board, each misses the bar on its own
+  const tf = rowsInputs(); tf.tests[1].fail = 1; tf.tests[1].pass = 5; tf.tests[1].exit = 1;
+  const tfv = rowsVerdictOf(tf);
+  assert.equal(tfv.met, false);
+  assert.ok(tfv.reasons.includes('test/gate.test.mjs did not pass: exit 1, pass 5, fail 1, tests 6'), tfv.reasons.join(' | '));
+  const nt = rowsInputs(); nt.tests = [];
+  assert.ok(rowsVerdictOf(nt).reasons.includes('no test file was run'));
+  const one = rowsInputs(); one.tests = one.tests[0];
+  assert.equal(rowsVerdictOf(one).met, true, 'a single run row is still read');
   const mr = rowsInputs(); delete mr.gate.rows.compress;
-  assert.ok(rowsVerdictOf(mr).reasons.includes('the gate printed 2 of the 3 rows'));
+  assert.ok(rowsVerdictOf(mr).reasons.includes('the gate printed 4 of the 5 rows'));
+  const nb = rowsInputs(); delete nb.gate.rows.loadBearing; delete nb.gate.rows.boundary;
+  const nbv = rowsVerdictOf(nb);
+  assert.ok(nbv.reasons.includes('the gate printed 3 of the 5 rows'), nbv.reasons.join(' | '));
+  assert.deepEqual(nbv.doc.parts.gate.rowsPrinted, ['BUDGET', 'COMPRESS', 'HIS DATA']);
+  const rb = rowsInputs(); rb.gate.verdict = 'RED'; rb.gate.rows.loadBearing = { ok: false, line: 'LOAD-BEARING RED: a row line' };
+  assert.ok(rowsVerdictOf(rb).reasons.includes('the gate is RED: red rows LOAD-BEARING'));
+  const mb = rowsInputs(); delete mb.ladder.board.knowledge; mb.ladder.board.authored = { share: 0.1 };
+  const mbv = rowsVerdictOf(mb);
+  assert.ok(mbv.reasons.includes('the board in ladder.json carries no AUTHORED, KNOWLEDGE block'), mbv.reasons.join(' | '));
+  assert.deepEqual(mbv.doc.parts.ladder.blocks, ['MULTIPLYING']);
+  assert.deepEqual(ok.doc.parts.ladder.blocks, ['MULTIPLYING', 'AUTHORED', 'KNOWLEDGE']);
+  assert.equal(ok.doc.parts.tests.length, 3);
+  assert.equal(ok.doc.board, 12);
   console.log('(o) met ' + ok.met + ', stale reasons ' + stale.reasons.length + ', red reasons ' + red.reasons.length);
 });
 
-test('(p) runRows writes rows-partial.json when missed, rows.json once when met, and runs only the test it is given', async () => {
-  const { runRows, ROWS_OWNED } = await import('../bench/ladder.mjs');
+test('(p) runRows writes rows-partial.json when missed, rows.json once when met, and runs the ladder and gate tests', async () => {
+  const { runRows, ROWS_OWNED, ROWS_TESTS } = await import('../bench/ladder.mjs');
   const { utimesSync } = await import('node:fs');
   const root = tmp();
   try {
@@ -626,10 +677,15 @@ test('(p) runRows writes rows-partial.json when missed, rows.json once when met,
     const red = { ...inp.gate, verdict: 'RED', rows: { ...inp.gate.rows, hisData: { ok: false, line: 'HIS DATA RED: a row line' } } };
     writeFileSync(path.join(vd, 'gate.json'), JSON.stringify(red));
     const ran = [];
-    const runTests = async (file) => { ran.push(path.relative(root, file).replaceAll('\\', '/')); return { row: inp.tests, out: '' }; };
+    const runTests = async (file) => {
+      const rel = path.relative(root, file).replaceAll('\\', '/');
+      ran.push(rel);
+      return { row: { ...inp.tests.find((t) => t.file === rel) }, out: '' };
+    };
     const logs = [];
     const a = await runRows({ root, verdictsDir: vd, runTests, log: (l) => logs.push(l), at: inp.at });
-    assert.deepEqual(ran, ['test/ladder.test.mjs']);
+    assert.deepEqual(ran, [...ROWS_TESTS]);
+    assert.deepEqual(ROWS_TESTS, ['test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs']);
     assert.equal(a.met, false);
     const partial = JSON.parse(readFileSync(path.join(vd, 'rows-partial.json'), 'utf8'));
     assert.equal(partial.isTheBar, false);
@@ -646,5 +702,164 @@ test('(p) runRows writes rows-partial.json when missed, rows.json once when met,
     const c = await runRows({ root, verdictsDir: vd, runTests, log: () => {}, at: '2026-09-24T04:00:00.000Z' });
     assert.equal(c.wrote, null, 'the bar file is written once');
     assert.equal(readFileSync(path.join(vd, 'rows.json'), 'utf8'), first);
+
+    // a test file not in the tree is not run and misses the bar by name
+    rmSync(path.join(root, 'test', 'gate-rows.test.mjs'));
+    ran.length = 0;
+    const d = await runRows({ root, verdictsDir: vd, runTests, log: () => {}, write: false, at: inp.at });
+    assert.deepEqual(ran, ['test/ladder.test.mjs', 'test/gate.test.mjs']);
+    assert.equal(d.met, false);
+    assert.ok(d.reasons.includes('test/gate-rows.test.mjs did not pass: not in the tree'), d.reasons.join(' | '));
+    assert.equal(d.wrote, null);
   } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+// ---------------------------------------------------------------- (q) to (s) the Board 12 blocks
+// Each block reads its verdict and prints what the verdict carries. The failure these guard is a
+// missing verdict or a missing field printed as 0, which reads as a measured zero.
+const NOT_ZERO = /(?:^|[\s(:,])0(?:[\s,;)/]|$)/;
+
+test('(q) MULTIPLYING: none is not measured, a -partial one is PARTIAL and claims no bar, the whole one wins', () => {
+  const dir = tmp();
+  try {
+    let m = multiplyOf({ dir });
+    assert.equal(m.source, null);
+    assert.deepEqual(multiplyingLines(m), ['MULTIPLYING: not measured (no bench/verdicts/multiply.json or multiply-partial.json)']);
+
+    // partial only, with the single arm carrying no duplications, no evals and no kill
+    put(dir, 'multiply-partial.json', {
+      at: '2026-09-24T01:00:00.000Z', command: 'c', isTheBar: false, config: { wallS: 80, suite: { fresh: 'grid/velocity:heldout' } },
+      bar: { met: true, singleFresh: 134, populationFresh: 133, freshT: 160, atOrAbove: false },
+      arms: { population: { aliveAtEnd: { alive: 3, s: 79.5, ids: ['i0', 'i1', 'i2'] }, maxAlive: 3, duplications: 2 }, single: { aliveAtEnd: { alive: 1 } } },
+    });
+    m = multiplyOf({ dir });
+    assert.equal(m.partial, true);
+    assert.deepEqual(m.partialBecause, ['the file is named -partial', 'isTheBar false']);
+    assert.equal(m.single.duplications, null, 'a missing number is null, not 0');
+    let L = multiplyingLines(m);
+    assert.match(L[0], /multiply-partial\.json, PARTIAL: the file is named -partial, isTheBar false, /);
+    assert.ok(L.some((l) => l.includes('population 3 at 79.5 s (i0, i1, i2), at most 3 at once; single 1, at most n/a at once')), L.join(' | '));
+    assert.ok(L.some((l) => l.includes('duplications: population 2, single n/a')), L.join(' | '));
+    assert.ok(L.some((l) => l.includes('133/160 against 134/160 on grid/velocity:heldout, at or above no')), L.join(' | '));
+    assert.ok(L.some((l) => l.startsWith('  kill: not recorded; bar met yes in a PARTIAL run, so it is not claimed')), L.join(' | '));
+    for (const l of L) assert.equal(NOT_ZERO.test(l), false, 'no zero stands in for a missing number: ' + l);
+
+    // the whole verdict is primary and the partial one is listed beside it
+    put(dir, 'multiply.json', {
+      at: '2026-09-24T02:00:00.000Z', command: 'node bench/multiply.mjs', isTheBar: true, modelCalls: 0, config: { wallS: 240, suite: { fresh: 'grid/velocity:heldout' }, spawnPlan: '1 then 2' },
+      bar: { met: true, singleFresh: 134, populationFresh: 136, freshT: 160, atOrAbove: true, cameBack: true },
+      kill: { id: 'i0', atS: 122, checkpointT: 1500, cameBack: true },
+      arms: { population: { aliveAtEnd: { alive: 3, s: 237.7, ids: ['i0', 'i1', 'i2'] }, maxAlive: 3, duplications: 2, pick: { fresh: 136, freshT: 160 } }, single: { aliveAtEnd: { alive: 1, s: 239 }, maxAlive: 1, duplications: 0 } },
+    });
+    m = multiplyOf({ dir });
+    assert.equal(m.partial, false);
+    assert.equal(m.source.endsWith('multiply.json'), true);
+    assert.equal(m.single.duplications, 0, 'a measured zero is printed as zero');
+    L = multiplyingLines(m);
+    assert.match(L[0], /multiply\.json, whole, isTheBar true, 2026-09-24T02:00:00\.000Z, 240 wall s per arm, model calls 0\):$/);
+    assert.ok(L.some((l) => l.includes('136/160 against 134/160 on grid/velocity:heldout, at or above yes')), L.join(' | '));
+    assert.ok(L.some((l) => l.includes('kill: i0 at 122 s, back from its checkpoint t=1500: yes; bar met yes')), L.join(' | '));
+    assert.equal(L.some((l) => l.includes('not claimed')), false);
+    assert.ok(L.some((l) => l.includes('also on disk: ') && l.includes('multiply-partial.json (partial, isTheBar false') && l.includes('population 133/160 against single 134/160')), L.join(' | '));
+    assert.deepEqual(narrowReasons('multiply.json', { isTheBar: true, complete: false }), ['complete false']);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('(r) AUTHORED: the share, patches per source per day, and days since the last board from each source', () => {
+  const dir = tmp();
+  try {
+    const states = path.join(dir, 'state');
+    mkdirSync(states);
+    const boardsFile = path.join(dir, 'BOARDS.json');
+    const now = Date.parse('2026-09-24T12:00:00.000Z');
+
+    // nothing on disk: every line says not measured, and none prints a zero
+    let au = authoredOf({ dir, boardsFile, states: [states], now });
+    assert.equal(au.source, null);
+    let L = authoredLines(au);
+    assert.equal(L[0], 'AUTHORED: not measured (no bench/verdicts/authorship.json with a share)');
+    assert.ok(L.includes('  patches proposed and kept per source per day: not measured (no bench/verdicts/authorship.json)'), L.join(' | '));
+    assert.ok(L.some((l) => l.startsWith('  days since the last board: not measured (no board in authorship.json, ')), L.join(' | '));
+    for (const l of L) assert.equal(NOT_ZERO.test(l), false, l);
+
+    // a share with no per-day field, boards counted to 9, listed to 10, and markers for 11 and 12
+    put(dir, 'authorship.json', {
+      at: '2026-09-24T00:00:00.000Z', command: 'node tools/authorship.mjs', isTheBar: true, numerator: 0, denominator: 93, share: 0,
+      organism: 0, kept: 0, boardFiles: 93, sources: { authored: { file: 'state/self/authored.jsonl', present: false } },
+      boards: [{ board: 8, at: '2026-09-22T12:00:00Z' }, { board: 9, at: '2026-09-23T00:00:00Z' }],
+    });
+    writeFileSync(boardsFile, JSON.stringify([{ board: 9, at: '2026-09-23T00:00:00Z' }, { board: 10, at: '2026-09-23T12:00:00Z' }]));
+    writeFileSync(path.join(states, 'board11.marker'), 'board 11 launched 2026-09-24T00:00:00Z by the chain\n');
+    writeFileSync(path.join(states, 'board12.marker'), 'board 12 launched 2026-09-24T06:00:00.000Z\n');
+    writeFileSync(path.join(states, 'board13.marker'), 'no launch time here\n');
+    au = authoredOf({ dir, boardsFile, states: [states], now });
+    assert.equal(au.share, 0);
+    assert.equal(au.perSourcePerDay.rows.length, 0);
+    assert.match(au.perSourcePerDay.reason, /carries no per-source per-day field .*; its input state\/self\/authored\.jsonl is not present$/);
+    const lb = au.lastBoard;
+    assert.equal(lb.newest.board, 12);
+    assert.equal(lb.newest.kind, 'launched');
+    assert.equal(lb.days, 0.25, 'six hours before noon');
+    assert.equal(lb.counted.board, 9);
+    assert.equal(lb.countedDays, 1.5);
+    assert.equal(lb.listed.board, 10);
+    assert.equal(lb.listedDays, 1);
+    assert.deepEqual(lb.unlisted, [11, 12], 'a marker with no launch time is not a board');
+    L = authoredLines(au);
+    assert.ok(L[1].startsWith('  AUTHORED SHARE: 0 of 93 = 0.00% (kept patches with an organism author 0, kept patches of any author 0, files landed by boards 93)'), L[1]);
+    assert.ok(L.some((l) => l.startsWith('  days since the last board: 0.25, read at 2026-09-24T12:00:00.000Z: board 12 launched 2026-09-24T06:00:00.000Z (')), L.join(' | '));
+    assert.ok(L.some((l) => l.includes('the share counts boards up to board 9 landed 2026-09-23T00:00:00Z') && l.includes('1.5 days')), L.join(' | '));
+    assert.ok(L.some((l) => l.startsWith('    boards 11, 12 have a launch marker and no ')), L.join(' | '));
+
+    // per source per day, in each shape the extractor reads
+    const rowsShape = perSourcePerDayOf({ perSourcePerDay: [{ day: '2026-09-24', source: 'organism', proposed: 4, kept: 1 }, { day: '2026-09-23', source: 'given', proposed: 2 }] });
+    assert.deepEqual(rowsShape.rows, [{ day: '2026-09-23', source: 'given', proposed: 2, kept: null }, { day: '2026-09-24', source: 'organism', proposed: 4, kept: 1 }]);
+    const daysShape = perSourcePerDayOf({ days: [{ date: '2026-09-24', sources: { organism: { proposed: 3, kept: 3 } } }] });
+    assert.deepEqual(daysShape, { field: 'days', rows: [{ day: '2026-09-24', source: 'organism', proposed: 3, kept: 3 }] });
+    const keyed = perSourcePerDayOf({ bySourceDay: { '2026-09-24': { organism: { proposed: 1, kept: 0 }, junk: 'x' } } });
+    assert.deepEqual(keyed.rows, [{ day: '2026-09-24', source: 'organism', proposed: 1, kept: 0 }]);
+    assert.deepEqual(perSourcePerDayOf(null), { field: null, rows: [] });
+    put(dir, 'authorship.json', { at: 'a', isTheBar: false, numerator: 1, denominator: 4, share: 0.25, perDay: { '2026-09-24': { organism: { proposed: 5, kept: 1 } } } });
+    au = authoredOf({ dir, boardsFile, states: [states], now });
+    L = authoredLines(au);
+    assert.match(L[0], /^AUTHORED \(.*authorship\.json, PARTIAL, a\):$/);
+    assert.ok(L.includes('  patches proposed and kept per source per day (perDay, 1 day(s), the last 7 printed):'), L.join(' | '));
+    assert.ok(L.includes('    2026-09-24: organism proposed 5, kept 1'), L.join(' | '));
+    assert.equal(lastBoardOf({ boardsFile: path.join(dir, 'none.json'), states: [], now }).days, null);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('(s) KNOWLEDGE: articles held per source, breadth and recall against null, a missing source not measured', () => {
+  const dir = tmp();
+  try {
+    let k = knowledgeOf({ dir });
+    assert.equal(k.measured, 0);
+    assert.equal(k.heldTotal, null, 'no source measured is no total, not 0');
+    let L = knowledgeLines(k);
+    assert.equal(L[0], 'KNOWLEDGE: 0 of 2 sources measured, no articles held measured');
+    assert.ok(L.includes('  simplewiki: not measured (no bench/verdicts/knowledge.json or knowledge-partial.json)'), L.join(' | '));
+    assert.ok(L.includes('  enwiki: not measured (no bench/verdicts/knowledge-en.json or knowledge-en-partial.json)'), L.join(' | '));
+
+    const verdict = (held, extra = {}) => ({
+      at: '2026-09-24T01:00:00.000Z', command: 'node bench/knowledge.mjs', isTheBar: true,
+      breadth: { held, articlesInDump: 1000, articlesRead: 1000, ratio: held / 1000 },
+      grade: { n: 200, recall1: 0.625, recall5: 0.785, null1: 0.09, null5: 0.13 },
+      dump: { file: 'simplewiki.xml.bz2', licence: 'CC BY-SA 4.0' }, ...extra,
+    });
+    // the enwiki run exists only as -partial: it is read, printed PARTIAL, and its held counts
+    put(dir, 'knowledge.json', verdict(998));
+    put(dir, 'knowledge-partial.json', verdict(500, { isTheBar: false }));
+    put(dir, 'knowledge-en-partial.json', { at: '2026-09-24T02:00:00.000Z', isTheBar: false, breadth: { held: 40000 }, grade: {} });
+    k = knowledgeOf({ dir });
+    assert.equal(k.measured, 2);
+    assert.equal(k.heldTotal, 40998);
+    assert.deepEqual(k.sources.map((s) => s.status), ['whole', 'partial']);
+    assert.equal(k.sources[1].primary.recall1, null);
+    L = knowledgeLines(k);
+    assert.equal(L[0], 'KNOWLEDGE: 2 of 2 sources measured, 40998 articles held (simplewiki, enwiki)');
+    assert.ok(L.some((l) => l.startsWith('  simplewiki (') && l.includes('whole, isTheBar true') && l.includes('998 articles held of 1000 in the dump, breadth 0.998; recall@1 0.625 against null 0.09, recall@5 0.785 against null 0.13, n 200 (simplewiki.xml.bz2, CC BY-SA 4.0)')), L.join(' | '));
+    assert.ok(L.some((l) => l.startsWith('    also on disk: ') && l.includes('knowledge-partial.json (PARTIAL: the file is named -partial, isTheBar false')), L.join(' | '));
+    assert.ok(L.some((l) => l.startsWith('  enwiki (') && l.includes('PARTIAL: the file is named -partial, isTheBar false') && l.includes('40000 articles held of n/a in the dump, breadth n/a; recall@1 n/a against null n/a, recall@5 n/a against null n/a, n n/a')), L.join(' | '));
+    for (const l of L.slice(1)) assert.equal(NOT_ZERO.test(l), false, l);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });

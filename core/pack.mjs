@@ -334,3 +334,263 @@ export function xorRiceDecode(buf, per, count) {
   rd.end();
   return out;
 }
+
+// ---------------------------------------------------------------- a resident store of packed vectors
+// Board 12, item delta (his P5, "self compressing"). A memory tier that stores its keys as 8192
+// Int8 lanes spends 8192 bytes on a vector that carries 1024 bytes of content, and the tiers that
+// only ever COMPARE keys (nearest by dot product, or by Hamming distance, which for bipolar
+// vectors is the same ranking: dot = lanes - 2 * hamming) never need a lane value at all. This
+// store packs on write (one bit a lane, the bit order above), answers Hamming distance and the
+// nearest key straight from the packed words with a popcount, and unpacks a vector only when a
+// caller asks for its lanes. bench/compress.mjs measures what it holds against the Int8 form and
+// the recall of the tiers read through it on bench/knowledge.mjs's held-out draw.
+//
+// Ties go to the EARLIER vector, which is what memory.assoc (a strict > scan) and ItemMemory
+// (insertion order) do, so a tier read through this store names the same key the Int8 scan names.
+const popcnt32 = (x) => { x = x - ((x >>> 1) & 0x55555555); x = (x & 0x33333333) + ((x >>> 2) & 0x33333333); return (((x + (x >>> 4)) & 0x0F0F0F0F) * 0x01010101) >>> 24; };
+
+/**
+ * Hamming distance between two bipolar vectors held as Int8 lanes (the reference the packed
+ * form is graded against; a lane counts as +1 when its signed value is positive).
+ */
+export function hammingLanes(a, b) {
+  if (a.length !== b.length) throw new RangeError('hammingLanes: ' + a.length + ' lanes against ' + b.length);
+  let h = 0;
+  for (let i = 0; i < a.length; i++) if ((lane(a, i) > 0) !== (lane(b, i) > 0)) h++;
+  return h;
+}
+/**
+ * Hamming distance between two packed vectors of `words` 32 bit words each.
+ * @param {Uint32Array} a @param {Uint32Array} b @param {number} words
+ * @param {number} [ao] word offset into a @param {number} [bo] word offset into b
+ */
+export function hammingPacked(a, b, words = Math.min(a.length, b.length), ao = 0, bo = 0) {
+  let h = 0;
+  for (let q = 0; q < words; q++) h += popcnt32(a[ao + q] ^ b[bo + q]);
+  return h;
+}
+/** The words of one bipolar vector packed for a PackedHVStore of `lanes` lanes. */
+export function packWords(v, lanes = v.length) {
+  const words = (lanes + 31) >>> 5;
+  const out = new Uint32Array(words);
+  packBipolarBits(v, new Uint8Array(out.buffer, 0, bipolarBytes(lanes)), 0);
+  return out;
+}
+
+export class PackedHVStore {
+  /**
+   * @param {number} lanes lanes a vector (8192 for core/simd.mjs vectors)
+   * @param {number} [capacity] vectors to reserve room for; the store grows by doubling past it
+   */
+  constructor(lanes, capacity = 64) {
+    if (!(Number.isInteger(lanes) && lanes > 0)) throw new RangeError('PackedHVStore: lanes must be a positive integer, got ' + lanes);
+    this.lanes = lanes;
+    this.words = (lanes + 31) >>> 5;
+    this.count = 0;
+    this.data = new Uint32Array(Math.max(1, capacity) * this.words);
+    // the pad bits of the last word are zero in every stored vector and in every packed query,
+    // so they never add to a distance
+  }
+  /** Bytes the store holds for its vectors (its word buffer, including room not yet used). */
+  get bytes() { return this.data.byteLength; }
+  /** Bytes the stored vectors occupy: count x words x 4. */
+  get usedBytes() { return this.count * this.words * 4; }
+  _room(n) {
+    if (n * this.words <= this.data.length) return;
+    let cap = Math.max(1, this.data.length / this.words);
+    while (cap < n) cap *= 2;
+    const d = new Uint32Array(cap * this.words); d.set(this.data.subarray(0, this.count * this.words)); this.data = d;
+  }
+  /** The packed words of a query: a Uint32Array of the right width passes through, lanes are packed. */
+  query(q) {
+    if (q instanceof Uint32Array && q.length === this.words) return q;
+    if (q.length !== this.lanes) throw new RangeError('PackedHVStore: a query of ' + q.length + ' lanes for a store of ' + this.lanes);
+    if (!isBipolar(q)) throw new RangeError('PackedHVStore: a query lane outside +1, -1');
+    return packWords(q, this.lanes);
+  }
+  /**
+   * Pack one bipolar vector on the way in. A lane outside +1 / -1 is refused: this store is for
+   * the tiers whose keys are bipolar, and a silent rounding would change what they recall.
+   * @returns {number} the vector's index
+   */
+  add(v) {
+    const w = this.query(v);
+    this._room(this.count + 1);
+    this.data.set(w, this.count * this.words);
+    return this.count++;
+  }
+  /** Replace vector i (a ring that overwrites its oldest row). */
+  set(i, v) {
+    if (!(i >= 0 && i < this.count)) throw new RangeError('PackedHVStore: no vector ' + i);
+    this.data.set(this.query(v), i * this.words);
+  }
+  /** Drop the first n vectors, keeping order (memory.assoc drops its oldest key past capacity). */
+  shift(n = 1) {
+    const k = Math.min(n, this.count);
+    this.data.copyWithin(0, k * this.words, this.count * this.words);
+    this.count -= k;
+  }
+  /** Hamming distance from vector i to a packed query. */
+  hamming(i, qw) { return hammingPacked(this.data, qw, this.words, i * this.words, 0); }
+  /** dot / lanes of vector i and a packed query: exactly what core/signal.mjs sim() gives on the Int8 lanes. */
+  sim(i, qw) { return (this.lanes - 2 * this.hamming(i, qw)) / this.lanes; }
+  /**
+   * The k nearest vectors by Hamming distance, nearest first, the earlier one first on a tie.
+   * @param {Int8Array|Uint32Array} q lanes or packed words
+   * @param {number} [k]
+   * @param {object} [opts] { ids: only these indices, in this order of preference on a tie }
+   * @returns {Array<{ index: number, distance: number, sim: number }>}
+   */
+  nearest(q, k = 1, { ids = null } = {}) {
+    const qw = this.query(q), W = this.words, D = this.data;
+    const best = []; // sorted ascending by distance, stable
+    const n = ids ? ids.length : this.count;
+    for (let t = 0; t < n; t++) {
+      const i = ids ? ids[t] : t;
+      let h = 0; const o = i * W;
+      for (let w = 0; w < W; w++) h += popcnt32(D[o + w] ^ qw[w]);
+      if (best.length === k && h >= best[k - 1].distance) continue;
+      let at = best.length;
+      while (at > 0 && best[at - 1].distance > h) at--;
+      best.splice(at, 0, { index: i, distance: h, sim: (this.lanes - 2 * h) / this.lanes });
+      if (best.length > k) best.pop();
+    }
+    return best;
+  }
+  /** Vector i unpacked into Int8 lanes: the one place a lane value is made. */
+  get(i, out = null) {
+    if (!(i >= 0 && i < this.count)) throw new RangeError('PackedHVStore: no vector ' + i);
+    return unpackBipolarBits(new Uint8Array(this.data.buffer, i * this.words * 4, this.words * 4), this.lanes, 0, out);
+  }
+}
+
+// ---------------------------------------------------------------- new vectors coded against old ones
+// A delta checkpoint (core/checkpoint-delta.mjs) holds only the vectors the chain has not seen.
+// MEASURED on 60 s of the daemon's 12 major organism (t=13387 to t=14429, 2575 new 8192 lane
+// vectors): coded among themselves with xorRiceEncode they take 1364631 bytes, but each one's
+// nearest vector among ALL the chain holds sits at median Hamming 591 (p10 11, p90 1082), which a
+// Rice code prices near 363 bytes a vector. So a new vector may name ANY earlier vector as its
+// reference, old or new, by its index in the chain's store:
+//
+//   RB bits     r + 1, the reference's index plus one, 0 = raw (RB holds base + count)
+//   raw         the vector's bytes, 8 bits each
+//   delta       NB bits n, 5 bits k, n Rice codes: exactly the delta of xorRiceEncode above
+//
+// The writer picks the references (HammingLsh below finds candidates); the stream is a function
+// of the vectors and those choices. The decoder refuses a reference at or past the vector being
+// decoded, so a stream can only ever point backwards.
+function bitsFor(n) { return Math.max(1, 32 - Math.clz32(n)); }
+
+/**
+ * @param {Uint8Array} store `count` new vectors of `per` bytes, back to back
+ * @param {number} per @param {number} count
+ * @param {object} opts { base: vectors the chain held before these, refs: Int32Array, for each new
+ *   vector -1 or the index (below base + i) of its reference, refAt(idx): the bytes of old vector idx < base }
+ * @returns {Buffer}
+ */
+export function xorRefEncode(store, per, count, { base = 0, refs = null, refAt = null } = {}) {
+  const nbits = per * 8, NB = 32 - Math.clz32(nbits), RB = bitsFor(base + count);
+  if (NB > 24 || RB > 24) throw new RangeError('xorRefEncode: ' + nbits + ' lanes or ' + (base + count) + ' vectors is past this coder');
+  if (store.length < per * count) throw new RangeError('xorRefEncode: ' + store.length + ' bytes for ' + count + ' vectors of ' + per);
+  const w = new BitWriter((per * count >>> 1) + 64);
+  const gaps = new Int32Array(nbits);
+  for (let i = 0; i < count; i++) {
+    const at = i * per, r = refs ? refs[i] : -1;
+    let ng = 0, k = 0, cost = Infinity;
+    if (r >= 0) {
+      if (r >= base + i) throw new RangeError('xorRefEncode: vector ' + i + ' names reference ' + r + ', not before it');
+      const ref = r < base ? refAt(r) : store.subarray((r - base) * per, (r - base + 1) * per);
+      let last = -1;
+      for (let q = 0; q < per; q++) { let v = store[at + q] ^ ref[q]; while (v !== 0) { const low = v & -v; const pos = (q << 3) + (31 - Math.clz32(low)); gaps[ng++] = pos - last - 1; last = pos; v ^= low; } }
+      const mean = ng > 0 ? (nbits - ng) / ng : 0;
+      const k0 = Math.max(0, Math.min(23, Math.floor(Math.log2(Math.max(1, mean * Math.LN2)))));
+      for (let kk = Math.max(0, k0 - 1); kk <= Math.min(23, k0 + 1); kk++) {
+        let c = ng * (kk + 1);
+        for (let t = 0; t < ng; t++) c += gaps[t] >>> kk;
+        if (c < cost) { cost = c; k = kk; }
+      }
+      cost += NB + XR_K_BITS;
+    }
+    if (r < 0 || cost >= nbits) {
+      w.write(0, RB);
+      for (let b = 0; b < per; b++) w.write(store[at + b], 8);
+    } else {
+      w.write(r + 1, RB); w.write(ng, NB); w.write(k, XR_K_BITS);
+      const mask = (1 << k) - 1;
+      for (let t = 0; t < ng; t++) { w.ones(gaps[t] >>> k); w.write(0, 1); if (k > 0) w.write(gaps[t] & mask, k); }
+    }
+  }
+  return w.finish();
+}
+
+/**
+ * The stream of xorRefEncode back into its `count` vectors.
+ * @param {Uint8Array} buf @param {number} per @param {number} count
+ * @param {object} opts { base, refAt(idx): the bytes of old vector idx < base }
+ * @returns {Buffer} per * count bytes
+ */
+export function xorRefDecode(buf, per, count, { base = 0, refAt = null } = {}) {
+  const nbits = per * 8, NB = 32 - Math.clz32(nbits), RB = bitsFor(base + count);
+  if (NB > 24 || RB > 24) throw new RangeError('xorRefDecode: ' + nbits + ' lanes or ' + (base + count) + ' vectors is past this coder');
+  const out = Buffer.alloc(per * count);
+  const rd = new BitReader(buf instanceof Uint8Array ? buf : new Uint8Array(buf));
+  for (let i = 0; i < count; i++) {
+    const code = rd.read(RB), at = i * per;
+    if (code === 0) { for (let b = 0; b < per; b++) out[at + b] = rd.read(8); continue; }
+    const r = code - 1;
+    if (r >= base + i) throw new RangeError('xor-ref: vector ' + i + ' names reference ' + r + ', at or past itself (base ' + base + ')');
+    const ref = r < base ? (refAt ? refAt(r) : null) : out.subarray((r - base) * per, (r - base + 1) * per);
+    if (!ref || ref.length < per) throw new RangeError('xor-ref: vector ' + i + ' names old vector ' + r + ', which the chain does not hold');
+    for (let b = 0; b < per; b++) out[at + b] = ref[b];
+    const ng = rd.read(NB), k = rd.read(XR_K_BITS);
+    if (ng > nbits) throw new RangeError('xor-ref: vector ' + i + ' flips ' + ng + ' of ' + nbits + ' lanes');
+    const maxQ = (nbits >>> k) + 1;
+    let pos = -1;
+    for (let t = 0; t < ng; t++) {
+      const q = rd.unary(maxQ);
+      pos += (k > 0 ? q * (1 << k) + rd.read(k) : q) + 1;
+      if (pos >= nbits) throw new RangeError('xor-ref: vector ' + i + ' flips lane ' + pos + ' of ' + nbits);
+      out[at + (pos >>> 3)] ^= 1 << (pos & 7);
+    }
+  }
+  rd.end();
+  return out;
+}
+
+/**
+ * Candidates for the nearest packed vector by Hamming distance, without a scan: `tables` hash
+ * tables, each keyed by `bits` lanes drawn from a fixed seed, so two vectors that differ in a
+ * fraction f of their lanes share a bucket in one table with probability (1 - f) ^ bits. A
+ * bucket keeps its last `cap` members. Approximate by design: it proposes, the caller measures
+ * the exact distance of each proposal and keeps the best, and a miss costs bytes, never identity.
+ */
+export class HammingLsh {
+  constructor(lanes, { tables = 16, bits = 14, cap = 8, seed = 0x2545F491 } = {}) {
+    if (!(bits >= 1 && bits <= 30)) throw new RangeError('HammingLsh: bits must be 1..30, got ' + bits);
+    this.lanes = lanes; this.tables = tables; this.bits = bits; this.cap = cap;
+    this.pos = new Int32Array(tables * bits);
+    let s = seed >>> 0 || 1;
+    for (let i = 0; i < this.pos.length; i++) { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; this.pos[i] = s % lanes; }
+    this.buckets = Array.from({ length: tables }, () => new Map());
+  }
+  key(bytes, t) {
+    let key = 0; const o = t * this.bits;
+    for (let j = 0; j < this.bits; j++) { const p = this.pos[o + j]; if ((bytes[p >>> 3] >>> (p & 7)) & 1) key |= 1 << j; }
+    return key;
+  }
+  add(idx, bytes) {
+    for (let t = 0; t < this.tables; t++) {
+      const m = this.buckets[t], k = this.key(bytes, t);
+      let b = m.get(k);
+      if (!b) { b = []; m.set(k, b); }
+      b.push(idx);
+      if (b.length > this.cap) b.shift();
+    }
+  }
+  /** Distinct indices sharing a bucket with `bytes` in any table, the most recent first per table. */
+  candidates(bytes) {
+    const out = new Set();
+    for (let t = 0; t < this.tables; t++) { const b = this.buckets[t].get(this.key(bytes, t)); if (b) for (let i = b.length - 1; i >= 0; i--) out.add(b[i]); }
+    return out;
+  }
+}

@@ -901,12 +901,176 @@ export function instancesOf({ states = stateDirs(BOARD_ROOT), dir = VERDICTS_DIR
   return { source: null, alive: null, reason: 'no instances.json in a state directory and no bench/verdicts/cloud.json or cloud-partial.json' };
 }
 
-/** The authored share, from bench/verdicts/authorship.json. */
-export function authoredOf({ dir = VERDICTS_DIR } = {}) {
+// ---------------------------------------------------------------- Board 12: P15's four rulers
+// Three blocks read from the verdicts on disk. A missing verdict prints "not measured", a narrow
+// run (a -partial file, or isTheBar false) prints "partial", and a number a verdict does not carry
+// prints "n/a": never a 0 standing in for a number nobody measured.
+const numOr = (x) => (isNum(x) ? x : null);
+const na = (x) => (x === null || x === undefined ? 'n/a' : String(x));
+const DAY_MS = 86_400_000;
+/** Why one of these verdicts is a narrow run: named -partial, isTheBar not true, or complete false. Empty when whole. */
+export function narrowReasons(name, v) {
+  if (!v || typeof v !== 'object') return ['the file does not parse'];
+  const out = [];
+  if (/-partial\.json$/.test(name)) out.push('the file is named -partial');
+  if (v.isTheBar !== true) out.push('isTheBar ' + v.isTheBar);
+  if (v.complete === false) out.push('complete false');
+  return out;
+}
+
+/**
+ * MULTIPLYING, from bench/verdicts/multiply.json (else multiply-partial.json, printed partial):
+ * instances alive at the end of each arm, duplications, and the population's best against the
+ * single instance on the fresh draw, with the kill the bar asks to come back.
+ */
+export function multiplyOf({ dir = VERDICTS_DIR } = {}) {
+  const names = ['multiply.json', 'multiply-partial.json'];
+  const found = names.map((n) => ({ name: n, v: readJsonSafe(path.join(dir, n)) })).filter((x) => x.v && typeof x.v === 'object');
+  if (!found.length) return { source: null, reason: 'no bench/verdicts/multiply.json or multiply-partial.json' };
+  const { name, v } = found[0];
+  const partialBecause = narrowReasons(name, v);
+  const arm = (a) => (a && typeof a === 'object' ? {
+    alive: numOr(a.aliveAtEnd && a.aliveAtEnd.alive), aliveAtS: numOr(a.aliveAtEnd && a.aliveAtEnd.s), ids: a.aliveAtEnd && Array.isArray(a.aliveAtEnd.ids) ? a.aliveAtEnd.ids : null,
+    maxAlive: numOr(a.maxAlive), duplications: numOr(a.duplications), fresh: numOr(a.pick && a.pick.fresh), freshT: numOr(a.pick && a.pick.freshT),
+    freshMoreMean: numOr(a.pick && a.pick.freshMoreMean), evals: numOr(a.evals), elitesImported: numOr(a.elitesImported), elitesExported: numOr(a.elitesExported),
+  } : null);
+  const bar = v.bar && typeof v.bar === 'object' ? v.bar : {};
+  const kill = v.kill && typeof v.kill === 'object' ? { id: v.kill.id ?? null, atS: numOr(v.kill.atS), checkpointT: numOr(v.kill.checkpointT), cameBack: typeof v.kill.cameBack === 'boolean' ? v.kill.cameBack : null } : null;
+  const cfg = v.config && typeof v.config === 'object' ? v.config : {};
+  return {
+    source: boardRel(path.join(dir, name)), at: v.at || null, command: v.command || null, isTheBar: v.isTheBar === true,
+    partial: partialBecause.length > 0, partialBecause,
+    wallS: numOr(cfg.wallS), fresh: cfg.suite && typeof cfg.suite.fresh === 'string' ? cfg.suite.fresh : null, spawnPlan: typeof cfg.spawnPlan === 'string' ? cfg.spawnPlan : null,
+    bar: { met: typeof bar.met === 'boolean' ? bar.met : null, singleFresh: numOr(bar.singleFresh), populationFresh: numOr(bar.populationFresh), freshT: numOr(bar.freshT), atOrAbove: typeof bar.atOrAbove === 'boolean' ? bar.atOrAbove : null, cameBack: typeof bar.cameBack === 'boolean' ? bar.cameBack : null },
+    single: arm(v.arms && v.arms.single), population: arm(v.arms && v.arms.population), kill, modelCalls: numOr(v.modelCalls),
+    alsoOnDisk: found.slice(1).map((x) => ({ file: boardRel(path.join(dir, x.name)), at: x.v.at || null, isTheBar: x.v.isTheBar === true, singleFresh: numOr(x.v.bar && x.v.bar.singleFresh), populationFresh: numOr(x.v.bar && x.v.bar.populationFresh), freshT: numOr(x.v.bar && x.v.bar.freshT), met: x.v.bar && typeof x.v.bar.met === 'boolean' ? x.v.bar.met : null, wallS: numOr(x.v.config && x.v.config.wallS) })),
+  };
+}
+
+/**
+ * Patches proposed and kept per source per day, from whichever of these authorship.json carries:
+ * perSourcePerDay, bySourceDay, days or perDay, as rows ({ day, source, proposed, kept }), days
+ * holding { sources: { name: { proposed, kept } } }, or an object keyed by day then source.
+ * Empty when the verdict carries none of them, which the block prints as not measured.
+ */
+export function perSourcePerDayOf(v) {
+  const rows = [];
+  const add = (day, source, o) => {
+    if (!day || !o || typeof o !== 'object') return;
+    const proposed = numOr(o.proposed), kept = numOr(o.kept);
+    if (proposed === null && kept === null) return;
+    rows.push({ day: String(day), source: String(source), proposed, kept });
+  };
+  const key = v && typeof v === 'object' ? ['perSourcePerDay', 'bySourceDay', 'days', 'perDay'].find((k) => v[k] && typeof v[k] === 'object') : null;
+  const src = key ? v[key] : null;
+  if (Array.isArray(src)) {
+    for (const r of src) {
+      if (!r || typeof r !== 'object') continue;
+      const day = r.day ?? r.date;
+      if (r.source !== undefined) add(day, r.source, r);
+      const by = r.sources ?? r.bySource;
+      if (by && typeof by === 'object') for (const [s, o] of Object.entries(by)) add(day, s, o);
+    }
+  } else if (src) {
+    for (const [day, by] of Object.entries(src)) if (by && typeof by === 'object') for (const [s, o] of Object.entries(by)) add(day, s, o);
+  }
+  rows.sort((a, b) => (a.day < b.day ? -1 : a.day > b.day ? 1 : a.source < b.source ? -1 : a.source > b.source ? 1 : 0));
+  return { field: key, rows };
+}
+
+/**
+ * The last board and the days since it: the boards authorship.json counted, docs/BOARDS.json, and
+ * the launch markers state/board<N>.marker. Each is printed with its source; the newest of them is
+ * the last board. A board with a marker and no BOARDS.json entry is named, because the authored
+ * share's denominator does not count its files.
+ */
+export function lastBoardOf({ authorship = null, boardsFile = path.join(BOARD_ROOT, 'docs', 'BOARDS.json'), states = stateDirs(BOARD_ROOT), now = Date.now() } = {}) {
+  const fromList = (arr, source) => (Array.isArray(arr) ? arr : []).filter((b) => b && typeof b === 'object' && isNum(Date.parse(b.at)))
+    .map((b) => ({ board: b.board ?? null, at: b.at, kind: 'landed', source })).sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
+  const counted = fromList(authorship && authorship.boards, 'bench/verdicts/authorship.json boards');
+  const bj = readJsonSafe(boardsFile);
+  const listed = fromList(Array.isArray(bj) ? bj : bj && bj.boards, boardRel(boardsFile));
+  const markers = [];
+  for (const s of states) {
+    let names = []; try { names = readdirSync(s); } catch { names = []; }
+    for (const n of names) {
+      const m = n.match(/^board(\d+)\.marker$/);
+      if (!m) continue;
+      let text = ''; try { text = readFileSync(path.join(s, n), 'utf8'); } catch { continue; }
+      const at = (text.match(/launched\s+(\d{4}-\d{2}-\d{2}T[\d:.]+Z)/) || [null, null])[1];
+      if (at) markers.push({ board: Number(m[1]), at, kind: 'launched', source: boardRel(path.join(s, n)) });
+    }
+  }
+  markers.sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
+  const all = [...counted, ...listed, ...markers].sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
+  const days = (x) => (x ? bR3((now - Date.parse(x.at)) / DAY_MS) : null);
+  const last = (xs) => (xs.length ? xs[xs.length - 1] : null);
+  const newest = last(all);
+  const listedBoards = new Set(listed.map((b) => b.board));
+  return {
+    newest, days: days(newest), at: new Date(now).toISOString(),
+    counted: last(counted), countedDays: days(last(counted)), listed: last(listed), listedDays: days(last(listed)),
+    launched: last(markers), launchedDays: days(last(markers)),
+    unlisted: markers.filter((m) => !listedBoards.has(m.board)).map((m) => m.board),
+    reason: newest ? null : 'no board in authorship.json, ' + boardRel(boardsFile) + ' or a state/board<N>.marker',
+  };
+}
+
+/** The authored share, from bench/verdicts/authorship.json, with per source per day and the last board. */
+export function authoredOf({ dir = VERDICTS_DIR, boardsFile = path.join(BOARD_ROOT, 'docs', 'BOARDS.json'), states = stateDirs(BOARD_ROOT), now = Date.now() } = {}) {
   const f = path.join(dir, 'authorship.json');
   const v = readJsonSafe(f);
-  if (!v || !isNum(v.share)) return { source: null, reason: 'no bench/verdicts/authorship.json with a share' };
-  return { source: boardRel(f), at: v.at || null, command: v.command || null, isTheBar: v.isTheBar === true, numerator: v.numerator ?? null, denominator: v.denominator ?? null, share: v.share };
+  const lastBoard = lastBoardOf({ authorship: v, boardsFile, states, now });
+  const psd = perSourcePerDayOf(v);
+  const input = v && v.sources && v.sources.authored && typeof v.sources.authored === 'object' ? v.sources.authored : null;
+  const perSourcePerDay = psd.rows.length ? { field: psd.field, rows: psd.rows } : {
+    field: null, rows: [],
+    reason: v ? 'bench/verdicts/authorship.json carries no per-source per-day field (perSourcePerDay, bySourceDay, days or perDay)'
+      + (input && input.present === false && typeof input.file === 'string' ? '; its input ' + input.file + ' is not present' : '') : 'no bench/verdicts/authorship.json',
+  };
+  if (!v || !isNum(v.share)) return { source: null, reason: 'no bench/verdicts/authorship.json with a share', perSourcePerDay, lastBoard };
+  return {
+    source: boardRel(f), at: v.at || null, command: v.command || null, isTheBar: v.isTheBar === true, partial: narrowReasons('authorship.json', v).length > 0,
+    numerator: v.numerator ?? null, denominator: v.denominator ?? null, share: v.share,
+    kept: numOr(v.kept), given: numOr(v.given), organism: numOr(v.organism), boardFiles: numOr(v.boardFiles),
+    weeks: Array.isArray(v.weeks) ? v.weeks.filter((w) => w && typeof w === 'object').map((w) => ({ week: w.week ?? null, organism: numOr(w.organism), kept: numOr(w.kept), boardFiles: numOr(w.boardFiles), share: numOr(w.share) })) : [],
+    perSourcePerDay, lastBoard,
+  };
+}
+
+/** The knowledge sources the board holds to the same three numbers. */
+export const KNOWLEDGE_SOURCES = Object.freeze([
+  { name: 'simplewiki', file: 'knowledge.json', partial: 'knowledge-partial.json' },
+  { name: 'enwiki', file: 'knowledge-en.json', partial: 'knowledge-en-partial.json' },
+]);
+
+/**
+ * KNOWLEDGE, per source: articles held, breadth (held over the articles in the dump), and recall
+ * at 1 and 5 against the null arm. The whole verdict is primary; a partial one stands in only
+ * when there is no whole one, and is then printed partial.
+ */
+export function knowledgeOf({ dir = VERDICTS_DIR, sources = KNOWLEDGE_SOURCES } = {}) {
+  const read = (name) => {
+    const v = readJsonSafe(path.join(dir, name));
+    if (!v || typeof v !== 'object') return null;
+    const b = v.breadth || {}, g = v.grade || {}, d = v.dump || {};
+    const why = narrowReasons(name, v);
+    return {
+      file: boardRel(path.join(dir, name)), at: v.at || null, command: v.command || null, isTheBar: v.isTheBar === true, partial: why.length > 0, partialBecause: why,
+      held: numOr(b.held), articlesInDump: numOr(b.articlesInDump), articlesRead: numOr(b.articlesRead), breadth: numOr(b.ratio),
+      n: numOr(g.n), recall1: numOr(g.recall1), recall5: numOr(g.recall5), null1: numOr(g.null1), null5: numOr(g.null5), meanMs: numOr(g.meanMs),
+      dump: typeof d.file === 'string' ? d.file : null, licence: typeof d.licence === 'string' ? d.licence : null,
+    };
+  };
+  const out = sources.map((s) => {
+    const whole = read(s.file), part = read(s.partial);
+    const primary = whole || part;
+    if (!primary) return { name: s.name, status: 'not measured', reason: 'no bench/verdicts/' + s.file + ' or ' + s.partial, primary: null, alsoOnDisk: [] };
+    return { name: s.name, status: primary.partial ? 'partial' : 'whole', primary, alsoOnDisk: whole && part ? [part] : [] };
+  });
+  const measured = out.filter((s) => s.primary);
+  const held = measured.filter((s) => s.primary.held !== null);
+  return { sources: out, measured: measured.length, of: out.length, heldTotal: held.length ? held.reduce((a, s) => a + s.primary.held, 0) : null, heldFrom: held.map((s) => s.name) };
 }
 
 /** Bytes per score point: the compress bar, and the newest checkpoint header on disk. */
@@ -936,7 +1100,7 @@ export async function improvementOf({ dir = VERDICTS_DIR, states = stateDirs(BOA
 }
 
 /** The whole board, read from disk. */
-export async function boardOf({ dir = VERDICTS_DIR, publishedFile = PUBLISHED_FILE, logFile = LOG_FILE, states = stateDirs(BOARD_ROOT), now = Date.now() } = {}) {
+export async function boardOf({ dir = VERDICTS_DIR, publishedFile = PUBLISHED_FILE, logFile = LOG_FILE, states = stateDirs(BOARD_ROOT), now = Date.now(), boardsFile = path.join(BOARD_ROOT, 'docs', 'BOARDS.json') } = {}) {
   const published = readJsonSafe(publishedFile);
   const sets = PUBLIC_SETS.map((s) => boardSet(s, { dir, published }));
   const direct = PROVENANCE.includes('direct');
@@ -945,7 +1109,9 @@ export async function boardOf({ dir = VERDICTS_DIR, publishedFile = PUBLISHED_FI
     direct: { recordedByAnyPath: direct, provenance: [...PROVENANCE], note: direct ? null : 'act/prompt.mjs PROVENANCE is ' + PROVENANCE.join(', ') + ': no answer path records direct, so its share is 0 and its latency is not measured' },
     substrate: substrateOf({ dir, logFile }),
     instances: instancesOf({ states, dir, now }),
-    authored: authoredOf({ dir }),
+    multiplying: multiplyOf({ dir }),
+    authored: authoredOf({ dir, boardsFile, states, now }),
+    knowledge: knowledgeOf({ dir }),
     bytesPerPoint: bytesPerPointOf({ dir, states }),
     improvement: await improvementOf({ dir, states }),
     hisRate: HIS_RATE,
@@ -972,6 +1138,65 @@ function fmtClass(key, c, directNote) {
   const head = key + ' ' + c.records + ' of ' + c.of + ' (' + pctOf(c.share) + '%)';
   if (!c.records) return head + (key === 'direct' && directNote ? ': ' + directNote : '');
   return head + ', ' + c.correct + ' correct, ' + fmtLatency(c) + (c.inferred ? ', ' + c.inferred + ' inferred from a null model' : '');
+}
+
+const yesNo = (x) => (x === true ? 'yes' : x === false ? 'no' : 'n/a');
+const status = (x) => (x.partial ? 'PARTIAL: ' + x.partialBecause.join(', ') : 'whole, isTheBar true');
+const frac = (a, b) => na(a) + '/' + na(b);
+
+/** The MULTIPLYING block. */
+export function multiplyingLines(m) {
+  if (!m.source) return ['MULTIPLYING: not measured (' + m.reason + ')'];
+  const L = [];
+  const p = m.population || {}, s = m.single || {};
+  const alive = (a) => na(a.alive) + (a.aliveAtS !== null && a.aliveAtS !== undefined ? ' at ' + a.aliveAtS + ' s' : '') + (a.ids ? ' (' + a.ids.join(', ') + ')' : '') + ', at most ' + na(a.maxAlive) + ' at once';
+  L.push('MULTIPLYING (' + m.source + ', ' + status(m) + ', ' + m.at + ', ' + na(m.wallS) + ' wall s per arm, model calls ' + na(m.modelCalls) + '):');
+  L.push('  instances alive at the end: population ' + alive(p) + '; single ' + alive(s));
+  L.push('  duplications: population ' + na(p.duplications) + (m.spawnPlan ? ' (' + m.spawnPlan + ')' : '') + ', single ' + na(s.duplications) + ', in one run of ' + na(m.wallS) + ' wall s; no instance has run a day, so none per day is measured');
+  L.push('  best of population against single instance: ' + frac(m.bar.populationFresh, m.bar.freshT) + ' against ' + frac(m.bar.singleFresh, m.bar.freshT) + ' on ' + na(m.fresh)
+    + ', at or above ' + yesNo(m.bar.atOrAbove) + '; fresh-more mean ' + na(p.freshMoreMean) + ' against ' + na(s.freshMoreMean) + '; evaluations ' + na(p.evals) + ' against ' + na(s.evals)
+    + '; elites imported ' + na(p.elitesImported) + ', exported ' + na(p.elitesExported));
+  L.push('  kill: ' + (m.kill ? na(m.kill.id) + ' at ' + na(m.kill.atS) + ' s, back from its checkpoint t=' + na(m.kill.checkpointT) + ': ' + yesNo(m.kill.cameBack) : 'not recorded') + '; bar met ' + yesNo(m.bar.met) + (m.partial ? ' in a PARTIAL run, so it is not claimed' : ''));
+  for (const a of m.alsoOnDisk) L.push('  also on disk: ' + a.file + ' (' + (a.isTheBar ? 'isTheBar true' : 'partial, isTheBar false') + ', ' + a.at + ', ' + na(a.wallS) + ' wall s): population ' + frac(a.populationFresh, a.freshT) + ' against single ' + frac(a.singleFresh, a.freshT) + ', bar met ' + yesNo(a.met));
+  return L;
+}
+
+/** The AUTHORED block: the share, patches proposed and kept per source per day, and the days since the last board. */
+export function authoredLines(au) {
+  const L = [];
+  L.push('AUTHORED' + (au.source ? ' (' + au.source + ', ' + (au.partial ? 'PARTIAL' : 'whole, isTheBar true') + ', ' + au.at + '):' : ': not measured (' + au.reason + ')'));
+  if (au.source) L.push('  AUTHORED SHARE: ' + au.numerator + ' of ' + au.denominator + ' = ' + pctOf(au.share) + '% (kept patches with an organism author ' + na(au.organism) + ', kept patches of any author ' + na(au.kept) + ', files landed by boards ' + na(au.boardFiles) + ')');
+  const psd = au.perSourcePerDay || { rows: [], reason: 'not read' };
+  if (!psd.rows.length) L.push('  patches proposed and kept per source per day: not measured (' + psd.reason + ')');
+  else {
+    const days = [...new Set(psd.rows.map((r) => r.day))];
+    L.push('  patches proposed and kept per source per day (' + psd.field + ', ' + days.length + ' day(s), the last 7 printed):');
+    for (const d of days.slice(-7)) L.push('    ' + d + ': ' + psd.rows.filter((r) => r.day === d).map((r) => r.source + ' proposed ' + na(r.proposed) + ', kept ' + na(r.kept)).join('; '));
+  }
+  const lb = au.lastBoard;
+  if (!lb || !lb.newest) L.push('  days since the last board: not measured (' + (lb ? lb.reason : 'not read') + ')');
+  else {
+    const one = (x, d) => 'board ' + na(x.board) + ' ' + x.kind + ' ' + x.at + ' (' + x.source + '), ' + d + ' days';
+    L.push('  days since the last board: ' + lb.days + ', read at ' + lb.at + ': board ' + na(lb.newest.board) + ' ' + lb.newest.kind + ' ' + lb.newest.at + ' (' + lb.newest.source + ')');
+    if (lb.counted) L.push('    the share counts boards up to ' + one(lb.counted, lb.countedDays) + (lb.listed ? '; ' + lb.listed.source + ' lists up to board ' + na(lb.listed.board) : ''));
+    if (lb.unlisted.length) L.push('    boards ' + lb.unlisted.join(', ') + ' have a launch marker and no ' + (lb.listed ? lb.listed.source : 'docs/BOARDS.json') + ' entry, so the share\'s denominator does not count their files');
+  }
+  return L;
+}
+
+/** The KNOWLEDGE block: articles held per source, breadth, recall against the null arm. */
+export function knowledgeLines(k) {
+  const L = [];
+  L.push('KNOWLEDGE: ' + k.measured + ' of ' + k.of + ' sources measured' + (k.heldTotal !== null ? ', ' + k.heldTotal + ' articles held (' + k.heldFrom.join(', ') + ')' : ', no articles held measured'));
+  const one = (x) => na(x.held) + ' articles held of ' + na(x.articlesInDump) + ' in the dump, breadth ' + (x.breadth === null ? 'n/a' : bR6(x.breadth))
+    + '; recall@1 ' + na(x.recall1) + ' against null ' + na(x.null1) + ', recall@5 ' + na(x.recall5) + ' against null ' + na(x.null5) + ', n ' + na(x.n);
+  for (const s of k.sources) {
+    if (!s.primary) { L.push('  ' + s.name + ': not measured (' + s.reason + ')'); continue; }
+    const p = s.primary;
+    L.push('  ' + s.name + ' (' + p.file + ', ' + status(p) + ', ' + p.at + '): ' + one(p) + (p.dump ? ' (' + p.dump + (p.licence ? ', ' + p.licence : '') + ')' : ''));
+    for (const a of s.alsoOnDisk) L.push('    also on disk: ' + a.file + ' (' + status(a) + ', ' + a.at + '): ' + one(a));
+  }
+  return L;
 }
 
 /** The board as printed lines. */
@@ -1019,8 +1244,9 @@ export function boardLines(b) {
   L.push('INSTANCES ALIVE: ' + (ins.alive === null ? 'not measured (' + ins.reason + ')'
     : ins.alive + (ins.kind === 'state' ? ' of ' + ins.known + ' known, lastSeen within ' + ins.windowMs + ' ms (' + ins.source + ')'
       : ' (' + ins.source + (ins.partial ? ', PARTIAL: isTheBar false' : '') + ', mode ' + ins.mode + ', ' + ins.at + '; no instances.json in a state directory here)')));
-  const au = b.authored;
-  L.push('AUTHORED SHARE: ' + (au.source ? au.numerator + ' of ' + au.denominator + ' = ' + pctOf(au.share) + '% (' + au.source + ', ' + au.at + (au.isTheBar ? ', isTheBar true' : ', not the bar') + ')' : 'not measured (' + au.reason + ')'));
+  if (b.multiplying) L.push(...multiplyingLines(b.multiplying));
+  L.push(...authoredLines(b.authored));
+  if (b.knowledge) L.push(...knowledgeLines(b.knowledge));
   const bp = b.bytesPerPoint;
   L.push('BYTES PER SCORE POINT: ' + (bp.bar ? bp.bar.bytesPerScorePoint + ' at the bar (' + bp.bar.source + ', score ' + bp.bar.score + ' of ' + bp.bar.of + ', ' + bp.bar.bytes + ' bytes, ' + bp.bar.at + ')' : 'no compress bar')
     + (bp.last ? '; ' + bp.last.bytesPerScorePoint + ' at the last checkpoint header on disk (' + bp.last.where + ', score ' + bp.last.score + (bp.last.of ? ' of ' + bp.last.of : '') + ', ' + bp.last.at + (bp.last.isTheBar === false ? ', not the bar' : '') + ')' : '; no checkpoint header records one'));
@@ -1051,7 +1277,12 @@ export function boardStatement(b) {
     + (b.substrate.measured ? 'The substrate row is ' + b.substrate.measured.nsPerCellRun + ' ns per cell run. '
       : b.substrate.browser ? 'The browser organism figures, ' + b.substrate.browser.nsPerCellRun + ' ns per cell run and ' + b.substrate.browser.nsPerHop + ' ns per packet hop, come from a log line, not a verdict file. ' : '')
     + (b.instances.alive !== null ? 'Instances alive: ' + b.instances.alive + (b.instances.partial ? ' from a partial cloud run' : '') + '. ' : '')
-    + (b.authored.source ? 'Authored share ' + pctOf(b.authored.share) + ' percent. ' : '')
+    + (b.multiplying ? (b.multiplying.source
+      ? 'Multiplying' + (b.multiplying.partial ? ' (partial)' : '') + ': ' + na(b.multiplying.population && b.multiplying.population.alive) + ' instances alive at the end of the population arm after ' + na(b.multiplying.population && b.multiplying.population.duplications) + ' duplications, its best ' + frac(b.multiplying.bar.populationFresh, b.multiplying.bar.freshT) + ' against the single instance at ' + frac(b.multiplying.bar.singleFresh, b.multiplying.bar.freshT) + '. '
+      : 'Multiplying is not measured. ') : '')
+    + (b.authored.source ? 'Authored share ' + pctOf(b.authored.share) + ' percent. ' : 'The authored share is not measured. ')
+    + (b.authored.lastBoard && b.authored.lastBoard.newest ? 'Days since the last board: ' + b.authored.lastBoard.days + ' (board ' + na(b.authored.lastBoard.newest.board) + ' ' + b.authored.lastBoard.newest.kind + '). ' : '')
+    + (b.knowledge ? 'Knowledge: ' + b.knowledge.sources.map((s) => s.primary ? s.name + ' holds ' + na(s.primary.held) + ' articles' + (s.primary.partial ? ' (partial)' : '') + ', recall@1 ' + na(s.primary.recall1) + ' against null ' + na(s.primary.null1) : s.name + ' is not measured').join('; ') + '. ' : '')
     + (b.bytesPerPoint.bar ? 'Bytes per score point ' + b.bytesPerPoint.bar.bytesPerScorePoint + ' at the compress bar. ' : '')
     + (im.source ? 'Improvement per wall second ' + im.percentPerSecond + ' percent of the suite against his ' + b.hisRate.percentPerSecond + '.' : 'Improvement per wall second is not measured.');
 }
@@ -1074,8 +1305,8 @@ export function seriesDocOf({ series, board, command, nFor95 = null, at = new Da
  * node bench/ladder.mjs: print the board and rewrite ladder.json with it. The file is written
  * before the function returns, and nothing here exits the process.
  */
-export async function runBoard({ dir = VERDICTS_DIR, seriesFile = SERIES_FILE, ladderDir = LADDER_DIR, publishedFile = PUBLISHED_FILE, logFile = LOG_FILE, states = stateDirs(BOARD_ROOT), write = true, log = console.log, command = 'node bench/ladder.mjs' } = {}) {
-  const board = await boardOf({ dir, publishedFile, logFile, states });
+export async function runBoard({ dir = VERDICTS_DIR, seriesFile = SERIES_FILE, ladderDir = LADDER_DIR, publishedFile = PUBLISHED_FILE, logFile = LOG_FILE, states = stateDirs(BOARD_ROOT), boardsFile = path.join(BOARD_ROOT, 'docs', 'BOARDS.json'), write = true, log = console.log, command = 'node bench/ladder.mjs' } = {}) {
+  const board = await boardOf({ dir, publishedFile, logFile, states, boardsFile });
   const lines = boardLines(board);
   for (const l of lines) log(l);
   const series = seriesOf(ladderDir);
@@ -1103,14 +1334,28 @@ export async function runBoard({ dir = VERDICTS_DIR, seriesFile = SERIES_FILE, l
 // verdict was typed by hand from a gate that ended two minutes before notes/ladder.md was
 // written, and that note then broke test/findings.test.mjs, which the gate had never seen.
 
+// Board 12 widened what the verdict grades and kept how: the board must carry the three new
+// blocks (MULTIPLYING, AUTHORED, KNOWLEDGE), the gate must print five rows (LOAD-BEARING and
+// BOUNDARY after the three), and the tests it runs itself are the ladder's and the gate's.
+
 /** The files the rows item owns. A gate that started before one of them changed did not see it. */
-export const ROWS_OWNED = Object.freeze(['bench/ladder.mjs', 'bench/gate.mjs', 'test/ladder.test.mjs', 'test/gate.test.mjs', 'notes/ladder.md']);
-const ROW_KEYS = Object.freeze([['budget', 'BUDGET'], ['compress', 'COMPRESS'], ['hisData', 'HIS DATA']]);
+export const ROWS_OWNED = Object.freeze(['bench/ladder.mjs', 'bench/gate.mjs', 'test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs', 'notes/ladder.md']);
+/** The test files node bench/ladder.mjs --rows runs itself, under the gate's budget caps. */
+export const ROWS_TESTS = Object.freeze(['test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs']);
+const ROW_KEYS = Object.freeze([['budget', 'BUDGET'], ['compress', 'COMPRESS'], ['hisData', 'HIS DATA'], ['loadBearing', 'LOAD-BEARING'], ['boundary', 'BOUNDARY']]);
+// a block is on the board when its object is there with the fields this bench writes for it,
+// "not measured" included: a block that says not measured was printed
+const BOARD_BLOCKS = Object.freeze([
+  ['multiplying', 'MULTIPLYING', (x) => !!x && typeof x === 'object' && 'source' in x],
+  ['authored', 'AUTHORED', (x) => !!x && typeof x === 'object' && 'lastBoard' in x && 'perSourcePerDay' in x],
+  ['knowledge', 'KNOWLEDGE', (x) => !!x && typeof x === 'object' && Array.isArray(x.sources)],
+]);
 const isoOf = (ms) => new Date(ms).toISOString();
 
 /**
  * The rows verdict from what is on disk. ladder and gate are parsed JSON (or { error }), tests is
- * a runTestFile row, owned is [{ file, mtimeMs }]. Pure: it reads nothing and writes nothing.
+ * a runTestFile row or a list of them, owned is [{ file, mtimeMs }]. Pure: it reads nothing and
+ * writes nothing.
  */
 export function rowsVerdictOf({ ladder, gate, tests, owned = [], at = new Date().toISOString(), command = 'node bench/ladder.mjs --rows' }) {
   const reasons = [];
@@ -1118,10 +1363,13 @@ export function rowsVerdictOf({ ladder, gate, tests, owned = [], at = new Date()
   const g = gate && !gate.error ? gate : null;
 
   const boardOk = !!(lad && lad.isTheBar === true && lad.board && !lad.board.error);
+  const blocks = boardOk ? BOARD_BLOCKS.filter(([k, , has]) => has(lad.board[k])).map(([, label]) => label) : [];
+  const missingBlocks = BOARD_BLOCKS.map(([, label]) => label).filter((l) => !blocks.includes(l));
   const ladderAtMs = lad ? Date.parse(lad.at) : NaN;
   const ladderStale = lad ? owned.filter((f) => f.file === 'bench/ladder.mjs' && !(f.mtimeMs <= ladderAtMs)) : [];
   if (!lad) reasons.push('bench/verdicts/ladder.json could not be read' + (ladder && ladder.error ? ' (' + ladder.error + ')' : ''));
   else if (!boardOk) reasons.push('bench/verdicts/ladder.json carries no board');
+  else if (missingBlocks.length) reasons.push('the board in ladder.json carries no ' + missingBlocks.join(', ') + ' block');
   if (ladderStale.length) reasons.push('the board in ladder.json was written at ' + lad.at + ', before bench/ladder.mjs changed at ' + isoOf(ladderStale[0].mtimeMs));
 
   const startMs = g && g.startedAt ? Date.parse(g.startedAt) : NaN;
@@ -1149,15 +1397,19 @@ export function rowsVerdictOf({ ladder, gate, tests, owned = [], at = new Date()
     reasons.push('the gate is ' + g.verdict + (why.length ? ': ' + why.join(', ') : ''));
   }
 
-  const testsOk = !!(tests && tests.exit === 0 && tests.fail === 0 && tests.pass > 0 && tests.pass === tests.total);
-  if (!testsOk) reasons.push('test/ladder.test.mjs did not pass: ' + (tests ? 'exit ' + tests.exit + ', pass ' + tests.pass + ', fail ' + tests.fail + ', tests ' + tests.total : 'not run'));
+  const runs = (Array.isArray(tests) ? tests : tests ? [tests] : []).filter(Boolean);
+  const passed = (t) => !!(t && t.exit === 0 && t.fail === 0 && t.pass > 0 && t.pass === t.total);
+  const testsOk = runs.length > 0 && runs.every(passed);
+  if (!runs.length) reasons.push('no test file was run');
+  for (const t of runs) if (!passed(t)) reasons.push(t.file + ' did not pass: ' + (t.missing ? 'not in the tree' : 'exit ' + t.exit + ', pass ' + t.pass + ', fail ' + t.fail + ', tests ' + t.total));
 
   const met = reasons.length === 0;
   const file = met ? 'rows.json' : 'rows-partial.json';
   const kill = (f) => f.killed ? ', killed on ' + f.killed + ' at ' + f.peakRssMb + ' MB' : '';
+  const testText = (t) => t.file + (t.missing ? ' is not in the tree' : (passed(t) ? ' passed ' : ' did not pass, ') + t.pass + ' of ' + t.total + ' (fail ' + t.fail + ', exit ' + t.exit + ') in ' + t.ms + ' ms, peak RSS ' + (t.budget ? t.budget.peakRssMb : null) + ' MB');
   const sentences = [
-    'Board 10 item rows (his P4 and P15), composed by ' + command + ' from the verdicts on disk and one run of the ladder tests.',
-    lad ? 'The board: bench/verdicts/ladder.json was written at ' + lad.at + ' by ' + lad.command + ', isTheBar ' + lad.isTheBar + (boardOk ? ', with the board for ' + lad.board.sets.map((s) => s.name + ' (' + s.status + ')').join(', ') + '.' : ', with no board.') : 'The board: bench/verdicts/ladder.json could not be read.',
+    'Board 12 item rows (P15\'s four rulers on the ladder, P8 on the gate), composed by ' + command + ' from the verdicts on disk and one run of each of ' + runs.length + ' test files.',
+    lad ? 'The board: bench/verdicts/ladder.json was written at ' + lad.at + ' by ' + lad.command + ', isTheBar ' + lad.isTheBar + (boardOk ? ', with the board for ' + lad.board.sets.map((s) => s.name + ' (' + s.status + ')').join(', ') + ' and the blocks ' + (blocks.length ? blocks.join(', ') : 'none') + (missingBlocks.length ? ' (missing: ' + missingBlocks.join(', ') + ')' : '') + '.' : ', with no board.') : 'The board: bench/verdicts/ladder.json could not be read.',
     g ? 'The gate: ' + g.command + ' ran from ' + (g.startedAt || 'an unrecorded start') + ' to ' + g.at + ' and is ' + g.verdict + ': test files ' + g.testsPassed + ' of ' + g.testsTotal
       + (failing.length ? ' (failing: ' + failing.map((f) => f.file + kill(f)).join('; ') + ')' : '')
       + ', assertions ' + g.assertionsPassed + ' pass and ' + g.assertionsFailed + ' fail, em-dash files ' + emDash.length + ', bad imports ' + badImports.length
@@ -1165,30 +1417,31 @@ export function rowsVerdictOf({ ladder, gate, tests, owned = [], at = new Date()
       + (redRows.length ? ', red: ' + redRows.join(', ') : ', none red') + '. '
       + (Number.isFinite(startMs) ? (gateStale.length ? 'It is STALE for this item: ' + gateStale.map((f) => f.file).join(', ') + ' changed after it started.' : 'None of the ' + owned.length + ' files this item owns changed after it started, so it graded them as they are.') : 'It records no start, so what it saw cannot be told.')
       : 'The gate: bench/verdicts/gate.json could not be read.',
-    tests ? 'The ladder tests: test/ladder.test.mjs ' + (testsOk ? 'passed ' : 'did not pass, ') + tests.pass + ' of ' + tests.total + ' (fail ' + tests.fail + ', exit ' + tests.exit + ') in ' + tests.ms + ' ms under the gate budget, peak RSS ' + (tests.budget ? tests.budget.peakRssMb : null) + ' MB.' : 'The ladder tests were not run.',
+    runs.length ? 'The tests, each run by this command under the gate budget: ' + runs.map(testText).join('; ') + '.' : 'No test file was run.',
     met ? 'The bar asks for all three and all three hold: MET.' : 'The bar asks for all three, so it is MISSED: ' + reasons.join('; ') + '.',
   ];
   const doc = {
     at, command, node: process.version, isTheBar: met,
     statement: sentences.join(' '),
-    item: 'rows', board: 10, met, reasons,
+    item: 'rows', board: 12, principles: { ladder: 'P15', gate: 'P8' }, met, reasons,
     parts: {
-      ladder: lad ? { file: 'bench/verdicts/ladder.json', at: lad.at, command: lad.command, isTheBar: lad.isTheBar, board: boardOk, sets: boardOk ? lad.board.sets.map((s) => ({ name: s.name, status: s.status })) : [] } : null,
+      ladder: lad ? { file: 'bench/verdicts/ladder.json', at: lad.at, command: lad.command, isTheBar: lad.isTheBar, board: boardOk, sets: boardOk ? lad.board.sets.map((s) => ({ name: s.name, status: s.status })) : [], blocks, missingBlocks } : null,
       gate: g ? {
         file: 'bench/verdicts/gate.json', command: g.command, startedAt: g.startedAt || null, at: g.at, verdict: g.verdict,
         testsPassed: g.testsPassed, testsTotal: g.testsTotal, assertionsPassed: g.assertionsPassed, assertionsFailed: g.assertionsFailed,
-        failing, emDashFiles: emDash.length, emDash, badImports, rowsPrinted: printed, redRows,
+        failing, emDashFiles: emDash.length, emDash, badImports, rowsExpected: ROW_KEYS.length, rowsPrintedCount: printed.length, rowsPrinted: printed, redRows,
         lines: Object.fromEntries(ROW_KEYS.map(([k]) => [k, rows[k] ? rows[k].line : null])),
       } : null,
-      ladderTests: tests ? { command: 'node --max-old-space-size=6000 --test test/ladder.test.mjs', tests: tests.total, pass: tests.pass, fail: tests.fail, exit: tests.exit, ms: tests.ms, peakRssMb: tests.budget ? tests.budget.peakRssMb : null, budget: tests.budget ? tests.budget.outcome : null } : null,
+      tests: runs.map((t) => ({ file: t.file, command: 'node --max-old-space-size=6000 --test ' + t.file, tests: t.total ?? null, pass: t.pass ?? null, fail: t.fail ?? null, exit: t.exit ?? null, ms: t.ms ?? null, peakRssMb: t.budget ? t.budget.peakRssMb : null, budget: t.budget ? t.budget.outcome : null, missing: !!t.missing })),
+      testFiles: runs.length,
     },
     owned: owned.map((f) => ({ file: f.file, changedAt: isoOf(f.mtimeMs) })),
     stale: { gate: gateStale.map((f) => f.file), ladder: ladderStale.map((f) => f.file) },
   };
   const lines = [
-    'ROWS ' + (met ? 'MET' : 'MISSED') + ': board ' + (boardOk ? 'written' : 'missing') + (lad ? ' at ' + lad.at : '')
+    'ROWS ' + (met ? 'MET' : 'MISSED') + ': board ' + (boardOk ? 'written' : 'missing') + (lad ? ' at ' + lad.at : '') + (boardOk ? ', blocks ' + blocks.length + '/' + BOARD_BLOCKS.length : '')
       + ', gate ' + (g ? g.verdict + ' ' + g.testsPassed + '/' + g.testsTotal + ', rows printed ' + printed.length + '/' + ROW_KEYS.length + (redRows.length ? ', red ' + redRows.join(', ') : '') : 'unread')
-      + ', ladder tests ' + (tests ? tests.pass + '/' + tests.total + ' exit ' + tests.exit : 'not run'),
+      + ', tests ' + (runs.length ? runs.map((t) => t.file + ' ' + t.pass + '/' + t.total + ' exit ' + t.exit).join(', ') : 'not run'),
     ...reasons.map((r) => '  ' + r),
   ];
   return { file, met, reasons, doc, lines };
@@ -1202,8 +1455,13 @@ export async function runRows({ root = BOARD_ROOT, verdictsDir = VERDICTS_DIR, r
   const readJson = (f) => { try { return JSON.parse(readFileSync(f, 'utf8')); } catch (e) { return { error: e.message }; } };
   const ladder = readJson(path.join(verdictsDir, 'ladder.json'));
   const gate = readJson(path.join(verdictsDir, 'gate.json'));
-  log('rows: running test/ladder.test.mjs under the gate budget caps');
-  const { row: tests } = await runTests(path.join(root, 'test', 'ladder.test.mjs'));
+  const tests = [];
+  for (const rel of ROWS_TESTS) {
+    if (!existsSync(path.join(root, rel))) { tests.push({ file: rel, missing: true, exit: null, pass: null, fail: null, total: null, ms: null }); continue; }
+    log('rows: running ' + rel + ' under the gate budget caps');
+    const { row } = await runTests(path.join(root, rel));
+    tests.push(row);
+  }
   const owned = ROWS_OWNED.filter((f) => existsSync(path.join(root, f))).map((f) => ({ file: f, mtimeMs: statSync(path.join(root, f)).mtimeMs }));
   const v = rowsVerdictOf({ ladder, gate, tests, owned, at: at || new Date().toISOString() });
   for (const l of v.lines) log(l);

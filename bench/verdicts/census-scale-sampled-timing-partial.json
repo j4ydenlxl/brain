@@ -1,0 +1,141 @@
+{
+  "bench": "census",
+  "mode": "sampled",
+  "at": "2026-09-24T14:10:36.153Z",
+  "command": "node --max-old-space-size=6000 tools/organism-census.mjs --sample 0.02 --seed organism/scale-52000 --max-batches 1 --cap-mb 5000",
+  "node": "v24.15.0",
+  "isTheBar": false,
+  "statement": "The sampled census drew 8320 of 416000 cells of organism/scale-52000 (fraction 0.02, seed \"census\") and ran 65 of them (an incomplete timing run) exactly, each on its backward cone at a 16 tick horizon, in 1 batches of at most 80000 cells under a 5000 MB cap per batch, no batch growing an edge. 46 of 65 ran (70.77%, 95% Wilson 58.80% to 80.42%), 16 emitted (24.62%, 15.76% to 36.31%), and 122 of their 624 out-edges delivered (19.55%, 10.54% to 28.56%). On the same cells the static rule says 93.85% reachable and 90.77% reachable within 16 ticks; 0 cells ran outside the static bound. Lines: static load bearing 99.45% (99.45% in bench/verdicts/census-scale-static.json) against a dynamic estimate of 24.54% (15.39% to 33.51%) at 16 ticks, the regions and circuits counted by the static rule.",
+  "seed": "organism/scale-52000",
+  "manifestHash": "a5dd71bb96767e51debd41ed46b178584255c5275de34ccac5c5ebba644e6075",
+  "horizon": {
+    "ticks": 16,
+    "lastTick": 15
+  },
+  "fraction": 0.02,
+  "sampleSeed": "census",
+  "method": "a seeded partial Fisher-Yates draw of cells; each sampled cell loaded with its backward cone (reduced to the cells u with f(u) + b(u) <= L, f the earliest tick u could run from the periodic cells at tick 0, b its travel time to the sampled cell) and run by runShard, the exact shard of the sharded census, tasks off; ran and fired shares with Wilson 95 percent intervals, the delivered share of the sampled cells' out-edges with a cluster ratio interval",
+  "sample": {
+    "drawn": 8320,
+    "measured": 65,
+    "complete": false,
+    "batches": 271,
+    "batchesRun": 1
+  },
+  "cones": {
+    "median": 3250,
+    "p90": 13812,
+    "max": 53959,
+    "sum": 46437329
+  },
+  "shares": {
+    "ran": {
+      "x": 46,
+      "n": 65,
+      "p": 0.7076923076923077,
+      "lo": 0.5880396276349971,
+      "hi": 0.8041658901232009
+    },
+    "fired": {
+      "x": 16,
+      "n": 65,
+      "p": 0.24615384615384617,
+      "lo": 0.15757986855897987,
+      "hi": 0.3630578319587784
+    },
+    "staticReachable": {
+      "x": 61,
+      "n": 65,
+      "p": 0.9384615384615385,
+      "lo": 0.852178481344768,
+      "hi": 0.9758109450336497
+    },
+    "staticWithinHorizon": {
+      "x": 59,
+      "n": 65,
+      "p": 0.9076923076923077,
+      "lo": 0.8128799948403962,
+      "hi": 0.9570049103886591
+    },
+    "edgesDelivered": {
+      "y": 122,
+      "m": 624,
+      "clusters": 65,
+      "r": 0.1955128205128205,
+      "se": 0.04595817102579253,
+      "lo": 0.10543646050693493,
+      "hi": 0.2855891805187061
+    },
+    "edgesStaticLive": {
+      "y": 624,
+      "m": 624,
+      "clusters": 65,
+      "r": 1,
+      "se": 0,
+      "lo": 1,
+      "hi": 1
+    }
+  },
+  "agreement": {
+    "ranNotWithinHorizon": 0,
+    "ranNotReachable": 0,
+    "withinHorizonNotRan": 13,
+    "reachableNotRan": 15
+  },
+  "wholeStatic": {
+    "cells": 416000,
+    "edges": 4656829,
+    "reachable": 411858,
+    "withinHorizon": 406881,
+    "liveEdges": 4632748
+  },
+  "lines": {
+    "loaded": 5126010,
+    "declarations": 5124836,
+    "structure": 1174,
+    "regionsDeclared": 7,
+    "circuitsDeclared": 52000,
+    "regionsLive": 7,
+    "circuitsLive": 52000,
+    "static": {
+      "liveDeclarations": 5096613,
+      "loadBearing": 5097787,
+      "fraction": 0.994494
+    },
+    "dynamic": {
+      "liveDeclarations": 1256877,
+      "fraction": 0.245425,
+      "lo": 0.153883,
+      "hi": 0.335086
+    }
+  },
+  "staticVerdict": "bench/verdicts/census-scale-static.json",
+  "exact": true,
+  "errored": 0,
+  "batches": [
+    {
+      "batch": 0,
+      "owned": 65,
+      "loadedCells": 78211,
+      "loadedEdges": 527738,
+      "grown": 0,
+      "errors": 0,
+      "peakRssMB": 1090.1,
+      "wallMs": 4748,
+      "mailDropped": 244944,
+      "phantomRefused": 0
+    }
+  ],
+  "memoryMB": {
+    "peakRssPerBatchMax": 1090.1,
+    "processPeakWorkingSet": 1093.1,
+    "capPerBatch": 5000
+  },
+  "ms": {
+    "plan": 9555,
+    "wall": 17780
+  },
+  "reduce": true,
+  "batchCells": 80000,
+  "capMB": 5000
+}

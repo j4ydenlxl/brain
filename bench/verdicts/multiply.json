@@ -1,0 +1,633 @@
+{
+  "at": "2026-09-24T14:36:34.385Z",
+  "command": "node --max-old-space-size=6000 bench/multiply.mjs",
+  "node": "v24.15.0",
+  "isTheBar": true,
+  "statement": "One instance (s0, seed 1) ran alone for 240 wall seconds and its best library by the searched objective scored 134/160 on the fresh draw grid/velocity:heldout after 116706884 evaluations. A population of 3 (i0 seed 1, duplicated from its own checkpoints into i1 seed 2 and i2 seed 3, each for 240 wall seconds, exchanging elites through a shared store at every checkpoint) made 327546224 evaluations, imported 2509 and exported 3661 elites, and its pick by the searched objective scored 136/160 on the same fresh draw, above the single instance. i0 was killed at 120 s and came back from its own checkpoint t=1500. The whole tree peaked at 4189.2 MB working set. The bar (population at or above single on the fresh draw, and the killed instance back) is met. No model was called; timings are wall clock on a desk shared with Board 11.",
+  "bar": {
+    "met": true,
+    "rule": "population pick by the searched objective at or above the single instance on grid/velocity:heldout, AND the killed instance came back from its checkpoint",
+    "singleFresh": 134,
+    "populationFresh": 136,
+    "freshT": 160,
+    "atOrAbove": true,
+    "cameBack": true,
+    "populationBestFreshOverInstances": 136,
+    "i0FreshAtWall": 136
+  },
+  "config": {
+    "wallS": 240,
+    "killAtS": 120,
+    "seed": 1,
+    "out": "state\\multiply-bench",
+    "suite": {
+      "kind": "grid",
+      "seed": "grid/velocity",
+      "draws": 4,
+      "maxDepth": 3,
+      "fresh": "grid/velocity:heldout",
+      "freshMore": 4
+    },
+    "organism": {
+      "majors": 12,
+      "units": 256,
+      "checkpointEvery": 250,
+      "chunk": 10,
+      "ledger": "summary",
+      "ledgerBudgetMb": 16
+    },
+    "instanceCaps": {
+      "ramMb": 1600,
+      "diskMb": 600,
+      "heapMb": 1024,
+      "planeHeapMb": 256
+    },
+    "spawnPlan": "i0 duplicates into i1 after its 2nd exchange and into i2 after its 3rd"
+  },
+  "prebuild": {
+    "exitCode": 0,
+    "peakRssMb": 0,
+    "wallS": 0.206
+  },
+  "arms": {
+    "single": {
+      "wallArmS": 249.6,
+      "timedOut": false,
+      "pick": {
+        "id": "s0",
+        "fitness": 0.9320403696498054,
+        "count": 598,
+        "len": 96,
+        "source": "s0",
+        "searchedMeanCount": 149.5,
+        "tasksPerDraw": 160,
+        "fresh": 134,
+        "freshT": 160,
+        "freshMore": [
+          133,
+          144,
+          137,
+          134
+        ],
+        "freshMoreMean": 137
+      },
+      "evals": 116706884,
+      "elitesImported": 0,
+      "elitesExported": 2230,
+      "duplications": 0,
+      "aliveAtEnd": {
+        "s": 238.5,
+        "alive": 1,
+        "ids": [
+          "s0"
+        ]
+      },
+      "maxAlive": 1,
+      "peakTreeWsMb": 1537.4,
+      "peakTreePrivateMb": 1580.7,
+      "peakTreeProcs": 7,
+      "instances": [
+        {
+          "id": "s0",
+          "seed": "1",
+          "parent": null,
+          "firstStartOffsetS": 0.5,
+          "attempts": 1,
+          "restarts": 0,
+          "gaveUp": null,
+          "exits": [
+            {
+              "attempt": 1,
+              "at": "2026-09-24T14:32:07.508Z",
+              "code": 0,
+              "signal": null,
+              "afterS": 248.7,
+              "outcome": "exit",
+              "peakRssMb": 1143.656,
+              "error": null
+            }
+          ],
+          "ended": true,
+          "t": 2500,
+          "starts": 1,
+          "resumedAt": 0,
+          "wallS": 247.982,
+          "checkpoints": 12,
+          "exchangeCalls": 12,
+          "duplications": 0,
+          "spawned": [],
+          "duplicatedFrom": null,
+          "evals": 116706884,
+          "planesRun": 4725,
+          "exchanges": 13,
+          "storeRows": 593,
+          "elitesImported": 0,
+          "elitesExported": 2230,
+          "imported": {
+            "files": 0,
+            "rows": 0,
+            "filled": 0,
+            "replaced": 0,
+            "kept": 0,
+            "rejected": 0,
+            "injected": 0
+          },
+          "best": {
+            "fitness": 0.9320403696498054,
+            "count": 598,
+            "len": 96,
+            "source": "s0",
+            "searchedMeanCount": 149.5,
+            "tasksPerDraw": 160,
+            "fresh": 134,
+            "freshT": 160,
+            "freshMore": [
+              133,
+              144,
+              137,
+              134
+            ],
+            "freshMoreMean": 137
+          },
+          "peakRssMb": 1143.7,
+          "heartbeatMaxRssMb": 1226,
+          "budgetOutcomes": [
+            "exit"
+          ],
+          "health": {
+            "reads": 43,
+            "fails": 3,
+            "lastS": 239.5,
+            "maxAlive": 1,
+            "last": {
+              "ok": true,
+              "instance": "s0",
+              "instancesAlive": 1,
+              "instances": [
+                "s0"
+              ],
+              "tick": 2470,
+              "rssMb": 1125,
+              "multiply": {
+                "duplications": 0,
+                "elitesImported": 0,
+                "elitesExported": 2098,
+                "storeRows": 582,
+                "evals": 98782080,
+                "exchanges": 10,
+                "resumed": false,
+                "resumedAt": 0
+              }
+            }
+          }
+        }
+      ],
+      "supervisor": [
+        {
+          "s": 0.4,
+          "line": "[population] s0 started (attempt 1, pid 2104)"
+        },
+        {
+          "s": 248.7,
+          "line": "[population] s0 ended (code 0, attempt 1, 248.7 s, peak 1143.656 MB)"
+        }
+      ]
+    },
+    "population": {
+      "wallArmS": 266,
+      "timedOut": false,
+      "pick": {
+        "id": "i0",
+        "fitness": 0.9320403696498054,
+        "count": 598,
+        "len": 96,
+        "source": "i0",
+        "searchedMeanCount": 149.5,
+        "tasksPerDraw": 160,
+        "fresh": 136,
+        "freshT": 160,
+        "freshMore": [
+          134,
+          145,
+          137,
+          133
+        ],
+        "freshMoreMean": 137.25
+      },
+      "evals": 327546224,
+      "elitesImported": 2509,
+      "elitesExported": 3661,
+      "duplications": 2,
+      "aliveAtEnd": {
+        "s": 237.7,
+        "alive": 3,
+        "ids": [
+          "i0",
+          "i1",
+          "i2"
+        ]
+      },
+      "maxAlive": 3,
+      "peakTreeWsMb": 4189.2,
+      "peakTreePrivateMb": 5716.8,
+      "peakTreeProcs": 15,
+      "instances": [
+        {
+          "id": "i0",
+          "seed": "1",
+          "parent": null,
+          "firstStartOffsetS": 0.5,
+          "attempts": 2,
+          "restarts": 1,
+          "gaveUp": null,
+          "exits": [
+            {
+              "attempt": 1,
+              "at": "2026-09-24T14:34:12.667Z",
+              "code": 1,
+              "signal": null,
+              "afterS": 124.3,
+              "outcome": "exit",
+              "peakRssMb": 954.051,
+              "error": null
+            },
+            {
+              "attempt": 2,
+              "at": "2026-09-24T14:36:15.293Z",
+              "code": 0,
+              "signal": null,
+              "afterS": 121.6,
+              "outcome": "exit",
+              "peakRssMb": 1129.891,
+              "error": null
+            }
+          ],
+          "ended": true,
+          "t": 2350,
+          "starts": 2,
+          "resumedAt": 1500,
+          "wallS": 246.174,
+          "checkpoints": 4,
+          "exchangeCalls": 4,
+          "duplications": 2,
+          "spawned": [
+            {
+              "id": "i1",
+              "seed": "2",
+              "fromTick": 250,
+              "planeRows": 346
+            },
+            {
+              "id": "i2",
+              "seed": "3",
+              "fromTick": 500,
+              "planeRows": 413
+            }
+          ],
+          "duplicatedFrom": null,
+          "evals": 108423658,
+          "planesRun": 4381,
+          "exchanges": 12,
+          "storeRows": 635,
+          "elitesImported": 710,
+          "elitesExported": 1827,
+          "imported": {
+            "files": 17,
+            "rows": 4627,
+            "filled": 65,
+            "replaced": 645,
+            "kept": 3917,
+            "rejected": 0,
+            "injected": 710
+          },
+          "best": {
+            "fitness": 0.9320403696498054,
+            "count": 598,
+            "len": 96,
+            "source": "i0",
+            "searchedMeanCount": 149.5,
+            "tasksPerDraw": 160,
+            "fresh": 136,
+            "freshT": 160,
+            "freshMore": [
+              134,
+              145,
+              137,
+              133
+            ],
+            "freshMoreMean": 137.25
+          },
+          "peakRssMb": 1129.9,
+          "heartbeatMaxRssMb": 1196,
+          "budgetOutcomes": [
+            "exit",
+            "exit"
+          ],
+          "health": {
+            "reads": 42,
+            "fails": 3,
+            "lastS": 244,
+            "maxAlive": 3,
+            "last": {
+              "ok": true,
+              "instance": "i0",
+              "instancesAlive": 3,
+              "instances": [
+                "i0",
+                "i1",
+                "i2"
+              ],
+              "tick": 2350,
+              "rssMb": 1113,
+              "multiply": {
+                "duplications": 2,
+                "elitesImported": 710,
+                "elitesExported": 1787,
+                "storeRows": 633,
+                "evals": 100798260,
+                "exchanges": 10,
+                "resumed": true,
+                "resumedAt": 1500
+              }
+            }
+          }
+        },
+        {
+          "id": "i1",
+          "seed": "2",
+          "parent": "i0",
+          "firstStartOffsetS": 7,
+          "attempts": 1,
+          "restarts": 0,
+          "gaveUp": null,
+          "exits": [
+            {
+              "attempt": 1,
+              "at": "2026-09-24T14:36:20.689Z",
+              "code": 0,
+              "signal": null,
+              "afterS": 245.8,
+              "outcome": "exit",
+              "peakRssMb": 1156.852,
+              "error": null
+            }
+          ],
+          "ended": true,
+          "t": 2450,
+          "starts": 1,
+          "resumedAt": 250,
+          "wallS": 245.095,
+          "checkpoints": 9,
+          "exchangeCalls": 9,
+          "duplications": 0,
+          "spawned": [],
+          "duplicatedFrom": {
+            "id": "i0",
+            "tick": 250,
+            "planeRows": 346,
+            "bytes": 1826824
+          },
+          "evals": 109225279,
+          "planesRun": 4423,
+          "exchanges": 10,
+          "storeRows": 643,
+          "elitesImported": 866,
+          "elitesExported": 1077,
+          "imported": {
+            "files": 18,
+            "rows": 5724,
+            "filled": 103,
+            "replaced": 763,
+            "kept": 4858,
+            "rejected": 0,
+            "injected": 866
+          },
+          "best": {
+            "fitness": 0.9320403696498054,
+            "count": 598,
+            "len": 96,
+            "source": "i0",
+            "searchedMeanCount": 149.5,
+            "tasksPerDraw": 160,
+            "fresh": 136,
+            "freshT": 160,
+            "freshMore": [
+              134,
+              145,
+              137,
+              133
+            ],
+            "freshMoreMean": 137.25
+          },
+          "peakRssMb": 1156.9,
+          "heartbeatMaxRssMb": 1222,
+          "budgetOutcomes": [
+            "exit"
+          ],
+          "health": {
+            "reads": 42,
+            "fails": 2,
+            "lastS": 249.5,
+            "maxAlive": 3,
+            "last": {
+              "ok": true,
+              "instance": "i1",
+              "instancesAlive": 2,
+              "instances": [
+                "i1",
+                "i2"
+              ],
+              "tick": 2450,
+              "rssMb": 1139,
+              "multiply": {
+                "duplications": 0,
+                "elitesImported": 791,
+                "elitesExported": 997,
+                "storeRows": 625,
+                "evals": 95356207,
+                "exchanges": 8,
+                "resumed": true,
+                "resumedAt": 250
+              }
+            }
+          }
+        },
+        {
+          "id": "i2",
+          "seed": "3",
+          "parent": "i0",
+          "firstStartOffsetS": 19.8,
+          "attempts": 1,
+          "restarts": 0,
+          "gaveUp": null,
+          "exits": [
+            {
+              "attempt": 1,
+              "at": "2026-09-24T14:36:33.588Z",
+              "code": 0,
+              "signal": null,
+              "afterS": 245.9,
+              "outcome": "exit",
+              "peakRssMb": 1166.344,
+              "error": null
+            }
+          ],
+          "ended": true,
+          "t": 2520,
+          "starts": 1,
+          "resumedAt": 500,
+          "wallS": 245.16,
+          "checkpoints": 9,
+          "exchangeCalls": 9,
+          "duplications": 0,
+          "spawned": [],
+          "duplicatedFrom": {
+            "id": "i0",
+            "tick": 500,
+            "planeRows": 413,
+            "bytes": 2467504
+          },
+          "evals": 109897287,
+          "planesRun": 4449,
+          "exchanges": 10,
+          "storeRows": 643,
+          "elitesImported": 933,
+          "elitesExported": 757,
+          "imported": {
+            "files": 20,
+            "rows": 7052,
+            "filled": 95,
+            "replaced": 838,
+            "kept": 6119,
+            "rejected": 0,
+            "injected": 933
+          },
+          "best": {
+            "fitness": 0.9320403696498054,
+            "count": 598,
+            "len": 96,
+            "source": "i0",
+            "searchedMeanCount": 149.5,
+            "tasksPerDraw": 160,
+            "fresh": 136,
+            "freshT": 160,
+            "freshMore": [
+              134,
+              145,
+              137,
+              133
+            ],
+            "freshMoreMean": 137.25
+          },
+          "peakRssMb": 1166.3,
+          "heartbeatMaxRssMb": 1233,
+          "budgetOutcomes": [
+            "exit"
+          ],
+          "health": {
+            "reads": 44,
+            "fails": 0,
+            "lastS": 261,
+            "maxAlive": 3,
+            "last": {
+              "ok": true,
+              "instance": "i2",
+              "instancesAlive": 1,
+              "instances": [
+                "i2"
+              ],
+              "tick": 2510,
+              "rssMb": 1142,
+              "multiply": {
+                "duplications": 0,
+                "elitesImported": 823,
+                "elitesExported": 694,
+                "storeRows": 631,
+                "evals": 90011552,
+                "exchanges": 7,
+                "resumed": true,
+                "resumedAt": 500
+              }
+            }
+          }
+        }
+      ],
+      "supervisor": [
+        {
+          "s": 0.4,
+          "line": "[population] i0 started (attempt 1, pid 33140)"
+        },
+        {
+          "s": 6.5,
+          "line": "[population] request: i0 duplicated into i1 (seed 2), launching"
+        },
+        {
+          "s": 6.9,
+          "line": "[population] i1 started (attempt 1, pid 41660)"
+        },
+        {
+          "s": 19.3,
+          "line": "[population] request: i0 duplicated into i2 (seed 3), launching"
+        },
+        {
+          "s": 19.7,
+          "line": "[population] i2 started (attempt 1, pid 44420)"
+        },
+        {
+          "s": 124.3,
+          "line": "[population] i0 exited code=1 signal=null after 124.3 s; restart 1 from its checkpoint t=1500 in 1000 ms"
+        },
+        {
+          "s": 125.7,
+          "line": "[population] i0 started (attempt 2, pid 28760)"
+        },
+        {
+          "s": 246.9,
+          "line": "[population] i0 ended (code 0, attempt 2, 121.6 s, peak 1129.891 MB)"
+        },
+        {
+          "s": 252.3,
+          "line": "[population] i1 ended (code 0, attempt 1, 245.8 s, peak 1156.852 MB)"
+        },
+        {
+          "s": 265.2,
+          "line": "[population] i2 ended (code 0, attempt 1, 245.9 s, peak 1166.344 MB)"
+        }
+      ]
+    }
+  },
+  "kill": {
+    "id": "i0",
+    "pid": 33140,
+    "atS": 122,
+    "checkpointT": 1500,
+    "planeT": 1500,
+    "planeRows": 581,
+    "planeIndex": 2189,
+    "tickAtKill": 1560,
+    "supervisorLine": "[population] i0 exited code=1 signal=null after 124.3 s; restart 1 from its checkpoint t=1500 in 1000 ms",
+    "supervisorCheckpointT": 1500,
+    "resumedLine": "[live] resumed brain in 2831 ms at t=1500, cells 173, edges 1799, checkpoint every 250 ticks, self every off, generations every off, ticks unbounded, wall 114557 ms, loop off, ledger summary budget 16 MB",
+    "planeResumedLine": "[multiply i0] plane resumed from plane.json at plane 2189 with 581 stored elites (saved at t=1500); suite 6175 components x 640 tasks, 9 draws cached, 0 built, 29.064 ms",
+    "cameBack": true
+  },
+  "ram": {
+    "peakTreeWsMb": 4189.2,
+    "peakTreePrivateMb": 5716.8,
+    "peakProcs": 15,
+    "samples": 258,
+    "samplerErrors": 0,
+    "under6000": true
+  },
+  "disk": {
+    "outMb": 22.1,
+    "over200": false
+  },
+  "machine": {
+    "cpus": 32,
+    "totalMemGb": 63.8,
+    "platform": "win32"
+  },
+  "modelCalls": 0,
+  "wallMs": 516824
+}

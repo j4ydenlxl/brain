@@ -22,6 +22,22 @@
 //             (SOURCES.md, LICENSE*, NOTICE*, COPYING*, .gitignore) are listed, not counted as
 //             data. Red if any data file is uncovered, with its path and bytes.
 //
+// TWO MORE (Board 12, his P8 and P15), printed after them and able to turn the gate red:
+//
+//   LOAD-BEARING  the dead share (1 - load-bearing lines / loaded lines) of every emitted seed
+//             under organism/, from the census verdicts on disk. A census counts for a seed only
+//             when it still describes it: its manifest hash is the seed's, or, when it carries
+//             none, it was written after the seed's manifest last changed. Red when any seed has
+//             no such census, or when a seed the daemon loads is above 10 percent dead. Which
+//             seeds the daemon loads is read, not assumed: the string literals of every module
+//             its entries can import that name a seed by path, and every checkpoint meta under
+//             a state directory that names one. The line says how many that is, even when 0.
+//   BOUNDARY  from bench/verdicts/boundary.json: red when a boundary's copied buffers reached the
+//             audit's cap, when a boundary was not measured, when the verdict lists an unlisted
+//             boundary, or when a static scan of the tree now (tools/boundary-audit.mjs, when it
+//             can be loaded) finds one the allowlist does not list. The wire size, strings
+//             included, is printed beside it; the audit reports it and does not hold it to the cap.
+//
 //   node bench/gate.mjs [--quiet]
 import { readdirSync, readFileSync, statSync, writeFileSync, mkdirSync, existsSync, mkdtempSync, rmSync } from 'node:fs';
 import os from 'node:os';
@@ -321,6 +337,289 @@ export function hisDataRow(cov, where = 'bench/fixtures') {
   return { ok, files: cov.files, covered: cov.covered, bytes: cov.bytes, uncovered: cov.uncovered, uncoveredBytes: cov.uncoveredBytes, notice: cov.notice.map((n) => n.file), sources: cov.sources, byLicence: cov.byLicence, line };
 }
 
+// ---------------------------------------------------------------- LOAD-BEARING: the dead share of every emitted seed
+/** A seed the daemon loads may be at most this share dead (1 - load-bearing lines / loaded lines). */
+export const DEAD_SHARE_CAP = 0.10;
+/** Where the daemon starts: the whole brain process, the served one, and the population of them. */
+export const DAEMON_ENTRIES = Object.freeze(['daemon/run.mjs', 'bin/serve.mjs', 'daemon/multiply.mjs']);
+const pct2 = (x) => (Math.round(x * 10000) / 100).toFixed(2);
+const byName = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+
+// tools/boundary-audit.mjs is loaded, not imported, for the same reason as the two siblings above:
+// a tree holding this file alone must still run the gate. Loaded once, on first use.
+let auditPromise = null;
+const auditModule = () => (auditPromise = auditPromise || loaded('../tools/boundary-audit.mjs'));
+
+/** organism/<name> from any spelling of a path to a seed (backslashes, ./, an absolute prefix), else null. */
+export function seedOf(p) {
+  if (typeof p !== 'string') return null;
+  const m = p.trim().replaceAll('\\', '/').match(/(?:^|\/)organism\/([A-Za-z0-9_][\w.-]*)\/?$/);
+  return m ? 'organism/' + m[1] : null;
+}
+
+/**
+ * Every emitted seed: a directory under organism/ holding a manifest.json (or, failing that, an
+ * index.mjs). Only the manifest is read, never the seed, so a five million line seed costs one
+ * small file here.
+ * @returns {Array<{seed, hash, changedAt, by}>}
+ */
+export function emittedSeeds(root = ROOT) {
+  const dir = path.join(root, 'organism');
+  let ents; try { ents = readdirSync(dir, { withFileTypes: true }); } catch { return []; }
+  const out = [];
+  for (const e of ents) {
+    if (!e.isDirectory() || e.name.startsWith('.')) continue;
+    const mf = path.join(dir, e.name, 'manifest.json'), ix = path.join(dir, e.name, 'index.mjs');
+    const file = existsSync(mf) ? mf : existsSync(ix) ? ix : null;
+    if (!file) continue;
+    let hash = null;
+    if (file === mf) { try { const m = JSON.parse(readFileSync(mf, 'utf8')); hash = typeof m.hash === 'string' ? m.hash : null; } catch { hash = null; } }
+    let changedAt = null; try { changedAt = statSync(file).mtime.toISOString(); } catch { /* raced */ }
+    out.push({ seed: 'organism/' + e.name, hash, changedAt, by: path.basename(file) });
+  }
+  return out.sort((a, b) => byName(a.seed, b.seed));
+}
+
+/**
+ * Every census line count on disk: a census verdict naming one seed (seed and lines), and each
+ * row of a census over many (seeds). A record with no loaded or no load-bearing count (a refused,
+ * stopped or sampled run) is kept, so the row can say a seed was tried and not counted.
+ */
+export function censusRecords(verdictsDir = path.join(ROOT, 'bench', 'verdicts')) {
+  let names; try { names = readdirSync(verdictsDir); } catch { return []; }
+  const out = [];
+  for (const f of names.filter((n) => /^census.*\.json$/.test(n)).sort()) {
+    let v; try { v = JSON.parse(readFileSync(path.join(verdictsDir, f), 'utf8')); } catch { continue; }
+    if (!v || typeof v !== 'object') continue;
+    const push = (s, lines, hash, mode) => {
+      const seed = seedOf(s);
+      if (!seed) return;
+      const n = (x) => (typeof x === 'number' && Number.isFinite(x) ? x : null);
+      out.push({ file: f, at: typeof v.at === 'string' ? v.at : null, isTheBar: v.isTheBar === true, seed, loaded: n(lines && lines.loaded), loadBearing: n(lines && lines.loadBearing), hash: typeof hash === 'string' ? hash : null, mode: typeof mode === 'string' ? mode : null });
+    };
+    if (typeof v.seed === 'string') push(v.seed, v.lines, (v.live && v.live.manifestHash) || (v.hash && v.hash.manifest), v.mode);
+    if (v.seeds && typeof v.seeds === 'object') for (const s of Object.values(v.seeds)) if (s && typeof s === 'object') push(s.seed, s.lines, s.manifestHash || (s.live && s.live.manifestHash) || (s.hash && s.hash.manifest), s.mode);
+  }
+  return out;
+}
+
+/**
+ * The census that describes a seed as it is now. Counted (loaded above 0, load-bearing within it)
+ * and fresh (same manifest hash, or with no hash to compare, written after the seed's manifest
+ * last changed), then the bar before a narrow run, then the newest.
+ */
+export function censusFor(seed, records) {
+  const mine = records.filter((r) => r.seed === seed.seed);
+  const counted = mine.filter((r) => r.loaded > 0 && r.loadBearing !== null && r.loadBearing >= 0 && r.loadBearing <= r.loaded);
+  const fresh = [], stale = [];
+  for (const r of counted) {
+    let by = null;
+    if (r.hash && seed.hash) by = r.hash === seed.hash ? 'hash' : null;
+    else if (r.at && seed.changedAt && Date.parse(seed.changedAt) <= Date.parse(r.at)) by = 'time';
+    if (by) fresh.push({ ...r, by }); else stale.push(r.file);
+  }
+  const t = (r) => Date.parse(r.at) || 0;
+  fresh.sort((a, b) => (Number(b.isTheBar) - Number(a.isTheBar)) || (t(b) - t(a)) || byName(a.file, b.file));
+  return { pick: fresh[0] || null, records: mine.length, counted: counted.length, stale };
+}
+
+// the module specifiers a source can load: static imports, literal dynamic imports, and the
+// new URL('./x.mjs', import.meta.url) a Worker is started from
+function specifiersOf(src) {
+  const specs = [];
+  for (const m of src.matchAll(/^\s*(?:import|export)\b[^;]*?(?<!['"\w])from\s*['"]([^'"]+)['"]/gm)) specs.push(m[1]);
+  for (const m of src.matchAll(/^\s*import\s*['"]([^'"]+)['"]/gm)) specs.push(m[1]);
+  for (const m of src.matchAll(/\bimport\(\s*['"]([^'"]+)['"]/g)) specs.push(m[1]);
+  for (const m of src.matchAll(/new URL\(\s*['"]([^'"]+\.m?js)['"]\s*,\s*import\.meta\.url/g)) specs.push(m[1]);
+  return specs;
+}
+
+/** Every module the entries can load, followed through relative specifiers; paths relative to root. */
+export function importClosure(root = ROOT, entries = DAEMON_ENTRIES) {
+  const seen = new Set();
+  const q = entries.map((e) => path.resolve(root, e));
+  while (q.length) {
+    const f = q.shift();
+    if (seen.has(f) || !existsSync(f)) continue;
+    seen.add(f);
+    let src; try { src = readFileSync(f, 'utf8'); } catch { continue; }
+    for (const s of specifiersOf(src)) if (s.startsWith('.')) q.push(path.resolve(path.dirname(f), s));
+  }
+  return [...seen].map((f) => relTo(root, f)).sort();
+}
+
+// string literals in order, [{ text, start, end }] with start and end the content's offsets. The
+// audit's lexer skips comments and regular expressions; without it a plain quoted-string scan
+// stands in, and the row says which read the source.
+function literalsOf(src, lex) {
+  if (lex) {
+    try { return lex(src).strings.map((s) => ({ text: src.slice(s.start, s.end), start: s.start, end: s.end })); } catch { /* fall through to the plain scan */ }
+  }
+  const out = [];
+  for (const m of src.matchAll(/'((?:[^'\\\n]|\\.)*)'|"((?:[^"\\\n]|\\.)*)"/g)) {
+    const text = m[1] !== undefined ? m[1] : m[2];
+    out.push({ text, start: m.index + 1, end: m.index + 1 + text.length });
+  }
+  return out;
+}
+
+/**
+ * Where source names a seed by path: a literal that is a path to organism/<name> ('organism/gen-0',
+ * '../organism/gen-0/'), or the literal 'organism' followed, across only a comma, by a literal that
+ * is a seed's name (path.join(root, 'organism', 'gen-0')). A usage message or prose that mentions a
+ * seed inside a longer string is not a path and is not counted.
+ */
+export function seedsNamedIn(root, files, seeds, lex = null) {
+  const names = new Set(seeds.map((s) => s.seed.slice('organism/'.length)));
+  const hits = [];
+  for (const rel of files) {
+    let src; try { src = readFileSync(path.join(root, rel), 'utf8'); } catch { continue; }
+    const lits = literalsOf(src, lex);
+    const lineAt = (i) => src.slice(0, i).split('\n').length;
+    for (let i = 0; i < lits.length; i++) {
+      const s = seedOf(lits[i].text);
+      if (s && names.has(s.slice('organism/'.length))) { hits.push({ seed: s, file: rel, line: lineAt(lits[i].start), text: lits[i].text }); continue; }
+      const next = lits[i + 1];
+      if (lits[i].text === 'organism' && next && names.has(next.text) && /^\s*,\s*$/.test(src.slice(lits[i].end + 1, next.start - 1))) {
+        hits.push({ seed: 'organism/' + next.text, file: rel, line: lineAt(lits[i].start), text: "'organism', '" + next.text + "'" });
+      }
+    }
+  }
+  return hits;
+}
+
+/** Every checkpoint meta.json under the state directories (a few levels down), with its kind and any seed it names. */
+export function checkpointMetas(states = stateDirs(ROOT), maxDepth = 4) {
+  const out = [];
+  const visit = (dir, depth) => {
+    let ents; try { ents = readdirSync(dir, { withFileTypes: true }); } catch { return; }
+    for (const e of ents) {
+      if (e.isDirectory()) {
+        if (depth < maxDepth && !e.name.startsWith('.') && e.name !== 'ledger' && e.name !== 'node_modules') visit(path.join(dir, e.name), depth + 1);
+        continue;
+      }
+      if (e.name !== 'meta.json') continue;
+      const p = path.join(dir, e.name);
+      let m; try { m = JSON.parse(readFileSync(p, 'utf8')); } catch { continue; }
+      if (!m || typeof m !== 'object') continue;
+      const seeds = [...new Set(Object.values(m).map(seedOf).filter(Boolean))];
+      out.push({ file: p.replaceAll('\\', '/'), kind: typeof m.kind === 'string' ? m.kind : null, seeds });
+    }
+  };
+  for (const s of states) visit(s, 0);
+  return out;
+}
+
+/** Which emitted seeds the daemon loads, read from its code and from its checkpoints on disk. */
+export async function daemonLoads({ root = ROOT, seeds = emittedSeeds(root), entries = DAEMON_ENTRIES, states = stateDirs(root) } = {}) {
+  const A = await auditModule();
+  const lex = A.mod && typeof A.mod.lex === 'function' ? A.mod.lex : null;
+  const closure = importClosure(root, entries);
+  const named = seedsNamedIn(root, closure, seeds, lex);
+  const metas = checkpointMetas(states);
+  const kinds = {};
+  for (const m of metas) kinds[m.kind || 'none'] = (kinds[m.kind || 'none'] || 0) + 1;
+  const emitted = new Set(seeds.map((s) => s.seed));
+  const loads = [...new Set([...named.map((h) => h.seed), ...metas.flatMap((m) => m.seeds)])].filter((s) => emitted.has(s)).sort();
+  return {
+    entries: [...entries], entriesPresent: entries.filter((e) => existsSync(path.join(root, e))), closure: closure.length,
+    reader: lex ? 'the audit lexer (tools/boundary-audit.mjs lex)' : 'a plain quoted-string scan (tools/boundary-audit.mjs could not be loaded: ' + A.error + ')',
+    named, metas: metas.length, kinds, metaSeeds: [...new Set(metas.flatMap((m) => m.seeds))].sort(), seeds: loads,
+  };
+}
+
+/** The LOAD-BEARING row from the seeds, the census records and what the daemon loads. */
+export function loadBearingRow({ seeds, records, daemon, cap = DEAD_SHARE_CAP }) {
+  const d = daemon || { entries: [...DAEMON_ENTRIES], entriesPresent: [], closure: 0, reader: 'not read', named: [], metas: 0, kinds: {}, metaSeeds: [], seeds: [] };
+  const loads = new Set(d.seeds);
+  const per = seeds.map((s) => {
+    const c = censusFor(s, records);
+    const p = c.pick;
+    const deadShare = p ? Math.round((1 - p.loadBearing / p.loaded) * 1e6) / 1e6 : null;
+    return {
+      seed: s.seed, deadShare, loadedByDaemon: loads.has(s.seed), records: c.records, counted: c.counted, stale: c.stale,
+      census: p ? { file: p.file, at: p.at, isTheBar: p.isTheBar, by: p.by, loaded: p.loaded, loadBearing: p.loadBearing, mode: p.mode } : null,
+    };
+  });
+  const noCensus = per.filter((p) => !p.census);
+  const overCap = per.filter((p) => p.loadedByDaemon && p.deadShare > cap);
+  const ok = seeds.length > 0 && noCensus.length === 0 && overCap.length === 0;
+  const counted = per.filter((p) => p.census);
+  const worst = counted.slice().sort((a, b) => b.deadShare - a.deadShare || byName(a.seed, b.seed))[0] || null;
+  const best = counted.slice().sort((a, b) => a.deadShare - b.deadShare || byName(a.seed, b.seed))[0] || null;
+  const byHash = counted.filter((p) => p.census.by === 'hash').length;
+  const fromBar = counted.filter((p) => p.census.isTheBar).length;
+  const capPct = String(Math.round(cap * 10000) / 100);
+  const short = (s) => s.slice('organism/'.length);
+  const why = (p) => short(p.seed) + (p.records === 0 ? ' (no census names it)' : p.counted === 0 ? ' (' + p.records + ' census record(s), none with a loaded and a load-bearing count)' : ' (every census with a count is stale: ' + p.stale.join(', ') + ')');
+  const shareText = (s) => { const p = per.find((x) => x.seed === s); return p && p.census ? pct2(p.deadShare) + '%' : 'no census'; };
+  const daemonText = 'the daemon loads ' + loads.size + ' of ' + seeds.length
+    + (loads.size ? ' (' + [...loads].map((s) => short(s) + ' ' + shareText(s)).join(', ') + ')' : '')
+    + ': the ' + d.closure + ' modules its entries ' + d.entries.join(', ') + ' can import (' + d.entriesPresent.length + ' of ' + d.entries.length + ' entries in this tree), read by ' + d.reader
+    + ', name ' + (d.named.length ? d.named.length + ' seed path(s) (' + d.named.map((h) => h.file + ':' + h.line + ' ' + short(h.seed)).join(', ') + ')' : 'no seed by path')
+    + ', and the ' + d.metas + ' checkpoint metas under the state directories (kind ' + (Object.entries(d.kinds).map(([k, n]) => k + ' ' + n).join(', ') || 'none') + ') name ' + (d.metaSeeds.length ? d.metaSeeds.map(short).join(', ') : 'no seed')
+    + (loads.size ? '' : ', so the ' + capPct + ' percent cap binds no seed');
+  const line = 'LOAD-BEARING ' + (ok ? 'GREEN' : 'RED') + ': '
+    + (seeds.length === 0 ? 'no emitted seed under organism/, so nothing was measured; '
+      : counted.length + ' of ' + seeds.length + ' emitted seeds under organism/ have a census on disk that still describes them (' + byHash + ' by manifest hash, ' + (counted.length - byHash) + ' written after the manifest last changed; ' + fromBar + ' from a bar census, ' + (counted.length - fromBar) + ' from a narrow run)'
+        + (noCensus.length ? ', ' + noCensus.length + ' have none: ' + noCensus.map(why).join(', ') : '')
+        + (worst ? '; dead share (1 - load-bearing lines / loaded lines) from ' + pct2(best.deadShare) + '% (' + short(best.seed) + ') to ' + pct2(worst.deadShare) + '% (' + short(worst.seed) + ')' : '') + '; ')
+    + daemonText
+    + (overCap.length ? '; over the ' + capPct + ' percent cap and loaded: ' + overCap.map((p) => short(p.seed) + ' ' + pct2(p.deadShare) + '%').join(', ') : '')
+    + (seeds.length ? '; every seed: ' + per.map((p) => short(p.seed) + ' ' + (p.census ? pct2(p.deadShare) + '% (' + p.census.file + (p.census.mode === 'static' ? ', static: a lower bound on the dead share' : p.census.mode ? ', ' + p.census.mode : '') + ')' : 'no census')).join(', ') : '');
+  return { ok, cap, seeds: seeds.length, counted: counted.length, noCensus: noCensus.map((p) => p.seed), overCap: overCap.map((p) => p.seed), daemon: d, per, line };
+}
+
+// ---------------------------------------------------------------- BOUNDARY: every structured clone under the cap, every one listed
+/** A static scan of the tree now against the audit's allowlist, when the audit can be loaded. */
+export async function liveBoundaryScan(root = ROOT) {
+  const A = await auditModule();
+  if (!A.mod || typeof A.mod.scanTree !== 'function' || typeof A.mod.checkAllowlist !== 'function') return { ran: false, error: A.error || 'tools/boundary-audit.mjs exports no scanTree' };
+  try {
+    const found = A.mod.scanTree(root);
+    const c = A.mod.checkAllowlist(found);
+    return { ran: true, found: found.length, listed: Array.isArray(A.mod.ALLOWLIST) ? A.mod.ALLOWLIST.length : null, unlisted: c.unlisted.map((b) => b.key), stale: c.stale.map((a) => a.key), overCap: c.overCap.map((a) => a.key) };
+  } catch (e) { return { ran: false, error: String((e && e.message) || e).split('\n')[0] }; }
+}
+
+/** The BOUNDARY row from bench/verdicts/boundary.json (parsed, or null) and a live scan (or null). */
+export function boundaryRow(v, { live = null, file = 'bench/verdicts/boundary.json' } = {}) {
+  const liveText = !live ? 'no scan of the tree now was run'
+    : live.ran ? 'a static scan of the tree now finds ' + live.found + ' boundaries against ' + live.listed + ' listed: unlisted ' + live.unlisted.length + (live.unlisted.length ? ' (' + live.unlisted.join('; ') + ')' : '') + ', stale ' + live.stale.length
+    : 'no scan of the tree now (' + live.error + ')';
+  const liveUnlisted = live && live.ran ? live.unlisted : [];
+  const table = v && Array.isArray(v.table) ? v.table : null;
+  const cap = v && typeof v.cap === 'number' && Number.isFinite(v.cap) ? v.cap : null;
+  if (!v || !table || cap === null) {
+    const what = !v ? file + ' is not on disk or does not parse' : file + ' carries no ' + (!table ? 'table' : 'cap');
+    return { ok: false, measured: false, liveUnlisted, line: 'BOUNDARY RED: not measured: ' + what + ' (node tools/boundary-audit.mjs --bar writes it), so no boundary is known to be under the cap; ' + liveText };
+  }
+  const fin = (x) => typeof x === 'number' && Number.isFinite(x);
+  const over = table.filter((r) => (fin(r.afterBytes) && r.afterBytes >= cap) || r.underCap === false);
+  const unmeasured = table.filter((r) => !fin(r.afterBytes));
+  const allow = v.allowlist && typeof v.allowlist === 'object' ? v.allowlist : null;
+  const recUnlisted = allow && Array.isArray(allow.unlisted) ? allow.unlisted : null;
+  const allowOver = allow && Array.isArray(allow.overCap) ? allow.overCap : [];
+  const wire = table.filter((r) => (fin(r.afterWire) && r.afterWire >= cap) || r.wireUnderCap === false).sort((a, b) => (b.afterWire || 0) - (a.afterWire || 0));
+  const views = table.filter((r) => fin(r.afterWasmViews) && r.afterWasmViews > 0);
+  const partial = v.isTheBar !== true;
+  const how = {};
+  for (const r of table) how[r.how || 'unrecorded'] = (how[r.how || 'unrecorded'] || 0) + 1;
+  const largest = table.filter((r) => fin(r.afterBytes)).sort((a, b) => b.afterBytes - a.afterBytes)[0] || null;
+  const ok = !partial && over.length === 0 && unmeasured.length === 0 && allowOver.length === 0 && recUnlisted !== null && recUnlisted.length === 0 && liveUnlisted.length === 0;
+  const keyOf = (x) => (typeof x === 'string' ? x : x && x.key) || '?';
+  const at = (r) => r.file + ':' + r.line;
+  const line = 'BOUNDARY ' + (ok ? 'GREEN' : 'RED') + ': ' + table.length + ' boundaries in ' + file + (partial ? ' (PARTIAL: isTheBar ' + v.isTheBar + ')' : ' (isTheBar true, ' + v.at + ')')
+    + ', measured ' + Object.entries(how).map(([k, n]) => k + ' ' + n).join(', ') + ', not measured ' + unmeasured.length + (unmeasured.length ? ' (' + unmeasured.map(at).join(', ') + ')' : '')
+    + '; ' + over.length + ' carried copied buffers at or over the ' + cap + ' byte cap' + (over.length ? ' (' + over.map((r) => at(r) + ' ' + r.afterBytes + ' bytes').join(', ') + ')' : '')
+    + (largest ? ' (largest copied ' + largest.afterBytes + ' bytes at ' + at(largest) + ')' : '')
+    + ', allowlist entries over it ' + allowOver.length + (allowOver.length ? ' (' + allowOver.map(keyOf).join('; ') + ')' : '')
+    + '; unlisted in the verdict ' + (recUnlisted === null ? 'not recorded' : recUnlisted.length + (recUnlisted.length ? ' (' + recUnlisted.map(keyOf).join('; ') + ')' : '')) + ', and ' + liveText
+    + '; views on a wasm heap ' + views.length
+    + '; on the wire (strings included, reported by the audit and not its cap measure) ' + wire.length + ' reached the cap' + (wire.length ? ': ' + wire.map((r) => at(r) + ' ' + r.afterWire + ' bytes').join(', ') : '');
+  return { ok, measured: true, partial, at: v.at || null, cap, boundaries: table.length, how, unmeasured: unmeasured.map(at), overCap: over.map(at), allowOverCap: allowOver.map(keyOf), unlisted: recUnlisted === null ? null : recUnlisted.map(keyOf), liveUnlisted, live, overCapWire: wire.map((r) => ({ at: at(r), bytes: r.afterWire })), wasmViews: views.map(at), largest: largest ? { at: at(largest), bytes: largest.afterBytes } : null, line };
+}
+
 // ---------------------------------------------------------------- the gate
 async function main() {
   const args = new Set(process.argv.slice(2));
@@ -374,6 +673,7 @@ async function main() {
     for (const m of src.matchAll(/^\s*import\s*['"]([^'"]+)['"]/gm)) specs.push(m[1]);
     for (const m of src.matchAll(/\bimport\(\s*['"]([^'"]+)['"]/g)) specs.push(m[1]);
     for (const spec of specs) {
+      if (/[ ()+]/.test(spec)) continue; // a specifier never holds a space, a parenthesis or a plus: this is a string literal that spells an import call (test/boundary.test.mjs:132), not an import
       if (spec.startsWith('.') || spec.startsWith('/') || spec.startsWith('node:') || spec.startsWith('file:')) continue;
       badImports.push(rel(f) + ' -> ' + spec);
     }
@@ -382,14 +682,23 @@ async function main() {
   // 5. every notes/ request must be answered or open (informational)
   const notes = existsSync(path.join(ROOT, 'notes')) ? readdirSync(path.join(ROOT, 'notes')).map(n => 'notes/' + n) : [];
 
-  // 6. the three rows
+  // 6. the five rows. A row that throws is RED with its error, never a crashed gate.
+  const guarded = async (label, f) => { try { return await f(); } catch (e) { return { ok: false, error: String((e && e.message) || e).split('\n')[0], line: label + ' RED: the row threw: ' + String((e && e.message) || e).split('\n')[0] }; } };
   const rows = {
     budget: budgetRow(tests),
     compress: compressRow(compressRecords()),
     hisData: hisDataRow(fixtureCoverage(path.join(ROOT, 'bench', 'fixtures'))),
+    loadBearing: await guarded('LOAD-BEARING', async () => {
+      const seeds = emittedSeeds(ROOT);
+      return loadBearingRow({ seeds, records: censusRecords(path.join(ROOT, 'bench', 'verdicts')), daemon: await daemonLoads({ root: ROOT, seeds }) });
+    }),
+    boundary: await guarded('BOUNDARY', async () => {
+      let v = null; try { v = JSON.parse(readFileSync(path.join(ROOT, 'bench', 'verdicts', 'boundary.json'), 'utf8')); } catch { v = null; }
+      return boundaryRow(v, { live: await liveBoundaryScan(ROOT) });
+    }),
   };
 
-  const rowsPass = rows.budget.ok && rows.compress.ok && rows.hisData.ok;
+  const rowsPass = rows.budget.ok && rows.compress.ok && rows.hisData.ok && rows.loadBearing.ok && rows.boundary.ok;
   const allPass = tests.every(t => t.exit === 0) && emDash.length === 0 && badImports.length === 0 && rowsPass;
   const verdict = {
     at: new Date().toISOString(), startedAt, node: process.version, command: 'node bench/gate.mjs' + (args.has('--quiet') ? ' --quiet' : ''),
@@ -397,7 +706,7 @@ async function main() {
     assertionsPassed: tests.reduce((a, t) => a + (t.pass || 0), 0), assertionsFailed: tests.reduce((a, t) => a + (t.fail || 0), 0),
     lines: { code: codeLines, prose: proseLines, codeFiles, generated: generatedLines, generatedFiles, byArea: counts },
     emDash, badImports, notes,
-    rows: { budget: rows.budget, compress: rows.compress, hisData: rows.hisData },
+    rows: { budget: rows.budget, compress: rows.compress, hisData: rows.hisData, loadBearing: rows.loadBearing, boundary: rows.boundary },
     verdict: allPass ? 'GREEN' : 'RED',
   };
   mkdirSync(path.join(HERE, 'verdicts'), { recursive: true });
@@ -406,7 +715,10 @@ async function main() {
   console.log(rows.budget.line);
   console.log(rows.compress.line);
   console.log(rows.hisData.line);
-  console.log(`\nGATE ${verdict.verdict}: test files ${verdict.testsPassed}/${verdict.testsTotal}, assertions ${verdict.assertionsPassed} pass / ${verdict.assertionsFailed} fail, authored code lines ${codeLines} in ${codeFiles} files, prose lines ${proseLines}, generated organism lines ${generatedLines} in ${generatedFiles} files, em-dash files ${emDash.length}, bad imports ${badImports.length}, budget ${rows.budget.ok ? 'GREEN' : 'RED'}, compress ${rows.compress.ok ? 'GREEN' : 'RED'}, his data ${rows.hisData.ok ? 'GREEN' : 'RED'}`);
+  console.log(rows.loadBearing.line);
+  console.log(rows.boundary.line);
+  const gr = (r) => (r.ok ? 'GREEN' : 'RED');
+  console.log(`\nGATE ${verdict.verdict}: test files ${verdict.testsPassed}/${verdict.testsTotal}, assertions ${verdict.assertionsPassed} pass / ${verdict.assertionsFailed} fail, authored code lines ${codeLines} in ${codeFiles} files, prose lines ${proseLines}, generated organism lines ${generatedLines} in ${generatedFiles} files, em-dash files ${emDash.length}, bad imports ${badImports.length}, budget ${gr(rows.budget)}, compress ${gr(rows.compress)}, his data ${gr(rows.hisData)}, load-bearing ${gr(rows.loadBearing)}, boundary ${gr(rows.boundary)}`);
   if (emDash.length) console.log('em-dashes in: ' + emDash.join(', '));
   if (badImports.length) console.log('bad imports: ' + badImports.join(', '));
   // gate.json is written above, synchronously, before this line can end the process

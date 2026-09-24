@@ -1,10 +1,17 @@
 {
   "name": "compress",
-  "at": "2026-09-24T02:33:01.810Z",
+  "item": "delta",
+  "board": 12,
+  "at": "2026-09-24T14:55:24.328Z",
   "command": "node --max-old-space-size=6000 bench/compress.mjs",
   "node": "v24.15.0",
   "isTheBar": true,
-  "statement": "A 12 major whole organism (173 cells, 2143 edges) ticked 2000 times and checkpointed at t=2000 as v1 (the JSON checkpoint the writer emitted before this item) in 21812892 bytes and as v2 (the binary container) in 21055888 bytes, 1.036 times smaller; the plain JSON form of the same organism is 53795670 bytes, 2.5549 times v2. v2 wrote in 1985 ms against 2318 ms and restored the whole organism in 1341 ms against 1485 ms. Over a 200 tick lockstep replay with 30 suite questions injected at the ask region, the organism restored from v2 matched the live one on 0 of 200 tick digests (every emitted signal hashed, 18702 of them against 18702 live), gave the same 30 answers on the same ticks; its state at restore differed from the live one in [ledger] (ledger.seq: 700849 vs 700848) and after the replay in [cells, connectome, ledger, gate, stats, extras] (cells.16.policy.priority: 3.681640625 vs 3.617838541666667; cells.18.policy.priority: 3.681640625 vs 3.617838541666667; cells.21.policy.priority: 1.8408203125 vs 1.8089192708333335; connectome.stats.pruned: 15 vs 0; connectome.stats.weakened: 876750 vs 879750; connectome.w: \"J0tAPiLtsT3YToE9cGbUPZm+gz0E5B8/asTAPRIfKD5qXoM9ULr5Pdd8wD1s+gw+wsfTPRo4Qj0r... vs \"J0tAPiLtsT3YToE9cGbUPZm+gz0E5B8/asTAPRIfKD5qXoM9ULr5Pdd8wD1s+gw+wsfTPRo4Qj0r...; ledger.seq: 772659 vs 772628; gate.nextId: 386329 vs 386314; gate.stats.proposed: 386328 vs 386313; gate.stats.approved: 121515 vs 121500; stats.pruned: 15 vs 0; extras.whole.attention.wm.1: \"b8192:ov/BdS7VQL0j4PQ7QwwIp/+PgRiK/D/uAHvXV965LNd/igDq9s8I/wwB7THWAbgbAiiQXw... vs \"b8192:273/mtXKIJTwcGrfJP+OQ31B8qg37LdmMixrK0V8VnuVkKNu8GXXb4SClDpI5B8lDdjYLR...; extras.whole.attention.wm.8: \"b8192:Qf0kOrF5km4tcb8MgyfkWk9fDmRB4pc1hd2pLGtYt0i7VQxRtWMFuuCJZ134isffNBTA5w... vs \"b8192:Af0kOjF5ki4vcbuMgiXkWk9fDmRBYpY1jd2pLWtYt8i7UQxTtWMFusKJZ134CsffNBTA5w...; extras.whole.attention.wm.11: \"b8192:ov/BdibXQL1H4PQ7Qg8Ip/nPgRjD3D/ujHvXR965LNd/igDq5s8I/4gB7jPWATwb4CDQXw... vs \"b8192:273/mtXKIJTwcGrfJP+OQ31B8qg37LdmMixrK0V8VnuVkKNu8GXXb4SClDpI5B8lDdjYLR...). Against the organism restored from v1 it matched on 200 of 200 tick digests and in state section for section (no difference at restore or after the replay). The exact path scored 30 of 30 on the drawn suites, so a score point costs 701862.933 bytes in v2 against 727096.4 in v1.",
+  "statement": "Over 60 s of the daemon bar organism (12 majors, 10000 substrate units, a checkpoint every 1000 ticks), Board 10's full container 2 checkpoints wrote 111952808 bytes over 14000 ticks (7996.629 bytes per tick) and the delta chain 24089056 bytes over 12000 ticks (2007.421 bytes per tick): a fall of 3.9835 times against a bar of 5 (3.2936 times over the 13 checkpoints both arms wrote at the same tick); the chain the daemon left read back over 14 links to the SHA-1 of the document its writer was handed (true). The 12 major organism (173 cells) checkpointed at t=2000 as v2 in 8276512 bytes and as a chain link in 1789824 (9570088 bytes for every file a restore reads); the chain rebuilt v2's document section for section (no difference) and the organism restored from it matched the live one on 200 of 200 tick digests of a 200 tick lockstep replay with 30 suite questions injected (0 mismatches), with the same 30 answers. A score point (30 of 30 on the exact path) costs 59660.8 bytes as the checkpoint the chain wrote, 319002.933 as every file a restore reads, and 275883.733 as a full v2 file; the newest record before this run was 275021.867 (bench/verdicts/compress-rerun.json). The packed tiers: memory.assoc held 4096 title keys in 33554432 bytes as Int8 lanes and 4194304 packed, the episodic store 33554432 and 4194304; on the held-out draw of bench/knowledge.mjs (200 records, seed knowledge-draw-2026-09-23) recall@1 by the hidden sentence went 0.96 to 0.96 (assoc) and 0.895 to 0.895 (episodic), by the title 1 to 1 and 1 to 1, with 0 of 800 answers differing. Bar NOT MET: a 5x fall in checkpoint bytes per tick with identity intact and tier recall unchanged.",
+  "bar": {
+    "ratio": 5,
+    "measured": 3.9835,
+    "met": false
+  },
   "params": {
     "majors": 12,
     "units": 256,
@@ -12,9 +19,385 @@
     "replay": 200,
     "tasks": 10,
     "every": 500,
-    "seed": "compress-12"
+    "seed": "compress-12",
+    "fullEvery": 20,
+    "daemonMajors": 12,
+    "daemonUnits": 10000,
+    "daemonEvery": 1000,
+    "daemonTasks": 1000,
+    "daemonWallMs": 60000,
+    "tierN": 200,
+    "tierKeys": 4096,
+    "tmp": "C:/Users/ybmic/AppData/Local/Temp/claude/C--Users-ybmic-Downloads-claudeskillsvideo-to-website/b20b8e7e-1cf2-4327-8295-4d76361d02e2/scratchpad/bar",
+    "statement": true
   },
-  "freeRamGbAtStart": 46.9,
+  "freeRamGbAtStart": 38.1,
+  "daemon": {
+    "order": [
+      "full",
+      "chain"
+    ],
+    "full": {
+      "kind": "full",
+      "ticks": 14000,
+      "t": 14429,
+      "checkpoints": 16,
+      "checkpointErrors": 0,
+      "lastCheckpointError": null,
+      "bytes": 111952808,
+      "bytesPerTick": 7996.629,
+      "loadMs": 1453,
+      "wallMs": 64676,
+      "series": [
+        {
+          "kind": "built",
+          "t": 0,
+          "done": 0,
+          "bytes": 526656,
+          "link": "container 2",
+          "onDisk": 526656,
+          "sinceLastMs": null
+        },
+        {
+          "kind": "checkpoint",
+          "t": 1014,
+          "done": 1000,
+          "bytes": 3402080,
+          "link": "container 2",
+          "onDisk": 3402080,
+          "sinceLastMs": 3710.2
+        },
+        {
+          "kind": "checkpoint",
+          "t": 2044,
+          "done": 2000,
+          "bytes": 3718856,
+          "link": "container 2",
+          "onDisk": 3718856,
+          "sinceLastMs": 3681.5
+        },
+        {
+          "kind": "checkpoint",
+          "t": 3074,
+          "done": 3000,
+          "bytes": 4217184,
+          "link": "container 2",
+          "onDisk": 4217184,
+          "sinceLastMs": 3779.5
+        },
+        {
+          "kind": "checkpoint",
+          "t": 4104,
+          "done": 4000,
+          "bytes": 4740672,
+          "link": "container 2",
+          "onDisk": 4740672,
+          "sinceLastMs": 3818.8
+        },
+        {
+          "kind": "checkpoint",
+          "t": 5134,
+          "done": 5000,
+          "bytes": 5422800,
+          "link": "container 2",
+          "onDisk": 5422800,
+          "sinceLastMs": 4128.4
+        },
+        {
+          "kind": "checkpoint",
+          "t": 6164,
+          "done": 6000,
+          "bytes": 6138000,
+          "link": "container 2",
+          "onDisk": 6138000,
+          "sinceLastMs": 4233.5
+        },
+        {
+          "kind": "checkpoint",
+          "t": 7194,
+          "done": 7000,
+          "bytes": 6842288,
+          "link": "container 2",
+          "onDisk": 6842288,
+          "sinceLastMs": 4352.1
+        },
+        {
+          "kind": "checkpoint",
+          "t": 8232,
+          "done": 8000,
+          "bytes": 7577752,
+          "link": "container 2",
+          "onDisk": 7577752,
+          "sinceLastMs": 4472.8
+        },
+        {
+          "kind": "checkpoint",
+          "t": 9267,
+          "done": 9000,
+          "bytes": 8278648,
+          "link": "container 2",
+          "onDisk": 8278648,
+          "sinceLastMs": 4467.3
+        },
+        {
+          "kind": "checkpoint",
+          "t": 10282,
+          "done": 10000,
+          "bytes": 8954168,
+          "link": "container 2",
+          "onDisk": 8954168,
+          "sinceLastMs": 4588.2
+        },
+        {
+          "kind": "checkpoint",
+          "t": 11317,
+          "done": 11000,
+          "bytes": 9490848,
+          "link": "container 2",
+          "onDisk": 9490848,
+          "sinceLastMs": 4788
+        },
+        {
+          "kind": "checkpoint",
+          "t": 12352,
+          "done": 12000,
+          "bytes": 10008824,
+          "link": "container 2",
+          "onDisk": 10008824,
+          "sinceLastMs": 4856.6
+        },
+        {
+          "kind": "checkpoint",
+          "t": 13387,
+          "done": 13000,
+          "bytes": 10521056,
+          "link": "container 2",
+          "onDisk": 10521056,
+          "sinceLastMs": 5032
+        },
+        {
+          "kind": "checkpoint",
+          "t": 14429,
+          "done": 14000,
+          "bytes": 11056488,
+          "link": "container 2",
+          "onDisk": 11056488,
+          "sinceLastMs": 5206.6
+        },
+        {
+          "kind": "final",
+          "t": 14429,
+          "done": 14000,
+          "bytes": 11056488,
+          "link": "container 2",
+          "onDisk": 11056488,
+          "sinceLastMs": 1924.4
+        }
+      ],
+      "verify": null,
+      "problems": [],
+      "cells": 298,
+      "edges": 1819,
+      "exchange": {
+        "calls": 16,
+        "errors": []
+      }
+    },
+    "chain": {
+      "kind": "chain",
+      "ticks": 12000,
+      "t": 12352,
+      "checkpoints": 14,
+      "checkpointErrors": 0,
+      "lastCheckpointError": null,
+      "bytes": 24089056,
+      "bytesPerTick": 2007.421,
+      "loadMs": 472,
+      "wallMs": 64076,
+      "series": [
+        {
+          "kind": "built",
+          "t": 0,
+          "done": 0,
+          "bytes": 528384,
+          "link": "full 0",
+          "onDisk": 528384,
+          "sinceLastMs": null
+        },
+        {
+          "kind": "checkpoint",
+          "t": 1014,
+          "done": 1000,
+          "bytes": 2573640,
+          "link": "delta 1",
+          "onDisk": 3100352,
+          "sinceLastMs": 4126.2
+        },
+        {
+          "kind": "checkpoint",
+          "t": 2044,
+          "done": 2000,
+          "bytes": 1879128,
+          "link": "delta 2",
+          "onDisk": 4976976,
+          "sinceLastMs": 4782.5
+        },
+        {
+          "kind": "checkpoint",
+          "t": 3074,
+          "done": 3000,
+          "bytes": 1817160,
+          "link": "delta 3",
+          "onDisk": 6791456,
+          "sinceLastMs": 4901.2
+        },
+        {
+          "kind": "checkpoint",
+          "t": 4104,
+          "done": 4000,
+          "bytes": 1957288,
+          "link": "delta 4",
+          "onDisk": 8745848,
+          "sinceLastMs": 4971.8
+        },
+        {
+          "kind": "checkpoint",
+          "t": 5134,
+          "done": 5000,
+          "bytes": 1973696,
+          "link": "delta 5",
+          "onDisk": 10716416,
+          "sinceLastMs": 5141.8
+        },
+        {
+          "kind": "checkpoint",
+          "t": 6164,
+          "done": 6000,
+          "bytes": 1929040,
+          "link": "delta 6",
+          "onDisk": 12642112,
+          "sinceLastMs": 5202.8
+        },
+        {
+          "kind": "checkpoint",
+          "t": 7194,
+          "done": 7000,
+          "bytes": 1914112,
+          "link": "delta 7",
+          "onDisk": 14552656,
+          "sinceLastMs": 5328.8
+        },
+        {
+          "kind": "checkpoint",
+          "t": 8232,
+          "done": 8000,
+          "bytes": 2020808,
+          "link": "delta 8",
+          "onDisk": 16569680,
+          "sinceLastMs": 5425.7
+        },
+        {
+          "kind": "checkpoint",
+          "t": 9267,
+          "done": 9000,
+          "bytes": 2065432,
+          "link": "delta 9",
+          "onDisk": 18631112,
+          "sinceLastMs": 5289.2
+        },
+        {
+          "kind": "checkpoint",
+          "t": 10282,
+          "done": 10000,
+          "bytes": 1942704,
+          "link": "delta 10",
+          "onDisk": 20569592,
+          "sinceLastMs": 5349.1
+        },
+        {
+          "kind": "checkpoint",
+          "t": 11317,
+          "done": 11000,
+          "bytes": 1751144,
+          "link": "delta 11",
+          "onDisk": 22316600,
+          "sinceLastMs": 5435.9
+        },
+        {
+          "kind": "checkpoint",
+          "t": 12352,
+          "done": 12000,
+          "bytes": 1730312,
+          "link": "delta 12",
+          "onDisk": 24042264,
+          "sinceLastMs": 5499.8
+        },
+        {
+          "kind": "final",
+          "t": 12352,
+          "done": 12000,
+          "bytes": 6208,
+          "link": "delta 13",
+          "onDisk": 24043608,
+          "sinceLastMs": 1290
+        }
+      ],
+      "verify": {
+        "links": 14,
+        "kinds": [
+          "full",
+          "delta",
+          "delta",
+          "delta",
+          "delta",
+          "delta",
+          "delta",
+          "delta",
+          "delta",
+          "delta",
+          "delta",
+          "delta",
+          "delta",
+          "delta"
+        ],
+        "refused": null,
+        "verified": {
+          "docSha1": true
+        },
+        "ms": 673.1,
+        "t": 12352
+      },
+      "problems": [],
+      "cells": 276,
+      "edges": 1797,
+      "exchange": {
+        "calls": 14,
+        "errors": []
+      }
+    },
+    "ratio": 3.9835,
+    "matched": {
+      "ticks": [
+        0,
+        1014,
+        2044,
+        3074,
+        4104,
+        5134,
+        6164,
+        7194,
+        8232,
+        9267,
+        10282,
+        11317,
+        12352
+      ],
+      "count": 13,
+      "fullBytes": 79318776,
+      "chainBytes": 24082848,
+      "ratio": 3.2936
+    }
+  },
   "organism": {
     "majors": 12,
     "units": 256,
@@ -31,11 +414,22 @@
       "lines": 2468,
       "score": 30,
       "of": 30,
-      "v1Bytes": 7811329,
-      "v2Bytes": 6639496,
-      "v1BytesPerScorePoint": 260377.633,
-      "v2BytesPerScorePoint": 221316.533,
-      "headerRuler": 221316.533
+      "v1Bytes": 7851469,
+      "v2Bytes": 3258184,
+      "v1BytesPerScorePoint": 261715.633,
+      "v2BytesPerScorePoint": 108606.133,
+      "headerRuler": 108606.133,
+      "v2WriteMs": 850.5,
+      "chain": {
+        "kind": "full",
+        "seq": 0,
+        "bytes": 3259136,
+        "chainBytes": 3259136,
+        "writeMs": 943.8,
+        "bytesPerScorePoint": 108637.867,
+        "chainBytesPerScorePoint": 108637.867,
+        "sections": null
+      }
     },
     {
       "t": 1000,
@@ -44,11 +438,48 @@
       "lines": 2468,
       "score": 30,
       "of": 30,
-      "v1Bytes": 13224593,
-      "v2Bytes": 11843728,
-      "v1BytesPerScorePoint": 440819.767,
-      "v2BytesPerScorePoint": 394790.933,
-      "headerRuler": 394790.933
+      "v1Bytes": 13373438,
+      "v2Bytes": 5302240,
+      "v1BytesPerScorePoint": 445781.267,
+      "v2BytesPerScorePoint": 176741.333,
+      "headerRuler": 176741.333,
+      "v2WriteMs": 1683.6,
+      "chain": {
+        "kind": "delta",
+        "seq": 1,
+        "bytes": 2578416,
+        "chainBytes": 5836656,
+        "writeMs": 2232.2,
+        "bytesPerScorePoint": 85947.2,
+        "chainBytesPerScorePoint": 194555.2,
+        "sections": [
+          {
+            "name": "slots",
+            "bytes": 14801,
+            "count": 5815,
+            "raw": 25951
+          },
+          {
+            "name": "patch",
+            "bytes": 63942
+          },
+          {
+            "name": "bytes",
+            "bytes": 44215,
+            "raw": 256764
+          },
+          {
+            "name": "words",
+            "bytes": 508430
+          },
+          {
+            "name": "hv.bipolar.8192",
+            "bytes": 1944219,
+            "count": 4944,
+            "raw": 5062656
+          }
+        ]
+      }
     },
     {
       "t": 1500,
@@ -57,11 +488,53 @@
       "lines": 2468,
       "score": 30,
       "of": 30,
-      "v1Bytes": 17266225,
-      "v2Bytes": 16442264,
-      "v1BytesPerScorePoint": 575540.833,
-      "v2BytesPerScorePoint": 548075.467,
-      "headerRuler": 548075.467
+      "v1Bytes": 17456264,
+      "v2Bytes": 6586336,
+      "v1BytesPerScorePoint": 581875.467,
+      "v2BytesPerScorePoint": 219544.533,
+      "headerRuler": 219544.533,
+      "v2WriteMs": 2291.5,
+      "chain": {
+        "kind": "delta",
+        "seq": 2,
+        "bytes": 1946944,
+        "chainBytes": 7782064,
+        "writeMs": 2694.3,
+        "bytesPerScorePoint": 64898.133,
+        "chainBytesPerScorePoint": 259402.133,
+        "sections": [
+          {
+            "name": "slots",
+            "bytes": 14487,
+            "count": 5763,
+            "raw": 25602
+          },
+          {
+            "name": "patch",
+            "bytes": 63186
+          },
+          {
+            "name": "bytes",
+            "bytes": 44388,
+            "raw": 247788
+          },
+          {
+            "name": "words",
+            "bytes": 110872
+          },
+          {
+            "name": "hv.bipolar.8192",
+            "bytes": 1702580,
+            "count": 4908,
+            "raw": 5025792
+          },
+          {
+            "name": "hv.ternary.32768",
+            "bytes": 8192,
+            "count": 1
+          }
+        ]
+      }
     },
     {
       "t": 2000,
@@ -70,11 +543,48 @@
       "lines": 2468,
       "score": 30,
       "of": 30,
-      "v1Bytes": 21812892,
-      "v2Bytes": 21055888,
-      "v1BytesPerScorePoint": 727096.4,
-      "v2BytesPerScorePoint": 701862.933,
-      "headerRuler": 701862.933
+      "v1Bytes": 22001604,
+      "v2Bytes": 8276512,
+      "v1BytesPerScorePoint": 733386.8,
+      "v2BytesPerScorePoint": 275883.733,
+      "headerRuler": 275883.733,
+      "v2WriteMs": 2880.5,
+      "chain": {
+        "kind": "delta",
+        "seq": 3,
+        "bytes": 1789824,
+        "chainBytes": 9570088,
+        "writeMs": 3113.9,
+        "bytesPerScorePoint": 59660.8,
+        "chainBytesPerScorePoint": 319002.933,
+        "sections": [
+          {
+            "name": "slots",
+            "bytes": 10986,
+            "count": 5689,
+            "raw": 28869
+          },
+          {
+            "name": "patch",
+            "bytes": 53979
+          },
+          {
+            "name": "bytes",
+            "bytes": 44323,
+            "raw": 247096
+          },
+          {
+            "name": "words",
+            "bytes": 31588
+          },
+          {
+            "name": "hv.bipolar.8192",
+            "bytes": 1645712,
+            "count": 4839,
+            "raw": 4955136
+          }
+        ]
+      }
     }
   ],
   "checkpoints": {
@@ -82,126 +592,223 @@
       "container": 1,
       "document": 3,
       "table": "format 4",
-      "bytes": 21812892,
-      "writeMs": 2317.8,
-      "readMs": 121.5,
-      "restoreMs": 1485.2,
+      "bytes": 22001604,
+      "writeMs": 2472,
+      "readMs": 101.1,
+      "restoreMs": 1925.5,
       "writeRuns": [
-        2199.8,
-        2322.9,
-        2317.8
+        2472,
+        2471.3,
+        2487.8
       ],
       "restoreRuns": [
-        1485.2,
-        1446.3,
-        1486
+        1961.3,
+        1922.5,
+        1925.5
       ]
     },
     "v1plain": {
       "container": 1,
       "document": 2,
       "table": null,
-      "bytes": 53795670,
-      "writeMs": 1864.9,
-      "readMs": 58.4,
+      "bytes": 70797377,
+      "writeMs": 2097.5,
+      "readMs": 159.6,
       "writeRuns": [
-        1809,
-        1864.9,
-        1915.1
+        2092.8,
+        2097.5,
+        2102.4
       ]
     },
     "v2": {
       "container": 2,
       "document": 3,
-      "bytes": 21055888,
-      "writeMs": 1984.6,
-      "readMs": 51.4,
-      "restoreMs": 1341.4,
+      "bytes": 8276512,
+      "writeMs": 2879.4,
+      "readMs": 199.2,
+      "restoreMs": 2052.4,
       "writeRuns": [
-        1945.3,
-        1984.6,
-        2009.6
+        2894.1,
+        2879.4,
+        2866.3
       ],
       "restoreRuns": [
-        1423.5,
-        1316.8,
-        1341.4
+        2289.1,
+        2006,
+        2052.4
       ],
       "census": {
         "raw": 0,
         "b64": 1733,
         "bipolar": 7,
-        "packed": 19685,
+        "packed": 19377,
         "ternary": 4,
         "typed": 12,
-        "vectorRefs": 19696,
-        "vectorsHeld": 19689
+        "vectorRefs": 19388,
+        "vectorsHeld": 19381
       },
       "sections": [
         {
           "name": "slots",
-          "bytes": 48869,
-          "raw": 94163,
-          "count": 21441
+          "enc": "deflate-raw",
+          "bytes": 49363,
+          "raw": 92623,
+          "count": 21133
         },
         {
           "name": "skeleton",
-          "bytes": 244204,
-          "raw": 2787296,
+          "enc": "deflate-raw-chunks",
+          "bytes": 272363,
+          "raw": 2989136,
           "count": null
         },
         {
           "name": "edges",
+          "enc": "typed",
           "bytes": 99748,
           "raw": null,
           "count": null
         },
         {
           "name": "bytes",
+          "enc": "deflate-raw-chunks",
           "bytes": 477944,
           "raw": 930848,
           "count": null
         },
         {
           "name": "hv.bipolar.8192",
-          "bytes": 20157440,
-          "raw": null,
-          "count": 19685
+          "enc": "xor-rice",
+          "bytes": 7349359,
+          "raw": 19842048,
+          "count": 19377
         },
         {
           "name": "hv.ternary.64",
+          "enc": "ternary-bits",
           "bytes": 16,
           "raw": null,
           "count": 1
         },
         {
           "name": "hv.ternary.65536",
+          "enc": "ternary-bits",
           "bytes": 16384,
           "raw": null,
           "count": 1
         },
         {
           "name": "hv.ternary.32768",
+          "enc": "ternary-bits",
           "bytes": 8192,
           "raw": null,
           "count": 1
         },
         {
           "name": "hv.ternary.692",
+          "enc": "ternary-bits",
           "bytes": 173,
           "raw": null,
           "count": 1
         }
       ]
+    },
+    "chain": {
+      "kind": "delta",
+      "seq": 3,
+      "chain": "cmufnbbpj-9bk-0",
+      "fullEvery": 20,
+      "bytes": 1789824,
+      "bytesOnDisk": 9570088,
+      "files": [
+        {
+          "kind": "full",
+          "seq": 0,
+          "t": 500,
+          "bytes": 3258240
+        },
+        {
+          "kind": "delta",
+          "seq": 1,
+          "t": 1000,
+          "bytes": 2576880
+        },
+        {
+          "kind": "delta",
+          "seq": 2,
+          "t": 1500,
+          "bytes": 1945144
+        },
+        {
+          "kind": "delta",
+          "seq": 3,
+          "t": 2000,
+          "bytes": 1787856
+        }
+      ],
+      "readMs": 353.4,
+      "restoreMs": 2164.8,
+      "restoreRuns": [
+        2180.6,
+        2164.8,
+        2153.5
+      ],
+      "census": {
+        "held": 43390,
+        "raw": 0,
+        "b64": 840,
+        "bipolar": 0,
+        "packed": 4839,
+        "ternary": 0,
+        "sparse": 10,
+        "sparseBytes": 31588,
+        "sparseRaw": 98800,
+        "vectorsNew": 4839,
+        "vectorsHeld": 0
+      },
+      "linkSections": [
+        {
+          "name": "slots",
+          "bytes": 10986,
+          "count": 5689,
+          "raw": 28869
+        },
+        {
+          "name": "patch",
+          "bytes": 53979
+        },
+        {
+          "name": "bytes",
+          "bytes": 44323,
+          "raw": 247096
+        },
+        {
+          "name": "words",
+          "bytes": 31588
+        },
+        {
+          "name": "hv.bipolar.8192",
+          "bytes": 1645712,
+          "count": 4839,
+          "raw": 4955136
+        }
+      ],
+      "verified": {
+        "docSha1": true
+      },
+      "links": 4
     }
   },
   "ratio": {
-    "v1_over_v2": 1.036,
-    "v1plain_over_v2": 2.5549
+    "v1_over_v2": 2.6583,
+    "v1plain_over_v2": 8.554,
+    "v2_over_chainLink": 4.6242,
+    "v2_over_chainOnDisk": 0.8648
   },
   "documentsDiffer": {
     "v2_v1": [],
-    "v2_v1plain": []
+    "v2_v1plain": [],
+    "chain_v2": []
   },
   "ruler": {
     "score": 30,
@@ -210,9 +817,11 @@
     "generatedLines": 2468,
     "cells": 173,
     "bytesPerScorePoint": {
-      "v1": 727096.4,
-      "v1plain": 1793189,
-      "v2": 701862.933
+      "v1": 733386.8,
+      "v1plain": 2359912.567,
+      "v2": 275883.733,
+      "chain": 59660.8,
+      "chainOnDisk": 319002.933
     },
     "v2Header": {
       "score": 30,
@@ -221,8 +830,29 @@
       "lines": 2468,
       "cells": 173,
       "t": 2000,
-      "bytes": 21055888,
-      "bytesPerScorePoint": 701862.933
+      "bytes": 1789824,
+      "chainBytes": 9570088,
+      "bytesPerScorePoint": 59660.8,
+      "chainBytesPerScorePoint": 319002.933,
+      "bytesMeans": "the bytes this checkpoint wrote: one delta link of the chain plus its head; chainBytes (and chainBytesPerScorePoint) is every file a restore reads"
+    },
+    "fullHeader": {
+      "score": 30,
+      "of": 30,
+      "draw": "10 per suite of algebra, sequence, grid, bench/answer.mjs buildQuestions, exact path",
+      "lines": 2468,
+      "cells": 173,
+      "t": 2000,
+      "bytes": 8276512,
+      "bytesPerScorePoint": 275883.733
+    },
+    "previousRecord": {
+      "file": "bench/verdicts/compress-rerun.json",
+      "at": "2026-09-24T03:07:56.719Z",
+      "bytesPerScorePoint": 275021.867,
+      "score": 30,
+      "of": 30,
+      "bytes": 8250656
     }
   },
   "replay": {
@@ -233,107 +863,99 @@
       "sequence": 10,
       "grid": 10
     },
-    "ms": 24744.7,
+    "ms": 90798.4,
     "wallTime": "Date.now held to one value per lockstep tick, the same for every organism",
     "identicalTicks": {
       "v2_live": {
-        "same": 0,
+        "same": 200,
         "of": 200,
-        "first": 0
+        "first": -1,
+        "mismatches": 0
       },
       "v1_live": {
-        "same": 0,
+        "same": 200,
         "of": 200,
-        "first": 0
+        "first": -1,
+        "mismatches": 0
       },
       "v2_v1": {
         "same": 200,
         "of": 200,
-        "first": -1
+        "first": -1,
+        "mismatches": 0
+      },
+      "chain_live": {
+        "same": 200,
+        "of": 200,
+        "first": -1,
+        "mismatches": 0
+      },
+      "chain_v2": {
+        "same": 200,
+        "of": 200,
+        "first": -1,
+        "mismatches": 0
       }
     },
     "firstSplit": {
-      "v2": {
-        "tick": 0,
-        "emission": 98,
-        "restored": null,
-        "live": null
-      },
-      "v1": {
-        "tick": 0,
-        "emission": 98,
-        "restored": null,
-        "live": null
-      }
+      "chain": null,
+      "v2": null,
+      "v1": null
     },
     "signalsEmitted": {
       "live": 18702,
       "v2": 18702,
-      "v1": 18702
+      "v1": 18702,
+      "chain": 18702
     },
     "identicalAnswers": {
       "v2_live": true,
       "v1_live": true,
-      "v2_v1": true
+      "v2_v1": true,
+      "chain_live": true
     },
     "answers": {
       "live": 30,
       "v2": 30,
-      "v1": 30
+      "v1": 30,
+      "chain": 30
     },
     "endStateDiffers": {
       "v2_live": [
-        "cells",
-        "connectome",
         "ledger",
-        "gate",
-        "stats",
         "extras"
       ],
       "v1_live": [
-        "cells",
-        "connectome",
         "ledger",
-        "gate",
-        "stats",
         "extras"
       ],
-      "v2_v1": []
+      "v2_v1": [],
+      "chain_live": [
+        "ledger"
+      ],
+      "chain_v2": [
+        "extras"
+      ]
     },
     "endStatePaths": {
       "v2_live": [
-        "cells.16.policy.priority: 3.681640625 vs 3.617838541666667",
-        "cells.18.policy.priority: 3.681640625 vs 3.617838541666667",
-        "cells.21.policy.priority: 1.8408203125 vs 1.8089192708333335",
-        "connectome.stats.pruned: 15 vs 0",
-        "connectome.stats.weakened: 876750 vs 879750",
-        "connectome.w: \"J0tAPiLtsT3YToE9cGbUPZm+gz0E5B8/asTAPRIfKD5qXoM9ULr5Pdd8wD1s+gw+wsfTPRo4Qj0r... vs \"J0tAPiLtsT3YToE9cGbUPZm+gz0E5B8/asTAPRIfKD5qXoM9ULr5Pdd8wD1s+gw+wsfTPRo4Qj0r...",
-        "ledger.seq: 772659 vs 772628",
-        "gate.nextId: 386329 vs 386314",
-        "gate.stats.proposed: 386328 vs 386313",
-        "gate.stats.approved: 121515 vs 121500",
-        "stats.pruned: 15 vs 0",
-        "extras.whole.attention.wm.1: \"b8192:ov/BdS7VQL0j4PQ7QwwIp/+PgRiK/D/uAHvXV965LNd/igDq9s8I/wwB7THWAbgbAiiQXw... vs \"b8192:273/mtXKIJTwcGrfJP+OQ31B8qg37LdmMixrK0V8VnuVkKNu8GXXb4SClDpI5B8lDdjYLR...",
-        "extras.whole.attention.wm.8: \"b8192:Qf0kOrF5km4tcb8MgyfkWk9fDmRB4pc1hd2pLGtYt0i7VQxRtWMFuuCJZ134isffNBTA5w... vs \"b8192:Af0kOjF5ki4vcbuMgiXkWk9fDmRBYpY1jd2pLWtYt8i7UQxTtWMFusKJZ134CsffNBTA5w...",
-        "extras.whole.attention.wm.11: \"b8192:ov/BdibXQL1H4PQ7Qg8Ip/nPgRjD3D/ujHvXR965LNd/igDq5s8I/4gB7jPWATwb4CDQXw... vs \"b8192:273/mtXKIJTwcGrfJP+OQ31B8qg37LdmMixrK0V8VnuVkKNu8GXXb4SClDpI5B8lDdjYLR..."
+        "ledger.seq: 772629 vs 772628",
+        "extras.whole.attention.stats.raised: 789 vs 793",
+        "extras.whole.attention.stats.lowered: 720 vs 716"
       ],
       "v1_live": [
-        "cells.16.policy.priority: 3.681640625 vs 3.617838541666667",
-        "cells.18.policy.priority: 3.681640625 vs 3.617838541666667",
-        "cells.21.policy.priority: 1.8408203125 vs 1.8089192708333335",
-        "connectome.stats.pruned: 15 vs 0",
-        "connectome.stats.weakened: 876750 vs 879750",
-        "connectome.w: \"J0tAPiLtsT3YToE9cGbUPZm+gz0E5B8/asTAPRIfKD5qXoM9ULr5Pdd8wD1s+gw+wsfTPRo4Qj0r... vs \"J0tAPiLtsT3YToE9cGbUPZm+gz0E5B8/asTAPRIfKD5qXoM9ULr5Pdd8wD1s+gw+wsfTPRo4Qj0r...",
-        "ledger.seq: 772659 vs 772628",
-        "gate.nextId: 386329 vs 386314",
-        "gate.stats.proposed: 386328 vs 386313",
-        "gate.stats.approved: 121515 vs 121500",
-        "stats.pruned: 15 vs 0",
-        "extras.whole.attention.wm.1: \"b8192:ov/BdS7VQL0j4PQ7QwwIp/+PgRiK/D/uAHvXV965LNd/igDq9s8I/wwB7THWAbgbAiiQXw... vs \"b8192:273/mtXKIJTwcGrfJP+OQ31B8qg37LdmMixrK0V8VnuVkKNu8GXXb4SClDpI5B8lDdjYLR...",
-        "extras.whole.attention.wm.8: \"b8192:Qf0kOrF5km4tcb8MgyfkWk9fDmRB4pc1hd2pLGtYt0i7VQxRtWMFuuCJZ134isffNBTA5w... vs \"b8192:Af0kOjF5ki4vcbuMgiXkWk9fDmRBYpY1jd2pLWtYt8i7UQxTtWMFusKJZ134CsffNBTA5w...",
-        "extras.whole.attention.wm.11: \"b8192:ov/BdibXQL1H4PQ7Qg8Ip/nPgRjD3D/ujHvXR965LNd/igDq5s8I/4gB7jPWATwb4CDQXw... vs \"b8192:273/mtXKIJTwcGrfJP+OQ31B8qg37LdmMixrK0V8VnuVkKNu8GXXb4SClDpI5B8lDdjYLR..."
+        "ledger.seq: 772629 vs 772628",
+        "extras.whole.attention.stats.raised: 789 vs 793",
+        "extras.whole.attention.stats.lowered: 720 vs 716"
       ],
-      "v2_v1": []
+      "v2_v1": [],
+      "chain_live": [
+        "ledger.seq: 772629 vs 772628"
+      ],
+      "chain_v2": [
+        "extras.whole.attention.stats.raised: 793 vs 789",
+        "extras.whole.attention.stats.lowered: 716 vs 720"
+      ]
     },
     "atRestoreDiffers": {
       "v2_live": [
@@ -342,7 +964,11 @@
       "v1_live": [
         "ledger"
       ],
-      "v2_v1": []
+      "v2_v1": [],
+      "chain_live": [
+        "ledger"
+      ],
+      "chain_v2": []
     },
     "atRestorePaths": {
       "v2_live": [
@@ -351,21 +977,133 @@
       "v1_live": [
         "ledger.seq: 700849 vs 700848"
       ],
-      "v2_v1": []
+      "v2_v1": [],
+      "chain_live": [
+        "ledger.seq: 700849 vs 700848"
+      ],
+      "chain_v2": []
     }
   },
   "scoresAfterReplay": {
     "live": 30,
     "v2": 30,
     "v1": 30,
+    "chain": 30,
     "of": 30
   },
-  "met": {
-    "replayIdenticalV2": false,
-    "replayIdenticalV1": false,
-    "v2EqualsV1": true,
-    "smaller": true
+  "identity": {
+    "chain": true,
+    "v2": true,
+    "v1": true,
+    "chainDocEqualsV2": true,
+    "chainStateEqualsV2": false
   },
-  "peakRssMb": 1861,
-  "wallMs": 163780
+  "tiers": {
+    "draw": {
+      "seed": "knowledge-draw-2026-09-23",
+      "pool": 628,
+      "n": 200,
+      "store": "bench/fixtures/wiki/store"
+    },
+    "keys": 4096,
+    "skippedKeys": 0,
+    "lanes": 8192,
+    "buildMs": 658.4,
+    "tiers": {
+      "assoc": {
+        "capacity": 4096,
+        "threshold": 0.15,
+        "held": 4096,
+        "heldPacked": 4096,
+        "before": {
+          "keyBytes": 33554432,
+          "insertMs": 12.5,
+          "title": {
+            "recall1": 1,
+            "msPerQuery": 3.7005
+          },
+          "sentence": {
+            "recall1": 0.96,
+            "msPerQuery": 3.7592
+          }
+        },
+        "after": {
+          "keyBytes": 4194304,
+          "insertMs": 214,
+          "title": {
+            "recall1": 1,
+            "msPerQuery": 1.3073
+          },
+          "sentence": {
+            "recall1": 0.96,
+            "msPerQuery": 1.2516
+          }
+        },
+        "differ": {
+          "title": 0,
+          "sentence": 0
+        }
+      },
+      "episodic": {
+        "held": 4096,
+        "heldPacked": 4096,
+        "rescore": 64,
+        "before": {
+          "keyBytes": 33554432,
+          "keyBytesAllocated": 33554432,
+          "insertMs": 17.6,
+          "title": {
+            "recall1": 1,
+            "msPerQuery": 0.108
+          },
+          "sentence": {
+            "recall1": 0.895,
+            "msPerQuery": 0.0972
+          }
+        },
+        "after": {
+          "keyBytes": 4194304,
+          "keyBytesAllocated": 4194304,
+          "insertMs": 111,
+          "title": {
+            "recall1": 1,
+            "msPerQuery": 0.121
+          },
+          "sentence": {
+            "recall1": 0.895,
+            "msPerQuery": 0.111
+          }
+        },
+        "differ": {
+          "title": 0,
+          "sentence": 0
+        }
+      }
+    },
+    "notPacked": {
+      "semantic": "its cleanup (memory/semantic.mjs) iterates on lane values, so its patterns stay Int8",
+      "knowledge": "already compares 256 bit title signatures (memory/knowledge.mjs SIG_BITS)"
+    },
+    "recallUnchanged": true
+  },
+  "met": {
+    "ratio": false,
+    "chainVerified": true,
+    "replayIdenticalChain": true,
+    "chainDocEqualsV2": true,
+    "recallUnchanged": true,
+    "bytesPerScorePointFell": true,
+    "belowPreviousRecord": true,
+    "bar": false
+  },
+  "replaces": {
+    "file": "bench/verdicts/compress.json",
+    "at": "2026-09-24T02:33:01.810Z",
+    "keptAs": "bench/verdicts/compress-board10.json"
+  },
+  "writtenBytes": 1104512638,
+  "peakRssMb": 4243,
+  "sampledPeakRssMb": 4215,
+  "wallMs": 513982,
+  "models": "none: the exact path (provider null) and the daemon arms call no model"
 }

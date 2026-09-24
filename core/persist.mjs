@@ -9,6 +9,9 @@
 import { openSync, writeSync, closeSync, renameSync, unlinkSync, existsSync, readSync, fstatSync } from 'node:fs';
 import { deflateRawSync, inflateRawSync } from 'node:zlib';
 import { crc32, packBipolarBits, packTernaryBits, bipolarBytes, ternaryBytes, xorRiceEncode, xorRiceDecode, XOR_RICE_WINDOW } from './pack.mjs';
+// Delta checkpoints (Board 12, item delta). The import is circular on purpose and safe: neither
+// module touches the other's bindings while it is being evaluated, only inside functions.
+import { deltaPolicyFor, writeChain, isChainHead, readChainHeaderBuffer, readChainBuffer } from './checkpoint-delta.mjs';
 
 const CHUNK = 1 << 22; // characters of pending text before one write to the descriptor
 
@@ -68,8 +71,8 @@ const PAYLOAD_RE = /^[A-Za-z0-9+/=:]+$/;
 // with '~' is written with one more '~' in front, and the reader strips exactly one, so an
 // ORIGINAL string of the shape "~b12" round trips instead of being read back as blob 12. That
 // escape is what makes the reference unambiguous rather than merely improbable.
-function valueOut(v, table) {
-  if (v.length >= BLOB_MIN && PAYLOAD_RE.test(v)) return '"' + REF + table.add(v) + '"';
+function valueOut(v, table, stack = null) {
+  if (v.length >= BLOB_MIN && PAYLOAD_RE.test(v)) return '"' + REF + table.add(v, stack) + '"';
   if (v.charCodeAt(0) === 126) return JSON.stringify('~' + v); // 126 is '~'
   return JSON.stringify(v);
 }
@@ -272,8 +275,11 @@ function emitInterned(obj, put, version) {
 // Element by element the whole way down: unlike emit() above there is no JSON.stringify
 // shortcut for a small subtree, because a payload string buried in one would never be seen.
 // The cost of that is measured as writeMs in bench/verdicts/checkpoint.json.
-function walkInterned(v, put, table) {
-  if (typeof v === 'string') { put(valueOut(v, table)); return; }
+// `stack`, when given, holds the path to the value being written (keys and indices), so a table
+// can see WHERE a payload sits: core/checkpoint-delta.mjs codes a changed payload against the one
+// that sat at the same path in the checkpoint before. Without it the walk is exactly as it was.
+function walkInterned(v, put, table, stack = null) {
+  if (typeof v === 'string') { put(valueOut(v, table, stack)); return; }
   const container = v !== null && typeof v === 'object' && typeof v.toJSON !== 'function' && !ArrayBuffer.isView(v);
   if (!container) { const s = JSON.stringify(v); put(s === undefined ? 'null' : s); return; }
   if (Array.isArray(v)) {
@@ -281,7 +287,9 @@ function walkInterned(v, put, table) {
     for (let i = 0; i < v.length; i++) {
       if (i) put(',');
       const x = v[i];
-      if (x === undefined || typeof x === 'function') put('null'); else walkInterned(x, put, table);
+      if (x === undefined || typeof x === 'function') put('null');
+      else if (stack) { stack.push(i); walkInterned(x, put, table, stack); stack.pop(); }
+      else walkInterned(x, put, table, null);
     }
     put(']');
     return;
@@ -293,7 +301,8 @@ function walkInterned(v, put, table) {
     if (x === undefined || typeof x === 'function') continue;
     put((first ? '' : ',') + JSON.stringify(k) + ':');
     first = false;
-    walkInterned(x, put, table);
+    if (stack) { stack.push(k); walkInterned(x, put, table, stack); stack.pop(); }
+    else walkInterned(x, put, table, null);
   }
   put('}');
 }
@@ -371,6 +380,9 @@ export function readJSONStreamed(file, { limit = SLICE, chunk = 1 << 30 } = {}) 
   // comes back as the same document a JSON file would have held, so every consumer that reads
   // through here (Brain.restore, cli/ops.mjs diffSnapshots, tools/lib.mjs) reads both.
   if (isCheckpoint(buf)) return readCheckpointBuffer(buf, { limit, file }).doc;
+  // A delta chain head (core/checkpoint-delta.mjs) replays its full checkpoint and every delta
+  // after it, each verified, into the same document.
+  if (isChainHead(buf)) return readChainBuffer(buf, { limit, file }).doc;
   // A format 1 or format 2 document carries no blob table and comes back untouched, which is
   // what lets a file the old code wrote (the soak of 2026-09-18 writes one every checkpoint)
   // restore under this reader.
@@ -650,21 +662,38 @@ const r3 = (x) => Math.round(x * 1000) / 1000;
  *   hv: 'xor-rice' (default) or 'bits', how the bipolar vector sections are stored
  * @returns {{ file: string, bytes: number, header: object }}
  */
-export function writeCheckpoint(file, doc, { ruler = null, hv = 'xor-rice' } = {}) {
+// With a delta policy on the file's directory (core/checkpoint-delta.mjs setDeltaPolicy, the
+// BRAIN_CHECKPOINT_DELTA environment variable or the --checkpoint-delta flag), the same call writes
+// a link of a delta chain instead, and returns the chain head's header in `header`: `bytes` is
+// then what THIS checkpoint wrote. `chain: false` forces a plain container 2 file.
+export function writeCheckpoint(file, doc, { ruler = null, hv = 'xor-rice', chain = true } = {}) {
   if (doc === null || typeof doc !== 'object' || Array.isArray(doc)) throw new TypeError('writeCheckpoint: the document must be a plain object');
   if (!HV_ENCODINGS.includes(hv)) throw new RangeError('writeCheckpoint: hv must be one of ' + HV_ENCODINGS.join(', ') + ', got ' + hv);
+  if (chain) { const policy = deltaPolicyFor(file); if (policy) return writeChain(file, doc, { ruler, hv, policy }); }
   const table = new SlotTable();
+  registerColumns(doc, table);
+  return assembleCheckpoint(file, doc, table, skeletonOf(doc, table), { ruler, hv });
+}
+function registerColumns(doc, table) {
   for (const [name, cols] of Object.entries(EDGE_COLUMNS)) {
     const o = doc[name];
     if (o && typeof o === 'object') for (const [k, dtype] of cols) table.column(o[k], name + '.' + k, dtype);
   }
-  // the skeleton, deflated a chunk at a time as the walk produces it: no single string past SKEL_CHUNK
-  const skel = [];
+}
+// the skeleton, deflated a chunk at a time as the walk produces it: no single string past
+// SKEL_CHUNK. `keep` also hands back the raw text (a delta chain diffs the next one against it).
+function skeletonOf(doc, table, { stack = null, keep = false } = {}) {
+  const chunks = [], raws = [];
   let parts = [], size = 0;
-  const flush = () => { if (!parts.length) return; const raw = Buffer.from(parts.join(''), 'utf8'); skel.push({ d: deflateRawSync(raw, { level: 6 }), raw: raw.length }); parts = []; size = 0; };
-  walkInterned(doc, (s) => { parts.push(s); size += s.length; if (size >= SKEL_CHUNK) flush(); }, table);
+  const flush = () => { if (!parts.length) return; const raw = Buffer.from(parts.join(''), 'utf8'); if (keep) raws.push(raw); chunks.push({ d: deflateRawSync(raw, { level: 6 }), raw: raw.length }); parts = []; size = 0; };
+  walkInterned(doc, (s) => { parts.push(s); size += s.length; if (size >= SKEL_CHUNK) flush(); }, table, stack);
   flush();
-
+  return { chunks, text: keep ? (raws.length === 1 ? raws[0] : Buffer.concat(raws)) : null };
+}
+// The sections, the header and the atomic write of a container 2 file, from a filled table.
+// `extra` rides in the header as `chain` (a chain's full checkpoint names its chain there).
+function assembleCheckpoint(file, doc, table, skeleton, { ruler = null, hv = 'xor-rice', extra = null } = {}) {
+  const skel = skeleton.chunks;
   const sections = [];
   const slotsRaw = table.recs.buffer();
   sections.push({ name: 'slots', enc: 'deflate-raw', stored: deflateRawSync(slotsRaw, { level: 6 }), raw: slotsRaw.length, count: table.count });
@@ -693,6 +722,7 @@ export function writeCheckpoint(file, doc, { ruler = null, hv = 'xor-rice' } = {
     cells: Array.isArray(doc.cells) ? doc.cells.length : null,
     edges: doc.connectome && Number.isFinite(doc.connectome.n) ? doc.connectome.n : null,
     bytes: 0, ruler: null, slots: table.count, census: table.census,
+    ...(extra ? { chain: extra } : {}),
     sections: sections.map(({ stored, ...rest }) => rest),
   };
   // The header states the size of the file it opens, and bytesPerScorePoint depends on that
@@ -762,12 +792,15 @@ export function readCheckpointHeader(file) {
   const fd = openSync(file, 'r');
   try {
     const pre = Buffer.alloc(CKPT_PRE);
-    if (readSync(fd, pre, 0, CKPT_PRE, 0) < CKPT_PRE || !isCheckpoint(pre)) return null;
+    if (readSync(fd, pre, 0, CKPT_PRE, 0) < CKPT_PRE) return null;
+    const head = isChainHead(pre);
+    if (!head && !isCheckpoint(pre)) return null;
     const H = pre.readUInt32LE(8);
     const both = Buffer.alloc(CKPT_PRE + H);
     pre.copy(both);
     if (readSync(fd, both, CKPT_PRE, H, CKPT_PRE) < H) throw new Error('checkpoint ' + file + ': short header');
-    return headerOf(both, file).header;
+    // a delta chain head: its header carries the ruler and `bytes` (what that checkpoint wrote)
+    return head ? readChainHeaderBuffer(both, file) : headerOf(both, file).header;
   } finally { closeSync(fd); }
 }
 
@@ -791,6 +824,20 @@ function inflateChunks(stored, chunks, raw, name, file) {
  * @returns {{ doc: object, header: object }}
  */
 export function readCheckpointBuffer(buf, { limit = SLICE, file = 'checkpoint' } = {}) {
+  if (isChainHead(buf)) return readChainBuffer(buf, { limit, file });
+  const { header, strings, text } = readCheckpointParts(buf, { file });
+  return { doc: unref(parseSkeleton(text, limit, file), strings), header };
+}
+// the skeleton text into its JSON value: one JSON.parse under `limit`, the streamed parser above it
+function parseSkeleton(text, limit, file = 'checkpoint') {
+  if (text.length <= limit) return JSON.parse(text.toString('utf8'));
+  const [value, end] = parseAt(text, ws(text, 0), limit);
+  if (ws(text, end) !== text.length) throw new SyntaxError('checkpoint ' + file + ': trailing bytes after the skeleton at ' + end);
+  return value;
+}
+// Every section verified and decoded: the header, every slot as its string, the vector and byte
+// sections by id, and the skeleton text. core/checkpoint-delta.mjs starts a chain from this.
+function readCheckpointParts(buf, { file = 'checkpoint' } = {}) {
   const { header, bodyAt } = headerOf(buf, file);
   if (header.bytes !== buf.length) throw new Error('checkpoint ' + file + ': the header says ' + header.bytes + ' bytes and the file holds ' + buf.length + '; refusing a truncated or extended checkpoint');
   const got = {};
@@ -832,14 +879,7 @@ export function readCheckpointBuffer(buf, { limit = SLICE, file = 'checkpoint' }
   }
   if (k !== strings.length) throw new Error('checkpoint ' + file + ': ' + k + ' slot records for a declared ' + strings.length);
   const text = inflateChunks(skelSec.stored, skelSec.s.chunks, skelSec.s.raw, 'skeleton', file);
-  let doc;
-  if (text.length <= limit) doc = JSON.parse(text.toString('utf8'));
-  else {
-    const [value, end] = parseAt(text, ws(text, 0), limit);
-    if (ws(text, end) !== text.length) throw new SyntaxError('trailing bytes after the skeleton at ' + end);
-    doc = value;
-  }
-  return { doc: unref(doc, strings), header };
+  return { header, strings, byId, text };
 }
 // an xor-rice section back into its store of packed vectors, checked end to end: the decoded
 // bytes must be exactly as long as, and have the CRC32 of, the store the writer coded
@@ -861,5 +901,15 @@ function unpackTernaryAsBytes(bits, n, at) {
   }
   return out;
 }
-/** Read a container 2 checkpoint file: the document and its header. */
+/** Read a container 2 checkpoint file (or a delta chain head): the document and its header. */
 export function readCheckpoint(file, opts = {}) { return readCheckpointBuffer(readAll(file, 1 << 30), { ...opts, file }); }
+
+// For core/checkpoint-delta.mjs only: the pieces a chain's files are built from and read with,
+// so a full checkpoint in a chain is byte for byte the container 2 file this module writes and
+// a delta's slot records mean exactly what a container 2 file's do.
+export const CHECKPOINT_INTERNALS = Object.freeze({
+  SlotTable, Parts, walkInterned, emit, registerColumns, skeletonOf, assembleCheckpoint, readCheckpointParts, parseSkeleton,
+  unref, readAll, headerOf, recordOf, readVarint, canonicalBytes, allBipolar, allTernaryBytes, deflateChunks, inflateChunks,
+  unpackBipolar, unpackTernaryAsBytes, BLOB_MIN, PAYLOAD_RE, PACKED_PREFIX_RE, SLICE, CKPT_PRE, BYTES_CHUNK,
+  S_RAW, S_B64, S_BIPOLAR, S_PACKED, S_TERNARY, SEC_BYTES, SEC_EDGES,
+});

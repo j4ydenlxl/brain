@@ -43,6 +43,12 @@
 // Each row rides in the checkpoint header (core/persist.mjs readCheckpointHeader) and in
 // state/<name>/ruler.jsonl with its wall time, tick, scores and bytes, so every printed rate
 // is reproducible from disk (readRuler + rulerRates below).
+//
+// THE EXCHANGE HOOK (his P15, daemon/multiply.mjs). opts.onCheckpoint, when a function, is
+// called after every checkpoint (kinds built, checkpoint, final) has been written, with
+// { kind, t, done, bytes, dir, name }. daemon/multiply.mjs uses it to trade plane elites with
+// the other instances of a population at every checkpoint. A throw is counted in the payload's
+// exchange.errors and never stops the organism; opts.instance (an id) rides in the payload.
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync, rmSync, statSync, appendFileSync, renameSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -472,6 +478,9 @@ export async function live(opts = {}) {
   const startRows = timescaleReport(brain);
   const startRuns = new Map(brain.cells.map((c) => [c.id, { runs: c.stats.runs, fired: c.stats.fired }]));
   let checkpoints = 0, checkpointErrors = 0, lastCheckpointError = null, checkpointBytes = 0, lastCheckpointBytes = 0;
+  // the exchange hook (daemon/multiply.mjs): called after each checkpoint lands, never fatal
+  const exchangeHook = typeof opts.onCheckpoint === 'function' ? opts.onCheckpoint : null;
+  const exchange = { calls: 0, errors: [] };
 
   // ------------------------------------------------ the loop's modules, state and ruler
   const M = loopOn || rulerOn ? await loopModules() : null;
@@ -552,6 +561,10 @@ export async function live(opts = {}) {
     const ck = checkpoint(brain, L, name, { ...extra, daemon: row ? { k: row.k, run: row.run, loop: { mode: loop.mode, ingestCursor: loop.ingest.cursor } } : undefined }, { ruler: headerRow });
     checkpointBytes += ck.bytes; lastCheckpointBytes = ck.bytes;
     if (row) finishRow(row, ck);
+    if (exchangeHook) {
+      try { exchangeHook({ kind, t: brain.clock.t, done: runner ? runner.state.done : 0, bytes: ck.bytes, dir: L.dir, name }); exchange.calls++; }
+      catch (e) { exchange.errors.push(kind + ' t=' + brain.clock.t + ': ' + firstLine(e)); if (exchange.errors.length > 16) exchange.errors.shift(); }
+    }
     return ck;
   };
 
@@ -866,6 +879,7 @@ export async function live(opts = {}) {
     } : null,
     ruler: rulerOn ? { file: rulerFile, run: runId, rows: thisRun.length, first: thisRun[0] || null, last: thisRun[thisRun.length - 1] || null, rates: rulerRates(thisRun), plateau: plateau.state(), ms: r3(ruler.ms), errors: ruler.errors } : null,
     control: controlInfo, snapshot: L.snapshot, dir: L.dir, summary: jsonSafe(brain.summary()),
+    instance: opts.instance || null, exchange: exchangeHook ? { calls: exchange.calls, errors: exchange.errors } : null,
   };
   return payload;
 }

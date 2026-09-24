@@ -15,6 +15,10 @@
 //   <state>/<name>/snapshot.json   the checkpoint itself (bytes, mtime)
 //   <state>/instances.json         one row per serve.mjs, heartbeat every minute
 //   bench/verdicts/ladder.json     the ladder series ($BRAIN_LADDER_SERIES overrides)
+//   <state>/<name>/multiply.json   a population instance's status (daemon/multiply.mjs), once a
+//                                  second: its id, duplications made, elites imported and
+//                                  exported, and <popDir>, whose instances/<id>.json heartbeats
+//                                  give instances alive (fresh within 10 s, pid alive, not ended)
 //
 // It imports node builtins only, so it cannot reach into a live organism by accident; a test
 // holds that line.
@@ -31,6 +35,8 @@ export const ROOT = path.resolve(HERE, '..');
 export const DEFAULT_SERIES = path.join(ROOT, 'bench', 'verdicts', 'ladder.json');
 export const ALIVE_WINDOW_MS = 150_000; // bin/serve.mjs heartbeats every 60 s
 export const SEED_RE = /^[0-9]{1,9}$/;
+/** A population instance heartbeats every second; one older than this is not alive. */
+export const POP_ALIVE_MS = 10_000;
 
 const readJson = (file) => { try { return JSON.parse(readFileSync(file, 'utf8')); } catch { return null; } };
 const statOf = (file) => { try { return statSync(file); } catch { return null; } };
@@ -70,6 +76,28 @@ export function lastLadderRow(seriesFile = DEFAULT_SERIES) {
   };
 }
 
+const pidAlive = (pid) => { if (!(Number.isInteger(pid) && pid > 0)) return false; try { process.kill(pid, 0); return true; } catch (e) { return !!(e && e.code === 'EPERM'); } };
+
+/**
+ * The instances of a population (daemon/multiply.mjs) alive at atMs: a heartbeat file
+ * <popDir>/instances/<id>.json written within POP_ALIVE_MS, not marked ended, whose pid answers.
+ * @returns {{ alive: number, ids: string[] }}
+ */
+export function populationAlive(popDir, { atMs = Date.now(), windowMs = POP_ALIVE_MS, checkPid = true } = {}) {
+  let names;
+  try { names = readdirSync(path.join(popDir, 'instances')); } catch { return { alive: 0, ids: [] }; }
+  const ids = [];
+  for (const n of names) {
+    if (!n.endsWith('.json')) continue;
+    const r = readJson(path.join(popDir, 'instances', n));
+    if (!r || r.ended || !Number.isFinite(r.atMs) || atMs - r.atMs > windowMs) continue;
+    if (checkPid && !pidAlive(r.pid)) continue;
+    ids.push(String(r.id));
+  }
+  ids.sort();
+  return { alive: ids.length, ids };
+}
+
 /** Everything /health returns, from disk, at `atMs`. */
 export function readHealth({ stateDir, name = 'cloud', seriesFile = process.env.BRAIN_LADDER_SERIES || DEFAULT_SERIES, atMs = Date.now() } = {}) {
   const brainDir = path.join(stateDir, name);
@@ -81,21 +109,26 @@ export function readHealth({ stateDir, name = 'cloud', seriesFile = process.env.
   const ladder = lastLadderRow(seriesFile);
   const updatedAgeS = serve && serve.updatedAt ? round1((atMs - Date.parse(serve.updatedAt)) / 1000) : null;
   const child = serve && serve.child;
+  // a population instance (daemon/multiply.mjs) has no serve.json: its own status file says it runs
+  const mult = readJson(path.join(brainDir, 'multiply.json'));
+  const multAgeS = mult && mult.updatedAt ? round1((atMs - Date.parse(mult.updatedAt)) / 1000) : null;
+  const multOk = Boolean(mult && multAgeS !== null && multAgeS * 1000 < POP_ALIVE_MS && mult.pid && !mult.ended);
+  const pop = mult && mult.popDir ? populationAlive(mult.popDir, { atMs }) : null;
   return {
     // alive: the supervisor wrote in the last 30 s and a daemon runs (or the 04:00 ladder holds it)
-    ok: Boolean(serve && updatedAgeS !== null && updatedAgeS < 30 && ((child && child.pid && !serve.lastExit) || (child && child.pid && serve.lastExit && Date.parse(child.startedAt) >= Date.parse(serve.lastExit.at)) || (serve.ladder && serve.ladder.running))),
+    ok: Boolean(serve && updatedAgeS !== null && updatedAgeS < 30 && ((child && child.pid && !serve.lastExit) || (child && child.pid && serve.lastExit && Date.parse(child.startedAt) >= Date.parse(serve.lastExit.at)) || (serve.ladder && serve.ladder.running))) || multOk,
     at: new Date(atMs).toISOString(),
-    instance: serve ? serve.instance : null,
+    instance: serve ? serve.instance : mult ? mult.instance : null,
     name,
     uptimeS: serve && serve.startedAt ? round1((atMs - Date.parse(serve.startedAt)) / 1000) : null,
     statusAgeS: updatedAgeS,
     restarts: serve ? serve.restarts : null,
     budgetKills: serve ? serve.budgetKills : null,
-    tick: child ? child.lastT : null,
+    tick: child ? child.lastT : mult ? mult.tick ?? null : null,
     ticksPerSec: child ? child.ticksPerSec : null,
     resumedAt: child ? child.resumedAt : null,
     daemonPid: child ? child.pid : null,
-    rssMb: child ? child.rssMb : null,
+    rssMb: child ? child.rssMb : mult ? mult.rssMb ?? null : null,
     // where the daemon memory sits (the child reports it; the episodic record is the grower)
     memory: child ? { heapUsedMb: child.heapUsedMb ?? null, arrayBuffersMb: child.arrayBuffersMb ?? null, episodic: child.episodic ?? null } : null,
     peak: serve ? serve.peak : null,
@@ -105,8 +138,13 @@ export function readHealth({ stateDir, name = 'cloud', seriesFile = process.env.
     nativeShare: ladder.native,
     nativeReason: ladder.reason,
     nextLadderAt: serve && serve.ladder ? serve.ladder.nextAt : null,
-    instancesAlive: rows.length,
-    instances: rows.map((r) => r.id).sort(),
+    instancesAlive: pop ? pop.alive : rows.length,
+    instances: pop ? pop.ids : rows.map((r) => r.id).sort(),
+    multiply: mult ? {
+      instance: mult.instance ?? null, seed: mult.seed ?? null, parent: mult.parent ?? null, pid: mult.pid ?? null, statusAgeS: multAgeS,
+      instancesAlive: pop ? pop.alive : null, duplications: mult.duplications ?? 0, elitesImported: mult.elitesImported ?? 0, elitesExported: mult.elitesExported ?? 0,
+      storeRows: mult.storeRows ?? null, evals: mult.evals ?? null, exchanges: mult.exchanges ?? null, resumed: !!mult.resumed, resumedAt: mult.resumedAt ?? null, ended: !!mult.ended,
+    } : null,
     ledger: serve ? serve.ledger : null,
     egressAllow: serve && serve.egress ? serve.egress.allow.map((e) => e.host + ':' + e.port) : null,
   };
@@ -148,7 +186,7 @@ export function duplicate({ stateDir, name = 'cloud', seed, diskCapMb = Infinity
 }
 
 /** Start the endpoint. Resolves once listening. */
-export function startHealth({ port = Number(process.env.HEALTH_PORT) || 8080, host = process.env.HEALTH_HOST || '127.0.0.1', stateDir, name = 'cloud', seriesFile, diskCapMb } = {}) {
+export function startHealth({ port = Number(process.env.HEALTH_PORT) || 8080, host = process.env.HEALTH_HOST || '127.0.0.1', stateDir, name = 'cloud', seriesFile, diskCapMb, onDuplicate = null } = {}) {
   if (!stateDir) throw new Error('startHealth: stateDir is required');
   const server = http.createServer((req, res) => {
     const send = (status, body) => { const text = JSON.stringify(body); res.writeHead(status, { 'content-type': 'application/json', 'cache-control': 'no-store', 'content-length': Buffer.byteLength(text) }); res.end(text); };
@@ -157,7 +195,8 @@ export function startHealth({ port = Number(process.env.HEALTH_PORT) || 8080, ho
     if (req.method !== 'GET') return send(405, { ok: false, error: 'GET only' });
     try {
       if (u.pathname === '/health') return send(200, readHealth({ stateDir, name, seriesFile: seriesFile || process.env.BRAIN_LADDER_SERIES || DEFAULT_SERIES }));
-      if (u.pathname === '/duplicate') { const r = duplicate({ stateDir, name, seed: u.searchParams.get('seed'), diskCapMb }); return send(r.status, r.body); }
+      // a population instance passes its own duplicate (daemon/multiply.mjs duplicateInstance)
+      if (u.pathname === '/duplicate') { const r = onDuplicate ? onDuplicate(u.searchParams.get('seed')) : duplicate({ stateDir, name, seed: u.searchParams.get('seed'), diskCapMb }); return send(r.status, r.body); }
       return send(404, { ok: false, error: 'GET /health or GET /duplicate?seed=N' });
     } catch (e) { return send(500, { ok: false, error: String((e && e.message) || e).split('\n')[0] }); }
   });

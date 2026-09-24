@@ -1,19 +1,23 @@
 {
-  "at": "2026-09-24T07:46:07.979Z",
+  "at": "2026-09-24T15:52:08.292Z",
   "command": "node bench/ladder.mjs --rows",
   "node": "v24.15.0",
   "isTheBar": false,
-  "statement": "Board 10 item rows (his P4 and P15), composed by node bench/ladder.mjs --rows from the verdicts on disk and one run of the ladder tests. The board: bench/verdicts/ladder.json was written at 2026-09-24T07:40:47.621Z by node bench/ladder.mjs, isTheBar true, with the board for GSM8K (PARTIAL), HumanEval (PARTIAL), ARC-AGI-1 evaluation (whole). The gate: node bench/gate.mjs ran from 2026-09-24T07:40:47.744Z to 2026-09-24T07:46:00.849Z and is RED: test files 67 of 68 (failing: test/runtime.test.mjs, killed on ram at 8981.793 MB), assertions 944 pass and 0 fail, em-dash files 0, bad imports 1 (organism/gen-0-pruned/index.mjs -> :); it printed 3 of the 3 rows, red: BUDGET, HIS DATA. None of the 5 files this item owns changed after it started, so it graded them as they are. The ladder tests: test/ladder.test.mjs passed 17 of 17 (fail 0, exit 0) in 6924 ms under the gate budget, peak RSS 621.684 MB. The bar asks for all three, so it is MISSED: the gate is RED: 1 failing test file(s), red rows BUDGET, HIS DATA, 1 bad import(s).",
+  "statement": "Board 12 item rows (P15's four rulers on the ladder, P8 on the gate), composed by node bench/ladder.mjs --rows from the verdicts on disk and one run of each of 3 test files. The board: bench/verdicts/ladder.json was written at 2026-09-24T15:45:16.051Z by node bench/ladder.mjs, isTheBar true, with the board for GSM8K (PARTIAL), HumanEval (PARTIAL), ARC-AGI-1 evaluation (whole) and the blocks MULTIPLYING, AUTHORED, KNOWLEDGE. The gate: node bench/gate.mjs ran from 2026-09-24T15:45:24.864Z to 2026-09-24T15:51:50.283Z and is RED: test files 83 of 83, assertions 1090 pass and 0 fail, em-dash files 0, bad imports 1 (test/boundary.test.mjs ->  + JSON.stringify(simd) + ); it printed 5 of the 5 rows, none red. None of the 6 files this item owns changed after it started, so it graded them as they are. The tests, each run by this command under the gate budget: test/ladder.test.mjs passed 20 of 20 (fail 0, exit 0) in 6969 ms, peak RSS 626.477 MB; test/gate.test.mjs passed 7 of 7 (fail 0, exit 0) in 4738 ms, peak RSS 420.02 MB; test/gate-rows.test.mjs passed 5 of 5 (fail 0, exit 0) in 759 ms, peak RSS 117.453 MB. The bar asks for all three, so it is MISSED: the gate is RED: 1 bad import(s).",
   "item": "rows",
-  "board": 10,
+  "board": 12,
+  "principles": {
+    "ladder": "P15",
+    "gate": "P8"
+  },
   "met": false,
   "reasons": [
-    "the gate is RED: 1 failing test file(s), red rows BUDGET, HIS DATA, 1 bad import(s)"
+    "the gate is RED: 1 bad import(s)"
   ],
   "parts": {
     "ladder": {
       "file": "bench/verdicts/ladder.json",
-      "at": "2026-09-24T07:40:47.621Z",
+      "at": "2026-09-24T15:45:16.051Z",
       "command": "node bench/ladder.mjs",
       "isTheBar": true,
       "board": true,
@@ -30,80 +34,112 @@
           "name": "ARC-AGI-1 evaluation",
           "status": "whole"
         }
-      ]
+      ],
+      "blocks": [
+        "MULTIPLYING",
+        "AUTHORED",
+        "KNOWLEDGE"
+      ],
+      "missingBlocks": []
     },
     "gate": {
       "file": "bench/verdicts/gate.json",
       "command": "node bench/gate.mjs",
-      "startedAt": "2026-09-24T07:40:47.744Z",
-      "at": "2026-09-24T07:46:00.849Z",
+      "startedAt": "2026-09-24T15:45:24.864Z",
+      "at": "2026-09-24T15:51:50.283Z",
       "verdict": "RED",
-      "testsPassed": 67,
-      "testsTotal": 68,
-      "assertionsPassed": 944,
+      "testsPassed": 83,
+      "testsTotal": 83,
+      "assertionsPassed": 1090,
       "assertionsFailed": 0,
-      "failing": [
-        {
-          "file": "test/runtime.test.mjs",
-          "exit": 137,
-          "pass": null,
-          "fail": null,
-          "budget": "killed",
-          "killed": "ram",
-          "peakRssMb": 8981.793
-        }
-      ],
+      "failing": [],
       "emDashFiles": 0,
       "emDash": [],
       "badImports": [
-        "organism/gen-0-pruned/index.mjs -> :"
+        "test/boundary.test.mjs ->  + JSON.stringify(simd) + "
       ],
+      "rowsExpected": 5,
+      "rowsPrintedCount": 5,
       "rowsPrinted": [
         "BUDGET",
         "COMPRESS",
-        "HIS DATA"
+        "HIS DATA",
+        "LOAD-BEARING",
+        "BOUNDARY"
       ],
-      "redRows": [
-        "BUDGET",
-        "HIS DATA"
-      ],
+      "redRows": [],
       "lines": {
-        "budget": "BUDGET RED: 68 of 68 test files ran under tools/budget.mjs (cap 6000 MB working set of the file's whole process tree, cap 2048 MB on the file's own TEMP dir, sampled every 1000 ms, --max-old-space-size=6000), 1 killed, refused or aborted (test/runtime.test.mjs killed ram); peak RSS 8981.793 MB (test/runtime.test.mjs), RSS sampled on 66 of 68 files (a file that exits before a sample catches its tree has none), peak dir 72359771 bytes (test/budget.test.mjs), left behind in temp 174775 bytes by 2 files",
-        "compress": "COMPRESS GREEN: bytes per score point 275021.867 at this checkpoint (bench/verdicts/compress-rerun.json ruler.v2Header, 2026-09-24T03:07:56.719Z, score 30 of 30) against 701874.4 at the last recorded one (bench/verdicts/compress-rerun-fidelity.json ruler.v2Header, 2026-09-24T02:53:56.933Z, score 30 of 30): fell 60.82 percent, score held",
-        "hisData": "HIS DATA RED: 822 of 825 data files under bench/fixtures (779283566 of 779349684 bytes) are named on a SOURCES.md line with a licence (Apache 2.0 800, MIT 2, BSD 3-Clause 1, CC0-1.0 5, CC BY-SA 4.0 14); 10 notice files are not data; uncovered 3 files, 66118 bytes (answer-questions.json 6591, code-tasks.json 57673, perception-urls.json 1854): their origin is written nowhere, so bytes of his data cannot be ruled 0"
+        "budget": "BUDGET GREEN: 83 of 83 test files ran under tools/budget.mjs (cap 6000 MB working set of the file's whole process tree, cap 2048 MB on the file's own TEMP dir, sampled every 1000 ms, --max-old-space-size=6000), 0 killed, refused or aborted; peak RSS 1533.57 MB (test/planes.test.mjs), RSS sampled on 81 of 83 files (a file that exits before a sample catches its tree has none), peak dir 71311194 bytes (test/budget.test.mjs), left behind in temp 174905 bytes by 2 files",
+        "compress": "COMPRESS GREEN: bytes per score point 59660.533 at this checkpoint (bench/verdicts/compress-delta-rerun.json ruler.v2Header, 2026-09-24T15:07:29.007Z, score 30 of 30) against 59660.8 at the last recorded one (bench/verdicts/compress.json ruler.v2Header, 2026-09-24T14:55:24.328Z, score 30 of 30): fell, score held",
+        "hisData": "HIS DATA GREEN: 825 of 825 data files under bench/fixtures (779349684 of 779349684 bytes) are named on a SOURCES.md line with a licence (CC0-1.0 8, Apache 2.0 800, MIT 2, BSD 3-Clause 1, CC BY-SA 4.0 14); 11 notice files are not data; uncovered 0 files, 0 bytes: bytes of his data 0",
+        "loadBearing": "LOAD-BEARING GREEN: 24 of 24 emitted seeds under organism/ have a census on disk that still describes them (4 by manifest hash, 20 written after the manifest last changed; 4 from a bar census, 20 from a narrow run); dead share (1 - load-bearing lines / loaded lines) from 0.00% (gen-0-pruned) to 71.44% (gen-1-4-4-1-4); the daemon loads 0 of 24: the 132 modules its entries daemon/run.mjs, bin/serve.mjs, daemon/multiply.mjs can import (3 of 3 entries in this tree), read by the audit lexer (tools/boundary-audit.mjs lex), name no seed by path, and the 6 checkpoint metas under the state directories (kind whole 6) name no seed, so the 10 percent cap binds no seed; every seed: gen-0 46.49% (census.json), gen-0-2-3-1-3 62.54% (census-all.json), gen-0-3-3-2-4 48.58% (census-all.json), gen-0-3-4-2-4 54.36% (census-all.json), gen-0-4-4-2-4 52.48% (census-all.json), gen-0-5-3-2-4 53.84% (census-all.json), gen-0-5-3-3-4 39.72% (census-all.json), gen-0-5-4-1-4 56.68% (census-all.json), gen-0-5-4-2-4 62.71% (census-all.json), gen-0-5-5-2-4 58.32% (census-all.json), gen-0-6-4-2-4 64.82% (census-all.json), gen-0-pruned 0.00% (census-prune.json), gen-1-4-3-2-4 41.21% (census-all.json), gen-1-4-3-3-4 39.48% (census-all.json), gen-1-4-4-1-4 71.44% (census-all.json), gen-1-4-4-2-4 61.52% (census-all.json), gen-1-5-3-1-3 61.06% (census-all.json), gen-1-5-3-1-4 50.85% (census-all.json), gen-1-5-4-2-4 55.56% (census-all.json), gen-1-6-4-1-4 57.90% (census-all.json), gen-2-0-4-1-4 50.39% (census-all.json), gen-2-4-3-3-4 37.95% (census-all.json), scale-52000 0.55% (census-scale-static.json, static: a lower bound on the dead share), scale-52000-pruned 0.00% (census-scale-pruned.json, static: a lower bound on the dead share)",
+        "boundary": "BOUNDARY GREEN: 76 boundaries in bench/verdicts/boundary.json (isTheBar true, 2026-09-24T14:27:10.726Z), measured probe 75, literal 1, not measured 0; 0 carried copied buffers at or over the 16777216 byte cap (largest copied 1048576 bytes at tools/boundary-audit.mjs:126), allowlist entries over it 0; unlisted in the verdict 0, and a static scan of the tree now finds 76 boundaries against 76 listed: unlisted 0, stale 0; views on a wasm heap 0; on the wire (strings included, reported by the audit and not its cap measure) 1 reached the cap: runtime/shard.mjs:474 28041254 bytes"
       }
     },
-    "ladderTests": {
-      "command": "node --max-old-space-size=6000 --test test/ladder.test.mjs",
-      "tests": 17,
-      "pass": 17,
-      "fail": 0,
-      "exit": 0,
-      "ms": 6924,
-      "peakRssMb": 621.684,
-      "budget": "exit"
-    }
+    "tests": [
+      {
+        "file": "test/ladder.test.mjs",
+        "command": "node --max-old-space-size=6000 --test test/ladder.test.mjs",
+        "tests": 20,
+        "pass": 20,
+        "fail": 0,
+        "exit": 0,
+        "ms": 6969,
+        "peakRssMb": 626.477,
+        "budget": "exit",
+        "missing": false
+      },
+      {
+        "file": "test/gate.test.mjs",
+        "command": "node --max-old-space-size=6000 --test test/gate.test.mjs",
+        "tests": 7,
+        "pass": 7,
+        "fail": 0,
+        "exit": 0,
+        "ms": 4738,
+        "peakRssMb": 420.02,
+        "budget": "exit",
+        "missing": false
+      },
+      {
+        "file": "test/gate-rows.test.mjs",
+        "command": "node --max-old-space-size=6000 --test test/gate-rows.test.mjs",
+        "tests": 5,
+        "pass": 5,
+        "fail": 0,
+        "exit": 0,
+        "ms": 759,
+        "peakRssMb": 117.453,
+        "budget": "exit",
+        "missing": false
+      }
+    ],
+    "testFiles": 3
   },
   "owned": [
     {
       "file": "bench/ladder.mjs",
-      "changedAt": "2026-09-24T07:22:04.100Z"
+      "changedAt": "2026-09-24T15:29:25.764Z"
     },
     {
       "file": "bench/gate.mjs",
-      "changedAt": "2026-09-24T07:18:53.810Z"
+      "changedAt": "2026-09-24T15:23:16.190Z"
     },
     {
       "file": "test/ladder.test.mjs",
-      "changedAt": "2026-09-24T07:22:19.753Z"
+      "changedAt": "2026-09-24T15:30:46.708Z"
     },
     {
       "file": "test/gate.test.mjs",
       "changedAt": "2026-09-24T07:18:53.810Z"
     },
     {
+      "file": "test/gate-rows.test.mjs",
+      "changedAt": "2026-09-24T15:32:51.464Z"
+    },
+    {
       "file": "notes/ladder.md",
-      "changedAt": "2026-09-24T07:32:59.473Z"
+      "changedAt": "2026-09-24T15:35:51.922Z"
     }
   ],
   "stale": {

@@ -14,11 +14,13 @@
 // Weights and delays are exact. Connectome.w and .conf are Float32Array, and f32() prints
 // the shortest decimal that Math.fround reads back to the identical float32, so loading the
 // emitted source reproduces the connectome bit for bit and the content hash agrees.
-import { mkdirSync, writeFileSync, rmSync, existsSync, readFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, rmSync, existsSync, readFileSync, openSync, readSync, closeSync, readdirSync, statSync } from 'node:fs';
+import { StringDecoder } from 'node:string_decoder';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
-import { f32, contentHash, Wiring, monomorphicGrowth } from './wire.mjs';
+import { f32, stable, contentHash, Wiring, monomorphicGrowth } from './wire.mjs';
+import { getKind, DEFAULT_POLICY } from '../core/cell.mjs';
 import { Brain } from '../core/brain.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -373,6 +375,9 @@ export async function pruneMain(argv) {
   const censusFile = path.resolve(opt('prune', ''));
   if (!existsSync(censusFile)) throw new Error('prune: no census file at ' + censusFile);
   const census = JSON.parse(readFileSync(censusFile, 'utf8'));
+  // a static census (tools/organism-census.mjs --static) never loaded the seed, and the prune by it
+  // does not either: pruneStatic streams the seed line by line (below)
+  if (census.mode === 'static') return pruneStaticMain(argv, census, censusFile);
   if (!census.live || !census.live.cells || !census.live.edges) throw new Error('prune: ' + censusFile + ' carries no liveness (a census written by tools/organism-census.mjs does)');
   const seedDir = path.resolve(BRAIN_ROOT, opt('seed', census.seed));
   const name = opt('name', path.basename(seedDir) + '-pruned');
@@ -413,6 +418,309 @@ export async function pruneMain(argv) {
   return { ok, dir: res.dir, dropped, kept, protect, lines: { before: linesBefore, after: res.lines }, cells: back.brain.cells.length, edges: bk.n, expected: { cells: wantCells, edges: wantEdges }, lost: { cells: lostCells, edges: lostEdges }, verify: v };
 }
 
+
+// ---------------------------------------------------------------- streaming (MANUAL P8, Board 12)
+//
+// organism/scale-52000 is 5,125,448 lines and a whole load of it sat at 5839.8 MB before its
+// first tick. Everything below reads an emitted seed line by line through a fixed buffer and
+// never builds a Brain: the static census (tools/organism-census.mjs --static) and the prune
+// by it (pruneStatic) both run in a few hundred MB whatever the seed's size.
+
+/**
+ * Stream a text file line by line through a fixed buffer. fn(line) is called for every piece
+ * text.split('\n') would give (a trailing carriage return removed), the last one included.
+ * Returns the physical line count the way bench/gate.mjs counts it: the newlines plus one.
+ * @param {string} file @param {(line: string) => void} fn
+ * @param {{ chunkBytes?: number }} [opts]
+ */
+export function eachLine(file, fn, { chunkBytes = 1 << 20 } = {}) {
+  const fd = openSync(file, 'r');
+  const buf = Buffer.allocUnsafe(chunkBytes);
+  const dec = new StringDecoder('utf8');
+  const strip = (s) => (s.length && s.charCodeAt(s.length - 1) === 13 ? s.slice(0, -1) : s);
+  let carry = '', lines = 1;
+  try {
+    for (;;) {
+      const n = readSync(fd, buf, 0, chunkBytes, null);
+      if (n <= 0) break;
+      const s = carry + dec.write(buf.subarray(0, n));
+      let i = 0, j;
+      while ((j = s.indexOf('\n', i)) >= 0) { lines++; fn(strip(s.slice(i, j))); i = j + 1; }
+      carry = s.slice(i);
+    }
+    carry += dec.end();
+    fn(strip(carry));
+  } finally { closeSync(fd); }
+  return lines;
+}
+
+/** The arguments of one declaration line, `pre(...);`, as the JSON array genome/emit.mjs wrote. */
+export function declArgs(line, pre) {
+  if (!line.endsWith(');')) throw new Error('emit: a declaration line does not end in ");": ' + line.slice(0, 80));
+  return JSON.parse('[' + line.slice(pre.length, -2) + ']');
+}
+
+// The content hash (genome/wire.mjs contentHash) over declaration lines instead of a Brain. A
+// loaded cell's params are its kind's defaults under the line's params and its policy is
+// DEFAULT_POLICY under the line's policy (core/cell.mjs createCell); a loaded edge keeps its
+// ports in Uint8Array, its delay in Uint16Array and its weight and confidence in Float32Array
+// (core/connectome.mjs), and the hash prints them through f32. The same rows, so the same hash:
+// checked on organism/scale-52000, whose manifest hash was computed on a real Brain.
+const U8 = new Uint8Array(1), U16 = new Uint16Array(1);
+export function cellHashRow(id, kind, region, circuit, params, policy) {
+  const k = getKind(kind);
+  return JSON.stringify([id, k.name, region || 'default', circuit || 'default', stable({ ...(k.defaults || {}), ...(params || {}) }), stable({ ...DEFAULT_POLICY, ...(policy || {}) })]) + '\n';
+}
+export function edgeHashRow(src, dst, sp, dp, w, delay, conf) {
+  U8[0] = sp; const a = U8[0]; U8[0] = dp; const b = U8[0]; U16[0] = delay;
+  return JSON.stringify([src, dst, a, b, f32(w), U16[0], f32(conf === undefined ? 0.5 : conf)]) + '\n';
+}
+
+/** index.mjs of an emitted seed names its cells and edges files in load order. */
+export function seedFiles(dir) {
+  const abs = path.resolve(dir);
+  const text = readFileSync(path.join(abs, 'index.mjs'), 'utf8');
+  return {
+    cells: [...text.matchAll(/from "\.\/(cells-\d+\.mjs)"/g)].map((m) => m[1]),
+    edges: [...text.matchAll(/from "\.\/(edges-\d+\.mjs)"/g)].map((m) => m[1]),
+  };
+}
+
+// The same file templates emitOrganism writes, for a seed written line by line. A test holds
+// the two byte for byte (test/census-static.test.mjs), so they cannot drift apart unseen.
+const regionsHeadOf = (name, nCircuits, nRegions) => [
+  '// ' + name + '/regions.mjs: GENERATED by genome/emit.mjs. Do not edit by hand.',
+  '// The regions of the organism and the circuits inside them. A circuit is a major',
+  '// computational node: ' + nCircuits + ' of them here, across ' + nRegions + ' regions.',
+  '// r(name, { budget, doc }); budget null means unbounded. k(region, name, period, doc).',
+  'export default function regions(r, k) {',
+];
+const cellsHeadOf = (name, total) => (i, lo, hi) => [
+  '// ' + name + '/cells-' + pad3(i) + '.mjs: GENERATED by genome/emit.mjs. Do not edit by hand.',
+  '// Cells ' + lo + ' to ' + (hi - 1) + ' of ' + total + '.',
+  '// c(id, kind, region, circuit, params, policy)',
+  'export default function cells(c) {',
+];
+const edgesHeadOf = (name, total) => (i, lo, hi) => [
+  '// ' + name + '/edges-' + pad3(i) + '.mjs: GENERATED by genome/emit.mjs. Do not edit by hand.',
+  '// Edges ' + lo + ' to ' + (hi - 1) + ' of ' + total + '. THE CONNECTOME IS THE BULK OF THE ORGANISM.',
+  '// e(src, dst, srcPort, dstPort, w, delay, conf); conf is omitted when it is the 0.5 default.',
+  'export default function edges(e) {',
+];
+
+/** emitChunks, one line at a time: the same file boundaries and the same text. */
+class ChunkStream {
+  constructor({ write, split, prefix, total, head }) {
+    Object.assign(this, { write, prefix, total, head, names: [], buf: null, file: 0, lo: 0, hi: 0, n: 0 });
+    this.perFile = Math.max(1, split - head(0, 0, 0).length - 2);
+    if (total === 0) { const L = head(0, 0, 0); L.push('}'); const nm = this.fileName(0); write(nm, L); this.names.push(nm); }
+  }
+  fileName(i) { return this.prefix + '-' + pad3(i) + '.mjs'; }
+  push(line) {
+    if (this.n >= this.total) throw new Error('emit: more lines pushed than the ' + this.total + ' declared');
+    if (!this.buf) { this.lo = this.n; this.hi = Math.min(this.total, this.lo + this.perFile); this.buf = this.head(this.file, this.lo, this.hi); }
+    this.buf.push(line); this.n++;
+    if (this.n === this.hi) { this.buf.push('}'); const nm = this.fileName(this.file); this.write(nm, this.buf); this.names.push(nm); this.buf = null; this.file++; }
+  }
+  end() {
+    if (this.n !== this.total) throw new Error('emit: ' + this.n + ' lines pushed, ' + this.total + ' declared');
+    return this.names;
+  }
+}
+
+/**
+ * Prune an emitted seed WITHOUT loading it: every c() and e() line whose liveness bit is set is
+ * copied verbatim into a new seed, re-chunked, and the new manifest's content hash is computed
+ * over the same rows contentHash reads. The keep rule is pruneBrain's: every live cell, every
+ * live edge (and every edge in flight, when recorded), both endpoints of every kept edge, the
+ * protected cells, and the regions and circuits that still hold a kept cell.
+ * @param {object} o
+ * @param {string} o.seedDir the seed to prune
+ * @param {{cells: {n, has}, edges: {n, has}, inFlight?: {n, has}}} o.live readers from readLiveBits
+ * @param {string} o.outDir @param {string} [o.name] @param {number} [o.split] lines per file,
+ *   default the largest cells or edges file of the source
+ * @param {string[]} [o.protect] cell ids kept whatever their liveness
+ * @param {object} [o.note] recorded as genome.pruned.census
+ * @returns the summary printed by pruneStaticMain
+ */
+export function pruneStatic({ seedDir, live, outDir, name = null, split = null, protect = [], note = null, rule = 'static' }) {
+  const t0 = Date.now();
+  const src = path.resolve(seedDir);
+  const manifest = JSON.parse(readFileSync(path.join(src, 'manifest.json'), 'utf8'));
+  const files = seedFiles(src);
+  const nC = manifest.counts.cells, nE = manifest.counts.edges;
+  if (live.cells.n !== nC) throw new Error('prune: liveness covers ' + live.cells.n + ' cells, the manifest counts ' + nC);
+  if (live.edges.n !== nE) throw new Error('prune: liveness covers ' + live.edges.n + ' edges, the manifest counts ' + nE);
+  if (live.inFlight && live.inFlight.n !== nE) throw new Error('prune: in flight liveness covers ' + live.inFlight.n + ' edges, the manifest counts ' + nE);
+  const outName = name || path.basename(src) + '-pruned';
+  const out = path.resolve(outDir);
+  if (out === src) throw new Error('prune: the output directory is the seed itself');
+  if (!split) split = Math.max(...manifest.files.filter((f) => /^(cells|edges)-/.test(f.path)).map((f) => f.lines));
+  // regions.mjs: the declared regions and circuits, in order
+  const rLines = [], kLines = [], circuitIdx = new Map(), regionIdx = new Map();
+  eachLine(path.join(src, 'regions.mjs'), (l) => {
+    if (l.startsWith('r(')) { const a = declArgs(l, 'r('); regionIdx.set(a[0], rLines.length); rLines.push(l); }
+    else if (l.startsWith('k(')) { const a = declArgs(l, 'k('); circuitIdx.set(a[0] + '/' + a[1], { i: kLines.length, region: a[0] }); kLines.push(l); }
+  });
+  // pass A: every cell, its circuit, and whether its own bit keeps it
+  const keep = new Uint8Array(nC), circuitOf = new Int32Array(nC);
+  const idOf = new Map(), prot = new Set(protect);
+  let g = 0, ran = 0, protectedOnly = 0, endpointOnly = 0;
+  for (const f of files.cells) eachLine(path.join(src, f), (l) => {
+    if (!l.startsWith('c(')) return;
+    const [id, , region, circuit] = declArgs(l, 'c(');
+    if (g >= nC) throw new Error('prune: ' + f + ' declares more cells than the manifest counts (' + nC + ')');
+    const c = circuitIdx.get((region || 'default') + '/' + (circuit || 'default'));
+    if (!c) throw new Error('prune: cell ' + id + ' names circuit ' + region + '/' + circuit + ', which regions.mjs does not declare');
+    idOf.set(id, g); circuitOf[g] = c.i;
+    if (live.cells.has(g)) { keep[g] = 1; ran++; } else if (prot.has(id)) { keep[g] = 1; protectedOnly++; }
+    g++;
+  });
+  if (g !== nC) throw new Error('prune: the seed declares ' + g + ' cells, its manifest counts ' + nC);
+  // pass B: which edges are kept, and the endpoints they keep
+  let j = 0, delivered = 0, inFlightOnly = 0;
+  for (const f of files.edges) eachLine(path.join(src, f), (l) => {
+    if (!l.startsWith('e(')) return;
+    const e = j++;
+    if (live.edges.has(e)) delivered++; else if (live.inFlight && live.inFlight.has(e)) inFlightOnly++; else return;
+    const x = declArgs(l, 'e(');
+    for (const id of [x[0], x[1]]) {
+      const i = idOf.get(id);
+      if (i === undefined) throw new Error('prune: edge ' + e + ' names an undeclared cell ' + id);
+      if (!keep[i]) { keep[i] = 1; endpointOnly++; }
+    }
+  });
+  if (j !== nE) throw new Error('prune: the seed declares ' + j + ' edges, its manifest counts ' + nE);
+  const keptEdges = delivered + inFlightOnly;
+  let keptCells = 0;
+  const liveCircuit = new Uint8Array(kLines.length), liveRegion = new Uint8Array(rLines.length);
+  const circuitRegion = new Int32Array(kLines.length);
+  for (const c of circuitIdx.values()) { const r = regionIdx.get(c.region); circuitRegion[c.i] = r === undefined ? -1 : r; }
+  for (let i = 0; i < nC; i++) if (keep[i]) { keptCells++; liveCircuit[circuitOf[i]] = 1; const r = circuitRegion[circuitOf[i]]; if (r >= 0) liveRegion[r] = 1; }
+  const nRegions = liveRegion.reduce((a, b) => a + b, 0), nCircuits = liveCircuit.reduce((a, b) => a + b, 0);
+  // pass C: write the copy and hash it on the way
+  if (existsSync(out)) rmSync(out, { recursive: true, force: true });
+  mkdirSync(out, { recursive: true });
+  const written = [];
+  const write = (file, lines) => {
+    const text = lines.join('\n') + '\n';
+    writeFileSync(path.join(out, file), text);
+    const n = text.split('\n').length;
+    written.push({ path: file, lines: n, bytes: Buffer.byteLength(text), sha256: createHash('sha256').update(text).digest('hex') });
+    return n;
+  };
+  {
+    const L = regionsHeadOf(outName, nCircuits, nRegions);
+    rLines.forEach((l, i) => { if (liveRegion[i]) L.push(l); });
+    kLines.forEach((l, i) => { if (liveCircuit[i]) L.push(l); });
+    L.push('}');
+    if (L.length + 1 > split) throw new Error('prune: regions.mjs would be ' + (L.length + 1) + ' lines, over the ' + split + ' line split');
+    write('regions.mjs', L);
+  }
+  const h = createHash('sha256');
+  h.update('brain.genome.v1\n');
+  h.update('cells ' + keptCells + '\n');
+  const cs = new ChunkStream({ write, split, prefix: 'cells', total: keptCells, head: cellsHeadOf(outName, keptCells) });
+  g = 0;
+  for (const f of files.cells) eachLine(path.join(src, f), (l) => {
+    if (!l.startsWith('c(')) return;
+    if (keep[g++]) { const a = declArgs(l, 'c('); h.update(cellHashRow(...a)); cs.push(l); }
+  });
+  const cellFiles = cs.end();
+  h.update('edges ' + keptEdges + '\n');
+  const es = new ChunkStream({ write, split, prefix: 'edges', total: keptEdges, head: edgesHeadOf(outName, keptEdges) });
+  j = 0;
+  for (const f of files.edges) eachLine(path.join(src, f), (l) => {
+    if (!l.startsWith('e(')) return;
+    const e = j++;
+    if (!(live.edges.has(e) || (live.inFlight && live.inFlight.has(e)))) return;
+    const x = declArgs(l, 'e(');
+    h.update(edgeHashRow(...x)); es.push(l);
+  });
+  const edgeFiles = es.end();
+  const hash = h.digest('hex');
+  const { loaded, hash: oldHash, wiring, pruned: priorPrune, ...genome0 } = manifest.genome || {};
+  const regionsDropped = rLines.length - nRegions, circuitsDropped = kLines.length - nCircuits;
+  const genome = {
+    ...genome0, name: outName,
+    pruned: {
+      from: manifest.name, fromHash: manifest.hash, rule, streamed: true,
+      cells: { before: nC, after: keptCells },
+      edges: { before: nE, after: keptEdges, neverDelivered: nE - keptEdges, orphaned: 0 },
+      kept: { cells: { ran, protectedOnly, endpointOnly }, edges: { delivered, inFlightOnly, protectedOnly: 0, inFlightRecorded: !!live.inFlight }, protect: { cells: prot.size, edges: 0 } },
+      regionsDropped, circuitsDropped,
+      wiring: null,
+      ...(note ? { census: note } : {}),
+    },
+  };
+  const counts = { regions: nRegions, circuits: nCircuits, cells: keptCells, edges: keptEdges, cellFiles: cellFiles.length, edgeFiles: edgeFiles.length };
+  {
+    const rel = toPosix(path.relative(out, BRAIN_ROOT)) || '.';
+    const L = [
+      '// ' + outName + '/index.mjs: GENERATED by genome/emit.mjs. Do not edit by hand.',
+      '// The organism as source. load() returns a Brain wired exactly as it was emitted.',
+      'import { loadOrganism } from ' + J(rel + '/genome/load.mjs') + ';',
+      'import regions from ' + J('./regions.mjs') + ';',
+    ];
+    for (const f of cellFiles) L.push('import ' + ident(f) + ' from ' + J('./' + f) + ';');
+    for (const f of edgeFiles) L.push('import ' + ident(f) + ' from ' + J('./' + f) + ';');
+    L.push('');
+    L.push('export const meta = ' + JSON.stringify({ name: outName, seed: genome.seed ?? outName, genome, counts, hash }) + ';');
+    L.push('export const parts = { regions, cells: [' + cellFiles.map(ident).join(', ') + '], edges: [' + edgeFiles.map(ident).join(', ') + '] };');
+    L.push('export function load(opts = {}) { return loadOrganism(parts, meta, opts); }');
+    L.push('export default load;');
+    write('index.mjs', L);
+  }
+  const lines = written.reduce((a, f) => a + f.lines, 0);
+  const bytes = written.reduce((a, f) => a + f.bytes, 0);
+  const m = {
+    format: 'brain.genome.v1',
+    name: outName, seed: genome.seed ?? outName, genome,
+    counts: { ...counts, files: written.length + 1, lines, bytes },
+    hash,
+    files: written.slice().sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0),
+  };
+  const mtext = JSON.stringify(m, null, 2) + '\n';
+  writeFileSync(path.join(out, 'manifest.json'), mtext);
+  return {
+    dir: out, name: outName, split, hash, counts,
+    lines: { before: manifest.counts.lines, after: lines, manifestFileLines: mtext.split('\n').length },
+    bytes: { before: manifest.counts.bytes, after: bytes, manifest: Buffer.byteLength(mtext), onDisk: bytes + Buffer.byteLength(mtext) },
+    cells: { before: nC, after: keptCells, kept: { ran, protectedOnly, endpointOnly }, dropped: nC - keptCells },
+    edges: { before: nE, after: keptEdges, kept: { delivered, inFlightOnly }, dropped: nE - keptEdges },
+    regionsDropped, circuitsDropped, files: written.length + 1, ms: Date.now() - t0,
+  };
+}
+
+// node genome/emit.mjs --prune <a static census verdict> [--out dir] [--name n] [--split N]
+async function pruneStaticMain(argv, census, censusFile) {
+  const opt = (k, d) => { const i = argv.indexOf('--' + k); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : d; };
+  const say = argv.includes('--quiet') ? () => {} : (s) => process.stdout.write(s + '\n');
+  await import('../cells/all.mjs');
+  const seedDir = path.resolve(BRAIN_ROOT, opt('seed', census.seed));
+  const manifest = JSON.parse(readFileSync(path.join(seedDir, 'manifest.json'), 'utf8'));
+  if (census.live.manifestHash !== manifest.hash) throw new Error('prune: the census was taken on organism hash ' + census.live.manifestHash + ', ' + seedDir + ' has ' + manifest.hash);
+  const name = opt('name', path.basename(seedDir) + '-pruned');
+  const outDir = path.resolve(opt('out', path.join(BRAIN_ROOT, 'bench', 'verdicts', '.census', name)));
+  const cells = readLiveBits(census.live.cells), edges = readLiveBits(census.live.edges);
+  const r = pruneStatic({
+    seedDir, live: { cells, edges }, outDir, name, split: Number(opt('split', 0)) || null,
+    protect: census.hosted || [],
+    note: { file: toPosix(path.relative(BRAIN_ROOT, censusFile)), at: census.at, rule: census.live.phases, command: census.command },
+  });
+  const pc = (a, b) => (100 * a / b).toFixed(2);
+  say('prune ' + toPosix(path.relative(BRAIN_ROOT, seedDir)) + ' by ' + toPosix(path.relative(BRAIN_ROOT, censusFile)) + ' (static census at ' + census.at + '), streamed line by line, never loaded');
+  say('  lines ' + r.lines.before + ' -> ' + r.lines.after + ' (manifest count: every emitted file but manifest.json): ' + (r.lines.before - r.lines.after) + ' removed, ' + pc(r.lines.before - r.lines.after, r.lines.before) + '% of the seed');
+  say('  cells ' + r.cells.before + ' -> ' + r.cells.after + ': kept ' + r.cells.kept.ran + ' live, ' + r.cells.kept.protectedOnly + ' protected only, ' + r.cells.kept.endpointOnly + ' endpoint only; dropped ' + r.cells.dropped);
+  say('  edges ' + r.edges.before + ' -> ' + r.edges.after + ': kept ' + r.edges.kept.delivered + ' live; dropped ' + r.edges.dropped);
+  say('  regions dropped ' + r.regionsDropped + ', circuits dropped ' + r.circuitsDropped + '; split ' + r.split + ' lines per file');
+  say('  emitted ' + toPosix(path.relative(BRAIN_ROOT, r.dir)) + ': ' + r.files + ' files, ' + r.bytes.onDisk + ' bytes on disk (' + r.bytes.after + ' before the manifest; the source had ' + r.bytes.before + '), content hash ' + r.hash.slice(0, 16));
+  say('  in ' + (r.ms / 1000).toFixed(1) + ' s; census the copy with tools/organism-census.mjs --static --seed ' + toPosix(path.relative(BRAIN_ROOT, r.dir)));
+  return { ok: true, ...r };
+}
+
+// the command line runs last, once every declaration above it (the streaming section's templates
+// included) is initialised
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url) && process.argv.includes('--prune')) {
   const r = await pruneMain(process.argv.slice(2));
   if (!r.ok) process.exitCode = 1;

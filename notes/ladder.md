@@ -299,3 +299,133 @@ kill, BUDGET green on an empty run, an unsampled file counted as sampled, NODE_T
 handed to the child, no fallback when `tools/budget.mjs` is missing, COMPRESS red whenever bytes
 per point rose, COMPRESS green when bytes rose and the score did not, a line with no licence
 covering its file, and a trailing period always ending a name (so `.bak` names the file).
+
+## the rulers on the board and two rows on the gate (Board 12, his P15 and P8, 2026-09-24)
+
+Board 12 puts P15's rulers on the ladder and P8 on the gate. The board gains three blocks,
+MULTIPLYING, AUTHORED and KNOWLEDGE, each read from the verdicts on disk by
+`node bench/ladder.mjs` with no model called and no bench run. The gate gains two rows,
+LOAD-BEARING and BOUNDARY, printed after HIS DATA and counted in the GATE line. This is the board
+as `node bench/ladder.mjs` printed it on this tree, with the three new blocks cut out of it:
+
+```
+node bench/ladder.mjs
+MULTIPLYING (bench/verdicts/multiply.json, whole, isTheBar true, 2026-09-24T14:36:34.385Z, 240 wall s per arm, model calls 0):
+  instances alive at the end: population 3 at 237.7 s (i0, i1, i2), at most 3 at once; single 1 at 238.5 s (s0), at most 1 at once
+  duplications: population 2 (i0 duplicates into i1 after its 2nd exchange and into i2 after its 3rd), single 0, in one run of 240 wall s; no instance has run a day, so none per day is measured
+  best of population against single instance: 136/160 against 134/160 on grid/velocity:heldout, at or above yes; fresh-more mean 137.25 against 137; evaluations 327546224 against 116706884; elites imported 2509, exported 3661
+  kill: i0 at 122 s, back from its checkpoint t=1500: yes; bar met yes
+  also on disk: bench/verdicts/multiply-partial.json (partial, isTheBar false, 2026-09-24T14:13:53.931Z, 80 wall s): population 133/160 against single 134/160, bar met no
+AUTHORED (bench/verdicts/authorship.json, whole, isTheBar true, 2026-09-24T02:37:18.898Z):
+  AUTHORED SHARE: 0 of 93 = 0.00% (kept patches with an organism author 0, kept patches of any author 0, files landed by boards 93)
+  patches proposed and kept per source per day: not measured (bench/verdicts/authorship.json carries no per-source per-day field (perSourcePerDay, bySourceDay, days or perDay); its input state/self/authored.jsonl is not present)
+  days since the last board: 0.084, read at 2026-09-24T15:34:18.595Z: board 12 launched 2026-09-24T13:32:47Z (state/board12.marker)
+    the share counts boards up to board 9 landed 2026-09-23T21:58:00Z (bench/verdicts/authorship.json boards), 0.734 days; docs/BOARDS.json lists up to board 9
+    boards 10, 11, 12 have a launch marker and no docs/BOARDS.json entry, so the share's denominator does not count their files
+KNOWLEDGE: 1 of 2 sources measured, 284454 articles held (simplewiki)
+  simplewiki (bench/verdicts/knowledge.json, whole, isTheBar true, 2026-09-23T21:53:15.853Z): 284454 articles held of 284749 in the dump, breadth 0.998964; recall@1 0.625 against null 0.09, recall@5 0.785 against null 0.13, n 200 (simplewiki-latest-pages-articles-multistream.xml.bz2, CC BY-SA 4.0)
+    also on disk: bench/verdicts/knowledge-partial.json (PARTIAL: the file is named -partial, isTheBar false, 2026-09-23T21:52:06.557Z): 19986 articles held of n/a in the dump, breadth 0.9993; recall@1 0.33 against null 0.075, recall@5 0.545 against null 0.105, n 200
+  enwiki: not measured (no bench/verdicts/knowledge-en.json or knowledge-en-partial.json)
+```
+
+**What a block will not print.** A block whose verdict is missing prints "not measured" and
+names the file it looked for. A verdict that is a narrow run prints PARTIAL with the reason: the
+file is named -partial, isTheBar is not true, or complete is false. A number the verdict does not
+carry prints n/a. A zero is printed only when a verdict measured it, like the single arm's
+duplications or the authored share. These three blocks are graded by `narrowReasons`, not the
+board's `partialReasons`, because that one also calls a verdict partial when it records no "n
+of" count, and none of these three verdicts records one. A partial run on disk beside a whole one
+is listed under it as "also on disk" and never stands in for it.
+
+**MULTIPLYING** reads the multiply verdict (the whole file, else the -partial one). It prints
+instances alive at the end of each arm, duplications, and the population's pick on the fresh draw
+against the single instance, with the kill the bar asks to come back. Duplications per day are
+not printed as a rate: the verdict is one run per arm, no instance has run for a day, and the
+block says so rather than dividing.
+
+**AUTHORED** keeps the authored share where the site reads it. It adds patches proposed and kept
+per source per day, and the days since the last board. The first is not measured: the authorship
+verdict carries no per-source per-day field, and its input `state/self/authored.jsonl` is not
+present. The deferred authored item owns the tool that would write both, so this block reads
+four spellings of that field (`perSourcePerDay`, `bySourceDay`, `days`, `perDay`) and prints
+whichever lands. The days since the last board take the newest of three sources, each printed
+with its name: the boards the authorship verdict counted, `docs/BOARDS.json`, and the launch
+line in `state/board<N>.marker`. The block also prints what that exposes: boards 10, 11
+and 12 have a launch marker and no `docs/BOARDS.json` entry, so the share's denominator does not
+count their files yet. docs/ is not this item's to edit.
+
+**KNOWLEDGE** prints articles held, breadth (held over the articles in the dump) and recall at 1
+and 5 against the null arm, per source. simplewiki reads the knowledge verdict. enwiki is not
+measured: its verdict belongs to the deferred enwiki item and is not on disk. The total held
+counts only the sources that measured it, so a missing source adds nothing and is not a zero.
+
+**LOAD-BEARING** is the dead share of every emitted seed: one minus load-bearing lines over
+loaded lines, from the census verdicts on disk. An emitted seed is a directory under organism/
+with a manifest.json, or else an index.mjs. The gate reads the manifest and never the seed, so the
+largest seed costs one small file. A census counts only while it still describes the
+seed. With a manifest hash on both sides the hashes must match; with no hash, the census must
+have been written after the manifest last changed. Of the fresh ones the bar goes first, then
+the newest. A refused, stopped or sampled run that recorded no line counts is a record, not a
+census. The row is RED when any emitted seed has no census that still describes it (named, with
+why), or when a seed the daemon loads is more than 10 percent dead. Exactly 10 percent is not
+above the cap. What the daemon loads is read two ways: the import closure of `daemon/run.mjs`,
+`bin/serve.mjs` and `daemon/multiply.mjs` (static imports, literal dynamic imports, and the
+`new URL(..., import.meta.url)` a Worker starts from), searched for a string literal that is a
+path to a seed; and the checkpoint metas under the state directories. The literals are read by
+the boundary audit's lexer, so a seed named in a comment or inside a usage string does not count.
+On this tree neither names an emitted seed: the daemon runs from its own checkpoints, whose metas
+are of kind whole. So the cap binds nothing today, and the row says so in words instead of
+printing a quiet GREEN. It prints every seed's share with the census it came from. Most seeds are
+counted only by the narrow census-all run, and many of those are far above 10 percent. A seed
+counted by a static census is marked as a lower bound on its dead share. The day the daemon loads
+one of those seeds, this row goes RED.
+
+**BOUNDARY** reads `bench/verdicts/boundary.json`, which `node tools/boundary-audit.mjs --bar`
+writes. It also runs the audit's own static scan of the tree now against its allowlist, which
+takes well under a second. It is RED when the verdict is missing ("not measured"), partial, or
+has a copied buffer at or over the cap. The rule is the audit's: copied bytes must be under the
+cap, and its own underCap false is RED too. It is also RED when a row was not measured, when an
+allowlist entry is over the cap, when the verdict's unlisted list is not empty or was never
+recorded, or when the scan of the tree now finds a boundary the allowlist does not name. The wire
+size, strings included, is printed and does not turn the row RED, because the audit reports it
+as context and not as its cap measure. One boundary is over the cap on the wire today:
+runtime/shard.mjs line 474, 28041254 bytes. It is printed on the row and left for the owner of
+that file.
+
+**The item verdict.** `node bench/ladder.mjs --rows` still composes it from disk and writes
+`bench/verdicts/rows.json` once, else `bench/verdicts/rows-partial.json`. It now needs the three
+blocks on the board and five rows printed by a GREEN gate, and it runs the three test files
+itself under the gate's caps: `test/ladder.test.mjs`, `test/gate.test.mjs` and
+`test/gate-rows.test.mjs`. A test file missing from the tree misses the bar by name. The order
+stays: `node bench/ladder.mjs`, then `node bench/gate.mjs`, then `node bench/ladder.mjs --rows`.
+Nothing this item owns is edited between them. The gate's row lines are in that verdict and in
+`bench/verdicts/gate.json`. They are not quoted here, because writing them here would make that
+run stale.
+
+**Tests.** `test/gate-rows.test.mjs` is new and builds every tree it grades. It checks seed
+spellings, and census freshness by hash and by time. It checks the pick order and a refused run.
+It checks the cap on both sides of exactly 10 percent, a seed with no census, a stale one and no
+seeds. It checks the closure, the literal reader against a comment and a usage string, and the
+checkpoint metas. It checks BOUNDARY on every rule above. `test/ladder.test.mjs` gains (q) to
+(s): each block on hand written verdicts, with a check that no zero stands in for a missing
+number. (n) holds the real board's multiply and knowledge numbers to their verdicts' fields. (o)
+and (p) now need five rows, three blocks and three test files.
+
+```
+node tools/budget.mjs --ram-mb 6000 --disk-mb 512 --dir <scratchpad>/tests-out --record <scratchpad>/tests-budget.json -- node --max-old-space-size=6000 --test --test-concurrency=1 test/ladder.test.mjs test/gate.test.mjs test/gate-rows.test.mjs
+✔ (a) seedOf reads a seed from any spelling of a path to one, and nothing else (0.8273ms)
+✔ (b) a census counts only while it describes the seed, the bar first, then the newest (11.8841ms)
+✔ (c) LOAD-BEARING: GREEN under the cap, RED for a loaded seed over it, a seed with no census, or no seeds (8.8913ms)
+✔ (d) the daemon loads what its import closure names by path and what its checkpoints name (17.4425ms)
+✔ (e) BOUNDARY: GREEN under the cap and listed; RED over it, unlisted, missing or partial (0.697ms)
+✔ (o) the rows verdict: met only when board, GREEN gate and tests all hold, and a stale gate is named (1.6336ms)
+✔ (p) runRows writes rows-partial.json when missed, rows.json once when met, and runs the ladder and gate tests (11.8806ms)
+✔ (q) MULTIPLYING: none is not measured, a -partial one is PARTIAL and claims no bar, the whole one wins (2.5972ms)
+✔ (r) AUTHORED: the share, patches per source per day, and days since the last board from each source (5.2864ms)
+✔ (s) KNOWLEDGE: articles held per source, breadth and recall against null, a missing source not measured (2.2399ms)
+ℹ tests 32
+ℹ pass 32
+ℹ fail 0
+ℹ duration_ms 10856.4041
+BUDGET done exit 0: wall 11.03 s, peak ram 651.4MB, peak dir 0.0MB, cpu 8.17 s, 6 samples, record ../../../AppData/Local/Temp/claude/C--Users-ybmic-Downloads-claudeskillsvideo-to-website/b20b8e7e-1cf2-4327-8295-4d76361d02e2/scratchpad/tests-budget.json
+```
