@@ -98,8 +98,40 @@ export function populationAlive(popDir, { atMs = Date.now(), windowMs = POP_ALIV
   return { alive: ids.length, ids };
 }
 
+const jsonlOf = (file) => {
+  let text;
+  try { text = readFileSync(file, 'utf8'); } catch { return []; }
+  const out = [];
+  for (const l of text.split('\n')) { if (!l.trim()) continue; try { out.push(JSON.parse(l)); } catch { /* a torn line */ } }
+  return out;
+};
+/** How many dated autopilot ledger files the gaps counters read (newest first). */
+export const GAPS_LEDGER_DAYS = 7;
+/**
+ * Board 14: the gaps counters, from disk. open = lines of state/self/gaps.jsonl, withTrial = those
+ * with a trial; attempted = distinct gaps the soak decided on (bench/verdicts/autopilot/<date>.jsonl,
+ * source gaps, the last GAPS_LEDGER_DAYS files); kept = organism lines of state/self/authored.jsonl
+ * from a gap; closed = gaps a rebuild after a keep no longer lists.
+ */
+export function gapCounters({ root = ROOT } = {}) {
+  const lines = jsonlOf(path.join(root, 'state', 'self', 'gaps.jsonl'));
+  const dir = path.join(root, 'bench', 'verdicts', 'autopilot');
+  let names = [];
+  try { names = readdirSync(dir).filter((n) => /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(n)).sort().slice(-GAPS_LEDGER_DAYS); } catch { names = []; }
+  const attempted = new Set(), closed = new Set();
+  for (const n of names) {
+    for (const d of jsonlOf(path.join(dir, n))) {
+      if (!d || d.source !== 'gaps') continue;
+      if (d.candidate === true && d.gap) attempted.add(String(d.gap));
+      if (d.event === 'ledger-refresh' && d.closed === true && d.gap) closed.add(String(d.gap));
+    }
+  }
+  const kept = jsonlOf(path.join(root, 'state', 'self', 'authored.jsonl')).filter((l) => l && typeof l.from === 'string' && l.from.startsWith('gaps:')).length;
+  return { open: lines.length, withTrial: lines.filter((g) => g && g.trial).length, attempted: attempted.size, kept, closed: closed.size };
+}
+
 /** Everything /health returns, from disk, at `atMs`. */
-export function readHealth({ stateDir, name = 'cloud', seriesFile = process.env.BRAIN_LADDER_SERIES || DEFAULT_SERIES, atMs = Date.now() } = {}) {
+export function readHealth({ stateDir, name = 'cloud', seriesFile = process.env.BRAIN_LADDER_SERIES || DEFAULT_SERIES, atMs = Date.now(), brainRoot = ROOT } = {}) {
   const brainDir = path.join(stateDir, name);
   const serve = readJson(path.join(brainDir, 'serve.json'));
   const meta = readJson(path.join(brainDir, 'meta.json'));
@@ -147,6 +179,7 @@ export function readHealth({ stateDir, name = 'cloud', seriesFile = process.env.
     } : null,
     ledger: serve ? serve.ledger : null,
     egressAllow: serve && serve.egress ? serve.egress.allow.map((e) => e.host + ':' + e.port) : null,
+    gaps: gapCounters({ root: brainRoot }),
   };
 }
 
@@ -212,8 +245,12 @@ export function startHealth({ port = Number(process.env.HEALTH_PORT) || 8080, ho
 }
 
 const isMain = Boolean(process.argv[1]) && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isMain) {
+if (isMain && process.argv.includes('--gaps')) {
+  // `node daemon/health.mjs --gaps`: the Board 14 counters, one line, no server
+  console.log('gaps ' + JSON.stringify(gapCounters({ root: ROOT })));
+} else if (isMain) {
   const stateDir = path.resolve(process.env.BRAIN_STATE_DIR || path.join(ROOT, 'state'));
+  console.log('[health] gaps ' + JSON.stringify(gapCounters({ root: ROOT })));
   const h = await startHealth({ stateDir, name: process.env.BRAIN_NAME || 'cloud' });
   console.log('[health] ' + h.url + '/health reading ' + stateDir);
 }

@@ -13,7 +13,10 @@
 //   to author it".
 //
 // That order authorises the BrainAutopilot task and nothing wider: this file registers, queries,
-// runs and deletes that one task name, never another.
+// runs and deletes that one task name, never another. Board 14's schedule builder built, tested
+// and printed it and did NOT run --register: a builder is a subagent, and no agent's instruction
+// is his consent, so the one register run is his, or his own session's on his word there (the
+// way BrainLadder was registered on 2026-09-23, docs/LOG.md).
 //
 //   node tools/schedule-autopilot.mjs              print both commands, register nothing
 //   node tools/schedule-autopilot.mjs --register   run the printed schtasks line, then --status
@@ -59,7 +62,7 @@
 //                                                   would be a one-pass wet run, not the soak
 //   free RAM stays under 16384 MB for 30 minutes    the BUDGETS rule (wait under 16 GB free)
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, readdirSync, appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, appendFileSync, mkdirSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -290,9 +293,9 @@ export function renderPlan({ taskName = TASK_NAME, tree = TREE } = {}) {
  * through the same budget wrapper with the log and ledger counted before and after, and the
  * authored share over docs/BOARDS.json. Writes bench/verdicts/schedule-autopilot.json once.
  */
-export async function bar({ root = TREE, taskName = TASK_NAME, now = new Date(), write = true } = {}) {
+export async function bar({ root = TREE, taskName = TASK_NAME, now = new Date(), write = true, quiet = false, ramProbe = () => Math.round(os.freemem() / 1048576) } = {}) {
   const lines = [];
-  const say = (s) => { lines.push(s); console.log(s); };
+  const say = (s) => { lines.push(s); if (!quiet) console.log(s); };
   const q = queryTask({ taskName });
   say(asLine(statusArgv({ taskName })));
   say('  ' + q.line);
@@ -300,7 +303,7 @@ export async function bar({ root = TREE, taskName = TASK_NAME, now = new Date(),
   const rel = (p) => path.relative(root, p).replaceAll('\\', '/');
   const logBefore = countLines(day.log), ledgerBefore = countLines(day.ledger);
   say('before: ' + rel(day.log) + ' ' + logBefore.lines + ' lines (' + logBefore.bytes + ' bytes), ' + rel(day.ledger) + ' ' + ledgerBefore.lines + ' lines');
-  const t = await tick({ root, dry: true, now, echo: false });
+  const t = await tick({ root, dry: true, now, echo: false, ramProbe });
   const logAfter = countLines(day.log), ledgerAfter = countLines(day.ledger);
   say('direct run: ' + t.command + (t.refused ? '  REFUSED: ' + t.line : '  exit ' + t.exit + ', wall ' + t.wallMs + ' ms' + (t.peakRamMb !== null ? ', peak ram ' + t.peakRamMb + ' MB' : '')));
   say('after:  ' + rel(day.log) + ' ' + logAfter.lines + ' lines (' + logAfter.bytes + ' bytes), ' + rel(day.ledger) + ' ' + ledgerAfter.lines + ' lines');
@@ -318,6 +321,26 @@ export async function bar({ root = TREE, taskName = TASK_NAME, now = new Date(),
     }
     if (summary) say('  the run: ' + JSON.stringify(summary.counts) + ' candidates by source ' + JSON.stringify(summary.candidatesBySource) + ', author ' + (summary.author && summary.author.on ? 'ON' : 'off'));
   }
+  // THE CONTROL: the same dry tick with the off switch planted, on a temp tree. It must refuse with
+  // exit 0, add exactly one line to that tree's dated log and start nothing. The temp tree is
+  // deleted after and its deletion checked.
+  const ctlRoot = mkdtempSync(path.join(os.tmpdir(), 'schedule-autopilot-control-'));
+  let control;
+  try {
+    mkdirSync(path.join(ctlRoot, 'state', 'self'), { recursive: true });
+    writeFileSync(path.join(ctlRoot, ...STOP_REL.split('/')), 'planted by the bar\n');
+    const ctlDay = dayFiles(ctlRoot, now);
+    const before = countLines(ctlDay.log);
+    const c = await tick({ root: ctlRoot, dry: true, now, echo: false, ramProbe });
+    const after = countLines(ctlDay.log);
+    control = { refused: c.refused, why: c.why || null, exit: c.exit, line: c.line, logLinesBefore: before.lines, logLinesAfter: after.lines };
+  } finally { rmSync(ctlRoot, { recursive: true, force: true }); }
+  control.deleted = !existsSync(ctlRoot);
+  say('control (' + STOP_REL + ' planted, same dry tick, temp tree): ' + (control.refused ? 'REFUSED (' + control.why + '), exit ' + control.exit : 'NOT refused, exit ' + control.exit) + ', its log ' + control.logLinesBefore + ' -> ' + control.logLinesAfter + ' lines, temp tree deleted ' + control.deleted);
+  // What the registered task would do at 05:00 today: the live guards on this tree, not run.
+  const live = guard({ root, dry: false, freeMb: ramProbe() });
+  const liveLine = live.ok ? 'would start the loop (every guard passes)' : live.line;
+  say('the 05:00 run today: ' + liveLine);
   const { main: authorship } = await import('./authorship.mjs');
   const a = authorship(['--root', root], now);
   const shareLine = a.text.split('\n').find((l) => l.startsWith('SHARE')) || '';
@@ -329,6 +352,7 @@ export async function bar({ root = TREE, taskName = TASK_NAME, now = new Date(),
     { name: 'ready', ok: q.registered && q.status === 'Ready', detail: q.status ? 'status ' + q.status + ', next run ' + q.nextRun : 'no status: ' + q.line },
     { name: 'dated log from a direct run', ok: !t.refused && logAfter.exists && logAfter.lines > logBefore.lines, detail: rel(day.log) + ' ' + logBefore.lines + ' -> ' + logAfter.lines + ' lines, run ' + (t.refused ? 'refused' : 'exit ' + t.exit) },
     { name: 'share over boards 8 to 12', ok: named, detail: 'launched boards in the denominator: ' + launched.join(', ') + '; ' + shareLine },
+    { name: 'control: the off switch refuses', ok: control.refused && control.why === 'stop' && control.exit === 0 && control.logLinesAfter === control.logLinesBefore + 1 && control.deleted, detail: STOP_REL + ' planted: ' + (control.refused ? 'refused (' + control.why + ')' : 'not refused') + ', exit ' + control.exit + ', its log ' + control.logLinesBefore + ' -> ' + control.logLinesAfter + ' lines, temp tree deleted ' + control.deleted },
   ];
   const barMet = checks.every((c) => c.ok);
   for (const c of checks) say('  ' + (c.ok ? 'PASS ' : 'FAIL ') + c.name + ': ' + c.detail);
@@ -341,8 +365,10 @@ export async function bar({ root = TREE, taskName = TASK_NAME, now = new Date(),
       development: 'test/schedule-autopilot.test.mjs on planted temp trees: the printed command, the four guards, the status of a task name that does not exist, docs/BOARDS.json against the commits it names',
       heldOut: 'the real tree and the real Task Scheduler: this run queries ' + taskName + ', runs the dry tick on the real tree and reads the real docs/BOARDS.json',
     },
-    statement: 'Task ' + taskName + ': ' + q.line + '. ' + (t.refused ? 'The direct dry run was REFUSED by its guard: ' + t.line + '. ' : 'The direct run of ' + t.command + ' exited ' + t.exit + ' after ' + t.wallMs + ' ms' + (t.peakRamMb !== null ? ' with a peak of ' + t.peakRamMb + ' MB by the budget wrapper\'s own line' : '') + '. ')
+    statement: 'Task ' + taskName + ': ' + q.line + '. ' + (q.registered ? '' : 'Nobody has run --register yet: registering is his call (the tools/schedule-ladder.mjs rule), and a builder is a subagent whose orchestrator\'s instruction is not his consent, so the task waits for him or his own session to run node tools/schedule-autopilot.mjs --register. ') + (t.refused ? 'The direct dry run was REFUSED by its guard: ' + t.line + '. ' : 'The direct run of ' + t.command + ' exited ' + t.exit + ' after ' + t.wallMs + ' ms' + (t.peakRamMb !== null ? ' with a peak of ' + t.peakRamMb + ' MB by the budget wrapper\'s own line' : '') + '. ')
       + 'The day log ' + rel(day.log) + ' went from ' + logBefore.lines + ' to ' + logAfter.lines + ' lines and the ledger ' + rel(day.ledger) + ' from ' + ledgerBefore.lines + ' to ' + ledgerAfter.lines + ' lines (a dry autopilot run writes no ledger line by design, self/autopilot.mjs). '
+      + 'The control, the same dry tick on a temp tree with ' + STOP_REL + ' planted, was ' + (control.refused ? 'refused (' + control.why + ') with exit ' + control.exit : 'NOT refused') + ' and its log went from ' + control.logLinesBefore + ' to ' + control.logLinesAfter + ' lines. '
+      + 'Were the task registered, its 05:00 run today would print: ' + liveLine + '. '
       + 'The authored share is ' + shareLine.replace(/^SHARE \(cumulative\): /, '') + ', over launched boards ' + launched.join(', ') + '. ' + checks.filter((c) => c.ok).length + ' of ' + checks.length + ' checks pass, so the bar is ' + (barMet ? 'MET' : 'NOT MET') + (barMet ? '.' : ': ' + checks.filter((c) => !c.ok).map((c) => c.name).join(', ') + '.'),
     task: { name: taskName, registered: q.registered, status: q.status, nextRun: q.nextRun, query: asLine(statusArgv({ taskName })) },
     printed: { schtasks: asLine(createArgv({ taskName })), runs: 'node ' + tickArgv().map(quoteArg).join(' '), trChars: trValue().length, trMax: TR_MAX },
@@ -352,6 +378,8 @@ export async function bar({ root = TREE, taskName = TASK_NAME, now = new Date(),
       ledger: { file: rel(day.ledger), linesBefore: ledgerBefore.lines, linesAfter: ledgerAfter.lines },
       summary,
     },
+    control, liveToday: { guard: live.ok ? 'pass' : live.why, line: liveLine },
+    register: { command: asLine(createArgv({ taskName })), ranByThisRun: false, rule: 'registering is his call (tools/schedule-ladder.mjs); ' + HIS_ORDER + ' is quoted as the authorisation for this one task, and the register run is his or his own session\'s' },
     authorship: { numerator: a.verdict.numerator, denominator: a.verdict.denominator, share: a.verdict.share, launchedBoards: launched, line: shareLine, verdictFile: 'bench/verdicts/authorship.json' },
     checks, printedLines: lines,
   };

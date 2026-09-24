@@ -141,11 +141,20 @@ export function cloneSub(brain, opts = {}) {
   // empty one so takeOutbox() returns only what the rollout itself produced.
   if (opts.copyOutbox) clone.outbox = brain.outbox.map(s => ({ ...s, data: deepCopy(s.data) }));
 
+  // THE OPERATOR GENES (Board 14, item spread). When the genome grows the field (genome.meta.operators,
+  // generations/operators-gene.mjs) a clone carries it, and only it: the rest of the genome is the
+  // parent's to keep. The copy is deep, so a rollout that changes how the clone improves itself cannot
+  // reach back into how the parent does.
+  const genes = brain.operatorGenes ?? (brain.organismGenome && brain.organismGenome.meta ? brain.organismGenome.meta.operators : null) ?? null;
+  if (genes) clone.operatorGenes = freezeDeep(deepCopy(genes));
   clone.ledgerLevel = opts.ledger ?? 'off';
   const ms = Number(process.hrtime.bigint() - t0) / 1e6;
   clone.origin = { of: brain.name, t: brain.clock.t, gen: brain.clock.gen, ids, cells: ids.length, edges: clone.connectome.size(), ms, seed, idxMap, edgeMap };
   return clone;
 }
+
+// frozen all the way down: the genes are data a clone reads, never a place it writes
+function freezeDeep(v) { if (v && typeof v === 'object' && !Object.isFrozen(v)) { for (const k of Object.keys(v)) freezeDeep(v[k]); Object.freeze(v); } return v; }
 
 function remap(it, idxMap, edgeMap) {
   const from = idxMap.has(it.from) ? idxMap.get(it.from) : -1;

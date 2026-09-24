@@ -104,12 +104,15 @@ const VERIFY_SCHEMA = {
   required: ['pass', 'reran', 'findings', 'strayFiles'],
 }
 
+// HIS ORDER of 2026-09-24 17:56: this directive opens every subagent prompt, no exception (CLAUDE.md at the repository root carries it too).
+const CONCISE = "[SYSTEM DIRECTIVE: CONCISE MODE ENFORCED]\n- You are a subagent reporting directly to a Fable 5.1 Orchestrator running under Ultracode.\n- DO NOT think out loud, explain your logic, or provide conversational pleasantries in your final response payload.\n- Execute your task internally. When returning the result, output ONLY the raw completed artifact (e.g., the exact code block, the specific terminal command output, or the strict data structure requested).\n- Minimize conversational tokens to protect the Orchestrator's context window. Every unnecessary word incurs extreme token penalties.\nThe work stays the same optimal work (every test, every bar, every printed number); only the payload shrinks: a schema field holds the number or the exact printed line, never a narrative."
+
 async function run(prompt, opts) {
-  try { return await agent(prompt, opts) } catch (e) {
+  try { return await agent(CONCISE + '\n\n' + prompt, opts) } catch (e) {
     const msg = String((e && e.message) || e)
     if (/model/i.test(msg) && opts && opts.model) {
       log(`${opts.label}: model ${opts.model} rejected (${msg.slice(0, 100)}); retrying with alias opus`)
-      try { return await agent(prompt, { ...opts, model: 'opus' }) } catch (e2) { log(`${opts.label}: failed again: ${String(e2 && e2.message || e2).slice(0, 160)}`); return null }
+      try { return await agent(CONCISE + '\n\n' + prompt, { ...opts, model: 'opus' }) } catch (e2) { log(`${opts.label}: failed again: ${String(e2 && e2.message || e2).slice(0, 160)}`); return null }
     }
     log(`${opts && opts.label}: agent error: ${msg.slice(0, 160)}`)
     return null

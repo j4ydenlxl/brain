@@ -5,12 +5,12 @@
 // a fake gate that writes GREEN) and its own temp copy, and both are deleted here.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, rmSync, existsSync, mkdtempSync } from 'node:fs';
+import { readFileSync, rmSync, existsSync, mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { parseKnobs, setKnob, bandOf, unifiedDiff, filesOfDiff, changedLines } from '../self/knobs.mjs';
 import { knobTune, strategySwap, author, knobCandidate, gapKnobs, vetDiff, readStrategies, makeBudget, isGridGap } from '../self/operators.mjs';
-import { improve, noiseBand, beatsNoise, hashTree, hashFiles, findBaseline, setGapsParser, applyTo, restore } from '../self/improve.mjs';
+import { improve, noiseBand, beatsNoise, hashTree, hashFiles, findBaseline, setGapsParser, setGapsParsers, readMetric, ledgerArgv, ledgerIncludes, applyTo, restore, copyTree, copyTop, deleteCopy, addGateKit, TOP_MARKER } from '../self/improve.mjs';
 import { applyUnifiedPatch } from '../self/code.mjs';
 import { plantTree, plantGaps, mockAuthor, AUTHOR_DIFF_GOOD, AUTHOR_DIFF_OUTSIDE, AUTHOR_DIFF_CEILING } from './operators-plant.mjs';
 
@@ -256,4 +256,105 @@ test('improve with the author mocked: a good diff is judged and kept, a diff out
   const c = await gen.next();
   assert.equal(c.value.refused, true);
   assert.match(c.value.reason, /open weights only/);
+});
+
+// ------------------------------------------------------------------ the copy layout and the gate kit
+test('the copy is nested in a marked temp top, deleteCopy removes exactly that top, and the kit puts a sibling only inside it', () => {
+  // a small fake tree beside a fake sibling: <base>/tree (the root) and <base>/side/data.bin
+  const base = tmp('brain-operators-layout-');
+  const root = path.join(base, 'tree');
+  mkdirSync(path.join(root, 'bench', 'fixtures', 'store'), { recursive: true });
+  mkdirSync(path.join(root, 'state'), { recursive: true });
+  mkdirSync(path.join(base, 'side'), { recursive: true });
+  writeFileSync(path.join(root, 'a.mjs'), 'export const A = 1;');
+  writeFileSync(path.join(root, 'state', 'live.json'), '{}');
+  writeFileSync(path.join(root, 'bench', 'fixtures', 'small.json'), '[1]');
+  writeFileSync(path.join(root, 'bench', 'fixtures', 'big.bin'), Buffer.alloc(4096));
+  writeFileSync(path.join(root, 'bench', 'fixtures', 'store', 'part1.bin'), Buffer.alloc(3000));
+  writeFileSync(path.join(root, 'bench', 'fixtures', 'store', 'part2.bin'), Buffer.alloc(3000));
+  writeFileSync(path.join(base, 'side', 'data.bin'), Buffer.alloc(100));
+  const tmpRoot = path.join(base, 'copies');
+  const c = copyTree(root, { tmpRoot });
+  assert.equal(path.basename(c.dir), 'tree', 'the copy keeps the root name one level down');
+  assert.equal(path.dirname(c.dir), c.top);
+  assert.ok(existsSync(path.join(c.top, TOP_MARKER)), 'the temp top carries the marker');
+  assert.equal(copyTop(c.dir), c.top);
+  assert.ok(existsSync(path.join(c.dir, 'a.mjs')) && !existsSync(path.join(c.dir, 'state')) && !existsSync(path.join(c.dir, 'bench', 'fixtures')), 'state/ and bench/fixtures/ are left out of the lean copy');
+  const kit = addGateKit(c.dir, root, { fixturesMaxBytes: 1000, siblings: ['../side/data.bin', '../side/absent.bin'], wholeDirs: [{ rel: 'bench/fixtures/store', maxBytes: 10000 }] });
+  assert.deepEqual(kit.whole.dirs, ['bench/fixtures/store'], 'a whole dir under its cap comes along whole');
+  assert.ok(existsSync(path.join(c.dir, 'bench', 'fixtures', 'store', 'part2.bin')));
+  assert.ok(existsSync(path.join(c.dir, 'bench', 'fixtures', 'small.json')) && !existsSync(path.join(c.dir, 'bench', 'fixtures', 'big.bin')), 'a fixture over the cap stays out');
+  assert.deepEqual(kit.fixtures.left.map((x) => x.file), ['bench/fixtures/big.bin']);
+  assert.deepEqual(kit.siblings.files, ['../side/data.bin']);
+  assert.ok(existsSync(path.join(c.top, 'side', 'data.bin')), 'the sibling lands beside the copy, inside its own top');
+  // a copy that is NOT nested gets no sibling: it would land on a shared path
+  const flat = copyTree(root, { tmpRoot, nest: null });
+  assert.equal(copyTop(flat.dir), flat.dir);
+  const k2 = addGateKit(flat.dir, root, { siblings: ['../side/data.bin'], wholeDirs: [] });
+  assert.deepEqual(k2.siblings.files, []);
+  assert.equal(k2.siblings.left[0].why, 'the copy is not nested');
+  assert.equal(existsSync(path.join(tmpRoot, 'side')), false, 'nothing was written beside a flat copy');
+  // deleteCopy removes the marked top and nothing above it; a flat copy removes only itself
+  const d1 = deleteCopy(c.dir);
+  assert.equal(d1.deleted, true);
+  assert.equal(existsSync(c.top), false);
+  const d2 = deleteCopy(flat.dir);
+  assert.equal(d2.deleted, true);
+  assert.ok(existsSync(tmpRoot) && existsSync(root) && existsSync(path.join(base, 'side', 'data.bin')), 'the parent of the tops, the tree and the real sibling are untouched');
+  assert.ok(existsSync(path.join(root, 'state', 'live.json')));
+});
+
+test('a gaps-ledger trial runs as the ledger wrote it: argv with {tmp} and {copy}, a named file parser, a row parser, and stdout apart from the budget lines', async () => {
+  // the ledger shape (self/gaps.mjs trialOf): argv is run, the command is a display line and is never run
+  const d = path.join(os.tmpdir(), 'x-copy');
+  assert.deepEqual(ledgerArgv({ argv: ['--heap', 'b.mjs', '--tmp', '{tmp}', '--root', '{copy}'] }, d), ['node', '--heap', 'b.mjs', '--tmp', path.join(d, 'tmp'), '--root', d]);
+  assert.equal(ledgerArgv({ argv: [] }, d), null);
+  assert.deepEqual(ledgerIncludes({ seed: 'organism/gen-0', fixtures: ['bench/fixtures/public/arc-agi-1'] }), ['organism/gen-0', 'bench/fixtures/public/arc-agi-1']);
+  assert.deepEqual(ledgerIncludes({ seed: null, fixtures: [] }), []);
+  const PARSERS = {
+    plant: { name: 'planted metric', file: () => 'tmp/out.json', read: (v) => v && v.metric },
+    said: { name: 'said share', stdout: true, read: (o) => { try { return JSON.parse(o).share; } catch { return null; } } },
+    test: { name: 'wall ms', row: true },
+  };
+  setGapsParsers(PARSERS);
+  try {
+    // row: the wall of a PASSING run; a failing run measured nothing
+    const rowGap = { trial: { parser: 'test' } };
+    assert.equal(readMetric(rowGap, { dir: d, run: { exit: 0, outcome: 'exit', seconds: 1.234 } }).value, 1234);
+    const fail = readMetric(rowGap, { dir: d, run: { exit: 1, outcome: 'exit', seconds: 0.5 } });
+    assert.equal(fail.value, null);
+    assert.match(fail.reason, /a failing run is not a wall/);
+    // stdout: the child's own stdout, not the mixed log the budget lines are in
+    const sGap = { trial: { parser: 'said' } };
+    assert.equal(readMetric(sGap, { dir: d, out: '[budget] start\n{"share":0.25}\n', stdout: '{"share":0.25}' }).value, 0.25);
+    assert.equal(readMetric(sGap, { dir: d, out: '[budget] start\n{"share":0.25}\n', stdout: '' }).value, null);
+    // an unknown parser name is a reason, never a guess
+    assert.match(readMetric({ trial: { parser: 'nope' } }, { dir: d }).reason, /no parser named nope/);
+    // end to end on the plant: the trial writes <copy>/tmp/out.json and the named parser reads it
+    const root = planted();
+    writeFileSync(path.join(root, 'planted', 'tune-json.mjs'), [
+      "import { writeFileSync } from 'node:fs';",
+      "import path from 'node:path';",
+      "import { score } from './tune.mjs';",
+      "writeFileSync(path.join(process.argv[2], 'out.json'), JSON.stringify({ metric: score() }));",
+      '',
+    ].join('\n'));
+    const stateDir = tmp('brain-operators-state-');
+    const base = plantGaps().tune;
+    const gap = { ...base, id: 'planted-ledger', trial: { key: 'plant', command: 'node tools/budget.mjs --dir <copy> -- node planted/tune-json.mjs <copy>/tmp', argv: ['planted/tune-json.mjs', '{tmp}'], parser: 'plant', runner: 'budget', minutes: 1, needsModel: false, where: 'copy', writes: [], seed: null, fixtures: [], trader: false } };
+    const treeBefore = hashTree(root).hash;
+    const logs = [];
+    const r = await improve({ root, stateDir, gap, operator: 'knob-tune', log: (l) => logs.push(l) });
+    assert.equal(r.kept, true, r.reason);
+    assert.equal(r.before, 64);
+    assert.equal(r.after, 96);
+    const argvLine = logs.find((l) => l.startsWith('trial argv (the ledger'));
+    assert.ok(argvLine, 'the ledger argv was logged');
+    const ran = argvLine.slice(argvLine.indexOf('): ') + 3);
+    assert.ok(ran.startsWith('node planted/tune-json.mjs ') && ran.endsWith(path.sep + 'tmp') && !ran.includes('{tmp}'), 'the argv ran with {tmp} as <copy>/tmp: ' + ran);
+    assert.ok(logs.some((l) => l.includes('PARSERS.plant')), 'the metric came from the named parser');
+    assert.equal(hashTree(root).hash, treeBefore, 'the planted tree is byte-identical');
+  } finally {
+    setGapsParsers(null);
+  }
 });

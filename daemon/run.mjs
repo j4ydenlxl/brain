@@ -81,6 +81,8 @@ export const DEFAULTS = Object.freeze({
   ledger: 'summary', summaryBudgetMb: 64, loopEvery: 200, selfCodeEvery: 20_000, selfCodeMax: 5,
   suiteTasks: 12, plateauPatience: 3, plateauEpsilon: 1e-9, ingestBatch: 32,
   genHeapMb: 1536, selfCodeHeapMb: 1024, rulerBudgetMb: 16, stopWaitMs: 30_000,
+  // Board 14: minutes of an unattended soak per self-code step (0: one Board 10 pass, as before)
+  selfCodeSoak: 0,
 });
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -727,6 +729,8 @@ export async function live(opts = {}) {
     const sc = loop.selfCode;
     if (!(sc.every > 0) || brain.clock.t - sc.lastT < sc.every) return;
     sc.lastT = brain.clock.t;
+    // Board 14: the switch. While state/self/STOP exists no self-code step starts.
+    if (existsSync(path.join(BRAIN_ROOT, 'state', 'self', 'STOP'))) { stepDone('self-code', 0, { refused: 'stop', reason: 'stopped by state/self/STOP' }); say('[self-code] refused at t=' + brain.clock.t + ': stopped by state/self/STOP'); return; }
     const flag = benchFlag({ dir: benchFlagDir, selfPid: process.pid });
     if (flag) { stepDone('self-code', 0, { refused: 'bench', flagPid: flag.pid, flagCommand: flag.command ? String(flag.command).slice(0, 160) : null }); say('[self-code] refused at t=' + brain.clock.t + ': a bench is running (pid ' + flag.pid + ')'); return; }
     if (selfCodeBusy) { loop.busy['self-code']++; return; }
@@ -734,7 +738,11 @@ export async function live(opts = {}) {
     const c0 = performance.now(), at = brain.clock.t;
     const cliOpts = { dry: sc.dry, max: opts.selfCodeMax ?? DEFAULTS.selfCodeMax, rerun: opts.selfCodeRerun === true };
     if (opts.selfCodeSources) cliOpts.sources = [].concat(opts.selfCodeSources).join(',');
+    // Board 14: the author is on by default when the step is wet (the model may author, never grade)
     if (opts.selfCodeAuthor !== undefined) cliOpts.author = opts.selfCodeAuthor;
+    else if (!sc.dry) cliOpts.author = 'on';
+    const soakMin = Number(opts.selfCodeSoak ?? DEFAULTS.selfCodeSoak);
+    if (Number.isFinite(soakMin) && soakMin > 0) cliOpts.soak = soakMin;
     let settled = false;
     const w = new Worker(SELF_CODE_WORKER, { eval: true, workerData: { url: pathToFileURL(path.join(BRAIN_ROOT, 'self', 'autopilot.mjs')).href, opts: cliOpts }, resourceLimits: { maxOldGenerationSizeMb: opts.selfCodeHeapMb ?? DEFAULTS.selfCodeHeapMb } });
     selfCodeWorker = w;
@@ -744,8 +752,9 @@ export async function live(opts = {}) {
       const res = m && m.ok ? m.result : null;
       sc.last = { t: at, ok: !!res, result: res, error: m && !m.ok ? firstLine(m.error) : null };
       if (!res) sc.errors.push(sc.last.error);
-      stepDone('self-code', performance.now() - c0, { from: at, dry: sc.dry, ok: res ? res.ok : false, reason: res ? res.reason : sc.last.error, candidates: res ? res.candidates : null, counts: res ? res.counts : null });
-      say('[self-code] ' + (res ? (sc.dry ? 'dry ' : '') + 'run from t=' + at + ': ' + res.candidates + ' candidates, ' + JSON.stringify(res.counts) : 'failed from t=' + at + ': ' + sc.last.error));
+      const soakOf = res && res.soak ? { runId: res.runId || null, status: res.status || null, attempts: res.attempts || null, stopped: !!res.stopped } : null;
+      stepDone('self-code', performance.now() - c0, { from: at, dry: sc.dry, ok: res ? res.ok : false, reason: res ? res.reason : sc.last.error, candidates: res ? res.candidates ?? null : null, counts: res ? res.counts ?? null : null, soak: soakOf });
+      say('[self-code] ' + (res ? (sc.dry ? 'dry ' : '') + (soakOf ? 'soak from t=' + at + ': ' + (soakOf.stopped ? 'stopped by state/self/STOP' : soakOf.status + ', ' + JSON.stringify(soakOf.attempts)) : 'run from t=' + at + ': ' + res.candidates + ' candidates, ' + JSON.stringify(res.counts)) : 'failed from t=' + at + ': ' + sc.last.error));
     };
     w.on('message', (m) => { done(m); w.terminate().catch(() => {}); });
     w.on('error', (e) => done({ ok: false, error: String(e && e.message || e) }));

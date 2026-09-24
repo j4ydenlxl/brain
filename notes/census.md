@@ -247,3 +247,107 @@ a test could not see it. The fix moves the command line to the end of emit.mjs. 
 puts the command line back in its old place, the test fails 1 of 1.
 
 test/census.test.mjs (17) and test/genome.test.mjs (36) still pass: 65 of 65 across the three files.
+
+## Board 14: Prune on a copy (self/prune.mjs)
+
+Author: board 14 builder. The autopilot's census source proposed prunes of pinned seeds that
+were all refused at the patch wall: deleting lines from one file of a seed breaks its manifest
+hash, and the only prune that keeps a seed loadable re-emits the whole seed. `self/prune.mjs`
+authors that call, on a copy of the tree only:
+
+    pruneSeed({ root, census, seed, control, include, gateCmd, carry, work })
+      -> { seed, linesBefore, linesAfter, deadShareBefore, deadShareAfter, gate, ms, patch,
+           prunedDir, prunedOnReal, load, after, carried, tests, cleanup, real, decision }
+
+1. It decodes the census bitsets the way `self/autopilot.mjs` decodeBits does (bit i at byte
+   i>>3, position i&7). It refuses a popcount that is not the recorded count, a byte length
+   that is not ceil(n/8), a census taken on another content hash, and a seed with no census.
+2. It copies the tree without state/, .git/, bench/fixtures/ (except the paths the gate's own
+   tests name, from gateIncludes), web/dist/, and every seed but the one being pruned.
+3. `genome/emit.mjs` pruneOnCopy runs the copy's own emitter into organism/<seed>-pruned.
+4. It re-points the seed's index.mjs and manifest.json. Those two files are the whole patch,
+   checked to apply back byte for byte.
+5. It loads and verifies the seed in a child process.
+6. It reads the dead share after from a census of the pruned content hash, and carries that
+   census to the re-pointed seed on the copy only.
+7. It runs the seed's own tests and `node bench/gate.mjs --quiet`.
+8. It deletes the copy, organism/ first, and hashes the real tree's seed, census, pruned
+   directory and organism/ listing before and after.
+
+`--control` runs the same copy with no prune.
+
+### The bar, run 1 (bench/verdicts/prune.json): NOT MET
+
+The run was `node tools/budget.mjs --ram-mb 6000 --disk-mb 2048 --dir <work> -- node
+--max-old-space-size=6000 bench/prune.mjs --work <work>`, with 846.6 s wall and a peak RSS of
+2120.5 MB for the whole tree. The chosen seed was organism/gen-0 (485784 lines) with
+bench/verdicts/census.json. The 20 smaller gen-* seeds have only bitless rows in
+census-all.json, and organism/gen-0-pruned's census marks nothing dead.
+
+- Lines went from 485784 to 259770 (manifest counts.lines). Cells went from 40000 to 37533,
+  and edges from 440578 to 217122.
+- The dead share was 0.46487 before (census.json: 260069 of 485992 loaded lines were load
+  bearing) and 0 after (census-prune.json: 259943 of 259943, the same dynamic 200-tick ruler).
+  The noise is a spread of 0 over 3 censuses of the content before and 2 of the content after.
+  The ruler band over 8 censuses of every mode and tick count is 0.46487 to 0.651799.
+- The re-pointed gen-0 loaded and verified as the pruned content: 37533 cells, 217122 edges,
+  hash e83bb4c5e620. That is the hash of Board 12's organism/gen-0-pruned in the real tree, so
+  the 444-line patch alone is the whole change there.
+- The own tests passed: census 17/17, gate-rows 5/5, ladder 20/20 and prune 7/7.
+- The gate on the copy was RED: 79/87 test files and 1093 pass / 25 fail assertions.
+  LOAD-BEARING was GREEN, reading "gen-0 0.00% (census-gen-0-repointed-partial.json)".
+- CONTROL: the same copy with nothing pruned was also RED, with the same 8 files (cli, daemon,
+  findings, perception, prompt-regions, public-regions, public, venue-suite) and the same
+  1093/25. The copy caused the RED, not the prune.
+- The real tree was unchanged (516ea09de9eb before and after), the work dir was deleted, and
+  1041410 MB were left.
+
+Tests: `node --test test/prune.test.mjs` passes 7/7 in 3.6 s on a planted seed under a temp
+directory. Four mutants of self/prune.mjs each turned one test red: no popcount check (d), no
+path re-rooting (a), a copy root not named brain (a), and no out-of-tree copy (f).
+
+Run 1's record is kept as bench/verdicts/prune-run1-partial.json. Its numbers are as measured,
+and isTheBar was set to false when run 2 replaced it.
+
+### Why the copy was red, and the fix (all in self/prune.mjs)
+
+The 8 red files were run alone on a copy made the same way (a diagnosis under
+tools/budget.mjs). They showed three defects of the copy and none of the prune:
+
+- gateIncludes read only test files. The fixtures are read through the modules the tests call:
+  bench/public.mjs reads bench/fixtures/public, bench/perception.mjs reads perception-urls.json,
+  act/prompt.mjs reads the knowledge store the daemon's ingest step opens, and tools/findings.mjs
+  reads web/dist. It now reads all 393 authored source files for bench/fixtures and web/dist
+  paths. It keeps each path of at most 512 MB, which gives 9 paths and 376.386 MB. It leaves
+  out bench/fixtures and bench/fixtures/wiki (the 368 MB dump) as too big.
+- test/cli.test.mjs reads module URLs relative to "/brain/", so the copy's root is now
+  <box>/brain.
+- tasks/venue.mjs replays the frozen trader tape from ../../trader/data/trader.db. Without it,
+  the venue suite fell back to synthetic windows and printed a hosting score of 0.125 against
+  the published 0.0625. gateIncludes now lists out-of-tree paths named by '..' segments, and
+  copyTree COPIES them (225.613 MB) into the trial's own box. It never links them, and it
+  refuses a box that is the real tree's parent.
+
+At a short path, the 8 files still failed the same way, so path length was not the cause.
+After the fix, all 8 passed on a diagnosis copy.
+
+### The bar, run 2 (bench/verdicts/prune.json): MET
+
+The command was the same as run 1, with 1041.5 s wall and a peak RSS of 2119.2 MB for the whole
+tree. The copy was 466.2 MB, with trader.db beside it.
+
+- Lines, cells, edges, the dead share (0.46487 to 0 on the same ruler, spread 0), the load
+  (37533 cells, 217122 edges, hash e83bb4c5e620) and the 444-line patch were all as in run 1.
+- The own tests passed, now including test/operators.test.mjs (11/11).
+- The gate on the copy with gen-0 re-pointed was GREEN: 88/88 test files, 1129 pass / 0 fail,
+  and LOAD-BEARING GREEN.
+- CONTROL, the same copy with nothing pruned: GREEN, 88/88 and 1129 / 0.
+- The real tree was unchanged (516ea09de9eb before and after), the work dir was deleted, and
+  1041363 MB were left.
+
+Next rungs:
+1. The autopilot's census source calls pruneSeed, not a patch that deletes lines.
+2. A census with liveness bits for the small gen-* seeds, which only have bitless rows today.
+3. Apply the 444-line patch to the real tree, where organism/gen-0-pruned already sits at the
+   same hash. That decision is the orchestrator's (request 2 above: census under the ladder
+   drive first).

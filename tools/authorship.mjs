@@ -225,7 +225,7 @@ export function renderShare(s, { authoredRel = AUTHORED_REL, boardsRel = BOARDS_
     L.push('  per source per day (' + ledgerRel + '/<date>.jsonl, live runs only)' + (perDay.length ? ':' : ': no decision lines'));
     for (const r of perDay) L.push('    ' + r.day + '  ' + r.source.padEnd(8) + '  candidates ' + r.candidates + '  proposed ' + r.proposed + '  kept ' + r.kept);
   }
-  if (missing.length) L.push('  NOT IN THE DENOMINATOR: ' + missing.map((m) => 'board ' + m.board + ' (' + m.source + ')').join(', ') + ' has a source and no entry: node tools/authorship.mjs --fill --write-boards derives it once it LANDED (or --derive N --commits SHA --write-boards)');
+  if (missing.length) L.push('  NOT IN THE DENOMINATOR: ' + missing.map((m) => 'board ' + m.board + ' (' + m.source + ')').join(', ') + (missing.length === 1 ? ' has a source and no entry' : ' have a source and no entry') + ': node tools/authorship.mjs --fill --write-boards derives each once it LANDED (or --derive N --commits SHA --write-boards)');
   if (stale.length) L.push('  STALE: ' + stale.map((x) => 'board ' + x.board + ' says launched false and ' + x.landed.source + ' says it LANDED').join('; ') + ': node tools/authorship.mjs --fill --write-boards');
   L.push('SHARE (cumulative): numerator ' + s.numerator + ' organism-authored kept patches, denominator ' + s.denominator + ' (' + s.kept + ' kept patches + ' + s.boardFiles + ' board files) = ' + fmtShare(s.numerator, s.denominator));
   return L.join('\n');

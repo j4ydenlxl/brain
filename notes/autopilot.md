@@ -38,7 +38,13 @@ A model cell on open weights: qwen3:30b-a3b through Ollama at http://localhost:1
 
 `state/self/authored.jsonl` gets one line per kept patch: at, runId, key, source, files, author, organism (every author but `given`), the file hash before and after, and the gate hash before and after (sha256 of the gate.json bytes that run wrote). A revert, a refusal or a dry run writes nothing there.
 
-`node tools/authorship.mjs` reads that file and docs/BOARDS.json and prints the share: organism-authored kept patches over (all kept patches plus the unique files each board landed), per ISO week (UTC) and cumulative, and writes bench/verdicts/authorship.json once per run. On the real tree it printed 0/93 = 0.0000: the authored file is absent, and docs/BOARDS.json lists board 8 (56 files) and board 9 (37 files), both in 2026-W39.
+`node tools/authorship.mjs` reads that file and docs/BOARDS.json and prints the share: organism-authored kept patches over (all kept patches plus the unique files each board landed), per ISO week (UTC) and cumulative, the days since the last board, and candidates, proposed and kept per source per day from the live ledger lines. It writes bench/verdicts/authorship.json once per run.
+
+A board's `at` is when it LANDED: its `BOARD N ... LANDED` line in docs/LOG.md, read as America/New_York local time, and only with no such line its latest checkpoint commit. Board 10's checkpoint commit is 2026-09-24T13:33:17Z; its LANDED line (docs/LOG.md:62) says 04:12 local, which is 2026-09-24T08:12:00Z, and that is the `at` now. Each derived entry carries `atSource`, `runId` (the wf_ id on the LOG line) and `commitsAt`.
+
+The denominator fills itself. `node tools/authorship.mjs --fill` derives every board that docs/LOG.md says LANDED and docs/BOARDS.json lacks: the items of docs/boards/board-N.js and the files of its checkpoint commits, found by subject ("Board N landed", "Boards N to M landed"; "not landed" never counts). It prints the rows and writes nothing; `--write-boards` writes them. A board that says launched false while docs/LOG.md says it LANDED is printed as a STALE line naming that command. The plain run prints boards with a docs/boards source and no entry (today 14 and 15) as NOT IN THE DENOMINATOR.
+
+On the real tree it printed 0/280 = 0.0000: the authored file is absent, and docs/BOARDS.json lists boards 8 (56 files), 9 (37), 10 (74), 11 (82) and 12 (31), all in 2026-W39, and board 13 not launched (8 items, 0 checkpoint commits). test/authorship.test.mjs checked every listed file: 280 in the tree, 0 only in a named commit. Board 9's 11 files under bench/fixtures/ are kept out of git by .gitignore and live only in the tree; the checkpoint commit aee673e carries the rest of boards 8 and 9.
 
 ## The bar
 
@@ -62,6 +68,39 @@ Every child the bench starts declares a heap: 2048 MB for the CLI runs, 1024 MB 
 `daemon/run.mjs` (another item's file) runs `runFromCli` in a Worker every selfCodeEvery ticks, wet unless selfCodeDry is set, and forwards `author` only when selfCodeAuthor is set, so the default here (author on when wet) is what a daemon step gets. It refuses the step while a live pid holds a bench flag, which is why the bench raises one: stage 3 asserts the real tree was not written.
 
 One such step ran on the real tree at 2026-09-24T02:24:16Z (run 20260924T022416440Z). It wrote 22 decisions to bench/verdicts/autopilot/2026-09-24.jsonl: 20 refused at the evidence wall (notes/act.md lines that name no test) and 2 refused as stale (notes/autopilot.md lines whose test/autopilot.test.mjs passed, 21 of 21 then), about 15 s apart, one test run each. It asked no model and wrote no source file. The worker was ended before it finished and left state/self-code/autopilot.lock holding pid 5904, which is dead, so the next run takes the lock over. The test memo came from that ledger: both stale lines ran the same test.
+
+## Schedule
+
+`tools/schedule-autopilot.mjs` makes the loop daily, the way tools/schedule-ladder.mjs made the ladder. With no flag it prints the schtasks line and registers nothing:
+
+    schtasks /create /tn BrainAutopilot /tr "cmd /c cd /d C:\Users\ybmic\Downloads\claudeskillsvideo-to-website\brain && node tools\schedule-autopilot.mjs --tick" /sc daily /st 05:00 /f
+
+05:00 is one hour after BrainLadder (04:00). schtasks takes at most 261 characters of /tr, so the task runs a tick (116 characters) and the tick runs the command:
+
+    node tools/budget.mjs --ram-mb 6000 --disk-mb 2000 --dir state/self -- node --max-old-space-size=6000 bin/brain.mjs self-code --auto --soak 90 --author on --json
+
+The tick appends every guard line, the whole transcript and the exit to `bench/verdicts/autopilot/<date>.log` (UTC date), beside the ledger `<date>.jsonl`. It refuses with exit 0 and one printed line, also appended to the log, while:
+
+1. `state/self/STOP` exists;
+2. a bench flag is live (`state/bench-flags/<pid>.json` held by a live pid; a dry tick goes on);
+3. `--soak` is not landed (self/autopilot.mjs and self/daemon.mjs read no soak option);
+4. free RAM stays under 16384 MB for 30 minutes.
+
+`--tick --dry` runs the same wrapper with `--dry --author off` in place of `--soak 90 --author on`: a dry run with the author on would still ask the model. `--status` queries the one task name and prints "not registered", exit 0, when it is absent. `--register`, `--run-now` (it waits up to 3 minutes for the log to grow) and `--remove` act on that one name only. `bin/brain.mjs` now lists no-author among its boolean flags, so `--no-author` no longer swallows the next word.
+
+The header quotes his order of 2026-09-24 12:02 ("Its gotta work without me") as the authorisation, beside the ladder's rule that registering is his call. Board 14's schedule builder did not register it: a builder is a subagent, and its orchestrator's instruction is not his consent. One command, run by him or by his own session, registers it:
+
+    node tools/schedule-autopilot.mjs --register
+
+`node tools/schedule-autopilot.mjs --bar` (verdict bench/verdicts/schedule-autopilot.json, 2026-09-24T18:44:10Z) printed BAR NOT MET, 3 of 5 checks:
+
+- registered, ready: FAIL. `schtasks /query /tn BrainAutopilot /fo LIST` printed "not registered".
+- The direct run of the dry command, through the same budget wrapper: exit 0, 1639 ms, peak ram 117.5 MB by the wrapper's line. 105 candidates (notes 76, imagine 1, census 23, slow 5), 105 refused, would apply 0, 0 model calls. The day log went from 1930 to 3860 lines; the ledger stayed at 22 lines, because a dry run writes no ledger line.
+- The control, the same dry tick on a temp tree with state/self/STOP planted: REFUSED (stop), exit 0, its log 0 -> 1 lines, temp tree deleted.
+- The share names boards 8 to 12: 0/280.
+- Were the task registered, its 05:00 run today would print "autopilot tick refused: --soak is not landed yet" and start nothing. Board 14 wave 2 adds the option; until then a registered task writes one refusal line a day.
+
+Tests: `node --test test/schedule-autopilot.test.mjs test/authorship.test.mjs` 14 of 14 in 620 ms. They never register or remove a task. They cover the printed command (05:00, the budget wrapper, STOP, /tr within 261), `--status` on an absent name ("not registered", exit 0), each guard on a planted tree, a STOP tick from the CLI, a dry tick through a fake wrapper, the bar on a planted tree, the boolean no-author with a value flag as control, and docs/BOARDS.json against the tree and its named commits. A mutation pass broke 7 behaviours one at a time (no-author a value flag, the STOP guard off, 06:00, `at` ignoring docs/LOG.md, "not landed" counted, STALE not printed, skipped items dropped): each was caught by at least one failing test, and each file was restored byte for byte. test/autopilot.test.mjs and test/ladder.test.mjs: 42 of 42.
 
 ## Open
 

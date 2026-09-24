@@ -70,11 +70,28 @@ export const SUITE = Object.freeze({ kind: 'grid', seed: 'grid/velocity', draws:
 /** The store's cell grid: the velocity axes, with the longest library any plane may hold. */
 export const STORE_LMAX = 96;
 export const ID_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,31}$/;
+/** The population size when --size is not given: N, the instances a kept improvement must reach (generations/spread.mjs reads it). */
+export const POPULATION_SIZE = 3;
+/** The instance ids of a population of `size`, in the order the population command makes them: i0, then its spawn plan i1, i2, ... */
+export function populationIds(size = POPULATION_SIZE) { return Array.from({ length: Math.max(1, size | 0) }, (_, k) => 'i' + k); }
+/**
+ * THE PROPAGATION OF A KEPT IMPROVEMENT ACROSS INSTANCES (Board 14, item spread): the conduits a kept
+ * improvement travels, as [from, to] id pairs. Each instance is wired both ways to its ring neighbours,
+ * so a population of N reaches every instance in floor(N / 2) hops. generations/spread.mjs wires these
+ * into a Brain connectome and reads its k (the generations to reach every instance) off that connectome,
+ * never off this list.
+ */
+export function spreadConduits(ids) {
+  const n = ids.length, out = [], seen = new Set();
+  const add = (a, b) => { const k = a + '>' + b; if (a !== b && !seen.has(k)) { seen.add(k); out.push([a, b]); } };
+  for (let i = 0; i < n && n > 1; i++) { add(ids[i], ids[(i + 1) % n]); add(ids[(i + 1) % n], ids[i]); }
+  return out;
+}
 export const DEFAULTS = Object.freeze({
   // checkpointEvery: the 12 major organism alone ticked 29 and 30 t/s over its first 600 ticks on
   // this desk; beside its plane worker in the bar it reached t=2450 in 244.413 s with 11
   // checkpoints (bench/verdicts/multiply.json); every checkpoint is an exchange
-  wallS: 240, majors: 12, units: 256, checkpointEvery: 250, chunk: 10, ledgerBudgetMb: 16,
+  wallS: 264, majors: 12, units: 256, checkpointEvery: 250, chunk: 10, ledgerBudgetMb: 16,
   patience: 200, epsilon: 1e-9, sliceMs: 25, heartbeatMs: 1000, planeHeapMb: 256,
   instanceHeapMb: 1024, instanceRamMb: 1600, instanceDiskMb: 600, budgetIntervalMs: 2000,
   restartMax: 3, backoffMs: 1000, pollMs: 250, minSpawnLeftS: 30,
@@ -911,7 +928,7 @@ async function main(argv) {
   }
   if (cmd === 'population') {
     if (!a.dir) throw new Error('population: --dir <population dir> is required');
-    const popDir = path.resolve(a.dir), seed = Number(a.seed || 1), size = Math.max(1, Number(a.size || 3)), wallS = Number(a['wall-s'] || DEFAULTS.wallS);
+    const popDir = path.resolve(a.dir), seed = Number(a.seed || 1), size = Math.max(1, Number(a.size || POPULATION_SIZE)), wallS = Number(a['wall-s'] || DEFAULTS.wallS);
     const plan = Array.from({ length: size - 1 }, (_, k) => ({ id: 'i' + (k + 1), seed: String(seed + k + 1), afterExchange: k + 2 }));
     if (!existsSync(path.join(instanceDir(popDir, 'i0'), 'instance.json'))) createInstance({ popDir, id: 'i0', seed: String(seed), wallS, spawnPlan: plan });
     const pop = new Population({ popDir, log: (l) => console.log(l) }).start();

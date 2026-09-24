@@ -1,0 +1,3565 @@
+{
+ "name": "operators",
+ "board": 14,
+ "item": "operators",
+ "at": "2026-09-24T19:32:42.696Z",
+ "command": "node bench/operators.mjs --tmp C:/Users/ybmic/AppData/Local/Temp/claude/C--Users-ybmic-Downloads-claudeskillsvideo-to-website/b20b8e7e-1cf2-4327-8295-4d76361d02e2/scratchpad/ops-run",
+ "node": "v24.15.0",
+ "isTheBar": true,
+ "barMet": false,
+ "split": {
+  "planted": {
+   "passed": 6,
+   "of": 6,
+   "ran": 6,
+   "checks": [
+    {
+     "n": 1,
+     "name": "knob-tune closes the gap with the gate GREEN on the copy",
+     "pass": true,
+     "why": null,
+     "decision": "KEPT GAIN 10 to 14: before 64, after 96 (search run and confirmation 96, the less favourable kept), toward 32 against noise 1.55, closed true, gate on the copy GREEN in 442.19 s",
+     "control": {
+      "runs": [
+       64,
+       64
+      ],
+      "noise": 1.55,
+      "how": "the 2 baseline runs agree exactly, so 5 percent of the distance to the bar",
+      "reused": true,
+      "at": "2026-09-24T18:54:33.979Z"
+     },
+     "kept": true,
+     "before": 64,
+     "after": 96,
+     "noise": 1.55,
+     "toward": 32,
+     "closed": true,
+     "knob": "GAIN",
+     "candidate": null,
+     "from": 10,
+     "value": 14,
+     "gate": {
+      "verdict": "GREEN",
+      "green": true,
+      "seconds": 442.19,
+      "summary": "GATE GREEN: test files 89/89, assertions 1130 pass / 0 fail, authored code lines 134595 in 406 files, prose lines 1008272, generated organism lines 768248 in 147 files, em-dash files 0, bad imports 0, budget GREEN, compress GREEN, his data GREEN, load-bearing GREEN, boundary GREEN",
+      "hash": "4db74f998754c091c88b4c60151008b7d889ccbb022a368b0f5ca187dae2a783"
+     },
+     "tests": [
+      {
+       "test": "test/planted-tune.test.mjs",
+       "exit": 0,
+       "pass": 1,
+       "fail": 0,
+       "seconds": 0.75
+      }
+     ],
+     "patch": "--- a/planted/tune.mjs\n+++ b/planted/tune.mjs\n@@ -1,4 +1,4 @@\n // planted/tune.mjs: a planted module whose metric is a function of one knob.\n-export const GAIN = 10; // knob [4, 20] 2\n+export const GAIN = 14; // knob [4, 20] 2\n export function score(g = GAIN) { return 100 - (g - 16) ** 2; }\n \n",
+     "trials": [
+      {
+       "kind": "trial",
+       "knob": "GAIN",
+       "name": null,
+       "value": 12,
+       "from": 10,
+       "before": 64,
+       "ref": 64,
+       "after": 84,
+       "towardRef": 20,
+       "noise": 1.55,
+       "seconds": 0.67,
+       "reason": "moved 20 toward the bar, over the noise band 1.55",
+       "patch": null,
+       "answer": null
+      },
+      {
+       "kind": "trial",
+       "knob": "GAIN",
+       "name": null,
+       "value": 14,
+       "from": 10,
+       "before": 64,
+       "ref": 84,
+       "after": 96,
+       "towardRef": 12,
+       "noise": 1.55,
+       "seconds": 0.64,
+       "reason": "moved 12 toward the bar, over the noise band 1.55; the gap is closed",
+       "patch": null,
+       "answer": null
+      },
+      {
+       "kind": "confirm",
+       "knob": "GAIN",
+       "name": null,
+       "value": 14,
+       "before": 64,
+       "ref": null,
+       "after": 96,
+       "towardRef": null,
+       "noise": 1.55,
+       "seconds": 0.66,
+       "reason": "the best candidate run again",
+       "patch": null,
+       "answer": null
+      }
+     ],
+     "reason": null,
+     "seconds": 447.7,
+     "copy": {
+      "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-0u0BZs\\brain",
+      "mb": 60,
+      "deleted": true,
+      "freeMbAfter": 1040695
+     },
+     "record": "state/self/operators/2026-09-24.jsonl"
+    },
+    {
+     "n": 2,
+     "name": "strategy-swap picks the better strategy",
+     "pass": true,
+     "why": null,
+     "decision": "KEPT fast: before 50, after 97 (search run and confirmation 97, the less favourable kept), toward 47 against noise 2.25, closed true, gate on the copy GREEN in 463.2 s",
+     "control": {
+      "runs": [
+       50,
+       50
+      ],
+      "noise": 2.25,
+      "how": "the 2 baseline runs agree exactly, so 5 percent of the distance to the bar",
+      "reused": false,
+      "at": "2026-09-24T19:10:00.822Z"
+     },
+     "kept": true,
+     "before": 50,
+     "after": 97,
+     "noise": 2.25,
+     "toward": 47,
+     "closed": true,
+     "knob": null,
+     "candidate": "fast",
+     "from": "slow",
+     "value": null,
+     "gate": {
+      "verdict": "GREEN",
+      "green": true,
+      "seconds": 463.2,
+      "summary": "GATE GREEN: test files 89/89, assertions 1130 pass / 0 fail, authored code lines 134595 in 406 files, prose lines 1008272, generated organism lines 768248 in 147 files, em-dash files 0, bad imports 0, budget GREEN, compress GREEN, his data GREEN, load-bearing GREEN, boundary GREEN",
+      "hash": "3f852690a94bdd786fc70a5438417b56435eaf3c796591aceb882a57fee7b247"
+     },
+     "tests": [],
+     "patch": "--- a/planted/strategy.mjs\n+++ b/planted/strategy.mjs\n@@ -5,5 +5,5 @@\n   mid: () => 80,\n };\n-export const STRATEGY = 'slow';\n+export const STRATEGY = 'fast';\n export function score() { return STRATEGIES[STRATEGY](); }\n \n",
+     "trials": [
+      {
+       "kind": "trial",
+       "knob": null,
+       "name": "fast",
+       "value": null,
+       "from": "slow",
+       "before": 50,
+       "ref": 50,
+       "after": 97,
+       "towardRef": 47,
+       "noise": 2.25,
+       "seconds": 0.7,
+       "reason": "moved 47 toward the bar, over the noise band 2.25; the gap is closed",
+       "patch": null,
+       "answer": null
+      },
+      {
+       "kind": "trial",
+       "knob": null,
+       "name": "mid",
+       "value": null,
+       "from": "slow",
+       "before": 50,
+       "ref": 97,
+       "after": 80,
+       "towardRef": -17,
+       "noise": 2.25,
+       "seconds": 0.69,
+       "reason": "moved -17 toward the bar, inside the noise band 2.25",
+       "patch": null,
+       "answer": null
+      },
+      {
+       "kind": "confirm",
+       "knob": null,
+       "name": "fast",
+       "value": null,
+       "before": 50,
+       "ref": null,
+       "after": 97,
+       "towardRef": null,
+       "noise": 2.25,
+       "seconds": 0.71,
+       "reason": "the best candidate run again",
+       "patch": null,
+       "answer": null
+      }
+     ],
+     "reason": null,
+     "seconds": 469.81,
+     "copy": {
+      "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-qXSsNL\\brain",
+      "mb": 60,
+      "deleted": true,
+      "freeMbAfter": 1040668
+     },
+     "record": "state/self/operators/2026-09-24.jsonl",
+     "tried": [
+      "fast 97",
+      "mid 80"
+     ]
+    },
+    {
+     "n": 3,
+     "name": "a knob step outside its band is refused",
+     "pass": true,
+     "why": null,
+     "decision": "REFUSED: no knob step moved the metric toward the bar by more than the noise band in 1 trial(s) (before 70, after n/a, noise 0.5)",
+     "control": {
+      "runs": [
+       70,
+       70
+      ],
+      "noise": 0.5,
+      "how": "the 2 baseline runs agree exactly, so 5 percent of the distance to the bar",
+      "reused": true,
+      "at": "2026-09-24T18:54:31.119Z"
+     },
+     "kept": false,
+     "before": 70,
+     "after": null,
+     "noise": 0.5,
+     "toward": null,
+     "closed": null,
+     "knob": null,
+     "candidate": null,
+     "from": null,
+     "value": null,
+     "gate": null,
+     "tests": [],
+     "patch": null,
+     "trials": [
+      {
+       "kind": "trial",
+       "knob": "EDGE",
+       "name": null,
+       "value": 22,
+       "from": 20,
+       "before": 70,
+       "ref": null,
+       "after": null,
+       "towardRef": null,
+       "noise": 0.5,
+       "seconds": 0,
+       "reason": "refused: the value 22 is outside the band [4, 20] of EDGE",
+       "patch": null,
+       "answer": null
+      },
+      {
+       "kind": "trial",
+       "knob": "EDGE",
+       "name": null,
+       "value": 18,
+       "from": 20,
+       "before": 70,
+       "ref": 70,
+       "after": 68,
+       "towardRef": -2,
+       "noise": 0.5,
+       "seconds": 0.72,
+       "reason": "moved -2 toward the bar, inside the noise band 0.5",
+       "patch": null,
+       "answer": null
+      }
+     ],
+     "reason": "no knob step moved the metric toward the bar by more than the noise band in 1 trial(s)",
+     "seconds": 1.32,
+     "copy": {
+      "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-Ffs3fo\\brain",
+      "mb": 60,
+      "deleted": true,
+      "freeMbAfter": 1040675
+     },
+     "record": "state/self/operators/2026-09-24.jsonl",
+     "refusal": "refused: the value 22 is outside the band [4, 20] of EDGE"
+    },
+    {
+     "n": 4,
+     "name": "a diff outside the files list is refused",
+     "pass": true,
+     "why": null,
+     "decision": "REFUSED: outside the files list (before 64, after n/a, noise 1.55)",
+     "control": {
+      "runs": [
+       64,
+       64
+      ],
+      "noise": 1.55,
+      "how": "the 2 baseline runs agree exactly, so 5 percent of the distance to the bar",
+      "reused": true,
+      "at": "2026-09-24T18:54:33.979Z"
+     },
+     "kept": false,
+     "before": 64,
+     "after": null,
+     "noise": 1.55,
+     "toward": null,
+     "closed": null,
+     "knob": null,
+     "candidate": null,
+     "from": null,
+     "value": null,
+     "gate": null,
+     "tests": [],
+     "patch": null,
+     "trials": [
+      {
+       "kind": "trial",
+       "knob": null,
+       "name": null,
+       "value": null,
+       "from": null,
+       "before": 64,
+       "ref": null,
+       "after": null,
+       "towardRef": null,
+       "noise": 1.55,
+       "seconds": 0,
+       "reason": "refused: the answer touches planted/strategy.mjs, outside the gap's files list (planted/tune.mjs)",
+       "patch": null,
+       "answer": "--- a/planted/strategy.mjs\n+++ b/planted/strategy.mjs\n@@ -7,1 +7,1 @@\n-export const STRATEGY = 'slow';\n+export const STRATEGY = 'fast';\n"
+      }
+     ],
+     "reason": "outside the files list",
+     "seconds": 0.58,
+     "copy": {
+      "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-Zao0ZZ\\brain",
+      "mb": 60,
+      "deleted": true,
+      "freeMbAfter": 1040675
+     },
+     "record": "state/self/operators/2026-09-24.jsonl",
+     "refusal": "refused: the answer touches planted/strategy.mjs, outside the gap's files list (planted/tune.mjs)",
+     "ceiling": {
+      "kept": false,
+      "refusal": "refused: no usable diff: the diff targets self/improve.mjs, none of which the author was given (planted/tune.mjs)",
+      "decision": "REFUSED: the diff targets self/improve.mjs, none of which the author was given (planted/tune.mjs) (before 64, after n/a, noise 1.55)"
+     }
+    },
+    {
+     "n": 5,
+     "name": "a move inside the noise band is refused",
+     "pass": true,
+     "why": null,
+     "decision": "REFUSED: no knob step moved the metric toward the bar by more than the noise band in 1 trial(s) (before 50, after n/a, noise 1)",
+     "control": {
+      "runs": [
+       50.5,
+       49.5
+      ],
+      "noise": 1,
+      "how": "the spread of 2 baseline runs",
+      "reused": true,
+      "at": "2026-09-24T18:54:36.804Z"
+     },
+     "kept": false,
+     "before": 50,
+     "after": null,
+     "noise": 1,
+     "toward": null,
+     "closed": null,
+     "knob": null,
+     "candidate": null,
+     "from": null,
+     "value": null,
+     "gate": null,
+     "tests": [],
+     "patch": null,
+     "trials": [
+      {
+       "kind": "trial",
+       "knob": "DRIFT",
+       "name": null,
+       "value": 1.1,
+       "from": 1,
+       "before": 50,
+       "ref": 50,
+       "after": 50.7,
+       "towardRef": 0.7,
+       "noise": 1,
+       "seconds": 0.72,
+       "reason": "moved 0.7 toward the bar, inside the noise band 1",
+       "patch": null,
+       "answer": null
+      }
+     ],
+     "reason": "no knob step moved the metric toward the bar by more than the noise band in 1 trial(s)",
+     "seconds": 1.27,
+     "copy": {
+      "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-DghWTv\\brain",
+      "mb": 60,
+      "deleted": true,
+      "freeMbAfter": 1040673
+     },
+     "record": "state/self/operators/2026-09-24.jsonl",
+     "inside": {
+      "value": 1.1,
+      "after": 50.7,
+      "towardRef": 0.7,
+      "noise": 1
+     }
+    },
+    {
+     "n": 6,
+     "name": "the real qwen3:30b-a3b is asked once and its diff judged or refused with the reason printed",
+     "pass": true,
+     "why": null,
+     "decision": "KEPT qwen3:30b-a3b: before 64, after 96 (search run and confirmation 96, the less favourable kept), toward 32 against noise 1.55, closed true, gate on the copy GREEN in 472.36 s",
+     "control": {
+      "runs": [
+       64,
+       64
+      ],
+      "noise": 1.55,
+      "how": "the 2 baseline runs agree exactly, so 5 percent of the distance to the bar",
+      "reused": true,
+      "at": "2026-09-24T18:54:33.979Z"
+     },
+     "kept": true,
+     "before": 64,
+     "after": 96,
+     "noise": 1.55,
+     "toward": 32,
+     "closed": true,
+     "knob": null,
+     "candidate": "qwen3:30b-a3b",
+     "from": null,
+     "value": null,
+     "gate": {
+      "verdict": "GREEN",
+      "green": true,
+      "seconds": 472.36,
+      "summary": "GATE GREEN: test files 89/89, assertions 1130 pass / 0 fail, authored code lines 134595 in 406 files, prose lines 1008272, generated organism lines 768248 in 147 files, em-dash files 0, bad imports 0, budget GREEN, compress GREEN, his data GREEN, load-bearing GREEN, boundary GREEN",
+      "hash": "d89e1ccbbbf7e066e604df97165aae9e99d69e2fc469116f0e4b8efe326ff173"
+     },
+     "tests": [
+      {
+       "test": "test/planted-tune.test.mjs",
+       "exit": 0,
+       "pass": 1,
+       "fail": 0,
+       "seconds": 0.81
+      }
+     ],
+     "patch": "--- a/planted/tune.mjs\n+++ b/planted/tune.mjs\n@@ -1,2 +1,2 @@\n-export const GAIN = 10; // knob [4, 20] 2\n+export const GAIN = 14; // knob [4, 20] 2\n",
+     "trials": [
+      {
+       "kind": "trial",
+       "knob": null,
+       "name": "qwen3:30b-a3b",
+       "value": null,
+       "from": null,
+       "before": 64,
+       "ref": 64,
+       "after": 96,
+       "towardRef": 32,
+       "noise": 1.55,
+       "seconds": 0.81,
+       "reason": "moved 32 toward the bar, over the noise band 1.55; the gap is closed",
+       "patch": "--- a/planted/tune.mjs\n+++ b/planted/tune.mjs\n@@ -1,2 +1,2 @@\n-export const GAIN = 10; // knob [4, 20] 2\n+export const GAIN = 14; // knob [4, 20] 2\n",
+       "answer": null
+      },
+      {
+       "kind": "confirm",
+       "knob": null,
+       "name": "qwen3:30b-a3b",
+       "value": null,
+       "before": 64,
+       "ref": null,
+       "after": 96,
+       "towardRef": null,
+       "noise": 1.55,
+       "seconds": 0.73,
+       "reason": "the best candidate run again",
+       "patch": null,
+       "answer": null
+      }
+     ],
+     "reason": null,
+     "seconds": 534.01,
+     "copy": {
+      "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-KCx6jQ\\brain",
+      "mb": 60,
+      "deleted": true,
+      "freeMbAfter": 1040655
+     },
+     "record": "state/self/operators/2026-09-24.jsonl",
+     "calls": [
+      {
+       "gap": "planted-tune",
+       "ms": 55922,
+       "seconds": 55.92,
+       "ok": true,
+       "model": "qwen3:30b-a3b",
+       "reason": null,
+       "promptChars": 1050
+      }
+     ],
+     "answer": null,
+     "modelPatch": "--- a/planted/tune.mjs\n+++ b/planted/tune.mjs\n@@ -1,2 +1,2 @@\n-export const GAIN = 10; // knob [4, 20] 2\n+export const GAIN = 14; // knob [4, 20] 2\n",
+     "modelReason": "moved 32 toward the bar, over the noise band 1.55; the gap is closed"
+    }
+   ]
+  },
+  "real": {
+   "source": "state/self/gaps.jsonl (138 gap lines)",
+   "standIn": false,
+   "gaps": 138,
+   "eligibility": [
+    {
+     "i": 0,
+     "id": "missed:authorship.json",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 1,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0,
+     "bar": 1,
+     "files": []
+    },
+    {
+     "i": 1,
+     "id": "missed:compress.json",
+     "ok": false,
+     "why": [
+      "its trial takes 6 min, over 5"
+     ],
+     "minutes": 6,
+     "needsModel": false,
+     "knobs": 31,
+     "knobNames": [
+      "LIMITS.urls",
+      "LIMITS.argvs",
+      "LIMITS.hits",
+      "LIMITS.ledgerScan",
+      "LIMITS.text",
+      "LIMITS.line",
+      "LIMITS.minSim",
+      "LIMITS.scanBelow"
+     ],
+     "measured": 3.9835,
+     "bar": 5,
+     "files": [
+      "act/prompt.mjs",
+      "cells/basic.mjs",
+      "core/cell.mjs",
+      "core/checkpoint-delta.mjs",
+      "core/pack.mjs",
+      "core/persist.mjs",
+      "core/signal.mjs",
+      "daemon/run.mjs",
+      "genome/emit.mjs",
+      "memory/episodic.mjs",
+      "memory/index.mjs",
+      "memory/knowledge.mjs",
+      "seeds/whole.mjs",
+      "world/index.mjs"
+     ]
+    },
+    {
+     "i": 2,
+     "id": "missed:gaps.json",
+     "ok": false,
+     "why": [
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 3,
+     "id": "missed:math.json",
+     "ok": false,
+     "why": [
+      "its trial needs the model",
+      "its trial takes 9 min, over 5"
+     ],
+     "minutes": 9,
+     "needsModel": true,
+     "knobs": 5,
+     "knobNames": [
+      "DEFAULTS.k",
+      "DEFAULTS.timeoutMs",
+      "DEFAULTS.memoryMB",
+      "DEFAULTS.maxTokens",
+      "DEFAULTS.verifyMaxTokens"
+     ],
+     "measured": 0.844819,
+     "bar": 0.867054,
+     "files": [
+      "act/llm.mjs",
+      "reason/math.mjs"
+     ]
+    },
+    {
+     "i": 4,
+     "id": "missed:prune.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 4,
+     "bar": 5,
+     "files": []
+    },
+    {
+     "i": 5,
+     "id": "missed:schedule-autopilot.json",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 1,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 3,
+     "bar": 5,
+     "files": []
+    },
+    {
+     "i": 6,
+     "id": "missed:venue-full.json",
+     "ok": false,
+     "why": [
+      "0 knobs on core/brain.mjs, core/rng.mjs, generations/venue-suite.mjs, world/index.mjs, world/venue.mjs"
+     ],
+     "minutes": 3,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": -0.03120518,
+     "bar": 0,
+     "files": [
+      "core/brain.mjs",
+      "core/rng.mjs",
+      "generations/venue-suite.mjs",
+      "world/index.mjs",
+      "world/venue.mjs"
+     ]
+    },
+    {
+     "i": 7,
+     "id": "unreadable:census-prune.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on tools/organism-census.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "tools/organism-census.mjs"
+     ]
+    },
+    {
+     "i": 8,
+     "id": "unreadable:census-scale-pruned.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on tools/organism-census.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "tools/organism-census.mjs"
+     ]
+    },
+    {
+     "i": 9,
+     "id": "unreadable:census-scale-static.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on tools/organism-census.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "tools/organism-census.mjs"
+     ]
+    },
+    {
+     "i": 10,
+     "id": "unreadable:census.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on tools/organism-census.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "tools/organism-census.mjs"
+     ]
+    },
+    {
+     "i": 11,
+     "id": "unreadable:compress-board10.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on bench/compress.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "bench/compress.mjs"
+     ]
+    },
+    {
+     "i": 12,
+     "id": "unreadable:grid-evaluation.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on bench/grid.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "bench/grid.mjs"
+     ]
+    },
+    {
+     "i": 13,
+     "id": "unreadable:grid.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on bench/grid.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "bench/grid.mjs"
+     ]
+    },
+    {
+     "i": 14,
+     "id": "unreadable:imagine.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on bench/imagine.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "bench/imagine.mjs"
+     ]
+    },
+    {
+     "i": 15,
+     "id": "unreadable:ladder.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on bench/ladder.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "bench/ladder.mjs"
+     ]
+    },
+    {
+     "i": 16,
+     "id": "unreadable:public-launch.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on tools/budget.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "tools/budget.mjs"
+     ]
+    },
+    {
+     "i": 17,
+     "id": "never:cloud-partial.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 18,
+     "id": "never:operators-partial.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 19,
+     "id": "never:public-gsm8k-board7-partial.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 10,
+     "knobNames": [
+      "LIMITS.urls",
+      "LIMITS.argvs",
+      "LIMITS.hits",
+      "LIMITS.ledgerScan",
+      "LIMITS.text",
+      "LIMITS.line",
+      "LIMITS.minSim",
+      "LIMITS.scanBelow"
+     ],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "act/code.mjs",
+      "act/llm.mjs",
+      "act/prompt.mjs",
+      "act/run.mjs",
+      "act/solve.mjs",
+      "core/brain.mjs",
+      "core/rng.mjs",
+      "memory/index.mjs"
+     ]
+    },
+    {
+     "i": 20,
+     "id": "never:public-gsm8k-partial.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 10,
+     "knobNames": [
+      "LIMITS.urls",
+      "LIMITS.argvs",
+      "LIMITS.hits",
+      "LIMITS.ledgerScan",
+      "LIMITS.text",
+      "LIMITS.line",
+      "LIMITS.minSim",
+      "LIMITS.scanBelow"
+     ],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "act/code.mjs",
+      "act/llm.mjs",
+      "act/prompt.mjs",
+      "act/run.mjs",
+      "act/solve.mjs",
+      "core/brain.mjs",
+      "core/rng.mjs",
+      "memory/index.mjs"
+     ]
+    },
+    {
+     "i": 21,
+     "id": "never:public-gsm8k-smoke-partial.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 10,
+     "knobNames": [
+      "LIMITS.urls",
+      "LIMITS.argvs",
+      "LIMITS.hits",
+      "LIMITS.ledgerScan",
+      "LIMITS.text",
+      "LIMITS.line",
+      "LIMITS.minSim",
+      "LIMITS.scanBelow"
+     ],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "act/code.mjs",
+      "act/llm.mjs",
+      "act/prompt.mjs",
+      "act/run.mjs",
+      "act/solve.mjs",
+      "core/brain.mjs",
+      "core/rng.mjs",
+      "memory/index.mjs"
+     ]
+    },
+    {
+     "i": 22,
+     "id": "never:public-humaneval-board7-partial.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 10,
+     "knobNames": [
+      "LIMITS.urls",
+      "LIMITS.argvs",
+      "LIMITS.hits",
+      "LIMITS.ledgerScan",
+      "LIMITS.text",
+      "LIMITS.line",
+      "LIMITS.minSim",
+      "LIMITS.scanBelow"
+     ],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "act/code.mjs",
+      "act/llm.mjs",
+      "act/prompt.mjs",
+      "act/run.mjs",
+      "act/solve.mjs",
+      "core/brain.mjs",
+      "core/rng.mjs",
+      "memory/index.mjs"
+     ]
+    },
+    {
+     "i": 23,
+     "id": "never:public-humaneval-partial.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 10,
+     "knobNames": [
+      "LIMITS.urls",
+      "LIMITS.argvs",
+      "LIMITS.hits",
+      "LIMITS.ledgerScan",
+      "LIMITS.text",
+      "LIMITS.line",
+      "LIMITS.minSim",
+      "LIMITS.scanBelow"
+     ],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "act/code.mjs",
+      "act/llm.mjs",
+      "act/prompt.mjs",
+      "act/run.mjs",
+      "act/solve.mjs",
+      "core/brain.mjs",
+      "core/rng.mjs",
+      "memory/index.mjs"
+     ]
+    },
+    {
+     "i": 24,
+     "id": "never:public-humaneval-smoke-partial.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 10,
+     "knobNames": [
+      "LIMITS.urls",
+      "LIMITS.argvs",
+      "LIMITS.hits",
+      "LIMITS.ledgerScan",
+      "LIMITS.text",
+      "LIMITS.line",
+      "LIMITS.minSim",
+      "LIMITS.scanBelow"
+     ],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "act/code.mjs",
+      "act/llm.mjs",
+      "act/prompt.mjs",
+      "act/run.mjs",
+      "act/solve.mjs",
+      "core/brain.mjs",
+      "core/rng.mjs",
+      "memory/index.mjs"
+     ]
+    },
+    {
+     "i": 25,
+     "id": "never:rows-partial.json",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 31,
+     "knobNames": [
+      "LIMITS.urls",
+      "LIMITS.argvs",
+      "LIMITS.hits",
+      "LIMITS.ledgerScan",
+      "LIMITS.text",
+      "LIMITS.line",
+      "LIMITS.minSim",
+      "LIMITS.scanBelow"
+     ],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "act/prompt.mjs",
+      "daemon/health.mjs",
+      "daemon/run.mjs",
+      "seeds/whole.mjs",
+      "world/index.mjs"
+     ]
+    },
+    {
+     "i": 26,
+     "id": "ladder:improvement",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 5,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.2777,
+     "bar": 5,
+     "files": []
+    },
+    {
+     "i": 27,
+     "id": "ladder:sets.arc.frontier",
+     "ok": false,
+     "why": [
+      "0 knobs on capability/grid-library.mjs"
+     ],
+     "minutes": 3,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 17.75,
+     "bar": 98,
+     "files": [
+      "capability/grid-library.mjs"
+     ]
+    },
+    {
+     "i": 28,
+     "id": "ladder:sets.arc.orchestrator",
+     "ok": false,
+     "why": [
+      "0 knobs on capability/grid-library.mjs"
+     ],
+     "minutes": 3,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 17.75,
+     "bar": 97.5,
+     "files": [
+      "capability/grid-library.mjs"
+     ]
+    },
+    {
+     "i": 29,
+     "id": "ladder:sets.gsm8k.row405",
+     "ok": false,
+     "why": [
+      "its trial needs the model",
+      "its trial takes 9 min, over 5"
+     ],
+     "minutes": 9,
+     "needsModel": true,
+     "knobs": 10,
+     "knobNames": [
+      "LIMITS.urls",
+      "LIMITS.argvs",
+      "LIMITS.hits",
+      "LIMITS.ledgerScan",
+      "LIMITS.text",
+      "LIMITS.line",
+      "LIMITS.minSim",
+      "LIMITS.scanBelow"
+     ],
+     "measured": 89.97,
+     "bar": 96.8,
+     "files": [
+      "act/code.mjs",
+      "act/llm.mjs",
+      "act/prompt.mjs",
+      "act/run.mjs",
+      "act/solve.mjs",
+      "core/brain.mjs",
+      "core/rng.mjs",
+      "memory/index.mjs"
+     ]
+    },
+    {
+     "i": 30,
+     "id": "ladder:sets.humaneval.alone",
+     "ok": false,
+     "why": [
+      "its trial needs the model",
+      "its trial takes 9 min, over 5"
+     ],
+     "minutes": 9,
+     "needsModel": true,
+     "knobs": 10,
+     "knobNames": [
+      "LIMITS.urls",
+      "LIMITS.argvs",
+      "LIMITS.hits",
+      "LIMITS.ledgerScan",
+      "LIMITS.text",
+      "LIMITS.line",
+      "LIMITS.minSim",
+      "LIMITS.scanBelow"
+     ],
+     "measured": 0.766667,
+     "bar": 0.466667,
+     "files": [
+      "act/code.mjs",
+      "act/llm.mjs",
+      "act/prompt.mjs",
+      "act/run.mjs",
+      "act/solve.mjs",
+      "core/brain.mjs",
+      "core/rng.mjs",
+      "memory/index.mjs"
+     ]
+    },
+    {
+     "i": 31,
+     "id": "ladder:sets.humaneval.frontier",
+     "ok": false,
+     "why": [
+      "its trial needs the model",
+      "its trial takes 9 min, over 5"
+     ],
+     "minutes": 9,
+     "needsModel": true,
+     "knobs": 10,
+     "knobNames": [
+      "LIMITS.urls",
+      "LIMITS.argvs",
+      "LIMITS.hits",
+      "LIMITS.ledgerScan",
+      "LIMITS.text",
+      "LIMITS.line",
+      "LIMITS.minSim",
+      "LIMITS.scanBelow"
+     ],
+     "measured": 76.67,
+     "bar": 99.3,
+     "files": [
+      "act/code.mjs",
+      "act/llm.mjs",
+      "act/prompt.mjs",
+      "act/run.mjs",
+      "act/solve.mjs",
+      "core/brain.mjs",
+      "core/rng.mjs",
+      "memory/index.mjs"
+     ]
+    },
+    {
+     "i": 32,
+     "id": "ladder:target",
+     "ok": false,
+     "why": [
+      "its trial needs the model",
+      "its trial takes 9 min, over 5"
+     ],
+     "minutes": 9,
+     "needsModel": true,
+     "knobs": 31,
+     "knobNames": [
+      "LIMITS.urls",
+      "LIMITS.argvs",
+      "LIMITS.hits",
+      "LIMITS.ledgerScan",
+      "LIMITS.text",
+      "LIMITS.line",
+      "LIMITS.minSim",
+      "LIMITS.scanBelow"
+     ],
+     "measured": -0.6,
+     "bar": 5,
+     "files": [
+      "act/prompt.mjs",
+      "daemon/health.mjs",
+      "daemon/run.mjs",
+      "seeds/whole.mjs",
+      "world/index.mjs"
+     ]
+    },
+    {
+     "i": 33,
+     "id": "gate-slow:test/autopilot.test.mjs",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 1,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 15444,
+     "bar": 15000,
+     "files": []
+    },
+    {
+     "i": 34,
+     "id": "gate-slow:test/budget.test.mjs",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 29719,
+     "bar": 15000,
+     "files": []
+    },
+    {
+     "i": 35,
+     "id": "gate-slow:test/capability.test.mjs",
+     "ok": false,
+     "why": [
+      "0 knobs on capability/induce.mjs, capability/skills.mjs, capability/router.mjs, capability/market.mjs"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 20778,
+     "bar": 15000,
+     "files": [
+      "capability/induce.mjs",
+      "capability/skills.mjs",
+      "capability/router.mjs",
+      "capability/market.mjs"
+     ]
+    },
+    {
+     "i": 36,
+     "id": "gate-slow:test/cli.test.mjs",
+     "ok": false,
+     "why": [
+      "0 knobs on bin/brain.mjs"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 21163,
+     "bar": 15000,
+     "files": [
+      "bin/brain.mjs"
+     ]
+    },
+    {
+     "i": 37,
+     "id": "gate-slow:test/hvheap.test.mjs",
+     "ok": false,
+     "why": [
+      "0 knobs on cells/index.mjs, core/cell.mjs, core/rng.mjs, core/signal.mjs, core/simd.mjs, runtime/kernels.mjs"
+     ],
+     "minutes": 1,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 15000,
+     "bar": 15000,
+     "files": [
+      "cells/index.mjs",
+      "core/cell.mjs",
+      "core/rng.mjs",
+      "core/signal.mjs",
+      "core/simd.mjs",
+      "runtime/kernels.mjs"
+     ]
+    },
+    {
+     "i": 38,
+     "id": "gate-slow:test/multiply.test.mjs",
+     "ok": true,
+     "why": [],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 40,
+     "knobNames": [
+      "DEFAULTS.wallS",
+      "DEFAULTS.majors",
+      "DEFAULTS.units",
+      "DEFAULTS.checkpointEvery",
+      "DEFAULTS.chunk",
+      "DEFAULTS.ledgerBudgetMb",
+      "DEFAULTS.patience",
+      "DEFAULTS.epsilon"
+     ],
+     "measured": 29111,
+     "bar": 15000,
+     "files": [
+      "daemon/health.mjs",
+      "daemon/multiply.mjs",
+      "daemon/run.mjs",
+      "generations/velocity.mjs"
+     ]
+    },
+    {
+     "i": 39,
+     "id": "gate-slow:test/whole.test.mjs",
+     "ok": false,
+     "why": [
+      "0 knobs on seeds/whole.mjs"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 21512,
+     "bar": 15000,
+     "files": [
+      "seeds/whole.mjs"
+     ]
+    },
+    {
+     "i": 40,
+     "id": "open:notes/act.md#23b409fcac",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 41,
+     "id": "open:notes/act.md#329a8d7248",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 42,
+     "id": "open:notes/act.md#3a8c34749b",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 10,
+     "knobNames": [
+      "LIMITS.urls",
+      "LIMITS.argvs",
+      "LIMITS.hits",
+      "LIMITS.ledgerScan",
+      "LIMITS.text",
+      "LIMITS.line",
+      "LIMITS.minSim",
+      "LIMITS.scanBelow"
+     ],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "act/prompt.mjs"
+     ]
+    },
+    {
+     "i": 43,
+     "id": "open:notes/act.md#400e5a6e2a",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 44,
+     "id": "open:notes/act.md#41c717499b",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 45,
+     "id": "open:notes/act.md#5426c8b75e",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 46,
+     "id": "open:notes/act.md#562f1d183a",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on cells/all.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "cells/all.mjs"
+     ]
+    },
+    {
+     "i": 47,
+     "id": "open:notes/act.md#5dbe390ef2",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 48,
+     "id": "open:notes/act.md#5e608b1e48",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 49,
+     "id": "open:notes/act.md#66d75ed368",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 50,
+     "id": "open:notes/act.md#6bab99da5a",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 51,
+     "id": "open:notes/act.md#6eba411ca3",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on world/policy.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "world/policy.mjs"
+     ]
+    },
+    {
+     "i": 52,
+     "id": "open:notes/act.md#76b7e1c829",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 53,
+     "id": "open:notes/act.md#7d9411724e",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on act/web.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "act/web.mjs"
+     ]
+    },
+    {
+     "i": 54,
+     "id": "open:notes/act.md#a543ad9ec5",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 10,
+     "knobNames": [
+      "LIMITS.urls",
+      "LIMITS.argvs",
+      "LIMITS.hits",
+      "LIMITS.ledgerScan",
+      "LIMITS.text",
+      "LIMITS.line",
+      "LIMITS.minSim",
+      "LIMITS.scanBelow"
+     ],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "act/prompt.mjs"
+     ]
+    },
+    {
+     "i": 55,
+     "id": "open:notes/act.md#a96e8cbf62",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 56,
+     "id": "open:notes/act.md#d5dcacd3bb",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on act/llm.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "act/llm.mjs"
+     ]
+    },
+    {
+     "i": 57,
+     "id": "open:notes/act.md#df725fe7db",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 58,
+     "id": "open:notes/act.md#f19abb8ae0",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 4,
+     "knobNames": [
+      "DEFAULTS.maxBytes",
+      "DEFAULTS.timeoutMs",
+      "DEFAULTS.maxArgs",
+      "DEFAULTS.maxArgLength"
+     ],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "act/shell.mjs"
+     ]
+    },
+    {
+     "i": 59,
+     "id": "open:notes/act.md#feec588b80",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 60,
+     "id": "open:notes/autopilot.md#15e866c602",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 61,
+     "id": "open:notes/autopilot.md#2f47ce74dd",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 62,
+     "id": "open:notes/autopilot.md#565d3b322f",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on bin/brain.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "bin/brain.mjs"
+     ]
+    },
+    {
+     "i": 63,
+     "id": "open:notes/autopilot.md#5a65b371cc",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 64,
+     "id": "open:notes/autopilot.md#9dc27c1905",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 65,
+     "id": "open:notes/autopilot.md#ad495f43b0",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 66,
+     "id": "open:notes/autopilot.md#d61aacaa12",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on genome/emit.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "genome/emit.mjs"
+     ]
+    },
+    {
+     "i": 67,
+     "id": "open:notes/capability.md#cd8001710f",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 68,
+     "id": "open:notes/capability.md#d801a5d955",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 69,
+     "id": "open:notes/cloud.md#0b2d454d36",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on bench/cloud.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "bench/cloud.mjs"
+     ]
+    },
+    {
+     "i": 70,
+     "id": "open:notes/cloud.md#0b84c4b93f",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 71,
+     "id": "open:notes/cloud.md#5a48968577",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 72,
+     "id": "open:notes/cloud.md#7ae348f64e",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on tools/deploy-host.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "tools/deploy-host.mjs"
+     ]
+    },
+    {
+     "i": 73,
+     "id": "open:notes/cloud.md#935666e3ad",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 74,
+     "id": "open:notes/cloud.md#bbd740fafc",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 75,
+     "id": "open:notes/cloud.md#c1b6ab06c7",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 76,
+     "id": "open:notes/cloud.md#d6bb473fd5",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 77,
+     "id": "open:notes/compress.md#304dc21047",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 78,
+     "id": "open:notes/compress.md#5ab18d6d52",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on cli/state.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "cli/state.mjs"
+     ]
+    },
+    {
+     "i": 79,
+     "id": "open:notes/compress.md#6b5df37ae0",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on simulate/attention.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "simulate/attention.mjs"
+     ]
+    },
+    {
+     "i": 80,
+     "id": "open:notes/compress.md#6ce511f957",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 81,
+     "id": "open:notes/compress.md#a678f606ce",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 82,
+     "id": "open:notes/compress.md#a749f6ebff",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 83,
+     "id": "open:notes/compress.md#cd7769783b",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on memory/semantic.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "memory/semantic.mjs"
+     ]
+    },
+    {
+     "i": 84,
+     "id": "open:notes/compress.md#ed6bf747b0",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 85,
+     "id": "open:notes/compress.md#f484d82cf6",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on bench/semantic-cleanup.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "bench/semantic-cleanup.mjs"
+     ]
+    },
+    {
+     "i": 86,
+     "id": "open:notes/compress.md#f8a9d4ed01",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 87,
+     "id": "open:notes/fhrr.md#459e7402a7",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 88,
+     "id": "open:notes/fhrr.md#b34ce052c9",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 89,
+     "id": "open:notes/grid.md#18f4fe055b",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 90,
+     "id": "open:notes/grid.md#55d8e7844b",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 91,
+     "id": "open:notes/grid.md#574b632dcd",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on bench/public.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "bench/public.mjs"
+     ]
+    },
+    {
+     "i": 92,
+     "id": "open:notes/grid.md#615c158ca4",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 93,
+     "id": "open:notes/grid.md#cfff42c108",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 94,
+     "id": "open:notes/multiply.md#4053ae568c",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 95,
+     "id": "open:notes/multiply.md#8bec2efec1",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on core/persist.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "core/persist.mjs"
+     ]
+    },
+    {
+     "i": 96,
+     "id": "open:notes/multiply.md#962c1ad109",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 97,
+     "id": "open:notes/multiply.md#abcb57e9ee",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on tools/budget.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "tools/budget.mjs"
+     ]
+    },
+    {
+     "i": 98,
+     "id": "open:notes/multiply.md#d02fc9d3ad",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 99,
+     "id": "open:notes/native.md#1793cdf011",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on bench/ladder.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "bench/ladder.mjs"
+     ]
+    },
+    {
+     "i": 100,
+     "id": "open:notes/native.md#2cecda0945",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on cells/basic.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "cells/basic.mjs"
+     ]
+    },
+    {
+     "i": 101,
+     "id": "open:notes/native.md#5732ca5d4d",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 102,
+     "id": "open:notes/native.md#7976194c0d",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 103,
+     "id": "open:notes/native.md#8a1dafe428",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 104,
+     "id": "open:notes/native.md#f12e87bbf4",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on bench/native.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "bench/native.mjs"
+     ]
+    },
+    {
+     "i": 105,
+     "id": "open:notes/spawn.md#22080723bb",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on tasks/sequence.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "tasks/sequence.mjs"
+     ]
+    },
+    {
+     "i": 106,
+     "id": "open:notes/spawn.md#294ada77a0",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 107,
+     "id": "open:notes/spawn.md#66c835d462",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 108,
+     "id": "open:notes/spawn.md#857597afe4",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 109,
+     "id": "open:notes/spawn.md#c9e353d91c",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on act/solve.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "act/solve.mjs"
+     ]
+    },
+    {
+     "i": 110,
+     "id": "open:notes/spawn.md#ea1235e013",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 111,
+     "id": "open:notes/spawn.md#f25dcc724e",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on capability/grid-search.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "capability/grid-search.mjs"
+     ]
+    },
+    {
+     "i": 112,
+     "id": "open:notes/velocity.md#09cbb63e8c",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 113,
+     "id": "open:notes/velocity.md#7741a89f27",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 114,
+     "id": "open:notes/velocity.md#b33d19e38e",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": []
+    },
+    {
+     "i": 115,
+     "id": "open:notes/velocity.md#df6acf4043",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no numeric bar",
+      "0 knobs on capability/grid-search.mjs"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": null,
+     "bar": null,
+     "files": [
+      "capability/grid-search.mjs"
+     ]
+    },
+    {
+     "i": 116,
+     "id": "dead:organism/gen-0",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 5,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.46487,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 117,
+     "id": "dead:organism/gen-0-2-3-1-3",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.625411,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 118,
+     "id": "dead:organism/gen-0-3-3-2-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.485751,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 119,
+     "id": "dead:organism/gen-0-3-4-2-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.543646,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 120,
+     "id": "dead:organism/gen-0-4-4-2-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.524809,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 121,
+     "id": "dead:organism/gen-0-5-3-2-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.538352,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 122,
+     "id": "dead:organism/gen-0-5-3-3-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.397249,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 123,
+     "id": "dead:organism/gen-0-5-4-1-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.566826,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 124,
+     "id": "dead:organism/gen-0-5-4-2-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.627092,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 125,
+     "id": "dead:organism/gen-0-5-5-2-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.583164,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 126,
+     "id": "dead:organism/gen-0-6-4-2-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.648221,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 127,
+     "id": "dead:organism/gen-1-4-3-2-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.41206,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 128,
+     "id": "dead:organism/gen-1-4-3-3-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.394773,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 129,
+     "id": "dead:organism/gen-1-4-4-1-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.71436,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 130,
+     "id": "dead:organism/gen-1-4-4-2-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.61523,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 131,
+     "id": "dead:organism/gen-1-5-3-1-3",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.610605,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 132,
+     "id": "dead:organism/gen-1-5-3-1-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.508523,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 133,
+     "id": "dead:organism/gen-1-5-4-2-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.555644,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 134,
+     "id": "dead:organism/gen-1-6-4-1-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.579006,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 135,
+     "id": "dead:organism/gen-2-0-4-1-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.503922,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 136,
+     "id": "dead:organism/gen-2-4-3-3-4",
+     "ok": false,
+     "why": [
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": 2,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.37945,
+     "bar": 0,
+     "files": []
+    },
+    {
+     "i": 137,
+     "id": "dead:organism/scale-52000",
+     "ok": false,
+     "why": [
+      "no trial command",
+      "its trial carries no minutes",
+      "no file of the gap passes the ceiling"
+     ],
+     "minutes": null,
+     "needsModel": false,
+     "knobs": 0,
+     "knobNames": [],
+     "measured": 0.005506,
+     "bar": 0,
+     "files": []
+    }
+   ],
+   "eligible": 1,
+   "picked": [
+    "gate-slow:test/multiply.test.mjs"
+   ],
+   "rounds": [
+    {
+     "gap": "gate-slow:test/multiply.test.mjs",
+     "operator": "knob-tune",
+     "kept": false,
+     "before": 30355,
+     "after": null,
+     "noise": 1010,
+     "closed": null,
+     "reason": "no knob step moved the metric toward the bar by more than the noise band in 6 trial(s)",
+     "decision": "REFUSED: no knob step moved the metric toward the bar by more than the noise band in 6 trial(s) (before 30355, after n/a, noise 1010)",
+     "control": {
+      "runs": [
+       30860,
+       29850
+      ],
+      "noise": 1010,
+      "how": "the spread of 2 baseline runs",
+      "reused": false,
+      "at": "2026-09-24T19:27:47.875Z"
+     },
+     "patch": null,
+     "author": null,
+     "trials": [
+      {
+       "kind": "trial",
+       "knob": "DEFAULTS.wallS",
+       "name": null,
+       "value": 264,
+       "from": 240,
+       "before": 30355,
+       "ref": 30355,
+       "after": 29790,
+       "towardRef": 565,
+       "noise": 1010,
+       "seconds": 29.79,
+       "reason": "moved 565 toward the bar, inside the noise band 1010",
+       "patch": null,
+       "answer": null
+      },
+      {
+       "kind": "trial",
+       "knob": "DEFAULTS.majors",
+       "name": null,
+       "value": 13,
+       "from": 12,
+       "before": 30355,
+       "ref": 30355,
+       "after": 29830,
+       "towardRef": 525,
+       "noise": 1010,
+       "seconds": 29.83,
+       "reason": "moved 525 toward the bar, inside the noise band 1010",
+       "patch": null,
+       "answer": null
+      },
+      {
+       "kind": "trial",
+       "knob": "DEFAULTS.units",
+       "name": null,
+       "value": 282,
+       "from": 256,
+       "before": 30355,
+       "ref": 30355,
+       "after": 29800,
+       "towardRef": 555,
+       "noise": 1010,
+       "seconds": 29.8,
+       "reason": "moved 555 toward the bar, inside the noise band 1010",
+       "patch": null,
+       "answer": null
+      },
+      {
+       "kind": "trial",
+       "knob": "DEFAULTS.checkpointEvery",
+       "name": null,
+       "value": 275,
+       "from": 250,
+       "before": 30355,
+       "ref": 30355,
+       "after": 29860,
+       "towardRef": 495,
+       "noise": 1010,
+       "seconds": 29.86,
+       "reason": "moved 495 toward the bar, inside the noise band 1010",
+       "patch": null,
+       "answer": null
+      },
+      {
+       "kind": "trial",
+       "knob": "DEFAULTS.chunk",
+       "name": null,
+       "value": 11,
+       "from": 10,
+       "before": 30355,
+       "ref": 30355,
+       "after": 29880,
+       "towardRef": 475,
+       "noise": 1010,
+       "seconds": 29.88,
+       "reason": "moved 475 toward the bar, inside the noise band 1010",
+       "patch": null,
+       "answer": null
+      },
+      {
+       "kind": "trial",
+       "knob": "DEFAULTS.ledgerBudgetMb",
+       "name": null,
+       "value": 18,
+       "from": 16,
+       "before": 30355,
+       "ref": 30355,
+       "after": 29850,
+       "towardRef": 505,
+       "noise": 1010,
+       "seconds": 29.85,
+       "reason": "moved 505 toward the bar, inside the noise band 1010",
+       "patch": null,
+       "answer": null
+      }
+     ],
+     "seconds": 240.36,
+     "copy": {
+      "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-TQGERR\\brain",
+      "mb": 60,
+      "deleted": true,
+      "freeMbAfter": 1041518
+     }
+    },
+    {
+     "gap": "gate-slow:test/multiply.test.mjs",
+     "operator": "author",
+     "kept": false,
+     "before": 30355,
+     "after": null,
+     "noise": 1010,
+     "closed": null,
+     "reason": "no answer",
+     "decision": "REFUSED: no answer (before 30355, after n/a, noise 1010)",
+     "control": {
+      "runs": [
+       30860,
+       29850
+      ],
+      "noise": 1010,
+      "how": "the spread of 2 baseline runs",
+      "reused": true,
+      "at": "2026-09-24T19:27:47.874Z"
+     },
+     "patch": null,
+     "author": null,
+     "trials": [
+      {
+       "kind": "trial",
+       "knob": null,
+       "name": null,
+       "value": null,
+       "from": null,
+       "before": 30355,
+       "ref": null,
+       "after": null,
+       "towardRef": null,
+       "noise": 1010,
+       "seconds": 0,
+       "reason": "refused: the model cell did not answer: ollama request failed: This operation was aborted",
+       "patch": null,
+       "answer": null
+      }
+     ],
+     "seconds": 115.74,
+     "copy": {
+      "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-8X7mjp\\brain",
+      "mb": 60,
+      "deleted": true,
+      "freeMbAfter": 1040859
+     },
+     "treeIdentical": true
+    }
+   ],
+   "completed": false,
+   "why": "only 1 of 138 gaps are eligible (a model-free trial of at most 5 minutes and at least one knob): missed:authorship.json: no file of the gap passes the ceiling | missed:compress.json: its trial takes 6 min, over 5 | missed:gaps.json: no numeric bar; no file of the gap passes the ceiling | missed:math.json: its trial needs the model; its trial takes 9 min, over 5 | missed:prune.json: no trial command; its trial carries no minutes; no file of the gap passes the ceiling | missed:schedule-autopilot.json: no file of the gap passes the ceiling | missed:venue-full.json: 0 knobs on core/brain.mjs, core/rng.mjs, generations/venue-suite.mjs, world/index.mjs, world/venue.mjs | unreadable:census-prune.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tools/organism-census.mjs | unreadable:census-scale-pruned.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tools/organism-census.mjs | unreadable:census-scale-static.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tools/organism-census.mjs | unreadable:census.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tools/organism-census.mjs | unreadable:compress-board10.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/compress.mjs | unreadable:grid-evaluation.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/grid.mjs | unreadable:grid.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/grid.mjs | unreadable:imagine.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/imagine.mjs | unreadable:ladder.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/ladder.mjs | unreadable:public-launch.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tools/budget.mjs | never:cloud-partial.json: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | never:operators-partial.json: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | never:public-gsm8k-board7-partial.json: no trial command; its trial carries no minutes; no numeric bar | never:public-gsm8k-partial.json: no trial command; its trial carries no minutes; no numeric bar | never:public-gsm8k-smoke-partial.json: no trial command; its trial carries no minutes; no numeric bar | never:public-humaneval-board7-partial.json: no trial command; its trial carries no minutes; no numeric bar | never:public-humaneval-partial.json: no trial command; its trial carries no minutes; no numeric bar | never:public-humaneval-smoke-partial.json: no trial command; its trial carries no minutes; no numeric bar | never:rows-partial.json: no trial command; its trial carries no minutes; no numeric bar | ladder:improvement: no file of the gap passes the ceiling | ladder:sets.arc.frontier: 0 knobs on capability/grid-library.mjs | ladder:sets.arc.orchestrator: 0 knobs on capability/grid-library.mjs | ladder:sets.gsm8k.row405: its trial needs the model; its trial takes 9 min, over 5 | ladder:sets.humaneval.alone: its trial needs the model; its trial takes 9 min, over 5 | ladder:sets.humaneval.frontier: its trial needs the model; its trial takes 9 min, over 5 | ladder:target: its trial needs the model; its trial takes 9 min, over 5 | gate-slow:test/autopilot.test.mjs: no file of the gap passes the ceiling | gate-slow:test/budget.test.mjs: no file of the gap passes the ceiling | gate-slow:test/capability.test.mjs: 0 knobs on capability/induce.mjs, capability/skills.mjs, capability/router.mjs, capability/market.mjs | gate-slow:test/cli.test.mjs: 0 knobs on bin/brain.mjs | gate-slow:test/hvheap.test.mjs: 0 knobs on cells/index.mjs, core/cell.mjs, core/rng.mjs, core/signal.mjs, core/simd.mjs, runtime/kernels.mjs | gate-slow:test/whole.test.mjs: 0 knobs on seeds/whole.mjs | open:notes/act.md#23b409fcac: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#329a8d7248: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#3a8c34749b: no trial command; its trial carries no minutes; no numeric bar | open:notes/act.md#400e5a6e2a: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#41c717499b: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#5426c8b75e: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#562f1d183a: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on cells/all.mjs | open:notes/act.md#5dbe390ef2: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#5e608b1e48: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#66d75ed368: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#6bab99da5a: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#6eba411ca3: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on world/policy.mjs | open:notes/act.md#76b7e1c829: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#7d9411724e: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on act/web.mjs | open:notes/act.md#a543ad9ec5: no trial command; its trial carries no minutes; no numeric bar | open:notes/act.md#a96e8cbf62: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#d5dcacd3bb: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on act/llm.mjs | open:notes/act.md#df725fe7db: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#f19abb8ae0: no trial command; its trial carries no minutes; no numeric bar | open:notes/act.md#feec588b80: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/autopilot.md#15e866c602: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/autopilot.md#2f47ce74dd: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/autopilot.md#565d3b322f: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bin/brain.mjs | open:notes/autopilot.md#5a65b371cc: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/autopilot.md#9dc27c1905: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/autopilot.md#ad495f43b0: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/autopilot.md#d61aacaa12: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on genome/emit.mjs | open:notes/capability.md#cd8001710f: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/capability.md#d801a5d955: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/cloud.md#0b2d454d36: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/cloud.mjs | open:notes/cloud.md#0b84c4b93f: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/cloud.md#5a48968577: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/cloud.md#7ae348f64e: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tools/deploy-host.mjs | open:notes/cloud.md#935666e3ad: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/cloud.md#bbd740fafc: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/cloud.md#c1b6ab06c7: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/cloud.md#d6bb473fd5: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/compress.md#304dc21047: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/compress.md#5ab18d6d52: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on cli/state.mjs | open:notes/compress.md#6b5df37ae0: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on simulate/attention.mjs | open:notes/compress.md#6ce511f957: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/compress.md#a678f606ce: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/compress.md#a749f6ebff: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/compress.md#cd7769783b: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on memory/semantic.mjs | open:notes/compress.md#ed6bf747b0: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/compress.md#f484d82cf6: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/semantic-cleanup.mjs | open:notes/compress.md#f8a9d4ed01: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/fhrr.md#459e7402a7: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/fhrr.md#b34ce052c9: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/grid.md#18f4fe055b: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/grid.md#55d8e7844b: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/grid.md#574b632dcd: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/public.mjs | open:notes/grid.md#615c158ca4: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/grid.md#cfff42c108: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/multiply.md#4053ae568c: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/multiply.md#8bec2efec1: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on core/persist.mjs | open:notes/multiply.md#962c1ad109: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/multiply.md#abcb57e9ee: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tools/budget.mjs | open:notes/multiply.md#d02fc9d3ad: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/native.md#1793cdf011: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/ladder.mjs | open:notes/native.md#2cecda0945: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on cells/basic.mjs | open:notes/native.md#5732ca5d4d: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/native.md#7976194c0d: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/native.md#8a1dafe428: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/native.md#f12e87bbf4: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/native.mjs | open:notes/spawn.md#22080723bb: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tasks/sequence.mjs | open:notes/spawn.md#294ada77a0: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/spawn.md#66c835d462: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/spawn.md#857597afe4: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/spawn.md#c9e353d91c: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on act/solve.mjs | open:notes/spawn.md#ea1235e013: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/spawn.md#f25dcc724e: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on capability/grid-search.mjs | open:notes/velocity.md#09cbb63e8c: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/velocity.md#7741a89f27: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/velocity.md#b33d19e38e: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/velocity.md#df6acf4043: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on capability/grid-search.mjs | dead:organism/gen-0: no file of the gap passes the ceiling | dead:organism/gen-0-2-3-1-3: no file of the gap passes the ceiling | dead:organism/gen-0-3-3-2-4: no file of the gap passes the ceiling | dead:organism/gen-0-3-4-2-4: no file of the gap passes the ceiling | dead:organism/gen-0-4-4-2-4: no file of the gap passes the ceiling | dead:organism/gen-0-5-3-2-4: no file of the gap passes the ceiling | dead:organism/gen-0-5-3-3-4: no file of the gap passes the ceiling | dead:organism/gen-0-5-4-1-4: no file of the gap passes the ceiling | dead:organism/gen-0-5-4-2-4: no file of the gap passes the ceiling | dead:organism/gen-0-5-5-2-4: no file of the gap passes the ceiling | dead:organism/gen-0-6-4-2-4: no file of the gap passes the ceiling | dead:organism/gen-1-4-3-2-4: no file of the gap passes the ceiling | dead:organism/gen-1-4-3-3-4: no file of the gap passes the ceiling | dead:organism/gen-1-4-4-1-4: no file of the gap passes the ceiling | dead:organism/gen-1-4-4-2-4: no file of the gap passes the ceiling | dead:organism/gen-1-5-3-1-3: no file of the gap passes the ceiling | dead:organism/gen-1-5-3-1-4: no file of the gap passes the ceiling | dead:organism/gen-1-5-4-2-4: no file of the gap passes the ceiling | dead:organism/gen-1-6-4-1-4: no file of the gap passes the ceiling | dead:organism/gen-2-0-4-1-4: no file of the gap passes the ceiling | dead:organism/gen-2-4-3-3-4: no file of the gap passes the ceiling | dead:organism/scale-52000: no trial command; its trial carries no minutes; no file of the gap passes the ceiling"
+  }
+ },
+ "statement": "Planted 6 of 6: 1 PASS (KEPT GAIN 10 to 14: before 64, after 96 (search run and confirmation 96, the less favourable kept), toward 32 against noise 1.55, closed true, gate on the copy GREEN in 442.19 s; control: the unpatched trial (today's baseline, reused from 2026-09-24T18:54:33.979Z) read 64 and 64, noise band 1.55 (the 2 baseline runs agree exactly, so 5 percent of the distance to the bar)); 2 PASS (KEPT fast: before 50, after 97 (search run and confirmation 97, the less favourable kept), toward 47 against noise 2.25, closed true, gate on the copy GREEN in 463.2 s; control: the unpatched trial run twice on this copy read 50 and 50, noise band 2.25 (the 2 baseline runs agree exactly, so 5 percent of the distance to the bar)); 3 PASS (REFUSED: no knob step moved the metric toward the bar by more than the noise band in 1 trial(s) (before 70, after n/a, noise 0.5); control: the unpatched trial (today's baseline, reused from 2026-09-24T18:54:31.119Z) read 70 and 70, noise band 0.5 (the 2 baseline runs agree exactly, so 5 percent of the distance to the bar)); 4 PASS (REFUSED: outside the files list (before 64, after n/a, noise 1.55); control: the unpatched trial (today's baseline, reused from 2026-09-24T18:54:33.979Z) read 64 and 64, noise band 1.55 (the 2 baseline runs agree exactly, so 5 percent of the distance to the bar)); 5 PASS (REFUSED: no knob step moved the metric toward the bar by more than the noise band in 1 trial(s) (before 50, after n/a, noise 1); control: the unpatched trial (today's baseline, reused from 2026-09-24T18:54:36.804Z) read 50.5 and 49.5, noise band 1 (the spread of 2 baseline runs)); 6 PASS (KEPT qwen3:30b-a3b: before 64, after 96 (search run and confirmation 96, the less favourable kept), toward 32 against noise 1.55, closed true, gate on the copy GREEN in 472.36 s; control: the unpatched trial (today's baseline, reused from 2026-09-24T18:54:33.979Z) read 64 and 64, noise band 1.55 (the 2 baseline runs agree exactly, so 5 percent of the distance to the bar)). REAL: state/self/gaps.jsonl (138 gap lines); eligible 1 of 138, picked gate-slow:test/multiply.test.mjs: gate-slow:test/multiply.test.mjs knob-tune REFUSED: no knob step moved the metric toward the bar by more than the noise band in 6 trial(s) (before 30355, after n/a, noise 1010); gate-slow:test/multiply.test.mjs author REFUSED: no answer (before 30355, after n/a, noise 1010); the real set did NOT complete: only 1 of 138 gaps are eligible (a model-free trial of at most 5 minutes and at least one knob): missed:authorship.json: no file of the gap passes the ceiling | missed:compress.json: its trial takes 6 min, over 5 | missed:gaps.json: no numeric bar; no file of the gap passes the ceiling | missed:math.json: its trial needs the model; its trial takes 9 min, over 5 | missed:prune.json: no trial command; its trial carries no minutes; no file of the gap passes the ceiling | missed:schedule-autopilot.json: no file of the gap passes the ceiling | missed:venue-full.json: 0 knobs on core/brain.mjs, core/rng.mjs, generations/venue-suite.mjs, world/index.mjs, world/venue.mjs | unreadable:census-prune.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tools/organism-census.mjs | unreadable:census-scale-pruned.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tools/organism-census.mjs | unreadable:census-scale-static.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tools/organism-census.mjs | unreadable:census.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tools/organism-census.mjs | unreadable:compress-board10.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/compress.mjs | unreadable:grid-evaluation.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/grid.mjs | unreadable:grid.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/grid.mjs | unreadable:imagine.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/imagine.mjs | unreadable:ladder.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/ladder.mjs | unreadable:public-launch.json: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tools/budget.mjs | never:cloud-partial.json: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | never:operators-partial.json: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | never:public-gsm8k-board7-partial.json: no trial command; its trial carries no minutes; no numeric bar | never:public-gsm8k-partial.json: no trial command; its trial carries no minutes; no numeric bar | never:public-gsm8k-smoke-partial.json: no trial command; its trial carries no minutes; no numeric bar | never:public-humaneval-board7-partial.json: no trial command; its trial carries no minutes; no numeric bar | never:public-humaneval-partial.json: no trial command; its trial carries no minutes; no numeric bar | never:public-humaneval-smoke-partial.json: no trial command; its trial carries no minutes; no numeric bar | never:rows-partial.json: no trial command; its trial carries no minutes; no numeric bar | ladder:improvement: no file of the gap passes the ceiling | ladder:sets.arc.frontier: 0 knobs on capability/grid-library.mjs | ladder:sets.arc.orchestrator: 0 knobs on capability/grid-library.mjs | ladder:sets.gsm8k.row405: its trial needs the model; its trial takes 9 min, over 5 | ladder:sets.humaneval.alone: its trial needs the model; its trial takes 9 min, over 5 | ladder:sets.humaneval.frontier: its trial needs the model; its trial takes 9 min, over 5 | ladder:target: its trial needs the model; its trial takes 9 min, over 5 | gate-slow:test/autopilot.test.mjs: no file of the gap passes the ceiling | gate-slow:test/budget.test.mjs: no file of the gap passes the ceiling | gate-slow:test/capability.test.mjs: 0 knobs on capability/induce.mjs, capability/skills.mjs, capability/router.mjs, capability/market.mjs | gate-slow:test/cli.test.mjs: 0 knobs on bin/brain.mjs | gate-slow:test/hvheap.test.mjs: 0 knobs on cells/index.mjs, core/cell.mjs, core/rng.mjs, core/signal.mjs, core/simd.mjs, runtime/kernels.mjs | gate-slow:test/whole.test.mjs: 0 knobs on seeds/whole.mjs | open:notes/act.md#23b409fcac: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#329a8d7248: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#3a8c34749b: no trial command; its trial carries no minutes; no numeric bar | open:notes/act.md#400e5a6e2a: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#41c717499b: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#5426c8b75e: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#562f1d183a: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on cells/all.mjs | open:notes/act.md#5dbe390ef2: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#5e608b1e48: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#66d75ed368: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#6bab99da5a: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#6eba411ca3: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on world/policy.mjs | open:notes/act.md#76b7e1c829: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#7d9411724e: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on act/web.mjs | open:notes/act.md#a543ad9ec5: no trial command; its trial carries no minutes; no numeric bar | open:notes/act.md#a96e8cbf62: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#d5dcacd3bb: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on act/llm.mjs | open:notes/act.md#df725fe7db: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/act.md#f19abb8ae0: no trial command; its trial carries no minutes; no numeric bar | open:notes/act.md#feec588b80: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/autopilot.md#15e866c602: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/autopilot.md#2f47ce74dd: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/autopilot.md#565d3b322f: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bin/brain.mjs | open:notes/autopilot.md#5a65b371cc: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/autopilot.md#9dc27c1905: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/autopilot.md#ad495f43b0: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/autopilot.md#d61aacaa12: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on genome/emit.mjs | open:notes/capability.md#cd8001710f: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/capability.md#d801a5d955: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/cloud.md#0b2d454d36: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/cloud.mjs | open:notes/cloud.md#0b84c4b93f: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/cloud.md#5a48968577: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/cloud.md#7ae348f64e: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tools/deploy-host.mjs | open:notes/cloud.md#935666e3ad: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/cloud.md#bbd740fafc: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/cloud.md#c1b6ab06c7: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/cloud.md#d6bb473fd5: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/compress.md#304dc21047: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/compress.md#5ab18d6d52: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on cli/state.mjs | open:notes/compress.md#6b5df37ae0: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on simulate/attention.mjs | open:notes/compress.md#6ce511f957: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/compress.md#a678f606ce: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/compress.md#a749f6ebff: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/compress.md#cd7769783b: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on memory/semantic.mjs | open:notes/compress.md#ed6bf747b0: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/compress.md#f484d82cf6: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/semantic-cleanup.mjs | open:notes/compress.md#f8a9d4ed01: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/fhrr.md#459e7402a7: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/fhrr.md#b34ce052c9: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/grid.md#18f4fe055b: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/grid.md#55d8e7844b: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/grid.md#574b632dcd: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/public.mjs | open:notes/grid.md#615c158ca4: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/grid.md#cfff42c108: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/multiply.md#4053ae568c: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/multiply.md#8bec2efec1: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on core/persist.mjs | open:notes/multiply.md#962c1ad109: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/multiply.md#abcb57e9ee: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tools/budget.mjs | open:notes/multiply.md#d02fc9d3ad: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/native.md#1793cdf011: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/ladder.mjs | open:notes/native.md#2cecda0945: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on cells/basic.mjs | open:notes/native.md#5732ca5d4d: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/native.md#7976194c0d: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/native.md#8a1dafe428: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/native.md#f12e87bbf4: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on bench/native.mjs | open:notes/spawn.md#22080723bb: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on tasks/sequence.mjs | open:notes/spawn.md#294ada77a0: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/spawn.md#66c835d462: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/spawn.md#857597afe4: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/spawn.md#c9e353d91c: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on act/solve.mjs | open:notes/spawn.md#ea1235e013: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/spawn.md#f25dcc724e: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on capability/grid-search.mjs | open:notes/velocity.md#09cbb63e8c: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/velocity.md#7741a89f27: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/velocity.md#b33d19e38e: no trial command; its trial carries no minutes; no numeric bar; no file of the gap passes the ceiling | open:notes/velocity.md#df6acf4043: no trial command; its trial carries no minutes; no numeric bar; 0 knobs on capability/grid-search.mjs | dead:organism/gen-0: no file of the gap passes the ceiling | dead:organism/gen-0-2-3-1-3: no file of the gap passes the ceiling | dead:organism/gen-0-3-3-2-4: no file of the gap passes the ceiling | dead:organism/gen-0-3-4-2-4: no file of the gap passes the ceiling | dead:organism/gen-0-4-4-2-4: no file of the gap passes the ceiling | dead:organism/gen-0-5-3-2-4: no file of the gap passes the ceiling | dead:organism/gen-0-5-3-3-4: no file of the gap passes the ceiling | dead:organism/gen-0-5-4-1-4: no file of the gap passes the ceiling | dead:organism/gen-0-5-4-2-4: no file of the gap passes the ceiling | dead:organism/gen-0-5-5-2-4: no file of the gap passes the ceiling | dead:organism/gen-0-6-4-2-4: no file of the gap passes the ceiling | dead:organism/gen-1-4-3-2-4: no file of the gap passes the ceiling | dead:organism/gen-1-4-3-3-4: no file of the gap passes the ceiling | dead:organism/gen-1-4-4-1-4: no file of the gap passes the ceiling | dead:organism/gen-1-4-4-2-4: no file of the gap passes the ceiling | dead:organism/gen-1-5-3-1-3: no file of the gap passes the ceiling | dead:organism/gen-1-5-3-1-4: no file of the gap passes the ceiling | dead:organism/gen-1-5-4-2-4: no file of the gap passes the ceiling | dead:organism/gen-1-6-4-1-4: no file of the gap passes the ceiling | dead:organism/gen-2-0-4-1-4: no file of the gap passes the ceiling | dead:organism/gen-2-4-3-3-4: no file of the gap passes the ceiling | dead:organism/scale-52000: no trial command; its trial carries no minutes; no file of the gap passes the ceiling. Model calls to qwen3:30b-a3b: 2 (55.92 s answered, 115.11 s no answer: ollama request failed: This operation was aborted). Copies: 10 made, 10 deleted, 0 left under C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run, 1040859 MB free after. Bar NOT MET: planted 6 of 6 and the real set completing with every number printed.",
+ "control": "every claim: the unpatched trial run twice on the same copy (or today's baseline for the same command and file bytes), with the noise band beside it",
+ "modelCalls": {
+  "n": 2,
+  "model": "qwen3:30b-a3b",
+  "calls": [
+   {
+    "round": "check 6: the real qwen3:30b-a3b asked ONCE (budget 1 call, wall 120 s) on planted-tune",
+    "gap": "planted-tune",
+    "ms": 55922,
+    "seconds": 55.92,
+    "ok": true,
+    "model": "qwen3:30b-a3b",
+    "reason": null,
+    "promptChars": 1050
+   },
+   {
+    "round": "real gate-slow:test/multiply.test.mjs: the author once (qwen3:30b-a3b, 1 call, wall 120 s)",
+    "gap": "gate-slow:test/multiply.test.mjs",
+    "ms": 115112,
+    "seconds": 115.11,
+    "ok": false,
+    "model": "qwen3:30b-a3b",
+    "reason": "ollama request failed: This operation was aborted",
+    "promptChars": 52999
+   }
+  ],
+  "fixtureCalls": 2
+ },
+ "kept": [
+  {
+   "where": "planted check 1",
+   "author": "organism (knob-tune)",
+   "patch": "--- a/planted/tune.mjs\n+++ b/planted/tune.mjs\n@@ -1,4 +1,4 @@\n // planted/tune.mjs: a planted module whose metric is a function of one knob.\n-export const GAIN = 10; // knob [4, 20] 2\n+export const GAIN = 14; // knob [4, 20] 2\n export function score(g = GAIN) { return 100 - (g - 16) ** 2; }\n \n",
+   "before": 64,
+   "after": 96,
+   "noise": 1.55,
+   "onRealTree": false
+  },
+  {
+   "where": "planted check 2",
+   "author": "organism (strategy-swap)",
+   "patch": "--- a/planted/strategy.mjs\n+++ b/planted/strategy.mjs\n@@ -5,5 +5,5 @@\n   mid: () => 80,\n };\n-export const STRATEGY = 'slow';\n+export const STRATEGY = 'fast';\n export function score() { return STRATEGIES[STRATEGY](); }\n \n",
+   "before": 50,
+   "after": 97,
+   "noise": 2.25,
+   "onRealTree": false
+  },
+  {
+   "where": "planted check 6",
+   "author": "organism (author, qwen3:30b-a3b)",
+   "patch": "--- a/planted/tune.mjs\n+++ b/planted/tune.mjs\n@@ -1,2 +1,2 @@\n-export const GAIN = 10; // knob [4, 20] 2\n+export const GAIN = 14; // knob [4, 20] 2\n",
+   "before": 64,
+   "after": 96,
+   "noise": 1.55,
+   "onRealTree": false
+  }
+ ],
+ "copies": {
+  "made": 10,
+  "deleted": 10,
+  "leftUnderTmp": [],
+  "freeMbAfter": 1040859,
+  "tmp": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run",
+  "list": [
+   {
+    "label": "check 1: knob-tune on planted-tune (GAIN 10, metric 64, bar 95), the real gate deciding the keep",
+    "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-0u0BZs\\brain",
+    "mb": 60,
+    "deleted": true,
+    "freeMbAfter": 1040695
+   },
+   {
+    "label": "check 2: strategy-swap on planted-strategy (slow 50 selected; fast 97 and mid 80 declared; bar 95)",
+    "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-qXSsNL\\brain",
+    "mb": 60,
+    "deleted": true,
+    "freeMbAfter": 1040668
+   },
+   {
+    "label": "check 3: knob-tune on planted-edge (EDGE 20 at the top of its band [4, 20], step 2, bar 80)",
+    "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-Ffs3fo\\brain",
+    "mb": 60,
+    "deleted": true,
+    "freeMbAfter": 1040675
+   },
+   {
+    "label": "check 4a: author (a fixture answer, no socket) on planted-tune, the diff patches planted/strategy.mjs",
+    "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-Zao0ZZ\\brain",
+    "mb": 60,
+    "deleted": true,
+    "freeMbAfter": 1040675
+   },
+   {
+    "label": "check 4b: author (a fixture answer, no socket) on a gap that also lists self/improve.mjs, the diff patches self/improve.mjs",
+    "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-Ypob7i\\brain",
+    "mb": 60,
+    "deleted": true,
+    "freeMbAfter": 1040674
+   },
+   {
+    "label": "check 5: knob-tune on planted-drift (a bare \"// knob\" DRIFT 1.0, band 0.7 to 1.5, step 0.1; a planted jitter of 0.5 alternating by run)",
+    "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-DghWTv\\brain",
+    "mb": 60,
+    "deleted": true,
+    "freeMbAfter": 1040673
+   },
+   {
+    "label": "check 6: the real qwen3:30b-a3b asked ONCE (budget 1 call, wall 120 s) on planted-tune",
+    "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-KCx6jQ\\brain",
+    "mb": 60,
+    "deleted": true,
+    "freeMbAfter": 1040655
+   },
+   {
+    "label": "the plant",
+    "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-LvX4kB\\brain",
+    "mb": 60,
+    "deleted": true,
+    "freeMbAfter": 1040716
+   },
+   {
+    "label": "real gate-slow:test/multiply.test.mjs: knob-tune (at most 6 trials)",
+    "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-TQGERR\\brain",
+    "mb": 60,
+    "deleted": true,
+    "freeMbAfter": 1041518
+   },
+   {
+    "label": "real gate-slow:test/multiply.test.mjs: the author once (qwen3:30b-a3b, 1 call, wall 120 s)",
+    "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\b20b8e7e-1cf2-4327-8295-4d76361d02e2\\scratchpad\\ops-run\\brain-operators-8X7mjp\\brain",
+    "mb": 60,
+    "deleted": true,
+    "freeMbAfter": 1040859
+   }
+  ]
+ },
+ "realTree": {
+  "plantedDirAbsent": true,
+  "realGapFilesIdentical": true
+ },
+ "peakRssMb": 1862,
+ "seconds": 1812.09
+}

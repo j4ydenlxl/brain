@@ -2,7 +2,11 @@
 //
 // A copied tree is built in a temp dir holding the REAL gate program (bench/gate.mjs, copied
 // byte for byte, so the gate that rules here is the gate that rules the brain) and planted
-// source and tests. Then:
+// source and tests. Since Boards 10 and 12 that program also reads tools/budget.mjs, the census
+// of every seed under organism/ and bench/verdicts/boundary.json, and is RED without them whatever
+// the tests do; each tree it rules here gets them from plantGateRows (test/autopilot-plant.mjs):
+// the real tools/budget.mjs, one planted seed with a census naming its manifest hash, and a
+// boundary verdict with no boundary (a planted tree starts no worker). Then:
 //
 //   stage 1  a planted failing test and a candidate patch that fixes it. The autopilot must
 //            write it with no human, the gate must go from red to GREEN, and the patch must
@@ -32,8 +36,22 @@
 //   stage 5  the share arithmetic of tools/authorship.mjs over the wet copy's authored lines
 //            and the real docs/BOARDS.json.
 //
-// Writes bench/verdicts/autopilot.json (isTheBar true) once, when every stage ran; it
-// OVERWRITES the Board 8 bar of the same name, and its statement says so. A run that throws
+// Board 14 added (the first 21 checks are those of Boards 8 and 10, unchanged):
+//
+//   stage 6  THE SOAK on a planted tree (test/operators-plant.mjs, a fixture gate): state/self/STOP
+//            refuses the soak with exit 0 before any lock, soak file or copy; one soak then takes
+//            the planted gap from the gaps source through knob-tune on a copy (self/improve.mjs),
+//            writes it to the tree behind the gate, appends "organism (knob-tune)" to
+//            state/self/authored.jsonl, rebuilds the ledger and prints the gap CLOSED; its
+//            MAGNITUDE line sets the organism rate beside orchestratorRate() (exported here, read
+//            from docs/BOARDS.json and docs/LOG.md).
+//
+// Importing this file runs nothing (self/autopilot.mjs imports orchestratorRate for the soak);
+// `node bench/autopilot.mjs` runs the bench.
+//
+// Writes bench/verdicts/autopilot.json (isTheBar true, barMet) once, when every stage ran; it
+// OVERWRITES the Board 10 bar of the same name (copied first to autopilot-board10.json), and its
+// statement says so. A run that throws
 // writes autopilot-partial.json (isTheBar false) instead. Every child declares its heap.
 import {
   mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, existsSync, cpSync, readdirSync, statSync,
@@ -42,9 +60,10 @@ import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { runAutopilot, renderRun, hashBytes, SOURCE_ORDER, AUTHORED_REL, makeModelAuthor } from '../self/autopilot.mjs';
+import { runAutopilot, renderRun, hashBytes, SOURCE_ORDER, AUTHORED_REL, makeModelAuthor, runSoak, runFromCli } from '../self/autopilot.mjs';
 import { computeShare, readBoards, fmtShare } from '../tools/authorship.mjs';
-import { plantWet, plantModel, SEED_EDGES } from '../test/autopilot-plant.mjs';
+import { plantWet, plantModel, plantGateRows, SEED_EDGES } from '../test/autopilot-plant.mjs';
+import { plantInto, plantGaps } from '../test/operators-plant.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
@@ -52,9 +71,9 @@ const COMMAND = 'node bench/autopilot.mjs';
 const VERDICT = path.join(HERE, 'verdicts', 'autopilot.json');
 const HEAP = '--max-old-space-size=2048';
 const t0 = Date.now();
+const isMain = Boolean(process.argv[1]) && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 
-const TMP = mkdtempSync(path.join(tmpdir(), 'bench-autopilot-'));
-const TREE = path.join(TMP, 'tree');
+let TMP = null, TREE = null;
 const put = (rel, text) => { const f = path.join(TREE, rel); mkdirSync(path.dirname(f), { recursive: true }); writeFileSync(f, text); };
 const bytesOf = (rel) => readFileSync(path.join(TREE, rel));
 
@@ -121,11 +140,86 @@ const perSourceLines = (r) => {
 };
 const walls = (r) => { const w = {}; for (const d of r?.decisions || []) if (d.candidate) { const k = (d.source || 'given') + ' ' + d.decision + (d.wall ? ' at ' + d.wall : ''); w[k] = (w[k] || 0) + 1; } return w; };
 
+// ---------------------------------------------------------------- the orchestrator's rate (Board 14)
+const DAY_MS = 86_400_000;
+// docs/LOG.md times are America/New_York; every dated line of this project falls inside EDT (UTC-4)
+const LOG_UTC_OFFSET_H = 4;
+/**
+ * The orchestrator's rate, read from disk: boards landed and bars met per day. A board has landed
+ * when a dated line of docs/LOG.md says "BOARD <n> ... LANDED" or "... DONE" (within 40 characters,
+ * no comma, colon or semicolon between; a DIED line does not match) or docs/BOARDS.json lists it
+ * launched with an "at". Bars met are read from the landed line: "<n> bars met", or the names after
+ * "MET " up to the next semicolon; a landed line with neither is listed as unparsed, so barsMet is a
+ * floor. The window runs from the first dated line of docs/LOG.md to the last landing.
+ * Cross-check: bench/verdicts/*.json with isTheBar true and a top-level barMet true.
+ */
+export function orchestratorRate({ root = ROOT } = {}) {
+  const logFile = path.join(root, 'docs', 'LOG.md');
+  const boardsFile = path.join(root, 'docs', 'BOARDS.json');
+  let text;
+  try { text = readFileSync(logFile, 'utf8'); } catch { return { ok: false, reason: 'no docs/LOG.md under ' + root }; }
+  const sources = ['docs/LOG.md'];
+  const DATED = /^- (\d{4})-(\d{2})-(\d{2})(?: (\d{2}):(\d{2}))?\b(.*)$/;
+  const LANDED = /\bBOARD (\d+)\b[^,;:]{0,40}?\b(LANDED|DONE)\b/i;
+  const landed = new Map();
+  let firstMs = null, firstLine = null;
+  text.split('\n').forEach((raw, i) => {
+    const m = DATED.exec(raw.replace(/\r$/, ''));
+    if (!m) return;
+    const atMs = Date.UTC(+m[1], +m[2] - 1, +m[3], (m[4] ? +m[4] : 0) + LOG_UTC_OFFSET_H, m[5] ? +m[5] : 0);
+    if (firstMs === null || atMs < firstMs) { firstMs = atMs; firstLine = i + 1; }
+    const L = LANDED.exec(m[6]);
+    if (!L || !m[4]) return;
+    const board = Number(L[1]);
+    if (landed.has(board)) return;
+    const count = /(\d+) bars met/i.exec(m[6]);
+    const named = /\bMET ([^;]+)/.exec(m[6]);
+    const bars = count ? Number(count[1]) : named ? named[1].split(',').map((s) => s.trim()).filter(Boolean).length : null;
+    landed.set(board, { board, atMs, at: new Date(atMs).toISOString(), from: 'docs/LOG.md:' + (i + 1), bars });
+  });
+  try {
+    const j = JSON.parse(readFileSync(boardsFile, 'utf8'));
+    const list = Array.isArray(j) ? j : Array.isArray(j.boards) ? j.boards : Object.values(j);
+    sources.push('docs/BOARDS.json');
+    for (const b of list) {
+      if (!b || !b.launched || !b.at || landed.has(Number(b.board))) continue;
+      const atMs = Date.parse(b.at);
+      if (Number.isFinite(atMs)) landed.set(Number(b.board), { board: Number(b.board), atMs, at: b.at, from: 'docs/BOARDS.json', bars: null });
+    }
+  } catch { /* the log alone */ }
+  const rows = [...landed.values()].sort((a, b) => a.board - b.board);
+  if (!rows.length || firstMs === null) return { ok: false, reason: 'no landed board in docs/LOG.md or docs/BOARDS.json', sources };
+  const lastMs = Math.max(...rows.map((r) => r.atMs));
+  const windowDays = Math.max(1e-9, (lastMs - firstMs) / DAY_MS);
+  const barsMet = rows.reduce((s, r) => s + (r.bars || 0), 0);
+  const unparsed = rows.filter((r) => r.bars === null).map((r) => r.board);
+  let verdictBarsMet = 0;
+  try {
+    const vd = path.join(root, 'bench', 'verdicts');
+    for (const n of readdirSync(vd)) {
+      if (!n.endsWith('.json')) continue;
+      try { const v = JSON.parse(readFileSync(path.join(vd, n), 'utf8')); if (v && v.isTheBar === true && v.barMet === true) verdictBarsMet++; } catch { /* not a verdict */ }
+    }
+    sources.push('bench/verdicts/*.json');
+  } catch { /* none */ }
+  const r4 = (x) => Math.round(x * 1e4) / 1e4;
+  return {
+    ok: true, sources, boards: rows.length, boardList: rows.map((r) => r.board), barsMet, barsMetUnparsed: unparsed, verdictBarsMet,
+    windowFrom: new Date(firstMs).toISOString(), windowFromLine: 'docs/LOG.md:' + firstLine, windowTo: new Date(lastMs).toISOString(), windowDays: r4(windowDays),
+    boardsPerDay: r4(rows.length / windowDays), barsMetPerDay: r4(barsMet / windowDays), boardsPerHour: r4(rows.length / windowDays / 24), barsMetPerHour: r4(barsMet / windowDays / 24),
+    rows: rows.map(({ board, at, from, bars }) => ({ board, at, from, bars })),
+  };
+}
+
+async function main() {
+TMP = mkdtempSync(path.join(tmpdir(), 'bench-autopilot-'));
+TREE = path.join(TMP, 'tree');
+
 // the verdict this run overwrites: Board 8's, carried forward when a Board 10 run already overwrote it
 let prior = null;
 try {
   const p = JSON.parse(readFileSync(VERDICT, 'utf8'));
-  prior = p.board === 10 && p.overwrote ? p.overwrote : { board: 8, at: p.at, passed: p.passed, total: p.total, verdict: p.verdict, command: p.command };
+  prior = p.board === 14 && p.overwrote ? p.overwrote : { board: p.board ?? 8, at: p.at, passed: p.passed, total: p.total, verdict: p.verdict, command: p.command, copy: p.board === 10 ? 'bench/verdicts/autopilot-board10.json' : null };
 } catch { prior = null; }
 
 // a daemon (daemon/run.mjs) refuses its self-code step while a live pid holds a flag in state/bench-flags/:
@@ -140,12 +234,13 @@ try {
   // ---------------------------------------------------------------- the copied tree
   mkdirSync(TREE, { recursive: true });
   cpSync(path.join(ROOT, 'bench', 'gate.mjs'), path.join(TREE, 'bench', 'gate.mjs'));
+  const gateRows = plantGateRows(TREE, ROOT);
   const gateHash = hashBytes(readFileSync(path.join(ROOT, 'bench', 'gate.mjs')));
   put('lib/sum.mjs', SUM_BUGGY);
   put('test/sum.test.mjs', SUM_TEST);
   put('lib/scale.mjs', SCALE);
   put('test/area.test.mjs', AREA_TEST);
-  console.log('tree ' + TREE + '  gate program bench/gate.mjs ' + gateHash.slice(0, 12) + ' (copied from the brain)');
+  console.log('tree ' + TREE + '  gate program bench/gate.mjs ' + gateHash.slice(0, 12) + ' (copied from the brain); its rows read ' + gateRows.join(', '));
 
   // ---------------------------------------------------------------- stage 1: fix, kept
   console.log('\nstage 1: planted failing test test/sum.test.mjs, candidate patch lib/sum.mjs');
@@ -225,6 +320,7 @@ try {
   // ---------------------------------------------------------------- stage 4a: one wet pass, non-mutant sources
   const WET = path.join(TMP, 'wet');
   plantWet(WET, ROOT);
+  plantGateRows(WET, ROOT);
   const edgesBefore = readFileSync(path.join(WET, 'seed/gen-p/edges-000.mjs'), 'utf8');
   console.log('\nstage 4a: a planted repository copy ' + WET + ' (the real gate program, mind/imagine.mjs, a census seed), the wet CLI run with the model author off');
   const wet = cliJson(['--auto', '--json', '--root', WET, '--author', 'off'], 900_000);
@@ -251,6 +347,7 @@ try {
   // ---------------------------------------------------------------- stage 4b: the model cell
   const MOD = path.join(TMP, 'model');
   plantModel(MOD, ROOT);
+  plantGateRows(MOD, ROOT);
   const closed = makeModelAuthor({ model: 'claude-opus' })({ key: 'k', test: 'test/mean.test.mjs' }, { root: MOD });
   const probe = makeModelAuthor({});
   console.log('\nstage 4b: the model cell ' + probe.config.model + ' at ' + probe.config.base + ' on a planted failing mean with an OPEN: line, at most one model call');
@@ -274,22 +371,77 @@ try {
   check('stage 5 the share counts the wet copy\'s kept patches over kept patches plus board files', share.numerator === authoredWet.filter((l) => l.organism).length && share.denominator === authoredWet.length + share.boardFiles && share.boardFiles > 0,
     fmtShare(share.numerator, share.denominator));
 
+  // ---------------------------------------------------------------- stage 6 (Board 14): THE SOAK on a planted tree
+  const SOAKT = path.join(TMP, 'soak');
+  const SOAK_TMP = path.join(TMP, 'soak-tmp');
+  mkdirSync(SOAK_TMP, { recursive: true });
+  plantInto(SOAKT, { gate: 'fake' });
+  const tuneGap = { ...plantGaps().tune, trial: { ...plantGaps().tune.trial, minutes: 0.01 } };
+  const writeGaps = (root, lines) => { const f = path.join(root, 'state', 'self', 'gaps.jsonl'); mkdirSync(path.dirname(f), { recursive: true }); writeFileSync(f, lines.map((l) => JSON.stringify(l)).join('\n') + (lines.length ? '\n' : '')); };
+  writeGaps(SOAKT, [tuneGap]);
+  const soakFilesOf = (root) => { try { return readdirSync(path.join(root, 'state', 'self')).filter((n) => /^soak-.+\.json$/.test(n)); } catch { return []; } };
+  console.log('\nstage 6: THE SOAK (Board 14) on a planted tree ' + SOAKT + ' (test/operators-plant.mjs, a fixture gate): STOP, then one gap closed by the organism, then the orchestrator rate');
+  // 6a the switch, through the CLI entry (no child is spawned) and through runSoak itself
+  writeFileSync(path.join(SOAKT, 'state', 'self', 'STOP'), 'stop\n');
+  const stopCli = runFromCli({ soak: 1, root: SOAKT, author: 'off' });
+  const stopRun = await runSoak({ soak: 1, root: SOAKT, author: 'off', tmpBase: SOAK_TMP, log: (l) => console.log('  | ' + l) });
+  check('stage 6a state/self/STOP refuses the soak before any lock, soak file or copy (exit 0)', stopCli.exitCode === 0 && stopCli.stopped === true && stopRun.stopped === true && stopRun.exitCode === 0
+    && readdirSync(SOAK_TMP).length === 0 && soakFilesOf(SOAKT).length === 0 && !existsSync(path.join(SOAKT, 'state', 'self-code', 'autopilot.lock')),
+  'cli exit ' + stopCli.exitCode + ' (' + stopCli.reason + '), runSoak ' + stopRun.reason + ', temp entries ' + readdirSync(SOAK_TMP).length + ', soak files ' + soakFilesOf(SOAKT).length);
+  rmSync(path.join(SOAKT, 'state', 'self', 'STOP'), { force: true });
+  // 6b one soak: the gap source, knob-tune through self/improve.mjs on a copy, the gate on the tree, the ledger rebuilt
+  const remeasure = async ({ root }) => {
+    const r = spawnSync(process.execPath, [HEAP, path.join('planted', 'tune-bench.mjs')], { cwd: root, encoding: 'utf8', windowsHide: true });
+    const v = Number((/metric (\S+)/.exec(String(r.stdout)) || [])[1]);
+    const lines = Number.isFinite(v) && v >= tuneGap.bar ? [] : [{ ...tuneGap, measured: Number.isFinite(v) ? v : null }];
+    writeGaps(root, lines);
+    return { lines };
+  };
+  const tuneBefore = readFileSync(path.join(SOAKT, 'planted', 'tune.mjs'), 'utf8');
+  const s6t = Date.now();
+  const r6 = await runSoak({ soak: 0.5, root: SOAKT, author: 'off', sources: 'gaps', 'gate-minutes': 0, 'idle-step-ms': 250, tmpBase: SOAK_TMP, refreshLedger: remeasure, rateFn: orchestratorRate, log: (l) => console.log('  | ' + l) });
+  const s6ms = Date.now() - s6t;
+  const tuneAfter = readFileSync(path.join(SOAKT, 'planted', 'tune.mjs'), 'utf8');
+  const authored6 = readAuthoredLines(SOAKT);
+  const ledger6 = readLedger(SOAKT).filter((l) => l.soak && l.source === 'gaps');
+  const kd = ledger6.find((l) => l.decision === 'kept') || {};
+  const k6 = (r6.kept || [])[0] || {};
+  const a6 = authored6.find((l) => l.from === 'gaps:planted-tune') || {};
+  const closed6 = (r6.refreshes || []).find((x) => x.why === 'kept') || {};
+  check('stage 6b a gaps-source candidate flows source -> knob-tune on a copy -> gate GREEN on the tree -> KEPT, before and after on the decision line', r6.exitCode === 0 && kd.operator === 'knob-tune' && kd.before === 64 && kd.after === 96 && Number.isFinite(kd.noise) && kd.gate?.verdict === 'GREEN'
+    && /export const GAIN = 14;/.test(tuneAfter) && /export const GAIN = 10;/.test(tuneBefore),
+  'decision ' + kd.decision + ' by ' + kd.author + ', before ' + kd.before + ' after ' + kd.after + ' noise ' + kd.noise + ', gate ' + kd.gate?.verdict + ', ' + s6ms + ' ms');
+  check('stage 6c the kept gap patch appends its authorship line: author organism (knob-tune), from gaps:planted-tune', authored6.length === 1 && a6.author === 'organism (knob-tune)' && a6.operator === 'knob-tune' && a6.organism === true && a6.before === 64 && a6.after === 96 && /^[0-9a-f]{64}$/.test(a6.hashAfter || ''),
+    JSON.stringify({ author: a6.author, from: a6.from, before: a6.before, after: a6.after, files: a6.files }));
+  check('stage 6d after the keep the ledger was rebuilt and the gap printed CLOSED; no copy left on disk', closed6.closed === true && r6.copies?.leftOnDisk === 0 && r6.copies?.tmpRemoved === true && r6.copies?.made >= 1 && r6.copies?.deleted === r6.copies?.made,
+    'closed ' + closed6.closed + ', copies made ' + r6.copies?.made + ' deleted ' + r6.copies?.deleted + ' left ' + r6.copies?.leftOnDisk);
+  const orch = orchestratorRate({ root: ROOT });
+  console.log('orchestrator rate: ' + JSON.stringify({ boards: orch.boards, barsMet: orch.barsMet, unparsed: orch.barsMetUnparsed, windowDays: orch.windowDays, boardsPerDay: orch.boardsPerDay, barsMetPerDay: orch.barsMetPerDay, verdictBarsMet: orch.verdictBarsMet }));
+  console.log(r6.magnitude?.line || 'no MAGNITUDE line');
+  check('stage 6e the MAGNITUDE line prints the organism rate beside the orchestrator rate read from docs/BOARDS.json and docs/LOG.md', orch.ok === true && orch.boards > 0 && orch.windowDays > 0 && r6.magnitude?.orchestrator?.ok === true
+    && /^MAGNITUDE organism: 1 kept/.test(r6.magnitude?.line || '') && /orchestrator: \d+ boards landed/.test(r6.magnitude?.line || ''),
+  orch.boards + ' boards and ' + orch.barsMet + ' bars met over ' + orch.windowDays + ' days; organism ' + r6.magnitude?.organism?.keptPerHour + ' kept/hour');
+
   const passed = checks.filter((x) => x.pass).length;
   const met = passed === checks.length;
   const nm = (n, one, many) => n + ' ' + (n === 1 ? one : many);
-  const statement = 'This verdict OVERWRITES the Board 8 bar of the same name' + (prior ? ' (written ' + prior.at + ', ' + prior.passed + ' of ' + prior.total + ' checks, ' + prior.verdict + ')' : '')
-    + '; its 13 checks run here first, unchanged. In a copied tree holding the real gate program (bench/gate.mjs ' + gateHash.slice(0, 12) + ') a planted fix was KEPT with the gate going from exit ' + r1.baseline?.exit + ' to exit ' + k.gate?.exit
+  const statement = 'This verdict OVERWRITES the Board ' + (prior?.board ?? 10) + ' bar of the same name' + (prior?.copy ? ', kept byte for byte as ' + prior.copy : '') + (prior ? ' (written ' + prior.at + ', ' + prior.passed + ' of ' + prior.total + ' checks, ' + prior.verdict + ')' : '')
+    + '; the 21 checks of Boards 8 and 10 run here first, unchanged. In a copied tree holding the real gate program (bench/gate.mjs ' + gateHash.slice(0, 12) + ') a planted fix was KEPT with the gate going from exit ' + r1.baseline?.exit + ' to exit ' + k.gate?.exit
     + ', a planted patch that turned ' + (rv.gate?.regressions || []).join(', ') + ' red was ' + String(rv.decision).toUpperCase() + ' byte for byte on a CRLF file, and a patch aimed at a test file was refused at the ceiling. '
     + 'On the real tree, brain self-code --auto --dry --json read ' + rc.candidates + ' candidates by source (' + SOURCE_ORDER.map((s) => s + ' ' + perSource[s]).join(', ') + '), would apply ' + rc.wouldApply + ', and wrote nothing. '
     + 'One wet CLI pass on a planted repository copy with the model author off kept ' + nm(keptNonMutant.length, 'candidate', 'candidates') + ' from non-mutant sources (' + keptNonMutant.map((d) => d.source).join(' and ') + ') with the gate GREEN'
     + ' and appended ' + nm(authoredWet.length, 'line', 'lines') + ' to state/self/authored.jsonl with the gate hash before and after. '
     + 'The model cell ' + m.author?.model + ' through Ollama was asked ' + nm(mt.modelCalls ?? 0, 'time', 'times') + ' for a planted OPEN: line, ' + (md.model?.answered ? 'answered in ' : 'did not answer (') + md.model?.ms + ' ms' + (md.model?.answered ? '' : ')') + ', and its patch was ' + String(md.decision || 'not reached').toUpperCase() + (md.wall ? ' at the ' + md.wall + ' wall' : '') + (md.decision === 'kept' ? ' with the gate ' + md.gate?.verdict : '')
-    + '. Over the wet copy and the real docs/BOARDS.json the share is ' + share.numerator + '/' + share.denominator + '. ' + passed + ' of ' + checks.length + ' checks passed.';
+    + '. Over the wet copy and the real docs/BOARDS.json the share is ' + share.numerator + '/' + share.denominator + '. '
+    + 'Board 14: on a planted tree state/self/STOP refused the soak with exit ' + stopCli.exitCode + ' and nothing written; one soak of 0.5 minutes took the planted gap from the gaps source through knob-tune on a copy and kept it (before ' + kd.before + ', after ' + kd.after + ', noise ' + kd.noise + ') with the gate ' + kd.gate?.verdict
+    + ', appended the authorship line "' + a6.author + '", rebuilt the ledger and printed the gap ' + (closed6.closed ? 'CLOSED' : 'still open') + ', with ' + r6.copies?.leftOnDisk + ' copies left on disk; the orchestrator rate read ' + orch.boards + ' boards landed and ' + orch.barsMet + ' bars met (a floor: ' + (orch.barsMetUnparsed || []).length + ' landed lines name no count) over ' + orch.windowDays + ' days. '
+    + passed + ' of ' + checks.length + ' checks passed.';
   verdict = {
-    at: new Date().toISOString(), command: COMMAND, node: process.version, isTheBar: true, board: 10,
+    at: new Date().toISOString(), command: COMMAND, node: process.version, isTheBar: true, barMet: met, board: 14,
+    split: { board8and10: checks.slice(0, 21).filter((x) => x.pass).length + '/' + Math.min(21, checks.length), board14: checks.slice(21).filter((x) => x.pass).length + '/' + checks.slice(21).length },
     statement,
     overwrote: prior,
-    fixture: { gateProgram: 'bench/gate.mjs', gateHash, files: ['lib/sum.mjs', 'lib/scale.mjs', 'test/sum.test.mjs', 'test/area.test.mjs', 'test/scale.test.mjs'] },
+    fixture: { gateProgram: 'bench/gate.mjs', gateHash, files: ['lib/sum.mjs', 'lib/scale.mjs', 'test/sum.test.mjs', 'test/area.test.mjs', 'test/scale.test.mjs'], gateRows },
     kept: { key: k.key, decision: k.decision, gate: k.gate, baselineGate: r1.baseline, hashBefore: k.hashBefore, hashAfter: k.hashAfter, verification: k.verification, snapshot: 'state/self-code/' + k.id, ms: s1ms },
     reverted: { key: rv.key, decision: rv.decision, gate: rv.gate, baselineGate: r2.baseline, hashBefore: rv.hashBefore, hashAfter: rv.hashAfter, hashRestored: rv.hashRestored, gateJsonRestored: rv.gateJsonRestored, verification: rv.verification, bytes: scaleAfter.length, ms: s2ms },
     ceiling: { key: c.key, decision: c.decision, wall: c.wall, reason: c.reason },
@@ -309,6 +461,13 @@ try {
       closedRefused: { ok: closed.ok, ms: closed.ms, reason: closed.reason }, ms: mod.ms,
     },
     share: { numerator: share.numerator, denominator: share.denominator, share: share.share, organism: share.organism, kept: share.kept, boardFiles: share.boardFiles, boards: share.boards },
+    soak: {
+      command: 'runSoak({ soak: 0.5, root: <planted tree>, author: off, sources: gaps, gate-minutes: 0 })',
+      stop: { cli: { exitCode: stopCli.exitCode, stopped: stopCli.stopped, reason: stopCli.reason }, run: { exitCode: stopRun.exitCode, stopped: stopRun.stopped, reason: stopRun.reason } },
+      decision: { key: kd.key, decision: kd.decision, operator: kd.operator, author: kd.author, before: kd.before, after: kd.after, noise: kd.noise, gate: kd.gate ?? null, hashBefore: kd.hashBefore ?? null, hashAfter: kd.hashAfter ?? null },
+      authored: a6, refresh: closed6, attempts: r6.attempts, copies: r6.copies, trials: r6.trials, magnitude: r6.magnitude ?? null, lines: r6.lines ?? [], ms: s6ms,
+    },
+    orchestrator: orch,
     checks, passed, total: checks.length, verdict: met ? 'MET' : 'MISSED', ms: Date.now() - t0,
   };
   mkdirSync(path.join(HERE, 'verdicts'), { recursive: true });
@@ -316,10 +475,12 @@ try {
   console.log('\nAUTOPILOT ' + verdict.verdict + ': ' + passed + '/' + checks.length + ' checks. real tree candidates ' + rc.candidates + ' (' + SOURCE_ORDER.map((s) => s + ' ' + perSource[s]).join(', ') + ')'
     + '; wet pass kept ' + keptNonMutant.length + ' non-mutant (' + keptNonMutant.map((d) => d.source).join(', ') + ') gate GREEN, authored.jsonl +' + authoredWet.length
     + '; model ' + m.author?.model + ' calls ' + mt.modelCalls + ' ' + md.model?.ms + ' ms, proposed ' + mt.modelProposed + ' kept ' + mt.modelKept
-    + '; ' + (Date.now() - t0) + ' ms. wrote bench/verdicts/autopilot.json (overwrites the Board 8 bar)');
+    + '; soak kept ' + (r6.kept || []).length + ' (' + kd.before + ' -> ' + kd.after + ') gap ' + (closed6.closed ? 'CLOSED' : 'open') + ', copies left ' + r6.copies?.leftOnDisk
+    + '; orchestrator ' + orch.boards + ' boards, ' + orch.barsMet + ' bars met over ' + orch.windowDays + ' days'
+    + '; ' + (Date.now() - t0) + ' ms. wrote bench/verdicts/autopilot.json (overwrites the Board ' + (prior?.board ?? 10) + ' bar)');
   process.exitCode = met ? 0 : 1;
 } catch (e) {
-  const partial = { at: new Date().toISOString(), command: COMMAND, node: process.version, isTheBar: false, board: 10, statement: 'The run threw before every stage completed: ' + String(e && e.message).split('\n')[0] + '. Checks that ran are listed. The Board 8 bar in autopilot.json was not overwritten.', error: String(e && e.stack || e), checks };
+  const partial = { at: new Date().toISOString(), command: COMMAND, node: process.version, isTheBar: false, barMet: false, board: 14, statement: 'The run threw before every stage completed: ' + String(e && e.message).split('\n')[0] + '. Checks that ran are listed. The Board 10 bar in autopilot.json was not overwritten.', error: String(e && e.stack || e), checks };
   mkdirSync(path.join(HERE, 'verdicts'), { recursive: true });
   writeFileSync(path.join(HERE, 'verdicts', 'autopilot-partial.json'), JSON.stringify(partial, null, 2));
   console.log('AUTOPILOT PARTIAL: ' + partial.statement + ' wrote bench/verdicts/autopilot-partial.json');
@@ -328,3 +489,6 @@ try {
   if (flagUp) { try { rmSync(FLAG, { force: true }); } catch { /* a dead pid's flag is ignored by the daemon */ } }
   try { rmSync(TMP, { recursive: true, force: true }); } catch { /* the OS will get it */ }
 }
+}
+
+if (isMain) await main();

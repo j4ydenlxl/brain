@@ -27,6 +27,15 @@
 //  17. the share arithmetic of tools/authorship.mjs, per ISO week and cumulative
 //  18. the CLI dry run on a planted tree prints candidates per source and writes nothing
 //
+// Board 14 (the soak, the seventh source gaps, test/operators-plant.mjs trees):
+//  19. state/self/STOP refuses the soak with exit 0 before any lock, soak file or copy, and a
+//      STOP written mid-soak ends it between rounds
+//  20. a gap candidate flows from state/self/gaps.jsonl to the decision line with before and after
+//  21. a kept gap patch appends "organism (<operator>)" from gaps:<id> to state/self/authored.jsonl
+//  22. the ledger is rebuilt after a kept patch and a gap that left it prints CLOSED
+//  23. --resume continues the soak file and never repeats a decided round
+//  24. the soak ends at its minute with every copy deleted and the temp root removed
+//
 // No test here asks a real model: the author is a function, and a fake one stands in for the
 // model cell. bench/autopilot.mjs asks the real one.
 //
@@ -47,6 +56,8 @@ import {
 } from '../self/autopilot.mjs';
 import { computeShare, isoWeek, main as authorshipMain } from '../tools/authorship.mjs';
 import * as P from './autopilot-plant.mjs';
+import { runSoak, runFromCli, soakConfig, soakFile, STOP_REL } from '../self/autopilot.mjs';
+import { plantInto, plantGaps } from './operators-plant.mjs';
 
 const TMP = mkdtempSync(path.join(tmpdir(), 'brain-autopilot-test-'));
 test.after(() => { try { rmSync(TMP, { recursive: true, force: true }); } catch { /* the OS will get it */ } });
@@ -495,4 +506,211 @@ test('the CLI dry run on a planted tree prints candidates per source and writes 
   assert.deepEqual([j.bySource.imagine.wouldApply, j.bySource.census.wouldApply, j.bySource.notes.refused, j.bySource.mutants.refused], [1, 1, 2, 1]);
   assert.equal(existsSync(path.join(root, 'state')), false, 'no snapshot, no lock, no authored line');
   assert.equal(readFileSync(path.join(root, 'lib/clamp.mjs'), 'utf8'), P.CLAMP_BUGGY);
+});
+
+// ------------------------------------------------------------------ Board 14: THE SOAK
+// Every soak here runs on a planted temp tree (test/operators-plant.mjs, a fixture gate), with its
+// copies under a temp base of its own, the gap source only, no author and gate-minutes 0.
+function soakTree(gapLines) {
+  const base = mkdtempSync(path.join(TMP, 'soak-'));
+  const root = path.join(base, 'tree');
+  plantInto(root, { gate: 'fake' });
+  writeGapLines(root, gapLines);
+  const tmpBase = path.join(base, 'copies');
+  mkdirSync(tmpBase, { recursive: true });
+  return { root, tmpBase };
+}
+function writeGapLines(root, lines) {
+  const f = path.join(root, 'state', 'self', 'gaps.jsonl');
+  mkdirSync(path.dirname(f), { recursive: true });
+  writeFileSync(f, lines.map((l) => JSON.stringify(l)).join('\n') + (lines.length ? '\n' : ''));
+}
+const fastGap = (g) => ({ ...g, trial: { ...g.trial, minutes: 0.01 } });
+const soakFilesIn = (root) => { try { return readdirSync(path.join(root, 'state', 'self')).filter((n) => /^soak-.+\.json$/.test(n)); } catch { return []; } };
+const jsonlIn = (f) => (existsSync(f) ? readFileSync(f, 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []);
+const soakLedger = (root) => { const d = path.join(root, 'bench', 'verdicts', 'autopilot'); return existsSync(d) ? readdirSync(d).filter((n) => n.endsWith('.jsonl')).flatMap((n) => jsonlIn(path.join(d, n))) : []; };
+const noRate = () => ({ ok: false, reason: 'not read in a test' });
+const SOAK_OPTS = { author: 'off', sources: 'gaps', 'gate-minutes': 0, 'idle-step-ms': 200, rateFn: noRate };
+
+// One real soak on the planted tune gap: knob-tune through the real self/improve.mjs on a copy.
+// Three tests below read it; it runs once, the first time one of them asks.
+let keptSoakP = null;
+function keptSoak() {
+  if (keptSoakP) return keptSoakP;
+  const gap = fastGap(plantGaps().tune);
+  const { root, tmpBase } = soakTree([gap]);
+  const refreshCalls = [];
+  const logs = [];
+  const remeasure = async ({ root: r }) => {
+    refreshCalls.push(r);
+    const run = spawnSync(process.execPath, [path.join('planted', 'tune-bench.mjs')], { cwd: r, encoding: 'utf8', windowsHide: true });
+    const v = Number((/metric (\S+)/.exec(String(run.stdout)) || [])[1]);
+    const lines = Number.isFinite(v) && v >= gap.bar ? [] : [{ ...gap, measured: Number.isFinite(v) ? v : null }];
+    writeGapLines(r, lines);
+    return { lines };
+  };
+  const before = readFileSync(path.join(root, 'planted', 'tune.mjs'), 'utf8');
+  keptSoakP = runSoak({ ...SOAK_OPTS, soak: 0.2, root, tmpBase, refreshLedger: remeasure, log: (l) => logs.push(l) })
+    .then((r) => ({ r, root, tmpBase, logs, refreshCalls, before, after: readFileSync(path.join(root, 'planted', 'tune.mjs'), 'utf8') }));
+  return keptSoakP;
+}
+
+test('the soak: state/self/STOP refuses it with exit 0 before any lock, soak file, ledger line or copy; a STOP written mid-soak ends it between rounds', { timeout: 120_000 }, async () => {
+  const { root, tmpBase } = soakTree([fastGap(plantGaps().tune), fastGap(plantGaps().strategy)]);
+  writeFileSync(path.join(root, ...STOP_REL.split('/')), 'stop\n');
+  let improveCalls = 0;
+  const spy = async () => { improveCalls++; return { kept: false, reason: 'a spy', trials: [] }; };
+  const cli = runFromCli({ soak: 1, root, author: 'off' });
+  assert.equal(cli.exitCode, 0);
+  assert.equal(cli.stopped, true);
+  assert.match(cli.reason, /^stopped by state\/self\/STOP$/);
+  const logs = [];
+  const r = await runSoak({ ...SOAK_OPTS, soak: 1, root, tmpBase, improveFn: spy, log: (l) => logs.push(l) });
+  assert.equal(r.exitCode, 0);
+  assert.equal(r.stopped, true);
+  assert.deepEqual(logs, ['stopped by state/self/STOP']);
+  assert.equal(improveCalls, 0, 'improve was never called');
+  assert.deepEqual(readdirSync(tmpBase), [], 'no copy and no temp root');
+  assert.deepEqual(soakFilesIn(root), [], 'no soak file');
+  assert.equal(existsSync(path.join(root, 'state', 'self-code', LOCK_NAME)), false, 'no lock');
+  assert.equal(existsSync(path.join(root, 'bench', 'verdicts', 'autopilot')), false, 'no ledger line');
+  // mid-soak: the first round writes STOP; the second never starts, and the soak says so
+  rmSync(path.join(root, ...STOP_REL.split('/')));
+  const seen = [];
+  const writesStop = async (a) => { seen.push(a.gap.id); writeFileSync(path.join(root, ...STOP_REL.split('/')), 'stop\n'); return { kept: false, reason: 'no trial moved the metric', trials: [] }; };
+  const logs2 = [];
+  const r2 = await runSoak({ ...SOAK_OPTS, soak: 1, root, tmpBase, improveFn: writesStop, log: (l) => logs2.push(l) });
+  assert.equal(r2.exitCode, 0);
+  assert.equal(r2.status, 'stopped');
+  assert.equal(seen.length, 1, 'one round, then the switch');
+  assert.ok(logs2.includes('stopped by state/self/STOP between rounds'));
+  assert.ok(r2.wallMinutes < 0.5, 'it did not wait out the minute: ' + r2.wallMinutes);
+  assert.equal(r2.copies.leftOnDisk, 0);
+  assert.equal(existsSync(path.join(root, 'state', 'self-code', LOCK_NAME)), false, 'the lock was released');
+});
+
+test('the soak: a gap candidate flows from the ledger to the decision line with before, after and noise (real self/improve.mjs, knob-tune on a copy)', { timeout: 120_000 }, async () => {
+  const { r, root, before, after } = await keptSoak();
+  assert.equal(r.exitCode, 0, String(r.reason));
+  assert.equal(r.status, 'done');
+  const kd = soakLedger(root).filter((l) => l.soak && l.candidate && l.source === 'gaps');
+  const k = kd.find((l) => l.decision === 'kept');
+  assert.ok(k, 'a kept decision line: ' + JSON.stringify(kd.map((l) => [l.key, l.decision, l.reason])));
+  assert.equal(k.key, 'gaps:planted-tune:knob-tune');
+  assert.equal(k.where, 'state/self/gaps.jsonl');
+  assert.equal(k.gap, 'planted-tune');
+  assert.equal(k.operator, 'knob-tune');
+  assert.equal(k.evidence, 'improve');
+  assert.deepEqual([k.before, k.after], [64, 96]);
+  assert.ok(Number.isFinite(k.noise), 'noise printed: ' + k.noise);
+  assert.equal(k.gate.verdict, 'GREEN');
+  assert.match(k.hashBefore, /^[0-9a-f]{64}$/);
+  assert.notEqual(k.hashBefore, k.hashAfter);
+  assert.match(before, /export const GAIN = 10;/);
+  assert.match(after, /export const GAIN = 14;/);
+  assert.equal(r.gapsAttempts, 1);
+  assert.equal(r.roundsRun, 1);
+  assert.deepEqual([r.bySource.gaps.kept, r.byOperator['knob-tune'].kept], [1, 1]);
+  assert.ok(r.trials.n >= 3 && r.trials.meanS > 0, 'trials printed with their mean: ' + JSON.stringify(r.trials));
+  assert.equal(r.copies.leftOnDisk, 0);
+});
+
+test('the soak: a kept gap patch appends its authorship line, organism (<operator>), from gaps:<id>, with before and after', { timeout: 120_000 }, async () => {
+  const { r, root, logs } = await keptSoak();
+  const auth = jsonlIn(path.join(root, ...AUTHORED_REL.split('/')));
+  assert.equal(auth.length, 1, 'one line for one keep');
+  const a = auth[0];
+  assert.equal(a.author, 'organism (knob-tune)');
+  assert.equal(a.operator, 'knob-tune');
+  assert.equal(a.from, 'gaps:planted-tune');
+  assert.equal(a.organism, true);
+  assert.deepEqual([a.before, a.after], [64, 96]);
+  assert.deepEqual(a.files, ['planted/tune.mjs']);
+  assert.equal(a.hashAfter, hashBytes(readFileSync(path.join(root, 'planted', 'tune.mjs'))));
+  assert.ok(logs.some((l) => l.startsWith('  authored state/self/authored.jsonl: ')), 'the authorship line is printed');
+  assert.equal(r.kept[0].author, 'organism (knob-tune)');
+});
+
+test('the soak: after a kept patch the ledger is rebuilt and a gap that left it is printed CLOSED', { timeout: 120_000 }, async () => {
+  const { r, root, logs, refreshCalls } = await keptSoak();
+  assert.equal(refreshCalls.length, 1, 'the ledger was rebuilt once, after the keep (it was fresh at the start)');
+  assert.equal(refreshCalls[0], root);
+  const ev = soakLedger(root).find((l) => l.event === 'ledger-refresh');
+  assert.ok(ev, 'a ledger-refresh line');
+  assert.equal(ev.closed, true);
+  assert.equal(ev.gap, 'planted-tune');
+  assert.ok(logs.includes('  gap planted-tune CLOSED: it left the ledger (0 lines now)'));
+  assert.ok(r.lines.some((l) => l === '  ledger rebuilt after the keep of planted-tune: CLOSED, it left the ledger'));
+  assert.equal(readFileSync(path.join(root, 'state', 'self', 'gaps.jsonl'), 'utf8'), '');
+});
+
+test('the soak: --resume continues the soak file where it stopped, and never repeats a round it already decided', { timeout: 120_000 }, async () => {
+  const { root, tmpBase } = soakTree([fastGap(plantGaps().tune), fastGap(plantGaps().strategy)]);
+  const dead = spawnSync(process.execPath, ['-e', ''], { windowsHide: true }).pid;
+  const runId = '20260924-000000-000';
+  const cfg = soakConfig({ ...SOAK_OPTS, soak: 0.1 });
+  const st = {
+    runId, startedAt: '2026-09-24T00:00:00.000Z', cfg, status: 'running', elapsedMs: 3000, pid: dead,
+    done: ['gaps:planted-tune:knob-tune'], decisions: [{ key: 'gaps:planted-tune:knob-tune', source: 'gaps', gap: 'planted-tune', operator: 'knob-tune', decision: 'refused', wall: 'evidence', reason: 'the killed segment', ran: true }],
+    modelCalls: [], trials: [], kept: [], refreshes: [], deferred: [], idleMs: 0, board10: null, resumes: [],
+    copies: { made: 1, deleted: 1, leftFound: 0, swept: 0 }, peaks: { trialMb: 0, gateCopyMb: 0 },
+  };
+  mkdirSync(path.join(root, 'state', 'self'), { recursive: true });
+  writeFileSync(soakFile(root, runId), JSON.stringify(st));
+  const keys = [];
+  const spy = async (a) => { keys.push('gaps:' + a.gap.id + ':' + a.operator); return { kept: false, reason: 'no trial moved the metric', trials: [{ kind: 'trial', seconds: 0.01 }] }; };
+  const logs = [];
+  const t = Date.now();
+  const r = await runSoak({ resume: runId, root, tmpBase, improveFn: spy, rateFn: noRate, log: (l) => logs.push(l) });
+  const ms = Date.now() - t;
+  assert.equal(r.exitCode, 0, String(r.reason));
+  assert.equal(r.runId, runId, 'the same soak');
+  assert.equal(r.resumes, 1);
+  assert.ok(logs.some((l) => l.startsWith('SOAK ' + runId + ' RESUMED at 3 s of 6 s')), logs[0]);
+  assert.ok(!keys.includes('gaps:planted-tune:knob-tune'), 'the decided round was skipped: ' + keys.join(', '));
+  assert.ok(keys.includes('gaps:planted-strategy:strategy-swap'), 'the undecided round ran: ' + keys.join(', '));
+  assert.ok(r.attempts.attempts >= 2, 'the old decision is kept beside the new ones');
+  assert.ok(r.elapsedMs >= 6000, 'the wall counts the killed segment too: ' + r.elapsedMs);
+  assert.ok(ms < 6000, 'this segment ran only the wall left, ' + ms + ' ms');
+  const saved = JSON.parse(readFileSync(soakFile(root, runId), 'utf8'));
+  assert.equal(saved.status, 'done');
+  assert.equal(saved.resumes.length, 1);
+  assert.equal(saved.copies.made, 1, 'the copies of the killed segment are still counted');
+  // a soak that finished is not resumed
+  const again = await runSoak({ resume: runId, root, tmpBase, improveFn: spy, rateFn: noRate, log: () => {} });
+  assert.equal(again.exitCode, 1);
+  assert.match(again.reason, /is done: nothing to resume/);
+});
+
+test('the soak ends at its minute with every copy deleted, a leaked one swept, the temp root removed and the lock released', { timeout: 120_000 }, async () => {
+  const { root, tmpBase } = soakTree([fastGap(plantGaps().tune), fastGap(plantGaps().strategy), fastGap(plantGaps().edge)]);
+  let n = 0;
+  const copying = async (a) => {
+    n++;
+    const dir = path.join(a.tmpRoot, 'brain-operators-' + ('abcdef' + n).slice(-6));
+    mkdirSync(path.join(dir, 'tree'), { recursive: true });
+    writeFileSync(path.join(dir, 'tree', 'x.bin'), Buffer.alloc(4096));
+    const leak = n === 2;
+    if (!leak) rmSync(dir, { recursive: true, force: true });
+    return { kept: false, reason: 'no trial moved the metric', trials: [{ kind: 'trial', seconds: 0.02 }], copy: { dir, mb: 0.01, deleted: !leak } };
+  };
+  const logs = [];
+  const t = Date.now();
+  const r = await runSoak({ ...SOAK_OPTS, soak: 0.1, root, tmpBase, improveFn: copying, log: (l) => logs.push(l) });
+  const ms = Date.now() - t;
+  assert.equal(r.exitCode, 0, String(r.reason));
+  assert.equal(r.status, 'done');
+  assert.ok(r.elapsedMs >= 6000 && ms >= 6000, 'it ran to its minute: ' + r.elapsedMs + ' ms');
+  assert.ok(r.overrunMs < 1500, 'and stopped there: overrun ' + r.overrunMs + ' ms');
+  assert.equal(n, 3);
+  assert.equal(r.copies.made, 3);
+  assert.equal(r.copies.deleted, 2, 'a copy counts as deleted only when it is gone');
+  assert.equal(r.copies.leftFound, 1, 'the leaked copy was found');
+  assert.equal(r.copies.leftOnDisk, 0);
+  assert.equal(r.copies.tmpRemoved, true);
+  assert.deepEqual(readdirSync(tmpBase), [], 'nothing under the temp base');
+  assert.ok(logs.some((l) => /copies: 1 found after gaps:planted-\w+:[\w-]+, 1 removed$/.test(l)), 'the sweep is printed');
+  assert.equal(r.gateAfter.ran, 'not run', 'a soak under 10 minutes with no write runs no gate after');
+  assert.equal(existsSync(path.join(root, 'state', 'self-code', LOCK_NAME)), false, 'the lock was released');
+  assert.ok(r.lines.some((l) => /^ {2}copies: made 3, deleted and verified 2, found left between rounds 1, left on disk 0 /.test(l)));
 });

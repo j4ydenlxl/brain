@@ -11,7 +11,14 @@
 //            under an "Open" heading (the grammar the builders already write)
 //   gate     bench/verdicts/gate.json with one red row and one slow green row
 //   mutants  bench/verdicts/mutants.json with one mutant that survived
+//
+// plantGateRows (Board 14) gives a planted tree what the real gate program reads beyond its tests
+// since Boards 10 and 12: tools/budget.mjs (the BUDGET row runs every test file under it), one
+// emitted seed under organism/ with a census verdict naming its manifest hash (LOAD-BEARING is red
+// with no seed), and bench/verdicts/boundary.json with no boundary (the tree starts no worker).
+// Without them the gate on a planted tree can never print GREEN, whatever its tests do.
 import { mkdirSync, writeFileSync, cpSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 
 export const HEAD = "import test from 'node:test';\nimport assert from 'node:assert/strict';\n";
@@ -110,4 +117,27 @@ export function plantModel(dir, brainRoot) {
   mkdirSync(path.join(dir, 'bench'), { recursive: true });
   cpSync(path.join(brainRoot, 'bench', 'gate.mjs'), path.join(dir, 'bench', 'gate.mjs'));
   return writeTree(dir, { 'lib/mean.mjs': MEAN_BUGGY, 'test/mean.test.mjs': MEAN_TEST, 'notes/mean.md': MEAN_NOTE });
+}
+
+// ---------------------------------------------------------------- the gate rows a planted tree needs (Board 14)
+export const ROWS_SEED = 'organism/planted-seed';
+export const ROWS_SEED_INDEX = '// organism/planted-seed/index.mjs: a planted seed every line of which is loaded and load-bearing.\nexport const cells = [1, 2, 3];\n';
+/**
+ * Write the inputs of the BUDGET, LOAD-BEARING and BOUNDARY rows of bench/gate.mjs into dir:
+ * tools/budget.mjs copied from brainRoot, organism/planted-seed with a manifest and a census
+ * verdict (bench/verdicts/census-planted.json, never census.json, which the census source reads)
+ * whose manifest hash is the seed's, and a boundary verdict listing no boundary. Returns the rels.
+ */
+export function plantGateRows(dir, brainRoot, { at = new Date().toISOString() } = {}) {
+  mkdirSync(path.join(dir, 'tools'), { recursive: true });
+  cpSync(path.join(brainRoot, 'tools', 'budget.mjs'), path.join(dir, 'tools', 'budget.mjs'));
+  const hash = createHash('sha256').update(ROWS_SEED_INDEX).digest('hex');
+  const lines = ROWS_SEED_INDEX.split('\n').length;
+  writeTree(dir, {
+    [ROWS_SEED + '/index.mjs']: ROWS_SEED_INDEX,
+    [ROWS_SEED + '/manifest.json']: JSON.stringify({ seed: ROWS_SEED, hash, files: ['index.mjs'] }, null, 1) + '\n',
+    'bench/verdicts/census-planted.json': JSON.stringify({ bench: 'census', at, command: 'planted', isTheBar: true, seed: ROWS_SEED, mode: 'planted', lines: { loaded: lines, loadBearing: lines }, hash: { manifest: hash } }, null, 1) + '\n',
+    'bench/verdicts/boundary.json': JSON.stringify({ at, command: 'planted', isTheBar: true, cap: 65536, table: [], allowlist: { unlisted: [], overCap: [] }, statement: 'A planted tree: it starts no worker, so it has no structured clone boundary.' }, null, 1) + '\n',
+  });
+  return ['tools/budget.mjs', ROWS_SEED + '/index.mjs', ROWS_SEED + '/manifest.json', 'bench/verdicts/census-planted.json', 'bench/verdicts/boundary.json'];
 }

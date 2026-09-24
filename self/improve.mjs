@@ -62,6 +62,9 @@ export const HEAP_MB = 6000;
 export const WAIT_FREE_RAM_MB = 16384;
 export const DEFAULT_GATE_CMD = 'node bench/gate.mjs --quiet';
 const MB = 1048576;
+export const COPY_PREFIX = 'brain-operators-';
+/** Written into the temp top of a NESTED copy by copyTree, and only there: deleteCopy removes a parent only when it carries this. */
+export const TOP_MARKER = '.brain-operators-top';
 
 const r6 = (x) => (x === null || x === undefined || !Number.isFinite(x) ? null : Number(Number(x).toPrecision(10)));
 export const today = (d = new Date()) => d.toISOString().slice(0, 10);
@@ -90,9 +93,17 @@ export function freeMb(dir = os.tmpdir()) {
  * then every path of `include` (a seed, a fixture) whole. Timestamps preserved.
  * @returns {{dir, ms, bytes, files, include}}
  */
-export function copyTree(root, { include = [], exclude = COPY_EXCLUDE, manifests = true, prefix = 'brain-operators-' } = {}) {
+export function copyTree(root, { include = [], exclude = COPY_EXCLUDE, manifests = true, prefix = COPY_PREFIX, tmpRoot = null, nest = path.basename(root) } = {}) {
   const t0 = Date.now();
-  const dir = mkdtempSync(path.join(os.tmpdir(), prefix));
+  const base = tmpRoot || os.tmpdir();
+  mkdirSync(base, { recursive: true });
+  // The copy sits one level down (<tmp>/brain-operators-XXXX/brain) so a path the code resolves
+  // beside the tree (tasks/venue.mjs reads ../trader/data/trader.db) lands inside the temp top,
+  // where the gate kit can put a copy of it, and never on a shared or real path.
+  const top = mkdtempSync(path.join(base, prefix));
+  const dir = nest ? path.join(top, nest) : top;
+  mkdirSync(dir, { recursive: true });
+  if (dir !== top) writeFileSync(path.join(top, TOP_MARKER), 'a temp top made by self/improve.mjs copyTree; deleted with its copy\n');
   const ex = exclude.map((e) => e.replaceAll('\\', '/'));
   cpSync(root, dir, {
     recursive: true, preserveTimestamps: true,
@@ -117,15 +128,152 @@ export function copyTree(root, { include = [], exclude = COPY_EXCLUDE, manifests
     added.push(rel);
   }
   const d = dirBytes(dir);
-  return { dir, ms: Date.now() - t0, bytes: d.bytes, files: d.files, include: added };
+  return { dir, top, ms: Date.now() - t0, bytes: d.bytes, files: d.files, include: added };
+}
+
+/** The temp top that holds a copy: its parent when copyTree nested it (the parent carries TOP_MARKER), else the dir itself. */
+export function copyTop(dir) {
+  const parent = path.dirname(dir);
+  return existsSync(path.join(parent, TOP_MARKER)) ? parent : dir;
+}
+
+/**
+ * THE GATE KIT. MEASURED 2026-09-24: the real gate on a trial copy (organism/, bench/fixtures/,
+ * web/dist/, state/ left out) was RED, test files 66 of 83, while the same gate was GREEN on the
+ * real tree: 17 test files read small fixtures (bench/fixtures/answer-questions.json,
+ * code-tasks.json, ...) or a small seed. So before the touched tests and the gate, the copy gets
+ * what they read and nothing the size of the big stores: every bench/fixtures file up to
+ * fixturesMaxBytes (10 MB; 830 of 836 files, about 24 MB; the six left out are five files of the
+ * wiki store and the simplewiki dump) and every organism seed whose directory is at most
+ * seedMaxBytes (30 MB; never the scale seeds, 270 MB each). Timestamps preserved.
+ * MEASURED on the kit copy: 84 of 87 test files; test/daemon.test.mjs still failed on "ingest ran
+ * 0 times" because the daemon's ingest step opens the knowledge store (act/prompt.mjs KNOWLEDGE_DIR,
+ * bench/fixtures/wiki/store), which is one unit: a store with five files missing does not open. So a
+ * WHOLE_DIRS entry is copied whole when it is at most its cap (the store is 388459374 bytes, the cap
+ * 512 MB); the 386 MB simplewiki dump, which no test reads, stays out. Returns what was added.
+ */
+export const GATE_KIT = Object.freeze({ fixturesMaxBytes: 10 * MB, seedMaxBytes: 30 * MB, distMaxBytes: 5 * MB, siblingMaxBytes: 300 * MB });
+/** Directories the kit copies as one unit (every file, whatever its size) when the whole is at most maxBytes. */
+export const WHOLE_DIRS = Object.freeze([Object.freeze({ rel: 'bench/fixtures/wiki/store', maxBytes: 512 * MB })]);
+/**
+ * Files the tree reads BESIDE itself. MEASURED 2026-09-24: on a copy with no ../trader/data/trader.db,
+ * tasks/venue.mjs falls back to a synthetic tape and test/venue-suite.test.mjs reads a hosting score
+ * of 0.125 where the verdict and notes/world.md publish 0.0625. A copy of the file (236 MB, never a
+ * link: trader/ is frozen and a link would let the copy write it) goes beside a NESTED copy only.
+ */
+export const SIBLING_READS = Object.freeze(['../trader/data/trader.db']);
+/**
+ * Copy each SIBLING_READS file beside a nested copy (inside its own temp top, never onto a shared
+ * path). Returns {files, bytes, left}.
+ */
+export function addSiblings(copyDir, kitRoot = ROOT, { siblings = SIBLING_READS, maxBytes = GATE_KIT.siblingMaxBytes } = {}) {
+  const out = { files: [], bytes: 0, left: [] };
+  const top = copyTop(copyDir);
+  for (const rel of siblings) {
+    const src = path.resolve(kitRoot, rel), dst = path.resolve(copyDir, rel);
+    if (!existsSync(src)) continue;
+    const r = path.relative(top, dst);
+    const inside = top !== copyDir && r && !r.startsWith('..') && !path.isAbsolute(r);
+    const b = statSync(src).size;
+    if (!inside || b > maxBytes) { out.left.push({ file: rel, bytes: b, why: inside ? 'over the cap' : 'the copy is not nested' }); continue; }
+    if (!existsSync(dst)) { mkdirSync(path.dirname(dst), { recursive: true }); cpSync(src, dst, { preserveTimestamps: true }); }
+    out.files.push(rel); out.bytes += b;
+  }
+  return out;
+}
+
+export function addGateKit(copyDir, kitRoot = ROOT, { fixturesMaxBytes = GATE_KIT.fixturesMaxBytes, seedMaxBytes = GATE_KIT.seedMaxBytes, distMaxBytes = GATE_KIT.distMaxBytes, siblingMaxBytes = GATE_KIT.siblingMaxBytes, siblings = SIBLING_READS, wholeDirs = WHOLE_DIRS } = {}) {
+  const t0 = Date.now();
+  const out = { fixtures: { files: 0, bytes: 0, left: [] }, seeds: { names: [], bytes: 0, left: [] }, dist: { bytes: 0, left: null }, siblings: { files: [], bytes: 0, left: [] }, whole: { dirs: [], bytes: 0, left: [] } };
+  const wholeRels = [];
+  for (const w of wholeDirs) {
+    const src = path.join(kitRoot, ...w.rel.split('/'));
+    if (!existsSync(src)) continue;
+    const b = dirBytes(src).bytes;
+    if (b > w.maxBytes) { out.whole.left.push({ dir: w.rel, bytes: b }); continue; }
+    cpSync(src, path.join(copyDir, ...w.rel.split('/')), { recursive: true, preserveTimestamps: true, force: true });
+    out.whole.dirs.push(w.rel); out.whole.bytes += b; wholeRels.push(w.rel + '/');
+  }
+  out.siblings = addSiblings(copyDir, kitRoot, { siblings, maxBytes: siblingMaxBytes });
+  // web/dist (1.2 MB): test/findings.test.mjs reads web/dist/index.html
+  const dist = path.join(kitRoot, 'web', 'dist');
+  if (existsSync(dist)) {
+    const b = dirBytes(dist).bytes;
+    if (b <= distMaxBytes) { cpSync(dist, path.join(copyDir, 'web', 'dist'), { recursive: true, preserveTimestamps: true, force: true }); out.dist.bytes = b; } else out.dist.left = b;
+  }
+  const fx = path.join(kitRoot, 'bench', 'fixtures');
+  const walk = (d) => {
+    let ents; try { ents = readdirSync(d, { withFileTypes: true }); } catch { return; }
+    for (const e of ents) {
+      const p = path.join(d, e.name);
+      if (e.isDirectory()) { walk(p); continue; }
+      let size = 0; try { size = statSync(p).size; } catch { continue; }
+      const rel = path.relative(kitRoot, p);
+      if (wholeRels.some((w) => rel.split(path.sep).join('/').startsWith(w))) continue;
+      if (size > fixturesMaxBytes) { out.fixtures.left.push({ file: rel.replaceAll('\\', '/'), bytes: size }); continue; }
+      const dst = path.join(copyDir, rel);
+      if (existsSync(dst)) continue;
+      mkdirSync(path.dirname(dst), { recursive: true });
+      cpSync(p, dst, { preserveTimestamps: true });
+      out.fixtures.files++; out.fixtures.bytes += size;
+    }
+  };
+  if (existsSync(fx)) walk(fx);
+  const org = path.join(kitRoot, 'organism');
+  if (existsSync(org)) {
+    for (const e of readdirSync(org, { withFileTypes: true })) {
+      if (!e.isDirectory()) continue;
+      const src = path.join(org, e.name);
+      const b = dirBytes(src).bytes;
+      if (b > seedMaxBytes) { out.seeds.left.push({ seed: e.name, bytes: b }); continue; }
+      cpSync(src, path.join(copyDir, 'organism', e.name), { recursive: true, preserveTimestamps: true, force: true });
+      out.seeds.names.push(e.name); out.seeds.bytes += b;
+    }
+  }
+  out.bytes = out.fixtures.bytes + out.seeds.bytes + out.dist.bytes + out.siblings.bytes + out.whole.bytes;
+  out.ms = Date.now() - t0;
+  return out;
+}
+
+/**
+ * A trial that died on a missing file under bench/fixtures/ or organism/ of the copy names the path
+ * in its ENOENT line. That one path (a file, or the seed directory it lies in) is copied from the
+ * tree when it is under the kit's size limits, so the trial can run again: the copy stays lean by
+ * default and grows only by what a trial proved it reads. Returns the relative paths added.
+ */
+export function fillMissing(copyDir, kitRoot, out, { fixturesMaxBytes = GATE_KIT.fixturesMaxBytes, seedMaxBytes = GATE_KIT.seedMaxBytes } = {}) {
+  const added = [];
+  const norm = (s) => s.replaceAll('\\\\', '\\').replaceAll('\\', '/');
+  const base = norm(copyDir).toLowerCase() + '/';
+  for (const m of String(out).matchAll(/ENOENT[^'"\n]*['"]([^'"\n]+)['"]/g)) {
+    const abs = norm(m[1]);
+    if (!abs.toLowerCase().startsWith(base)) continue;
+    const rel = abs.slice(base.length);
+    let pick = null;
+    if (rel.startsWith('bench/fixtures/')) {
+      const src = path.join(kitRoot, rel);
+      if (existsSync(src) && statSync(src).isFile() && statSync(src).size <= fixturesMaxBytes) pick = rel;
+    } else if (rel.startsWith('web/dist/')) {
+      if (existsSync(path.join(kitRoot, 'web', 'dist'))) pick = 'web/dist';
+    } else if (rel.startsWith('organism/')) {
+      const seed = rel.split('/').slice(0, 2).join('/');
+      const src = path.join(kitRoot, seed);
+      if (existsSync(src) && dirBytes(src).bytes <= seedMaxBytes) pick = seed;
+    }
+    if (!pick || added.includes(pick)) continue;
+    cpSync(path.join(kitRoot, pick), path.join(copyDir, pick), { recursive: true, preserveTimestamps: true, force: true });
+    added.push(pick);
+  }
+  return added;
 }
 
 /** Delete a copy and verify it is gone. */
 export function deleteCopy(dir) {
   let error = null;
-  try { rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch (e) { error = firstLine(e); }
-  const gone = !existsSync(dir);
-  return { dir, deleted: gone, error, freeMb: freeMb() };
+  const top = copyTop(dir);
+  try { rmSync(top, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch (e) { error = firstLine(e); }
+  const gone = !existsSync(top) && !existsSync(dir);
+  return { dir, top, deleted: gone, error, freeMb: freeMb() };
 }
 
 /** sha256 of each file of a list (relative to root) and of the list: the "files list" hash. */
@@ -153,6 +301,25 @@ export function hashTree(root, { skip = ['.git', 'node_modules', 'state', 'organ
 }
 
 // ------------------------------------------------------------------ the trial
+/**
+ * argv of a gaps-ledger trial (self/gaps.mjs trialOf): node plus trial.argv, with {tmp} as <copy>/tmp
+ * and {copy} as the copy. Its trial.command is a display line ("--dir <copy>") and is never run.
+ * Null when the trial carries no argv.
+ */
+export function ledgerArgv(trial, dir) {
+  if (!trial || !Array.isArray(trial.argv) || !trial.argv.length) return null;
+  const tmp = path.join(dir, 'tmp');
+  return ['node', ...trial.argv.map((a) => String(a).replaceAll('{tmp}', tmp).replaceAll('{copy}', dir))];
+}
+/** The copy paths a ledger trial reads: its seed and its fixtures. */
+export function ledgerIncludes(trial) {
+  if (!trial) return [];
+  const out = [];
+  if (typeof trial.seed === 'string' && trial.seed) out.push(trial.seed.startsWith('organism/') ? trial.seed : 'organism/' + trial.seed);
+  for (const f of [].concat(trial.fixtures || [])) if (typeof f === 'string' && f) out.push(f);
+  return out;
+}
+
 /** argv of a trial command: a tools/budget.mjs prefix is dropped (this file wraps it itself), node gets a heap cap. */
 export function trialArgv(command) {
   let argv = splitCommand(command);
@@ -175,7 +342,7 @@ const cleanEnv = () => { const env = {}; for (const [k, v] of Object.entries(pro
  */
 export async function runCapped(argv, dir, { wallMs = TRIAL_WALL_MS, ramMb = RAM_MB, diskMb = null, waitFreeRamMb = WAIT_FREE_RAM_MB } = {}) {
   const t0 = Date.now();
-  let out = '';
+  let out = '', stdout = '';
   let rec;
   const disk = diskMb || Math.ceil(dirBytes(dir).bytes / MB) + 1024;
   try {
@@ -186,14 +353,14 @@ export async function runCapped(argv, dir, { wallMs = TRIAL_WALL_MS, ramMb = RAM
       log: (line) => { out += line + '\n'; },
       onSpawn: (child) => {
         child.stdout.setEncoding('utf8'); child.stderr.setEncoding('utf8');
-        child.stdout.on('data', (d) => { if (out.length < 4_000_000) out += d; });
+        child.stdout.on('data', (d) => { if (out.length < 4_000_000) out += d; if (stdout.length < 4_000_000) stdout += d; });
         child.stderr.on('data', (d) => { if (out.length < 4_000_000) out += d; });
       },
     });
   } catch (e) {
     rec = { outcome: 'error', exitCode: 127, error: firstLine(e), peakRssMb: 0 };
   }
-  return { exit: rec.exitCode, outcome: rec.outcome, seconds: Math.round((Date.now() - t0) / 10) / 100, peakRssMb: rec.peakRssMb ?? 0, killed: rec.killed ? (rec.killed.which || rec.outcome) : null, error: rec.error || null, diskMb: disk, out };
+  return { exit: rec.exitCode, outcome: rec.outcome, seconds: Math.round((Date.now() - t0) / 10) / 100, peakRssMb: rec.peakRssMb ?? 0, killed: rec.killed ? (rec.killed.which || rec.outcome) : null, error: rec.error || null, diskMb: disk, out, stdout };
 }
 
 const getPath = (o, p) => String(p).split('.').reduce((a, k) => (a === null || a === undefined ? undefined : a[k]), o);
@@ -212,6 +379,9 @@ export function registerMetric(verdictBase, fn) { METRIC_READERS[verdictBase] = 
  */
 let GAPS_PARSER = undefined;
 let GAPS_SAID = false;
+let GAPS_PARSERS = null;
+/** Set the gaps item's named parsers by hand (tests): {name: {file(trial) | stdout | row, read}}. */
+export function setGapsParsers(obj) { GAPS_PARSERS = obj && typeof obj === 'object' ? obj : null; }
 export const GAPS_PARSER_NAMES = Object.freeze(['metricOf', 'parseTrialMetric', 'readTrialMetric', 'trialMetric', 'parseMetric']);
 export async function loadGapsParser({ root = ROOT, log = (l) => console.log(l) } = {}) {
   if (typeof GAPS_PARSER === 'function' || GAPS_PARSER === false) return GAPS_PARSER || null;
@@ -224,7 +394,9 @@ export async function loadGapsParser({ root = ROOT, log = (l) => console.log(l) 
     const m = await import(pathToFileURL(f).href);
     const name = GAPS_PARSER_NAMES.find((n) => typeof m[n] === 'function');
     GAPS_PARSER = name ? m[name] : false;
-    log(name ? 'self/gaps.mjs ' + name + '() reads trial metrics' : 'self/gaps.mjs has landed but exports none of ' + GAPS_PARSER_NAMES.join(', ') + ': its parser is not used');
+    if (m.PARSERS && typeof m.PARSERS === 'object' && !GAPS_PARSERS) GAPS_PARSERS = m.PARSERS;
+    log((name ? 'self/gaps.mjs ' + name + '() reads trial metrics' : 'self/gaps.mjs exports no parser function')
+      + (GAPS_PARSERS ? '; its PARSERS (' + Object.keys(GAPS_PARSERS).join(', ') + ') read the metric of a trial that names one in trial.parser' : ''));
   } catch (e) { log('self/gaps.mjs does not import: ' + firstLine(e)); GAPS_PARSER = null; }
   return GAPS_PARSER || null;
 }
@@ -236,7 +408,7 @@ export function setGapsParser(fn) { GAPS_PARSER = fn; }
  * reader registered for the gap's verdict file; the gaps item's parser (loadGapsParser); then a
  * "metric <n>" line on the output.
  */
-export function readMetric(gap, { dir, out = '' }) {
+export function readMetric(gap, { dir, out = '', stdout = null, run = null }) {
   const t = (gap && gap.trial) || {};
   const spec = t.metric || gap.metric || null;
   const num = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v)) ? Number(v) : null);
@@ -251,6 +423,29 @@ export function readMetric(gap, { dir, out = '' }) {
       const m = String(out).match(new RegExp(spec.regex, 'm'));
       const v = m ? num(m[1]) : null;
       return v === null ? { value: null, how: 'regex', reason: 'the output does not match ' + spec.regex } : { value: v, how: 'regex' };
+    }
+    const pname = t.parser || null;
+    const p = pname && GAPS_PARSERS ? GAPS_PARSERS[pname] : null;
+    if (pname && !p && GAPS_PARSERS) return { value: null, how: 'parser ' + pname, reason: 'self/gaps.mjs PARSERS has no parser named ' + pname };
+    if (p) {
+      const how = 'self/gaps.mjs PARSERS.' + pname + (p.name ? ' (' + p.name + ')' : '');
+      if (p.row) {
+        // the test runner: the metric is the file's wall, and a file that fails measured nothing
+        if (!run) return { value: null, how, reason: 'no run to read a wall from' };
+        if (run.exit !== 0) return { value: null, how, reason: 'the test file failed (exit ' + run.exit + ' ' + run.outcome + '): a failing run is not a wall' };
+        return { value: Math.round(run.seconds * 1000), how: how + ', wall ms of a passing run' };
+      }
+      if (typeof p.file === 'function') {
+        const rel = p.file(t);
+        const fp = path.join(dir, rel);
+        if (!existsSync(fp)) return { value: null, how, reason: rel + ' was not written by the trial' };
+        const v = num(p.read(JSON.parse(readFileSync(fp, 'utf8'))));
+        return v === null ? { value: null, how, reason: rel + ' holds no number where ' + pname + ' reads' } : { value: v, how: how + ' from ' + rel };
+      }
+      if (p.stdout) {
+        const v = num(p.read(stdout === null ? out : stdout));
+        return v === null ? { value: null, how, reason: 'the trial\'s stdout holds no number where ' + pname + ' reads' } : { value: v, how: how + ' from stdout' };
+      }
     }
     const base = gap && gap.verdictFile ? path.basename(String(gap.verdictFile)) : null;
     if (base && METRIC_READERS[base]) {
@@ -373,7 +568,7 @@ export async function gateOn(dir, { cmd = DEFAULT_GATE_CMD, wallMs = GATE_WALL_M
 export async function improve({
   root = ROOT, stateRoot = null, gap, operator = 'knob-tune', budget = null, gateCmd = DEFAULT_GATE_CMD,
   trialWallMs = TRIAL_WALL_MS, gateWallMs = GATE_WALL_MS, runId = null, hooks = {}, log = () => {}, allowModelTrial = false,
-  confirm = true, now = () => new Date(), stateDir = null,
+  confirm = true, now = () => new Date(), stateDir = null, kitRoot = null, gateKit = true, tmpRoot = null, maxRefill = 3,
 } = {}) {
   const t0 = Date.now();
   const sr = stateDir || stateDirOf(stateRoot || root);
@@ -402,21 +597,49 @@ export async function improve({
   if (!Number.isFinite(bar)) return refuse('the gap carries no numeric bar');
   const allowed = allowedFiles(gap, root);
   if (!allowed.files.length) return refuse('no file of the gap passes the ceiling' + (allowed.refused.length ? ': ' + allowed.refused.map((r) => r.reason).join('; ') : ''));
-  const argv = trialArgv(cmd);
-  if (!argv) return refuse('the trial command is empty');
+  const fromLedger = Array.isArray(gap.trial.argv) && gap.trial.argv.length > 0;
+  let argv = fromLedger ? null : trialArgv(cmd);
+  if (!fromLedger && !argv) return refuse('the trial command is empty');
   const fh = hashFiles(root, allowed.files).all;
   const writes = [].concat(gap.trial.writes || []).filter((w) => typeof w === 'string' && !path.isAbsolute(w));
 
   let result;
   try {
-    copy = copyTree(root, { include: [].concat(gap.copyInclude || []) });
-    log('copy ' + copy.dir + ': ' + copy.files + ' files, ' + (copy.bytes / MB).toFixed(1) + ' MB in ' + copy.ms + ' ms');
-    const clean = () => { for (const w of writes) { try { rmSync(path.join(copy.dir, w), { force: true, recursive: true }); } catch { /* none */ } } };
+    const include = [...new Set([...[].concat(gap.copyInclude || []), ...ledgerIncludes(gap.trial)])];
+    copy = copyTree(root, { include, tmpRoot });
+    const kr = kitRoot || root;
+    const refilled = [];
+    log('copy ' + copy.dir + ': ' + copy.files + ' files, ' + (copy.bytes / MB).toFixed(1) + ' MB in ' + copy.ms + ' ms' + (copy.include.length ? '; with ' + copy.include.join(', ') : ''));
+    if (fromLedger) {
+      argv = ledgerArgv(gap.trial, copy.dir);
+      mkdirSync(path.join(copy.dir, 'tmp'), { recursive: true });
+      log('trial argv (the ledger\'s, {tmp} and {copy} on this copy): ' + argv.join(' '));
+    }
+    if (gap.trial.trader) {
+      const sib = addSiblings(copy.dir, kr);
+      log('a trader trial: beside the copy ' + (sib.files.join(', ') || 'nothing') + ' (' + (sib.bytes / MB).toFixed(1) + ' MB)' + (sib.left.length ? ', left out: ' + sib.left.map((x) => x.file + ' ' + x.why).join('; ') : ''));
+    }
+    // what a run leaves behind never reaches the next run: the trial's writes, the file its parser reads, and {tmp}
+    const pfile = gap.trial.parser && GAPS_PARSERS && GAPS_PARSERS[gap.trial.parser] && typeof GAPS_PARSERS[gap.trial.parser].file === 'function' ? GAPS_PARSERS[gap.trial.parser].file(gap.trial) : null;
+    const clean = () => {
+      for (const w of [...writes, ...(pfile ? [pfile] : [])]) { try { rmSync(path.join(copy.dir, w), { force: true, recursive: true }); } catch { /* none */ } }
+      if (fromLedger) { try { rmSync(path.join(copy.dir, 'tmp'), { force: true, recursive: true }); } catch { /* none */ } mkdirSync(path.join(copy.dir, 'tmp'), { recursive: true }); }
+    };
     const once = async (label) => {
       clean();
-      const r = await runCapped(argv, copy.dir, { wallMs: trialWallMs });
-      const m = readMetric(gap, { dir: copy.dir, out: r.out });
-      log(label + ': exit ' + r.exit + ' ' + r.outcome + ', metric ' + m.value + ' (' + (m.value === null ? m.reason : m.how) + '), ' + r.seconds + ' s, peak ' + r.peakRssMb + ' MB');
+      let r = await runCapped(argv, copy.dir, { wallMs: trialWallMs });
+      let m = readMetric(gap, { dir: copy.dir, out: r.out, stdout: r.stdout, run: r });
+      // a trial that died on a missing fixture, seed or web/dist file gets that one path and runs again
+      for (let k = 0; m.value === null && k < maxRefill; k++) {
+        const add = fillMissing(copy.dir, kr, r.out);
+        if (!add.length) break;
+        refilled.push(...add);
+        log(label + ': the trial read ' + add.join(', ') + ', missing from the lean copy; copied from the tree and run again');
+        clean();
+        r = await runCapped(argv, copy.dir, { wallMs: trialWallMs });
+        m = readMetric(gap, { dir: copy.dir, out: r.out, stdout: r.stdout, run: r });
+      }
+      log(label + ': exit ' + r.exit + ' ' + r.outcome + ', metric ' + m.value + ' (' + (m.value === null ? m.reason : m.how) + '), ' + r.seconds + ' s, peak ' + (r.peakRssMb ? r.peakRssMb + ' MB' : 'not sampled (the run ended inside one 1 s sample)'));
       return { ...r, metric: m.value, how: m.how, metricReason: m.reason || null };
     };
 
@@ -450,21 +673,25 @@ export async function improve({
     while (!step.done) {
       const c = step.value || {};
       const tag = { knob: c.knob || null, name: c.name || null, file: c.file || null, value: c.value ?? null, from: c.from ?? null };
+      // an author's answer and diff go on its line whatever the verdict: what the model proposed is evidence too
+      const said = c.operator === 'author' ? { answer: c.answer ? String(c.answer).slice(0, 600) : null, patch: c.patch || null } : {};
       if (c.refused) {
-        trials.push(write({ kind: 'trial', ...tag, before, after: null, noise, seconds: 0, reason: 'refused: ' + c.reason, model: c.model || null }));
+        trials.push(write({ kind: 'trial', ...tag, before, after: null, noise, seconds: 0, reason: 'refused: ' + c.reason, model: c.model || null, ...said }));
         log('refused ' + (c.knob || c.name || c.operator) + ': ' + c.reason);
         step = await gen.next({ refused: true, reason: c.reason, before, after: null, noise });
         continue;
       }
       const vet = vetDiff(c.patch, gap, copy.dir, { maxLines: operator === 'author' ? MAX_CHANGED_LINES : Infinity });
       if (!vet.ok) {
-        trials.push(write({ kind: 'trial', ...tag, before, after: null, noise, seconds: 0, reason: 'refused: ' + vet.reason, model: c.model || null }));
+        trials.push(write({ kind: 'trial', ...tag, before, after: null, noise, seconds: 0, reason: 'refused: ' + vet.reason, model: c.model || null, ...said }));
+        log('refused ' + (c.knob || c.name || c.operator) + ': ' + vet.reason);
         step = await gen.next({ refused: true, reason: vet.reason, before, after: null, noise });
         continue;
       }
       const applied = applyTo(copy.dir, c.patch);
       if (!applied.ok) {
-        trials.push(write({ kind: 'trial', ...tag, before, after: null, noise, seconds: 0, reason: 'refused: the patch does not apply: ' + applied.reason, model: c.model || null }));
+        trials.push(write({ kind: 'trial', ...tag, before, after: null, noise, seconds: 0, reason: 'refused: the patch does not apply: ' + applied.reason, model: c.model || null, ...said }));
+        log('refused ' + (c.knob || c.name || c.operator) + ': the patch does not apply: ' + applied.reason);
         step = await gen.next({ refused: true, reason: applied.reason, before, after: null, noise });
         continue;
       }
@@ -476,7 +703,8 @@ export async function improve({
       const reason = r.metric === null ? 'the patched trial printed no metric: ' + r.metricReason
         : beatsNoise(towardRef, noise) ? 'moved ' + towardRef + ' toward the bar, over the noise band ' + noise + (closed ? '; the gap is closed' : '')
           : 'moved ' + towardRef + ' toward the bar, inside the noise band ' + noise;
-      trials.push(write({ kind: 'trial', ...tag, before, ref: c.ref ?? before, after: r.metric, toward, towardRef, noise, closed, seconds: r.seconds, peakRssMb: r.peakRssMb, exit: r.exit, reason, model: c.model || null, lines: vet.lines }));
+      trials.push(write({ kind: 'trial', ...tag, before, ref: c.ref ?? before, after: r.metric, toward, towardRef, noise, closed, seconds: r.seconds, peakRssMb: r.peakRssMb, exit: r.exit, reason, model: c.model || null, lines: vet.lines, ...said }));
+      log('  ' + reason);
       step = await gen.next({ before, after: r.metric, toward, towardRef, noise, closed, seconds: r.seconds });
     }
     const out = step.value || {};
@@ -497,6 +725,12 @@ export async function improve({
     }
     const toward = towardOf(after, before, bar, dir);
     if (!beatsNoise(toward, noise)) { result = refuse('the best candidate moved ' + toward + ' toward the bar on its less favourable run, inside the noise band ' + noise, { before, after, noise, baselineRan, best: slim(best) }); return result; }
+    let kit = null;
+    if (gateKit) {
+      kit = addGateKit(copy.dir, kr);
+      log('gate kit: ' + kit.fixtures.files + ' fixture files (' + (kit.fixtures.bytes / MB).toFixed(1) + ' MB, ' + kit.fixtures.left.length + ' over the cap left out), ' + kit.seeds.names.length + ' seeds (' + (kit.seeds.bytes / MB).toFixed(1) + ' MB, ' + kit.seeds.left.length + ' left out), web/dist ' + (kit.dist.bytes / MB).toFixed(1) + ' MB, whole ' + (kit.whole.dirs.join(', ') || 'nothing') + ' (' + (kit.whole.bytes / MB).toFixed(1) + ' MB), beside the copy ' + (kit.siblings.files.join(', ') || 'nothing') + ' (' + (kit.siblings.bytes / MB).toFixed(1) + ' MB' + (kit.siblings.left.length ? ', left out: ' + kit.siblings.left.map((x) => x.file + ' ' + x.why).join('; ') : '') + '), in ' + kit.ms + ' ms');
+    }
+    const kitLine = kit ? { files: kit.fixtures.files, seeds: kit.seeds.names.length, mb: Math.round(kit.bytes / MB * 10) / 10, whole: kit.whole.dirs, siblings: kit.siblings.files, leftOut: [...kit.fixtures.left.map((x) => x.file), ...kit.seeds.left.map((x) => 'organism/' + x.seed), ...kit.siblings.left.map((x) => x.file)] } : null;
     const tests = touchedTests(copy.dir, filesOfDiff(best.patch), [].concat(gap.tests || []));
     const testRuns = [];
     for (const t of tests) {
@@ -509,7 +743,7 @@ export async function improve({
     log('gate on the copy: ' + (g.summary || 'no GATE line') + ' (' + g.seconds + ' s)');
     if (!g.green) { result = refuse('the gate on the copy is not GREEN: ' + (g.summary || 'exit ' + g.exit + ' ' + g.outcome) + (g.red && g.red.length ? ' (red: ' + g.red.join(', ') + ')' : '') + (g.rows.filter((x) => / RED/.test(x)).length ? ' ' + g.rows.filter((x) => / RED/.test(x)).join(' | ') : ''), { before, after, noise, baselineRan, tests: testRuns, gate: g, best: slim(best) }); return result; }
     const closed = closedAt(after, bar, dir);
-    const d = write({ kind: 'decision', kept: true, knob: best.knob || null, name: best.name || null, file: best.file || null, value: best.value ?? null, from: best.from ?? null, before, after, confirm: confirmRun, noise, toward, closed, gateHash: g.hash, gate: g.summary, tests: testRuns, patch: best.patch, seconds: Math.round((Date.now() - t0) / 10) / 100, reason: 'moved ' + toward + ' toward the bar ' + bar + ', over the noise band ' + noise + '; touched tests pass; the gate on the copy is GREEN' + (closed ? '; the gap is closed' : '') });
+    const d = write({ kind: 'decision', kept: true, knob: best.knob || null, name: best.name || null, file: best.file || null, value: best.value ?? null, from: best.from ?? null, before, after, confirm: confirmRun, noise, toward, closed, gateHash: g.hash, gate: g.summary, kit: kitLine, refilled, tests: testRuns, patch: best.patch, seconds: Math.round((Date.now() - t0) / 10) / 100, reason: 'moved ' + toward + ' toward the bar ' + bar + ', over the noise band ' + noise + '; touched tests pass; the gate on the copy is GREEN' + (closed ? '; the gap is closed' : '') });
     result = { kept: true, patch: best.patch, operator, knob: best.knob || null, name: best.name || null, file: best.file || null, value: best.value ?? null, from: best.from ?? null, before, after, confirm: confirmRun, noise, toward, closed, gateHash: g.hash, gate: g, tests: testRuns, trials, record: recFile, decision: d, baselineRan, gap: gap.id };
     return result;
   } catch (e) {
@@ -583,7 +817,7 @@ async function main(argv) {
     const cmd = gap.trial && gap.trial.command;
     const fh = hashFiles(ROOT, allowed.files).all;
     const bl = cmd ? findBaseline(stateDirOf(ROOT), { command: cmd, filesHash: fh }) : null;
-    const plan = { gap: gap.id, operator, measured: gap.measured, bar: gap.bar, files: allowed.files, refusedFiles: allowed.refused, knobs: knobs.map((k) => k.name + ' ' + k.literal + ' [' + k.lo + ', ' + k.hi + '] step ' + k.step), trial: cmd ? trialArgv(cmd) : null, needsModel: !!(gap.trial && gap.trial.needsModel), baseline: bl ? { at: bl.at, runs: bl.runs, noise: bl.noise } : 'none today: two unpatched runs first' };
+    const plan = { gap: gap.id, operator, measured: gap.measured, bar: gap.bar, files: allowed.files, refusedFiles: allowed.refused, knobs: knobs.map((k) => k.name + ' ' + k.literal + ' [' + k.lo + ', ' + k.hi + '] step ' + k.step), trial: cmd ? (Array.isArray(gap.trial.argv) && gap.trial.argv.length ? ledgerArgv(gap.trial, '<copy>') : trialArgv(cmd)) : null, needsModel: !!(gap.trial && gap.trial.needsModel), baseline: bl ? { at: bl.at, runs: bl.runs, noise: bl.noise } : 'none today: two unpatched runs first' };
     console.log(json ? JSON.stringify(plan, null, 2) : Object.entries(plan).map(([k, v]) => k + ': ' + (typeof v === 'string' ? v : JSON.stringify(v))).join('\n'));
     return;
   }

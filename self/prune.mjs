@@ -11,9 +11,13 @@
 //   1. read the census verdict and decode its liveness bitsets exactly as the autopilot does
 //      (decodeBits: bit i at byte i>>3, position i&7), refusing a bitset whose popcount is not
 //      its recorded count, a census taken on another content hash, and a seed with no census;
-//   2. copy the tree to a temp directory, leaving out state/, .git/, node_modules/,
+//   2. copy the tree to <temp>/brain-prune-XXXXXX/brain (the root keeps the name brain: a gate
+//      test reads module URLs relative to "/brain/"), leaving out state/, .git/, node_modules/,
 //      bench/fixtures/, web/dist/, bench/verdicts/.census/ and every seed under organism/ but
-//      this one, except the paths the caller names in `include` (what the gate's own tests read);
+//      this one, except the paths named in `include` (gateIncludes: the fixture and web/dist
+//      paths the authored code names, each at most INCLUDE_MAX_MB, and the SOURCES.md lines that
+//      license them), plus the out-of-tree files the code names by '..' segments (the frozen
+//      trader tape tasks/venue.mjs replays), COPIED beside the copy, never linked;
 //   3. on the copy, genome/emit.mjs pruneOnCopy writes organism/<seed>-pruned with the copy's
 //      own emitter;
 //   4. re-point the seed: its index.mjs re-exports ../<seed>-pruned/index.mjs and its
@@ -29,15 +33,18 @@
 //      and without it the re-pointed seed has no census at its new hash (the row goes red);
 //   7. run the seed's own tests (every test file that names organism/<seed>) and the gate
 //      (node bench/gate.mjs --quiet) on the copy;
-//   8. delete the copy, verify the deletion, and read the disk space left.
+//   8. delete the copy, organism/ first, verify both deletions, read the disk space left, and
+//      hash what this call could have touched in the real tree before and after.
 //
 // A control run (control: true) does steps 1, 2, 7 and 8 on the same kind of copy with no prune
 // and no re-point, so the gate line with the intervention off is on record beside the one with
-// it on. The returned prunedDir is a path, not a diff: a seed is up to 277 MB.
+// it on. The returned prunedDir is a path, not a diff: a seed is up to 277 MB. When the real
+// tree already holds that directory at the pruned hash (Board 12 emitted organism/gen-0-pruned),
+// prunedOnReal says so, and the patch alone is then the whole change to the real tree.
 //
 //   node self/prune.mjs [--census bench/verdicts/census.json] [--seed organism/gen-0]
-//        [--control] [--include a,b,...] [--gate-cmd "node bench/gate.mjs --quiet"]
-//        [--no-carry] [--no-gate] [--work <dir>] [--out result.json] [--json]
+//        [--control] [--include auto|a,b,...] [--outside a,b,...] [--gate-cmd "node bench/gate.mjs --quiet"]
+//        [--no-carry] [--no-gate] [--no-tests] [--work <dir>] [--out result.json] [--json]
 import {
   readFileSync, writeFileSync, existsSync, mkdirSync, mkdtempSync, rmSync, readdirSync, statSync,
   cpSync, statfsSync,
@@ -58,6 +65,14 @@ export const TEST_TIMEOUT_MS = 10 * 60_000;
 export const COPY_SKIP_TOP = Object.freeze(['state', '.git', 'node_modules']);
 /** Deeper paths a trial copy never carries, unless named in include. */
 export const COPY_SKIP_PATHS = Object.freeze(['bench/fixtures', 'web/dist', 'bench/verdicts/.census']);
+/** A seed directory over this many bytes is watched by (path, size, mtime) rows, not by its bytes. */
+export const WATCH_BYTES_CAP = 256 * 1024 * 1024;
+/** gateIncludes leaves out any one path over this many MB, and says so. The knowledge store the
+ *  daemon's ingest step opens (bench/fixtures/wiki/store) is 371 MB; the wiki dump beside it and
+ *  the whole of bench/fixtures are over it. */
+export const INCLUDE_MAX_MB = 512;
+/** The directories a trial copy leaves out whose named paths gateIncludes carries back. */
+export const INCLUDE_ROOTS = Object.freeze(['bench/fixtures', 'web/dist']);
 const MB = 1024 * 1024;
 const SELF_FILE = fileURLToPath(import.meta.url);
 const posix = (p) => String(p).replaceAll('\\', '/');
@@ -102,7 +117,9 @@ export const deadShareOf = (lines) => (lines && lines.loaded > 0 && Number.isFin
 
 /**
  * Every census record on disk under verdictsDir: a verdict naming one seed, and each row of a
- * census over many. Each record says whether it carries liveness bitsets.
+ * census over many. Each record says whether it carries liveness bitsets. A census of a seed
+ * outside organism/ (a scratch copy) keeps seed null and its path in seedPath, so a lookup by
+ * content hash still finds it.
  */
 export function censusRecords(verdictsDir) {
   let names; try { names = readdirSync(verdictsDir); } catch { return []; }
@@ -112,12 +129,11 @@ export function censusRecords(verdictsDir) {
     if (!r.ok || !r.j || typeof r.j !== 'object') continue;
     const v = r.j;
     const push = (row, isRow) => {
-      const seed = seedRel(row.seed);
-      if (!seed) return;
+      if (typeof row.seed !== 'string') return;
       const live = row.live || null;
       const hash = (live && live.manifestHash) || (row.hash && row.hash.manifest) || row.manifestHash || null;
       out.push({
-        file: f, row: isRow, seed, at: typeof v.at === 'string' ? v.at : null, isTheBar: v.isTheBar === true,
+        file: f, row: isRow, seed: seedRel(row.seed), seedPath: posix(row.seed), at: typeof v.at === 'string' ? v.at : null, isTheBar: v.isTheBar === true,
         ruler: rulerOf(isRow ? { ...row, ticks: row.ticks ?? v.ticks } : v), hash: typeof hash === 'string' ? hash : null,
         lines: row.lines && typeof row.lines === 'object' ? { loaded: row.lines.loaded ?? null, loadBearing: row.lines.loadBearing ?? null } : null,
         deadShare: deadShareOf(row.lines), hasBits: !!(live && live.cells && live.edges), carriedFrom: v.carriedFrom || null,
@@ -135,7 +151,7 @@ export function censusesFor(root, seed) {
   const mf = s ? path.join(root, s, 'manifest.json') : null;
   const m = mf && existsSync(mf) ? readJson(mf) : null;
   const hash = m && m.ok ? m.j.hash : null;
-  const recs = censusRecords(path.join(root, 'bench', 'verdicts')).filter((r) => r.seed === s);
+  const recs = censusRecords(path.join(root, 'bench', 'verdicts')).filter((r) => r.seed && r.seed === s);
   return {
     seed: s, hash, lines: m && m.ok && m.j.counts ? m.j.counts.lines : null, records: recs,
     usable: recs.filter((r) => r.hasBits && !r.row && r.hash && r.hash === hash).sort(newestBarFirst),
@@ -175,21 +191,92 @@ export function pickSeed(root = ROOT) {
   return { pick, considered };
 }
 
-/** sha256 over sorted relative paths and bytes of every file under the given paths of root. */
-export function treeHash(root, rels = ['.'], { skip = [] } = {}) {
-  const h = createHash('sha256');
-  let files = 0, bytes = 0;
+/**
+ * Where the gate's tests read what a trial copy leaves out. A test reads a fixture itself or
+ * through the module it calls (bench/public.mjs reads bench/fixtures/public, act/prompt.mjs the
+ * knowledge store), so every authored source file is read: every .mjs, .js and .cjs outside the
+ * skipped directories and organism/. A path under bench/fixtures or web/dist is named as a literal
+ * ('bench/fixtures/code-tasks.json'), as root segments (path.join(ROOT, 'bench', 'fixtures',
+ * 'senses')) or as segments from the file's own directory (path.join(HERE, 'fixtures', 'public')
+ * in bench/). Each named path that exists is kept, with every SOURCES.md at or above it (the
+ * gate's HIS DATA row needs the licence line that covers a data file); a path under another kept
+ * directory is folded into it; a path over maxMb is left out and listed in tooBig. A path named by
+ * segments that climb out of root ('..', '..', 'trader', 'data', 'trader.db' from tasks/) is listed
+ * in outside, relative to root's parent, when it exists and is at most maxMb.
+ * @returns {{ include: string[], mb: number, namedBy: Record<string, string[]>, tooBig: string[], outside: string[], outsideMb: number, scanned: number }}
+ */
+export function gateIncludes(root = ROOT, { maxMb = INCLUDE_MAX_MB } = {}) {
+  const sources = authoredSources(root);
+  const named = new Map(), out = new Map();
+  const under = (p) => INCLUDE_ROOTS.some((r) => p === r || p.startsWith(r + '/'));
+  const note = (p, file) => { const k = path.posix.normalize(posix(p)).replace(/\/+$/, ''); if (!under(k)) return; if (!named.has(k)) named.set(k, new Set()); named.get(k).add(file); };
+  const segs = (list) => [...list.matchAll(/['"]([A-Za-z0-9_.-]+)['"]/g)].map((x) => x[1]);
+  for (const rel of sources) {
+    let src; try { src = readFileSync(path.join(root, rel), 'utf8'); } catch { continue; }
+    for (const m of src.matchAll(/(?:bench\/fixtures|web\/dist)(?:\/[A-Za-z0-9_.\-/]*[A-Za-z0-9_-])?/g)) note(m[0], rel);
+    for (const m of src.matchAll(/['"](bench|web)['"]\s*,\s*['"](fixtures|dist)['"]((?:\s*,\s*['"][A-Za-z0-9_.-]+['"])*)/g)) {
+      if ((m[1] === 'bench') !== (m[2] === 'fixtures')) continue;
+      note([m[1], m[2], ...segs(m[3])].join('/'), rel);
+    }
+    const dir = path.posix.dirname(rel);
+    for (const m of src.matchAll(/['"]\.\.['"]((?:\s*,\s*['"][A-Za-z0-9_.-]+['"])+)/g)) {
+      const p = path.posix.normalize(path.posix.join(dir, '..', ...segs(m[1])));
+      if (p.startsWith('../') && !p.startsWith('../../') && p.split('/').length > 2) { if (!out.has(p)) out.set(p, new Set()); out.get(p).add(rel); }
+    }
+    for (const m of src.matchAll(/(['"](?:bench|web)['"]\s*,\s*)?['"](fixtures|dist)['"]((?:\s*,\s*['"][A-Za-z0-9_.-]+['"])*)/g)) {
+      if (m[1]) continue; // the root form, read above
+      note(path.posix.join(dir, m[2], ...segs(m[3])), rel);
+    }
+  }
+  const exists = [...named.keys()].filter((p) => existsSync(path.join(root, p))).sort();
+  const tooBig = [];
+  const sized = exists.filter((p) => { const mb = dirBytes(path.join(root, p)) / MB; if (mb > maxMb) { tooBig.push(p); return false; } return true; });
+  const withSources = new Set(sized);
+  for (const p of sized) {
+    if (!(p === 'bench/fixtures' || p.startsWith('bench/fixtures/'))) continue;
+    let d = path.posix.dirname(p);
+    for (;;) {
+      if (!(d === 'bench/fixtures' || d.startsWith('bench/fixtures/'))) break;
+      if (existsSync(path.join(root, d, 'SOURCES.md'))) withSources.add(d + '/SOURCES.md');
+      if (d === 'bench/fixtures') break;
+      d = path.posix.dirname(d);
+    }
+  }
+  const all = [...withSources].sort();
+  const include = all.filter((p) => !all.some((q) => q !== p && p.startsWith(q + '/')));
+  const namedBy = Object.fromEntries(exists.map((p) => [p, [...named.get(p)].sort()]));
+  const mb = Math.round((include.reduce((a, p) => a + dirBytes(path.join(root, p)), 0) / MB) * 1000) / 1000;
+  const outside = [];
+  for (const p of [...out.keys()].sort()) {
+    const abs = path.resolve(root, p);
+    if (!existsSync(abs)) continue;
+    const q = p.slice(3);
+    namedBy[p] = [...out.get(p)].sort();
+    if (dirBytes(abs) / MB > maxMb) tooBig.push(p); else outside.push(q);
+  }
+  const outsideMb = Math.round((outside.reduce((a, q) => a + dirBytes(path.resolve(root, '..', q)), 0) / MB) * 1000) / 1000;
+  return { include, mb, namedBy, tooBig, outside, outsideMb, scanned: sources.length };
+}
+
+/** Every authored source file of a tree (.mjs, .js, .cjs), relative and sorted, outside what a copy skips and organism/. */
+export function authoredSources(root) {
+  const out = [];
   const walk = (abs) => {
     const rel = relOf(root, abs);
-    if (skip.some((s) => rel === s || rel.startsWith(s + '/'))) return;
-    let st; try { st = statSync(abs); } catch { h.update('missing ' + rel + '\n'); return; }
-    if (st.isDirectory()) { for (const n of readdirSync(abs).sort()) walk(path.join(abs, n)); return; }
-    const b = readFileSync(abs);
-    h.update(rel + '\n' + b.length + '\n'); h.update(b);
-    files++; bytes += b.length;
+    if (rel) {
+      const top = rel.split('/')[0];
+      if (COPY_SKIP_TOP.includes(top) || top === 'organism' || top.startsWith('.')) return;
+      if (COPY_SKIP_PATHS.some((p) => rel === p || rel.startsWith(p + '/'))) return;
+    }
+    let ents; try { ents = readdirSync(abs, { withFileTypes: true }); } catch { return; }
+    for (const e of ents) {
+      const p = path.join(abs, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (/\.(mjs|js|cjs)$/.test(e.name)) out.push(relOf(root, p));
+    }
   };
-  for (const r of rels) walk(path.resolve(root, r));
-  return { hash: h.digest('hex'), files, bytes };
+  walk(root);
+  return out.sort();
 }
 
 function dirBytes(abs) {
@@ -198,14 +285,53 @@ function dirBytes(abs) {
   walk(abs);
   return n;
 }
+
+/**
+ * sha256 over sorted relative paths and bytes of every file under the given paths of root. A
+ * directory over WATCH_BYTES_CAP is hashed by (path, size, mtime) rows instead of its bytes, and
+ * the result says which were. A missing path hashes as missing, so appearing is a change.
+ */
+export function treeHash(root, rels = ['.'], { skip = [], capBytes = WATCH_BYTES_CAP } = {}) {
+  const h = createHash('sha256');
+  let files = 0, bytes = 0;
+  const byStat = [];
+  const walk = (abs, statOnly) => {
+    const rel = relOf(root, abs);
+    if (skip.some((s) => rel === s || rel.startsWith(s + '/'))) return;
+    let st; try { st = statSync(abs); } catch { h.update('missing ' + rel + '\n'); return; }
+    if (st.isDirectory()) { for (const n of readdirSync(abs).sort()) walk(path.join(abs, n), statOnly); return; }
+    files++; bytes += st.size;
+    if (statOnly) { h.update(rel + '\n' + st.size + '\n' + st.mtimeMs + '\n'); return; }
+    const b = readFileSync(abs);
+    h.update(rel + '\n' + b.length + '\n'); h.update(b);
+  };
+  for (const r of rels) {
+    const abs = path.resolve(root, r);
+    let big = false;
+    try { big = statSync(abs).isDirectory() && dirBytes(abs) > capBytes; } catch { big = false; }
+    if (big) byStat.push(relOf(root, abs));
+    walk(abs, big);
+  }
+  return { hash: h.digest('hex'), files, bytes, byStat };
+}
+
+/** The names under root/organism, one per line, hashed: a seed directory created or removed changes it. */
+export function organismListing(root) {
+  let names; try { names = readdirSync(path.join(root, 'organism')).sort(); } catch { names = []; }
+  return { names: names.length, hash: createHash('sha256').update(names.join('\n')).digest('hex') };
+}
+
 /** MB free on the volume holding p, read with statfs. */
 export const freeDiskMb = (p) => { try { const s = statfsSync(p); return Math.round((s.bavail * s.bsize) / MB); } catch { return null; } };
 
 /**
  * Copy root to dest for a trial: every file but the skipped directories and every seed under
  * organism/ except `seed`, plus each path of `include` (relative to root) however it is skipped.
+ * Each path of `outside` (relative to root's parent) is COPIED to the same place relative to
+ * dest's parent, which must then be a directory the trial owns; a .db file brings a -wal file
+ * beside it when that one holds bytes. Nothing is linked, so nothing on the copy writes back.
  */
-export function copyTree(root, dest, { seed, include = [] } = {}) {
+export function copyTree(root, dest, { seed, include = [], outside = [] } = {}) {
   const keepSeed = seed ? seedRel(seed).slice('organism/'.length) : null;
   const inc = include.map((p) => posix(p).replace(/\/+$/, ''));
   const underInclude = (p) => inc.some((i) => p === i || p.startsWith(i + '/'));
@@ -224,7 +350,21 @@ export function copyTree(root, dest, { seed, include = [] } = {}) {
   });
   const missing = inc.filter((i) => !existsSync(path.join(root, i)));
   const includedBytes = inc.reduce((a, i) => a + dirBytes(path.join(dest, i)), 0);
-  return { ms: Date.now() - t0, bytes: dirBytes(dest), include: inc, includedBytes, missing };
+  const box = path.dirname(path.resolve(dest)), realParent = path.dirname(path.resolve(root));
+  let outsideBytes = 0;
+  const outCopied = [];
+  for (const q of outside.map((p) => posix(p).replace(/\/+$/, ''))) {
+    const src = path.resolve(realParent, q), dst = path.resolve(box, q);
+    const rel = path.relative(box, dst);
+    if (!rel || rel.startsWith('..') || path.isAbsolute(rel) || path.resolve(box) === realParent) throw new Error('copyTree: the outside path ' + q + ' does not land inside the trial directory ' + box);
+    if (!existsSync(src)) { missing.push('../' + q); continue; }
+    mkdirSync(path.dirname(dst), { recursive: true });
+    cpSync(src, dst, { recursive: true, preserveTimestamps: true });
+    if (/\.db$/.test(q) && existsSync(src + '-wal') && statSync(src + '-wal').size > 0) cpSync(src + '-wal', dst + '-wal', { preserveTimestamps: true });
+    outsideBytes += dirBytes(dst);
+    outCopied.push(q);
+  }
+  return { ms: Date.now() - t0, bytes: dirBytes(dest), include: inc, includedBytes, outside: outCopied, outsideBytes, missing };
 }
 
 /** One unified diff hunk replacing what differs between two texts (the common head and tail kept out). */
@@ -310,6 +450,18 @@ export function censusOfContent(verdictsDir, hash, ruler) {
   return { ...r, sameRuler: sameRuler(r.ruler, ruler) };
 }
 
+/**
+ * Run-to-run spread of the dead share at one content hash and one ruler: every census on disk
+ * that measured that content with that ruler (carried records excluded), each with its share.
+ * @returns {{ n, min, max, spread, files: Array<{file, seed, deadShare, lines}> }}
+ */
+export function repeatsAt(verdictsDir, hash, ruler) {
+  const recs = censusRecords(verdictsDir).filter((r) => r.hash === hash && r.deadShare !== null && !r.carriedFrom && sameRuler(r.ruler, ruler));
+  const shares = recs.map((r) => r.deadShare);
+  const min = shares.length ? Math.min(...shares) : null, max = shares.length ? Math.max(...shares) : null;
+  return { n: recs.length, min, max, spread: shares.length ? round6(max - min) : null, files: recs.map((r) => ({ file: r.file, seed: r.seed || r.seedPath, deadShare: r.deadShare, lines: r.lines })) };
+}
+
 /** Where the gate on a copy stood: its exit, its summary line, its LOAD-BEARING line, its red files. */
 function gateOn(copy, cmd, timeoutMs) {
   const g = runGate({ root: copy, cmd, timeoutMs });
@@ -334,16 +486,17 @@ function gateOn(copy, cmd, timeoutMs) {
  * @param {string} [o.census] the census verdict, relative to root (default: the preferred usable one)
  * @param {string} [o.seed] the seed (default: the census's)
  * @param {boolean} [o.control] no prune, no re-point: the same copy, tests and gate
- * @param {string[]} [o.include] paths copied although a skip rule covers them
+ * @param {string[]} [o.include] paths copied although a skip rule covers them (gateIncludes)
+ * @param {string[]} [o.outside] paths beside root (relative to its parent) copied beside the copy
  * @param {string} [o.gateCmd] @param {number} [o.gateTimeoutMs]
  * @param {boolean} [o.carry] write the carried census record on the copy (default true)
  * @param {string} [o.work] where the copy is made (default the OS temp directory)
  * @param {(s: string) => void} [o.log]
  * @returns {object} { ok, decision, seed, linesBefore, linesAfter, deadShareBefore, deadShareAfter,
- *   gate, ms, patch, prunedDir, ... }
+ *   gate, ms, patch, prunedDir, prunedOnReal, ... }
  */
 export function pruneSeed({
-  root = ROOT, census = null, seed = null, control = false, include = [], gateCmd = DEFAULT_GATE_CMD,
+  root = ROOT, census = null, seed = null, control = false, include = [], outside = [], gateCmd = DEFAULT_GATE_CMD,
   gateTimeoutMs = GATE_TIMEOUT_MS, testTimeoutMs = TEST_TIMEOUT_MS, carry = true, work = tmpdir(), heapMb = HEAP_MB,
   runOwnTests = true, runGateStep = true, log = () => {},
 } = {}) {
@@ -384,32 +537,41 @@ export function pruneSeed({
   const beforeRuler = rulerOf(v);
   const deadShareBefore = deadShareOf(v.lines);
   const prunedRel = s + '-pruned';
-  const watch = [s, censusRel].concat(existsSync(path.join(R, prunedRel)) ? [prunedRel + '/manifest.json', prunedRel + '/index.mjs'] : []);
-  const realBefore = treeHash(R, watch);
+  // what this call could touch in the real tree: the seed, its pruned sibling, the census, and the
+  // listing of organism/ (a directory appearing there is a write)
+  const watch = [s, censusRel, prunedRel];
+  const realBefore = { tree: treeHash(R, watch), organism: organismListing(R) };
   log((control ? 'control ' : 'prune ') + s + ' by ' + censusRel + ': cells ' + cb.count + ' of ' + cb.n + ' live, edges ' + eb.count + ' of ' + eb.n + ' live (popcount = count for both)');
 
   // 2. the copy
   mkdirSync(work, { recursive: true });
-  const copy = mkdtempSync(path.join(work, 'brain-prune-'));
+  const box = mkdtempSync(path.join(work, 'brain-prune-'));
+  const copy = path.join(box, 'brain');
   const out = {
     ok: false, decision: null, control, seed: s,
     census: { file: censusRel, at: v.at ?? null, ruler: beforeRuler, lines: v.lines ? { loaded: v.lines.loaded, loadBearing: v.lines.loadBearing } : null, cells: { n: cb.n, live: cb.count, dead: cb.dead }, edges: { n: eb.n, live: eb.count, dead: eb.dead } },
-    linesBefore: bm.counts.lines, linesAfter: null, deadShareBefore, deadShareAfter: null, gate: null, ms: 0, patch: null, prunedDir: null,
+    linesBefore: bm.counts.lines, linesAfter: null, deadShareBefore, deadShareAfter: null, gate: null, ms: 0, patch: null, prunedDir: null, prunedOnReal: null,
     copy: null, prune: null, repoint: null, load: null, after: null, carried: null, tests: null, cleanup: null, real: null,
   };
   try {
-    const cp = copyTree(R, copy, { seed: s, include });
-    out.copy = { dir: copy, mb: Math.round((cp.bytes / MB) * 10) / 10, includedMb: Math.round((cp.includedBytes / MB) * 10) / 10, ms: cp.ms, include: cp.include, missing: cp.missing };
-    log('copy ' + copy + ': ' + out.copy.mb + ' MB in ' + cp.ms + ' ms' + (cp.include.length ? ', ' + cp.include.length + ' included path(s) = ' + out.copy.includedMb + ' MB' : '') + (cp.missing.length ? ', MISSING ' + cp.missing.join(', ') : ''));
+    const cp = copyTree(R, copy, { seed: s, include, outside });
+    out.copy = { dir: copy, mb: Math.round((cp.bytes / MB) * 10) / 10, includedMb: Math.round((cp.includedBytes / MB) * 10) / 10, outside: cp.outside, outsideMb: Math.round((cp.outsideBytes / MB) * 10) / 10, ms: cp.ms, include: cp.include, missing: cp.missing };
+    log('copy ' + copy + ': ' + out.copy.mb + ' MB in ' + cp.ms + ' ms' + (cp.include.length ? ', ' + cp.include.length + ' included path(s) = ' + out.copy.includedMb + ' MB' : '') + (cp.outside.length ? ', beside it ' + cp.outside.join(', ') + ' = ' + out.copy.outsideMb + ' MB' : '') + (cp.missing.length ? ', MISSING ' + cp.missing.join(', ') : ''));
 
     if (!control) {
       // 3. the prune, by the copy's own emitter
-      const p = pruneOnCopy(copy, s, prunedRel, censusRel, { heapMb, timeoutMs: gateTimeoutMs });
+      let p;
+      try { p = pruneOnCopy(copy, s, prunedRel, censusRel, { heapMb, timeoutMs: gateTimeoutMs }); }
+      catch (e) { out.decision = 'refused'; out.wall = 'prune'; out.reason = String((e && e.message) || e).split('\n')[0]; return out; }
       out.prune = { ok: p.ok, exit: p.exit, ms: p.ms, hash: p.hash, lines: p.lines, cells: p.cells, edges: p.edges, printed: p.printed.slice(0, 16), error: p.error };
       for (const l of p.printed) log('  emit | ' + l);
       if (!p.ok) { out.decision = 'refused'; out.wall = 'prune'; out.reason = p.error; return out; }
       out.linesAfter = p.lines.after;
       out.prunedDir = prunedRel;
+      const realPruned = path.join(R, prunedRel, 'manifest.json');
+      const rp = existsSync(realPruned) ? readJson(realPruned) : null;
+      out.prunedOnReal = { dir: prunedRel, exists: !!rp, hash: rp && rp.ok ? rp.j.hash : null, sameHash: !!(rp && rp.ok && rp.j.hash === p.hash) };
+      log('pruned ' + prunedRel + ' on the copy: hash ' + String(p.hash).slice(0, 12) + '; the real tree ' + (out.prunedOnReal.exists ? 'holds ' + prunedRel + ' at hash ' + String(out.prunedOnReal.hash).slice(0, 12) + (out.prunedOnReal.sameHash ? ' (the same content: the patch alone is the whole change there)' : ' (a DIFFERENT content)') : 'holds no ' + prunedRel));
       // 4. the re-point: the seed's index.mjs and manifest.json, as a diff checked by the applier
       const oldIndex = readFileSync(path.join(copy, s, 'index.mjs'), 'utf8');
       const oldManifest = readFileSync(path.join(copy, s, 'manifest.json'), 'utf8');
@@ -432,16 +594,16 @@ export function pruneSeed({
       // 6. the census of the pruned content, and the carried record
       const vdir = path.join(copy, 'bench', 'verdicts');
       const after = censusOfContent(vdir, p.hash, beforeRuler);
-      out.after = after ? { file: after.file, seed: after.seed, at: after.at, ruler: after.ruler, sameRuler: after.sameRuler, isTheBar: after.isTheBar, lines: after.lines, deadShare: after.deadShare } : null;
+      out.after = after ? { file: after.file, seed: after.seed || after.seedPath, at: after.at, ruler: after.ruler, sameRuler: after.sameRuler, isTheBar: after.isTheBar, lines: after.lines, deadShare: after.deadShare } : null;
       out.deadShareAfter = after ? after.deadShare : null;
-      log(after ? 'census of the pruned content: ' + after.file + ' (' + after.seed + ', hash ' + p.hash.slice(0, 12) + '): ' + after.lines.loadBearing + ' of ' + after.lines.loaded + ' loaded lines load bearing, dead share ' + after.deadShare + (after.sameRuler ? ', the same ruler as the census before' : ', a DIFFERENT ruler from the census before') : 'no census on disk measured content hash ' + String(p.hash).slice(0, 12) + ': census ' + prunedRel + ' before this prune can be judged');
+      log(after ? 'census of the pruned content: ' + after.file + ' (' + out.after.seed + ', hash ' + p.hash.slice(0, 12) + '): ' + after.lines.loadBearing + ' of ' + after.lines.loaded + ' loaded lines load bearing, dead share ' + after.deadShare + (after.sameRuler ? ', the same ruler as the census before' : ', a DIFFERENT ruler from the census before') : 'no census on disk measured content hash ' + String(p.hash).slice(0, 12) + ': census ' + prunedRel + ' before this prune can be judged');
       if (after && carry) {
         const name = 'census-' + s.slice('organism/'.length) + '-repointed-partial.json';
         const rec = {
           bench: 'census', at: new Date().toISOString(), command: 'self/prune.mjs (carried on a trial copy)', node: process.version, isTheBar: false,
           seed: s, ...(after.ruler.mode === 'dynamic' ? {} : { mode: after.ruler.mode }), ticks: after.ruler.ticks,
           hash: { manifest: p.hash }, lines: after.lines, carriedFrom: after.file,
-          statement: s + ' on this trial copy was re-pointed to ' + prunedRel + ', whose content hash ' + p.hash + ' is the hash ' + after.file + ' measured under the name ' + after.seed + '. This record carries that census\'s own line counts (' + after.lines.loadBearing + ' of ' + after.lines.loaded + ' loaded lines load bearing) to the re-pointed seed so the gate can match a census to it by path and hash. Nothing was re-measured; it exists only on the copy.',
+          statement: s + ' on this trial copy was re-pointed to ' + prunedRel + ', whose content hash ' + p.hash + ' is the hash ' + after.file + ' measured under the name ' + out.after.seed + '. This record carries that census\'s own line counts (' + after.lines.loadBearing + ' of ' + after.lines.loaded + ' loaded lines load bearing) to the re-pointed seed so the gate can match a census to it by path and hash. Nothing was re-measured; it exists only on the copy.',
         };
         writeFileSync(path.join(vdir, name), JSON.stringify(rec, null, 2) + '\n');
         out.carried = { file: name, from: after.file };
@@ -458,15 +620,17 @@ export function pruneSeed({
         out.tests.push({ file: rel, exit: r.exit, pass: r.pass, fail: r.fail, total: r.total, ms: r.ms, failures: r.failures.slice(0, 3) });
         log('own test ' + rel + ': ' + (r.exit === 0 ? 'PASS' : 'FAIL') + ' ' + r.pass + '/' + r.total + ' in ' + r.ms + ' ms');
       }
+      if (!names.length) log('own tests: no test file names ' + s);
     }
     if (runGateStep) {
       out.gate = gateOn(copy, gateCmd, gateTimeoutMs);
       log('gate on the copy: ' + (out.gate.summary || out.gate.verdict + ' (no summary line)'));
       if (out.gate.loadBearing) log('  ' + out.gate.loadBearing);
       if (out.gate.red.length) log('  red files: ' + out.gate.red.join(', '));
+      if (out.gate.tail) log('  tail: ' + out.gate.tail.replaceAll('\n', ' | '));
     }
     const testsOk = !out.tests || out.tests.every((t) => t.exit === 0);
-    out.ok = control ? !!out.gate && out.gate.verdict === 'GREEN' && testsOk
+    out.ok = control ? (!out.gate || out.gate.verdict === 'GREEN') && testsOk
       : !!out.prune && out.prune.ok && !!out.load && out.load.pruned && (!out.gate || out.gate.verdict === 'GREEN') && testsOk;
     out.decision = control ? 'control' : out.ok ? 'would apply' : 'refused';
     if (!control && !out.ok) {
@@ -479,12 +643,13 @@ export function pruneSeed({
     const org = path.join(copy, 'organism');
     let orgGone = false, copyGone = false, error = null;
     try { rmSync(org, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); orgGone = !existsSync(org); } catch (e) { error = String(e.message || e); }
-    try { rmSync(copy, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); copyGone = !existsSync(copy); } catch (e) { error = error || String(e.message || e); }
+    try { rmSync(box, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); copyGone = !existsSync(box); } catch (e) { error = error || String(e.message || e); }
     out.cleanup = { organismDeleted: orgGone, copyDeleted: copyGone, error, freeDiskMb: freeDiskMb(work) };
     log('cleanup: the copy\'s organism/ ' + (orgGone ? 'deleted' : 'NOT deleted') + ', the copy ' + (copyGone ? 'deleted' : 'NOT deleted') + ' (checked with existsSync); ' + out.cleanup.freeDiskMb + ' MB left on the disk of ' + work);
-    const realAfter = treeHash(R, watch);
-    out.real = { watched: watch, before: realBefore.hash, after: realAfter.hash, same: realBefore.hash === realAfter.hash, files: realAfter.files, bytes: realAfter.bytes };
-    log('the real tree: ' + watch.join(', ') + ' hash ' + realBefore.hash.slice(0, 12) + ' before, ' + realAfter.hash.slice(0, 12) + ' after (' + (out.real.same ? 'unchanged' : 'CHANGED') + ')');
+    const realAfter = { tree: treeHash(R, watch), organism: organismListing(R) };
+    const same = realBefore.tree.hash === realAfter.tree.hash && realBefore.organism.hash === realAfter.organism.hash;
+    out.real = { watched: watch.concat(['organism/ (listing)']), before: realBefore.tree.hash, after: realAfter.tree.hash, organismBefore: realBefore.organism.hash, organismAfter: realAfter.organism.hash, same, files: realAfter.tree.files, bytes: realAfter.tree.bytes, byStat: realAfter.tree.byStat };
+    log('the real tree: ' + out.real.watched.join(', ') + ' hash ' + realBefore.tree.hash.slice(0, 12) + ' before, ' + realAfter.tree.hash.slice(0, 12) + ' after; organism/ listing ' + realBefore.organism.hash.slice(0, 12) + ' before, ' + realAfter.organism.hash.slice(0, 12) + ' after (' + (same ? 'unchanged' : 'CHANGED') + ')');
     out.ms = Date.now() - t0;
   }
 }
@@ -498,9 +663,13 @@ if (process.argv[1] && path.resolve(process.argv[1]) === SELF_FILE) {
   const log = json ? () => {} : (l) => process.stdout.write(l + '\n');
   let census = opt('census', null), seed = opt('seed', null);
   if (!census && !seed) { const p = pickSeed(ROOT); if (p.pick) { seed = p.pick.seed; census = 'bench/verdicts/' + p.pick.census; } }
+  const incOpt = opt('include', 'auto');
+  let include, outside = (opt('outside', '') || '').split(',').filter(Boolean);
+  if (incOpt === 'auto') { const g = gateIncludes(ROOT); include = g.include; if (!argv.includes('--outside')) outside = g.outside; log('outside the tree (copied beside the copy, ' + g.outsideMb + ' MB): ' + (g.outside.join(', ') || 'none')); log('include (the fixture and web/dist paths ' + g.scanned + ' authored files name, ' + g.mb + ' MB): ' + (include.join(', ') || 'none') + (g.tooBig.length ? '; left out as over ' + INCLUDE_MAX_MB + ' MB: ' + g.tooBig.join(', ') : '')); }
+  else include = incOpt.split(',').filter(Boolean);
   const r = pruneSeed({
-    census, seed, control: has('control'), include: (opt('include', '') || '').split(',').filter(Boolean),
-    gateCmd: opt('gate-cmd', DEFAULT_GATE_CMD), carry: !has('no-carry'), runGateStep: !has('no-gate'), work: opt('work', tmpdir()), log,
+    census, seed, control: has('control'), include, outside,
+    gateCmd: opt('gate-cmd', DEFAULT_GATE_CMD), carry: !has('no-carry'), runGateStep: !has('no-gate'), runOwnTests: !has('no-tests'), work: opt('work', tmpdir()), log,
   });
   const f = opt('out', null);
   if (f) writeFileSync(f, JSON.stringify(r, null, 2) + '\n');
