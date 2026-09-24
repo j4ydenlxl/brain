@@ -33,11 +33,28 @@
 // named in --skip was deferred and owns nothing; a path whose clause says "only if" counts only
 // from a commit that changed it, never from a first commit that carries the whole tree), reads
 // the files each checkpoint commit names (git show --name-only, read only: this file never runs a
-// git command that writes), and keeps the owned paths the commits carry. "at" defaults to the
-// latest checkpoint commit's author date in UTC. It prints the entry, and --write-boards puts it
+// git command that writes), and keeps the owned paths the commits carry; "at" is read as below.
+// It prints the entry, and --write-boards puts it
 // into docs/BOARDS.json in place of any entry for the same board. The run also names every
-// docs/boards/board-N.js that has no entry yet, so a board that landed and was never counted is a
-// printed gap, not a silent one.
+// docs/boards/board-N.js that has no entry yet, and every entry that says launched false while
+// docs/LOG.md says the board LANDED, so a board that landed and was never counted is a printed
+// gap, not a silent one.
+//
+// "at" IS WHEN THE BOARD LANDED: the docs/LOG.md line "- YYYY-MM-DD HH:MM BOARD N ... LANDED",
+// read in the zone that log is written in (LOG_ZONE, the local clock of the machine the
+// orchestrator runs on), and the latest checkpoint commit's date only when no such line exists.
+// A commit can be hours late: Board 10 LANDED at 04:12 local and first reached git in the
+// repository's first commit at 09:33 local. entry.atSource names what was read, and a per-day
+// rate over the boards reads "at".
+//
+//   node tools/authorship.mjs --fill [--write-boards]
+//
+// fills every entry that is missing or says launched false, with nothing typed: for each
+// docs/boards/board-N.js whose LANDED line is in docs/LOG.md and whose landing a commit subject
+// names ("Board N landed", "Boards A to B landed"; git log, read only), it derives the entry as
+// --derive does, carrying an existing entry's skipped items and run id (the run id is otherwise
+// read from the LANDED line). A board with no LANDED line, or with one and no commit yet, is
+// printed with that reason and left as it is.
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -328,7 +345,7 @@ export function readCommit(root, rev) {
  * that is a change (not a first commit carrying the whole tree).
  * @param {{root?, board, commits?: string[], at?, runId?, launched?, skip?: string[], readCommitFn?}} o
  */
-export function deriveBoard({ root = ROOT, board, commits = [], at = null, runId = null, launched = true, skip = [], readCommitFn = readCommit } = {}) {
+export function deriveBoard({ root = ROOT, board, commits = [], at = null, runId = null, launched = true, skip = [], readCommitFn = readCommit, landed = undefined } = {}) {
   const source = BOARD_SOURCES_REL + '/board-' + board + '.js';
   const file = path.join(root, ...source.split('/'));
   if (!existsSync(file)) throw new Error('no ' + source);
@@ -350,9 +367,12 @@ export function deriveBoard({ root = ROOT, board, commits = [], at = null, runId
     for (const f of hit) files.add(f);
   }
   const latest = cs.map((c) => c.at).sort().at(-1);
+  const log = landed === undefined ? landedFromLog(root, board) : landed;
   const entry = {
-    board, at: at || latest, runId, launched: true, source, items: items.map((i) => i.key),
-    commits: cs.map((c) => c.sha), commitSubjects: cs.map((c) => c.subject), byItem, files: [...files].sort(),
+    board, at: at || (log && log.at) || latest,
+    atSource: at ? 'given (--at)' : log ? log.source + ' (' + log.local + ')' : 'the latest checkpoint commit (no LANDED line in ' + LOG_REL + ')',
+    runId: runId || (log && log.runId) || null, launched: true, source, items: items.map((i) => i.key),
+    commits: cs.map((c) => c.sha), commitSubjects: cs.map((c) => c.subject), commitsAt: cs.map((c) => c.at), byItem, files: [...files].sort(),
   };
   if (skip.length) entry.skipped = [...skip];
   if (cs.some((c) => c.root)) entry.note = 'a checkpoint here is the repository\'s first commit, whose name list is the whole tree: every owned path it holds is counted, including one the board owned and left unchanged (an overcount); a conditional path ("only if") is not counted from it';
@@ -379,8 +399,115 @@ export function missingBoards(root, boards) {
     .filter((n) => !have.has(n)).sort((a, b) => a - b).map((n) => ({ board: n, source: BOARD_SOURCES_REL + '/board-' + n + '.js' }));
 }
 
+// ================================================================ when a board landed, from docs/LOG.md
+export const LOG_REL = 'docs/LOG.md';
+/**
+ * The zone of docs/LOG.md's dated lines: the local clock of the machine the orchestrator writes
+ * it on (Intl resolved America/New_York there on 2026-09-24, and its git commits carry -04:00).
+ */
+export const LOG_ZONE = 'America/New_York';
+
+/**
+ * A wall-clock minute in a zone as a UTC ISO string ('2026-09-24T08:12:00Z'), through Intl, so the
+ * answer does not depend on the zone of the machine that reads it. Null for a zone Intl refuses.
+ */
+export function zonedToUtc(y, mo, d, h, mi, zone = LOG_ZONE) {
+  let fmt;
+  try {
+    fmt = new Intl.DateTimeFormat('en-US', { timeZone: zone, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' });
+  } catch { return null; }
+  const wallOf = (t) => {
+    const p = Object.fromEntries(fmt.formatToParts(new Date(t)).map((x) => [x.type, x.value]));
+    return Date.UTC(Number(p.year), Number(p.month) - 1, Number(p.day), Number(p.hour) % 24, Number(p.minute), Number(p.second));
+  };
+  const wall = Date.UTC(y, mo - 1, d, h, mi);
+  let t = wall - (wallOf(wall) - wall);
+  t = wall - (wallOf(t) - t);
+  return new Date(t).toISOString().replace('.000Z', 'Z');
+}
+
+const LANDED_LINE = /^- (\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}) BOARD (\d+)((?: [A-Z][A-Z0-9-]*)*) LANDED\b/;
+
+/**
+ * The docs/LOG.md line that says board N LANDED ("- 2026-09-24 04:12 BOARD 10 LANDED (wf_...",
+ * "BOARD 12 SELF LANDED"): {at (UTC), local, runId, line, lineNo, source}, or null. The first such
+ * line wins: a board lands once, and a later line quoting it is not its landing.
+ */
+export function landedFromLog(root, board, { logRel = LOG_REL, zone = LOG_ZONE } = {}) {
+  let text;
+  try { text = readFileSync(path.join(root, ...logRel.split('/')), 'utf8'); } catch { return null; }
+  const lines = text.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const m = LANDED_LINE.exec(lines[i]);
+    if (!m || Number(m[6]) !== Number(board)) continue;
+    const at = zonedToUtc(Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4]), Number(m[5]), zone);
+    if (!at) return null;
+    const run = /\b(wf_[0-9a-f]+-[0-9a-f]+)\b/.exec(lines[i]);
+    return { at, local: m[1] + '-' + m[2] + '-' + m[3] + ' ' + m[4] + ':' + m[5] + ' ' + zone, runId: run ? run[1] : null, line: lines[i].trim().slice(0, 120), lineNo: i + 1, source: logRel + ':' + (i + 1) };
+  }
+  return null;
+}
+
+/**
+ * The boards a commit subject says landed: "Boards 8 to 11 landed" is 8, 9, 10 and 11; "Board 11
+ * landed, Board 12 running, Board 13 authored" is 11 alone; "Board 12 SELF landed" is 12; a
+ * "not landed" is nothing.
+ */
+export function boardsLandedInSubject(subject) {
+  const out = new Set();
+  for (const m of String(subject).matchAll(/\bboards?\s+(\d+)(?:\s+to\s+(\d+))?(?:\s+(?!not\b)[A-Za-z]+)?\s+landed\b/gi)) {
+    const a = Number(m[1]), b = m[2] ? Number(m[2]) : a;
+    if (b >= a && b - a < 100) for (let n = a; n <= b; n++) out.add(n);
+  }
+  return [...out].sort((x, y) => x - y);
+}
+
+/** The commits whose subject says board N landed, oldest first. Read only: git log. */
+export function checkpointCommitsFor(root, board, { logFn = (r) => git(r, ['log', '--format=%H%x09%s']) } = {}) {
+  const rows = String(logFn(root)).split('\n').map((l) => l.split('\t')).filter((p) => p.length >= 2 && /^[0-9a-f]{7,40}$/.test(p[0]));
+  return rows.filter(([, ...s]) => boardsLandedInSubject(s.join('\t')).includes(Number(board))).map(([sha]) => sha).reverse();
+}
+
+/** Every entry that says launched false while docs/LOG.md has its LANDED line. */
+export function staleBoards(root, boards) {
+  const out = [];
+  for (const b of boards) {
+    if (isLaunched(b)) continue;
+    const log = landedFromLog(root, b.board);
+    if (log) out.push({ board: b.board, landed: log });
+  }
+  return out;
+}
+
+/**
+ * THE DENOMINATOR FILLS ITSELF: for every docs/boards/board-N.js whose entry is missing or says
+ * launched false, derive the entry when docs/LOG.md has its LANDED line AND a commit subject names
+ * its landing; otherwise give the reason it is left as it is. [{board, action, why, entry?}].
+ * Pure over its two readers, so a test can hand it a log and commits; the CLI writes with
+ * --write-boards.
+ */
+export function fillBoards({ root = ROOT, boards = [], readCommitFn = readCommit, logFn = undefined } = {}) {
+  let names;
+  try { names = readdirSync(path.join(root, ...BOARD_SOURCES_REL.split('/'))); } catch { names = []; }
+  const nums = names.map((n) => /^board-(\d+)\.js$/.exec(n)).filter(Boolean).map((m) => Number(m[1])).sort((a, b) => a - b);
+  const out = [];
+  for (const n of nums) {
+    const cur = boards.find((b) => Number(b.board) === n) || null;
+    if (cur && isLaunched(cur)) continue;
+    const had = cur ? 'its entry says launched false' : 'it has no entry';
+    const landed = landedFromLog(root, n);
+    if (!landed) { out.push({ board: n, action: 'none', why: had + ' and ' + LOG_REL + ' has no "BOARD ' + n + ' ... LANDED" line: not landed yet' }); continue; }
+    let commits;
+    try { commits = checkpointCommitsFor(root, n, logFn ? { logFn } : {}); } catch (e) { out.push({ board: n, action: 'none', why: had + '; LANDED at ' + landed.source + ', and git log could not be read: ' + String(e.message).split('\n')[0] }); continue; }
+    if (!commits.length) { out.push({ board: n, action: 'none', why: had + '; LANDED at ' + landed.source + ', and no commit subject says board ' + n + ' landed: the checkpoint is not committed yet' }); continue; }
+    const entry = deriveBoard({ root, board: n, commits, runId: (cur && cur.runId) || landed.runId, skip: cur && Array.isArray(cur.skipped) ? cur.skipped : [], readCommitFn, landed });
+    out.push({ board: n, action: 'derive', why: had + '; LANDED at ' + landed.source + ', checkpoint commits ' + commits.map((c) => c.slice(0, 7)).join(', '), entry });
+  }
+  return out;
+}
+
 // ================================================================ the CLI
-const BOOLEAN = new Set(['json', 'no-write', 'not-launched', 'write-boards']);
+const BOOLEAN = new Set(['json', 'no-write', 'not-launched', 'write-boards', 'fill']);
 function parseArgs(argv) {
   const o = {};
   for (let i = 0; i < argv.length; i++) {

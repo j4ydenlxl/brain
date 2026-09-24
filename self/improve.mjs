@@ -43,8 +43,8 @@ import {
 import { createHash } from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { COPY_SKIP, runTest, applyUnifiedPatch } from './code.mjs';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { COPY_SKIP, applyUnifiedPatch } from './code.mjs';
 import { splitCommand } from './autopilot.mjs';
 import { OPERATORS, makeBudget, vetDiff, allowedFiles, MAX_CHANGED_LINES } from './operators.mjs';
 import { filesOfDiff } from './knobs.mjs';
@@ -205,7 +205,37 @@ const getPath = (o, p) => String(p).split('.').reduce((a, k) => (a === null || a
 export const METRIC_READERS = {};
 export function registerMetric(verdictBase, fn) { METRIC_READERS[verdictBase] = fn; }
 
-/** The metric one trial run printed: gap.trial.metric, a registered reader, then "metric <n>" on stdout. */
+/**
+ * The gaps item (self/gaps.mjs, Board 14 wave 1) registers a per-bench parser beside each trial. It
+ * is imported by name when it has landed; until then this prints "not landed yet" once and the
+ * readers below carry on without it. Returns the parser function or null.
+ */
+let GAPS_PARSER = undefined;
+let GAPS_SAID = false;
+export const GAPS_PARSER_NAMES = Object.freeze(['metricOf', 'parseTrialMetric', 'readTrialMetric', 'trialMetric', 'parseMetric']);
+export async function loadGapsParser({ root = ROOT, log = (l) => console.log(l) } = {}) {
+  if (typeof GAPS_PARSER === 'function' || GAPS_PARSER === false) return GAPS_PARSER || null;
+  const f = path.join(root, 'self', 'gaps.mjs');
+  if (!existsSync(f)) {
+    if (!GAPS_SAID) log('self/gaps.mjs: not landed yet (the gaps item\'s per-bench parser is not used; gap.trial.metric and "metric <n>" still read)');
+    GAPS_SAID = true; GAPS_PARSER = null; return null;
+  }
+  try {
+    const m = await import(pathToFileURL(f).href);
+    const name = GAPS_PARSER_NAMES.find((n) => typeof m[n] === 'function');
+    GAPS_PARSER = name ? m[name] : false;
+    log(name ? 'self/gaps.mjs ' + name + '() reads trial metrics' : 'self/gaps.mjs has landed but exports none of ' + GAPS_PARSER_NAMES.join(', ') + ': its parser is not used');
+  } catch (e) { log('self/gaps.mjs does not import: ' + firstLine(e)); GAPS_PARSER = null; }
+  return GAPS_PARSER || null;
+}
+/** Set (or clear, with false) the gaps parser by hand: tests and the bench. */
+export function setGapsParser(fn) { GAPS_PARSER = fn; }
+
+/**
+ * The metric one trial run printed, in this order: gap.trial.metric ({file, field} or {regex}); a
+ * reader registered for the gap's verdict file; the gaps item's parser (loadGapsParser); then a
+ * "metric <n>" line on the output.
+ */
 export function readMetric(gap, { dir, out = '' }) {
   const t = (gap && gap.trial) || {};
   const spec = t.metric || gap.metric || null;
@@ -226,6 +256,11 @@ export function readMetric(gap, { dir, out = '' }) {
     if (base && METRIC_READERS[base]) {
       const v = num(METRIC_READERS[base](dir, out, gap));
       return v === null ? { value: null, how: 'reader ' + base, reason: 'the registered reader for ' + base + ' found no number' } : { value: v, how: 'reader ' + base };
+    }
+    if (typeof GAPS_PARSER === 'function') {
+      const got = GAPS_PARSER(gap, { dir, out, stdout: out });
+      const v = num(got && typeof got === 'object' ? (got.value ?? got.metric) : got);
+      if (v !== null) return { value: v, how: 'self/gaps.mjs parser' };
     }
   } catch (e) { return { value: null, how: 'error', reason: firstLine(e) }; }
   const m = String(out).match(/^\s*metric[ :=]+(-?\d[\d.eE+-]*)\s*$/m);
@@ -260,12 +295,14 @@ function readJsonl(file) {
   for (const l of readFileSync(file, 'utf8').split(/\r?\n/)) { if (!l.trim()) continue; try { out.push(JSON.parse(l)); } catch { /* torn */ } }
   return out;
 }
-export const baselinesFile = (stateRoot) => path.join(stateRoot, ...STATE_REL.split('/'), 'baselines.jsonl');
-export const recordFile = (stateRoot, date = today()) => path.join(stateRoot, ...STATE_REL.split('/'), date + '.jsonl');
+/** The directory holding baselines.jsonl and the dated record files: <stateRoot>/state/self/operators. */
+export const stateDirOf = (stateRoot) => path.join(stateRoot, ...STATE_REL.split('/'));
+export const baselinesFile = (stateDir) => path.join(stateDir, 'baselines.jsonl');
+export const recordFile = (stateDir, date = today()) => path.join(stateDir, date + '.jsonl');
 
 /** The baseline of today for this command and these file bytes, or null. */
-export function findBaseline(stateRoot, { command, filesHash, date = today() }) {
-  const rows = readJsonl(baselinesFile(stateRoot)).filter((b) => b.date === date && b.command === command && b.filesHash === filesHash && Array.isArray(b.runs) && b.runs.length >= 2);
+export function findBaseline(stateDir, { command, filesHash, date = today() }) {
+  const rows = readJsonl(baselinesFile(stateDir)).filter((b) => b.date === date && b.command === command && b.filesHash === filesHash && Array.isArray(b.runs) && b.runs.length >= 2);
   return rows.length ? rows[rows.length - 1] : null;
 }
 
@@ -287,6 +324,17 @@ export function touchedTests(root, files, extra = []) {
   }
   for (const t of extra) if (t && !out.includes(t)) out.push(t);
   return out;
+}
+
+/**
+ * One test file on a directory, under tools/budget.mjs like every other process this file starts:
+ * node --test with the TAP reporter, the pass and fail counts read from its summary.
+ */
+export async function testOn(dir, testRel, { wallMs = TRIAL_WALL_MS } = {}) {
+  const r = await runCapped([process.execPath, '--max-old-space-size=' + HEAP_MB, '--test', '--test-reporter=tap', testRel], dir, { wallMs });
+  const n = (label) => { const m = r.out.match(new RegExp('^# ' + label + ' (\\d+)$', 'm')); return m ? Number(m[1]) : null; };
+  const failures = [...r.out.matchAll(/^not ok \d+ - (.+)$/gm)].map((m) => m[1].trim()).slice(0, 5);
+  return { test: testRel, exit: r.exit, outcome: r.outcome, pass: n('pass'), fail: n('fail'), seconds: r.seconds, peakRssMb: r.peakRssMb, failures };
 }
 
 /** The gate on a directory, under the budget wrapper; GREEN only on exit 0 AND a gate.json written by this run saying GREEN. */
@@ -325,10 +373,10 @@ export async function gateOn(dir, { cmd = DEFAULT_GATE_CMD, wallMs = GATE_WALL_M
 export async function improve({
   root = ROOT, stateRoot = null, gap, operator = 'knob-tune', budget = null, gateCmd = DEFAULT_GATE_CMD,
   trialWallMs = TRIAL_WALL_MS, gateWallMs = GATE_WALL_MS, runId = null, hooks = {}, log = () => {}, allowModelTrial = false,
-  confirm = true, now = () => new Date(),
+  confirm = true, now = () => new Date(), stateDir = null,
 } = {}) {
   const t0 = Date.now();
-  const sr = stateRoot || root;
+  const sr = stateDir || stateDirOf(stateRoot || root);
   const date = today(now());
   const rid = runId || now().toISOString().replace(/[-:.]/g, '').slice(0, 15) + 'Z';
   const bud = budget || makeBudget();
@@ -345,6 +393,7 @@ export async function improve({
   const refuse = (reason, extra = {}) => { const d = write({ kind: 'decision', kept: false, reason, seconds: Math.round((Date.now() - t0) / 10) / 100, ...extra }); return { kept: false, reason, operator, gap: gap && gap.id, trials, record: recFile, decision: d, ...extra }; };
 
   if (!gap || typeof gap !== 'object') return refuse('no gap');
+  await loadGapsParser({ log });
   if (!OPERATORS[operator]) return refuse('no operator named ' + operator + ' (known: ' + Object.keys(OPERATORS).join(', ') + ')');
   const cmd = gap.trial && gap.trial.command;
   if (!cmd) return refuse('the gap has no trial command');
@@ -451,9 +500,9 @@ export async function improve({
     const tests = touchedTests(copy.dir, filesOfDiff(best.patch), [].concat(gap.tests || []));
     const testRuns = [];
     for (const t of tests) {
-      const tr = runTest(copy.dir, t, trialWallMs);
-      testRuns.push({ test: t, exit: tr.exit, pass: tr.pass, fail: tr.fail, ms: tr.ms });
-      if (tr.exit !== 0) { result = refuse('a touched test fails on the copy: ' + t + ' (' + (tr.failures[0] ? tr.failures[0].name : 'exit ' + tr.exit) + ')', { before, after, noise, baselineRan, tests: testRuns, best: slim(best) }); return result; }
+      const tr = await testOn(copy.dir, t, { wallMs: trialWallMs });
+      testRuns.push(tr);
+      if (tr.exit !== 0) { result = refuse('a touched test fails on the copy: ' + t + ' (' + (tr.failures[0] || 'exit ' + tr.exit + ' ' + tr.outcome) + ')', { before, after, noise, baselineRan, tests: testRuns, best: slim(best) }); return result; }
     }
     log('touched tests: ' + (tests.length ? tests.join(', ') + ' pass' : 'none import a patched file'));
     const g = await gateOn(copy.dir, { cmd: gateCmd, wallMs: gateWallMs });
@@ -512,3 +561,34 @@ export function splitSections(patch) {
   }
   return out.map((s) => ({ file: s.file, patch: s.lines.join('\n') + '\n' }));
 }
+
+// ------------------------------------------------------------------ CLI
+//   node self/improve.mjs --gap <id> [--operator knob-tune] [--gaps FILE] [--dry] [--json]
+// --dry plans without copying or running anything: the gap, its allowed files and knobs, the trial
+// argv, and whether today's baseline would be reused. Without --dry it runs one improve() round on
+// a copy (the real tree is never written) and prints the decision.
+async function main(argv) {
+  const val = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] !== undefined ? argv[i + 1] : d; };
+  const json = argv.includes('--json');
+  const gapsFile = path.resolve(val('--gaps', path.join(ROOT, 'state', 'self', 'gaps.jsonl')));
+  const id = val('--gap');
+  const operator = val('--operator', 'knob-tune');
+  if (!id) { console.log('usage: node self/improve.mjs --gap <id> [--operator ' + Object.keys(OPERATORS).join('|') + '] [--gaps FILE] [--dry] [--json]'); return; }
+  const gap = readJsonl(gapsFile).find((g) => String(g.id) === String(id));
+  if (!gap) { console.log('no gap ' + id + ' in ' + gapsFile); process.exitCode = 1; return; }
+  if (argv.includes('--dry')) {
+    const allowed = allowedFiles(gap, ROOT);
+    const { gapKnobs } = await import('./operators.mjs');
+    const knobs = gapKnobs(gap, ROOT);
+    const cmd = gap.trial && gap.trial.command;
+    const fh = hashFiles(ROOT, allowed.files).all;
+    const bl = cmd ? findBaseline(stateDirOf(ROOT), { command: cmd, filesHash: fh }) : null;
+    const plan = { gap: gap.id, operator, measured: gap.measured, bar: gap.bar, files: allowed.files, refusedFiles: allowed.refused, knobs: knobs.map((k) => k.name + ' ' + k.literal + ' [' + k.lo + ', ' + k.hi + '] step ' + k.step), trial: cmd ? trialArgv(cmd) : null, needsModel: !!(gap.trial && gap.trial.needsModel), baseline: bl ? { at: bl.at, runs: bl.runs, noise: bl.noise } : 'none today: two unpatched runs first' };
+    console.log(json ? JSON.stringify(plan, null, 2) : Object.entries(plan).map(([k, v]) => k + ': ' + (typeof v === 'string' ? v : JSON.stringify(v))).join('\n'));
+    return;
+  }
+  const r = await improve({ gap, operator, log: json ? () => {} : (l) => console.log(l) });
+  const out = { kept: r.kept, operator, gap: gap.id, before: r.before ?? null, after: r.after ?? null, noise: r.noise ?? null, knob: r.knob || null, name: r.name || null, reason: r.kept ? null : r.reason, gateHash: r.gateHash || null, record: r.record, copy: r.copy || null };
+  console.log(json ? JSON.stringify(out, null, 2) : (r.kept ? 'KEPT ' : 'NOT KEPT ') + JSON.stringify(out));
+}
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main(process.argv.slice(2)).catch((e) => { console.error(firstLine(e)); process.exitCode = 1; });

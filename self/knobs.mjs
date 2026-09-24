@@ -48,10 +48,11 @@ const isInt = (x) => Number.isInteger(x);
 const r6 = (x) => Number(Number(x).toPrecision(12));
 
 /**
- * The band and step of a knob from its value and its comment's grammar.
+ * The band and step of a knob from its value and its comment's grammar. An integer knob is one
+ * whose LITERAL is written as an integer (no point, no exponent): 1.0 is a real knob, 1 is not.
  * @returns {{lo, hi, step, integer, form, frozen, malformed, reason}}
  */
-export function bandOf(value, comment = null) {
+export function bandOf(value, comment = null, literal = null) {
   const c = comment === null ? null : String(comment).trim();
   let lo = null, hi = null, step = null, form = 'default', malformed = null;
   if (c !== null) {
@@ -67,7 +68,8 @@ export function bandOf(value, comment = null) {
     lo = Math.min(a, b); hi = Math.max(a, b);
   }
   if (lo > hi) return { lo, hi, step, integer: false, form: 'malformed', frozen: true, malformed: 'the band [' + lo + ', ' + hi + '] is empty', reason: 'the band is empty' };
-  const integer = isInt(value) && (form === 'default' || form === 'step' || (isInt(lo) && isInt(hi)));
+  const intLit = literal === null ? true : !/[.eE]/.test(String(literal));
+  const integer = intLit && isInt(value) && (form === 'default' || form === 'step' || (isInt(lo) && isInt(hi)));
   if (integer && form !== 'band' && form !== 'band+step') { lo = Math.ceil(r6(lo)); hi = Math.floor(r6(hi)); }
   if (step === null) step = Math.abs(value) * DEFAULT_STEP_FRAC || (hi - lo) * DEFAULT_STEP_FRAC;
   if (integer) step = Math.max(1, Math.round(step));
@@ -143,7 +145,7 @@ export function parseKnobs(text, { file = null } = {}) {
     const m = raw.match(CONST_RE);
     if (m && /^knob\b/.test(m[4].trim())) {
       const value = numOf(m[3]);
-      const b = bandOf(value, m[4]);
+      const b = bandOf(value, m[4], m[3]);
       const litAt = raw.indexOf(m[3], raw.indexOf('=') + 1);
       out.push({
         id: (file || '') + '#' + m[2], file, kind: 'const', name: m[2], object: null, field: null, exported: !!m[1], line: li + 1,
@@ -161,7 +163,7 @@ export function parseKnobs(text, { file = null } = {}) {
     for (const f of fields) {
       const value = numOf(f.literal);
       if (!Number.isFinite(value)) continue;
-      const b = bandOf(value, null);
+      const b = bandOf(value, null, f.literal);
       out.push({
         id: (file || '') + '#' + m[1] + '.' + f.field, file, kind: 'field', name: m[1] + '.' + f.field, object: m[1], field: f.field, exported: true,
         line: lineAt(src, f.start), literal: f.literal, start: f.start, end: f.end, value, ...b, comment: null,
