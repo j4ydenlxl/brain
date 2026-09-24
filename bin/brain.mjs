@@ -40,7 +40,7 @@ const runMod = async () => (_runmod ??= await import('../cli/run.mjs'));
 const BOOLEAN_FLAGS = new Set([
   'json', 'realtime', 'fast', 'no-color', 'help', 'version', 'force', 'quiet', 'viz',
   'verbose', 'keep-outbox', 'all', 'follow', 'plain', 'spin', 'approve', 'quick',
-  'auto', 'dry',
+  'auto', 'dry', 'no-author',
 ]);
 const SAVES_AFTER = new Set(['inject', 'tick', 'step', 'approve', 'reject', 'propose']);
 

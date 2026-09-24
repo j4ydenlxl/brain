@@ -19,6 +19,7 @@ import { StringDecoder } from 'node:string_decoder';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { f32, stable, contentHash, Wiring, monomorphicGrowth } from './wire.mjs';
 import { getKind, DEFAULT_POLICY } from '../core/cell.mjs';
 import { Brain } from '../core/brain.mjs';
@@ -717,6 +718,73 @@ async function pruneStaticMain(argv, census, censusFile) {
   say('  emitted ' + toPosix(path.relative(BRAIN_ROOT, r.dir)) + ': ' + r.files + ' files, ' + r.bytes.onDisk + ' bytes on disk (' + r.bytes.after + ' before the manifest; the source had ' + r.bytes.before + '), content hash ' + r.hash.slice(0, 16));
   say('  in ' + (r.ms / 1000).toFixed(1) + ' s; census the copy with tools/organism-census.mjs --static --seed ' + toPosix(path.relative(BRAIN_ROOT, r.dir)));
   return { ok: true, ...r };
+}
+
+// ---------------------------------------------------------------- prune on a copy (Board 14)
+//
+// The autopilot's census wall: every prune of a pinned seed was refused because the seed is
+// re-emitted whole by `node genome/emit.mjs --prune` and nothing authored that call. This
+// authors it, on a COPY of the tree only. It runs the COPY's own emit.mjs as a child process,
+// so the pruned seed's index.mjs imports the copy's genome/load.mjs and every path the prune
+// records is the copy's; calling pruneMain in this process would have written an index that
+// imports THIS tree's loader. A root that is the tree this file lives in is refused: the
+// real tree is never written by it.
+
+const samePath = (a, b) => (process.platform === 'win32' ? path.resolve(a).toLowerCase() === path.resolve(b).toLowerCase() : path.resolve(a) === path.resolve(b));
+const inside = (dir, p) => { const r = path.relative(dir, p); return !!r && !r.startsWith('..') && !path.isAbsolute(r); };
+
+/**
+ * Prune one seed of a copy of the tree by a census, with the copy's own emitter.
+ * @param {string} root the copy's root (it must hold genome/emit.mjs); never this tree
+ * @param {string} seedDir the seed to prune, inside root/organism/ (relative to root or absolute)
+ * @param {string} outDir where the pruned seed is written, inside root/organism/, never the seed
+ * @param {string|object} census a census verdict: a path (relative to root, or absolute) or the
+ *   parsed verdict, which is then written into the copy (bench/verdicts/.census/) first
+ * @param {{ heapMb?: number, timeoutMs?: number, name?: string }} [opts]
+ * @returns {{ ok, exit, dir, name, censusFile, hash, lines: {before, after}, cells: {before, after},
+ *   edges: {before, after}, manifest, printed: string[], ms, error }}
+ */
+export function pruneOnCopy(root, seedDir, outDir, census, { heapMb = 6000, timeoutMs = 30 * 60_000, name = null } = {}) {
+  const t0 = Date.now();
+  const R = path.resolve(root);
+  if (samePath(R, BRAIN_ROOT)) throw new Error('pruneOnCopy: ' + R + ' is the tree this emitter lives in; it prunes a copy only');
+  const emitter = path.join(R, 'genome', 'emit.mjs');
+  if (!existsSync(emitter)) throw new Error('pruneOnCopy: the copy has no genome/emit.mjs at ' + emitter);
+  const org = path.join(R, 'organism');
+  const seed = path.resolve(R, seedDir), out = path.resolve(R, outDir);
+  if (!inside(org, seed)) throw new Error('pruneOnCopy: the seed ' + seed + ' is not inside the copy\'s organism/');
+  if (!inside(org, out)) throw new Error('pruneOnCopy: the output ' + out + ' is not inside the copy\'s organism/');
+  if (samePath(seed, out)) throw new Error('pruneOnCopy: the output directory is the seed itself');
+  if (!existsSync(path.join(seed, 'manifest.json'))) throw new Error('pruneOnCopy: no manifest.json in ' + seed);
+  const nm = name || path.basename(out);
+  let censusFile;
+  if (typeof census === 'string') censusFile = path.resolve(R, census);
+  else if (census && typeof census === 'object') {
+    const d = path.join(R, 'bench', 'verdicts', '.census');
+    mkdirSync(d, { recursive: true });
+    censusFile = path.join(d, nm + '.census.json');
+    writeFileSync(censusFile, JSON.stringify(census));
+  } else throw new Error('pruneOnCopy: census must be a path or a parsed census verdict');
+  if (!existsSync(censusFile)) throw new Error('pruneOnCopy: no census file at ' + censusFile);
+  const before = JSON.parse(readFileSync(path.join(seed, 'manifest.json'), 'utf8'));
+  const env = {};
+  for (const [k, v] of Object.entries(process.env)) if (!k.startsWith('NODE_TEST') && k !== 'NODE_OPTIONS') env[k] = v;
+  const r = spawnSync(process.execPath, ['--max-old-space-size=' + heapMb, emitter, '--prune', censusFile, '--seed', seed, '--out', out, '--name', nm], {
+    cwd: R, encoding: 'utf8', timeout: timeoutMs, maxBuffer: 64 * 1024 * 1024, env, windowsHide: true,
+  });
+  const printed = ((r.stdout || '') + (r.stderr || '')).split(/\r?\n/).filter(Boolean);
+  const mf = path.join(out, 'manifest.json');
+  const after = r.status === 0 && existsSync(mf) ? JSON.parse(readFileSync(mf, 'utf8')) : null;
+  const ok = r.status === 0 && !!after && !printed.some((l) => /ROUND TRIP FAILED/.test(l));
+  const n = (m, k) => (m && m.counts ? m.counts[k] : null);
+  return {
+    ok, exit: r.status, dir: out, name: nm, censusFile, hash: after ? after.hash : null,
+    lines: { before: n(before, 'lines'), after: n(after, 'lines') },
+    cells: { before: n(before, 'cells'), after: n(after, 'cells') },
+    edges: { before: n(before, 'edges'), after: n(after, 'edges') },
+    manifest: after, printed, ms: Date.now() - t0,
+    error: ok ? null : (r.error ? String(r.error.message) : 'emit.mjs --prune exited ' + r.status + ': ' + printed.slice(-3).join(' | ')),
+  };
 }
 
 // the command line runs last, once every declaration above it (the streaming section's templates
