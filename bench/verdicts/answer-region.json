@@ -1,0 +1,2076 @@
+{
+  "at": "2026-09-18T15:08:02.197Z",
+  "node": "v24.15.0",
+  "command": "node bench/answer.mjs --tasks 3 --route region",
+  "verdict": "GREEN",
+  "checks": {
+    "everyPresentArmAnsweredEveryQuestionItWasAsked": true,
+    "everyQuestionGotAllThreeArms": true,
+    "armsRotated": true,
+    "absentArmsCarryAReason": true,
+    "provenanceCountsAddUp": true
+  },
+  "ms": 1768997,
+  "armsRun": [
+    "organism",
+    "alone",
+    "null"
+  ],
+  "model": "qwen3:1.7b",
+  "base": "http://127.0.0.1:11434",
+  "ollamaUp": true,
+  "route": "region",
+  "seed": null,
+  "questions": {
+    "total": 49,
+    "tasksPerSuite": 3,
+    "fixtureInEpisodicMemory": 40,
+    "bySource": {
+      "fixture": 40,
+      "algebra": 3,
+      "sequence": 3,
+      "grid": 3
+    }
+  },
+  "interleaving": {
+    "how": "question by question: all three arms answer question i before any arm sees question i+1, and the first arm rotates with i",
+    "order": [
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null",
+      "alone>null>organism",
+      "null>organism>alone",
+      "organism>alone>null"
+    ]
+  },
+  "grading": {
+    "how": "one extractor and one comparison for all three arms; number compares exact rationals through tasks/exact.mjs, exact compares characters. The winner is decided on this ruler and no other",
+    "loose": "accuracyLoose repeats the strict ruler with case ignored",
+    "anywhere": "accuracyAnywhere is the generous edge: the right answer is somewhere in what the arm wrote, wherever it is. It is reported, never used to pick a winner",
+    "provenance": "arms.<arm>.provenance counts each answer as exact (act/solve.mjs computed the whole prompt, with no model and no socket), memory (the retrieval answered) or model (the llm answered), with how many of each were right. The alone arm is the raw model and carries none"
+  },
+  "arms": {
+    "organism": {
+      "absent": false,
+      "reason": null,
+      "asked": 49,
+      "n": 49,
+      "correct": 49,
+      "accuracy": 1,
+      "correctLoose": 49,
+      "accuracyLoose": 1,
+      "correctAnywhere": 49,
+      "accuracyAnywhere": 1,
+      "meanMs": 10585.49,
+      "fellBack": 0,
+      "interval": {
+        "lo": 0.9273,
+        "hi": 1,
+        "width": 0.0727
+      },
+      "bySource": {
+        "fixture": {
+          "n": 40,
+          "correct": 40,
+          "accuracy": 1
+        },
+        "algebra": {
+          "n": 3,
+          "correct": 3,
+          "accuracy": 1
+        },
+        "sequence": {
+          "n": 3,
+          "correct": 3,
+          "accuracy": 1
+        },
+        "grid": {
+          "n": 3,
+          "correct": 3,
+          "accuracy": 1
+        }
+      },
+      "provenance": {
+        "model": {
+          "n": 40,
+          "correct": 40
+        },
+        "exact": {
+          "n": 9,
+          "correct": 9
+        }
+      },
+      "recall": {
+        "ownEpisodeAmongTheCitedLines": 40,
+        "ofFixtureQuestions": 40
+      }
+    },
+    "alone": {
+      "absent": false,
+      "reason": null,
+      "asked": 49,
+      "n": 49,
+      "correct": 40,
+      "accuracy": 0.816327,
+      "correctLoose": 42,
+      "accuracyLoose": 0.857143,
+      "correctAnywhere": 41,
+      "accuracyAnywhere": 0.836735,
+      "meanMs": 25511.52,
+      "fellBack": 0,
+      "interval": {
+        "lo": 0.686421,
+        "hi": 0.900238,
+        "width": 0.213816
+      },
+      "bySource": {
+        "fixture": {
+          "n": 40,
+          "correct": 38,
+          "accuracy": 0.95
+        },
+        "algebra": {
+          "n": 3,
+          "correct": 1,
+          "accuracy": 0.333333
+        },
+        "sequence": {
+          "n": 3,
+          "correct": 1,
+          "accuracy": 0.333333
+        },
+        "grid": {
+          "n": 3,
+          "correct": 0,
+          "accuracy": 0
+        }
+      },
+      "provenance": null,
+      "recall": {
+        "ownEpisodeAmongTheCitedLines": 0,
+        "ofFixtureQuestions": 0
+      }
+    },
+    "null": {
+      "absent": false,
+      "reason": null,
+      "asked": 49,
+      "n": 49,
+      "correct": 46,
+      "accuracy": 0.938776,
+      "correctLoose": 46,
+      "accuracyLoose": 0.938776,
+      "correctAnywhere": 49,
+      "accuracyAnywhere": 1,
+      "meanMs": 2.95,
+      "fellBack": 0,
+      "interval": {
+        "lo": 0.834793,
+        "hi": 0.97896,
+        "width": 0.144168
+      },
+      "bySource": {
+        "fixture": {
+          "n": 40,
+          "correct": 37,
+          "accuracy": 0.925
+        },
+        "algebra": {
+          "n": 3,
+          "correct": 3,
+          "accuracy": 1
+        },
+        "sequence": {
+          "n": 3,
+          "correct": 3,
+          "accuracy": 1
+        },
+        "grid": {
+          "n": 3,
+          "correct": 3,
+          "accuracy": 1
+        }
+      },
+      "provenance": {
+        "memory": {
+          "n": 40,
+          "correct": 37
+        },
+        "exact": {
+          "n": 9,
+          "correct": 9
+        }
+      },
+      "recall": {
+        "ownEpisodeAmongTheCitedLines": 40,
+        "ofFixtureQuestions": 40
+      }
+    }
+  },
+  "winner": "organism",
+  "runnerUp": "null",
+  "gap": 0.061224,
+  "nFor95": 59,
+  "statement": "organism won: 49/49 = 100.00% against null 46/49 = 93.88%, a gap of 6.12 points. The 95% interval is 7.27 points wide on the winner and 14.42 on the runner up, and a gap this size at these rates needs 59 questions per arm to separate from zero.",
+  "rows": [
+    {
+      "i": 0,
+      "id": "fixture.0",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "391",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "391",
+          "ms": 8302.59,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "391",
+          "ms": 19309.04,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "391",
+          "ms": 4.18,
+          "provenance": "memory"
+        }
+      }
+    },
+    {
+      "i": 1,
+      "id": "alg.cmp.0",
+      "source": "algebra",
+      "grade": "number",
+      "expected": "-1",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "-1",
+          "ms": 16916.45,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "-1",
+          "ms": 3.87,
+          "provenance": "exact"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "-1",
+          "ms": 2.46,
+          "provenance": "exact"
+        }
+      }
+    },
+    {
+      "i": 2,
+      "id": "seq.ari.0",
+      "source": "sequence",
+      "grade": "number",
+      "expected": "-179/5",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "-179/5",
+          "ms": 2.76,
+          "provenance": "exact"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "-179/5",
+          "ms": 2.16,
+          "provenance": "exact"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "-179/5",
+          "ms": 31197.31,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 3,
+      "id": "grid.d1.0",
+      "source": "grid",
+      "grade": "exact",
+      "expected": "6006060060|3886338863|8368683686|6303863038|0333603336|6006060060|3886338863|8368683686|6303863038|0333603336",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "6006060060|3886338863|8368683686|6303863038|0333603336|6006060060|3886338863|8368683686|6303863038|0333603336",
+          "ms": 3.24,
+          "provenance": "exact"
+        },
+        "alone": {
+          "ok": false,
+          "loose": false,
+          "candidate": "Each output row is the corresponding input row repeated twice",
+          "ms": 54014.91,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "6006060060|3886338863|8368683686|6303863038|0333603336|6006060060|3886338863|8368683686|6303863038|0333603336",
+          "ms": 2.82,
+          "provenance": "exact"
+        }
+      }
+    },
+    {
+      "i": 4,
+      "id": "fixture.1",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "6912",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "6912",
+          "ms": 20559.58,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "6912",
+          "ms": 2.08,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "6912",
+          "ms": 17819.71,
+          "provenance": "model"
+        }
+      }
+    },
+    {
+      "i": 5,
+      "id": "alg.mul.10",
+      "source": "algebra",
+      "grade": "number",
+      "expected": "42300784910109684727766538",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "42300784910109684727766538",
+          "ms": 3.29,
+          "provenance": "exact"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "42300784910109684727766538",
+          "ms": 1.9,
+          "provenance": "exact"
+        },
+        "alone": {
+          "ok": false,
+          "loose": false,
+          "candidate": "1",
+          "ms": 44374.6,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 6,
+      "id": "seq.geo.23",
+      "source": "sequence",
+      "grade": "number",
+      "expected": "256/729",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "256/729",
+          "ms": 2.5,
+          "provenance": "exact"
+        },
+        "alone": {
+          "ok": false,
+          "loose": false,
+          "candidate": "256/2187",
+          "ms": 39195.26,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "256/729",
+          "ms": 2.06,
+          "provenance": "exact"
+        }
+      }
+    },
+    {
+      "i": 7,
+      "id": "grid.d2.3",
+      "source": "grid",
+      "grade": "exact",
+      "expected": "2002|5656|5000|2660",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "loose": false,
+          "candidate": "0065",
+          "ms": 51316.39,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "2002|5656|5000|2660",
+          "ms": 3.41,
+          "provenance": "exact"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "2002|5656|5000|2660",
+          "ms": 2.4,
+          "provenance": "exact"
+        }
+      }
+    },
+    {
+      "i": 8,
+      "id": "fixture.2",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "1024",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "1024",
+          "ms": 1.89,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "1024",
+          "ms": 10992.84,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "1024",
+          "ms": 18257.47,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 9,
+      "id": "alg.nest.30",
+      "source": "algebra",
+      "grade": "number",
+      "expected": "-817251481443/5000000",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "-817251481443/5000000",
+          "ms": 3.52,
+          "provenance": "exact"
+        },
+        "alone": {
+          "ok": false,
+          "loose": false,
+          "candidate": "",
+          "ms": 229524.2,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "-817251481443/5000000",
+          "ms": 2.25,
+          "provenance": "exact"
+        }
+      }
+    },
+    {
+      "i": 10,
+      "id": "seq.rec.16",
+      "source": "sequence",
+      "grade": "number",
+      "expected": "15824",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "loose": false,
+          "candidate": "21609",
+          "ms": 79876.55,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "15824",
+          "ms": 2.85,
+          "provenance": "exact"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "15824",
+          "ms": 2.17,
+          "provenance": "exact"
+        }
+      }
+    },
+    {
+      "i": 11,
+      "id": "grid.d3.1",
+      "source": "grid",
+      "grade": "exact",
+      "expected": "2015220152|1206012060|0052000520|2565025650|2015220152|1206012060|0052000520|2565025650",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "2015220152|1206012060|0052000520|2565025650|2015220152|1206012060|0052000520|2565025650",
+          "ms": 8.11,
+          "provenance": "exact"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "2015220152|1206012060|0052000520|2565025650|2015220152|1206012060|0052000520|2565025650",
+          "ms": 7.17,
+          "provenance": "exact"
+        },
+        "alone": {
+          "ok": false,
+          "loose": false,
+          "candidate": "2102521025",
+          "ms": 56595.91,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 12,
+      "id": "fixture.3",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "621",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "621",
+          "ms": 18421.03,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "621",
+          "ms": 14021.54,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "621",
+          "ms": 2.79,
+          "provenance": "memory"
+        }
+      }
+    },
+    {
+      "i": 13,
+      "id": "fixture.4",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "5050",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "5050",
+          "ms": 19158.86,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "5050",
+          "ms": 2.26,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "5050",
+          "ms": 12267.86,
+          "provenance": "model"
+        }
+      }
+    },
+    {
+      "i": 14,
+      "id": "fixture.5",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "36",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "36",
+          "ms": 2.86,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "36",
+          "ms": 18888.93,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "36",
+          "ms": 25188.81,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 15,
+      "id": "fixture.6",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "7/8",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "7/8",
+          "ms": 10231.97,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "7/8",
+          "ms": 12988.51,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "7/8",
+          "ms": 5.41,
+          "provenance": "memory"
+        }
+      }
+    },
+    {
+      "i": 16,
+      "id": "fixture.7",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "2",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "2",
+          "ms": 52500.4,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "2",
+          "ms": 2.01,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "2",
+          "ms": 10506.68,
+          "provenance": "model"
+        }
+      }
+    },
+    {
+      "i": 17,
+      "id": "fixture.8",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "0.3",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "0.3",
+          "ms": 1.82,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "0.3",
+          "ms": 10695.86,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "0.3",
+          "ms": 12277.74,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 18,
+      "id": "fixture.9",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "504",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "504",
+          "ms": 6027.9,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "504",
+          "ms": 6969.28,
+          "provenance": null
+        },
+        "null": {
+          "ok": false,
+          "loose": false,
+          "candidate": "391",
+          "ms": 4.05,
+          "provenance": "memory"
+        }
+      }
+    },
+    {
+      "i": 19,
+      "id": "fixture.10",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "5000",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "5000",
+          "ms": 12655.73,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "5000",
+          "ms": 2.08,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "5000",
+          "ms": 11403.13,
+          "provenance": "model"
+        }
+      }
+    },
+    {
+      "i": 20,
+      "id": "fixture.11",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "150",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "150",
+          "ms": 2.44,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "150",
+          "ms": 16474.42,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "150",
+          "ms": 16012.31,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 21,
+      "id": "fixture.12",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "72",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "72",
+          "ms": 15121.98,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "72",
+          "ms": 6707.35,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "72",
+          "ms": 2.41,
+          "provenance": "memory"
+        }
+      }
+    },
+    {
+      "i": 22,
+      "id": "fixture.13",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "1000",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "1000",
+          "ms": 9060.77,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "1000",
+          "ms": 2.62,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "1000",
+          "ms": 11045.64,
+          "provenance": "model"
+        }
+      }
+    },
+    {
+      "i": 23,
+      "id": "fixture.14",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "6",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "6",
+          "ms": 2.59,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "6",
+          "ms": 7827.58,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "6",
+          "ms": 19941.83,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 24,
+      "id": "fixture.15",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "10560",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "10560",
+          "ms": 17590.87,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "10560",
+          "ms": 19547.51,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "10560",
+          "ms": 2.81,
+          "provenance": "memory"
+        }
+      }
+    },
+    {
+      "i": 25,
+      "id": "fixture.16",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "4000",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "4000",
+          "ms": 15075.39,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "4000",
+          "ms": 1.95,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "4000",
+          "ms": 13560.81,
+          "provenance": "model"
+        }
+      }
+    },
+    {
+      "i": 26,
+      "id": "fixture.17",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "604800",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "604800",
+          "ms": 2.71,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "604800",
+          "ms": 9267.32,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "604800",
+          "ms": 15434.95,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 27,
+      "id": "fixture.18",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "100",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "100",
+          "ms": 10169.01,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "100",
+          "ms": 12525.74,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "100",
+          "ms": 2.6,
+          "provenance": "memory"
+        }
+      }
+    },
+    {
+      "i": 28,
+      "id": "fixture.19",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "5400",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "5400",
+          "ms": 22624.38,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "5400",
+          "ms": 2.04,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "5400",
+          "ms": 15720.2,
+          "provenance": "model"
+        }
+      }
+    },
+    {
+      "i": 29,
+      "id": "fixture.20",
+      "source": "fixture",
+      "grade": "exact",
+      "expected": "niarb",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "Write the word brain with its letters in reverse order. Answer with the word only, in lower case. => niarb",
+          "ms": 3.63,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "niarb",
+          "ms": 22642.72,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "niarb",
+          "ms": 15013.94,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 30,
+      "id": "fixture.21",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "10",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "10",
+          "ms": 9849.23,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "10",
+          "ms": 12963.44,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "10",
+          "ms": 2.52,
+          "provenance": "memory"
+        }
+      }
+    },
+    {
+      "i": 31,
+      "id": "fixture.22",
+      "source": "fixture",
+      "grade": "exact",
+      "expected": "DILATION",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "DILATION",
+          "ms": 9425.05,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "Write the word dilation in upper case. Answer with the word only. => DILATION",
+          "ms": 2.02,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "DILATION",
+          "ms": 9537.73,
+          "provenance": "model"
+        }
+      }
+    },
+    {
+      "i": 32,
+      "id": "fixture.23",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "3",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "3",
+          "ms": 2.58,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "3",
+          "ms": 20825.44,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "3",
+          "ms": 16189.94,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 33,
+      "id": "fixture.24",
+      "source": "fixture",
+      "grade": "exact",
+      "expected": "org",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "org",
+          "ms": 9803.6,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "org",
+          "ms": 12614.07,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "What are the first three letters of the word organism? Answer with those letters only, in lower case. => org",
+          "ms": 3.19,
+          "provenance": "memory"
+        }
+      }
+    },
+    {
+      "i": 34,
+      "id": "fixture.25",
+      "source": "fixture",
+      "grade": "exact",
+      "expected": "neurons",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "neurons",
+          "ms": 11568.35,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "Join the word neuron and the letter s into one word. Answer with the word only, in lower case. => neurons",
+          "ms": 2.3,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "neurons",
+          "ms": 10067.44,
+          "provenance": "model"
+        }
+      }
+    },
+    {
+      "i": 35,
+      "id": "fixture.26",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "5",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "5",
+          "ms": 2.94,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "5",
+          "ms": 22410.31,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "5",
+          "ms": 10085.36,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 36,
+      "id": "fixture.27",
+      "source": "fixture",
+      "grade": "exact",
+      "expected": "r",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "r",
+          "ms": 8383.86,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "r",
+          "ms": 8994.69,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "What is the last letter of the word ledger? Answer with that letter only, in lower case. => r",
+          "ms": 2.92,
+          "provenance": "memory"
+        }
+      }
+    },
+    {
+      "i": 37,
+      "id": "fixture.28",
+      "source": "fixture",
+      "grade": "exact",
+      "expected": "d",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "d",
+          "ms": 9153.27,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "In the string abcdef, counting from 1, what is the 4th character? Answer with that character only, in lower case. => d",
+          "ms": 2.46,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "d",
+          "ms": 11007.72,
+          "provenance": "model"
+        }
+      }
+    },
+    {
+      "i": 38,
+      "id": "fixture.29",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "4",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "4",
+          "ms": 2.45,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "4",
+          "ms": 10706.4,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "4",
+          "ms": 14210.74,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 39,
+      "id": "fixture.30",
+      "source": "fixture",
+      "grade": "exact",
+      "expected": "2026-01-30",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "2026-01-30",
+          "ms": 14930.8,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "2026-01-30",
+          "ms": 19614.67,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "A run starts on 2026-01-01 and lasts 30 days, counting the start date as day 1. On what date does day 30 fall? Answer as YYYY-MM-DD only. => 2026-01-30",
+          "ms": 3.17,
+          "provenance": "memory"
+        }
+      }
+    },
+    {
+      "i": 40,
+      "id": "fixture.31",
+      "source": "fixture",
+      "grade": "exact",
+      "expected": "Sunday",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "loose": true,
+          "candidate": "SUNDAY",
+          "ms": 13516.3,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "2026-03-01 is a Sunday. What weekday is 2026-03-15? Answer with the weekday name only, capitalised. => Sunday",
+          "ms": 2.15,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "Sunday",
+          "ms": 10656.95,
+          "provenance": "model"
+        }
+      }
+    },
+    {
+      "i": 41,
+      "id": "fixture.32",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "29",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "29",
+          "ms": 2.57,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "29",
+          "ms": 16436.09,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "29",
+          "ms": 11052.92,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 42,
+      "id": "fixture.33",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "365",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "365",
+          "ms": 16709.65,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "365",
+          "ms": 19012.08,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "365",
+          "ms": 2.97,
+          "provenance": "memory"
+        }
+      }
+    },
+    {
+      "i": 43,
+      "id": "fixture.34",
+      "source": "fixture",
+      "grade": "exact",
+      "expected": "12:35",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "12:35",
+          "ms": 11712.53,
+          "provenance": null
+        },
+        "null": {
+          "ok": false,
+          "loose": false,
+          "candidate": "35",
+          "ms": 2.5,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "12:35",
+          "ms": 11925.33,
+          "provenance": "model"
+        }
+      }
+    },
+    {
+      "i": 44,
+      "id": "fixture.35",
+      "source": "fixture",
+      "grade": "exact",
+      "expected": "16:15",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": false,
+          "loose": false,
+          "candidate": "15",
+          "ms": 4.46,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "16:15",
+          "ms": 11561.78,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "16:15",
+          "ms": 21483.27,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 45,
+      "id": "fixture.36",
+      "source": "fixture",
+      "grade": "exact",
+      "expected": "Sunday",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "Sunday",
+          "ms": 13154.96,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": false,
+          "loose": true,
+          "candidate": "SUNDAY",
+          "ms": 15340.6,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "2026-09-17 is a Thursday. What weekday is 2026-09-20? Answer with the weekday name only, capitalised. => Sunday",
+          "ms": 2.64,
+          "provenance": "memory"
+        }
+      }
+    },
+    {
+      "i": 46,
+      "id": "fixture.37",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "48",
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "48",
+          "ms": 21208.91,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "48",
+          "ms": 2,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "48",
+          "ms": 11921.59,
+          "provenance": "model"
+        }
+      }
+    },
+    {
+      "i": 47,
+      "id": "fixture.38",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "31",
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "31",
+          "ms": 3.79,
+          "provenance": "memory"
+        },
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "31",
+          "ms": 10540.68,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "31",
+          "ms": 19363.73,
+          "provenance": null
+        }
+      }
+    },
+    {
+      "i": 48,
+      "id": "fixture.39",
+      "source": "fixture",
+      "grade": "number",
+      "expected": "28",
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "loose": true,
+          "candidate": "28",
+          "ms": 13252.7,
+          "provenance": "model"
+        },
+        "alone": {
+          "ok": true,
+          "loose": true,
+          "candidate": "28",
+          "ms": 23711.63,
+          "provenance": null
+        },
+        "null": {
+          "ok": true,
+          "loose": true,
+          "candidate": "28",
+          "ms": 6.05,
+          "provenance": "memory"
+        }
+      }
+    }
+  ],
+  "nullBefore": {
+    "at": "2026-09-18T03:54:51.988Z",
+    "node": "v24.15.0",
+    "command": "node bench/answer.mjs --arms null",
+    "ms": 45,
+    "promptSurfaceSha": "621947e35055048d",
+    "questions": {
+      "total": 49,
+      "tasksPerSuite": 3,
+      "fixtureInEpisodicMemory": 40,
+      "bySource": {
+        "fixture": 40,
+        "algebra": 3,
+        "sequence": 3,
+        "grid": 3
+      }
+    },
+    "arms": {
+      "null": {
+        "absent": false,
+        "n": 49,
+        "asked": 49,
+        "lastLine": {
+          "correct": 0,
+          "accuracy": 0
+        },
+        "anywhere": {
+          "correct": 33,
+          "accuracy": 0.673469
+        },
+        "meanMs": 0.19,
+        "interval": {
+          "lo": 0,
+          "hi": 0.0727,
+          "width": 0.0727
+        },
+        "bySource": {
+          "fixture": {
+            "n": 40,
+            "correct": 0,
+            "accuracy": 0
+          },
+          "algebra": {
+            "n": 3,
+            "correct": 0,
+            "accuracy": 0
+          },
+          "sequence": {
+            "n": 3,
+            "correct": 0,
+            "accuracy": 0
+          },
+          "grid": {
+            "n": 3,
+            "correct": 0,
+            "accuracy": 0
+          }
+        },
+        "recall": {
+          "ownEpisodeAmongTheCitedLines": 30,
+          "ofFixtureQuestions": 40
+        }
+      }
+    },
+    "ruler": "lastLine is the one candidate the winner is decided on (the last boxed value, else the last meaningful line); anywhere is the generous edge"
+  },
+  "slots": "a --arms run merges here and leaves the three arm verdict above untouched; <arms>Before is pinned on first write, <arms>After is the newest",
+  "nullAfter": {
+    "at": "2026-09-18T13:33:43.157Z",
+    "node": "v24.15.0",
+    "command": "node bench/answer.mjs --tasks 1 --arms null",
+    "ms": 70,
+    "promptSurfaceSha": "2f30d62930ddbf1d",
+    "questions": {
+      "total": 43,
+      "tasksPerSuite": 1,
+      "fixtureInEpisodicMemory": 40,
+      "bySource": {
+        "fixture": 40,
+        "algebra": 1,
+        "sequence": 1,
+        "grid": 1
+      }
+    },
+    "arms": {
+      "null": {
+        "absent": false,
+        "n": 43,
+        "asked": 43,
+        "lastLine": {
+          "correct": 40,
+          "accuracy": 0.930233
+        },
+        "anywhere": {
+          "correct": 43,
+          "accuracy": 1
+        },
+        "meanMs": 0.77,
+        "interval": {
+          "lo": 0.813907,
+          "hi": 0.975989,
+          "width": 0.162082
+        },
+        "bySource": {
+          "fixture": {
+            "n": 40,
+            "correct": 37,
+            "accuracy": 0.925
+          },
+          "algebra": {
+            "n": 1,
+            "correct": 1,
+            "accuracy": 1
+          },
+          "sequence": {
+            "n": 1,
+            "correct": 1,
+            "accuracy": 1
+          },
+          "grid": {
+            "n": 1,
+            "correct": 1,
+            "accuracy": 1
+          }
+        },
+        "provenance": {
+          "memory": {
+            "n": 40,
+            "correct": 37
+          },
+          "exact": {
+            "n": 3,
+            "correct": 3
+          }
+        },
+        "recall": {
+          "ownEpisodeAmongTheCitedLines": 40,
+          "ofFixtureQuestions": 40
+        }
+      }
+    },
+    "ruler": "lastLine is the one candidate the winner is decided on (the last boxed value, else the last meaningful line); anywhere is the generous edge"
+  },
+  "null.directBefore": {
+    "at": "2026-09-18T14:31:29.984Z",
+    "node": "v24.15.0",
+    "command": "node bench/answer.mjs --tasks 10 --arms null --route direct",
+    "ms": 105,
+    "route": "direct",
+    "promptSurfaceSha": "54429a55b2052d47",
+    "questions": {
+      "total": 70,
+      "tasksPerSuite": 10,
+      "fixtureInEpisodicMemory": 40,
+      "bySource": {
+        "fixture": 40,
+        "algebra": 10,
+        "sequence": 10,
+        "grid": 10
+      }
+    },
+    "arms": {
+      "null": {
+        "absent": false,
+        "n": 70,
+        "asked": 70,
+        "lastLine": {
+          "correct": 67,
+          "accuracy": 0.957143
+        },
+        "anywhere": {
+          "correct": 70,
+          "accuracy": 1
+        },
+        "meanMs": 0.95,
+        "interval": {
+          "lo": 0.881401,
+          "hi": 0.985319,
+          "width": 0.103917
+        },
+        "bySource": {
+          "fixture": {
+            "n": 40,
+            "correct": 37,
+            "accuracy": 0.925
+          },
+          "algebra": {
+            "n": 10,
+            "correct": 10,
+            "accuracy": 1
+          },
+          "sequence": {
+            "n": 10,
+            "correct": 10,
+            "accuracy": 1
+          },
+          "grid": {
+            "n": 10,
+            "correct": 10,
+            "accuracy": 1
+          }
+        },
+        "provenance": {
+          "memory": {
+            "n": 40,
+            "correct": 37
+          },
+          "exact": {
+            "n": 30,
+            "correct": 30
+          }
+        },
+        "recall": {
+          "ownEpisodeAmongTheCitedLines": 40,
+          "ofFixtureQuestions": 40
+        }
+      }
+    },
+    "ruler": "lastLine is the one candidate the winner is decided on (the last boxed value, else the last meaningful line); anywhere is the generous edge"
+  },
+  "null.regionBefore": {
+    "at": "2026-09-18T14:31:32.284Z",
+    "node": "v24.15.0",
+    "command": "node bench/answer.mjs --tasks 10 --arms null --route region",
+    "ms": 122,
+    "route": "region",
+    "promptSurfaceSha": "54429a55b2052d47",
+    "questions": {
+      "total": 70,
+      "tasksPerSuite": 10,
+      "fixtureInEpisodicMemory": 40,
+      "bySource": {
+        "fixture": 40,
+        "algebra": 10,
+        "sequence": 10,
+        "grid": 10
+      }
+    },
+    "arms": {
+      "null": {
+        "absent": false,
+        "n": 70,
+        "asked": 70,
+        "lastLine": {
+          "correct": 67,
+          "accuracy": 0.957143
+        },
+        "anywhere": {
+          "correct": 70,
+          "accuracy": 1
+        },
+        "meanMs": 1.19,
+        "interval": {
+          "lo": 0.881401,
+          "hi": 0.985319,
+          "width": 0.103917
+        },
+        "bySource": {
+          "fixture": {
+            "n": 40,
+            "correct": 37,
+            "accuracy": 0.925
+          },
+          "algebra": {
+            "n": 10,
+            "correct": 10,
+            "accuracy": 1
+          },
+          "sequence": {
+            "n": 10,
+            "correct": 10,
+            "accuracy": 1
+          },
+          "grid": {
+            "n": 10,
+            "correct": 10,
+            "accuracy": 1
+          }
+        },
+        "provenance": {
+          "memory": {
+            "n": 40,
+            "correct": 37
+          },
+          "exact": {
+            "n": 30,
+            "correct": 30
+          }
+        },
+        "recall": {
+          "ownEpisodeAmongTheCitedLines": 40,
+          "ofFixtureQuestions": 40
+        }
+      }
+    },
+    "ruler": "lastLine is the one candidate the winner is decided on (the last boxed value, else the last meaningful line); anywhere is the generous edge"
+  }
+}

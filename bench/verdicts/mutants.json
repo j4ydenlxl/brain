@@ -1,0 +1,1026 @@
+{
+  "at": "2026-09-18T02:53:25.669Z",
+  "node": "v24.15.0",
+  "conditions": {
+    "at": "2026-09-18T02:51:44.320Z",
+    "node": "v24.15.0",
+    "platform": "win32",
+    "cpus": 32,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900KF",
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "totalmemGB": 63.8,
+    "freememGB": 41.6,
+    "perMutantBudgetMs": 90000
+  },
+  "command": "node bench/mutants.mjs --sub act-web,act-shell,act-llm,simd,self,epochs --only aw,as,al,sm,sp,ey --timeout 90000 --budget 90000 --tag verify-landed",
+  "suites": {
+    "act-web": [
+      "test/act-web.test.mjs"
+    ],
+    "act-shell": [
+      "test/act-shell.test.mjs"
+    ],
+    "act-llm": [
+      "test/act-llm.test.mjs"
+    ],
+    "simd": [
+      "test/hvheap.test.mjs",
+      "test/simd.test.mjs"
+    ],
+    "self": [
+      "test/self.test.mjs"
+    ],
+    "epochs": [
+      "test/epochs.test.mjs"
+    ]
+  },
+  "tally": {
+    "mutants": 40,
+    "executed": 40,
+    "killed": 40,
+    "survived": 0,
+    "notExecuted": 0,
+    "score": 1,
+    "wallMs": 101081
+  },
+  "bySubsystem": {
+    "act-web": {
+      "suite": [
+        "test/act-web.test.mjs"
+      ],
+      "generated": 10,
+      "executed": 10,
+      "killed": 10,
+      "survived": 0,
+      "notExecuted": 0,
+      "unmutatedMs": 322,
+      "unmutatedPass": 16,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 3237
+    },
+    "act-shell": {
+      "suite": [
+        "test/act-shell.test.mjs"
+      ],
+      "generated": 10,
+      "executed": 10,
+      "killed": 10,
+      "survived": 0,
+      "notExecuted": 0,
+      "unmutatedMs": 3185,
+      "unmutatedPass": 19,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 42804
+    },
+    "act-llm": {
+      "suite": [
+        "test/act-llm.test.mjs"
+      ],
+      "generated": 5,
+      "executed": 5,
+      "killed": 5,
+      "survived": 0,
+      "notExecuted": 0,
+      "unmutatedMs": 172,
+      "unmutatedPass": 15,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 1014
+    },
+    "simd": {
+      "suite": [
+        "test/hvheap.test.mjs",
+        "test/simd.test.mjs"
+      ],
+      "generated": 5,
+      "executed": 5,
+      "killed": 5,
+      "survived": 0,
+      "notExecuted": 0,
+      "unmutatedMs": 362,
+      "unmutatedPass": 19,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 32035
+    },
+    "self": {
+      "suite": [
+        "test/self.test.mjs"
+      ],
+      "generated": 6,
+      "executed": 6,
+      "killed": 6,
+      "survived": 0,
+      "notExecuted": 0,
+      "unmutatedMs": 2519,
+      "unmutatedPass": 30,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 17485
+    },
+    "epochs": {
+      "suite": [
+        "test/epochs.test.mjs"
+      ],
+      "generated": 4,
+      "executed": 4,
+      "killed": 4,
+      "survived": 0,
+      "notExecuted": 0,
+      "unmutatedMs": 917,
+      "unmutatedPass": 30,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 4506
+    }
+  },
+  "mutants": [
+    {
+      "id": "aw01",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "ADDRESS FAMILY: carrier private 100.64.0.0/10 stops being a refused family",
+      "executed": true,
+      "probeHits": 2,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: the address families are read from the address, not from the spelling",
+        "error": "100.64.0.1 read as null, wanted carrier private"
+      },
+      "newFailures": 1,
+      "ms": 291,
+      "passed": 15,
+      "status": "killed",
+      "find": "  if (a === 100 && b >= 64 && b <= 127) return 'carrier private (100.64.0.0/10)';",
+      "replace": "  if (__MUTP() && a === 100 && b >= 64 && b <= 63) return 'carrier private (100.64.0.0/10)';"
+    },
+    {
+      "id": "aw02",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "ADDRESS FAMILY: the private block is read as /11, so a public 172.32 address is refused",
+      "executed": true,
+      "probeHits": 4,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: the address families are read from the address, not from the spelling",
+        "error": "172.32.0.1 was blocked as private (172.16.0.0/12)"
+      },
+      "newFailures": 1,
+      "ms": 278,
+      "passed": 15,
+      "status": "killed",
+      "find": "  if (a === 172 && b >= 16 && b <= 31) return 'private (172.16.0.0/12)';",
+      "replace": "  if (__MUTP() && a === 172 && b >= 16 && b <= 63) return 'private (172.16.0.0/12)';"
+    },
+    {
+      "id": "aw03",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "ADDRESS FAMILY: the metadata address is read with its last two octets swapped",
+      "executed": true,
+      "probeHits": 3,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: the address families are read from the address, not from the spelling",
+        "error": "169.254.169.254 read as link local (169.254.0.0/16), wanted cloud metadata"
+      },
+      "newFailures": 2,
+      "ms": 292,
+      "passed": 14,
+      "status": "killed",
+      "find": "o[2] === 169 && o[3] === 254 ? 'cloud metadata (169.254.169.254)' : 'link local (169.254.0.0/16)'",
+      "replace": "(__MUTP() && o[2] === 254 && o[3] === 169) ? 'cloud metadata (169.254.169.254)' : 'link local (169.254.0.0/16)'"
+    },
+    {
+      "id": "aw04",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "ADDRESS FAMILY: an ipv4 mapped ipv6 address is not unwrapped, so ::ffff:127.0.0.1 is reachable",
+      "executed": true,
+      "probeHits": 3,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: the address families are read from the address, not from the spelling",
+        "error": "::ffff:127.0.0.1 read as null, wanted ipv4 mapped"
+      },
+      "newFailures": 1,
+      "ms": 282,
+      "passed": 15,
+      "status": "killed",
+      "find": "  if (groups.slice(0, 5).every((g) => g === 0) && groups[5] === 0xffff) {",
+      "replace": "  if (__MUTP() && false) {"
+    },
+    {
+      "id": "aw05",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "ADDRESS FAMILY: the octal spelling of an address is read as decimal, so 0177.0.0.1 is not 127.0.0.1",
+      "executed": true,
+      "probeHits": 15,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: the address families are read from the address, not from the spelling",
+        "error": "Expected values to be strictly deep-equal:"
+      },
+      "newFailures": 1,
+      "ms": 291,
+      "passed": 15,
+      "status": "killed",
+      "find": "    else if (/^0[0-7]+$/.test(p)) n = parseInt(p.slice(1), 8);",
+      "replace": "    else if (__MUTP() && /^0[0-7]+$/.test(p)) n = parseInt(p.slice(1), 10);"
+    },
+    {
+      "id": "aw06",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "REDIRECT HOP: the test loopback flag applies to every hop, so a redirect into loopback is followed",
+      "executed": true,
+      "probeHits": 9,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: a redirect into loopback is refused at the hop, and the hop never leaves",
+        "error": "a redirect into loopback must be refused"
+      },
+      "newFailures": 1,
+      "ms": 294,
+      "passed": 15,
+      "status": "killed",
+      "find": "    const guard = guardUrl(current, { ...pol, allowLoopbackForTests: firstHop && opts.allowLoopbackForTests === true });",
+      "replace": "    const guard = guardUrl(current, { ...pol, allowLoopbackForTests: (__MUTP(), opts.allowLoopbackForTests === true) });"
+    },
+    {
+      "id": "aw07",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "REDIRECT HOP: the hop is not recorded, so nothing shows which urls were requested",
+      "executed": true,
+      "probeHits": 7,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: a redirect into loopback is refused at the hop, and the hop never leaves",
+        "error": "only the first url was requested"
+      },
+      "newFailures": 1,
+      "ms": 282,
+      "passed": 15,
+      "status": "killed",
+      "find": "    hops.push({ url: guard.url, status, host: guard.host, addresses: res.addresses, location: location || null });",
+      "replace": "    __MUTP();"
+    },
+    {
+      "id": "aw08",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "REDIRECT HOP: the resolved addresses of a name are no longer judged, so DNS chooses the host",
+      "executed": true,
+      "probeHits": 2,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: guardResolved judges a name by what it resolves to, and a literal by the guard that already read it",
+        "error": "localhost resolved to ::1, 127.0.0.1 and was allowed"
+      },
+      "newFailures": 1,
+      "ms": 286,
+      "passed": 15,
+      "status": "killed",
+      "find": "    if (cls.blocked) return { ok: false, reason: 'host ' + guard.hostname + ' resolves to ' + a + ' which is ' + cls.blocked, addresses };",
+      "replace": "    if (__MUTP() && false) return { ok: false, reason: 'host ' + guard.hostname + ' resolves to ' + a + ' which is ' + cls.blocked, addresses };"
+    },
+    {
+      "id": "aw09",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "credentials in a url stop being refused, so the host before the at sign is what a reader sees",
+      "executed": true,
+      "probeHits": 28,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: each refusal rule is exercised by a url that only that rule refuses (mutants aw09, aw10)",
+        "error": "a url with userinfo in front of an ALLOWED host was allowed"
+      },
+      "newFailures": 1,
+      "ms": 310,
+      "passed": 15,
+      "status": "killed",
+      "find": "  if (u.username || u.password) return { ok: false, reason: 'credentials in the url are refused: the host is '",
+      "replace": "  if (__MUTP() && false) return { ok: false, reason: 'credentials in the url are refused: the host is '"
+    },
+    {
+      "id": "aw10",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "the wildcard allow entry loses its dot, so *.docs.example matches notdocs.example",
+      "executed": true,
+      "probeHits": 8,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: each refusal rule is exercised by a url that only that rule refuses (mutants aw09, aw10)",
+        "error": "notdocs.example matched the *.docs.example entry"
+      },
+      "newFailures": 1,
+      "ms": 293,
+      "passed": 15,
+      "status": "killed",
+      "find": "    if (e.startsWith('*.') && (name === e.slice(2) || name.endsWith(e.slice(1)))) return e;",
+      "replace": "    if (__MUTP() && e.startsWith('*.') && (name === e.slice(2) || name.endsWith(e.slice(2)))) return e;"
+    },
+    {
+      "id": "as01",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ARGV ALLOW LIST: only argv[0] is compared, so git push runs on a policy that allows git log",
+      "executed": true,
+      "probeHits": 18,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: allowArgv: the shipped default allows nothing, and a prefix must match element by element",
+        "error": "a different subcommand is not the declared prefix"
+      },
+      "newFailures": 2,
+      "ms": 3179,
+      "passed": 17,
+      "status": "killed",
+      "find": "    for (let i = 1; i < entry.length; i++) if (argv[i] !== entry[i]) { all = false; break; }",
+      "replace": "    for (let i = 1; (__MUTP(), i < 0); i++) if (argv[i] !== entry[i]) { all = false; break; }"
+    },
+    {
+      "id": "as02",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ARGV ALLOW LIST: the length test is inverted, so an argv longer than its prefix is refused",
+      "executed": true,
+      "probeHits": 18,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: allowArgv: a shell string, an empty argv and a bad element are all refused before anything runs",
+        "error": "the allowed program is allowed"
+      },
+      "newFailures": 14,
+      "ms": 10962,
+      "passed": 5,
+      "status": "killed",
+      "find": "    if (entry.length > argv.length) continue;",
+      "replace": "    if (__MUTP() && entry.length < argv.length) continue;"
+    },
+    {
+      "id": "as03",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ARGV ALLOW LIST: an argv element carrying a null byte is accepted",
+      "executed": true,
+      "probeHits": 67,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: allowArgv: a shell string, an empty argv and a bad element are all refused before anything runs",
+        "error": "a null byte is refused"
+      },
+      "newFailures": 1,
+      "ms": 3176,
+      "passed": 18,
+      "status": "killed",
+      "find": "    if (a.includes('\\0')) return { ok: false, reason: 'an argv element contains a null byte' };",
+      "replace": "    if (__MUTP() && false) return { ok: false, reason: 'an argv element contains a null byte' };"
+    },
+    {
+      "id": "as04",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ARGV ALLOW LIST: the element count cap is not enforced",
+      "executed": true,
+      "probeHits": 27,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: allowArgv: a shell string, an empty argv and a bad element are all refused before anything runs",
+        "error": "too many elements are refused"
+      },
+      "newFailures": 1,
+      "ms": 3157,
+      "passed": 18,
+      "status": "killed",
+      "find": "  if (argv.length > policy.maxArgs) return { ok: false, reason: argv.length + ' argv elements is over the cap ' + policy.maxArgs };",
+      "replace": "  if (__MUTP() && false) return { ok: false, reason: argv.length + ' argv elements is over the cap ' + policy.maxArgs };"
+    },
+    {
+      "id": "as05",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ARGV ALLOW LIST: the per element length cap is not enforced",
+      "executed": true,
+      "probeHits": 69,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: allowArgv: a shell string, an empty argv and a bad element are all refused before anything runs",
+        "error": "an over long element is refused"
+      },
+      "newFailures": 1,
+      "ms": 3154,
+      "passed": 18,
+      "status": "killed",
+      "find": "    if (a.length > policy.maxArgLength) return { ok: false, reason: 'an argv element of ' + a.length + ' chars is over the cap ' + policy.maxArgLength };",
+      "replace": "    if (__MUTP() && false) return { ok: false, reason: 'an argv element of ' + a.length + ' chars is over the cap ' + policy.maxArgLength };"
+    },
+    {
+      "id": "as06",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ARGV ALLOW LIST: a shell string is refused for the wrong reason, so the reason stops being evidence",
+      "executed": true,
+      "probeHits": 25,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: allowArgv: a shell string, an empty argv and a bad element are all refused before anything runs",
+        "error": "The input did not match the regular expression /never a shell string/. Input:"
+      },
+      "newFailures": 1,
+      "ms": 3168,
+      "passed": 18,
+      "status": "killed",
+      "find": "  if (typeof argv === 'string') return { ok: false, reason: 'argv must be an array of strings, never a shell string:",
+      "replace": "  if (__MUTP() && false) return { ok: false, reason: 'argv must be an array of strings, never a shell string:"
+    },
+    {
+      "id": "as07",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ENV NAMES: every variable of the parent environment reaches the child, not only the named ones",
+      "executed": true,
+      "probeHits": 10,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: the ledger holds one event per run, with argv, code and ms, and never an output or a secret value",
+        "error": "an unnamed variable never reaches the child"
+      },
+      "newFailures": 1,
+      "ms": 3225,
+      "passed": 18,
+      "status": "killed",
+      "find": "  const names = strings(envNames);\n  for (const name of names) if (process.env[name] !== undefined) out[name] = process.env[name];",
+      "replace": "  const names = strings(envNames);\n  for (const name of (__MUTP(), Object.keys(process.env))) if (process.env[name] !== undefined) out[name] = process.env[name];"
+    },
+    {
+      "id": "as08",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ENV NAMES: the ledger event stops naming the variables that were forwarded",
+      "executed": true,
+      "probeHits": 7,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: the ledger holds one event per run, with argv, code and ms, and never an output or a secret value",
+        "error": "the event names the variable"
+      },
+      "newFailures": 1,
+      "ms": 3175,
+      "passed": 18,
+      "status": "killed",
+      "find": "    env: names, reason: res.reason || null,",
+      "replace": "    env: (__MUTP(), []), reason: res.reason || null,"
+    },
+    {
+      "id": "as09",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ENV NAMES: opts.env with VALUES in it is accepted, so this code would handle a credential",
+      "executed": true,
+      "probeHits": 13,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: opts.env with values is refused: this code never handles a credential",
+        "error": "it was refused"
+      },
+      "newFailures": 1,
+      "ms": 3193,
+      "passed": 18,
+      "status": "killed",
+      "find": "  if (opts.env !== undefined && opts.env !== null) return refuse('opts.env is refused:",
+      "replace": "  if (__MUTP() && false) return refuse('opts.env is refused:"
+    },
+    {
+      "id": "as10",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "a caller may WIDEN a policy cap instead of only tightening it",
+      "executed": true,
+      "probeHits": 21,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: a 5 MB stdout is capped, and the cap is measured against the bytes the child produced",
+        "error": "a caller may not widen the policy cap"
+      },
+      "newFailures": 1,
+      "ms": 3215,
+      "passed": 18,
+      "status": "killed",
+      "find": "  return Number.isFinite(n) && n > 0 && n < limit ? n : limit;",
+      "replace": "  return (__MUTP(), Number.isFinite(n) && n > 0) ? n : limit;"
+    },
+    {
+      "id": "al01",
+      "sub": "act-llm",
+      "file": "act/llm.mjs",
+      "why": "SCRUB: scrub hands the string back untouched, so a key travels with the answer",
+      "executed": true,
+      "probeHits": 6,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-llm.test.mjs :: env provider: the header arrives, and the key is in nothing that comes back",
+        "error": "no returned object carries the key"
+      },
+      "newFailures": 3,
+      "ms": 173,
+      "passed": 12,
+      "status": "killed",
+      "find": "  return str.split(String(secret)).join(REDACTED);",
+      "replace": "  return (__MUTP(), str);"
+    },
+    {
+      "id": "al02",
+      "sub": "act-llm",
+      "file": "act/llm.mjs",
+      "why": "SCRUB: the minimum secret length is raised above a real key, so a real key is left alone",
+      "executed": true,
+      "probeHits": 6,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-llm.test.mjs :: env provider: the header arrives, and the key is in nothing that comes back",
+        "error": "no returned object carries the key"
+      },
+      "newFailures": 3,
+      "ms": 168,
+      "passed": 12,
+      "status": "killed",
+      "find": "  if (!secret || String(secret).length < 4) return str;",
+      "replace": "  if (!secret || (__MUTP(), String(secret).length < 64)) return str;"
+    },
+    {
+      "id": "al03",
+      "sub": "act-llm",
+      "file": "act/llm.mjs",
+      "why": "SCRUB: only the FIRST occurrence of the key is replaced",
+      "executed": true,
+      "probeHits": 7,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-llm.test.mjs :: scrub replaces EVERY occurrence of the key, not the first (mutant al03)",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 1,
+      "ms": 167,
+      "passed": 14,
+      "status": "killed",
+      "find": "  return str.split(String(secret)).join(REDACTED);",
+      "replace": "  return (__MUTP(), str.replace(String(secret), REDACTED));"
+    },
+    {
+      "id": "al04",
+      "sub": "act-llm",
+      "file": "act/llm.mjs",
+      "why": "SCRUB: the words the provider itself sent are not scrubbed, so an echoed header returns the key",
+      "executed": true,
+      "probeHits": 2,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-llm.test.mjs :: env provider: the header arrives, and the key is in nothing that comes back",
+        "error": "no returned object carries the key"
+      },
+      "newFailures": 2,
+      "ms": 169,
+      "passed": 13,
+      "status": "killed",
+      "find": "    const text = safe(String((choice && choice.message && choice.message.content) ?? (choice && choice.text) ?? j.response ?? ''));",
+      "replace": "    const text = (__MUTP(), String((choice && choice.message && choice.message.content) ?? (choice && choice.text) ?? j.response ?? ''));"
+    },
+    {
+      "id": "al05",
+      "sub": "act-llm",
+      "file": "act/llm.mjs",
+      "why": "the ledger records the prompt itself instead of how long it was",
+      "executed": true,
+      "probeHits": 3,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-llm.test.mjs :: env provider through the cell: the key is in no ledger event",
+        "error": "the ledger records how it went, not what was said"
+      },
+      "newFailures": 1,
+      "ms": 156,
+      "passed": 14,
+      "status": "killed",
+      "find": "            promptChars: String(prompt).length, ok: r.ok, reason: r.reason, fellBack: r.fellBack,",
+      "replace": "            promptChars: String(prompt).length, prompt: (__MUTP(), String(prompt)), ok: r.ok, reason: r.reason, fellBack: r.fellBack,"
+    },
+    {
+      "id": "sm01",
+      "sub": "simd",
+      "file": "core/simd.mjs",
+      "why": "SLOT ARITHMETIC: a view is placed at s * n instead of s * SLOT, so two slots overlap",
+      "executed": true,
+      "probeHits": 72490,
+      "probeProcesses": 3,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/hvheap.test.mjs :: when every slot is taken the kernel wrappers still answer, into plain arrays, and the slots come back on release",
+        "error": "every held slot came back"
+      },
+      "newFailures": 6,
+      "ms": 347,
+      "passed": 13,
+      "status": "killed",
+      "find": "  const view = new Int8Array(BUF, HEAP_BASE + s * SLOT, n);",
+      "replace": "  const view = new Int8Array(BUF, HEAP_BASE + (__MUTP(), s * n), n);"
+    },
+    {
+      "id": "sm02",
+      "sub": "simd",
+      "file": "core/simd.mjs",
+      "why": "SLOT ARITHMETIC: a handed out slot is never marked used, so release refuses its own view",
+      "executed": true,
+      "probeHits": 68249,
+      "probeProcesses": 3,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/hvheap.test.mjs :: alloc hands out distinct slot-aligned views; release returns the slot at once; a second release, a plain array and an unaligned view are refused",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 8,
+      "ms": 10329,
+      "passed": 11,
+      "status": "killed",
+      "find": "  used[s] = 1; inUse++; if (inUse > peak) peak = inUse; allocs++;",
+      "replace": "  __MUTP(); inUse++; if (inUse > peak) peak = inUse; allocs++;"
+    },
+    {
+      "id": "sm03",
+      "sub": "simd",
+      "file": "core/simd.mjs",
+      "why": "SLOT ARITHMETIC: returning a slot does not advance its generation, so a stale finalizer frees the new owner",
+      "executed": true,
+      "probeHits": 69698,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/hvheap.test.mjs :: a dropped view returns its slot through the finalizer after a collection and a turn; a stale finalizer cannot free a slot handed out again",
+        "error": "the old view's finalizer fired and was recognised as stale"
+      },
+      "newFailures": 1,
+      "ms": 10354,
+      "passed": 18,
+      "status": "killed",
+      "find": "  used[slot] = 0; gen[slot] = (gen[slot] + 1) >>> 0; free[freeTop++] = slot; inUse--;",
+      "replace": "  used[slot] = 0; __MUTP(); free[freeTop++] = slot; inUse--;"
+    },
+    {
+      "id": "sm04",
+      "sub": "simd",
+      "file": "core/simd.mjs",
+      "why": "SLOT ARITHMETIC: the finalizer handle packs the slot and the generation the other way round",
+      "executed": true,
+      "probeHits": 70604,
+      "probeProcesses": 3,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/hvheap.test.mjs :: a dropped view returns its slot through the finalizer after a collection and a turn; a stale finalizer cannot free a slot handed out again",
+        "error": "reclaimed 1 of 4096"
+      },
+      "newFailures": 1,
+      "ms": 10342,
+      "passed": 18,
+      "status": "killed",
+      "find": "  REGISTRY.register(view, gen[s] * slots + s, view);",
+      "replace": "  REGISTRY.register(view, (__MUTP(), gen[s] + s * slots), view);"
+    },
+    {
+      "id": "sm05",
+      "sub": "simd",
+      "file": "core/simd.mjs",
+      "why": "SLOT ARITHMETIC: the full heap test can never be true, so alloc reads past the free list",
+      "executed": true,
+      "probeHits": 74672,
+      "probeProcesses": 3,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/hvheap.test.mjs :: a full heap falls back to plain arrays, counts every fallback, reports the transition to BRAIN_HV_HEAP_REPORT, and computes the same lanes",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 7,
+      "ms": 293,
+      "passed": 12,
+      "status": "killed",
+      "find": "  if (freeTop === 0) {",
+      "replace": "  if (__MUTP() && freeTop < 0) {"
+    },
+    {
+      "id": "sp01",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH CAP: the prune cap collapses to its floor, so it stops scaling with the organism",
+      "executed": true,
+      "probeHits": 38,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune cap is the rule it publishes, at every organism size (mutants sp01, sp02, sp03)",
+        "error": "pruneCap(25601) disagrees with cap = max(256, ceil(edges * 0.01))"
+      },
+      "newFailures": 2,
+      "ms": 2522,
+      "passed": 28,
+      "status": "killed",
+      "find": "  return Math.max(floor, Math.ceil(finite(edges) * keep));",
+      "replace": "  return (__MUTP(), floor);"
+    },
+    {
+      "id": "sp02",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH CAP: the cap is ten times the declared share of the organism",
+      "executed": true,
+      "probeHits": 37,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune cap is the rule it publishes, at every organism size (mutants sp01, sp02, sp03)",
+        "error": "pruneCap(25600) disagrees with cap = max(256, ceil(edges * 0.01))"
+      },
+      "newFailures": 2,
+      "ms": 2523,
+      "passed": 28,
+      "status": "killed",
+      "find": "  return Math.max(floor, Math.ceil(finite(edges) * keep));",
+      "replace": "  return Math.max(floor, Math.ceil(finite(edges) * (__MUTP(), 0.1)));"
+    },
+    {
+      "id": "sp03",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH CAP: the published rule says a share the code does not use",
+      "executed": true,
+      "probeHits": 1,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune cap is the rule it publishes, at every organism size (mutants sp01, sp02, sp03)",
+        "error": "pruneCap(25600) disagrees with cap = max(256, ceil(edges * 0.02))"
+      },
+      "newFailures": 1,
+      "ms": 2478,
+      "passed": 29,
+      "status": "killed",
+      "find": "export const PRUNE_CAP_RULE = 'cap = max(256, ceil(edges * 0.01))';",
+      "replace": "export const PRUNE_CAP_RULE = (__MUTP(), 'cap = max(256, ceil(edges * 0.02))');"
+    },
+    {
+      "id": "sp04",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH: the floor is dropped, so a small stale population proposes a batch too small to move the rate",
+      "executed": true,
+      "probeHits": 28,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune batch is the floor, the share and the cap, one organism for each (mutants sp04, sp05, sp06)",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 1,
+      "ms": 2480,
+      "passed": 29,
+      "status": "killed",
+      "find": "      const batch = Math.max(8, Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * 0.02)));",
+      "replace": "      const batch = Math.max((__MUTP(), 0), Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * 0.02)));"
+    },
+    {
+      "id": "sp05",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH: the share of the stale population is a tenth of the declared 2%",
+      "executed": true,
+      "probeHits": 35,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune batch is the floor, the share and the cap, one organism for each (mutants sp04, sp05, sp06)",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 1,
+      "ms": 2475,
+      "passed": 29,
+      "status": "killed",
+      "find": "      const batch = Math.max(8, Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * 0.02)));",
+      "replace": "      const batch = Math.max(8, Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * (__MUTP(), 0.002))));"
+    },
+    {
+      "id": "sp06",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH: the cap is not a cap, so a batch larger than the armed gate maxEdges is proposed",
+      "executed": true,
+      "probeHits": 28,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune batch is the floor, the share and the cap, one organism for each (mutants sp04, sp05, sp06)",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 1,
+      "ms": 2478,
+      "passed": 29,
+      "status": "killed",
+      "find": "      const batch = Math.max(8, Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * 0.02)));",
+      "replace": "      const batch = Math.max(8, Math.max((__MUTP(), pruneCap(model.metrics.edges)), Math.ceil(model.metrics.staleEdges * 0.02)));"
+    },
+    {
+      "id": "ey01",
+      "sub": "epochs",
+      "file": "generations/epochs.mjs",
+      "why": "YEAR ARITHMETIC: the year is a 365 day calendar year, not the Julian year the file declares",
+      "executed": true,
+      "probeHits": 1,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/epochs.test.mjs :: the years clock is the Julian year, the population and the sentence it prints (mutants ey01, ey02, ey03, ey04)",
+        "error": "SECONDS_PER_YEAR is not a Julian year of 365.25 days"
+      },
+      "newFailures": 1,
+      "ms": 817,
+      "passed": 29,
+      "status": "killed",
+      "find": "export const SECONDS_PER_YEAR = 31_557_600;",
+      "replace": "export const SECONDS_PER_YEAR = (__MUTP(), 31_536_000);"
+    },
+    {
+      "id": "ey02",
+      "sub": "epochs",
+      "file": "generations/epochs.mjs",
+      "why": "YEAR ARITHMETIC: years per generation counts one organism, not the population that was run",
+      "executed": true,
+      "probeHits": 5,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/epochs.test.mjs :: the years clock is the Julian year, the population and the sentence it prints (mutants ey01, ey02, ey03, ey04)",
+        "error": "years per generation is not the manifest arithmetic"
+      },
+      "newFailures": 1,
+      "ms": 919,
+      "passed": 29,
+      "status": "killed",
+      "find": "      yearsPerGeneration: (this.ticks * this.popSize * this.secondsPerTick) / SECONDS_PER_YEAR,",
+      "replace": "      yearsPerGeneration: (__MUTP(), this.ticks * this.secondsPerTick) / SECONDS_PER_YEAR,"
+    },
+    {
+      "id": "ey03",
+      "sub": "epochs",
+      "file": "generations/epochs.mjs",
+      "why": "YEAR ARITHMETIC: the lineage clock counts one generation more than has been run",
+      "executed": true,
+      "probeHits": 17,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/epochs.test.mjs :: the years clock is the Julian year, the population and the sentence it prints (mutants ey01, ey02, ey03, ey04)",
+        "error": "the lineage clock does not count the generations run"
+      },
+      "newFailures": 1,
+      "ms": 921,
+      "passed": 29,
+      "status": "killed",
+      "find": "    const lineage = (this.generation * this.ticks * this.secondsPerTick) / SECONDS_PER_YEAR;",
+      "replace": "    const lineage = (__MUTP(), (this.generation + 1) * this.ticks * this.secondsPerTick) / SECONDS_PER_YEAR;"
+    },
+    {
+      "id": "ey04",
+      "sub": "epochs",
+      "file": "generations/epochs.mjs",
+      "why": "YEAR ARITHMETIC: the printed arithmetic states a different number than the years it reports",
+      "executed": true,
+      "probeHits": 17,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/epochs.test.mjs :: the years clock is the Julian year, the population and the sentence it prints (mutants ey01, ey02, ey03, ey04)",
+        "error": "the sentence states a different number than years"
+      },
+      "newFailures": 1,
+      "ms": 923,
+      "passed": 29,
+      "status": "killed",
+      "find": "        ' organism-seconds; / ' + SECONDS_PER_YEAR + ' s/year = ' + yrs.toExponential(6) + ' organism-years',",
+      "replace": "        ' organism-seconds; / ' + SECONDS_PER_YEAR + ' s/year = ' + (__MUTP(), yrs * 2).toExponential(6) + ' organism-years',"
+    }
+  ],
+  "verdict": "GREEN"
+}

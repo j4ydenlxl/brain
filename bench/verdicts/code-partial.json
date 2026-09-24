@@ -1,0 +1,203 @@
+{
+  "at": "2026-09-24T13:28:27.849Z",
+  "node": "v24.15.0",
+  "command": "node bench/code.mjs --limit 2 --arms null",
+  "verdict": "NARROW",
+  "isTheBar": false,
+  "wroteTo": "bench/verdicts/code-partial.json",
+  "notTheBarBecause": "this run is 2 of the fixture's 40 tasks, which is not the bar's shape",
+  "shape": {
+    "name": "narrow",
+    "tasksRun": 2,
+    "tasksInFixture": 40,
+    "armsRun": [
+      "null"
+    ],
+    "inMemory": false
+  },
+  "progress": {
+    "tasksDone": 2,
+    "tasksTotal": 2,
+    "complete": true
+  },
+  "checks": {
+    "everyTaskGotEverySelectedArm": true,
+    "everyTaskHadHiddenCases": true,
+    "everyTaskSaysWhereItsExpectedValuesCameFrom": true,
+    "armsRotated": true,
+    "theNullArmSpentNoRound": true,
+    "absentArmsCarryAReason": true,
+    "everyTaskWasReached": true
+  },
+  "ms": 70,
+  "model": "qwen3:1.7b",
+  "base": "http://127.0.0.1:11434",
+  "ollamaUp": null,
+  "armsRun": [
+    "null"
+  ],
+  "rounds": 3,
+  "sandbox": {
+    "limitMs": 2000,
+    "memoryMB": 128,
+    "maxTokens": 1600,
+    "numCtx": 4096
+  },
+  "tasks": {
+    "total": 2,
+    "seed": "code-2026-09-18",
+    "inMemory": false,
+    "fixture": "bench/fixtures/code-tasks.json",
+    "byKind": {
+      "bigint": 2
+    },
+    "byExpectedFrom": {
+      "a reference implementation in bench/code.mjs": 2
+    },
+    "hiddenCases": 8,
+    "visibleCases": 6
+  },
+  "ruler": "a task counts when EVERY hidden case passes; hiddenCasePassRate is the generous edge and decides nothing",
+  "interleaving": "task by task: all three arms answer task i before any arm sees task i+1, and the first arm rotates with i",
+  "armsDiffer": "organism and alone use the same model, the same first prompt, the same extraction and the same sandbox; alone gets one call and no repair round",
+  "arms": {
+    "organism": {
+      "absent": true,
+      "reason": "not selected: this run was --arms null",
+      "asked": 0,
+      "n": 0,
+      "passed": null,
+      "accuracy": null,
+      "interval": {
+        "lo": null,
+        "hi": null,
+        "width": null
+      },
+      "meanRounds": null,
+      "meanMs": null,
+      "hiddenCasePassRate": null,
+      "byKind": {}
+    },
+    "alone": {
+      "absent": true,
+      "reason": "not selected: this run was --arms null",
+      "asked": 0,
+      "n": 0,
+      "passed": null,
+      "accuracy": null,
+      "interval": {
+        "lo": null,
+        "hi": null,
+        "width": null
+      },
+      "meanRounds": null,
+      "meanMs": null,
+      "hiddenCasePassRate": null,
+      "byKind": {}
+    },
+    "null": {
+      "absent": false,
+      "reason": null,
+      "asked": 2,
+      "n": 2,
+      "passed": 0,
+      "accuracy": 0,
+      "interval": {
+        "lo": 0,
+        "hi": 0.657628,
+        "width": 0.657628
+      },
+      "meanRounds": 0,
+      "meanMs": 34,
+      "hiddenCasePassRate": 0,
+      "hiddenCases": {
+        "passed": 0,
+        "of": 8
+      },
+      "byKind": {
+        "bigint": {
+          "n": 2,
+          "passed": 0,
+          "accuracy": 0
+        }
+      }
+    }
+  },
+  "winner": "null",
+  "runnerUp": null,
+  "gap": null,
+  "nFor95": null,
+  "statement": "null is the only arm that was graded: 0/2",
+  "rows": [
+    {
+      "i": 0,
+      "id": "bigint.mulAdd.0",
+      "kind": "bigint",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "absent": true
+        },
+        "alone": {
+          "absent": true
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 34,
+          "codeChars": 39,
+          "firstFailure": {
+            "args": [
+              "6571225922613813057",
+              "78423342535194",
+              "187172950914794"
+            ],
+            "expected": "515337501405289281907726510142852",
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "i": 1,
+      "id": "bigint.powMod.1",
+      "kind": "bigint",
+      "hidden": 4,
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "absent": true
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 34,
+          "codeChars": 39,
+          "firstFailure": {
+            "args": [
+              "218911821740459",
+              "8147",
+              "13337089231"
+            ],
+            "expected": "11860000958",
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "absent": true
+        }
+      }
+    }
+  ]
+}

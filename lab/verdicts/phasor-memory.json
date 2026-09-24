@@ -1,0 +1,567 @@
+{
+  "name": "phasor-memory",
+  "question": "At equal dimension 1024 and 64 pairs, does the phasor superposition store (phv.memory) recall more than the bipolar list store (memory.assoc) it would replace?",
+  "at": "2026-09-17T11:38:07.429Z",
+  "node": "v24.15.0",
+  "hypothesis": {
+    "metric": "recall",
+    "direction": "increase",
+    "minEffect": 0.05
+  },
+  "bar": {
+    "alpha": 0.05,
+    "seeds": 8,
+    "exactUpTo": 16,
+    "samples": 20000
+  },
+  "region": "lab",
+  "ports": {},
+  "seeds": [
+    "m1",
+    "m2",
+    "m3",
+    "m4",
+    "m5",
+    "m6",
+    "m7",
+    "m8"
+  ],
+  "k": 8,
+  "metric": "recall",
+  "treatment": {
+    "mean": 0.988281,
+    "sd": 0.011049,
+    "values": [
+      0.984375,
+      0.96875,
+      0.984375,
+      1,
+      1,
+      1,
+      0.984375,
+      0.984375
+    ]
+  },
+  "control": {
+    "mean": 1,
+    "sd": 0,
+    "values": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "effect": {
+    "mean": -0.011719,
+    "sd": 0.011049,
+    "median": -0.015625,
+    "min": -0.03125,
+    "max": 0,
+    "wins": 0,
+    "losses": 5,
+    "ties": 3
+  },
+  "diffs": [
+    -0.015625,
+    -0.03125,
+    -0.015625,
+    0,
+    0,
+    0,
+    -0.015625,
+    -0.015625
+  ],
+  "permutation": {
+    "share": 1,
+    "reverse": 0.03125,
+    "mode": "exact",
+    "draws": 256
+  },
+  "verdict": "undecided",
+  "reasons": [
+    "effect -0.011719 is inside the band [-0.05, 0.05]"
+  ],
+  "secondary": {
+    "answered": {
+      "treatmentMean": 64,
+      "controlMean": 64,
+      "delta": 0
+    },
+    "cellRuns": {
+      "treatmentMean": 192,
+      "controlMean": 192,
+      "delta": 0
+    },
+    "codebookBytes": {
+      "treatmentMean": 524288,
+      "controlMean": 0,
+      "delta": 524288
+    },
+    "correct": {
+      "treatmentMean": 63.25,
+      "controlMean": 64,
+      "delta": -0.75
+    },
+    "meanSim": {
+      "treatmentMean": 0.11075,
+      "controlMean": 1,
+      "delta": -0.88925
+    },
+    "pairsStored": {
+      "treatmentMean": 64,
+      "controlMean": 64,
+      "delta": 0
+    },
+    "queries": {
+      "treatmentMean": 64,
+      "controlMean": 64,
+      "delta": 0
+    },
+    "recall": {
+      "treatmentMean": 0.988281,
+      "controlMean": 1,
+      "delta": -0.011719
+    },
+    "recallPerKB": {
+      "treatmentMean": 0.061768,
+      "controlMean": 0.015625,
+      "delta": 0.046143
+    },
+    "traceBytes": {
+      "treatmentMean": 16384,
+      "controlMean": 65536,
+      "delta": -49152
+    },
+    "traceBytesPerPair": {
+      "treatmentMean": 256,
+      "controlMean": 1024,
+      "delta": -768
+    }
+  },
+  "isolation": {
+    "refusedCrossings": 0,
+    "undeclaredCrossings": 0
+  },
+  "source": {
+    "mechanism": "sha256:e7b24f24374a51248a5781f3601bf2be463f17e85733098651ff83ac15dcf461",
+    "control": "sha256:871c4d671f5de028b4215abddc0008946d30046f2c52594409b064ad3fbb3660",
+    "measure": "sha256:db3f6febee0bd92deb4f66aebbabb954c7a050f1f17226ff59f5bf01cd01fc56",
+    "build": "sha256:eb8353f92c242abf739b9f1901f8a8566332dbec811d3e7e811e37aede4e61d7"
+  },
+  "wallMs": 108.5,
+  "rows": [
+    {
+      "seed": "m1",
+      "treatment": {
+        "metrics": {
+          "recall": 0.984375,
+          "answered": 64,
+          "correct": 63,
+          "queries": 64,
+          "meanSim": 0.11008836183464155,
+          "pairsStored": 64,
+          "traceBytes": 16384,
+          "codebookBytes": 524288,
+          "traceBytesPerPair": 256,
+          "recallPerKB": 0.0615234375,
+          "cellRuns": 192
+        },
+        "ms": 13.245,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "phv.memory",
+          "structure": "superposition accumulator",
+          "d": 1024
+        }
+      },
+      "control": {
+        "metrics": {
+          "recall": 1,
+          "answered": 64,
+          "correct": 64,
+          "queries": 64,
+          "meanSim": 1,
+          "pairsStored": 64,
+          "traceBytes": 65536,
+          "codebookBytes": 0,
+          "traceBytesPerPair": 1024,
+          "recallPerKB": 0.015625,
+          "cellRuns": 192
+        },
+        "ms": 4.993,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "memory.assoc",
+          "structure": "nearest neighbour list",
+          "d": 1024
+        }
+      }
+    },
+    {
+      "seed": "m2",
+      "treatment": {
+        "metrics": {
+          "recall": 0.96875,
+          "answered": 64,
+          "correct": 62,
+          "queries": 64,
+          "meanSim": 0.1093338635400869,
+          "pairsStored": 64,
+          "traceBytes": 16384,
+          "codebookBytes": 524288,
+          "traceBytesPerPair": 256,
+          "recallPerKB": 0.060546875,
+          "cellRuns": 192
+        },
+        "ms": 9.689,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "phv.memory",
+          "structure": "superposition accumulator",
+          "d": 1024
+        }
+      },
+      "control": {
+        "metrics": {
+          "recall": 1,
+          "answered": 64,
+          "correct": 64,
+          "queries": 64,
+          "meanSim": 1,
+          "pairsStored": 64,
+          "traceBytes": 65536,
+          "codebookBytes": 0,
+          "traceBytesPerPair": 1024,
+          "recallPerKB": 0.015625,
+          "cellRuns": 192
+        },
+        "ms": 2.649,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "memory.assoc",
+          "structure": "nearest neighbour list",
+          "d": 1024
+        }
+      }
+    },
+    {
+      "seed": "m3",
+      "treatment": {
+        "metrics": {
+          "recall": 0.984375,
+          "answered": 64,
+          "correct": 63,
+          "queries": 64,
+          "meanSim": 0.1098103504627943,
+          "pairsStored": 64,
+          "traceBytes": 16384,
+          "codebookBytes": 524288,
+          "traceBytesPerPair": 256,
+          "recallPerKB": 0.0615234375,
+          "cellRuns": 192
+        },
+        "ms": 8.168,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "phv.memory",
+          "structure": "superposition accumulator",
+          "d": 1024
+        }
+      },
+      "control": {
+        "metrics": {
+          "recall": 1,
+          "answered": 64,
+          "correct": 64,
+          "queries": 64,
+          "meanSim": 1,
+          "pairsStored": 64,
+          "traceBytes": 65536,
+          "codebookBytes": 0,
+          "traceBytesPerPair": 1024,
+          "recallPerKB": 0.015625,
+          "cellRuns": 192
+        },
+        "ms": 2.508,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "memory.assoc",
+          "structure": "nearest neighbour list",
+          "d": 1024
+        }
+      }
+    },
+    {
+      "seed": "m4",
+      "treatment": {
+        "metrics": {
+          "recall": 1,
+          "answered": 64,
+          "correct": 64,
+          "queries": 64,
+          "meanSim": 0.11107719992287457,
+          "pairsStored": 64,
+          "traceBytes": 16384,
+          "codebookBytes": 524288,
+          "traceBytesPerPair": 256,
+          "recallPerKB": 0.0625,
+          "cellRuns": 192
+        },
+        "ms": 8.766,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "phv.memory",
+          "structure": "superposition accumulator",
+          "d": 1024
+        }
+      },
+      "control": {
+        "metrics": {
+          "recall": 1,
+          "answered": 64,
+          "correct": 64,
+          "queries": 64,
+          "meanSim": 1,
+          "pairsStored": 64,
+          "traceBytes": 65536,
+          "codebookBytes": 0,
+          "traceBytesPerPair": 1024,
+          "recallPerKB": 0.015625,
+          "cellRuns": 192
+        },
+        "ms": 2.817,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "memory.assoc",
+          "structure": "nearest neighbour list",
+          "d": 1024
+        }
+      }
+    },
+    {
+      "seed": "m5",
+      "treatment": {
+        "metrics": {
+          "recall": 1,
+          "answered": 64,
+          "correct": 64,
+          "queries": 64,
+          "meanSim": 0.11105689592659473,
+          "pairsStored": 64,
+          "traceBytes": 16384,
+          "codebookBytes": 524288,
+          "traceBytesPerPair": 256,
+          "recallPerKB": 0.0625,
+          "cellRuns": 192
+        },
+        "ms": 8.503,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "phv.memory",
+          "structure": "superposition accumulator",
+          "d": 1024
+        }
+      },
+      "control": {
+        "metrics": {
+          "recall": 1,
+          "answered": 64,
+          "correct": 64,
+          "queries": 64,
+          "meanSim": 1,
+          "pairsStored": 64,
+          "traceBytes": 65536,
+          "codebookBytes": 0,
+          "traceBytesPerPair": 1024,
+          "recallPerKB": 0.015625,
+          "cellRuns": 192
+        },
+        "ms": 2.779,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "memory.assoc",
+          "structure": "nearest neighbour list",
+          "d": 1024
+        }
+      }
+    },
+    {
+      "seed": "m6",
+      "treatment": {
+        "metrics": {
+          "recall": 1,
+          "answered": 64,
+          "correct": 64,
+          "queries": 64,
+          "meanSim": 0.1115722581744194,
+          "pairsStored": 64,
+          "traceBytes": 16384,
+          "codebookBytes": 524288,
+          "traceBytesPerPair": 256,
+          "recallPerKB": 0.0625,
+          "cellRuns": 192
+        },
+        "ms": 9.259,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "phv.memory",
+          "structure": "superposition accumulator",
+          "d": 1024
+        }
+      },
+      "control": {
+        "metrics": {
+          "recall": 1,
+          "answered": 64,
+          "correct": 64,
+          "queries": 64,
+          "meanSim": 1,
+          "pairsStored": 64,
+          "traceBytes": 65536,
+          "codebookBytes": 0,
+          "traceBytesPerPair": 1024,
+          "recallPerKB": 0.015625,
+          "cellRuns": 192
+        },
+        "ms": 2.743,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "memory.assoc",
+          "structure": "nearest neighbour list",
+          "d": 1024
+        }
+      }
+    },
+    {
+      "seed": "m7",
+      "treatment": {
+        "metrics": {
+          "recall": 0.984375,
+          "answered": 64,
+          "correct": 63,
+          "queries": 64,
+          "meanSim": 0.11230276187416166,
+          "pairsStored": 64,
+          "traceBytes": 16384,
+          "codebookBytes": 524288,
+          "traceBytesPerPair": 256,
+          "recallPerKB": 0.0615234375,
+          "cellRuns": 192
+        },
+        "ms": 8.281,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "phv.memory",
+          "structure": "superposition accumulator",
+          "d": 1024
+        }
+      },
+      "control": {
+        "metrics": {
+          "recall": 1,
+          "answered": 64,
+          "correct": 64,
+          "queries": 64,
+          "meanSim": 1,
+          "pairsStored": 64,
+          "traceBytes": 65536,
+          "codebookBytes": 0,
+          "traceBytesPerPair": 1024,
+          "recallPerKB": 0.015625,
+          "cellRuns": 192
+        },
+        "ms": 3.237,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "memory.assoc",
+          "structure": "nearest neighbour list",
+          "d": 1024
+        }
+      }
+    },
+    {
+      "seed": "m8",
+      "treatment": {
+        "metrics": {
+          "recall": 0.984375,
+          "answered": 64,
+          "correct": 63,
+          "queries": 64,
+          "meanSim": 0.11076147225685418,
+          "pairsStored": 64,
+          "traceBytes": 16384,
+          "codebookBytes": 524288,
+          "traceBytesPerPair": 256,
+          "recallPerKB": 0.0615234375,
+          "cellRuns": 192
+        },
+        "ms": 9.02,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "phv.memory",
+          "structure": "superposition accumulator",
+          "d": 1024
+        }
+      },
+      "control": {
+        "metrics": {
+          "recall": 1,
+          "answered": 64,
+          "correct": 64,
+          "queries": 64,
+          "meanSim": 1,
+          "pairsStored": 64,
+          "traceBytes": 65536,
+          "codebookBytes": 0,
+          "traceBytesPerPair": 1024,
+          "recallPerKB": 0.015625,
+          "cellRuns": 192
+        },
+        "ms": 2.688,
+        "cells": 3,
+        "edges": 1,
+        "refusedCrossings": 0,
+        "installed": {
+          "store": "memory.assoc",
+          "structure": "nearest neighbour list",
+          "d": 1024
+        }
+      }
+    }
+  ]
+}

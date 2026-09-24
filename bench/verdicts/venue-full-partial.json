@@ -1,0 +1,480 @@
+{
+  "at": "2026-09-23T20:53:10.874Z",
+  "command": "node bench/venue.mjs --full --generations 3 --pop 16",
+  "node": "v24.15.0",
+  "cpus": 32,
+  "platform": "win32",
+  "isTheBar": false,
+  "statement": "On the recorded pumpswap tape read only from trader.db (2839 instruments, 324480 readings, every instrument with at least 20 readings), split by a stable hash of the instrument id into 2126 train and 713 holdout instruments, 3 generations of 16 venue.trader genomes (48 evaluations, 150.9 per wall second) were selected on net after the borrowed 0.0454 round trip fee per trip on train. Perfect foresight clears the fee on 580 of 713 holdout instruments. On the holdout the evolved trader made 82 trips on 56 instruments for -0.34986 SOL (-21.33% per trip), its matched random control (the same trips per instrument, random fillable entries, the same exit rule) -0.10392 SOL (-6.34% per trip), and hold -5.32149 SOL over 651 trips (-40.87% per trip). The paired gap evolved minus control is -0.01725 of size per instrument with a 95 percent interval [-0.04265, 0.00815] and nFor95 1547, so the evolved trader NULL AGAINST its control; against hold the gap is 0.34864 [0.18420, 0.51309]. The organism ran the best genome on 12 holdout instruments and its book was identical to the kernel trip for trip. Nothing placed an order: replay only.",
+  "claim": "NULL: the paired gap between the evolved trader and its matched random control on the holdout has a 95 percent interval that spans zero; nFor95 1547 instruments would be needed at the observed mean and spread",
+  "verdict": "NULL AGAINST",
+  "clearsFee": false,
+  "sound": true,
+  "checks": {
+    "tapeIsRecorded": true,
+    "everyEligibleInstrumentLoaded": true,
+    "splitDisjointByInstrument": true,
+    "searchSawOnlyTrain": true,
+    "evolvedTraded": true,
+    "controlTripMatched": true,
+    "everyTripPaidTheFee": true,
+    "deterministic": true,
+    "organismAgreesWithKernel": true
+  },
+  "wallMs": 4027,
+  "config": {
+    "generations": 3,
+    "pop": 16,
+    "draws": 16,
+    "instruments": 0,
+    "seed": "venue.full/1",
+    "share": 0.25,
+    "salt": "venue.holdout/1",
+    "maxImpact": 0.01,
+    "size": 0.02,
+    "lag": 1,
+    "minReadings": 20,
+    "minTripsShare": 0.1,
+    "boot": 2000,
+    "check": 12
+  },
+  "canonical": {
+    "generations": 120,
+    "pop": 64,
+    "draws": 16,
+    "instruments": 0,
+    "seed": "venue.full/1",
+    "share": 0.25,
+    "salt": "venue.holdout/1",
+    "maxImpact": 0.01,
+    "size": 0.02,
+    "lag": 1,
+    "minReadings": 20,
+    "minTripsShare": 0.1,
+    "boot": 2000,
+    "check": 12
+  },
+  "units": "every net, netPerTrip, grossPerTrip, liqNet and every paired gap is in units of the entry size (1.0 = one entry of size SOL); netSol = net x size in SOL; meanHeld is in readings",
+  "fee": {
+    "file": "trader/bench/verdicts/desk.json",
+    "assertion": "FEE_BAR is the measured 4.54% round trip",
+    "detail": "0.0454",
+    "venueMeasuredOn": "pump.fun",
+    "venueAppliedTo": "pumpswap (never measured: trader/bench/verdicts/instrument.json)",
+    "value": 0.0454,
+    "borrowed": true
+  },
+  "fills": {
+    "size": 0.02,
+    "lag": 1,
+    "maxImpact": 0.01,
+    "note": "payable price from the recorded reserves; a buy fills only when size / quote reserve <= maxImpact; sells always fill; the fee is charged once per closed trip on its size"
+  },
+  "tape": {
+    "source": "trader.db",
+    "db": "C:\\Users\\ybmic\\Downloads\\claudeskillsvideo-to-website\\trader\\data\\trader.db",
+    "venue": "pumpswap",
+    "instruments": 2839,
+    "readings": 324480,
+    "eligible": 2839,
+    "minReadings": 20,
+    "sampled": false,
+    "scanned": 325148,
+    "loadMs": 3494,
+    "cadenceSeconds": 20.088,
+    "liqEvents": 4003,
+    "liqThreshold": 0.05
+  },
+  "split": {
+    "by": "instrument",
+    "hash": "hash32(salt + \":\" + signature) % 10000 < share * 10000",
+    "salt": "venue.holdout/1",
+    "share": 0.25,
+    "train": 2126,
+    "holdout": 713,
+    "trainReadings": 243045,
+    "holdoutReadings": 81435,
+    "disjoint": true
+  },
+  "ceiling": {
+    "all": {
+      "instruments": 2839,
+      "clears": 2327,
+      "clearsSwapOnly": 2326,
+      "noEntry": 268,
+      "share": 0.8196548080309969,
+      "shareSwapOnly": 0.8193025713279324,
+      "bestTrip": {
+        "p10": 0.006690989776388621,
+        "median": 0.5020604021349592,
+        "p90": 5.0230194610772125,
+        "max": 1451.9763958668573
+      }
+    },
+    "train": {
+      "instruments": 2126,
+      "clears": 1747,
+      "clearsSwapOnly": 1746,
+      "noEntry": 206,
+      "share": 0.8217309501411101,
+      "shareSwapOnly": 0.8212605832549389,
+      "bestTrip": {
+        "p10": 0.010401460188376975,
+        "median": 0.5219682985152482,
+        "p90": 5.172760421857988,
+        "max": 1451.9763958668573
+      }
+    },
+    "holdout": {
+      "instruments": 713,
+      "clears": 580,
+      "clearsSwapOnly": 580,
+      "noEntry": 62,
+      "share": 0.8134642356241234,
+      "shareSwapOnly": 0.8134642356241234,
+      "bestTrip": {
+        "p10": -0.0030500914154166572,
+        "median": 0.4283355386273521,
+        "p90": 4.480015997502137,
+        "max": 91.10170758730291
+      }
+    }
+  },
+  "search": {
+    "generations": 3,
+    "evaluations": 48,
+    "cacheHits": 0,
+    "readingsReplayed": 11666160,
+    "marketYearsReplayed": 7.426097741273101,
+    "yearsArithmetic": "48 evaluations x 243045 readings = 11666160 readings; x 20.088 s per reading = 234349822 market-seconds; / 31557600 s per year = 7.4261e+0 market-years replayed",
+    "archiveFill": 28,
+    "archiveCapacity": 98,
+    "archiveStats": {
+      "evaluated": 48,
+      "placed": 28,
+      "replaced": 11,
+      "rejected": 9,
+      "emitted": 0
+    },
+    "best": {
+      "id": "vg0-1",
+      "genome": {
+        "lookback": 2,
+        "entryUp": 0.5805788886283979,
+        "entryDir": -1,
+        "trail": 0.0913531247831657,
+        "maxHold": 72,
+        "takeProfit": 0,
+        "minQuote": 2.6161085325434934,
+        "maxEntryStep": 0
+      },
+      "fitness": 1.8530411982656703,
+      "trips": 346,
+      "netPerTrip": 1.8530411982656703
+    },
+    "evalMs": 317.0754,
+    "manifest": {
+      "seed": "venue.full/1",
+      "popSize": 16,
+      "readingsPerEvaluation": 243045,
+      "trainInstruments": 2126,
+      "secondsPerTick": 20.088,
+      "secondsPerYear": 31557600,
+      "fitness": "net after the fee per round trip on the training instruments; a genome under minTrips = 213 trips scores -3 + trips / minTrips, under any real trader",
+      "genes": [
+        "lookback",
+        "entryUp",
+        "entryDir",
+        "trail",
+        "maxHold",
+        "takeProfit",
+        "minQuote",
+        "maxEntryStep"
+      ],
+      "crossoverRate": 0.3,
+      "mutationRate": 2,
+      "elite": 16,
+      "grid": [
+        "tripsPerInstrument",
+        "meanHeld",
+        "entryDir"
+      ],
+      "gridCapacity": 98
+    },
+    "minTrips": 213,
+    "evoMs": 318,
+    "evaluationsPerWallSecond": 150.9433962264151,
+    "readingsPerWallSecond": 36686037.73584905,
+    "history": [
+      {
+        "gen": 1,
+        "best": 1.853041,
+        "bestTrips": 346,
+        "genMean": -0.463219,
+        "fill": 14,
+        "fresh": 16,
+        "ms": 105.7
+      },
+      {
+        "gen": 2,
+        "best": 1.853041,
+        "bestTrips": 346,
+        "genMean": -0.545593,
+        "fill": 20,
+        "fresh": 16,
+        "ms": 113.9
+      },
+      {
+        "gen": 3,
+        "best": 1.853041,
+        "bestTrips": 346,
+        "genMean": -0.241405,
+        "fill": 28,
+        "fresh": 16,
+        "ms": 97.4
+      }
+    ]
+  },
+  "best": {
+    "genome": {
+      "lookback": 2,
+      "entryUp": 0.5805788886283979,
+      "entryDir": -1,
+      "trail": 0.0913531247831657,
+      "maxHold": 72,
+      "takeProfit": 0,
+      "minQuote": 2.6161085325434934,
+      "maxEntryStep": 0
+    },
+    "trainFitness": 1.8530411982656703,
+    "trainTrips": 346,
+    "trainNetPerTrip": 1.8530411982656703
+  },
+  "train": {
+    "instruments": 2126,
+    "evolved": {
+      "trips": 346,
+      "net": 641.1522545999218,
+      "netPerTrip": 1.8530411982656698,
+      "grossPerTrip": 1.8984411982656626,
+      "meanHeld": 10.127167630057803,
+      "impactRefused": 21,
+      "liqTrips": 132,
+      "liqNet": -45.51917368813165,
+      "instrumentsTraded": 217,
+      "netSol": 12.823045091998436
+    },
+    "control": {
+      "tripsMatched": 346,
+      "drawnTrips": 4772,
+      "draws": 16,
+      "collisions": 764,
+      "net": 112.4453367863458,
+      "netPerTrip": 0.3249865225038896,
+      "drawnNetPerTrip": 0.2091684058341795,
+      "liqTrips": 1044,
+      "liqNet": -410.5691786437568,
+      "matchedShare": 1,
+      "fillShare": 0.8619942196531792,
+      "netSol": 2.248906735726916
+    },
+    "hold": {
+      "trips": 1920,
+      "net": -388.7501748231193,
+      "netPerTrip": -0.2024740493870413,
+      "noEntry": 206,
+      "liqTrips": 1577,
+      "liqNet": -853.9860161120978,
+      "netSol": -7.775003496462387
+    },
+    "gapVsControl": {
+      "n": 2126,
+      "mean": 0.24868623,
+      "sd": 8.08556413,
+      "se": 0.17535926,
+      "lo": -0.09501792,
+      "hi": 0.59239037,
+      "bootLo": 0.00080977,
+      "bootHi": 0.64429952,
+      "boot": 2000,
+      "nFor95": 4061,
+      "positive": 105,
+      "negative": 112,
+      "zero": 1909,
+      "excludesZero": false,
+      "bootExcludesZero": true
+    }
+  },
+  "holdout": {
+    "instruments": 713,
+    "evolved": {
+      "trips": 82,
+      "net": -17.49278412473098,
+      "netPerTrip": -0.213326635667451,
+      "grossPerTrip": -0.16792663566745103,
+      "meanHeld": 10.487804878048781,
+      "impactRefused": 6,
+      "liqTrips": 47,
+      "liqNet": -23.15668658530702,
+      "instrumentsTraded": 56,
+      "netSol": -0.3498556824946196
+    },
+    "control": {
+      "tripsMatched": 82,
+      "drawnTrips": 1145,
+      "draws": 16,
+      "collisions": 167,
+      "net": -5.196090713706832,
+      "netPerTrip": -0.06336695992325406,
+      "drawnNetPerTrip": -0.07006994996383971,
+      "liqTrips": 347,
+      "liqNet": -72.77316878407788,
+      "matchedShare": 1,
+      "fillShare": 0.8727134146341463,
+      "netSol": -0.10392181427413665
+    },
+    "hold": {
+      "trips": 651,
+      "net": -266.07426137118983,
+      "netPerTrip": -0.4087162233044391,
+      "noEntry": 62,
+      "liqTrips": 525,
+      "liqNet": -484.08467657143177,
+      "netSol": -5.321485227423797
+    },
+    "gapVsControl": {
+      "n": 713,
+      "mean": -0.01724641,
+      "sd": 0.34605419,
+      "se": 0.01295983,
+      "lo": -0.04264768,
+      "hi": 0.00815486,
+      "bootLo": -0.04511775,
+      "bootHi": 0.0058584,
+      "boot": 2000,
+      "nFor95": 1547,
+      "positive": 18,
+      "negative": 38,
+      "zero": 657,
+      "excludesZero": false,
+      "bootExcludesZero": false
+    },
+    "gapVsHold": {
+      "n": 713,
+      "mean": 0.34864162,
+      "sd": 2.24033191,
+      "se": 0.08390109,
+      "lo": 0.18419549,
+      "hi": 0.51308776,
+      "bootLo": 0.16954289,
+      "bootHi": 0.50272811,
+      "boot": 2000,
+      "nFor95": 159,
+      "positive": 536,
+      "negative": 114,
+      "zero": 63,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapVsControlOnTraded": {
+      "n": 56,
+      "mean": -0.21958381,
+      "sd": 1.22679489,
+      "se": 0.16393736,
+      "lo": -0.54090104,
+      "hi": 0.10173342,
+      "bootLo": -0.56525277,
+      "bootHi": 0.06251312,
+      "boot": 2000,
+      "nFor95": 120,
+      "positive": 18,
+      "negative": 38,
+      "zero": 0,
+      "excludesZero": false,
+      "bootExcludesZero": false
+    }
+  },
+  "incumbentOnHoldout": {
+    "genome": {
+      "lookback": 3,
+      "entryUp": 0.02,
+      "entryDir": 1,
+      "trail": 0.1,
+      "maxHold": 12,
+      "takeProfit": 0,
+      "minQuote": 0,
+      "maxEntryStep": 0
+    },
+    "instruments": 713,
+    "evolved": {
+      "trips": 2106,
+      "net": -253.77894631416765,
+      "netPerTrip": -0.12050282351100079,
+      "grossPerTrip": -0.0751028235110006,
+      "meanHeld": 7.370845204178537,
+      "impactRefused": 429,
+      "liqTrips": 405,
+      "liqNet": -329.76590977219206,
+      "instrumentsTraded": 583,
+      "netSol": -5.075578926283353
+    },
+    "control": {
+      "tripsMatched": 2106,
+      "drawnTrips": 23211,
+      "draws": 16,
+      "collisions": 10485,
+      "net": -222.4921398347249,
+      "netPerTrip": -0.10564679004497858,
+      "drawnNetPerTrip": -0.14586935402063658,
+      "liqTrips": 5185,
+      "liqNet": -4364.643037757763,
+      "matchedShare": 1,
+      "fillShare": 0.6888354700854701,
+      "netSol": -4.449842796694498
+    },
+    "hold": {
+      "trips": 651,
+      "net": -266.07426137118983,
+      "netPerTrip": -0.4087162233044391,
+      "noEntry": 62,
+      "liqTrips": 525,
+      "liqNet": -484.08467657143177,
+      "netSol": -5.321485227423797
+    },
+    "gapVsControl": {
+      "n": 713,
+      "mean": -0.04388051,
+      "sd": 0.47340076,
+      "se": 0.017729,
+      "lo": -0.07862935,
+      "hi": -0.00913168,
+      "bootLo": -0.07988767,
+      "bootHi": -0.00983723,
+      "boot": 2000,
+      "nFor95": 448,
+      "positive": 271,
+      "negative": 290,
+      "zero": 152,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    }
+  },
+  "organism": {
+    "instruments": 12,
+    "readings": 1368,
+    "readingsPerInstrument": 114,
+    "organismTrips": 4,
+    "kernelTrips": 4,
+    "identical": true,
+    "maxAbsDiff": 1.734723475976807e-18,
+    "lag": 1,
+    "refused": 0,
+    "impactRefused": 0
+  },
+  "unmodelled": [
+    "the tape after our own order is the recorded tape: our fill moves nothing the next reading reports",
+    "every instrument is its own book: no cap on positions open at once across instruments",
+    "the fee is borrowed from pump.fun; the round trip cost of pumpswap has never been measured",
+    "the holdout is split by instrument, not by time: holdout instruments share the train instruments calendar (2026-09-07 to 2026-09-11)"
+  ]
+}

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DILATION / BRAIN / FINDINGS</title>
+<meta name="description" content="The measured findings of a persistent computational organism: one card per verdict, with the command that printed it, the numbers it printed, and the note that reads them.">
+<style>
+:root { color-scheme: dark; --ink: #e8eefc; --dim: #7f8ba6; --line: rgba(150,180,255,0.14);
+  --glass: rgba(10,14,26,0.62); --accent: #7fb0ff; --warm: #ffb27f; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #02030a; color: var(--ink);
+  font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+body { padding: 0 20px 72px; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--line); }
+a:hover { border-bottom-color: var(--accent); }
+.wrap { max-width: 1180px; margin: 0 auto; }
+header.top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  flex-wrap: wrap; padding: 34px 0 10px; border-bottom: 1px solid var(--line); }
+h1 { font-size: 15px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; margin: 0;
+  text-shadow: 0 0 18px rgba(127,176,255,0.28); }
+h1 .dim { text-shadow: none; }
+h2 { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600;
+  color: var(--ink); margin: 40px 0 4px; }
+h2 + .lede { color: var(--dim); margin: 0 0 16px; max-width: 78ch; }
+.dim { color: var(--dim); }
+.intro { max-width: 92ch; margin: 24px 0 8px; }
+.intro p { color: var(--ink); margin: 0 0 14px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; margin-top: 16px; }
+.card { background: var(--glass); border: 1px solid var(--line); border-radius: 10px; padding: 13px 15px 15px; }
+.card.null { border-color: rgba(255,178,127,0.22); }
+.card h3 { margin: 0; font-size: 13px; letter-spacing: 0.06em; font-weight: 600; }
+.card.null h3 { color: var(--warm); }
+.card .head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.card .at { color: var(--dim); font-size: 11px; white-space: nowrap; }
+.cmd { margin: 9px 0 0; color: var(--dim); overflow-wrap: anywhere; }
+.cmd code { color: var(--ink); }
+.rule { height: 1px; background: var(--line); margin: 10px 0; }
+.nums { margin: 0; }
+.row { display: flex; justify-content: space-between; gap: 12px; padding: 1px 0; }
+.row .k { color: var(--dim); overflow-wrap: anywhere; }
+.row .v { text-align: right; white-space: nowrap; }
+.note { color: var(--dim); margin: 10px 0 0; font-size: 11px; }
+.note q { quotes: none; }
+.tag { display: inline-block; border: 1px solid var(--line); border-radius: 5px;
+  padding: 0 6px; margin-right: 6px; color: var(--dim); font-size: 11px; }
+.soak { background: var(--glass); border: 1px solid var(--line); border-radius: 10px;
+  padding: 15px 17px; margin-top: 16px; max-width: 640px; }
+footer { color: var(--dim); margin-top: 44px; padding-top: 14px; border-top: 1px solid var(--line); max-width: 92ch; }
+@media (max-width: 640px) { .grid { grid-template-columns: 1fr; } body { padding: 0 14px 48px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>DILATION <span class="dim">/</span> BRAIN <span class="dim">/</span> FINDINGS</h1>
+  <div class="dim"><a href="../">back to the organism</a> &middot; <a href="../ladder/">the ladder</a> &middot; generated {{GENERATED}}</div>
+</header>
+
+<section class="intro">
+{{INTRO}}
+</section>
+
+<h2>what was measured</h2>
+<p class="lede">One card per verdict file. The command is the one that writes that verdict, the numbers are
+read out of it at generation time, and the note is the paragraph where a builder wrote it up. Nothing on
+this page is typed by hand: the generator refuses to emit a number it did not read.</p>
+{{STATS}}
+<div class="grid">
+{{CARDS}}
+</div>
+
+<h2>retractions and nulls</h2>
+<p class="lede">The verdicts below carry a null result, a refutation or a negative number. They are on the
+page for the same reason the others are, and they are first here rather than buried: a result that only
+survives when you hide half of it is not a result.</p>
+<div class="grid">
+{{NULLS}}
+</div>
+
+<h2>the soak</h2>
+<p class="lede">One organism has been up continuously since it was started, checkpointing itself as it
+goes. These are read out of its own state directory, read only. Its control file is never opened by the
+generator: that file holds a token, and no tool here reads a credential value.</p>
+{{SOAK}}
+
+<footer>
+<p>Provenance rule: a number that no command printed does not exist. Every value above resolves to a field
+of a verdict file under bench/verdicts, to the soak state on disk, or to a count this generator printed
+when it ran. Quoted paragraphs are verbatim from the document or note named on them.</p>
+<p>All rights reserved by the owner of dilation.dev. This page and the brain scene are published for
+reading; the source tree, the notes, the ledger and the soak state are not published and are not offered
+under any open licence. The rights notice is the LICENSE file at the root of the source tree.</p>
+</footer>
+
+</div>
+</body>
+</html>

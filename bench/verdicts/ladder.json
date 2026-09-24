@@ -1,0 +1,1540 @@
+{
+  "at": "2026-09-24T13:14:37.043Z",
+  "node": "v24.15.0",
+  "command": "node bench/ladder.mjs",
+  "isTheBar": true,
+  "statement": "The ladder board reads the verdicts on disk and calls no model. GSM8K is a PARTIAL sample, 27 of 30 (90.00 percent) from bench/verdicts/public-gsm8k-smoke-partial.json, with no frontier row kept, and no published orchestrator row; HumanEval is a PARTIAL sample, 23 of 30 (76.67 percent) from bench/verdicts/public-humaneval-smoke-partial.json, decided below the frontier row o4-mini-high at 99.3, and no published orchestrator row; ARC-AGI-1 evaluation is whole, 71 of 400 (17.75 percent) from bench/verdicts/grid-evaluation.json, decided below the frontier row Gemini 3.1 Pro (Preview) at 98, and below the orchestrator row Claude Fable 5.1 (Max) at 97.5. Of 460 recorded organism answers, 5 came from the model, 400 were native and 0 were direct (no answer path records direct yet). The browser organism figures, 90 ns per cell run and 50 ns per packet hop, come from a log line, not a verdict file. Instances alive: 2 from a partial cloud run. Authored share 0.00 percent. Bytes per score point 701862.933 at the compress bar. Improvement per wall second 0.2777 percent of the suite against his 5.",
+  "columns": [
+    "answer",
+    "code",
+    "capability",
+    "health"
+  ],
+  "how": "every dated file under bench/verdicts/ladder/ is one run; the series takes the LAST run of each day. composite is the mean of the four columns, each in [0, 1]. A delta is a percent OF THE PREVIOUS DAY, not a difference in points. board is read from the verdicts on disk by node bench/ladder.mjs.",
+  "tierRule": "tier N+1 unlocks when every accuracy column (answer, code, capability) of the previous day at tier N is at or above 0.9 and health is not below the day before",
+  "target": {
+    "low": 5,
+    "high": 10,
+    "met": false
+  },
+  "days": [
+    {
+      "date": "2026-09-18",
+      "file": "bench/verdicts/ladder/2026-09-18.json",
+      "runOfDay": 1,
+      "runsThatDay": 1,
+      "tier": 1,
+      "at": "2026-09-18T14:41:30.239Z",
+      "columns": {
+        "answer": {
+          "score": 1,
+          "n": 12,
+          "correct": 12,
+          "arm": "organism",
+          "organism": {
+            "score": 1,
+            "n": 12,
+            "correct": 12,
+            "absent": false,
+            "reason": null
+          },
+          "null": {
+            "score": 1,
+            "n": 12,
+            "correct": 12,
+            "absent": false,
+            "reason": null
+          },
+          "nFor95": null,
+          "anchor": {
+            "n": 1,
+            "correct": 1,
+            "accuracy": 1
+          },
+          "ollamaUp": true,
+          "meanMs": 276.98,
+          "ms": 3643,
+          "from": "bench/answer.mjs run()"
+        },
+        "code": {
+          "score": 0.166667,
+          "n": 6,
+          "correct": 1,
+          "arm": "organism",
+          "organism": {
+            "score": 0.166667,
+            "n": 6,
+            "correct": 1,
+            "absent": false,
+            "reason": null
+          },
+          "null": {
+            "score": 0,
+            "n": 6,
+            "correct": 0,
+            "absent": false,
+            "reason": null
+          },
+          "byKind": {
+            "bigint": {
+              "n": 2,
+              "passed": 1,
+              "accuracy": 0.5
+            },
+            "string": {
+              "n": 1,
+              "passed": 0,
+              "accuracy": 0
+            },
+            "array": {
+              "n": 1,
+              "passed": 0,
+              "accuracy": 0
+            },
+            "date": {
+              "n": 1,
+              "passed": 0,
+              "accuracy": 0
+            },
+            "parser": {
+              "n": 1,
+              "passed": 0,
+              "accuracy": 0
+            }
+          },
+          "nFor95": 20,
+          "ollamaUp": true,
+          "meanMs": 48464.17,
+          "wroteTo": null,
+          "isTheBar": false,
+          "ms": 291001,
+          "from": "bench/code.mjs run() with inMemory true"
+        },
+        "capability": {
+          "score": 1,
+          "n": 205,
+          "correct": 205,
+          "arm": "exact",
+          "induction": {
+            "solved": 15,
+            "total": 15,
+            "searched": 308912
+          },
+          "algebra": {
+            "solved": 190,
+            "solvable": 190,
+            "verified": 190
+          },
+          "marketGap": 3.922725344550743,
+          "verdict": "GREEN",
+          "ms": 4307,
+          "from": "bench/capability.mjs run({ seed, write: false })"
+        },
+        "health": {
+          "score": 0.848646,
+          "ticks": 256,
+          "t": 256,
+          "seed": "ladder/2026-09-18",
+          "cells": 205,
+          "edges": 2802,
+          "runs": 33803,
+          "errors": 0,
+          "refused": 0,
+          "activeCellRate": 0.8439024390243902,
+          "usedEdgeRate": 0.6334760885082085,
+          "inChild": true,
+          "arm": "organism",
+          "n": 205,
+          "correct": null,
+          "ms": 5569,
+          "from": "seeds/whole.mjs + self/observe.mjs"
+        }
+      },
+      "composite": 0.753828
+    },
+    {
+      "date": "2026-09-24",
+      "file": "bench/verdicts/ladder/2026-09-24.json",
+      "runOfDay": 1,
+      "runsThatDay": 1,
+      "tier": 1,
+      "at": "2026-09-24T08:01:49.825Z",
+      "columns": {
+        "answer": {
+          "score": 1,
+          "n": 12,
+          "correct": 12,
+          "arm": "organism",
+          "organism": {
+            "score": 1,
+            "n": 12,
+            "correct": 12,
+            "absent": false,
+            "reason": null
+          },
+          "null": {
+            "score": 1,
+            "n": 12,
+            "correct": 12,
+            "absent": false,
+            "reason": null
+          },
+          "nFor95": null,
+          "anchor": {
+            "n": 1,
+            "correct": 1,
+            "accuracy": 1
+          },
+          "ollamaUp": true,
+          "meanMs": 183.73,
+          "ms": 2427,
+          "from": "bench/answer.mjs run()"
+        },
+        "code": {
+          "score": 0.166667,
+          "n": 6,
+          "correct": 1,
+          "arm": "organism",
+          "organism": {
+            "score": 0.166667,
+            "n": 6,
+            "correct": 1,
+            "absent": false,
+            "reason": null
+          },
+          "null": {
+            "score": 0,
+            "n": 6,
+            "correct": 0,
+            "absent": false,
+            "reason": null
+          },
+          "byKind": {
+            "array": {
+              "n": 2,
+              "passed": 0,
+              "accuracy": 0
+            },
+            "date": {
+              "n": 1,
+              "passed": 0,
+              "accuracy": 0
+            },
+            "parser": {
+              "n": 1,
+              "passed": 0,
+              "accuracy": 0
+            },
+            "bigint": {
+              "n": 1,
+              "passed": 1,
+              "accuracy": 1
+            },
+            "string": {
+              "n": 1,
+              "passed": 0,
+              "accuracy": 0
+            }
+          },
+          "nFor95": 20,
+          "ollamaUp": true,
+          "meanMs": 16624.33,
+          "wroteTo": null,
+          "isTheBar": false,
+          "ms": 99944,
+          "from": "bench/code.mjs run() with inMemory true"
+        },
+        "capability": {
+          "score": 1,
+          "n": 199,
+          "correct": 199,
+          "arm": "exact",
+          "induction": {
+            "solved": 15,
+            "total": 15,
+            "searched": 308912
+          },
+          "algebra": {
+            "solved": 184,
+            "solvable": 184,
+            "verified": 184
+          },
+          "marketGap": 3.922725344550743,
+          "verdict": "GREEN",
+          "ms": 3893,
+          "from": "bench/capability.mjs run({ seed, write: false })"
+        },
+        "health": {
+          "score": 0.830464,
+          "ticks": 256,
+          "t": 256,
+          "seed": "ladder/2026-09-24",
+          "cells": 205,
+          "edges": 2656,
+          "runs": 34377,
+          "errors": 0,
+          "refused": 0,
+          "activeCellRate": 0.8195121951219512,
+          "usedEdgeRate": 0.603539156626506,
+          "inChild": true,
+          "arm": "organism",
+          "n": 205,
+          "correct": null,
+          "ms": 1877,
+          "from": "seeds/whole.mjs + self/observe.mjs"
+        }
+      },
+      "composite": 0.749283
+    }
+  ],
+  "deltas": [
+    {
+      "date": "2026-09-24",
+      "against": "2026-09-18",
+      "perColumn": {
+        "answer": 0,
+        "code": 0,
+        "capability": 0,
+        "health": -2.14
+      },
+      "composite": -0.6
+    }
+  ],
+  "latest": {
+    "date": "2026-09-24",
+    "file": "bench/verdicts/ladder/2026-09-24.json",
+    "runOfDay": 1,
+    "runsThatDay": 1
+  },
+  "lastDelta": -0.6,
+  "line": "day over day: composite -0.60 percent, target 5 to 10 percent: missed",
+  "nFor95": {
+    "how": "answer and code each ask their own bench for it, on the organism rate against the null rate of that day",
+    "answer": null,
+    "code": 20
+  },
+  "board": {
+    "sets": [
+      {
+        "key": "gsm8k",
+        "name": "GSM8K",
+        "benchmark": "gsm8k",
+        "status": "PARTIAL",
+        "partialBecause": [
+          "the file is named -partial",
+          "isTheBar false",
+          "a sample of 30 of 1319"
+        ],
+        "notTheBarBecause": [
+          "a sample of 30 of 1319, not the whole set (--limit 0, or --bar to declare a sample the bar)"
+        ],
+        "primary": {
+          "file": "bench/verdicts/public-gsm8k-smoke-partial.json",
+          "at": "2026-09-24T12:51:54.405Z",
+          "command": "node bench/public.mjs --set gsm8k --limit 30 --name smoke",
+          "isTheBar": false,
+          "model": "qwen3:1.7b",
+          "n": 30,
+          "of": 1319
+        },
+        "arms": {
+          "organism": {
+            "absent": false,
+            "n": 30,
+            "correct": 27,
+            "accuracy": 0.9,
+            "interval": {
+              "lo": 0.743786,
+              "hi": 0.965401
+            },
+            "intervalFrom": "the verdict",
+            "meanMs": 20918.63
+          },
+          "alone": {
+            "absent": false,
+            "n": 30,
+            "correct": 26,
+            "accuracy": 0.866667,
+            "interval": {
+              "lo": 0.703183,
+              "hi": 0.946904
+            },
+            "intervalFrom": "the verdict",
+            "meanMs": 5538.19
+          },
+          "null": {
+            "absent": false,
+            "n": 30,
+            "correct": 0,
+            "accuracy": 0,
+            "interval": {
+              "lo": 0,
+              "hi": 0.113517
+            },
+            "intervalFrom": "the verdict",
+            "meanMs": 1.01
+          }
+        },
+        "classes": {
+          "model": {
+            "records": 0,
+            "of": 30,
+            "share": 0,
+            "correct": 0,
+            "inferred": 0,
+            "msN": 0,
+            "msSum": 0,
+            "meanMs": null,
+            "meanMsCorrect": null,
+            "unit": "s",
+            "latency": null,
+            "latencyCorrect": null
+          },
+          "native": {
+            "records": 0,
+            "of": 30,
+            "share": 0,
+            "correct": 0,
+            "inferred": 0,
+            "msN": 0,
+            "msSum": 0,
+            "meanMs": null,
+            "meanMsCorrect": null,
+            "unit": "us",
+            "latency": null,
+            "latencyCorrect": null
+          },
+          "direct": {
+            "records": 0,
+            "of": 30,
+            "share": 0,
+            "correct": 0,
+            "inferred": 0,
+            "msN": 0,
+            "msSum": 0,
+            "meanMs": null,
+            "meanMsCorrect": null,
+            "unit": "ns",
+            "latency": null,
+            "latencyCorrect": null
+          },
+          "unrecorded": {
+            "records": 0,
+            "of": 30,
+            "share": 0,
+            "correct": 0,
+            "inferred": 0,
+            "msN": 0,
+            "msSum": 0,
+            "meanMs": null,
+            "meanMsCorrect": null,
+            "unit": "ms",
+            "latency": null,
+            "latencyCorrect": null
+          },
+          "other": {
+            "records": 30,
+            "of": 30,
+            "share": 1,
+            "correct": 27,
+            "inferred": 0,
+            "msN": 30,
+            "msSum": 627558.78,
+            "meanMs": 20918.626,
+            "meanMsCorrect": 18316.277,
+            "unit": "ms",
+            "latency": 20918.626,
+            "latencyCorrect": 18316.276667
+          }
+        },
+        "recordsRead": 30,
+        "bars": {
+          "alone": {
+            "verdict": "not separated, intervals overlap",
+            "organism": "27/30",
+            "other": "26/30"
+          },
+          "null": {
+            "verdict": "beats, intervals separate",
+            "organism": "27/30",
+            "other": "0/30"
+          },
+          "row405": {
+            "system": "Llama 3.1 405B Instruct",
+            "score": 96.8,
+            "metric": "em_maj1@1, 8-shot CoT",
+            "class": "open 405B",
+            "source": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md (instruction tuned table)",
+            "pct": 90,
+            "lo": 74.38,
+            "hi": 96.54,
+            "gapPoints": -6.8,
+            "side": "below",
+            "decided": "below"
+          },
+          "frontier": null,
+          "orchestrator": null,
+          "claimable": false
+        },
+        "orchestrator": null,
+        "published": [
+          {
+            "system": "Llama 3.1 405B Instruct",
+            "score": 96.8,
+            "unit": "percent",
+            "metric": "em_maj1@1, 8-shot CoT",
+            "class": "open 405B",
+            "source": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md (instruction tuned table)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-gsm8k-board7-partial.json",
+              "bench/verdicts/public-gsm8k-partial.json",
+              "bench/verdicts/public-gsm8k-smoke-partial.json"
+            ],
+            "pct": 90,
+            "lo": 74.38,
+            "hi": 96.54,
+            "gapPoints": -6.8,
+            "side": "below",
+            "decided": "below"
+          },
+          {
+            "system": "Llama 3.1 70B Instruct",
+            "score": 95.1,
+            "unit": "percent",
+            "metric": "em_maj1@1, 8-shot CoT",
+            "class": "open 70B",
+            "source": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md (instruction tuned table)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-gsm8k-board7-partial.json",
+              "bench/verdicts/public-gsm8k-partial.json",
+              "bench/verdicts/public-gsm8k-smoke-partial.json"
+            ],
+            "pct": 90,
+            "lo": 74.38,
+            "hi": 96.54,
+            "gapPoints": -5.1,
+            "side": "below",
+            "decided": null
+          },
+          {
+            "system": "Llama 3.1 8B Instruct",
+            "score": 84.5,
+            "unit": "percent",
+            "metric": "em_maj1@1, 8-shot CoT",
+            "class": "open 8B",
+            "source": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md (instruction tuned table)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-gsm8k-board7-partial.json",
+              "bench/verdicts/public-gsm8k-partial.json",
+              "bench/verdicts/public-gsm8k-smoke-partial.json"
+            ],
+            "pct": 90,
+            "lo": 74.38,
+            "hi": 96.54,
+            "gapPoints": 5.5,
+            "side": "above",
+            "decided": null
+          },
+          {
+            "system": "Llama 3 8B Instruct",
+            "score": 80.6,
+            "unit": "percent",
+            "metric": "em_maj1@1, 8-shot CoT",
+            "class": "open 8B",
+            "source": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md (instruction tuned table)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-gsm8k-board7-partial.json",
+              "bench/verdicts/public-gsm8k-partial.json",
+              "bench/verdicts/public-gsm8k-smoke-partial.json"
+            ],
+            "pct": 90,
+            "lo": 74.38,
+            "hi": 96.54,
+            "gapPoints": 9.4,
+            "side": "above",
+            "decided": null
+          },
+          {
+            "system": "Qwen3-1.7B-Base (the model this tree runs against, base weights)",
+            "score": 75.44,
+            "unit": "percent",
+            "metric": "4-shot CoT",
+            "class": "small, same family as the local arm",
+            "source": "https://arxiv.org/html/2505.09388v1 (Qwen3 Technical Report, Table 8)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-gsm8k-board7-partial.json",
+              "bench/verdicts/public-gsm8k-partial.json",
+              "bench/verdicts/public-gsm8k-smoke-partial.json"
+            ],
+            "pct": 90,
+            "lo": 74.38,
+            "hi": 96.54,
+            "gapPoints": 14.56,
+            "side": "above",
+            "decided": null
+          },
+          {
+            "system": "Qwen2.5-1.5B-Base",
+            "score": 68.54,
+            "unit": "percent",
+            "metric": "4-shot CoT",
+            "class": "small",
+            "source": "https://arxiv.org/html/2505.09388v1 (Qwen3 Technical Report, Table 8)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-gsm8k-board7-partial.json",
+              "bench/verdicts/public-gsm8k-partial.json",
+              "bench/verdicts/public-gsm8k-smoke-partial.json"
+            ],
+            "pct": 90,
+            "lo": 74.38,
+            "hi": 96.54,
+            "gapPoints": 21.46,
+            "side": "above",
+            "decided": "above"
+          },
+          {
+            "system": "Qwen3-0.6B-Base",
+            "score": 59.59,
+            "unit": "percent",
+            "metric": "4-shot CoT",
+            "class": "small",
+            "source": "https://arxiv.org/html/2505.09388v1 (Qwen3 Technical Report, Table 8)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-gsm8k-board7-partial.json",
+              "bench/verdicts/public-gsm8k-partial.json",
+              "bench/verdicts/public-gsm8k-smoke-partial.json"
+            ],
+            "pct": 90,
+            "lo": 74.38,
+            "hi": 96.54,
+            "gapPoints": 30.41,
+            "side": "above",
+            "decided": "above"
+          },
+          {
+            "system": "Gemma-3-1B-Base",
+            "score": 2.2,
+            "unit": "percent",
+            "metric": "4-shot CoT",
+            "class": "small",
+            "source": "https://arxiv.org/html/2505.09388v1 (Qwen3 Technical Report, Table 8)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-gsm8k-board7-partial.json",
+              "bench/verdicts/public-gsm8k-partial.json",
+              "bench/verdicts/public-gsm8k-smoke-partial.json"
+            ],
+            "pct": 90,
+            "lo": 74.38,
+            "hi": 96.54,
+            "gapPoints": 87.8,
+            "side": "above",
+            "decided": "above"
+          }
+        ],
+        "alsoOnDisk": [
+          {
+            "file": "bench/verdicts/public-gsm8k-partial.json",
+            "at": "2026-09-23T20:49:41.434Z",
+            "status": "PARTIAL",
+            "reasons": [
+              "the file is named -partial",
+              "isTheBar false",
+              "a sample of 6 of 1319"
+            ],
+            "organism": "6/6",
+            "provenanceRecorded": true
+          },
+          {
+            "file": "bench/verdicts/public-gsm8k-board7-partial.json",
+            "at": "2026-09-18T15:09:35.597Z",
+            "status": "PARTIAL",
+            "reasons": [
+              "the file is named -partial",
+              "isTheBar false",
+              "complete false",
+              "a sample of 39 of 60"
+            ],
+            "organism": "21/39",
+            "provenanceRecorded": false
+          }
+        ]
+      },
+      {
+        "key": "humaneval",
+        "name": "HumanEval",
+        "benchmark": "humaneval",
+        "status": "PARTIAL",
+        "partialBecause": [
+          "the file is named -partial",
+          "isTheBar false",
+          "a sample of 30 of 161"
+        ],
+        "notTheBarBecause": [
+          "a sample of 30 of 161, not the whole set (--limit 0, or --bar to declare a sample the bar)"
+        ],
+        "primary": {
+          "file": "bench/verdicts/public-humaneval-smoke-partial.json",
+          "at": "2026-09-24T13:14:25.312Z",
+          "command": "node bench/public.mjs --set humaneval --limit 30 --name smoke",
+          "isTheBar": false,
+          "model": "qwen3:1.7b",
+          "n": 30,
+          "of": 161
+        },
+        "arms": {
+          "organism": {
+            "absent": false,
+            "n": 30,
+            "correct": 23,
+            "accuracy": 0.766667,
+            "interval": {
+              "lo": 0.590713,
+              "hi": 0.882078
+            },
+            "intervalFrom": "the verdict",
+            "meanMs": 34881.88
+          },
+          "alone": {
+            "absent": false,
+            "n": 30,
+            "correct": 14,
+            "accuracy": 0.466667,
+            "interval": {
+              "lo": 0.302321,
+              "hi": 0.63858
+            },
+            "intervalFrom": "the verdict",
+            "meanMs": 10107.2
+          },
+          "null": {
+            "absent": false,
+            "n": 30,
+            "correct": 0,
+            "accuracy": 0,
+            "interval": {
+              "lo": 0,
+              "hi": 0.113517
+            },
+            "intervalFrom": "the verdict",
+            "meanMs": 16.04
+          }
+        },
+        "classes": {
+          "model": {
+            "records": 5,
+            "of": 30,
+            "share": 0.166667,
+            "correct": 1,
+            "inferred": 0,
+            "msN": 5,
+            "msSum": 609674.27,
+            "meanMs": 121934.854,
+            "meanMsCorrect": 11606.82,
+            "unit": "s",
+            "latency": 121.934854,
+            "latencyCorrect": 11.60682
+          },
+          "native": {
+            "records": 0,
+            "of": 30,
+            "share": 0,
+            "correct": 0,
+            "inferred": 0,
+            "msN": 0,
+            "msSum": 0,
+            "meanMs": null,
+            "meanMsCorrect": null,
+            "unit": "us",
+            "latency": null,
+            "latencyCorrect": null
+          },
+          "direct": {
+            "records": 0,
+            "of": 30,
+            "share": 0,
+            "correct": 0,
+            "inferred": 0,
+            "msN": 0,
+            "msSum": 0,
+            "meanMs": null,
+            "meanMsCorrect": null,
+            "unit": "ns",
+            "latency": null,
+            "latencyCorrect": null
+          },
+          "unrecorded": {
+            "records": 0,
+            "of": 30,
+            "share": 0,
+            "correct": 0,
+            "inferred": 0,
+            "msN": 0,
+            "msSum": 0,
+            "meanMs": null,
+            "meanMsCorrect": null,
+            "unit": "ms",
+            "latency": null,
+            "latencyCorrect": null
+          },
+          "other": {
+            "records": 25,
+            "of": 30,
+            "share": 0.833333,
+            "correct": 22,
+            "inferred": 0,
+            "msN": 25,
+            "msSum": 436782.14,
+            "meanMs": 17471.286,
+            "meanMsCorrect": 17536.183,
+            "unit": "ms",
+            "latency": 17471.2856,
+            "latencyCorrect": 17536.182727
+          }
+        },
+        "recordsRead": 30,
+        "bars": {
+          "alone": {
+            "verdict": "not separated, intervals overlap",
+            "organism": "23/30",
+            "other": "14/30"
+          },
+          "null": {
+            "verdict": "beats, intervals separate",
+            "organism": "23/30",
+            "other": "0/30"
+          },
+          "row405": null,
+          "frontier": {
+            "system": "o4-mini-high",
+            "score": 99.3,
+            "metric": "pass@1",
+            "class": "frontier reasoning",
+            "source": "https://github.com/openai/simple-evals (README table)",
+            "pct": 76.67,
+            "lo": 59.07,
+            "hi": 88.21,
+            "gapPoints": -22.63,
+            "side": "below",
+            "decided": "below"
+          },
+          "orchestrator": null,
+          "claimable": false
+        },
+        "orchestrator": null,
+        "published": [
+          {
+            "system": "o4-mini-high",
+            "score": 99.3,
+            "unit": "percent",
+            "metric": "pass@1",
+            "class": "frontier reasoning",
+            "source": "https://github.com/openai/simple-evals (README table)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-humaneval-board7-partial.json",
+              "bench/verdicts/public-humaneval-partial.json",
+              "bench/verdicts/public-humaneval-smoke-partial.json"
+            ],
+            "pct": 76.67,
+            "lo": 59.07,
+            "hi": 88.21,
+            "gapPoints": -22.63,
+            "side": "below",
+            "decided": "below"
+          },
+          {
+            "system": "gpt-4.1-2025-04-14",
+            "score": 94.5,
+            "unit": "percent",
+            "metric": "pass@1",
+            "class": "frontier",
+            "source": "https://github.com/openai/simple-evals (README table)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-humaneval-board7-partial.json",
+              "bench/verdicts/public-humaneval-partial.json",
+              "bench/verdicts/public-humaneval-smoke-partial.json"
+            ],
+            "pct": 76.67,
+            "lo": 59.07,
+            "hi": 88.21,
+            "gapPoints": -17.83,
+            "side": "below",
+            "decided": "below"
+          },
+          {
+            "system": "Claude 3.5 Sonnet (reported)",
+            "score": 92,
+            "unit": "percent",
+            "metric": "pass@1",
+            "class": "frontier",
+            "source": "https://github.com/openai/simple-evals (README table)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-humaneval-board7-partial.json",
+              "bench/verdicts/public-humaneval-partial.json",
+              "bench/verdicts/public-humaneval-smoke-partial.json"
+            ],
+            "pct": 76.67,
+            "lo": 59.07,
+            "hi": 88.21,
+            "gapPoints": -15.33,
+            "side": "below",
+            "decided": "below"
+          },
+          {
+            "system": "gpt-4o-2024-11-20",
+            "score": 90.2,
+            "unit": "percent",
+            "metric": "pass@1",
+            "class": "frontier",
+            "source": "https://github.com/openai/simple-evals (README table)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-humaneval-board7-partial.json",
+              "bench/verdicts/public-humaneval-partial.json",
+              "bench/verdicts/public-humaneval-smoke-partial.json"
+            ],
+            "pct": 76.67,
+            "lo": 59.07,
+            "hi": 88.21,
+            "gapPoints": -13.53,
+            "side": "below",
+            "decided": "below"
+          },
+          {
+            "system": "o3-high",
+            "score": 88.4,
+            "unit": "percent",
+            "metric": "pass@1",
+            "class": "frontier reasoning",
+            "source": "https://github.com/openai/simple-evals (README table)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-humaneval-board7-partial.json",
+              "bench/verdicts/public-humaneval-partial.json",
+              "bench/verdicts/public-humaneval-smoke-partial.json"
+            ],
+            "pct": 76.67,
+            "lo": 59.07,
+            "hi": 88.21,
+            "gapPoints": -11.73,
+            "side": "below",
+            "decided": "below"
+          },
+          {
+            "system": "Llama 3.1 8b",
+            "score": 72.6,
+            "unit": "percent",
+            "metric": "pass@1",
+            "class": "open 8B",
+            "source": "https://github.com/openai/simple-evals (README table)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-humaneval-board7-partial.json",
+              "bench/verdicts/public-humaneval-partial.json",
+              "bench/verdicts/public-humaneval-smoke-partial.json"
+            ],
+            "pct": 76.67,
+            "lo": 59.07,
+            "hi": 88.21,
+            "gapPoints": 4.07,
+            "side": "above",
+            "decided": null
+          },
+          {
+            "system": "Codex 12B, 100 samples (2021)",
+            "score": 70.2,
+            "unit": "percent",
+            "metric": "pass@100",
+            "class": "origin",
+            "source": "https://arxiv.org/abs/2107.03374 (Codex paper abstract)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-humaneval-board7-partial.json",
+              "bench/verdicts/public-humaneval-partial.json",
+              "bench/verdicts/public-humaneval-smoke-partial.json"
+            ],
+            "pct": 76.67,
+            "lo": 59.07,
+            "hi": 88.21,
+            "gapPoints": 6.47,
+            "side": "above",
+            "decided": null
+          },
+          {
+            "system": "Codex 12B (2021)",
+            "score": 28.8,
+            "unit": "percent",
+            "metric": "pass@1",
+            "class": "origin",
+            "source": "https://arxiv.org/abs/2107.03374 (Codex paper abstract)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-humaneval-board7-partial.json",
+              "bench/verdicts/public-humaneval-partial.json",
+              "bench/verdicts/public-humaneval-smoke-partial.json"
+            ],
+            "pct": 76.67,
+            "lo": 59.07,
+            "hi": 88.21,
+            "gapPoints": 47.87,
+            "side": "above",
+            "decided": "above"
+          },
+          {
+            "system": "GPT-J (2021)",
+            "score": 11.4,
+            "unit": "percent",
+            "metric": "pass@1",
+            "class": "origin",
+            "source": "https://arxiv.org/abs/2107.03374 (Codex paper abstract)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-humaneval-board7-partial.json",
+              "bench/verdicts/public-humaneval-partial.json",
+              "bench/verdicts/public-humaneval-smoke-partial.json"
+            ],
+            "pct": 76.67,
+            "lo": 59.07,
+            "hi": 88.21,
+            "gapPoints": 65.27,
+            "side": "above",
+            "decided": "above"
+          },
+          {
+            "system": "GPT-3 (2021)",
+            "score": 0,
+            "unit": "percent",
+            "metric": "pass@1",
+            "class": "origin",
+            "source": "https://arxiv.org/abs/2107.03374 (Codex paper abstract)",
+            "readAt": "2026-09-18 09:10 EDT",
+            "keptIn": [
+              "bench/verdicts/public-humaneval-board7-partial.json",
+              "bench/verdicts/public-humaneval-partial.json",
+              "bench/verdicts/public-humaneval-smoke-partial.json"
+            ],
+            "pct": 76.67,
+            "lo": 59.07,
+            "hi": 88.21,
+            "gapPoints": 76.67,
+            "side": "above",
+            "decided": "above"
+          }
+        ],
+        "alsoOnDisk": [
+          {
+            "file": "bench/verdicts/public-humaneval-partial.json",
+            "at": "2026-09-23T20:51:27.008Z",
+            "status": "PARTIAL",
+            "reasons": [
+              "the file is named -partial",
+              "isTheBar false",
+              "a sample of 6 of 161"
+            ],
+            "organism": "5/6",
+            "provenanceRecorded": true
+          },
+          {
+            "file": "bench/verdicts/public-humaneval-board7-partial.json",
+            "at": "2026-09-18T15:09:00.784Z",
+            "status": "PARTIAL",
+            "reasons": [
+              "the file is named -partial",
+              "isTheBar false",
+              "complete false",
+              "a sample of 31 of 40"
+            ],
+            "organism": "14/31",
+            "provenanceRecorded": false
+          }
+        ]
+      },
+      {
+        "key": "arc",
+        "name": "ARC-AGI-1 evaluation",
+        "benchmark": "arc-agi-1",
+        "status": "whole",
+        "partialBecause": [],
+        "notTheBarBecause": [],
+        "primary": {
+          "file": "bench/verdicts/grid-evaluation.json",
+          "at": "2026-09-23T22:30:54.236Z",
+          "command": "node bench/grid.mjs --split evaluation --budget-ms 3000 --workers 2",
+          "isTheBar": true,
+          "model": null,
+          "n": 400,
+          "of": 400
+        },
+        "arms": {
+          "organism": {
+            "absent": false,
+            "n": 400,
+            "correct": 71,
+            "accuracy": 0.1775,
+            "interval": {
+              "lo": 0.143175,
+              "hi": 0.21796,
+              "width": 0.074785
+            },
+            "intervalFrom": "the ladder (Wilson 95)",
+            "meanMs": 2463.52
+          },
+          "alone": {
+            "absent": true,
+            "reason": "this verdict has no model arm (its model is null)"
+          },
+          "null": {
+            "absent": true,
+            "reason": "this verdict has no model arm (its model is null)"
+          }
+        },
+        "classes": {
+          "model": {
+            "records": 0,
+            "of": 400,
+            "share": 0,
+            "correct": 0,
+            "inferred": 0,
+            "msN": 0,
+            "msSum": 0,
+            "meanMs": null,
+            "meanMsCorrect": null,
+            "unit": "s",
+            "latency": null,
+            "latencyCorrect": null
+          },
+          "native": {
+            "records": 400,
+            "of": 400,
+            "share": 1,
+            "correct": 71,
+            "inferred": 400,
+            "msN": 400,
+            "msSum": 985409.22,
+            "meanMs": 2463.523,
+            "meanMsCorrect": 136.856,
+            "unit": "us",
+            "latency": 2463523.05,
+            "latencyCorrect": 136856.056338
+          },
+          "direct": {
+            "records": 0,
+            "of": 400,
+            "share": 0,
+            "correct": 0,
+            "inferred": 0,
+            "msN": 0,
+            "msSum": 0,
+            "meanMs": null,
+            "meanMsCorrect": null,
+            "unit": "ns",
+            "latency": null,
+            "latencyCorrect": null
+          },
+          "unrecorded": {
+            "records": 0,
+            "of": 400,
+            "share": 0,
+            "correct": 0,
+            "inferred": 0,
+            "msN": 0,
+            "msSum": 0,
+            "meanMs": null,
+            "meanMsCorrect": null,
+            "unit": "ms",
+            "latency": null,
+            "latencyCorrect": null
+          },
+          "other": {
+            "records": 0,
+            "of": 400,
+            "share": 0,
+            "correct": 0,
+            "inferred": 0,
+            "msN": 0,
+            "msSum": 0,
+            "meanMs": null,
+            "meanMsCorrect": null,
+            "unit": "ms",
+            "latency": null,
+            "latencyCorrect": null
+          }
+        },
+        "recordsRead": 400,
+        "bars": {
+          "alone": {
+            "verdict": "absent",
+            "reason": "this verdict has no model arm (its model is null)"
+          },
+          "null": {
+            "verdict": "absent",
+            "reason": "this verdict has no model arm (its model is null)"
+          },
+          "row405": null,
+          "frontier": {
+            "system": "Gemini 3.1 Pro (Preview)",
+            "score": 98,
+            "metric": null,
+            "class": "frontier reasoning",
+            "source": "https://arcprize.org/leaderboard",
+            "pct": 17.75,
+            "lo": 14.32,
+            "hi": 21.8,
+            "gapPoints": -80.25,
+            "side": "below",
+            "decided": "below"
+          },
+          "orchestrator": {
+            "system": "Claude Fable 5.1 (Max)",
+            "score": 97.5,
+            "metric": null,
+            "class": "frontier reasoning",
+            "source": "https://arcprize.org/leaderboard",
+            "pct": 17.75,
+            "lo": 14.32,
+            "hi": 21.8,
+            "gapPoints": -79.75,
+            "side": "below",
+            "decided": "below"
+          },
+          "claimable": true
+        },
+        "orchestrator": {
+          "benchmark": "arc-agi-1",
+          "system": "Claude Fable 5.1 (Max)",
+          "score": 97.5,
+          "unit": "percent",
+          "costPerTask": 1.4,
+          "source": "https://arcprize.org/leaderboard",
+          "readAt": "2026-09-18 08:49 EDT",
+          "class": "frontier reasoning"
+        },
+        "published": [
+          {
+            "system": "Gemini 3.1 Pro (Preview)",
+            "score": 98,
+            "unit": "percent",
+            "metric": null,
+            "class": "frontier reasoning",
+            "source": "https://arcprize.org/leaderboard",
+            "readAt": "2026-09-18 08:49 EDT",
+            "keptIn": [
+              "bench/verdicts/public-arc.json"
+            ],
+            "pct": 17.75,
+            "lo": 14.32,
+            "hi": 21.8,
+            "gapPoints": -80.25,
+            "side": "below",
+            "decided": "below"
+          },
+          {
+            "system": "Human Panel",
+            "score": 98,
+            "unit": "percent",
+            "metric": null,
+            "class": "human",
+            "source": "https://arcprize.org/leaderboard",
+            "readAt": "2026-09-18 08:49 EDT",
+            "keptIn": [
+              "bench/verdicts/public-arc.json"
+            ],
+            "pct": 17.75,
+            "lo": 14.32,
+            "hi": 21.8,
+            "gapPoints": -80.25,
+            "side": "below",
+            "decided": "below"
+          },
+          {
+            "system": "Claude Fable 5.1 (Max)",
+            "score": 97.5,
+            "unit": "percent",
+            "metric": null,
+            "class": "frontier reasoning",
+            "source": "https://arcprize.org/leaderboard",
+            "readAt": "2026-09-18 08:49 EDT",
+            "keptIn": [
+              "bench/verdicts/public-arc.json"
+            ],
+            "pct": 17.75,
+            "lo": 14.32,
+            "hi": 21.8,
+            "gapPoints": -79.75,
+            "side": "below",
+            "decided": "below"
+          },
+          {
+            "system": "Claude Opus 5 (High)",
+            "score": 97.5,
+            "unit": "percent",
+            "metric": null,
+            "class": "frontier reasoning",
+            "source": "https://arcprize.org/leaderboard",
+            "readAt": "2026-09-18 08:49 EDT",
+            "keptIn": [
+              "bench/verdicts/public-arc.json"
+            ],
+            "pct": 17.75,
+            "lo": 14.32,
+            "hi": 21.8,
+            "gapPoints": -79.75,
+            "side": "below",
+            "decided": "below"
+          },
+          {
+            "system": "GPT-6 Astra (Max)",
+            "score": 97.5,
+            "unit": "percent",
+            "metric": null,
+            "class": "frontier reasoning",
+            "source": "https://arcprize.org/leaderboard",
+            "readAt": "2026-09-18 08:49 EDT",
+            "keptIn": [
+              "bench/verdicts/public-arc.json"
+            ],
+            "pct": 17.75,
+            "lo": 14.32,
+            "hi": 21.8,
+            "gapPoints": -79.75,
+            "side": "below",
+            "decided": "below"
+          },
+          {
+            "system": "Icecuber (Kaggle, program search over a hand written DSL, no LLM)",
+            "score": 17,
+            "unit": "percent",
+            "metric": null,
+            "class": "program search, no model",
+            "source": "https://arcprize.org/leaderboard",
+            "readAt": "2026-09-18 08:49 EDT",
+            "keptIn": [
+              "bench/verdicts/grid-evaluation.json",
+              "bench/verdicts/public-arc.json"
+            ],
+            "pct": 17.75,
+            "lo": 14.32,
+            "hi": 21.8,
+            "gapPoints": 0.75,
+            "side": "above",
+            "decided": null
+          },
+          {
+            "system": "GPT-5.2 (no reasoning)",
+            "score": 12.3,
+            "unit": "percent",
+            "metric": null,
+            "class": "frontier no reasoning",
+            "source": "https://arcprize.org/leaderboard",
+            "readAt": "2026-09-18 08:49 EDT",
+            "keptIn": [
+              "bench/verdicts/public-arc.json"
+            ],
+            "pct": 17.75,
+            "lo": 14.32,
+            "hi": 21.8,
+            "gapPoints": 5.45,
+            "side": "above",
+            "decided": "above"
+          },
+          {
+            "system": "DeepSeek V4 Flash 0731 (None)",
+            "score": 11.8,
+            "unit": "percent",
+            "metric": null,
+            "class": "frontier no reasoning",
+            "source": "https://arcprize.org/leaderboard",
+            "readAt": "2026-09-18 08:49 EDT",
+            "keptIn": [
+              "bench/verdicts/public-arc.json"
+            ],
+            "pct": 17.75,
+            "lo": 14.32,
+            "hi": 21.8,
+            "gapPoints": 5.95,
+            "side": "above",
+            "decided": "above"
+          }
+        ],
+        "alsoOnDisk": [
+          {
+            "file": "bench/verdicts/public-arc.json",
+            "at": "2026-09-18T14:35:37.968Z",
+            "status": "whole",
+            "reasons": [],
+            "organism": "1/400",
+            "provenanceRecorded": true
+          }
+        ]
+      }
+    ],
+    "totals": {
+      "sets": 3,
+      "whole": 1,
+      "partial": 2,
+      "correct": 121,
+      "n": 460,
+      "accuracy": 0.263043,
+      "records": 460,
+      "classes": {
+        "model": {
+          "records": 5,
+          "correct": 1,
+          "msN": 5,
+          "msSum": 609674.27,
+          "share": 0.01087,
+          "meanMs": 121934.854,
+          "unit": "s",
+          "latency": 121.934854
+        },
+        "native": {
+          "records": 400,
+          "correct": 71,
+          "msN": 400,
+          "msSum": 985409.22,
+          "share": 0.869565,
+          "meanMs": 2463.523,
+          "unit": "us",
+          "latency": 2463523.05
+        },
+        "direct": {
+          "records": 0,
+          "correct": 0,
+          "msN": 0,
+          "msSum": 0,
+          "share": 0,
+          "meanMs": null,
+          "unit": "ns",
+          "latency": null
+        },
+        "unrecorded": {
+          "records": 0,
+          "correct": 0,
+          "msN": 0,
+          "msSum": 0,
+          "share": 0,
+          "meanMs": null,
+          "unit": "ms",
+          "latency": null
+        },
+        "other": {
+          "records": 55,
+          "correct": 49,
+          "msN": 55,
+          "msSum": 1064340.92,
+          "share": 0.119565,
+          "meanMs": 19351.653,
+          "unit": "ms",
+          "latency": 19351.653091
+        }
+      },
+      "how": "a sum over each set's primary verdict, whole and partial alike, so it mixes samples with whole sets and is a tally, not a benchmark score"
+    },
+    "direct": {
+      "recordedByAnyPath": false,
+      "provenance": [
+        "exact",
+        "memory",
+        "model"
+      ],
+      "note": "act/prompt.mjs PROVENANCE is exact, memory, model: no answer path records direct, so its share is 0 and its latency is not measured"
+    },
+    "substrate": {
+      "measured": null,
+      "browser": {
+        "file": "docs/LOG.md",
+        "line": 14,
+        "when": "2026-09-16 22:46",
+        "usPerCellRun": 0.09,
+        "usPerHop": 0.05,
+        "nsPerCellRun": 90,
+        "nsPerHop": 50,
+        "kind": "a log line, not a verdict file"
+      },
+      "node": {
+        "file": "bench/verdicts/speed.json",
+        "at": "2026-09-17T12:20:33.710Z",
+        "organism": "organism/gen-0",
+        "cells": 40000,
+        "usPerRun": {
+          "baseline": 55.463,
+          "single": 11.723,
+          "best": 2.158
+        },
+        "nsPerCellRunBest": 2158
+      }
+    },
+    "instances": {
+      "source": "bench/verdicts/cloud-partial.json",
+      "kind": "verdict",
+      "alive": 2,
+      "at": "2026-09-24T02:33:42.645Z",
+      "isTheBar": false,
+      "partial": true,
+      "mode": "native",
+      "restartCount": 14
+    },
+    "authored": {
+      "source": "bench/verdicts/authorship.json",
+      "at": "2026-09-24T02:37:18.898Z",
+      "command": "node tools/authorship.mjs",
+      "isTheBar": true,
+      "numerator": 0,
+      "denominator": 93,
+      "share": 0
+    },
+    "bytesPerPoint": {
+      "bar": {
+        "source": "bench/verdicts/compress.json ruler.v2Header",
+        "at": "2026-09-24T02:33:01.810Z",
+        "isTheBar": true,
+        "bytesPerScorePoint": 701862.933,
+        "score": 30,
+        "of": 30,
+        "bytes": 21055888
+      },
+      "last": {
+        "at": "2026-09-24T03:07:56.719Z",
+        "where": "bench/verdicts/compress-rerun.json ruler.v2Header",
+        "score": 30,
+        "of": 30,
+        "bytes": 8250656,
+        "bytesPerScorePoint": 275021.867,
+        "isTheBar": false
+      },
+      "records": 3
+    },
+    "improvement": {
+      "source": "bench/verdicts/daemon.json phaseA.perWallSecond",
+      "kind": "daemon verdict",
+      "at": "2026-09-24T02:51:04.223Z",
+      "isTheBar": true,
+      "fromK": 0,
+      "toK": 57,
+      "seconds": 359.629,
+      "ticks": 57000,
+      "exact": 0,
+      "carried": 0.002777,
+      "exactDelta": 0,
+      "carriedDelta": 0.998621,
+      "ledgerBytes": 165481,
+      "ledgerBytesPer1000Ticks": 2903,
+      "percentPerSecond": 0.2777
+    },
+    "hisRate": {
+      "words": "5 percent every second",
+      "percentPerSecond": 5
+    },
+    "publishedFile": "research/published.json"
+  }
+}

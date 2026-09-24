@@ -1,0 +1,147 @@
+{
+  "at": "2026-09-24T02:08:26.136Z",
+  "command": "node bench/recall.mjs --n 40 --provider ollama --model qwen3:1.7b",
+  "node": "v24.15.0",
+  "isTheBar": false,
+  "barMet": false,
+  "statement": "On 40 held-out Simple English Wikipedia questions (the knowledge bar's own draw, first sentences hidden from the ingest) and 200 algebra and sequence questions, the ask path of act/prompt.mjs was run on one bare brain with the knowledge tier on and off, interleaved per question, the model cell on provider ollama. With the tier on, 36 of 40 wiki questions (90.0%) were answered natively, without reaching a model cell, against 0 (0.0%) with it off; wiki accuracy was 70.0% on and 45.0% off, the native answers took a mean 9342.8 microseconds, and the model cell was called 4 times on and 40 off. On the suite the tier changed nothing it could: accuracy 100.0% on and 100.0% off, 200 and 200 native, 0 and 0 model calls. The confidence floor was 0.2, chosen on the 588 held-out records outside this draw. 0 hidden sentences were found in the store. The bar is not met.",
+  "bar": "the native share on the wiki questions rises with the tier on, and the suite accuracy does not fall",
+  "checks": {
+    "drewWiki": false,
+    "drewSuite": true,
+    "wikiNativeRises": true,
+    "suiteAccuracyHolds": true,
+    "noLeaks": true
+  },
+  "config": {
+    "n": 40,
+    "perSuite": 100,
+    "store": "bench\\fixtures\\wiki\\store",
+    "floor": 0.2,
+    "floorShipped": 0.2,
+    "pool": 40,
+    "provider": "ollama",
+    "model": "qwen3:1.7b",
+    "drawSeed": "knowledge-draw-2026-09-23",
+    "route": "direct",
+    "interleaved": "even questions tier on first, odd questions tier off first"
+  },
+  "definitions": {
+    "native": "the model cell was never reached: provenance.llm.provider is null (an exact answer, or the knowledge tier at or above its floor)",
+    "accuracyWiki": "the hidden first sentence head noun (plural folded) among the words of the answer line read by bench/answer.mjs extractAnswer; an answer beginning \"nothing in memory matches\" is an abstention and wrong",
+    "accuracySuite": "bench/answer.mjs gradeAnswer, exact rational comparison",
+    "nativeMeanUs": "mean wall time of the whole ask() call, in microseconds, over the native answers",
+    "modelCalls": "answers whose provenance.llm.provider is not null: askModel was called"
+  },
+  "wiki": {
+    "on": {
+      "n": 40,
+      "native": 36,
+      "nativeShare": 0.9,
+      "correct": 28,
+      "accuracy": 0.7,
+      "nativeCorrect": 27,
+      "nativeMeanUs": 9342.8,
+      "nativeP50Us": 7475.1,
+      "nativeP95Us": 17670,
+      "modelCalls": 4,
+      "abstained": 0,
+      "byProvenance": {
+        "memory": 36,
+        "model": 4
+      },
+      "byRoute": {
+        "knowledge": 36,
+        "direct": 4
+      }
+    },
+    "off": {
+      "n": 40,
+      "native": 0,
+      "nativeShare": 0,
+      "correct": 18,
+      "accuracy": 0.45,
+      "nativeCorrect": 0,
+      "nativeMeanUs": null,
+      "nativeP50Us": null,
+      "nativeP95Us": null,
+      "modelCalls": 40,
+      "abstained": 0,
+      "byProvenance": {
+        "model": 40
+      },
+      "byRoute": {
+        "direct": 40
+      }
+    }
+  },
+  "suite": {
+    "on": {
+      "n": 200,
+      "native": 200,
+      "nativeShare": 1,
+      "correct": 200,
+      "accuracy": 1,
+      "nativeCorrect": 200,
+      "nativeMeanUs": 1021.6,
+      "nativeP50Us": 1025.8,
+      "nativeP95Us": 1326.3,
+      "modelCalls": 0,
+      "abstained": 0,
+      "byProvenance": {
+        "exact": 200
+      },
+      "byRoute": {
+        "direct": 200
+      }
+    },
+    "off": {
+      "n": 200,
+      "native": 200,
+      "nativeShare": 1,
+      "correct": 200,
+      "accuracy": 1,
+      "nativeCorrect": 200,
+      "nativeMeanUs": 1029.5,
+      "nativeP50Us": 1012.6,
+      "nativeP95Us": 1385.5,
+      "modelCalls": 0,
+      "abstained": 0,
+      "byProvenance": {
+        "exact": 200
+      },
+      "byRoute": {
+        "direct": 200
+      }
+    }
+  },
+  "knowledgeTier": {
+    "opens": 0,
+    "openFailures": 0,
+    "asked": 40,
+    "answered": 36,
+    "below": 4
+  },
+  "warmUpUs": 2727707.4,
+  "leaks": 0,
+  "runSeconds": 59.9,
+  "peakRssMb": 272.6,
+  "heldoutPool": 628,
+  "printed": [
+    "recall bar: node bench/recall.mjs --n 40 --provider ollama --model qwen3:1.7b",
+    "store bench\\fixtures\\wiki\\store: a finished ingest",
+    "wiki: 40 of 628 held-out questions drawn by seed knowledge-draw-2026-09-23 (the knowledge bar's draw); suite: 200 (algebra 100, sequence 100) from bench/answer.mjs buildQuestions",
+    "floor 0.2 (KNOWLEDGE.floor as shipped), model cell provider ollama model qwen3:1.7b",
+    "warm-up (not counted): store opened 1 time(s), first definitional ask 2727707.4 us",
+    "leak check: 0 hidden sentences of the 40 drawn articles found in the store",
+    "wiki  tier on : native 36/40 (90.0%), accuracy 28/40 (70.0%), native correct 27/36, native mean 9342.8 us (p50 7475.1, p95 17670), model calls 4, abstained 0, provenance {\"memory\":36,\"model\":4}",
+    "wiki  tier off: native 0/40 (0.0%), accuracy 18/40 (45.0%), native correct 0/0, native mean n/a (none native), model calls 40, abstained 0, provenance {\"model\":40}",
+    "suite tier on : native 200/200 (100.0%), accuracy 200/200 (100.0%), native correct 200/200, native mean 1021.6 us (p50 1025.8, p95 1326.3), model calls 0, provenance {\"exact\":200}",
+    "suite tier off: native 200/200 (100.0%), accuracy 200/200 (100.0%), native correct 200/200, native mean 1029.5 us (p50 1012.6, p95 1385.5), model calls 0, provenance {\"exact\":200}",
+    "knowledge tier during the run: asked 40, answered at or above the floor 36, below 4, opens 0",
+    "wiki with the tier on: 36 answered by the tier (27 correct), 4 fell through to the model cell",
+    "run: 240 questions x 2 arms in 59.9 s; peak rss 272.6 MB",
+    "checks: drewWiki NO, drewSuite yes, wikiNativeRises yes, suiteAccuracyHolds yes, noLeaks yes",
+    "bar NOT MET (a narrow run: written as recall-partial.json)"
+  ]
+}

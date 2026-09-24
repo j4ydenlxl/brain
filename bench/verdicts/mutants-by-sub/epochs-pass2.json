@@ -1,0 +1,142 @@
+{
+  "at": "2026-09-18T02:37:02.134Z",
+  "node": "v24.15.0",
+  "conditions": {
+    "at": "2026-09-18T02:36:57.239Z",
+    "node": "v24.15.0",
+    "platform": "win32",
+    "cpus": 32,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900KF",
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "totalmemGB": 63.8,
+    "freememGB": 42.4,
+    "perMutantBudgetMs": 90000
+  },
+  "command": "node bench/mutants.mjs --sub epochs --only ey --timeout 90000 --budget 90000 --tag pass2",
+  "suites": {
+    "epochs": [
+      "test/epochs.test.mjs"
+    ]
+  },
+  "tally": {
+    "mutants": 4,
+    "executed": 4,
+    "killed": 4,
+    "survived": 0,
+    "notExecuted": 0,
+    "score": 1,
+    "wallMs": 4620
+  },
+  "bySubsystem": {
+    "epochs": {
+      "suite": [
+        "test/epochs.test.mjs"
+      ],
+      "generated": 4,
+      "executed": 4,
+      "killed": 4,
+      "survived": 0,
+      "notExecuted": 0,
+      "unmutatedMs": 948,
+      "unmutatedPass": 29,
+      "unmutatedFail": 1,
+      "timeoutCountsAsKill": true,
+      "wallMs": 4620
+    }
+  },
+  "mutants": [
+    {
+      "id": "ey01",
+      "sub": "epochs",
+      "file": "generations/epochs.mjs",
+      "why": "YEAR ARITHMETIC: the year is a 365 day calendar year, not the Julian year the file declares",
+      "executed": true,
+      "probeHits": 1,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/epochs.test.mjs :: the years clock is the Julian year, the population and the sentence it prints (mutants ey01, ey02, ey03, ey04)",
+        "error": "SECONDS_PER_YEAR is not a Julian year of 365.25 days"
+      },
+      "newFailures": 1,
+      "ms": 854,
+      "passed": 28,
+      "status": "killed",
+      "find": "export const SECONDS_PER_YEAR = 31_557_600;",
+      "replace": "export const SECONDS_PER_YEAR = (__MUTP(), 31_536_000);"
+    },
+    {
+      "id": "ey02",
+      "sub": "epochs",
+      "file": "generations/epochs.mjs",
+      "why": "YEAR ARITHMETIC: years per generation counts one organism, not the population that was run",
+      "executed": true,
+      "probeHits": 5,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/epochs.test.mjs :: the years clock is the Julian year, the population and the sentence it prints (mutants ey01, ey02, ey03, ey04)",
+        "error": "years per generation is not the manifest arithmetic"
+      },
+      "newFailures": 1,
+      "ms": 944,
+      "passed": 28,
+      "status": "killed",
+      "find": "      yearsPerGeneration: (this.ticks * this.popSize * this.secondsPerTick) / SECONDS_PER_YEAR,",
+      "replace": "      yearsPerGeneration: (__MUTP(), this.ticks * this.secondsPerTick) / SECONDS_PER_YEAR,"
+    },
+    {
+      "id": "ey03",
+      "sub": "epochs",
+      "file": "generations/epochs.mjs",
+      "why": "YEAR ARITHMETIC: the lineage clock counts one generation more than has been run",
+      "executed": true,
+      "probeHits": 17,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/epochs.test.mjs :: the years clock is the Julian year, the population and the sentence it prints (mutants ey01, ey02, ey03, ey04)",
+        "error": "the lineage clock does not count the generations run"
+      },
+      "newFailures": 1,
+      "ms": 942,
+      "passed": 28,
+      "status": "killed",
+      "find": "    const lineage = (this.generation * this.ticks * this.secondsPerTick) / SECONDS_PER_YEAR;",
+      "replace": "    const lineage = (__MUTP(), (this.generation + 1) * this.ticks * this.secondsPerTick) / SECONDS_PER_YEAR;"
+    },
+    {
+      "id": "ey04",
+      "sub": "epochs",
+      "file": "generations/epochs.mjs",
+      "why": "YEAR ARITHMETIC: the printed arithmetic states a different number than the years it reports",
+      "executed": true,
+      "probeHits": 17,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/epochs.test.mjs :: the years clock is the Julian year, the population and the sentence it prints (mutants ey01, ey02, ey03, ey04)",
+        "error": "the sentence states a different number than years"
+      },
+      "newFailures": 1,
+      "ms": 924,
+      "passed": 28,
+      "status": "killed",
+      "find": "        ' organism-seconds; / ' + SECONDS_PER_YEAR + ' s/year = ' + yrs.toExponential(6) + ' organism-years',",
+      "replace": "        ' organism-seconds; / ' + SECONDS_PER_YEAR + ' s/year = ' + (__MUTP(), yrs * 2).toExponential(6) + ' organism-years',"
+    }
+  ],
+  "verdict": "GREEN"
+}

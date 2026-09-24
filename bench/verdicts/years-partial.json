@@ -1,0 +1,1228 @@
+{
+ "name": "years",
+ "at": "2026-09-24T08:26:12.481Z",
+ "command": "node bench/years.mjs --budgets 3 --control-s 3",
+ "execArgv": [
+  "--max-old-space-size=4096"
+ ],
+ "node": "v24.15.0",
+ "isTheBar": false,
+ "barMet": false,
+ "bar": {
+  "rule": "the 300 s run prints score gained per million organism-years above zero on both planes with the plateau second named, and the projection carries its arithmetic",
+  "perPlane": [
+   {
+    "plane": "grid",
+    "ran": false,
+    "fresh": null,
+    "start": null,
+    "end": null,
+    "gained": null,
+    "organismYears": null,
+    "perMillionYears": null,
+    "firstPlateauS": null,
+    "projectionArithmetic": null,
+    "gainedAboveZero": false,
+    "plateauNamed": false,
+    "projectionCarriesArithmetic": false
+   },
+   {
+    "plane": "synthetic",
+    "ran": false,
+    "fresh": null,
+    "start": null,
+    "end": null,
+    "gained": null,
+    "organismYears": null,
+    "perMillionYears": null,
+    "firstPlateauS": null,
+    "projectionArithmetic": null,
+    "gainedAboveZero": false,
+    "plateauNamed": false,
+    "projectionCarriesArithmetic": false
+   }
+  ]
+ },
+ "statement": "A narrower run: the 300 s run was not made on both planes, so the bar was not graded.",
+ "declaration": {
+  "unit": "organism-year",
+  "declaration": "one organism-year is one generation of the whole population on a plane, so organism-years equal generations",
+  "measured": false,
+  "popSize": null,
+  "evaluationsPerGeneration": null,
+  "note": "carried elites re-scored at an arm start are evaluations, not years; velocity.mjs declaredYears (ticks x seconds per tick) is a different declaration and is not used here"
+ },
+ "plateauRule": {
+  "windowMs": 2000,
+  "floor": 0.1,
+  "unit": "searched score (mean tasks per draw minus length / 257) per wall second",
+  "firesOncePerArm": true,
+  "readsFresh": false
+ },
+ "development": {
+  "seeds": [
+   "years/dev",
+   "years/dev2",
+   "years/synthetic-dev"
+  ],
+  "chose": "windowDraws 8 over 4 (60 s runs: fresh 145 against 141 on years/dev, 140 against 131 on years/dev2); prefetch on",
+  "barSeedsSeenInDevelopment": false,
+  "note": "grid/velocity:heldout was printed by Boards 8 and 10 (not tuned on here); grid/velocity:years1 and :years2 had never been printed before this bench"
+ },
+ "machine": {
+  "platform": "win32",
+  "cpus": 32,
+  "totalMemMB": 65370,
+  "freeMemGBStart": 37.7,
+  "freeMemGBEnd": 37.6,
+  "shared": "seven builders share this machine tonight; every rate is a contended wall-clock rate; no Ollama call was made by this bench"
+ },
+ "peakRssMb": 133.9,
+ "wallMs": 16234.2047,
+ "runs": [
+  {
+   "label": "grid 3 s",
+   "plane": "grid",
+   "budgetS": 3,
+   "options": {
+    "popSize": 64,
+    "lmax0": 64,
+    "lmaxStep": 32,
+    "lmaxSlack": 2,
+    "directed": 0.75,
+    "mutationRate": 1.5,
+    "crossoverRate": 0.15,
+    "bins": 6,
+    "windowMs": 2000,
+    "floor": 0.1,
+    "rowEveryMs": 100,
+    "windowDraws": 8,
+    "growth": true,
+    "prefetch": true,
+    "seed": "grid/velocity:years"
+   },
+   "source": {
+    "kind": "grid",
+    "seed": "grid/velocity",
+    "tasksPerDraw": 160,
+    "components": 6175
+   },
+   "wallMs": 3000.081599995494,
+   "overshootMs": 0.08159999549388885,
+   "setupMs": 1433.875799998641,
+   "stopReason": "wall",
+   "generations": 50735,
+   "evals": 3247347,
+   "carried": 307,
+   "years": {
+    "declaration": "one organism-year is one generation of the whole population on a plane, so organism-years equal generations",
+    "measured": false,
+    "popSize": 64,
+    "evaluationsPerGeneration": 64,
+    "generations": 50735,
+    "organismYears": 50735,
+    "evals": 3247347,
+    "carried": 307,
+    "wallMs": 3000.081599995494,
+    "generationsPerSecond": 16911.20668187032,
+    "evalsPerSecond": 1082419.558189643,
+    "arithmetic": "50,735 generations x 1 organism-year per generation (declared: one generation = the whole population of 64 children = 64 evaluations; the 307 carried elites re-scored at arm starts are evaluations, not years) = 50,735 organism-years (3,247,347 evaluations)"
+   },
+   "projection": {
+    "projection": true,
+    "targetYears": 1000000000,
+    "generations": 50735,
+    "wallMs": 3000.081599995494,
+    "generationsPerSecond": 16911.20668187032,
+    "seconds": 59132.385926786126,
+    "hours": 16.42566275744059,
+    "days": 0.684402614893358,
+    "arithmetic": "projection: 1,000,000,000 organism-years / 16,911.2 generations per wall second (measured: 50,735 generations in 3.000 s) = 59,132 s (16.4 h), a projection, not a measurement"
+   },
+   "fresh": [
+    {
+     "name": "grid/velocity:heldout",
+     "tasks": 160,
+     "start": 49,
+     "end": 123,
+     "gained": 74,
+     "perMillionYears": 1458.5591800532177,
+     "seenVerbatim": 0
+    },
+    {
+     "name": "grid/velocity:years1",
+     "tasks": 160,
+     "start": 53,
+     "end": 119,
+     "gained": 66,
+     "perMillionYears": 1300.8771065339508,
+     "seenVerbatim": 0
+    },
+    {
+     "name": "grid/velocity:years2",
+     "tasks": 160,
+     "start": 62,
+     "end": 111,
+     "gained": 49,
+     "perMillionYears": 965.802700305509,
+     "seenVerbatim": 0
+    }
+   ],
+   "searched": {
+    "start": 74.94163424124514,
+    "end": 145.25097276264592
+   },
+   "start": {
+    "tMs": 0.7422000020742416,
+    "gen": 1,
+    "fresh": [
+     49,
+     53,
+     62
+    ]
+   },
+   "end": {
+    "tMs": 3000.081599995494,
+    "gen": 50735,
+    "fresh": [
+     123,
+     119,
+     111
+    ],
+    "draws": [
+     0,
+     1
+    ],
+    "lmax": 64,
+    "len": 64
+   },
+   "firstPlateauS": 2.101326600000262,
+   "plateaus": [
+    {
+     "t": 2.101,
+     "gen": 40229,
+     "rate": 0,
+     "arm": 0,
+     "draws": 1,
+     "lmax": 64,
+     "len": 50,
+     "searched": 157.8054474708171,
+     "fresh": [
+      109,
+      108,
+      101
+     ],
+     "action": "ingest",
+     "text": "plateau: ingest draw 1 (prefetched), carried 307 elites",
+     "carried": 307,
+     "growthMs": 9.360700011253357
+    }
+   ],
+   "growth": {
+    "widen": 0,
+    "ingest": 1,
+    "spawn": 0,
+    "retired": 0,
+    "prefetched": 1,
+    "builtInLoop": 0,
+    "buildMsInLoop": 0
+   },
+   "arms": 2,
+   "finalDraws": [
+    0,
+    1
+   ],
+   "finalLmax": 64,
+   "best": {
+    "len": 64,
+    "searched": 145.25097276264592,
+    "genome": [
+     5797,
+     1,
+     883,
+     175,
+     16,
+     7,
+     2709,
+     3972,
+     3964,
+     285,
+     2636,
+     99,
+     4711,
+     2499,
+     8,
+     343,
+     3162,
+     5019,
+     5852,
+     307,
+     5775,
+     733,
+     5448,
+     1377,
+     5498,
+     251,
+     2533,
+     5732,
+     2614,
+     1460,
+     4850,
+     1609,
+     614,
+     17,
+     4354,
+     5206,
+     174,
+     290,
+     2997,
+     2947,
+     5642,
+     1603,
+     5740,
+     3962,
+     5361,
+     242,
+     5593,
+     4759,
+     683,
+     268,
+     27,
+     73,
+     1917,
+     2943,
+     454,
+     738,
+     14,
+     322,
+     4033,
+     5548,
+     3203,
+     1315,
+     778,
+     3918
+    ]
+   },
+   "rows": [
+    {
+     "t": 0.001,
+     "gen": 1,
+     "evals": 64,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 15,
+     "searched": 74.9416,
+     "fresh": [
+      49,
+      53,
+      62
+     ]
+    },
+    {
+     "t": 0.301,
+     "gen": 6129,
+     "evals": 392256,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 50,
+     "searched": 157.8054,
+     "fresh": [
+      109,
+      108,
+      101
+     ]
+    },
+    {
+     "t": 0.601,
+     "gen": 11921,
+     "evals": 762944,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 50,
+     "searched": 157.8054,
+     "fresh": [
+      109,
+      108,
+      101
+     ]
+    },
+    {
+     "t": 0.901,
+     "gen": 17746,
+     "evals": 1135744,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 50,
+     "searched": 157.8054,
+     "fresh": [
+      109,
+      108,
+      101
+     ]
+    },
+    {
+     "t": 1.201,
+     "gen": 23346,
+     "evals": 1494144,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 50,
+     "searched": 157.8054,
+     "fresh": [
+      109,
+      108,
+      101
+     ]
+    },
+    {
+     "t": 1.501,
+     "gen": 29042,
+     "evals": 1858688,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 50,
+     "searched": 157.8054,
+     "fresh": [
+      109,
+      108,
+      101
+     ]
+    },
+    {
+     "t": 1.801,
+     "gen": 34712,
+     "evals": 2221568,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 50,
+     "searched": 157.8054,
+     "fresh": [
+      109,
+      108,
+      101
+     ]
+    },
+    {
+     "t": 2.101,
+     "gen": 40229,
+     "evals": 2574656,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 50,
+     "searched": 157.8054,
+     "fresh": [
+      109,
+      108,
+      101
+     ]
+    },
+    {
+     "t": 2.402,
+     "gen": 43760,
+     "evals": 2800947,
+     "arm": 1,
+     "draws": 2,
+     "firstDraw": 0,
+     "lastDraw": 1,
+     "lmax": 64,
+     "len": 64,
+     "searched": 144.751,
+     "fresh": [
+      123,
+      121,
+      112
+     ]
+    },
+    {
+     "t": 2.702,
+     "gen": 47242,
+     "evals": 3023795,
+     "arm": 1,
+     "draws": 2,
+     "firstDraw": 0,
+     "lastDraw": 1,
+     "lmax": 64,
+     "len": 64,
+     "searched": 144.751,
+     "fresh": [
+      123,
+      121,
+      112
+     ]
+    },
+    {
+     "t": 3,
+     "gen": 50735,
+     "evals": 3920038,
+     "arm": 1,
+     "draws": 2,
+     "firstDraw": 0,
+     "lastDraw": 1,
+     "lmax": 64,
+     "len": 64,
+     "searched": 145.251,
+     "fresh": [
+      123,
+      119,
+      111
+     ]
+    }
+   ]
+  },
+  {
+   "label": "synthetic 3 s",
+   "plane": "synthetic",
+   "budgetS": 3,
+   "options": {
+    "popSize": 64,
+    "lmax0": 64,
+    "lmaxStep": 32,
+    "lmaxSlack": 2,
+    "directed": 0.75,
+    "mutationRate": 1.5,
+    "crossoverRate": 0.15,
+    "bins": 6,
+    "windowMs": 2000,
+    "floor": 0.1,
+    "rowEveryMs": 100,
+    "windowDraws": 8,
+    "growth": true,
+    "prefetch": false,
+    "seed": "years/synthetic:years"
+   },
+   "source": {
+    "kind": "synthetic",
+    "seed": "years/synthetic",
+    "tasksPerDraw": 256,
+    "components": 512
+   },
+   "wallMs": 3000.048800006509,
+   "overshootMs": 0.04880000650882721,
+   "setupMs": 0.44609999656677246,
+   "stopReason": "wall",
+   "generations": 51078,
+   "evals": 3269300,
+   "carried": 308,
+   "years": {
+    "declaration": "one organism-year is one generation of the whole population on a plane, so organism-years equal generations",
+    "measured": false,
+    "popSize": 64,
+    "evaluationsPerGeneration": 64,
+    "generations": 51078,
+    "organismYears": 51078,
+    "evals": 3269300,
+    "carried": 308,
+    "wallMs": 3000.048800006509,
+    "generationsPerSecond": 17025.72304820148,
+    "evalsPerSecond": 1089748.9400815438,
+    "arithmetic": "51,078 generations x 1 organism-year per generation (declared: one generation = the whole population of 64 children = 64 evaluations; the 308 carried elites re-scored at arm starts are evaluations, not years) = 51,078 organism-years (3,269,300 evaluations)"
+   },
+   "projection": {
+    "projection": true,
+    "targetYears": 1000000000,
+    "generations": 51078,
+    "wallMs": 3000.048800006509,
+    "generationsPerSecond": 17025.72304820148,
+    "seconds": 58734.656799532255,
+    "hours": 16.315182444314516,
+    "days": 0.6797992685131048,
+    "arithmetic": "projection: 1,000,000,000 organism-years / 17,025.7 generations per wall second (measured: 51,078 generations in 3.000 s) = 58,735 s (16.3 h), a projection, not a measurement"
+   },
+   "fresh": [
+    {
+     "name": "years/synthetic:fresh0",
+     "tasks": 256,
+     "start": 89,
+     "end": 256,
+     "gained": 167,
+     "perMillionYears": 3269.509377814323,
+     "seenVerbatim": null
+    },
+    {
+     "name": "years/synthetic:fresh1",
+     "tasks": 256,
+     "start": 100,
+     "end": 256,
+     "gained": 156,
+     "perMillionYears": 3054.1524726888288,
+     "seenVerbatim": null
+    }
+   ],
+   "searched": {
+    "start": 99.93774319066148,
+    "end": 255.96887159533074
+   },
+   "start": {
+    "tMs": 0.09130001068115234,
+    "gen": 1,
+    "fresh": [
+     89,
+     100
+    ]
+   },
+   "end": {
+    "tMs": 3000.048800006509,
+    "gen": 51078,
+    "fresh": [
+     256,
+     256
+    ],
+    "draws": [
+     0,
+     1
+    ],
+    "lmax": 64,
+    "len": 8
+   },
+   "firstPlateauS": 2.100877900004387,
+   "plateaus": [
+    {
+     "t": 2.101,
+     "gen": 40826,
+     "rate": 0,
+     "arm": 0,
+     "draws": 1,
+     "lmax": 64,
+     "len": 8,
+     "searched": 255.96887159533074,
+     "fresh": [
+      256,
+      256
+     ],
+     "action": "ingest",
+     "text": "plateau: ingest draw 1 (built in the loop, 0 ms), carried 308 elites",
+     "carried": 308,
+     "growthMs": 1.5884000062942505
+    }
+   ],
+   "growth": {
+    "widen": 0,
+    "ingest": 1,
+    "spawn": 0,
+    "retired": 0,
+    "prefetched": 0,
+    "builtInLoop": 1,
+    "buildMsInLoop": 0.4153
+   },
+   "arms": 2,
+   "finalDraws": [
+    0,
+    1
+   ],
+   "finalLmax": 64,
+   "best": {
+    "len": 8,
+    "searched": 255.96887159533074,
+    "genome": [
+     20,
+     295,
+     42,
+     508,
+     454,
+     180,
+     297,
+     378
+    ]
+   },
+   "rows": [
+    {
+     "t": 0,
+     "gen": 1,
+     "evals": 64,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 16,
+     "searched": 99.9377,
+     "fresh": [
+      89,
+      100
+     ]
+    },
+    {
+     "t": 0.3,
+     "gen": 6864,
+     "evals": 439296,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 8,
+     "searched": 255.9689,
+     "fresh": [
+      256,
+      256
+     ]
+    },
+    {
+     "t": 0.6,
+     "gen": 12971,
+     "evals": 830144,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 8,
+     "searched": 255.9689,
+     "fresh": [
+      256,
+      256
+     ]
+    },
+    {
+     "t": 0.9,
+     "gen": 18853,
+     "evals": 1206592,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 8,
+     "searched": 255.9689,
+     "fresh": [
+      256,
+      256
+     ]
+    },
+    {
+     "t": 1.201,
+     "gen": 24638,
+     "evals": 1576832,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 8,
+     "searched": 255.9689,
+     "fresh": [
+      256,
+      256
+     ]
+    },
+    {
+     "t": 1.501,
+     "gen": 30267,
+     "evals": 1937088,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 8,
+     "searched": 255.9689,
+     "fresh": [
+      256,
+      256
+     ]
+    },
+    {
+     "t": 1.801,
+     "gen": 35709,
+     "evals": 2285376,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 8,
+     "searched": 255.9689,
+     "fresh": [
+      256,
+      256
+     ]
+    },
+    {
+     "t": 2.101,
+     "gen": 40826,
+     "evals": 2612864,
+     "arm": 0,
+     "draws": 1,
+     "firstDraw": 0,
+     "lastDraw": 0,
+     "lmax": 64,
+     "len": 8,
+     "searched": 255.9689,
+     "fresh": [
+      256,
+      256
+     ]
+    },
+    {
+     "t": 2.401,
+     "gen": 44295,
+     "evals": 2835188,
+     "arm": 1,
+     "draws": 2,
+     "firstDraw": 0,
+     "lastDraw": 1,
+     "lmax": 64,
+     "len": 8,
+     "searched": 255.9689,
+     "fresh": [
+      256,
+      256
+     ]
+    },
+    {
+     "t": 2.701,
+     "gen": 47663,
+     "evals": 3050740,
+     "arm": 1,
+     "draws": 2,
+     "firstDraw": 0,
+     "lastDraw": 1,
+     "lmax": 64,
+     "len": 8,
+     "searched": 255.9689,
+     "fresh": [
+      256,
+      256
+     ]
+    },
+    {
+     "t": 3,
+     "gen": 51078,
+     "evals": 3925736,
+     "arm": 1,
+     "draws": 2,
+     "firstDraw": 0,
+     "lastDraw": 1,
+     "lmax": 64,
+     "len": 8,
+     "searched": 255.9689,
+     "fresh": [
+      256,
+      256
+     ]
+    }
+   ]
+  }
+ ],
+ "control": {
+  "label": "control grid 3 s, growth off",
+  "plane": "grid",
+  "budgetS": 3,
+  "options": {
+   "popSize": 64,
+   "lmax0": 64,
+   "lmaxStep": 32,
+   "lmaxSlack": 2,
+   "directed": 0.75,
+   "mutationRate": 1.5,
+   "crossoverRate": 0.15,
+   "bins": 6,
+   "windowMs": 2000,
+   "floor": 0.1,
+   "rowEveryMs": 100,
+   "windowDraws": 8,
+   "growth": false,
+   "prefetch": false,
+   "seed": "grid/velocity:years"
+  },
+  "source": {
+   "kind": "grid",
+   "seed": "grid/velocity",
+   "tasksPerDraw": 160,
+   "components": 6175
+  },
+  "wallMs": 3000.0488999933004,
+  "overshootMs": 0.04889999330043793,
+  "setupMs": 1430.4840999990702,
+  "stopReason": "wall",
+  "generations": 56965,
+  "evals": 3645760,
+  "carried": 0,
+  "years": {
+   "declaration": "one organism-year is one generation of the whole population on a plane, so organism-years equal generations",
+   "measured": false,
+   "popSize": 64,
+   "evaluationsPerGeneration": 64,
+   "generations": 56965,
+   "organismYears": 56965,
+   "evals": 3645760,
+   "carried": 0,
+   "wallMs": 3000.0488999933004,
+   "generationsPerSecond": 18988.02382858733,
+   "evalsPerSecond": 1215233.5250295892,
+   "arithmetic": "56,965 generations x 1 organism-year per generation (declared: one generation = the whole population of 64 children = 64 evaluations) = 56,965 organism-years (3,645,760 evaluations)"
+  },
+  "projection": {
+   "projection": true,
+   "targetYears": 1000000000,
+   "generations": 56965,
+   "wallMs": 3000.0488999933004,
+   "generationsPerSecond": 18988.02382858733,
+   "seconds": 52664.77486163961,
+   "hours": 14.629104128233227,
+   "days": 0.609546005343051,
+   "arithmetic": "projection: 1,000,000,000 organism-years / 18,988.0 generations per wall second (measured: 56,965 generations in 3.000 s) = 52,665 s (14.6 h), a projection, not a measurement"
+  },
+  "fresh": [
+   {
+    "name": "grid/velocity:heldout",
+    "tasks": 160,
+    "start": 49,
+    "end": 109,
+    "gained": 60,
+    "perMillionYears": 1053.278328798385,
+    "seenVerbatim": 0
+   },
+   {
+    "name": "grid/velocity:years1",
+    "tasks": 160,
+    "start": 53,
+    "end": 108,
+    "gained": 55,
+    "perMillionYears": 965.5051347318529,
+    "seenVerbatim": 0
+   },
+   {
+    "name": "grid/velocity:years2",
+    "tasks": 160,
+    "start": 62,
+    "end": 101,
+    "gained": 39,
+    "perMillionYears": 684.6309137189502,
+    "seenVerbatim": 0
+   }
+  ],
+  "searched": {
+   "start": 74.94163424124514,
+   "end": 157.8054474708171
+  },
+  "start": {
+   "tMs": 0.049400001764297485,
+   "gen": 1,
+   "fresh": [
+    49,
+    53,
+    62
+   ]
+  },
+  "end": {
+   "tMs": 3000.0488999933004,
+   "gen": 56965,
+   "fresh": [
+    109,
+    108,
+    101
+   ],
+   "draws": [
+    0
+   ],
+   "lmax": 64,
+   "len": 50
+  },
+  "firstPlateauS": 2.1005458000004293,
+  "plateaus": [
+   {
+    "t": 2.101,
+    "gen": 40232,
+    "rate": 0,
+    "arm": 0,
+    "draws": 1,
+    "lmax": 64,
+    "len": 50,
+    "searched": 157.8054474708171,
+    "fresh": [
+     109,
+     108,
+     101
+    ],
+    "action": "none",
+    "text": "plateau: no growth hook",
+    "carried": null,
+    "growthMs": null
+   }
+  ],
+  "growth": {
+   "widen": 0,
+   "ingest": 0,
+   "spawn": 0,
+   "retired": 0,
+   "prefetched": 0,
+   "builtInLoop": 0,
+   "buildMsInLoop": 0
+  },
+  "arms": 1,
+  "finalDraws": [
+   0
+  ],
+  "finalLmax": 64,
+  "best": {
+   "len": 50,
+   "searched": 157.8054474708171,
+   "genome": [
+    2692,
+    454,
+    329,
+    3341,
+    234,
+    5716,
+    5461,
+    169,
+    13,
+    1607,
+    2585,
+    5804,
+    1338,
+    8,
+    4138,
+    221,
+    2357,
+    5676,
+    4053,
+    5764,
+    23,
+    163,
+    14,
+    404,
+    702,
+    1484,
+    1708,
+    2259,
+    107,
+    3453,
+    3509,
+    1729,
+    537,
+    540,
+    2392,
+    17,
+    28,
+    4,
+    175,
+    5491,
+    49,
+    4102,
+    5763,
+    4442,
+    195,
+    50,
+    1626,
+    0,
+    717,
+    3555
+   ]
+  },
+  "rows": [
+   {
+    "t": 0,
+    "gen": 1,
+    "evals": 64,
+    "arm": 0,
+    "draws": 1,
+    "firstDraw": 0,
+    "lastDraw": 0,
+    "lmax": 64,
+    "len": 15,
+    "searched": 74.9416,
+    "fresh": [
+     49,
+     53,
+     62
+    ]
+   },
+   {
+    "t": 0.3,
+    "gen": 6304,
+    "evals": 403456,
+    "arm": 0,
+    "draws": 1,
+    "firstDraw": 0,
+    "lastDraw": 0,
+    "lmax": 64,
+    "len": 50,
+    "searched": 157.8054,
+    "fresh": [
+     109,
+     108,
+     101
+    ]
+   },
+   {
+    "t": 0.6,
+    "gen": 12079,
+    "evals": 773056,
+    "arm": 0,
+    "draws": 1,
+    "firstDraw": 0,
+    "lastDraw": 0,
+    "lmax": 64,
+    "len": 50,
+    "searched": 157.8054,
+    "fresh": [
+     109,
+     108,
+     101
+    ]
+   },
+   {
+    "t": 0.9,
+    "gen": 17823,
+    "evals": 1140672,
+    "arm": 0,
+    "draws": 1,
+    "firstDraw": 0,
+    "lastDraw": 0,
+    "lmax": 64,
+    "len": 50,
+    "searched": 157.8054,
+    "fresh": [
+     109,
+     108,
+     101
+    ]
+   },
+   {
+    "t": 1.2,
+    "gen": 23565,
+    "evals": 1508160,
+    "arm": 0,
+    "draws": 1,
+    "firstDraw": 0,
+    "lastDraw": 0,
+    "lmax": 64,
+    "len": 50,
+    "searched": 157.8054,
+    "fresh": [
+     109,
+     108,
+     101
+    ]
+   },
+   {
+    "t": 1.5,
+    "gen": 28988,
+    "evals": 1855232,
+    "arm": 0,
+    "draws": 1,
+    "firstDraw": 0,
+    "lastDraw": 0,
+    "lmax": 64,
+    "len": 50,
+    "searched": 157.8054,
+    "fresh": [
+     109,
+     108,
+     101
+    ]
+   },
+   {
+    "t": 1.801,
+    "gen": 34686,
+    "evals": 2219904,
+    "arm": 0,
+    "draws": 1,
+    "firstDraw": 0,
+    "lastDraw": 0,
+    "lmax": 64,
+    "len": 50,
+    "searched": 157.8054,
+    "fresh": [
+     109,
+     108,
+     101
+    ]
+   },
+   {
+    "t": 2.101,
+    "gen": 40232,
+    "evals": 2574848,
+    "arm": 0,
+    "draws": 1,
+    "firstDraw": 0,
+    "lastDraw": 0,
+    "lmax": 64,
+    "len": 50,
+    "searched": 157.8054,
+    "fresh": [
+     109,
+     108,
+     101
+    ]
+   },
+   {
+    "t": 2.401,
+    "gen": 45871,
+    "evals": 2935744,
+    "arm": 0,
+    "draws": 1,
+    "firstDraw": 0,
+    "lastDraw": 0,
+    "lmax": 64,
+    "len": 50,
+    "searched": 157.8054,
+    "fresh": [
+     109,
+     108,
+     101
+    ]
+   },
+   {
+    "t": 2.701,
+    "gen": 51421,
+    "evals": 3290944,
+    "arm": 0,
+    "draws": 1,
+    "firstDraw": 0,
+    "lastDraw": 0,
+    "lmax": 64,
+    "len": 50,
+    "searched": 157.8054,
+    "fresh": [
+     109,
+     108,
+     101
+    ]
+   },
+   {
+    "t": 3,
+    "gen": 56965,
+    "evals": 7291520,
+    "arm": 0,
+    "draws": 1,
+    "firstDraw": 0,
+    "lastDraw": 0,
+    "lmax": 64,
+    "len": 50,
+    "searched": 157.8054,
+    "fresh": [
+     109,
+     108,
+     101
+    ]
+   }
+  ]
+ }
+}

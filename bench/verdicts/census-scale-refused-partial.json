@@ -1,0 +1,87 @@
+{
+  "bench": "census",
+  "mode": "sharded exact",
+  "at": "2026-09-24T02:51:39.645Z",
+  "command": "node --max-old-space-size=6000 --expose-gc tools/organism-census.mjs --seed organism/scale-52000 --shard-files 4 --ticks 20",
+  "node": "v24.15.0",
+  "isTheBar": false,
+  "statement": "census: REFUSED the sharded census of organism/scale-52000: shard 0 is estimated at 43453 MB, over the 8000 MB cap; shard 1 is estimated at 43610 MB, over the 8000 MB cap. An exact shard must load the backward cone of its cells over the whole horizon, and at 132 ticks that cone is 410718 of 416000 cells. Nothing was loaded; the plan below is the whole record.",
+  "seed": "organism/scale-52000",
+  "ticks": 20,
+  "shardFiles": 4,
+  "capMB": 8000,
+  "error": "census: REFUSED the sharded census of organism/scale-52000: shard 0 is estimated at 43453 MB, over the 8000 MB cap; shard 1 is estimated at 43610 MB, over the 8000 MB cap. An exact shard must load the backward cone of its cells over the whole horizon, and at 132 ticks that cone is 410718 of 416000 cells.",
+  "horizon": {
+    "lastTick": 131
+  },
+  "shards": [
+    {
+      "shard": 0,
+      "files": [
+        "cells-000.mjs",
+        "cells-001.mjs",
+        "cells-002.mjs",
+        "cells-003.mjs"
+      ],
+      "ownedCells": 239976,
+      "ownedEdges": 2653709,
+      "loadedCells": 410718,
+      "cone": 410718,
+      "loadedEdges": 4623958,
+      "phantomEdges": 22285,
+      "estimateMB": 43453,
+      "whole": false
+    },
+    {
+      "shard": 1,
+      "files": [
+        "cells-004.mjs",
+        "cells-005.mjs",
+        "cells-006.mjs"
+      ],
+      "ownedCells": 176024,
+      "ownedEdges": 2003120,
+      "loadedCells": 406640,
+      "cone": 406640,
+      "loadedEdges": 4646260,
+      "phantomEdges": 5109,
+      "estimateMB": 43610,
+      "whole": false
+    }
+  ],
+  "plan": {
+    "cells": 416000,
+    "edges": 4656829,
+    "parseMs": 3150,
+    "taskTicks": 112,
+    "picks": {
+      "algebra": {
+        "eval": "co.20801.5",
+        "solve": "co.20801.0",
+        "cmp": "co.20805.7",
+        "+": "co.20801.7",
+        "-": "co.20800.0",
+        "*": "co.20826.2"
+      },
+      "sequence": {
+        "fit": "co.20801.6"
+      },
+      "missing": {
+        "algebra": [
+          "/",
+          "^"
+        ],
+        "sequence": []
+      }
+    }
+  },
+  "ratio": {
+    "file": "bench/verdicts/census-h64-partial.json",
+    "seed": "organism/gen-0",
+    "ticks": 64,
+    "peakMB": 4194.6,
+    "lines": 485992,
+    "bytesPerLine": 9050,
+    "how": "peak rss of 98 progress samples up to tick 130"
+  }
+}

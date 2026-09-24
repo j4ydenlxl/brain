@@ -1,0 +1,111 @@
+{
+  "at": "2026-09-18T02:34:09.268Z",
+  "node": "v24.15.0",
+  "conditions": {
+    "at": "2026-09-18T02:33:59.857Z",
+    "node": "v24.15.0",
+    "platform": "win32",
+    "cpus": 32,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900KF",
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "totalmemGB": 63.8,
+    "freememGB": 42.4,
+    "perMutantBudgetMs": 90000
+  },
+  "command": "node bench/mutants.mjs --sub self --only sp --timeout 90000 --budget 90000 --tag pass1",
+  "suites": {
+    "self": [
+      "test/self.test.mjs"
+    ]
+  },
+  "tally": {
+    "mutants": 3,
+    "executed": 3,
+    "killed": 0,
+    "survived": 3,
+    "notExecuted": 0,
+    "score": 0,
+    "wallMs": 9143
+  },
+  "bySubsystem": {
+    "self": {
+      "suite": [
+        "test/self.test.mjs"
+      ],
+      "generated": 3,
+      "executed": 3,
+      "killed": 0,
+      "survived": 3,
+      "notExecuted": 0,
+      "unmutatedMs": 2279,
+      "unmutatedPass": 28,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 9143
+    }
+  },
+  "mutants": [
+    {
+      "id": "sp01",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH CAP: the prune cap collapses to its floor, so it stops scaling with the organism",
+      "executed": true,
+      "probeHits": 25,
+      "probeProcesses": 1,
+      "killed": false,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": null,
+      "newFailures": 0,
+      "ms": 2275,
+      "passed": 28,
+      "status": "survived",
+      "find": "  return Math.max(floor, Math.ceil(finite(edges) * keep));",
+      "replace": "  return (__MUTP(), floor);"
+    },
+    {
+      "id": "sp02",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH CAP: the cap is ten times the declared share of the organism",
+      "executed": true,
+      "probeHits": 25,
+      "probeProcesses": 1,
+      "killed": false,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": null,
+      "newFailures": 0,
+      "ms": 2283,
+      "passed": 28,
+      "status": "survived",
+      "find": "  return Math.max(floor, Math.ceil(finite(edges) * keep));",
+      "replace": "  return Math.max(floor, Math.ceil(finite(edges) * (__MUTP(), 0.1)));"
+    },
+    {
+      "id": "sp03",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH CAP: the published rule says a share the code does not use",
+      "executed": true,
+      "probeHits": 1,
+      "probeProcesses": 1,
+      "killed": false,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": null,
+      "newFailures": 0,
+      "ms": 2299,
+      "passed": 28,
+      "status": "survived",
+      "find": "export const PRUNE_CAP_RULE = 'cap = max(256, ceil(edges * 0.01))';",
+      "replace": "export const PRUNE_CAP_RULE = (__MUTP(), 'cap = max(256, ceil(edges * 0.02))');"
+    }
+  ],
+  "verdict": "RED"
+}

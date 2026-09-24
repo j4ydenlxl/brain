@@ -1,0 +1,6504 @@
+{
+ "at": "2026-09-24T10:14:01.862Z",
+ "command": "node bench/grid.mjs --split evaluation --budget-ms 3000 --workers 2 --library --corpus bench/verdicts/grid.json,bench/verdicts/grid-library-harvest15-partial.json --ids 00576224,009d5c81,00dbd492,0692e18c,070dd51e,0c786b71,0c9aba6e,12eac192,137f0df0,15663ba9,195ba7dc,19bb5feb,1a2e2828,1c0d0a4b,1d0a4b61,2072aba6,21f83797,27f8ce4f,31d5ba1a,332efdb3,34b99a2b,351d6448,48131b3c,4cd1b7b2,506d28a5,59341089,5b526a93,5b6cbef5,5d2a5c43,60c09cac,642d658d,66e6c45b,66f2d22f,67b4a34d,68b67ca3,6ea4a07e,7039b2d7,73182012,7953d61e,81c0276b,833dafe3,84db8fc4,84f2aca1,8597cfd7,8e2edd66,981571dc,9a4bb226,9ddd00f0,aa18de87,ad7e01d0,ae58858e,af22c60d,bc4146bd,be03b35f,bf89d739,c1990cce,c48954c1,c663677b,c92b942c,ca8de6ea,ca8f78db,ccd554ac,cd3c21df,ce8d95cc,d19f7514,d282b262,d37a1ef5,e0fb7511,e133d23d,e1baa8a4,e345f17b,e633a9e5,e66aafb8,e88171ec,e95e3d8e,e9c9d9a1,ed74f2f2,ed98d772,f0df5ff0,f4081712,f45f5ca7,fc754716,03560426,12422b43,1c02dbbe,2753e76c,33b52de3,4364c1c4,505fff84,58e15b12,695367ec,782b5218,88207623,9356391f,9bebae7a,aa4ec2a5,b7cb93ac,c62e2108,d47aa2ff,e2092e0c,e7b06bea,f5aa3634 --tag verifyb11",
+ "node": "v24.15.0",
+ "isTheBar": false,
+ "barMet": false,
+ "split": "evaluation",
+ "heldOut": true,
+ "devFold": null,
+ "developmentRecords": "none: the evaluation split is held out; the library was learned from training programs only",
+ "n": 102,
+ "budgetMs": 3000,
+ "workers": 2,
+ "maxDepth": 4,
+ "attemptsPerTask": 2,
+ "attemptsAllowedByArc": 2,
+ "model": null,
+ "library": {
+  "corpus": [
+   "bench/verdicts/grid.json",
+   "bench/verdicts/grid-library-harvest15-partial.json"
+  ],
+  "params": {
+   "topN": 24,
+   "minLen": 2,
+   "maxLen": 4,
+   "minTasks": 2,
+   "minNet": 1,
+   "alpha": 140,
+   "alphaFrac": 1,
+   "scale": 4,
+   "share": 0.25
+  },
+  "stats": {
+   "tasks": 156,
+   "programs": 156,
+   "droppedPrograms": 0,
+   "candidates": 54,
+   "words": 140,
+   "stepsBefore": 239,
+   "stepsAfter": 236,
+   "stepsSaved": 3,
+   "definitionSteps": 2
+  },
+  "macros": [
+   {
+    "name": "keepRareColor+cropBBox",
+    "ops": [
+     "keepRareColor",
+     "cropBBox"
+    ],
+    "from": "grid",
+    "to": "grid",
+    "gross": 3,
+    "net": 1,
+    "tasks": 3,
+    "count": 3,
+    "usedBy": [
+     "0b148d64",
+     "1f85a75f",
+     "23b5c85d"
+    ],
+    "hand": 3,
+    "cost": 3,
+    "costUnits": 0.8107
+   }
+  ],
+  "learnerOrder": [
+   "localRule",
+   "colormap",
+   "tileSym",
+   "objectRecolor",
+   "stamp",
+   "fixedCrop",
+   "kronLearned",
+   "extendTo",
+   "constant",
+   "rayLearned"
+  ],
+  "cheapestWords": {
+   "cropBBox": -0.9575,
+   "periodicFill": -0.1893,
+   "keepRareColor": 0.3187,
+   "orTB": 0.3187,
+   "flipH": 0.4005,
+   "objectsC4": 0.4005,
+   "transpose": 0.4005,
+   "colorHistogram": 0.4358,
+   "cellsDominant": 0.6607,
+   "connectH": 0.6607,
+   "dedupeBoth": 0.6607,
+   "fillEnclosed": 0.6607
+  }
+ },
+ "comparison": {
+  "library": 73,
+  "noLibrary": [
+   71,
+   71
+  ],
+  "bestNoLibrary": 71,
+  "noise": 0,
+  "baseFlips": 0,
+  "margin": 2,
+  "met": true,
+  "newly": [
+   "642d658d",
+   "81c0276b"
+  ],
+  "lost": [],
+  "newlyVsBoth": [
+   "642d658d",
+   "81c0276b"
+  ],
+  "lostVsBoth": []
+ },
+ "comparisonAtAttempt1": {
+  "library": 73,
+  "noLibrary": [
+   71,
+   71
+  ],
+  "bestNoLibrary": 71,
+  "noise": 0,
+  "baseFlips": 0,
+  "margin": 2,
+  "met": true,
+  "newly": [
+   "642d658d",
+   "81c0276b"
+  ],
+  "lost": [],
+  "newlyVsBoth": [
+   "642d658d",
+   "81c0276b"
+  ],
+  "lostVsBoth": []
+ },
+ "arms": [
+  {
+   "arm": "base",
+   "label": "no-library run 1",
+   "freeMbBefore": 39174,
+   "solved": 71,
+   "solvedFirst": 71,
+   "rescuedBySecond": 0,
+   "secondFound": 40,
+   "solvedByLearnedPhase": 0,
+   "n": 102,
+   "pct": 69.61,
+   "meanMs": 2080.27,
+   "meanSolvedMs": 1738.77,
+   "meanFirstMs": 176.35,
+   "wallSeconds": 106.39,
+   "exhausted": 1,
+   "timedOut": 23,
+   "foundButWrong": 7,
+   "errors": 0,
+   "killedAtHardDeadline": 0,
+   "depthHistogram": {
+    "1": 35,
+    "2": 31,
+    "3": 4,
+    "4": 1
+   },
+   "topOps": {
+    "localRule": 13,
+    "colormap": 11,
+    "tileSym": 8,
+    "orLR": 5,
+    "periodicFill": 5,
+    "fillEnclosed": 4,
+    "fixedCrop": 4,
+    "invert": 4,
+    "stamp": 4,
+    "cropBBox": 3,
+    "dedupeBoth": 3,
+    "kronLearned": 3,
+    "objectRecolor": 3,
+    "orTB": 3,
+    "tile2x2": 3
+   },
+   "vocabulary": 196,
+   "macroUse": {},
+   "macrosUsed": 0
+  },
+  {
+   "arm": "library",
+   "label": "library run 1",
+   "freeMbBefore": 38337,
+   "solved": 73,
+   "solvedFirst": 73,
+   "rescuedBySecond": 0,
+   "secondFound": 39,
+   "solvedByLearnedPhase": 2,
+   "n": 102,
+   "pct": 71.57,
+   "meanMs": 2087.71,
+   "meanSolvedMs": 1779.99,
+   "meanFirstMs": 241.61,
+   "wallSeconds": 106.96,
+   "exhausted": 1,
+   "timedOut": 21,
+   "foundButWrong": 7,
+   "errors": 0,
+   "killedAtHardDeadline": 0,
+   "depthHistogram": {
+    "1": 35,
+    "2": 31,
+    "3": 5,
+    "4": 2
+   },
+   "topOps": {
+    "localRule": 13,
+    "colormap": 12,
+    "tileSym": 8,
+    "orLR": 5,
+    "periodicFill": 5,
+    "cellsDominant": 4,
+    "fillEnclosed": 4,
+    "fixedCrop": 4,
+    "invert": 4,
+    "stamp": 4,
+    "cropBBox": 3,
+    "dedupeBoth": 3,
+    "kronLearned": 3,
+    "objectRecolor": 3,
+    "orTB": 3
+   },
+   "vocabulary": 197,
+   "macroUse": {},
+   "macrosUsed": 0
+  },
+  {
+   "arm": "base",
+   "label": "no-library run 2",
+   "freeMbBefore": 38206,
+   "solved": 71,
+   "solvedFirst": 71,
+   "rescuedBySecond": 0,
+   "secondFound": 40,
+   "solvedByLearnedPhase": 0,
+   "n": 102,
+   "pct": 69.61,
+   "meanMs": 2075.59,
+   "meanSolvedMs": 1732.33,
+   "meanFirstMs": 176.87,
+   "wallSeconds": 106.26,
+   "exhausted": 1,
+   "timedOut": 23,
+   "foundButWrong": 7,
+   "errors": 0,
+   "killedAtHardDeadline": 0,
+   "depthHistogram": {
+    "1": 35,
+    "2": 31,
+    "3": 4,
+    "4": 1
+   },
+   "topOps": {
+    "localRule": 13,
+    "colormap": 11,
+    "tileSym": 8,
+    "orLR": 5,
+    "periodicFill": 5,
+    "fillEnclosed": 4,
+    "fixedCrop": 4,
+    "invert": 4,
+    "stamp": 4,
+    "cropBBox": 3,
+    "dedupeBoth": 3,
+    "kronLearned": 3,
+    "objectRecolor": 3,
+    "orTB": 3,
+    "tile2x2": 3
+   },
+   "vocabulary": 196,
+   "macroUse": {},
+   "macrosUsed": 0
+  }
+ ],
+ "noise": 0,
+ "statement": "On the ARC-AGI-1 evaluation split, 102 tasks, at 3000 ms per task, 2 workers and 2 attempts per task, arms run one at a time: the grid search with a library learned from 156 solved training tasks (1 macros, a learned search order, run as a portfolio: the hand ordered search for the first 2250 ms, then the learned order with the macros) solved 73, and without it 71 and 71 in 2 runs (run to run noise 0 tasks, 0 tasks flipped between them). Against the better no-library run the margin is 2; against the first no-library run the library newly solved 2 and lost 0. At attempt 1 alone: library 73, no library 71 and 71. Macros used in at least one right answer: 0 of 1. Mean ms per task: library 2087.71, no library 2080.27 and 2075.59; timed out: library 21, no library 23 and 23. The bar (library above the better no-library run by more than the noise) is MET. Latencies were measured on a machine shared with other builders.",
+ "rows": [
+  {
+   "id": "00576224",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.74,
+     "firstMs": 2.56,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.57,
+     "firstMs": 2.48,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.68,
+     "firstMs": 2.38,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "009d5c81",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.94,
+     "firstMs": 36.07,
+     "attempts": [
+      {
+       "names": [
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.51,
+     "firstMs": 33.03,
+     "attempts": [
+      {
+       "names": [
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3016.94,
+     "firstMs": 28.13,
+     "attempts": [
+      {
+       "names": [
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "00dbd492",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3003.75,
+     "firstMs": 146.57,
+     "attempts": [
+      {
+       "names": [
+        "fillEnclosed",
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.24,
+     "firstMs": 146.14,
+     "attempts": [
+      {
+       "names": [
+        "fillEnclosed",
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3005.21,
+     "firstMs": 144.05,
+     "attempts": [
+      {
+       "names": [
+        "fillEnclosed",
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "03560426",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.44,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.11,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.72,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "0692e18c",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 660.37,
+     "firstMs": 50.97,
+     "attempts": [
+      {
+       "names": [
+        "invert",
+        "kronInverse"
+       ]
+      },
+      {
+       "names": [
+        "up3",
+        "recolorSize8",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 666.09,
+     "firstMs": 54.2,
+     "attempts": [
+      {
+       "names": [
+        "invert",
+        "kronInverse"
+       ]
+      },
+      {
+       "names": [
+        "up3",
+        "recolorSize8",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 704.13,
+     "firstMs": 77.57,
+     "attempts": [
+      {
+       "names": [
+        "invert",
+        "kronInverse"
+       ]
+      },
+      {
+       "names": [
+        "up3",
+        "recolorSize8",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "070dd51e",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3006.34,
+     "firstMs": 866.07,
+     "attempts": [
+      {
+       "names": [
+        "rot90",
+        "connectHV",
+        "rot270"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3067.56,
+     "firstMs": 861.3,
+     "attempts": [
+      {
+       "names": [
+        "rot90",
+        "connectHV",
+        "rot270"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3001.88,
+     "firstMs": 872.56,
+     "attempts": [
+      {
+       "names": [
+        "rot90",
+        "connectHV",
+        "rot270"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "0c786b71",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.11,
+     "firstMs": 0.42,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.18,
+     "firstMs": 0.47,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.14,
+     "firstMs": 0.37,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "0c9aba6e",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 100.07,
+     "firstMs": 1.24,
+     "attempts": [
+      {
+       "names": [
+        "orTB",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "overlayBT",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 98.18,
+     "firstMs": 1.29,
+     "attempts": [
+      {
+       "names": [
+        "orTB",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "overlayBT",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 99.03,
+     "firstMs": 1.41,
+     "attempts": [
+      {
+       "names": [
+        "orTB",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "overlayBT",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "12422b43",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.34,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.1,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.07,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "12eac192",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.11,
+     "firstMs": 9.71,
+     "attempts": [
+      {
+       "names": [
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.13,
+     "firstMs": 9.86,
+     "attempts": [
+      {
+       "names": [
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.18,
+     "firstMs": 9.97,
+     "attempts": [
+      {
+       "names": [
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "137f0df0",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.17,
+     "firstMs": 202.5,
+     "attempts": [
+      {
+       "names": [
+        "connectHVP",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.19,
+     "firstMs": 192.97,
+     "attempts": [
+      {
+       "names": [
+        "connectHVP",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3001.16,
+     "firstMs": 194.35,
+     "attempts": [
+      {
+       "names": [
+        "connectHVP",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "15663ba9",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.25,
+     "firstMs": 145.43,
+     "attempts": [
+      {
+       "names": [
+        "fillEnclosed",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.22,
+     "firstMs": 149.01,
+     "attempts": [
+      {
+       "names": [
+        "fillEnclosed",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.26,
+     "firstMs": 146.23,
+     "attempts": [
+      {
+       "names": [
+        "fillEnclosed",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "195ba7dc",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 120.16,
+     "firstMs": 1.11,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "fillEnclosed",
+        "overlayLR",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 119.1,
+     "firstMs": 1.09,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "fillEnclosed",
+        "overlayLR",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 116.53,
+     "firstMs": 1.11,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "fillEnclosed",
+        "overlayLR",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "19bb5feb",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1020.73,
+     "firstMs": 37.57,
+     "attempts": [
+      {
+       "names": [
+        "cropBBox",
+        "cellsDominant"
+       ]
+      },
+      {
+       "names": [
+        "flipV",
+        "unmaskCropH",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1016.64,
+     "firstMs": 42.74,
+     "attempts": [
+      {
+       "names": [
+        "cropBBox",
+        "cellsDominant"
+       ]
+      },
+      {
+       "names": [
+        "flipV",
+        "unmaskCropH",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 974.79,
+     "firstMs": 34.99,
+     "attempts": [
+      {
+       "names": [
+        "cropBBox",
+        "cellsDominant"
+       ]
+      },
+      {
+       "names": [
+        "flipV",
+        "unmaskCropH",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "1a2e2828",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.24,
+     "firstMs": 1422.24,
+     "attempts": [
+      {
+       "names": [
+        "objectsC4",
+        "uniqueColor",
+        "crop",
+        "dedupeBoth"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.19,
+     "firstMs": 1527.66,
+     "attempts": [
+      {
+       "names": [
+        "objectsC4",
+        "uniqueColor",
+        "crop",
+        "dedupeBoth"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.22,
+     "firstMs": 1462.44,
+     "attempts": [
+      {
+       "names": [
+        "objectsC4",
+        "uniqueColor",
+        "crop",
+        "dedupeBoth"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "1c02dbbe",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.15,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.16,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.11,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "1c0d0a4b",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 183.97,
+     "firstMs": 0.95,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "symFillOffsetV",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 187.87,
+     "firstMs": 0.99,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "symFillOffsetV",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 192.81,
+     "firstMs": 0.98,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "symFillOffsetV",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "1d0a4b61",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 2195.59,
+     "firstMs": 371.98,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill"
+       ]
+      },
+      {
+       "names": [
+        "symFillOffsetHV",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 2130.43,
+     "firstMs": 373.39,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill"
+       ]
+      },
+      {
+       "names": [
+        "symFillOffsetHV",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 2214.24,
+     "firstMs": 368.93,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill"
+       ]
+      },
+      {
+       "names": [
+        "symFillOffsetHV",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "2072aba6",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 305.74,
+     "firstMs": 5.31,
+     "attempts": [
+      {
+       "names": [
+        "up2",
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "cropBBox",
+        "up2",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 323.5,
+     "firstMs": 6.16,
+     "attempts": [
+      {
+       "names": [
+        "up2",
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "cropBBox",
+        "up2",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 318.24,
+     "firstMs": 5.98,
+     "attempts": [
+      {
+       "names": [
+        "up2",
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "cropBBox",
+        "up2",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "21f83797",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1156.68,
+     "firstMs": 162.07,
+     "attempts": [
+      {
+       "names": [
+        "ray4",
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "flipV",
+        "ray4",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1104.91,
+     "firstMs": 165.65,
+     "attempts": [
+      {
+       "names": [
+        "ray4",
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "flipV",
+        "ray4",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1120.66,
+     "firstMs": 176.63,
+     "attempts": [
+      {
+       "names": [
+        "ray4",
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "flipV",
+        "ray4",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "2753e76c",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.07,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.1,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.05,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "27f8ce4f",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 826.59,
+     "firstMs": 778.14,
+     "attempts": [
+      {
+       "names": [
+        "up3",
+        "keepTopColor",
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "up3",
+        "recolorSmallest",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 894.52,
+     "firstMs": 846.82,
+     "attempts": [
+      {
+       "names": [
+        "up3",
+        "keepTopColor",
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "up3",
+        "recolorSmallest",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 837.15,
+     "firstMs": 789.43,
+     "attempts": [
+      {
+       "names": [
+        "up3",
+        "keepTopColor",
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "up3",
+        "recolorSmallest",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "31d5ba1a",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 176.1,
+     "firstMs": 1.28,
+     "attempts": [
+      {
+       "names": [
+        "xorTB",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "xorTB",
+        "connectV",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 169.43,
+     "firstMs": 1.22,
+     "attempts": [
+      {
+       "names": [
+        "xorTB",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "xorTB",
+        "connectV",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 165.31,
+     "firstMs": 1.21,
+     "attempts": [
+      {
+       "names": [
+        "xorTB",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "xorTB",
+        "connectV",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "332efdb3",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 2518.41,
+     "firstMs": 0.32,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 2637.11,
+     "firstMs": 0.33,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 2581.96,
+     "firstMs": 0.32,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "33b52de3",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.06,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.13,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.1,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "34b99a2b",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 92.29,
+     "firstMs": 1.09,
+     "attempts": [
+      {
+       "names": [
+        "xorLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "xorLR",
+        "pixelRayL",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 93.38,
+     "firstMs": 1.17,
+     "attempts": [
+      {
+       "names": [
+        "xorLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "xorLR",
+        "pixelRayL",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 90.61,
+     "firstMs": 1.14,
+     "attempts": [
+      {
+       "names": [
+        "xorLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "xorLR",
+        "pixelRayL",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "351d6448",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.06,
+     "firstMs": 2801.55,
+     "attempts": [
+      {
+       "names": [
+        "dropBgLines",
+        "bNotATB",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.1,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.08,
+     "firstMs": 2729.54,
+     "attempts": [
+      {
+       "names": [
+        "dropBgLines",
+        "bNotATB",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "4364c1c4",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.06,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.09,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.12,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "48131b3c",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1441.37,
+     "firstMs": 25.82,
+     "attempts": [
+      {
+       "names": [
+        "tile2x2",
+        "invert"
+       ]
+      },
+      {
+       "names": [
+        "tile2x2",
+        "invert",
+        "recolorSize8",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1430.96,
+     "firstMs": 29.51,
+     "attempts": [
+      {
+       "names": [
+        "tile2x2",
+        "invert"
+       ]
+      },
+      {
+       "names": [
+        "tile2x2",
+        "invert",
+        "recolorSize8",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1407.09,
+     "firstMs": 26.5,
+     "attempts": [
+      {
+       "names": [
+        "tile2x2",
+        "invert"
+       ]
+      },
+      {
+       "names": [
+        "tile2x2",
+        "invert",
+        "recolorSize8",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "4cd1b7b2",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.05,
+     "firstMs": 2.09,
+     "attempts": [
+      {
+       "names": [
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.78,
+     "firstMs": 5.03,
+     "attempts": [
+      {
+       "names": [
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.06,
+     "firstMs": 2.14,
+     "attempts": [
+      {
+       "names": [
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "505fff84",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.21,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.09,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.13,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "506d28a5",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 158,
+     "firstMs": 1.04,
+     "attempts": [
+      {
+       "names": [
+        "orTB",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "removeNoise",
+        "orTB",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 159.38,
+     "firstMs": 1.14,
+     "attempts": [
+      {
+       "names": [
+        "orTB",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "removeNoise",
+        "orTB",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 159.15,
+     "firstMs": 1.31,
+     "attempts": [
+      {
+       "names": [
+        "orTB",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "removeNoise",
+        "orTB",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "58e15b12",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.59,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.16,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.14,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "59341089",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.2,
+     "firstMs": 0.55,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.17,
+     "firstMs": 0.71,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.59,
+     "firstMs": 0.73,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "5b526a93",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.16,
+     "firstMs": 139.54,
+     "attempts": [
+      {
+       "names": [
+        "fillEnclosed",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.14,
+     "firstMs": 140.91,
+     "attempts": [
+      {
+       "names": [
+        "fillEnclosed",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.11,
+     "firstMs": 141.3,
+     "attempts": [
+      {
+       "names": [
+        "fillEnclosed",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "5b6cbef5",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3074.68,
+     "firstMs": 0.85,
+     "attempts": [
+      {
+       "names": [
+        "kronLearned"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.12,
+     "firstMs": 0.85,
+     "attempts": [
+      {
+       "names": [
+        "kronLearned"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3077.8,
+     "firstMs": 0.84,
+     "attempts": [
+      {
+       "names": [
+        "kronLearned"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "5d2a5c43",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 145.69,
+     "firstMs": 1.36,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "orLR",
+        "dedupeCols",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 152.5,
+     "firstMs": 1.49,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "orLR",
+        "dedupeCols",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 145.88,
+     "firstMs": 1.33,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "orLR",
+        "dedupeCols",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "60c09cac",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 6.67,
+     "firstMs": 0.28,
+     "attempts": [
+      {
+       "names": [
+        "up2"
+       ]
+      },
+      {
+       "names": [
+        "dedupeRows",
+        "up2"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 6.1,
+     "firstMs": 0.32,
+     "attempts": [
+      {
+       "names": [
+        "up2"
+       ]
+      },
+      {
+       "names": [
+        "dedupeRows",
+        "up2"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 7.53,
+     "firstMs": 0.35,
+     "attempts": [
+      {
+       "names": [
+        "up2"
+       ]
+      },
+      {
+       "names": [
+        "dedupeRows",
+        "up2"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "642d658d",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.09,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 2949.24,
+     "firstMs": 2948.5,
+     "attempts": [
+      {
+       "names": [
+        "rayX",
+        "cellsDominant",
+        "unmaskCropHV",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "rayX",
+        "cellsDominant",
+        "unmaskCropH",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.05,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "66e6c45b",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.09,
+     "firstMs": 125.27,
+     "attempts": [
+      {
+       "names": [
+        "rot180",
+        "tile2x2",
+        "fixedCrop"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.11,
+     "firstMs": 164.13,
+     "attempts": [
+      {
+       "names": [
+        "rot180",
+        "tile2x2",
+        "fixedCrop"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.11,
+     "firstMs": 130.03,
+     "attempts": [
+      {
+       "names": [
+        "rot180",
+        "tile2x2",
+        "fixedCrop"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "66f2d22f",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 101.91,
+     "firstMs": 0.96,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "overlayLR",
+        "symFillOffsetH",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 102.59,
+     "firstMs": 0.9,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "overlayLR",
+        "symFillOffsetH",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 115.47,
+     "firstMs": 1.18,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "overlayLR",
+        "symFillOffsetH",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "67b4a34d",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 2244.2,
+     "firstMs": 4.35,
+     "attempts": [
+      {
+       "names": [
+        "unmaskCropV"
+       ]
+      },
+      {
+       "names": [
+        "unmaskCropV",
+        "hollow",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.13,
+     "firstMs": 4.19,
+     "attempts": [
+      {
+       "names": [
+        "unmaskCropV"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 2161.85,
+     "firstMs": 4.18,
+     "attempts": [
+      {
+       "names": [
+        "unmaskCropV"
+       ]
+      },
+      {
+       "names": [
+        "unmaskCropV",
+        "hollow",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "68b67ca3",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 49.71,
+     "firstMs": 0.58,
+     "attempts": [
+      {
+       "names": [
+        "dropBgLines"
+       ]
+      },
+      {
+       "names": [
+        "dropBgLines",
+        "dedupeRows"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 35.94,
+     "firstMs": 0.61,
+     "attempts": [
+      {
+       "names": [
+        "dropBgLines"
+       ]
+      },
+      {
+       "names": [
+        "dropBgLines",
+        "dedupeRows"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 15.1,
+     "firstMs": 0.54,
+     "attempts": [
+      {
+       "names": [
+        "dropBgLines"
+       ]
+      },
+      {
+       "names": [
+        "dropBgLines",
+        "dedupeRows"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "695367ec",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.04,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.08,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.1,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "6ea4a07e",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1.96,
+     "firstMs": 0.48,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1.94,
+     "firstMs": 0.57,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1.87,
+     "firstMs": 0.45,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      },
+      {
+       "names": [
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "7039b2d7",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 94.81,
+     "firstMs": 1.21,
+     "attempts": [
+      {
+       "names": [
+        "cellsDominant"
+       ]
+      },
+      {
+       "names": [
+        "cellsDominant",
+        "hollow",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 93.97,
+     "firstMs": 2.81,
+     "attempts": [
+      {
+       "names": [
+        "cellsDominant"
+       ]
+      },
+      {
+       "names": [
+        "cellsDominant",
+        "hollow",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 93.37,
+     "firstMs": 1.17,
+     "attempts": [
+      {
+       "names": [
+        "cellsDominant"
+       ]
+      },
+      {
+       "names": [
+        "cellsDominant",
+        "hollow",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "73182012",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1774.43,
+     "firstMs": 25.86,
+     "attempts": [
+      {
+       "names": [
+        "cropBBox",
+        "fixedCrop"
+       ]
+      },
+      {
+       "names": [
+        "symFillD4",
+        "cropBBox",
+        "fixedCrop"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1700.1,
+     "firstMs": 28.26,
+     "attempts": [
+      {
+       "names": [
+        "cropBBox",
+        "fixedCrop"
+       ]
+      },
+      {
+       "names": [
+        "symFillD4",
+        "cropBBox",
+        "fixedCrop"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1704.68,
+     "firstMs": 24.41,
+     "attempts": [
+      {
+       "names": [
+        "cropBBox",
+        "fixedCrop"
+       ]
+      },
+      {
+       "names": [
+        "symFillD4",
+        "cropBBox",
+        "fixedCrop"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "782b5218",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.12,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.09,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3010.95,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "7953d61e",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.07,
+     "firstMs": 0.37,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.53,
+     "firstMs": 0.48,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.07,
+     "firstMs": 0.36,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "81c0276b",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3007.92,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.23,
+     "firstMs": 2420.43,
+     "attempts": [
+      {
+       "names": [
+        "cellsDominant",
+        "colorHistogram",
+        "flipV"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.07,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "833dafe3",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 7.94,
+     "firstMs": 0.42,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      },
+      {
+       "names": [
+        "dropBgLines",
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 19.93,
+     "firstMs": 0.59,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      },
+      {
+       "names": [
+        "dropBgLines",
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 7.94,
+     "firstMs": 0.49,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      },
+      {
+       "names": [
+        "dropBgLines",
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "84db8fc4",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 273.11,
+     "firstMs": 23.09,
+     "attempts": [
+      {
+       "names": [
+        "fillEnclosed",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "fillEnclosed",
+        "slideDown",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 298.42,
+     "firstMs": 39.6,
+     "attempts": [
+      {
+       "names": [
+        "fillEnclosed",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "fillEnclosed",
+        "slideDown",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 277.08,
+     "firstMs": 23.1,
+     "attempts": [
+      {
+       "names": [
+        "fillEnclosed",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "fillEnclosed",
+        "slideDown",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "84f2aca1",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.08,
+     "firstMs": 0.48,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.2,
+     "firstMs": 0.47,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.07,
+     "firstMs": 0.46,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "8597cfd7",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.06,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.12,
+     "firstMs": 2672.86,
+     "attempts": [
+      {
+       "names": [
+        "symFillV",
+        "cellsDominant",
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.18,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "88207623",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.03,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.07,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.04,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "8e2edd66",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 2453.87,
+     "firstMs": 52.09,
+     "attempts": [
+      {
+       "names": [
+        "invert",
+        "kron"
+       ]
+      },
+      {
+       "names": [
+        "recolorSize8",
+        "invert",
+        "kron",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 2771.72,
+     "firstMs": 49.91,
+     "attempts": [
+      {
+       "names": [
+        "invert",
+        "kron"
+       ]
+      },
+      {
+       "names": [
+        "recolorSize8",
+        "invert",
+        "kron",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 2302.26,
+     "firstMs": 50.67,
+     "attempts": [
+      {
+       "names": [
+        "invert",
+        "kron"
+       ]
+      },
+      {
+       "names": [
+        "recolorSize8",
+        "invert",
+        "kron",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "9356391f",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.09,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.14,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.12,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "981571dc",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3943.56,
+     "firstMs": 25.4,
+     "attempts": [
+      {
+       "names": [
+        "symFillOffsetHV"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 4142.2,
+     "firstMs": 24.51,
+     "attempts": [
+      {
+       "names": [
+        "symFillOffsetHV"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3838.34,
+     "firstMs": 22.18,
+     "attempts": [
+      {
+       "names": [
+        "symFillOffsetHV"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "9a4bb226",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3001.15,
+     "firstMs": 216.57,
+     "attempts": [
+      {
+       "names": [
+        "cellsDistinct",
+        "cropBBox"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.1,
+     "firstMs": 197.79,
+     "attempts": [
+      {
+       "names": [
+        "cellsDistinct",
+        "cropBBox"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.12,
+     "firstMs": 198.45,
+     "attempts": [
+      {
+       "names": [
+        "cellsDistinct",
+        "cropBBox"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "9bebae7a",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.05,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.09,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.05,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "9ddd00f0",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 81.72,
+     "firstMs": 2.23,
+     "attempts": [
+      {
+       "names": [
+        "symFillD4"
+       ]
+      },
+      {
+       "names": [
+        "hollow",
+        "symFillD4"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 81.9,
+     "firstMs": 2.16,
+     "attempts": [
+      {
+       "names": [
+        "symFillD4"
+       ]
+      },
+      {
+       "names": [
+        "hollow",
+        "symFillD4"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 130.13,
+     "firstMs": 3.89,
+     "attempts": [
+      {
+       "names": [
+        "symFillD4"
+       ]
+      },
+      {
+       "names": [
+        "hollow",
+        "symFillD4"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "aa18de87",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.04,
+     "firstMs": 89.43,
+     "attempts": [
+      {
+       "names": [
+        "connectHVP",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.1,
+     "firstMs": 85.45,
+     "attempts": [
+      {
+       "names": [
+        "connectHVP",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3004.76,
+     "firstMs": 87.12,
+     "attempts": [
+      {
+       "names": [
+        "connectHVP",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "aa4ec2a5",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3039.12,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3140.29,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.16,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "ad7e01d0",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 66.73,
+     "firstMs": 0.5,
+     "attempts": [
+      {
+       "names": [
+        "kronLearned"
+       ]
+      },
+      {
+       "names": [
+        "connectH",
+        "kronLearned"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 70.68,
+     "firstMs": 0.77,
+     "attempts": [
+      {
+       "names": [
+        "kronLearned"
+       ]
+      },
+      {
+       "names": [
+        "connectH",
+        "kronLearned"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 68.88,
+     "firstMs": 0.78,
+     "attempts": [
+      {
+       "names": [
+        "kronLearned"
+       ]
+      },
+      {
+       "names": [
+        "connectH",
+        "kronLearned"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "ae58858e",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 49.54,
+     "firstMs": 11.27,
+     "attempts": [
+      {
+       "names": [
+        "objectRecolor"
+       ]
+      },
+      {
+       "names": [
+        "dedupeCols",
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 50.06,
+     "firstMs": 10.27,
+     "attempts": [
+      {
+       "names": [
+        "objectRecolor"
+       ]
+      },
+      {
+       "names": [
+        "dedupeCols",
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 50.06,
+     "firstMs": 10.09,
+     "attempts": [
+      {
+       "names": [
+        "objectRecolor"
+       ]
+      },
+      {
+       "names": [
+        "dedupeCols",
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "af22c60d",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 4710.46,
+     "firstMs": 20.96,
+     "attempts": [
+      {
+       "names": [
+        "symFillOffsetHV"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3796.02,
+     "firstMs": 21.23,
+     "attempts": [
+      {
+       "names": [
+        "symFillOffsetHV"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 4634.51,
+     "firstMs": 21.13,
+     "attempts": [
+      {
+       "names": [
+        "symFillOffsetHV"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "b7cb93ac",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.08,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.07,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.07,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "bc4146bd",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.06,
+     "firstMs": 0.39,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.09,
+     "firstMs": 0.41,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.06,
+     "firstMs": 0.36,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "be03b35f",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 218.26,
+     "firstMs": 1.79,
+     "attempts": [
+      {
+       "names": [
+        "rot90",
+        "fixedCrop"
+       ]
+      },
+      {
+       "names": [
+        "rot90",
+        "gravityDown",
+        "fixedCrop"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 225.22,
+     "firstMs": 1.78,
+     "attempts": [
+      {
+       "names": [
+        "rot90",
+        "fixedCrop"
+       ]
+      },
+      {
+       "names": [
+        "rot90",
+        "gravityDown",
+        "fixedCrop"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 219.28,
+     "firstMs": 1.91,
+     "attempts": [
+      {
+       "names": [
+        "rot90",
+        "fixedCrop"
+       ]
+      },
+      {
+       "names": [
+        "rot90",
+        "gravityDown",
+        "fixedCrop"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "bf89d739",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.08,
+     "firstMs": 122.21,
+     "attempts": [
+      {
+       "names": [
+        "connectHV",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.11,
+     "firstMs": 124.65,
+     "attempts": [
+      {
+       "names": [
+        "connectHV",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.07,
+     "firstMs": 131.38,
+     "attempts": [
+      {
+       "names": [
+        "connectHV",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "c1990cce",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "exhausted",
+     "wallMs": 854.65,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "exhausted",
+     "wallMs": 910.09,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "exhausted",
+     "wallMs": 845.95,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "c48954c1",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1673.51,
+     "firstMs": 0.51,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      },
+      {
+       "names": [
+        "hollow",
+        "rayX",
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1707.91,
+     "firstMs": 0.55,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      },
+      {
+       "names": [
+        "hollow",
+        "rayX",
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1683.29,
+     "firstMs": 0.34,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      },
+      {
+       "names": [
+        "hollow",
+        "rayX",
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "c62e2108",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.05,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3058.25,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.04,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "c663677b",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3166.88,
+     "firstMs": 538.29,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3123.19,
+     "firstMs": 535.54,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3176.85,
+     "firstMs": 538,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "c92b942c",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 309.79,
+     "firstMs": 45.24,
+     "attempts": [
+      {
+       "names": [
+        "tile3x3",
+        "stamp"
+       ]
+      },
+      {
+       "names": [
+        "flipH",
+        "tile3x3",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 327.76,
+     "firstMs": 41.15,
+     "attempts": [
+      {
+       "names": [
+        "tile3x3",
+        "stamp"
+       ]
+      },
+      {
+       "names": [
+        "flipH",
+        "tile3x3",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 315.11,
+     "firstMs": 40.54,
+     "attempts": [
+      {
+       "names": [
+        "tile3x3",
+        "stamp"
+       ]
+      },
+      {
+       "names": [
+        "flipH",
+        "tile3x3",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "ca8de6ea",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.28,
+     "firstMs": 262.86,
+     "attempts": [
+      {
+       "names": [
+        "trimBorder",
+        "dropRareColor",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.1,
+     "firstMs": 357.7,
+     "attempts": [
+      {
+       "names": [
+        "trimBorder",
+        "dropRareColor",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.14,
+     "firstMs": 266.26,
+     "attempts": [
+      {
+       "names": [
+        "trimBorder",
+        "dropRareColor",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "ca8f78db",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3710.81,
+     "firstMs": 1409.74,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3026.87,
+     "firstMs": 1407.98,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3725.17,
+     "firstMs": 1432.03,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "ccd554ac",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 10.18,
+     "firstMs": 0.62,
+     "attempts": [
+      {
+       "names": [
+        "kronLearned"
+       ]
+      },
+      {
+       "names": [
+        "dedupeCols",
+        "kronLearned"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 9.64,
+     "firstMs": 0.64,
+     "attempts": [
+      {
+       "names": [
+        "kronLearned"
+       ]
+      },
+      {
+       "names": [
+        "dedupeCols",
+        "kronLearned"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 10.08,
+     "firstMs": 0.56,
+     "attempts": [
+      {
+       "names": [
+        "kronLearned"
+       ]
+      },
+      {
+       "names": [
+        "dedupeCols",
+        "kronLearned"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "cd3c21df",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1757.14,
+     "firstMs": 223.36,
+     "attempts": [
+      {
+       "names": [
+        "objectsC4",
+        "uniqueColor",
+        "cropRegion"
+       ]
+      },
+      {
+       "names": [
+        "flipH",
+        "objectsC4",
+        "uniqueColor",
+        "cropRegion"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1795.68,
+     "firstMs": 222.72,
+     "attempts": [
+      {
+       "names": [
+        "objectsC4",
+        "uniqueColor",
+        "cropRegion"
+       ]
+      },
+      {
+       "names": [
+        "flipH",
+        "objectsC4",
+        "uniqueColor",
+        "cropRegion"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1753.66,
+     "firstMs": 213.69,
+     "attempts": [
+      {
+       "names": [
+        "objectsC4",
+        "uniqueColor",
+        "cropRegion"
+       ]
+      },
+      {
+       "names": [
+        "flipH",
+        "objectsC4",
+        "uniqueColor",
+        "cropRegion"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "ce8d95cc",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.23,
+     "firstMs": 0.52,
+     "attempts": [
+      {
+       "names": [
+        "dedupeBoth"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.12,
+     "firstMs": 0.59,
+     "attempts": [
+      {
+       "names": [
+        "dedupeBoth"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.94,
+     "firstMs": 0.51,
+     "attempts": [
+      {
+       "names": [
+        "dedupeBoth"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "d19f7514",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 71.19,
+     "firstMs": 0.83,
+     "attempts": [
+      {
+       "names": [
+        "orTB",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "orTB",
+        "dedupeCols",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 70.88,
+     "firstMs": 0.79,
+     "attempts": [
+      {
+       "names": [
+        "orTB",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "orTB",
+        "dedupeCols",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 73.63,
+     "firstMs": 2.42,
+     "attempts": [
+      {
+       "names": [
+        "orTB",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "orTB",
+        "dedupeCols",
+        "colormap"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "d282b262",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 232.86,
+     "firstMs": 2.35,
+     "attempts": [
+      {
+       "names": [
+        "slideRight"
+       ]
+      },
+      {
+       "names": [
+        "connectH",
+        "slideRight"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 243.65,
+     "firstMs": 2.43,
+     "attempts": [
+      {
+       "names": [
+        "slideRight"
+       ]
+      },
+      {
+       "names": [
+        "connectH",
+        "slideRight"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 230.77,
+     "firstMs": 2.4,
+     "attempts": [
+      {
+       "names": [
+        "slideRight"
+       ]
+      },
+      {
+       "names": [
+        "connectH",
+        "slideRight"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "d37a1ef5",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.09,
+     "firstMs": 202.52,
+     "attempts": [
+      {
+       "names": [
+        "connectH",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.16,
+     "firstMs": 205.58,
+     "attempts": [
+      {
+       "names": [
+        "connectH",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.33,
+     "firstMs": 212.09,
+     "attempts": [
+      {
+       "names": [
+        "connectH",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "d47aa2ff",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.15,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.07,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.06,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "e0fb7511",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3010.78,
+     "firstMs": 821.75,
+     "attempts": [
+      {
+       "names": [
+        "invert",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.15,
+     "firstMs": 821.78,
+     "attempts": [
+      {
+       "names": [
+        "invert",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.08,
+     "firstMs": 808.32,
+     "attempts": [
+      {
+       "names": [
+        "invert",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "e133d23d",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 87.9,
+     "firstMs": 0.99,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "cellsLeast",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 90.4,
+     "firstMs": 0.99,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "cellsLeast",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 84.71,
+     "firstMs": 0.98,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "cellsLeast",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "e1baa8a4",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 2334.96,
+     "firstMs": 0.62,
+     "attempts": [
+      {
+       "names": [
+        "dedupeBoth"
+       ]
+      },
+      {
+       "names": [
+        "trimBorder",
+        "trimBorder",
+        "dedupeBoth"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.1,
+     "firstMs": 0.72,
+     "attempts": [
+      {
+       "names": [
+        "dedupeBoth"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 2262.9,
+     "firstMs": 0.59,
+     "attempts": [
+      {
+       "names": [
+        "dedupeBoth"
+       ]
+      },
+      {
+       "names": [
+        "trimBorder",
+        "trimBorder",
+        "dedupeBoth"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "e2092e0c",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.12,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.07,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.04,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "e345f17b",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 74.7,
+     "firstMs": 0.81,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "orLR",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 75.89,
+     "firstMs": 1.11,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "orLR",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 74.33,
+     "firstMs": 0.86,
+     "attempts": [
+      {
+       "names": [
+        "orLR",
+        "colormap"
+       ]
+      },
+      {
+       "names": [
+        "orLR",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "e633a9e5",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.06,
+     "firstMs": 1098.98,
+     "attempts": [
+      {
+       "names": [
+        "mirror4",
+        "tile2x2",
+        "fixedCrop"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.08,
+     "firstMs": 1091.7,
+     "attempts": [
+      {
+       "names": [
+        "mirror4",
+        "tile2x2",
+        "fixedCrop"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.07,
+     "firstMs": 1136.01,
+     "attempts": [
+      {
+       "names": [
+        "mirror4",
+        "tile2x2",
+        "fixedCrop"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "e66aafb8",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 515.77,
+     "firstMs": 10.82,
+     "attempts": [
+      {
+       "names": [
+        "unmaskCropV"
+       ]
+      },
+      {
+       "names": [
+        "unmaskCropV",
+        "cropBBoxMajority"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 538.6,
+     "firstMs": 11.15,
+     "attempts": [
+      {
+       "names": [
+        "unmaskCropV"
+       ]
+      },
+      {
+       "names": [
+        "unmaskCropV",
+        "cropBBoxMajority"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 514.91,
+     "firstMs": 10.96,
+     "attempts": [
+      {
+       "names": [
+        "unmaskCropV"
+       ]
+      },
+      {
+       "names": [
+        "unmaskCropV",
+        "cropBBoxMajority"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "e7b06bea",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.08,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.23,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.03,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "e88171ec",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.11,
+     "firstMs": 437.49,
+     "attempts": [
+      {
+       "names": [
+        "outline8",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.24,
+     "firstMs": 468.13,
+     "attempts": [
+      {
+       "names": [
+        "outline8",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.14,
+     "firstMs": 442.54,
+     "attempts": [
+      {
+       "names": [
+        "outline8",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "e95e3d8e",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.1,
+     "firstMs": 342.23,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.32,
+     "firstMs": 346.12,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3017.5,
+     "firstMs": 348.3,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "e9c9d9a1",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3005.87,
+     "firstMs": 0.63,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3030.6,
+     "firstMs": 0.76,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.11,
+     "firstMs": 0.72,
+     "attempts": [
+      {
+       "names": [
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "ed74f2f2",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3002.16,
+     "firstMs": 106.87,
+     "attempts": [
+      {
+       "names": [
+        "rightHalf",
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.07,
+     "firstMs": 102.89,
+     "attempts": [
+      {
+       "names": [
+        "rightHalf",
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "found",
+     "wallMs": 3000.1,
+     "firstMs": 100.19,
+     "attempts": [
+      {
+       "names": [
+        "rightHalf",
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "ed98d772",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.5,
+     "firstMs": 0.4,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.09,
+     "firstMs": 0.52,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.06,
+     "firstMs": 0.5,
+     "attempts": [
+      {
+       "names": [
+        "tileSym"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "f0df5ff0",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.27,
+     "firstMs": 5.92,
+     "attempts": [
+      {
+       "names": [
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.19,
+     "firstMs": 5.04,
+     "attempts": [
+      {
+       "names": [
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.75,
+     "firstMs": 5.48,
+     "attempts": [
+      {
+       "names": [
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "f4081712",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 250.45,
+     "firstMs": 10.1,
+     "attempts": [
+      {
+       "names": [
+        "unmaskCropV"
+       ]
+      },
+      {
+       "names": [
+        "unmaskCropH",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 256.63,
+     "firstMs": 11.31,
+     "attempts": [
+      {
+       "names": [
+        "unmaskCropV"
+       ]
+      },
+      {
+       "names": [
+        "unmaskCropH",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 254.92,
+     "firstMs": 10.56,
+     "attempts": [
+      {
+       "names": [
+        "unmaskCropV"
+       ]
+      },
+      {
+       "names": [
+        "unmaskCropH",
+        "localRule"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  },
+  {
+   "id": "f45f5ca7",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3003.25,
+     "firstMs": 244.6,
+     "attempts": [
+      {
+       "names": [
+        "rayR",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.07,
+     "firstMs": 245.61,
+     "attempts": [
+      {
+       "names": [
+        "rayR",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 3000.06,
+     "firstMs": 240.42,
+     "attempts": [
+      {
+       "names": [
+        "rayR",
+        "stamp"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true
+     ]
+    }
+   }
+  },
+  {
+   "id": "f5aa3634",
+   "arms": {
+    "no-library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.07,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "library run 1": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.07,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    },
+    "no-library run 2": {
+     "solved": false,
+     "solvedFirst": false,
+     "status": "timeout",
+     "wallMs": 3000.04,
+     "firstMs": null,
+     "attempts": [],
+     "attemptRight": []
+    }
+   }
+  },
+  {
+   "id": "fc754716",
+   "arms": {
+    "no-library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1792.88,
+     "firstMs": 43.61,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill",
+        "hollow"
+       ]
+      },
+      {
+       "names": [
+        "frame",
+        "dedupeRows",
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "library run 1": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1933.27,
+     "firstMs": 44.32,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill",
+        "hollow"
+       ]
+      },
+      {
+       "names": [
+        "frame",
+        "dedupeRows",
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    },
+    "no-library run 2": {
+     "solved": true,
+     "solvedFirst": true,
+     "status": "found",
+     "wallMs": 1803.17,
+     "firstMs": 42.08,
+     "attempts": [
+      {
+       "names": [
+        "periodicFill",
+        "hollow"
+       ]
+      },
+      {
+       "names": [
+        "frame",
+        "dedupeRows",
+        "objectRecolor"
+       ]
+      }
+     ],
+     "attemptRight": [
+      true,
+      false
+     ]
+    }
+   }
+  }
+ ]
+}

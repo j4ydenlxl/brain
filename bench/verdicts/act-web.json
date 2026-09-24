@@ -1,0 +1,139 @@
+{
+  "at": "2026-09-24T13:26:42.504Z",
+  "node": "v24.15.0",
+  "refusals": [
+    {
+      "what": "a file url",
+      "url": "file:///C:/Windows/win.ini",
+      "urlChars": 26,
+      "reason": "scheme file: is not http or https"
+    },
+    {
+      "what": "an ftp url",
+      "url": "ftp://allowed.example/x",
+      "urlChars": 23,
+      "reason": "scheme ftp: is not http or https"
+    },
+    {
+      "what": "loopback",
+      "url": "http://127.0.0.1/",
+      "urlChars": 17,
+      "reason": "host 127.0.0.1 is loopback (127.0.0.0/8)"
+    },
+    {
+      "what": "the cloud metadata address",
+      "url": "http://169.254.169.254/latest/meta-data/",
+      "urlChars": 40,
+      "reason": "host 169.254.169.254 is cloud metadata (169.254.169.254)"
+    },
+    {
+      "what": "a private address",
+      "url": "http://10.0.0.1/",
+      "urlChars": 16,
+      "reason": "host 10.0.0.1 is private (10.0.0.0/8)"
+    },
+    {
+      "what": "ipv6 loopback",
+      "url": "http://[::1]:8080/",
+      "urlChars": 18,
+      "reason": "host [::1]:8080 is loopback (::1)"
+    },
+    {
+      "what": "a host that is not on the list",
+      "url": "https://not-on-the-list.example/",
+      "urlChars": 32,
+      "reason": "host not-on-the-list.example is not on the allow list (2 entries)"
+    },
+    {
+      "what": "an address in decimal form",
+      "url": "http://2130706433/",
+      "urlChars": 18,
+      "reason": "host 127.0.0.1 is loopback (127.0.0.0/8)"
+    },
+    {
+      "what": "an address in octal form",
+      "url": "http://0177.0.0.1/",
+      "urlChars": 18,
+      "reason": "host 127.0.0.1 is loopback (127.0.0.0/8)"
+    },
+    {
+      "what": "the userinfo trick",
+      "url": "http://allowed.example@10.0.0.1/",
+      "urlChars": 32,
+      "reason": "credentials in the url are refused: the host is 10.0.0.1, whatever the text before the at sign says"
+    },
+    {
+      "what": "a trailing dot",
+      "url": "http://allowed.example./",
+      "urlChars": 24,
+      "reason": "host allowed.example. ends in a dot, a second spelling of one name that an allowlist compares as a third"
+    },
+    {
+      "what": "a url of 65536 chars",
+      "url": "http://allowed.example/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...",
+      "urlChars": 65536,
+      "reason": "the url is 65536 chars, over the cap 2048"
+    }
+  ],
+  "fixture": {
+    "page": {
+      "status": 200,
+      "bytes": 138,
+      "chars": 36,
+      "title": "Hello & welcome",
+      "ms": 13,
+      "wallMs": 13,
+      "hitsAfter": 1
+    },
+    "redirect": {
+      "reason": "redirect hop 1 to http://127.0.0.1:59427/secret refused: host 127.0.0.1:59427 is loopback (127.0.0.0/8)",
+      "hops": 1,
+      "hitsAfter": 2,
+      "metadataReason": "redirect hop 1 to http://169.254.169.254/latest/meta-data/ refused: host 169.254.169.254 is cloud metadata (169.254.169.254)"
+    },
+    "truncation": {
+      "cap": 4096,
+      "bytes": 4096,
+      "chars": 4057,
+      "truncated": true
+    },
+    "contentType": {
+      "reason": "content type application/pdf is not one this surface reads"
+    },
+    "injection": {
+      "chars": 104,
+      "title": "Release notes",
+      "scriptInText": false
+    },
+    "ingest": {
+      "chars": 104,
+      "tokens": 104,
+      "ticks": 107
+    },
+    "sense": {
+      "fetched": 1,
+      "refused": 0,
+      "failed": 0,
+      "hits": 1,
+      "acts": 1
+    },
+    "refusedSense": {
+      "refused": 1,
+      "hits": 0,
+      "reason": "host 127.0.0.1:59441 is not on the allowlist (no entries)"
+    }
+  },
+  "checks": {
+    "hostileRefused": 12,
+    "addressFamilies": 14,
+    "resolvedReason": "host localhost resolves to ::1 which is loopback (::1)",
+    "shippedHosts": 0,
+    "shippedSource": "defaults",
+    "refusedByRule": {
+      "credentials": "credentials in the url are refused: the host is allowed.example, whatever the text before the at sign says",
+      "wildcardSuffix": "host notdocs.example is not on the allow list (2 entries)",
+      "trailingDot": "host allowed.example. ends in a dot, a second spelling of one name that an allowlist compares as a third"
+    }
+  },
+  "verdict": "GREEN"
+}

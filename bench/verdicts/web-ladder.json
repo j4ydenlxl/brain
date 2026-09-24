@@ -1,0 +1,112 @@
+{
+ "name": "web-ladder",
+ "at": "2026-09-24T08:32:55.094Z",
+ "command": "node --max-old-space-size=6000 web/ladder-bar.mjs",
+ "node": "v24.15.0",
+ "isTheBar": true,
+ "barMet": true,
+ "bar": {
+  "rule": "web/build.mjs runs to completion and prints the pages built; test/web-ladder.test.mjs renders the page from the current verdicts and from a fixture directory with one verdict missing and one -partial, asserts \"not measured\" and \"partial\", and walks every number in the page text back to a verdict field; no em dashes in the page",
+  "checks": {
+   "buildExit0": true,
+   "pagesBuiltPrinted": true,
+   "ladderLinePrinted": true,
+   "builtPageWalked": true,
+   "everyNumberTraced": true,
+   "noEmDash": true,
+   "ladderTestExit0": true,
+   "notMeasuredAndPartialAsserted": true,
+   "walkerControlsReject": true,
+   "daemonTestExit0": true
+  },
+  "missed": []
+ },
+ "statement": "The ladder page (/ladder) was built by node web/build.mjs, which exited 0 and printed \"pages built: 4 (index.html, findings/index.html, portfolio/index.html, ladder/index.html)\". The built page is 148662 bytes; a walker that shares no code with the generator walked it against bench/verdicts and traced 722 numbers in 570 spans (709 of them in 483 field values, the rest in field-path labels and file names) to 9 verdict files, with 0 untraced and 0 em dashes. test/web-ladder.test.mjs exited 0 with 4 of 4 passing: it renders the page from the current verdicts and from a fixture with HumanEval missing and GSM8K only -partial, asserts \"not measured\" and \"partial\", and shows that the walker rejects a bent number, a loose digit and a bad path. test/web-daemon.test.mjs exited 0 with 4 of 4 passing: the live view shows the health numbers through daemon/health.mjs and web/serve.mjs, and \"daemon not running\" when the endpoint is closed. The counts are a snapshot of verdicts other builders are still writing; no model was called and the machine was shared.",
+ "build": {
+  "exit": 0,
+  "signal": null,
+  "error": null,
+  "pagesLine": "pages built: 4 (index.html, findings/index.html, portfolio/index.html, ladder/index.html)",
+  "pagesBuilt": 4,
+  "ladderLine": "dist ladder/index.html    148662 bytes   722 numbers traced in 570 spans from 9 verdict files; gsm8k partial, humaneval partial, arc whole; native not measured, years partial"
+ },
+ "page": {
+  "path": "web/dist/ladder/index.html",
+  "bytes": 148662,
+  "numbersTraced": 722,
+  "numbersInFieldValues": 709,
+  "numbersInPathLabels": 1,
+  "digitRunsInFileNames": 12,
+  "spans": 570,
+  "valueSpans": 483,
+  "pathSpans": 48,
+  "fileSpans": 39,
+  "fieldsDistinct": 465,
+  "verdictFiles": [
+   "grid-evaluation.json",
+   "ladder.json",
+   "native-before-partial.json",
+   "public-arc.json",
+   "public-gsm8k-board7-partial.json",
+   "public-gsm8k-partial.json",
+   "public-humaneval-board7-partial.json",
+   "public-humaneval-partial.json",
+   "years-partial.json"
+  ],
+  "untraced": 0,
+  "untracedFirst": [],
+  "emDashes": 0,
+  "notMeasured": 23,
+  "partial": 10
+ },
+ "tests": {
+  "ladder": {
+   "file": "test/web-ladder.test.mjs",
+   "status": 0,
+   "pass": 4,
+   "fail": 0,
+   "tests": 4,
+   "durationMs": 68.704,
+   "named": [
+    "✔ the ladder from the verdicts on disk now: every number walks back to a field",
+    "✔ a fixture with one set missing and one -partial renders \"not measured\" and \"partial\", never zero",
+    "✔ no ladder.json, an unreadable verdict, and a verdict partial only by isTheBar false",
+    "✔ controls: the walker rejects a bent number, a loose digit, a bad path and a missing file"
+   ],
+   "diagnostics": [
+    "current verdicts: 148662 bytes, 722 numbers traced in 570 spans (709 in 483 field values, 1 in 48 field-path labels, 12 in 39 file names) from 9 verdict files",
+    "fixture (humaneval missing, gsm8k partial): 68819 bytes, 324 numbers traced in 229 spans (315 in 214 field values, 0 in 0 field-path labels, 9 in 15 file names) from 3 verdict files",
+    "fixture (no ladder.json): 42731 bytes, 152 numbers traced in 115 spans (151 in 101 field values, 0 in 0 field-path labels, 1 in 14 file names) from 3 verdict files"
+   ]
+  },
+  "daemon": {
+   "file": "test/web-daemon.test.mjs",
+   "status": 0,
+   "pass": 4,
+   "fail": 0,
+   "tests": 4,
+   "durationMs": 102.3015,
+   "named": [
+    "✔ no health: the rows say \"daemon not running\" and why, and invent no number",
+    "✔ the reader: a missing endpoint, a page that is not health JSON, and a timeout all read as not running",
+    "✔ daemon running: health.mjs through web/serve.mjs to the rows, then closed: \"daemon not running\"",
+    "✔ a supervisor status older than 30 s is not a running daemon"
+   ],
+   "diagnostics": []
+  }
+ },
+ "development": {
+  "note": "every build, page render and test run before this one was development: web/ladder.mjs, web/ladder-walk.mjs, web/src/ladder.html and both tests changed between them, and none of their counts is quoted here. This run changed no file but web/dist and this verdict.",
+  "fixtureRendersAreFixtures": "the fixture pages in test/web-ladder.test.mjs are rendered from copies of verdict files in a temp directory and prove the missing and partial paths; their counts describe the fixture, not the site"
+ },
+ "machine": {
+  "platform": "win32",
+  "cpus": 32,
+  "freeMemGBStart": 38.3,
+  "waitedForRamS": 0,
+  "shared": "seven builders share this machine; no Ollama call was made by this bar; the test timings are contended wall-clock times"
+ },
+ "peakRssMb": 57.3,
+ "peakRssNote": "this runner process only (process.resourceUsage().maxRSS); the build and test children ran one at a time under the same heap cap",
+ "wallMs": 764
+}

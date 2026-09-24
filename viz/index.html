@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BRAIN</title>
+<style>
+  :root {
+    --ink: #dbe9ff;
+    --dim: #7e93b5;
+    --line: rgba(120, 190, 255, 0.16);
+    --glass: rgba(9, 14, 26, 0.62);
+    --good: #4ef5a3;
+    --warn: #ffd166;
+    --bad: #ff6b8b;
+    --accent: #38e8ff;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; background: #04060c; color: var(--ink);
+    font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow: hidden; }
+  #gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  .panelish { background: var(--glass); border: 1px solid var(--line); border-radius: 12px;
+    backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.35), 0 18px 60px rgba(0, 12, 30, 0.55); }
+  body.bare .hideable { opacity: 0; pointer-events: none; }
+  .hideable { transition: opacity .25s ease; }
+
+  /* ----------------------------------------------------------- top left */
+  /* One column, so the legend can never land on top of the readout on a short window.
+     The column itself is not a surface: only its two panels take the pointer. */
+  #leftcol { position: fixed; top: 16px; left: 16px; bottom: 104px; width: 280px; z-index: 5;
+    display: flex; flex-direction: column; gap: 12px; align-items: stretch; pointer-events: none; }
+  #leftcol > * { pointer-events: auto; }
+  #instruments { flex: 0 0 auto; padding: 14px 14px 10px; }
+  #brandline { display: flex; align-items: baseline; gap: 10px; margin-bottom: 2px; }
+  #brand { font-size: 19px; letter-spacing: 0.34em; font-weight: 600;
+    background: linear-gradient(94deg, #ffffff, var(--accent) 45%, #b77cff);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: 0 0 26px rgba(56, 232, 255, 0.28); }
+  #mode { font-size: 10px; color: var(--dim); letter-spacing: 0.18em; text-transform: uppercase; }
+  #sub { color: var(--dim); font-size: 10.5px; letter-spacing: 0.12em; margin-bottom: 10px; }
+  .metric { display: flex; justify-content: space-between; align-items: baseline; padding: 2px 0; }
+  .metric .k { color: var(--dim); letter-spacing: 0.06em; }
+  .metric .v { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .v.good { color: var(--good); } .v.warn { color: var(--warn); } .v.bad { color: var(--bad); }
+  #name { color: var(--accent); }
+  .rule { height: 1px; background: var(--line); margin: 9px 0; }
+  .status { font-size: 10.5px; color: var(--dim); min-height: 14px; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; }
+  .status.good { color: var(--good); } .status.warn { color: var(--warn); } .status.bad { color: var(--bad); }
+
+  /* ----------------------------------------------------------- legend */
+  #legendbox { flex: 0 1 auto; margin-top: auto; padding: 10px 12px; overflow: auto; }
+  #legendtitle { color: var(--dim); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 6px; }
+  .legend-row { display: flex; align-items: center; gap: 8px; padding: 1.5px 0; }
+  #conduittitle { color: var(--dim); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; margin: 10px 0 4px; }
+  #conduits { font-size: 10.5px; }
+  .cond-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 8px; padding: 1.5px 0; white-space: nowrap; }
+  .cond-row .cpair { overflow: hidden; text-overflow: ellipsis; }
+  .cond-row .cn, .cond-row .cps, .cond-row .cus { color: var(--dim); font-variant-numeric: tabular-nums; }
+  .cond-row .cps.hot { color: #ffd166; }
+  .swatch { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto;
+    box-shadow: 0 0 9px currentColor; filter: saturate(1.3); }
+  .lname { flex: 1 1 auto; color: var(--ink); opacity: .86; }
+  .lcount { color: var(--dim); font-variant-numeric: tabular-nums; }
+
+  /* ----------------------------------------------------------- cell panel */
+  #panel { position: fixed; top: 16px; right: 16px; width: 330px; max-height: calc(100vh - 200px);
+    display: none; flex-direction: column; z-index: 6; }
+  #panel.open { display: flex; }
+  #panelHead { display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  #panelTitle { color: var(--accent); font-size: 13px; letter-spacing: 0.06em; }
+  #panelClose { color: var(--dim); cursor: pointer; padding: 0 4px; font-size: 14px; line-height: 1; }
+  #panelClose:hover { color: var(--ink); }
+  #panelBody { overflow: auto; padding: 10px 12px 14px; }
+  .panel-head { margin-bottom: 8px; }
+  .panel-head .kind { color: var(--ink); }
+  .panel-head .where, .panel-head .period { color: var(--dim); font-size: 10.5px; }
+  .panel-fn { margin: 6px 0 8px; color: var(--ink); font-size: 11px; line-height: 1.45; opacity: 0.86; }
+  .panel-cap { margin: 6px 0 4px; }
+  .caprow { display: flex; justify-content: space-between; font-size: 10.5px; }
+  .capbar { height: 4px; background: rgba(255,255,255,0.10); border-radius: 2px; overflow: hidden; margin: 3px 0; }
+  .capbar i { display: block; height: 100%; background: linear-gradient(90deg, #5b8cff, #ffd166); }
+  .caprow .k { color: var(--dim); }
+  .caprow .v2 { color: var(--accent); font-variant-numeric: tabular-nums; }
+  .capparts { color: var(--dim); font-size: 10px; font-variant-numeric: tabular-nums; }
+  .stats, .edges { margin-top: 6px; }
+  .row { display: flex; justify-content: space-between; gap: 10px; padding: 1px 0; }
+  .row .k { color: var(--dim); }
+  .row .v2 { color: var(--ink); opacity: .9; font-variant-numeric: tabular-nums; }
+  .sub { color: var(--accent); opacity: .75; font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; margin: 10px 0 3px; }
+  details { margin-top: 10px; }
+  summary { color: var(--dim); cursor: pointer; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; }
+  pre.json { max-height: 240px; overflow: auto; color: var(--dim); font-size: 10.5px;
+    background: rgba(0,0,0,0.30); border: 1px solid var(--line); border-radius: 8px; padding: 8px; margin: 6px 0 0; }
+
+  /* ----------------------------------------------------------- timeline + keys */
+  #stripbox { position: fixed; left: 16px; right: 16px; bottom: 16px; height: 78px; padding: 6px; z-index: 5; }
+  #strip { width: 100%; height: 100%; display: block; }
+  #keys { position: fixed; right: 18px; bottom: 104px; text-align: right; color: var(--dim);
+    font-size: 10px; letter-spacing: 0.10em; z-index: 5; line-height: 1.8; }
+  #keys b { color: var(--ink); font-weight: 600; }
+  pre.fatal { position: fixed; inset: auto 16px 110px 16px; max-height: 40vh; overflow: auto;
+    color: var(--bad); background: rgba(10,0,6,0.8); border: 1px solid rgba(255,107,139,.4);
+    border-radius: 10px; padding: 12px; z-index: 9; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<div id="leftcol" class="hideable">
+<section id="instruments" class="panelish">
+  <div id="brandline"><div id="brand">BRAIN</div><div id="mode">live</div></div>
+  <div id="sub">a persistent computational organism</div>
+  <div class="metric"><span class="k">name</span><span class="v" id="name">-</span></div>
+  <div class="metric"><span class="k">t</span><span class="v" id="t">0</span></div>
+  <div class="metric"><span class="k">gen</span><span class="v" id="gen">0</span></div>
+  <div class="rule"></div>
+  <div class="metric"><span class="k">cells</span><span class="v" id="cells">0</span></div>
+  <div class="metric"><span class="k">edges live / all</span><span class="v" id="edges">0 / 0</span></div>
+  <div class="metric"><span class="k">runs</span><span class="v" id="runs">0/s</span></div>
+  <div class="metric"><span class="k">signals</span><span class="v" id="signals">0/s</span></div>
+  <div class="metric"><span class="k">proposals pending</span><span class="v" id="proposals">0</span></div>
+  <div class="metric"><span class="k">transmission</span><span class="v" id="flight">180 ms/tick</span></div>
+  <div class="metric"><span class="k">per cell run</span><span class="v" id="usrun">-</span></div>
+  <div class="metric"><span class="k">per packet</span><span class="v" id="uspkt">-</span></div>
+  <div class="metric"><span class="k">per tick</span><span class="v" id="ustick">-</span></div>
+  <div class="metric"><span class="k">render</span><span class="v" id="fps">0 fps</span></div>
+  <div class="rule"></div>
+  <div class="status" id="status">starting</div>
+</section>
+
+<section id="legendbox" class="panelish">
+  <div id="legendtitle">regions</div>
+  <div id="legend"></div>
+  <div id="conduittitle">conduits, packets and latency per hop</div>
+  <div id="conduits"></div>
+</section>
+</div>
+
+<aside id="panel" class="panelish">
+  <div id="panelHead"><div id="panelTitle">cell</div><div id="panelClose" data-close>close</div></div>
+  <div id="panelBody"></div>
+</aside>
+
+<section id="stripbox" class="panelish hideable"><canvas id="strip"></canvas></section>
+
+<div id="keys" class="hideable">
+  <div><b>drag</b> rotate &nbsp; <b>wheel</b> zoom &nbsp; <b>click</b> inspect a cell</div>
+  <div><b>space</b> pause &nbsp; <b>r</b> re-layout &nbsp; <b>h</b> hide</div>
+  <div><b>a</b> auto drive &nbsp; <b>i</b> inject &nbsp; <b>t</b> tick 100</div>
+  <div><b>v</b> view: brain anatomy / pipeline stages</div>
+</div>
+
+<script type="module" src="client/main.js"></script>
+</body>
+</html>

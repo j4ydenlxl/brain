@@ -1,0 +1,2414 @@
+{
+  "at": "2026-09-24T08:42:57.573Z",
+  "command": "node bench/native.mjs --limit 3000 --lookups 100000",
+  "node": "v24.15.0",
+  "isTheBar": false,
+  "barMet": false,
+  "met": {
+    "share": true,
+    "suite": true,
+    "ns": false
+  },
+  "statement": "The ask path of act/prompt.mjs now tries a direct table first and the knowledge tier before any model cell. On the 200 held-out first-sentence facts of the knowledge bar's draw (seed knowledge-draw-2026-09-23), asked through ask() with the model cell offline, 122 were answered correctly at recall@1 with provenance memory or direct and no model call (61.0%, the bar is 100); 175 came from the direct table in one lookup, and 175 of those 175 gave the answer the tier alone gave. The same questions scored 122 with the tier alone, 122 with a control table that holds every title but the drawn ones (0 direct hits), 0 with the tier and the table off, and 18 when the answer is the title's own last word. The table memoises the tier: it was filled by asking the tier \"What is <title>?\" for 3000 titles, the drawn titles among them, and none of the hidden sentences was ever in the store. Native answers took a mean 38.3 microseconds a whole ask with the table on and 1061.2 with the tier alone. Over 100000 lookups a run the table took a median 9.24 ns a hit and 11.93 ns a miss, measured with process.hrtime.bigint on a shared machine. The tasks suites scored 724 of 725 before and 724 of 725 after, and of the 724 suite questions ask() answered exactly and correctly before the change, 0 were lost with the table off and 0 with it on. The semantic tier is now bounded by a declared 256 MB byte budget, room for 15416 named keys, instead of 4,096 keys.",
+  "rulers": {
+    "bar": "the 200 held-out records bench/knowledge.mjs draws by seed knowledge-draw-2026-09-23 (their first sentences never ingested), and the 725 suite questions of bench/answer.mjs buildQuestions",
+    "development": "the confidence floor 0.2 was chosen by bench/recall.mjs --tune on the 428 held-out records outside the draw; the where and when locator, the factual shapes and the direct keys were developed on titles that are not held out and on the suite; the draw was read only by bench/native.mjs --before and by this run"
+  },
+  "code": {
+    "prompt": "b22f5cd9d7691bbd2cefa2324c24082a22428e7819bfeb9395d761c85bba822a",
+    "knowledge": "faa93706d823beebb79c1d0d14bbaf380bb0583899d9c64c9a084a7e9a77a9c6",
+    "semantic": "18c34e1445a6df7a9ea9c5adf4f354c46ce1a1cac185ddd0017921f06ceadb0f",
+    "direct": "395e2356aac8b11d24047b31efdec11b87f7708eabca9d3566a719b2689ab522"
+  },
+  "before": {
+    "file": "bench/verdicts/native-before-partial.json",
+    "at": "2026-09-24T08:23:34.337Z",
+    "tasks": {
+      "correct": 724,
+      "n": 725,
+      "failures": [
+        "grid:grid.d2.13"
+      ]
+    },
+    "suite": {
+      "exact": 725,
+      "exactCorrect": 724,
+      "digest": "aaa9480b6cfcd764"
+    },
+    "wiki": {
+      "n": 200,
+      "recallAt1": 122,
+      "recallAt1Share": 0.61,
+      "correct": 122,
+      "native": 176,
+      "modelCalls": 24,
+      "direct": 0,
+      "directShare": 0,
+      "directCorrect": 0,
+      "nativeMeanUs": 9644.6,
+      "nativeP50Us": 8278.7,
+      "nativeP95Us": 19196.9,
+      "abstained": 24,
+      "byProvenance": {
+        "memory": 200
+      }
+    }
+  },
+  "tasks": {
+    "n": 725,
+    "correct": 724,
+    "suites": {
+      "algebra": {
+        "n": 360,
+        "correct": 360
+      },
+      "sequence": {
+        "n": 205,
+        "correct": 205
+      },
+      "grid": {
+        "n": 160,
+        "correct": 159
+      }
+    },
+    "failures": [
+      "grid:grid.d2.13"
+    ]
+  },
+  "tasksSame": true,
+  "suite": {
+    "off": {
+      "n": 725,
+      "correct": 724,
+      "exact": 725,
+      "exactCorrect": 724,
+      "byProvenance": {
+        "exact": 725
+      },
+      "meanUs": 1135.1,
+      "digest": "aaa9480b6cfcd764"
+    },
+    "fill": {
+      "n": 725,
+      "correct": 724,
+      "exact": 725,
+      "exactCorrect": 724,
+      "byProvenance": {
+        "exact": 720,
+        "direct": 5
+      },
+      "meanUs": 955,
+      "digest": "aaa9480b6cfcd764"
+    },
+    "on": {
+      "n": 725,
+      "correct": 724,
+      "exact": 725,
+      "exactCorrect": 724,
+      "byProvenance": {
+        "direct": 725
+      },
+      "meanUs": 14.3,
+      "digest": "aaa9480b6cfcd764"
+    },
+    "lostOff": [],
+    "lostOn": []
+  },
+  "fill": {
+    "titles": 3000,
+    "of": 284749,
+    "workers": 2,
+    "ms": 6110,
+    "answered": 2968,
+    "entries": {
+      "entries": 3883,
+      "exact": 720,
+      "memory": 3163
+    },
+    "aboveFloor": 2842,
+    "floor": 0.2,
+    "slots": 8192,
+    "bytes": {
+      "typed": 199768,
+      "strings": 227862,
+      "total": 427630
+    },
+    "stats": {
+      "inserted": 3883,
+      "replaced": 4,
+      "foldCollisions": 22,
+      "probeCollisions": 926,
+      "grows": 0
+    },
+    "sharedFolds": {
+      "sameQuestion": 3,
+      "sameBag": 11,
+      "differentBags": 0
+    },
+    "suiteEntries": {
+      "entries": 720,
+      "exact": 720,
+      "memory": 0
+    },
+    "drawnInTable": 199,
+    "drawnInControl": 0,
+    "savedBytes": 349968,
+    "roundTrip": true
+  },
+  "wiki": {
+    "n": 200,
+    "pool": 628,
+    "drawSeed": "knowledge-draw-2026-09-23",
+    "arms": {
+      "direct": {
+        "n": 200,
+        "recallAt1": 122,
+        "recallAt1Share": 0.61,
+        "correct": 122,
+        "native": 176,
+        "modelCalls": 24,
+        "direct": 175,
+        "directShare": 0.875,
+        "directCorrect": 122,
+        "nativeMeanUs": 38.3,
+        "nativeP50Us": 25.7,
+        "nativeP95Us": 47,
+        "abstained": 24,
+        "byProvenance": {
+          "direct": 175,
+          "memory": 25
+        }
+      },
+      "tier": {
+        "n": 200,
+        "recallAt1": 122,
+        "recallAt1Share": 0.61,
+        "correct": 122,
+        "native": 176,
+        "modelCalls": 24,
+        "direct": 0,
+        "directShare": 0,
+        "directCorrect": 0,
+        "nativeMeanUs": 1061.2,
+        "nativeP50Us": 924.4,
+        "nativeP95Us": 1977,
+        "abstained": 24,
+        "byProvenance": {
+          "memory": 200
+        }
+      },
+      "control": {
+        "n": 200,
+        "recallAt1": 122,
+        "recallAt1Share": 0.61,
+        "correct": 122,
+        "native": 176,
+        "modelCalls": 24,
+        "direct": 0,
+        "directShare": 0,
+        "directCorrect": 0,
+        "nativeMeanUs": 1006.8,
+        "nativeP50Us": 915,
+        "nativeP95Us": 1953.3,
+        "abstained": 24,
+        "byProvenance": {
+          "memory": 200
+        }
+      },
+      "none": {
+        "n": 200,
+        "recallAt1": 0,
+        "recallAt1Share": 0,
+        "correct": 0,
+        "native": 0,
+        "modelCalls": 200,
+        "direct": 0,
+        "directShare": 0,
+        "directCorrect": 0,
+        "nativeMeanUs": null,
+        "nativeP50Us": null,
+        "nativeP95Us": null,
+        "abstained": 200,
+        "byProvenance": {
+          "memory": 200
+        }
+      }
+    },
+    "titleAlone": 18,
+    "agree": 175,
+    "directRows": 175,
+    "hitUs": {
+      "mean": 30.5,
+      "p50": 25.7
+    },
+    "hitLookupNs": {
+      "mean": 990.3,
+      "p50": 900
+    },
+    "hitKeyNs": {
+      "mean": 13543.4,
+      "p50": 12900
+    },
+    "counters": {
+      "asked": 400,
+      "hits": 175,
+      "misses": 225,
+      "skipped": 23
+    }
+  },
+  "shapes": {
+    "who": {
+      "recallAt1": 122,
+      "direct": 175,
+      "directShare": 0.875,
+      "native": 176,
+      "nativeMeanUs": 24.6,
+      "byProvenance": {
+        "direct": 175,
+        "memory": 25
+      }
+    },
+    "which": {
+      "recallAt1": 122,
+      "direct": 175,
+      "directShare": 0.875,
+      "native": 176,
+      "nativeMeanUs": 21.9,
+      "byProvenance": {
+        "direct": 175,
+        "memory": 25
+      }
+    },
+    "define": {
+      "recallAt1": 122,
+      "direct": 175,
+      "directShare": 0.875,
+      "native": 176,
+      "nativeMeanUs": 22.7,
+      "byProvenance": {
+        "direct": 175,
+        "memory": 25
+      }
+    },
+    "x-is": {
+      "recallAt1": 120,
+      "direct": 173,
+      "directShare": 0.865,
+      "native": 174,
+      "nativeMeanUs": 26.3,
+      "byProvenance": {
+        "direct": 173,
+        "memory": 27
+      }
+    },
+    "meaning": {
+      "recallAt1": 122,
+      "direct": 175,
+      "directShare": 0.875,
+      "native": 176,
+      "nativeMeanUs": 23.3,
+      "byProvenance": {
+        "direct": 175,
+        "memory": 25
+      }
+    }
+  },
+  "timing": {
+    "lookups": 100000,
+    "reps": 3,
+    "hitNs": [
+      19.88,
+      9.24,
+      8.94
+    ],
+    "missNs": [
+      11.93,
+      12.01,
+      11.66
+    ],
+    "emptyLoopNs": [
+      5.59,
+      1.37,
+      1.25
+    ],
+    "hitNsMedian": 9.24,
+    "missNsMedian": 11.93,
+    "emptyLoopNsMedian": 1.37,
+    "hitsFound": 100000,
+    "missesFound": 0,
+    "meanProbesHit": 1.4531,
+    "meanProbesMiss": 2.3108,
+    "probeSample": 100000,
+    "slots": 8192,
+    "entries": 3883,
+    "load": 0.474,
+    "sink": 581169864
+  },
+  "semantic": {
+    "declared": {
+      "keys": 0,
+      "bytes": 0,
+      "budgetBytes": 268435456,
+      "capacity": 15416,
+      "countCap": null,
+      "bytesPerKey": 17412,
+      "dropped": 0
+    },
+    "tiny": {
+      "keys": 60,
+      "bytes": 1044720,
+      "budgetBytes": 1048576,
+      "capacity": 60,
+      "countCap": null,
+      "bytesPerKey": 17412,
+      "dropped": 16
+    },
+    "lines": [
+      "semantic tier: 0 keys held, 0 bytes of a 268435456 byte budget (256.0 MB), 17412 bytes a named key, room for 15416, 0 dropped",
+      "semantic tier: 60 keys held, 1044720 bytes of a 1048576 byte budget (1.0 MB), 17412 bytes a named key, room for 60, 16 dropped"
+    ]
+  },
+  "rows": [
+    {
+      "title": "Village of the Giants",
+      "ok": false,
+      "provenance": "direct",
+      "us": 451,
+      "lookupNs": 12900,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Glendale, Arizona",
+      "ok": true,
+      "provenance": "direct",
+      "us": 92.1,
+      "lookupNs": 1200,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Marquay, Pas-de-Calais",
+      "ok": true,
+      "provenance": "direct",
+      "us": 37.9,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Mont-Saint-Martin, Aisne",
+      "ok": true,
+      "provenance": "direct",
+      "us": 42.9,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Jón Jósep Snæbjörnsson",
+      "ok": true,
+      "provenance": "direct",
+      "us": 56.9,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Irving Gerstein",
+      "ok": false,
+      "provenance": "direct",
+      "us": 36.1,
+      "lookupNs": 1100,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Ahome",
+      "ok": true,
+      "provenance": "direct",
+      "us": 22.3,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Kendrick Lamar",
+      "ok": true,
+      "provenance": "direct",
+      "us": 22.1,
+      "lookupNs": 600,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "List of Manitoba general elections",
+      "ok": true,
+      "provenance": "direct",
+      "us": 37.3,
+      "lookupNs": 1200,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "The Killers Are Our Guests",
+      "ok": true,
+      "provenance": "direct",
+      "us": 24.7,
+      "lookupNs": 1100,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Ali Shamkhani",
+      "ok": false,
+      "provenance": "memory",
+      "us": 897,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Bégadan",
+      "ok": true,
+      "provenance": "direct",
+      "us": 30.5,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Microsoft Office 2024",
+      "ok": false,
+      "provenance": "direct",
+      "us": 24.4,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Giovanni Corrieri",
+      "ok": false,
+      "provenance": "direct",
+      "us": 43,
+      "lookupNs": 1200,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Danila Yurov",
+      "ok": false,
+      "provenance": "direct",
+      "us": 26.3,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Charlottesville, Virginia",
+      "ok": true,
+      "provenance": "direct",
+      "us": 47.3,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Surques",
+      "ok": true,
+      "provenance": "direct",
+      "us": 46.9,
+      "lookupNs": 1500,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Hadiya Khalaf Abbas",
+      "ok": true,
+      "provenance": "direct",
+      "us": 30.8,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Area studies",
+      "ok": false,
+      "provenance": "memory",
+      "us": 1662.1,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Harrah, Oklahoma",
+      "ok": true,
+      "provenance": "direct",
+      "us": 34.7,
+      "lookupNs": 1100,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Tumaba",
+      "ok": false,
+      "provenance": "direct",
+      "us": 35.8,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "BBC 6 Music",
+      "ok": true,
+      "provenance": "direct",
+      "us": 24.9,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Izates II",
+      "ok": false,
+      "provenance": "memory",
+      "us": 909.2,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Keio University",
+      "ok": true,
+      "provenance": "direct",
+      "us": 31.1,
+      "lookupNs": 1300,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "The Sea of Monsters",
+      "ok": true,
+      "provenance": "direct",
+      "us": 31.6,
+      "lookupNs": 1200,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Bergères",
+      "ok": true,
+      "provenance": "direct",
+      "us": 23.9,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Sodium arsenite",
+      "ok": true,
+      "provenance": "direct",
+      "us": 48.2,
+      "lookupNs": 1200,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Unterlunkhofen",
+      "ok": true,
+      "provenance": "direct",
+      "us": 23.3,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Mi pecado",
+      "ok": true,
+      "provenance": "direct",
+      "us": 23.1,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Boidae",
+      "ok": true,
+      "provenance": "direct",
+      "us": 22.5,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "John Lundvik",
+      "ok": true,
+      "provenance": "direct",
+      "us": 28.3,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Sophie Reynolds",
+      "ok": false,
+      "provenance": "direct",
+      "us": 27.6,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Ka",
+      "ok": false,
+      "provenance": "memory",
+      "us": 1650.7,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "John Dall",
+      "ok": true,
+      "provenance": "direct",
+      "us": 27.9,
+      "lookupNs": 1300,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Blame It on the Rain",
+      "ok": true,
+      "provenance": "direct",
+      "us": 27.8,
+      "lookupNs": 1300,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Surrender (1987 movie)",
+      "ok": true,
+      "provenance": "direct",
+      "us": 30.2,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Prince of Asturias",
+      "ok": false,
+      "provenance": "direct",
+      "us": 25.7,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Andrea Feldman",
+      "ok": false,
+      "provenance": "direct",
+      "us": 28.3,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Going Inside a Storm",
+      "ok": true,
+      "provenance": "direct",
+      "us": 25.4,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Mendrisio District",
+      "ok": true,
+      "provenance": "direct",
+      "us": 29.8,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Antithesis",
+      "ok": true,
+      "provenance": "direct",
+      "us": 27.2,
+      "lookupNs": 1100,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Arc",
+      "ok": false,
+      "provenance": "memory",
+      "us": 1252,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "List of Nutri Ventures – The Quest for the 7 Kingdoms episodes",
+      "ok": false,
+      "provenance": "memory",
+      "us": 1483.8,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Naseeruddin Shah",
+      "ok": true,
+      "provenance": "direct",
+      "us": 56.9,
+      "lookupNs": 1100,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Farley, Missouri",
+      "ok": true,
+      "provenance": "direct",
+      "us": 27.7,
+      "lookupNs": 1400,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Ennio Fantastichini",
+      "ok": true,
+      "provenance": "direct",
+      "us": 24.9,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "National Medal of Science",
+      "ok": false,
+      "provenance": "direct",
+      "us": 29.7,
+      "lookupNs": 1300,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Bono",
+      "ok": false,
+      "provenance": "memory",
+      "us": 1866.3,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "UEFA Euro 2024 final",
+      "ok": false,
+      "provenance": "direct",
+      "us": 40.9,
+      "lookupNs": 1300,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Marine Corps Base Quantico",
+      "ok": false,
+      "provenance": "direct",
+      "us": 26.8,
+      "lookupNs": 1200,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Rudi Glöckner",
+      "ok": true,
+      "provenance": "direct",
+      "us": 27.4,
+      "lookupNs": 1100,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "San Jose State Spartans",
+      "ok": false,
+      "provenance": "direct",
+      "us": 25.6,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "The King of Fighters (movie)",
+      "ok": true,
+      "provenance": "direct",
+      "us": 27.3,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Muldrow, Oklahoma",
+      "ok": true,
+      "provenance": "direct",
+      "us": 22.5,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Secretary of State for Health and Social Care",
+      "ok": true,
+      "provenance": "direct",
+      "us": 37.6,
+      "lookupNs": 1600,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Magog, Quebec",
+      "ok": true,
+      "provenance": "direct",
+      "us": 31.9,
+      "lookupNs": 1200,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Leapmotor B03X",
+      "ok": true,
+      "provenance": "direct",
+      "us": 27.3,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Pentti Linkola",
+      "ok": false,
+      "provenance": "memory",
+      "us": 648.6,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Faboideae",
+      "ok": false,
+      "provenance": "direct",
+      "us": 21.8,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "It Happened One Night",
+      "ok": true,
+      "provenance": "direct",
+      "us": 24.3,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "BBC Sports Personality of the Year Lifetime Achievement Award",
+      "ok": true,
+      "provenance": "direct",
+      "us": 33.4,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Glenwood, Alabama",
+      "ok": true,
+      "provenance": "direct",
+      "us": 25.7,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Cathy Come Home",
+      "ok": false,
+      "provenance": "memory",
+      "us": 1136.8,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Jean Thissen",
+      "ok": true,
+      "provenance": "direct",
+      "us": 27.9,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Islesboro, Maine",
+      "ok": true,
+      "provenance": "direct",
+      "us": 47.5,
+      "lookupNs": 1100,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Cauby Peixoto",
+      "ok": true,
+      "provenance": "direct",
+      "us": 27.7,
+      "lookupNs": 1100,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Lego Batman 2: DC Super Heroes",
+      "ok": true,
+      "provenance": "direct",
+      "us": 38.2,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Tim Pool",
+      "ok": false,
+      "provenance": "memory",
+      "us": 1771.4,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Wardell, Missouri",
+      "ok": true,
+      "provenance": "direct",
+      "us": 29.6,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Xis",
+      "ok": true,
+      "provenance": "direct",
+      "us": 21.8,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Barbon",
+      "ok": true,
+      "provenance": "direct",
+      "us": 19.8,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "G minor",
+      "ok": true,
+      "provenance": "direct",
+      "us": 19.7,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Derby Playhouse",
+      "ok": true,
+      "provenance": "direct",
+      "us": 26.7,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "East Lynne (1931 movie)",
+      "ok": true,
+      "provenance": "direct",
+      "us": 29,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Escalante, Utah",
+      "ok": true,
+      "provenance": "direct",
+      "us": 22.1,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Jackie Jackson",
+      "ok": true,
+      "provenance": "direct",
+      "us": 22.2,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Long Thanh International Airport",
+      "ok": true,
+      "provenance": "direct",
+      "us": 28.9,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Ximen metro station",
+      "ok": true,
+      "provenance": "direct",
+      "us": 23.3,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Siezbüttel",
+      "ok": true,
+      "provenance": "direct",
+      "us": 21.1,
+      "lookupNs": 600,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Nuevo Casas Grandes Municipality",
+      "ok": true,
+      "provenance": "direct",
+      "us": 25.8,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "William Riker",
+      "ok": false,
+      "provenance": "direct",
+      "us": 22,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Speed Force",
+      "ok": false,
+      "provenance": "direct",
+      "us": 24.1,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Govinda Prasad Kalauni",
+      "ok": false,
+      "provenance": "direct",
+      "us": 22.7,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Taoyuan City",
+      "ok": false,
+      "provenance": "direct",
+      "us": 22.4,
+      "lookupNs": 600,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Parker County, Texas",
+      "ok": true,
+      "provenance": "direct",
+      "us": 25.5,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Mental image",
+      "ok": false,
+      "provenance": "direct",
+      "us": 24.3,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Roach's mouse-tailed dormouse",
+      "ok": true,
+      "provenance": "direct",
+      "us": 23.5,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Mary Baker Eddy",
+      "ok": false,
+      "provenance": "memory",
+      "us": 821.5,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Corona Australis",
+      "ok": true,
+      "provenance": "direct",
+      "us": 22.4,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Penal colony",
+      "ok": false,
+      "provenance": "memory",
+      "us": 1296.7,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "U.S. Route 25",
+      "ok": true,
+      "provenance": "direct",
+      "us": 24.4,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Decentralization",
+      "ok": false,
+      "provenance": "direct",
+      "us": 19.8,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Ezekiel Hart",
+      "ok": false,
+      "provenance": "memory",
+      "us": 1002.8,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Galician Institute of Aquaculture Training",
+      "ok": false,
+      "provenance": "memory",
+      "us": 1187,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Coinbase",
+      "ok": true,
+      "provenance": "direct",
+      "us": 21.1,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Windows Phone 8.1",
+      "ok": false,
+      "provenance": "direct",
+      "us": 28.9,
+      "lookupNs": 600,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Dendropsophus rhea",
+      "ok": true,
+      "provenance": "direct",
+      "us": 30.3,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Grammelot",
+      "ok": false,
+      "provenance": "direct",
+      "us": 19.9,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Erinaceidae",
+      "ok": false,
+      "provenance": "direct",
+      "us": 18.1,
+      "lookupNs": 600,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Huo Qubing",
+      "ok": true,
+      "provenance": "direct",
+      "us": 19.4,
+      "lookupNs": 600,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "The Victors (movie)",
+      "ok": false,
+      "provenance": "direct",
+      "us": 22.3,
+      "lookupNs": 600,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Pardon",
+      "ok": false,
+      "provenance": "direct",
+      "us": 21.7,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Forever Your Girl (song)",
+      "ok": true,
+      "provenance": "direct",
+      "us": 22.2,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Michael Robinson (footballer)",
+      "ok": true,
+      "provenance": "direct",
+      "us": 23.7,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Yreka, California",
+      "ok": false,
+      "provenance": "direct",
+      "us": 24,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Quonset hut",
+      "ok": false,
+      "provenance": "memory",
+      "us": 840.4,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Rogers County, Oklahoma",
+      "ok": true,
+      "provenance": "direct",
+      "us": 26.3,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Gamemaster",
+      "ok": false,
+      "provenance": "direct",
+      "us": 19.9,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Rök runestone",
+      "ok": false,
+      "provenance": "memory",
+      "us": 735.5,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Curtido",
+      "ok": false,
+      "provenance": "direct",
+      "us": 22,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Jaworzno",
+      "ok": true,
+      "provenance": "direct",
+      "us": 18,
+      "lookupNs": 500,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Sartrouville",
+      "ok": true,
+      "provenance": "direct",
+      "us": 17.3,
+      "lookupNs": 600,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Ortenberg, Baden-Württemberg",
+      "ok": true,
+      "provenance": "direct",
+      "us": 26.2,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Paulo Wanchope",
+      "ok": true,
+      "provenance": "direct",
+      "us": 26.9,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Kat Bjelland",
+      "ok": true,
+      "provenance": "direct",
+      "us": 29.9,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Clifford Olson",
+      "ok": true,
+      "provenance": "direct",
+      "us": 27.8,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Baja California Sur",
+      "ok": false,
+      "provenance": "direct",
+      "us": 31.3,
+      "lookupNs": 1100,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Antônio Carlos Zago",
+      "ok": true,
+      "provenance": "direct",
+      "us": 29.8,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Rounding",
+      "ok": false,
+      "provenance": "direct",
+      "us": 22.2,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Jacaranda mimosifolia",
+      "ok": false,
+      "provenance": "direct",
+      "us": 24.7,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "ISO 3166-2:SK",
+      "ok": false,
+      "provenance": "memory",
+      "us": 1398.2,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Rajaraja Chola I",
+      "ok": false,
+      "provenance": "direct",
+      "us": 23.5,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Lockdown (2000 movie)",
+      "ok": true,
+      "provenance": "direct",
+      "us": 30.4,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Mark LaVarre",
+      "ok": false,
+      "provenance": "direct",
+      "us": 24.1,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Eochaid of Scotland",
+      "ok": false,
+      "provenance": "direct",
+      "us": 28.4,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Gujarat",
+      "ok": false,
+      "provenance": "direct",
+      "us": 22.2,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Amyloplast",
+      "ok": false,
+      "provenance": "direct",
+      "us": 18.3,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Lake Victoria",
+      "ok": true,
+      "provenance": "direct",
+      "us": 20.9,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "György Baló",
+      "ok": false,
+      "provenance": "memory",
+      "us": 607.1,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Wilburton, Oklahoma",
+      "ok": true,
+      "provenance": "direct",
+      "us": 24.7,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Ceropegia elegans",
+      "ok": false,
+      "provenance": "direct",
+      "us": 47,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Hyla orientalis",
+      "ok": true,
+      "provenance": "direct",
+      "us": 29.2,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "The Return of Saint Luke",
+      "ok": true,
+      "provenance": "direct",
+      "us": 33.4,
+      "lookupNs": 1400,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Running Water (song)",
+      "ok": true,
+      "provenance": "direct",
+      "us": 25.2,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "International Union of Railways",
+      "ok": false,
+      "provenance": "direct",
+      "us": 29.3,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Roberto Digón",
+      "ok": true,
+      "provenance": "direct",
+      "us": 42.1,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Wayne, Michigan",
+      "ok": true,
+      "provenance": "direct",
+      "us": 41.6,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Polyxena of Hesse-Rotenburg",
+      "ok": false,
+      "provenance": "memory",
+      "us": 765.5,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Birkir Már Sævarsson",
+      "ok": true,
+      "provenance": "direct",
+      "us": 44.4,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Ibarra, Ecuador",
+      "ok": true,
+      "provenance": "direct",
+      "us": 35.1,
+      "lookupNs": 600,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Jos Vandeloo",
+      "ok": true,
+      "provenance": "direct",
+      "us": 25.7,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Evan Lysacek",
+      "ok": true,
+      "provenance": "direct",
+      "us": 36.8,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Krásná Hora",
+      "ok": true,
+      "provenance": "direct",
+      "us": 22.5,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Vittoria Bogo Deledda",
+      "ok": true,
+      "provenance": "direct",
+      "us": 25.9,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Eagar, Arizona",
+      "ok": true,
+      "provenance": "direct",
+      "us": 45,
+      "lookupNs": 1300,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Gary Eck",
+      "ok": false,
+      "provenance": "memory",
+      "us": 803.6,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Garabit Viaduct",
+      "ok": true,
+      "provenance": "direct",
+      "us": 24,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Mendenhall Springs, California",
+      "ok": true,
+      "provenance": "direct",
+      "us": 24.4,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Bogo, Cebu",
+      "ok": true,
+      "provenance": "direct",
+      "us": 22.2,
+      "lookupNs": 600,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Willem Aantjes",
+      "ok": true,
+      "provenance": "direct",
+      "us": 20.9,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Orange County, North Carolina",
+      "ok": true,
+      "provenance": "direct",
+      "us": 29,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Paul Sand",
+      "ok": true,
+      "provenance": "direct",
+      "us": 25.8,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Epigastric artery",
+      "ok": false,
+      "provenance": "direct",
+      "us": 22.7,
+      "lookupNs": 500,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Cape Horn",
+      "ok": false,
+      "provenance": "memory",
+      "us": 1309.1,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Ivor Grattan-Guinness",
+      "ok": true,
+      "provenance": "direct",
+      "us": 22,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Stephen P. Cohen",
+      "ok": false,
+      "provenance": "memory",
+      "us": 913.6,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Fabiola Yáñez",
+      "ok": false,
+      "provenance": "direct",
+      "us": 28,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "David Reed (American football)",
+      "ok": false,
+      "provenance": "direct",
+      "us": 26.7,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Aging in cats",
+      "ok": false,
+      "provenance": "direct",
+      "us": 23.2,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Sames, Pyrénées-Atlantiques",
+      "ok": true,
+      "provenance": "direct",
+      "us": 31.2,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Faure Gnassingbé",
+      "ok": true,
+      "provenance": "direct",
+      "us": 29.9,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Steeple",
+      "ok": false,
+      "provenance": "direct",
+      "us": 20.7,
+      "lookupNs": 1100,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Niklas Bäckström",
+      "ok": true,
+      "provenance": "direct",
+      "us": 30.3,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Vosselaar",
+      "ok": true,
+      "provenance": "direct",
+      "us": 24.5,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Amy Logan",
+      "ok": true,
+      "provenance": "direct",
+      "us": 20.5,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Rives, Missouri",
+      "ok": true,
+      "provenance": "direct",
+      "us": 24.7,
+      "lookupNs": 1100,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Allobates bacurau",
+      "ok": true,
+      "provenance": "direct",
+      "us": 23.3,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Karkkila",
+      "ok": true,
+      "provenance": "direct",
+      "us": 20.5,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Gekisou Sentai Carranger",
+      "ok": true,
+      "provenance": "direct",
+      "us": 21.8,
+      "lookupNs": 600,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Parvicursor",
+      "ok": true,
+      "provenance": "direct",
+      "us": 17.8,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Dori Friend",
+      "ok": false,
+      "provenance": "memory",
+      "us": 514.6,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Beyond the Gates",
+      "ok": false,
+      "provenance": "direct",
+      "us": 22.9,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Santa Bárbara, Honduras",
+      "ok": true,
+      "provenance": "direct",
+      "us": 30.1,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Cypripedium reginae",
+      "ok": false,
+      "provenance": "direct",
+      "us": 22.3,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Tuscumbia, Missouri",
+      "ok": true,
+      "provenance": "direct",
+      "us": 23.3,
+      "lookupNs": 600,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Joseph Cotten",
+      "ok": true,
+      "provenance": "direct",
+      "us": 22.8,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Kangxi Emperor",
+      "ok": true,
+      "provenance": "direct",
+      "us": 26.7,
+      "lookupNs": 600,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Paw Patrol season 9",
+      "ok": true,
+      "provenance": "direct",
+      "us": 30.9,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Bruno Maderna",
+      "ok": false,
+      "provenance": "direct",
+      "us": 23.6,
+      "lookupNs": 1200,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Eustis, Nebraska",
+      "ok": true,
+      "provenance": "direct",
+      "us": 22.1,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Eric Lindros",
+      "ok": true,
+      "provenance": "direct",
+      "us": 25,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Spencer Bohren",
+      "ok": false,
+      "provenance": "direct",
+      "us": 56.7,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Luigi Radice",
+      "ok": true,
+      "provenance": "direct",
+      "us": 26.4,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Karl Kroeber",
+      "ok": false,
+      "provenance": "memory",
+      "us": 1725.9,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Hal Roach",
+      "ok": true,
+      "provenance": "direct",
+      "us": 37.1,
+      "lookupNs": 1200,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Cave, Missouri",
+      "ok": true,
+      "provenance": "direct",
+      "us": 23,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Pocklington",
+      "ok": true,
+      "provenance": "direct",
+      "us": 20.8,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Audio description",
+      "ok": false,
+      "provenance": "direct",
+      "us": 19.8,
+      "lookupNs": 700,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Gubbio",
+      "ok": true,
+      "provenance": "direct",
+      "us": 19.2,
+      "lookupNs": 600,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Ebensfeld",
+      "ok": true,
+      "provenance": "direct",
+      "us": 18,
+      "lookupNs": 900,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Klaus, Vorarlberg",
+      "ok": true,
+      "provenance": "direct",
+      "us": 26.9,
+      "lookupNs": 1000,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Premier of Manitoba",
+      "ok": false,
+      "provenance": "direct",
+      "us": 32.5,
+      "lookupNs": 1300,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "The Phantom of Liberty",
+      "ok": true,
+      "provenance": "direct",
+      "us": 24.3,
+      "lookupNs": 800,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "British Rail Class 01",
+      "ok": false,
+      "provenance": "direct",
+      "us": 32.2,
+      "lookupNs": 1300,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "1704",
+      "ok": false,
+      "provenance": "direct",
+      "us": 23.8,
+      "lookupNs": 1200,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Lynda Thomas",
+      "ok": false,
+      "provenance": "direct",
+      "us": 25.9,
+      "lookupNs": 1100,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "John E. Sununu",
+      "ok": false,
+      "provenance": "direct",
+      "us": 31,
+      "lookupNs": 1100,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Leo Belgicus",
+      "ok": true,
+      "provenance": "direct",
+      "us": 23.3,
+      "lookupNs": 1400,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    },
+    {
+      "title": "Female",
+      "ok": false,
+      "provenance": "memory",
+      "us": 2847.2,
+      "lookupNs": null,
+      "tier": "memory",
+      "tierOk": false,
+      "control": "memory"
+    },
+    {
+      "title": "Brownstown, Illinois",
+      "ok": true,
+      "provenance": "direct",
+      "us": 37,
+      "lookupNs": 1400,
+      "tier": "memory",
+      "tierOk": true,
+      "control": "memory"
+    }
+  ],
+  "peakRssMb": 987.9,
+  "printed": [
+    "native: node bench/native.mjs --limit 3000 --lookups 100000",
+    "code: act/prompt.mjs sha256 b22f5cd9d7691bbd, memory/knowledge.mjs faa93706d823beeb, memory/semantic.mjs 18c34e1445a6df7a, memory/direct.mjs 395e2356aac8b11d",
+    "before (bench/verdicts/native-before-partial.json, 2026-09-24T08:23:34.337Z, act/prompt.mjs 46d4319932d09752, not the code now): tasks 724/725, suite exact and correct 724 (digest aaa9480b6cfcd764), wiki recall@1 122/200",
+    "tasks tally: before 724/725, after 724/725 (algebra 360/360, sequence 205/205, grid 159/160); wrong after: grid:grid.d2.13; unchanged",
+    "suite through ask(), direct step off: exact 725, exact and correct 724 (digest aaa9480b6cfcd764), lost against before 0, mean 1135.1 us",
+    "fill, suite: 725 asked through ask() with a learning table: 720 exact entries, 0 memory entries, fold collisions 11, exact and correct 724",
+    "  fill 1000/3000 titles, 989 entries, 3.3 s",
+    "  fill 2000/3000 titles, 1980 entries, 3.3 s",
+    "  fill 3000/3000 titles, 2968 entries, 6.1 s",
+    "fill, wiki: 3000 of 284749 titles on 2 worker threads in 6.1 s, 2968 answered by the tier; table 3883 entries (720 exact, 3163 memory, 2842 memory at or above the floor 0.2), 8192 slots, 199768 typed bytes + 227862 string bytes, fold collisions 22, probe collisions 926, replaced 4",
+    "shared folds among the 2968 filled: 3 the same question again, 11 another wording of the same title words (told apart by the verifier), 0 between different word sets (a true 64 bit fold collision)",
+    "drawn titles in the table: 199/200; in the control table (every title but the drawn): 0/200",
+    "save and load: 349968 bytes on disk, read back identical in every slot, column and string (temp file removed)",
+    "wiki: 200 of 628 held out (seed knowledge-draw-2026-09-23), asked \"What is <title>?\" through ask(), four arms interleaved",
+    "  direct table: recall@1 memory or direct, no model call 122/200 (61.0%); direct 175 (87.5%), of them correct 122; native 176, model calls 24; native mean 38.3 us (p50 25.7, p95 47); provenance {\"direct\":175,\"memory\":25}",
+    "  tier alone (direct off): recall@1 memory or direct, no model call 122/200 (61.0%); direct 0 (0.0%), of them correct 0; native 176, model calls 24; native mean 1061.2 us (p50 924.4, p95 1977); provenance {\"memory\":200}",
+    "  control table (drawn titles left out): recall@1 memory or direct, no model call 122/200 (61.0%); direct 0 (0.0%), of them correct 0; native 176, model calls 24; native mean 1006.8 us (p50 915, p95 1953.3); provenance {\"memory\":200}",
+    "  null: tier and table off: recall@1 memory or direct, no model call 0/200 (0.0%); direct 0 (0.0%), of them correct 0; native 0, model calls 200; native mean null us (p50 null, p95 null); provenance {\"memory\":200}",
+    "  null: the title alone (bench/knowledge.mjs nullAnswers) 18/200",
+    "  direct hits agree with the tier alone (same answer, same article, same grade): 175/175",
+    "  direct hits through ask(): mean 30.5 us a whole ask (p50 25.7); lookup 990.3 ns mean (p50 900), key 13543.4 ns mean (p50 12900), as ask() printed them",
+    "  direct step counters over the four arms: asked 400, hits 175, misses 225, skipped 23",
+    "  shape who (\"Who is X?\"): direct 175/200 (87.5%), recall@1 memory or direct 122/200, native mean 24.6 us",
+    "  shape which (\"Which is X?\"): direct 175/200 (87.5%), recall@1 memory or direct 122/200, native mean 21.9 us",
+    "  shape define (\"Define X\"): direct 175/200 (87.5%), recall@1 memory or direct 122/200, native mean 22.7 us",
+    "  shape x-is (\"X is?\"): direct 173/200 (86.5%), recall@1 memory or direct 120/200, native mean 26.3 us",
+    "  shape meaning (\"What does X mean?\"): direct 175/200 (87.5%), recall@1 memory or direct 122/200, native mean 23.3 us",
+    "direct table, 100000 lookups a run, 3 runs, process.hrtime.bigint around each whole run: ns per hit 19.88 / 9.24 / 8.94 (median 9.24), ns per miss 11.93 / 12.01 / 11.66 (median 11.93), the same loop without the lookup 5.59 / 1.37 / 1.25 ns; hit keys found 100000/100000, miss keys found 0/100000; mean probes 1.4531 a hit, 2.3108 a miss (100000 sampled); 3883 entries in 8192 slots, load 0.474",
+    "suite through ask(), direct step on (the full table): exact 725, exact and correct 724 (digest aaa9480b6cfcd764), provenance {\"direct\":725}, lost against before 0, mean 14.3 us",
+    "semantic tier at its declared budget (--semantic-mb 256): semantic tier: 0 keys held, 0 bytes of a 268435456 byte budget (256.0 MB), 17412 bytes a named key, room for 15416, 0 dropped",
+    "  budget evicts: semantic tier: 60 keys held, 1044720 bytes of a 1048576 byte budget (1.0 MB), 17412 bytes a named key, room for 60, 1 dropped",
+    "  budget evicts: semantic tier: 60 keys held, 1044720 bytes of a 1048576 byte budget (1.0 MB), 17412 bytes a named key, room for 60, 2 dropped",
+    "  budget evicts: semantic tier: 60 keys held, 1044720 bytes of a 1048576 byte budget (1.0 MB), 17412 bytes a named key, room for 60, 4 dropped",
+    "  budget evicts: semantic tier: 60 keys held, 1044720 bytes of a 1048576 byte budget (1.0 MB), 17412 bytes a named key, room for 60, 8 dropped",
+    "  budget evicts: semantic tier: 60 keys held, 1044720 bytes of a 1048576 byte budget (1.0 MB), 17412 bytes a named key, room for 60, 16 dropped",
+    "semantic tier at a 1 MB budget after 76 keys learned: semantic tier: 60 keys held, 1044720 bytes of a 1048576 byte budget (1.0 MB), 17412 bytes a named key, room for 60, 16 dropped",
+    "BAR: recall@1 memory or direct 122/200 against 100 needed: met; suite unchanged (tasks tally, and not one exact answer lost with the table off or on): met; ns per direct hit from a measured loop of 100000: 9.24 ns MISSED; BAR NOT MET (a narrow run: written -partial)",
+    "peak rss 987.9 MB (the whole process, fill workers included)"
+  ]
+}

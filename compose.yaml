@@ -1,0 +1,83 @@
+# compose.yaml: the organism as one sandboxed service (his P13) and its duplicates (his P15:
+# "multiplying, duplicating, all within cloud with zero data on my part").
+#
+#   docker compose up -d --build                  the organism, 24/7, restarted on any exit
+#   curl -s http://127.0.0.1:8080/health          uptime, restarts, tick, checkpoint age and bytes
+#   curl -s "http://127.0.0.1:8080/duplicate?seed=1"
+#   DUP_NAME=dup-1 docker compose --profile dup up -d dup     a second container from that copy
+#
+# docs/CLOUD.md is the manual; bench/cloud.mjs measures what this file declares.
+#
+# EGRESS ALLOWLIST. The organism may reach three things and nothing else:
+#   1. the venue feed hosts world/policy.json declares (http.hosts, venue.venues, venue.feeds;
+#      the shipped policy declares NONE, so today there is no venue egress at all)
+#   2. the model endpoint, BRAIN_MODEL_URL: Ollama on the host, reached through the
+#      host.docker.internal entry in extra_hosts below
+#   3. the checkpoint store, BRAIN_CHECKPOINT_URL (empty: checkpoints stay on the volume)
+# plus any host:port listed in BRAIN_EGRESS_ALLOW (empty). bin/serve.mjs enforces the list in
+# every node process of the container (fetch, http.request, https.request): anything else is
+# refused before a socket opens and logged to /state/egress.log. The list is enforced in the
+# PROCESS, not the network: a network level wall needs an egress proxy (docs/CLOUD.md, OPEN).
+
+name: brain
+
+x-organism-env: &organism-env
+  BRAIN_NAME: cloud
+  BRAIN_INSTANCE: brain-1
+  BRAIN_MAJORS: "12"
+  BRAIN_UNITS: "256"
+  BRAIN_CHECKPOINT_EVERY: "1000"
+  BRAIN_LEDGER: summary
+  BRAIN_LEDGER_BUDGET_MB: "64"
+  BRAIN_HEAP_MB: "224"
+  BRAIN_RSS_CAP_MB: "448"
+  BRAIN_DISK_CAP_MB: "2048"
+  BRAIN_LADDER: "on"
+  BRAIN_LADDER_HOUR: "4"
+  TZ: ${BRAIN_TZ:-UTC}
+  BRAIN_MODEL_URL: ${BRAIN_MODEL_URL:-http://host.docker.internal:11434}
+  BRAIN_CHECKPOINT_URL: ${BRAIN_CHECKPOINT_URL:-}
+  BRAIN_EGRESS_ALLOW: ${BRAIN_EGRESS_ALLOW:-}
+
+x-organism: &organism
+  build: .
+  image: brain-organism:latest
+  init: true
+  restart: always
+  read_only: true
+  user: "1000:1000"
+  mem_limit: 512m
+  memswap_limit: 512m
+  cpus: 1.0
+  pids_limit: 256
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  tmpfs: ["/tmp:size=64m,mode=1777"]
+  volumes: ["brain-state:/state"]
+  stop_grace_period: 30s
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "3" }
+
+services:
+  brain:
+    <<: *organism
+    ports: ["127.0.0.1:${HEALTH_HOST_PORT:-8080}:8080"]
+    environment:
+      <<: *organism-env
+
+  # a second organism resumed from /state/${DUP_NAME} (made by GET /duplicate?seed=N)
+  dup:
+    <<: *organism
+    profiles: ["dup"]
+    ports: ["127.0.0.1:${DUP_HOST_PORT:-8081}:8080"]
+    environment:
+      <<: *organism-env
+      BRAIN_NAME: ${DUP_NAME:-dup-1}
+      BRAIN_INSTANCE: ${DUP_NAME:-dup-1}
+      BRAIN_LADDER: "off"
+
+volumes:
+  brain-state: {}

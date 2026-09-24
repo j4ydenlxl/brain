@@ -1,0 +1,265 @@
+{
+  "at": "2026-09-24T13:16:55.220Z",
+  "command": "cmd.exe /c cd /d C:\\Users\\ybmic\\Downloads\\claudeskillsvideo-to-website\\brain && (C:\\PROGRA~1\\nodejs\\node.exe tools\\budget.mjs --ram-mb 6000 --disk-mb 200 --dir bench\\verdicts\\public --wait-free-ram-mb 16384 --wait-max-s 21600 --record bench\\verdicts\\public\\budget-whole-gsm8k.json -- C:\\PROGRA~1\\nodejs\\node.exe --max-old-space-size=6000 bench\\public.mjs --set gsm8k --limit 0 --resume > bench\\verdicts\\public\\whole-gsm8k.log 2>&1 & C:\\PROGRA~1\\nodejs\\node.exe tools\\budget.mjs --ram-mb 6000 --disk-mb 200 --dir bench\\verdicts\\public --wait-free-ram-mb 16384 --wait-max-s 21600 --record bench\\verdicts\\public\\budget-whole-humaneval.json -- C:\\PROGRA~1\\nodejs\\node.exe --max-old-space-size=6000 bench\\public.mjs --set humaneval --limit 0 --resume > bench\\verdicts\\public\\whole-humaneval.log 2>&1 & C:\\PROGRA~1\\nodejs\\node.exe tools\\budget.mjs --ram-mb 6000 --disk-mb 200 --dir bench\\verdicts\\public --wait-free-ram-mb 16384 --wait-max-s 21600 --record bench\\verdicts\\public\\budget-whole-gsm8k-30b.json -- C:\\PROGRA~1\\nodejs\\node.exe --max-old-space-size=6000 bench\\public.mjs --set gsm8k --limit 0 --resume --model qwen3:30b-a3b --tag 30b > bench\\verdicts\\public\\whole-gsm8k-30b.log 2>&1)",
+  "node": "v24.15.0",
+  "isTheBar": true,
+  "item": "Board 11, public (P4): the whole public sets through the new ask path",
+  "bar": "both smoke -partial verdicts written from ask() with provenance fields; the chain launched; its first journal line count printed twice, a minute apart",
+  "smoke": {
+    "gsm8k": {
+      "file": "bench/verdicts/public-gsm8k-smoke-partial.json",
+      "at": "2026-09-24T12:51:54.405Z",
+      "command": "node bench/public.mjs --set gsm8k --limit 30 --name smoke",
+      "isTheBar": false,
+      "n": 30,
+      "of": 1319,
+      "organism": {
+        "correct": 27,
+        "n": 30,
+        "interval": {
+          "lo": 0.743786,
+          "hi": 0.965401,
+          "width": 0.221615
+        }
+      },
+      "alone": {
+        "correct": 26,
+        "n": 30,
+        "interval": {
+          "lo": 0.703183,
+          "hi": 0.946904,
+          "width": 0.243721
+        }
+      },
+      "null": {
+        "correct": 0,
+        "n": 30
+      },
+      "native": {
+        "n": 0,
+        "of": 30,
+        "share": 0,
+        "correct": 0,
+        "meanUs": null,
+        "maxUs": null,
+        "provenances": [
+          "exact",
+          "memory",
+          "direct"
+        ]
+      },
+      "direct": {
+        "n": 0,
+        "of": 30,
+        "share": 0,
+        "correct": 0,
+        "meanNs": null,
+        "meanUs": null
+      },
+      "splits": {
+        "organism": {
+          "development": {
+            "n": 5,
+            "correct": 4,
+            "accuracy": 0.8,
+            "interval": {
+              "lo": 0.375528,
+              "hi": 0.963777,
+              "width": 0.588249
+            }
+          },
+          "heldOut": {
+            "n": 25,
+            "correct": 23,
+            "accuracy": 0.92,
+            "interval": {
+              "lo": 0.750335,
+              "hi": 0.97778,
+              "width": 0.227445
+            }
+          }
+        },
+        "alone": {
+          "development": {
+            "n": 5,
+            "correct": 4,
+            "accuracy": 0.8,
+            "interval": {
+              "lo": 0.375528,
+              "hi": 0.963777,
+              "width": 0.588249
+            }
+          },
+          "heldOut": {
+            "n": 25,
+            "correct": 22,
+            "accuracy": 0.88,
+            "interval": {
+              "lo": 0.700438,
+              "hi": 0.958333,
+              "width": 0.257895
+            }
+          }
+        }
+      },
+      "organismRecordsWithProvenance": 32,
+      "organismRecordsJournaled": 32,
+      "etaWhole": {
+        "msPerTask": 26458.62,
+        "of": 1319,
+        "minutes": 581.65,
+        "remaining": 1289,
+        "remainingMinutes": 568.42,
+        "arithmetic": "26458.62 ms per record x 1319 records / 60000 = 581.65 minutes (arms organism,alone,null, interleaved; a resume skips the 30 held here, leaving 568.42 minutes)"
+      }
+    },
+    "humaneval": {
+      "file": "bench/verdicts/public-humaneval-smoke-partial.json",
+      "at": "2026-09-24T13:14:25.312Z",
+      "command": "node bench/public.mjs --set humaneval --limit 30 --name smoke",
+      "isTheBar": false,
+      "n": 30,
+      "of": 161,
+      "organism": {
+        "correct": 23,
+        "n": 30,
+        "interval": {
+          "lo": 0.590713,
+          "hi": 0.882078,
+          "width": 0.291364
+        }
+      },
+      "alone": {
+        "correct": 14,
+        "n": 30,
+        "interval": {
+          "lo": 0.302321,
+          "hi": 0.63858,
+          "width": 0.336259
+        }
+      },
+      "null": {
+        "correct": 0,
+        "n": 30
+      },
+      "native": {
+        "n": 0,
+        "of": 30,
+        "share": 0,
+        "correct": 0,
+        "meanUs": null,
+        "maxUs": null,
+        "provenances": [
+          "exact",
+          "memory",
+          "direct"
+        ]
+      },
+      "direct": {
+        "n": 0,
+        "of": 30,
+        "share": 0,
+        "correct": 0,
+        "meanNs": null,
+        "meanUs": null
+      },
+      "splits": {
+        "organism": {
+          "development": {
+            "n": 7,
+            "correct": 7,
+            "accuracy": 1,
+            "interval": {
+              "lo": 0.645661,
+              "hi": 1,
+              "width": 0.354339
+            }
+          },
+          "heldOut": {
+            "n": 23,
+            "correct": 16,
+            "accuracy": 0.695652,
+            "interval": {
+              "lo": 0.491339,
+              "hi": 0.843962,
+              "width": 0.352623
+            }
+          }
+        },
+        "alone": {
+          "development": {
+            "n": 7,
+            "correct": 4,
+            "accuracy": 0.571429,
+            "interval": {
+              "lo": 0.250454,
+              "hi": 0.841783,
+              "width": 0.591329
+            }
+          },
+          "heldOut": {
+            "n": 23,
+            "correct": 10,
+            "accuracy": 0.434783,
+            "interval": {
+              "lo": 0.256344,
+              "hi": 0.63189,
+              "width": 0.375546
+            }
+          }
+        }
+      },
+      "organismRecordsWithProvenance": 30,
+      "organismRecordsJournaled": 30,
+      "etaWhole": {
+        "msPerTask": 45006.3,
+        "of": 161,
+        "minutes": 120.77,
+        "remaining": 131,
+        "remainingMinutes": 98.26,
+        "arithmetic": "45006.3 ms per record x 161 records / 60000 = 120.77 minutes (arms organism,alone,null, interleaved; a resume skips the 30 held here, leaving 98.26 minutes)"
+      }
+    }
+  },
+  "chain": {
+    "launchedAs": "one cmd.exe created through WMI Win32_Process Create (hidden, outlives the session), process id 32984, at 2026-09-24T13:15:09Z",
+    "steps": [
+      {
+        "verdict": "bench/verdicts/public-gsm8k.json",
+        "journal": "bench/verdicts/public/gsm8k-public_1.jsonl",
+        "log": "bench/verdicts/public/whole-gsm8k.log",
+        "budgetRecord": "bench/verdicts/public/budget-whole-gsm8k.json"
+      },
+      {
+        "verdict": "bench/verdicts/public-humaneval.json",
+        "journal": "bench/verdicts/public/humaneval-public_1.jsonl",
+        "log": "bench/verdicts/public/whole-humaneval.log",
+        "budgetRecord": "bench/verdicts/public/budget-whole-humaneval.json"
+      },
+      {
+        "verdict": "bench/verdicts/public-gsm8k-30b.json",
+        "journal": "bench/verdicts/public/gsm8k-30b-public_1.jsonl",
+        "log": "bench/verdicts/public/whole-gsm8k-30b.log",
+        "budgetRecord": "bench/verdicts/public/budget-whole-gsm8k-30b.json"
+      }
+    ],
+    "firstJournalLineCounts": [
+      {
+        "at": "2026-09-24T13:15:13Z",
+        "lines": 91
+      },
+      {
+        "at": "2026-09-24T13:16:19Z",
+        "lines": 98
+      }
+    ],
+    "expectedMinutes": {
+      "gsm8k": "26458.62 ms per record x 1319 records / 60000 = 581.65 minutes (arms organism,alone,null, interleaved; a resume skips the 30 held here, leaving 568.42 minutes)",
+      "humaneval": "45006.3 ms per record x 161 records / 60000 = 120.77 minutes (arms organism,alone,null, interleaved; a resume skips the 30 held here, leaving 98.26 minutes)",
+      "firstTwoRemaining": "568.42 + 98.26 = 666.68 minutes",
+      "gsm8k30b": "not measured: no 30b smoke was run, so no ms per record exists to multiply"
+    }
+  },
+  "sharedQueue": "every latency here was measured on ONE Ollama queue that other builders were using at the same time",
+  "statement": "The bar is met. Both smokes ran 30 records through act/prompt.mjs ask() with the regions on and wrote their -partial verdicts (isTheBar false): GSM8K organism 27 of 30, alone 26 of 30; HumanEval organism 23 of 30, alone 14 of 30, held out (records 40 to 160) organism 16 of 23 against alone 10 of 23. Every organism record journals its provenance, its region provenance and its microseconds (32 of 32 and 30 of 30). No record of either smoke was native (native 0 and 0, direct 0 and 0). The chain (GSM8K whole, HumanEval whole, GSM8K on qwen3:30b-a3b) was launched detached through tools/budget.mjs with --resume; its first journal held 91 lines at 2026-09-24T13:15:13Z and 98 lines at 2026-09-24T13:16:19Z. Expected minutes for the first two steps from the smoke rates: 666.68; the 30b step is not measured. These are samples: no accuracy here is a bar for either set."
+}

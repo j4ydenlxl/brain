@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DILATION / BRAIN / PORTFOLIO</title>
+<meta name="description" content="The portfolio of a persistent computational organism, in paragraphs: what it is, what it does, and what was measured. Regenerated from docs/PORTFOLIO.md at every build, with the markdown one click away.">
+<style>
+:root { color-scheme: dark; --ink: #e8eefc; --dim: #7f8ba6; --line: rgba(150,180,255,0.14);
+  --glass: rgba(10,14,26,0.62); --accent: #7fb0ff; --warm: #ffb27f; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #02030a; color: var(--ink);
+  font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+body { padding: 0 20px 72px; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--line); }
+a:hover { border-bottom-color: var(--accent); }
+.wrap { max-width: 880px; margin: 0 auto; }
+header.top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  flex-wrap: wrap; padding: 34px 0 10px; border-bottom: 1px solid var(--line); }
+h1 { font-size: 15px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; margin: 0;
+  text-shadow: 0 0 18px rgba(127,176,255,0.28); }
+h1 .dim { text-shadow: none; }
+.dim { color: var(--dim); }
+.meta { color: var(--dim); margin: 14px 0 0; max-width: 92ch; }
+.tools { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 18px 0 6px; }
+button { background: var(--glass); border: 1px solid var(--line); border-radius: 10px; padding: 7px 13px;
+  color: var(--ink); letter-spacing: 0.16em; text-transform: uppercase; font: inherit; font-size: 11px; cursor: pointer; }
+button:hover { border-color: var(--accent); text-shadow: 0 0 12px rgba(127,176,255,0.55); }
+#said { color: var(--dim); min-width: 12ch; }
+article { max-width: 78ch; margin: 22px 0 0; font-size: 13px; line-height: 1.75; }
+article h1 { font-size: 17px; letter-spacing: 0.08em; text-transform: none; margin: 0 0 22px; }
+article h2, article h3 { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; margin: 30px 0 6px; }
+article p { margin: 0 0 16px; color: var(--ink); }
+article code { color: var(--warm); background: rgba(255,178,127,0.06); border: 1px solid rgba(255,178,127,0.14);
+  border-radius: 4px; padding: 0 4px; }
+details { margin: 28px 0 0; }
+summary { cursor: pointer; color: var(--dim); letter-spacing: 0.16em; text-transform: uppercase; font-size: 11px; }
+textarea { width: 100%; min-height: 320px; margin-top: 10px; background: var(--glass); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font: inherit; resize: vertical; }
+footer { margin-top: 40px; color: var(--dim); border-top: 1px solid var(--line); padding-top: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <h1>DILATION <span class="dim">/</span> BRAIN <span class="dim">/</span> PORTFOLIO</h1>
+  <nav><a href="../">organism</a> <span class="dim">/</span> <a href="../findings/">findings</a> <span class="dim">/</span> <a href="../ladder/">ladder</a> <span class="dim">/</span> <a href="PORTFOLIO.md">raw markdown</a></nav>
+</header>
+<p class="meta">The portfolio, in paragraphs. It is the file <code>docs/PORTFOLIO.md</code> rendered at build time, so
+this page is the current one: every deploy regenerates it, and the sentences that carry counts are rewritten by
+<code>tools/portfolio-gate.mjs</code> after each green gate. Copy it as markdown or as plain text; the raw file is served next to this page.</p>
+<div class="tools">
+  <button id="copy-md" type="button">copy markdown</button>
+  <button id="copy-text" type="button">copy plain text</button>
+  <span id="said" aria-live="polite"></span>
+</div>
+<article id="doc">
+{{BODY}}
+</article>
+<details>
+  <summary>raw markdown ({{BYTES}} bytes, {{PARAGRAPHS}} paragraphs)</summary>
+  <textarea id="md" readonly spellcheck="false" aria-label="the portfolio as markdown">{{MD}}</textarea>
+</details>
+<footer>generated {{GENERATED}} from docs/PORTFOLIO.md; gate {{GATE}}</footer>
+</div>
+<script>
+(function () {
+  var ta = document.getElementById('md'), said = document.getElementById('said');
+  function say(t) { said.textContent = t; setTimeout(function () { said.textContent = ''; }, 2400); }
+  function put(text, label) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { say(label + ' copied'); }, function () { fallback(text, label); });
+    } else fallback(text, label);
+  }
+  function fallback(text, label) {
+    var d = document.getElementById('md').parentNode; d.open = true;
+    ta.value = text; ta.focus(); ta.select();
+    var ok = false; try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    say(ok ? label + ' copied' : 'selected: press ctrl+c');
+  }
+  document.getElementById('copy-md').addEventListener('click', function () { put(ta.value, 'markdown'); });
+  document.getElementById('copy-text').addEventListener('click', function () {
+    var parts = [];
+    document.querySelectorAll('#doc h1, #doc h2, #doc h3, #doc p').forEach(function (el) { parts.push(el.textContent.replace(/\s+/g, ' ').trim()); });
+    put(parts.join('\n\n') + '\n', 'plain text');
+  });
+})();
+</script>
+</body>
+</html>

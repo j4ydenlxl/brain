@@ -1,0 +1,2403 @@
+{
+  "at": "2026-09-24T08:51:24.410Z",
+  "command": "node bench/venue.mjs",
+  "node": "v24.15.0",
+  "cpus": 32,
+  "platform": "win32",
+  "isTheBar": true,
+  "statement": "On the recorded pumpswap tape read only from trader.db (2839 instruments, 324480 readings, every instrument with at least 20 readings), 7 typed sensors (real SOL, age, trading and buying intervals in the last 6 readings, reserve slope, market births in 600 s, migrated origin) fed the venue.trader gate; 120 generations of 64 genomes (7548 evaluations) over the gate and a trailing exit were selected on TRAIN only (2126 instruments, the development set) by the smaller fold t statistic of the per instrument gap to an age binned baseline, and the one elite (gates realSolMin 12.19, realSolMax 5208, ageMin 30.22, ageMax 141.8, tradesMin 3, slopeMin 0.09485, birthsMin 2, maxEntries 3; exit trail 0.02014, trailArm off, stopLoss 0.3768, maxHold 49, takeProfit 1.179) was graded once on the 713 HELD OUT instruments at the payable price after the borrowed 0.0454 fee charged on both legs. It made 498 trips on 390 instruments at -9.54% per trip (-0.94975 SOL), win rate 45.98%, its top 5 percent of trips carrying 41.87% of its winnings; its age matched control (the same 498 trips, 16 random entries each on other holdout instruments within 30 s of the same age, the same exit, size and fee; 0 trips had no instrument alive at their age and were excluded from both arms) made -32.62% per trip, win rate 34.27%. The per instrument gap is 0.16123 of size with a 95 percent interval [0.12881, 0.19364] and nFor95 29, so the elite BEATS its control and the bar is MET, though its trips do not clear the fee. Against random times on the SAME instruments (the board 8 control, same exit) the per instrument gap is 0.04189 [0.01823, 0.06555]. Per trip the elite gains 0.23083 [0.18978, 0.27189] over its age control; the same exit with no gate (4259 trips) gains 0.07289 [0.05505, 0.09073] per trip over its own (per instrument 0.43539 [0.31255, 0.55823]; a per instrument sum grows with trip count, a per trip gap does not): the exit with no gate already beats random entries at the same ages, so part of the gap is the exit and the entry timing it allows, and the gate adds per trip gap beyond it (the two per trip intervals do not overlap). On the holdout census the sensors whose beats-the-age-bin AUC interval excludes 0.5 are realSol 0.5424, ageS 0.3543, trades 0.5463, buyers 0.5580, slope 0.5723, migrated 0.4657. 0 of 8466 trips filled better than the reported ratio, every trip paid the both legs fee of its own proceeds, the organism book was identical to the kernel on 12 holdout instruments, and a second grade was identical. Nothing placed an order; wall times are of a shared machine and no latency is claimed.",
+  "claim": "the sensor elite BEATS its age matched control on the holdout: the 95 percent interval of the per instrument gap excludes zero on the favourable side, but its trips do NOT clear the fee on both legs (-9.54% per trip): an edge over random entries at the same ages, not a profit",
+  "verdict": "BEATS",
+  "barMet": true,
+  "clearsFee": false,
+  "sound": true,
+  "checks": {
+    "tapeIsRecorded": true,
+    "tapeComplete": true,
+    "splitDisjointByInstrument": true,
+    "searchSawOnlyTrain": true,
+    "evolvedTraded": true,
+    "controlMatchesTradeCount": true,
+    "controlMatchesAges": true,
+    "payableNeverBeatsMid": true,
+    "feeOnBothLegs": true,
+    "deterministic": true,
+    "organismAgreesWithKernel": true
+  },
+  "wallMs": 119412,
+  "rssMb": 427.4,
+  "sharedMachine": "measured on a shared machine (other sessions and one Ollama queue); wall times are not latencies and no latency is claimed",
+  "config": {
+    "generations": 120,
+    "pop": 64,
+    "draws": 16,
+    "tolS": 30,
+    "instruments": 0,
+    "seed": "venue.sensors/1",
+    "share": 0.25,
+    "salt": "venue.holdout/1",
+    "foldSalt": "venue.fold/1",
+    "maxImpact": 0.01,
+    "size": 0.02,
+    "lag": 1,
+    "minReadings": 20,
+    "minTripsShare": 0.1,
+    "window": 6,
+    "boot": 2000,
+    "aucBoot": 200,
+    "check": 12
+  },
+  "canonical": {
+    "generations": 120,
+    "pop": 64,
+    "draws": 16,
+    "tolS": 30,
+    "instruments": 0,
+    "seed": "venue.sensors/1",
+    "share": 0.25,
+    "salt": "venue.holdout/1",
+    "foldSalt": "venue.fold/1",
+    "maxImpact": 0.01,
+    "size": 0.02,
+    "lag": 1,
+    "minReadings": 20,
+    "minTripsShare": 0.1,
+    "window": 6,
+    "boot": 2000,
+    "aucBoot": 200,
+    "check": 12
+  },
+  "units": "every net, netPerTrip, gap and tail number is in units of the entry size (1.0 = one entry of size SOL) at the payable price after the fee on both legs; netSol = net x size; meanHeld in readings; ages in seconds",
+  "fee": {
+    "file": "trader/bench/verdicts/desk.json",
+    "assertion": "FEE_BAR is the measured 4.54% round trip",
+    "detail": "0.0454",
+    "venueMeasuredOn": "pump.fun",
+    "venueAppliedTo": "pumpswap (never measured: trader/bench/verdicts/instrument.json)",
+    "value": 0.0454,
+    "borrowed": true,
+    "legs": "fee/2 of the buy notional + fee/2 of the sell proceeds; a flat trip pays exactly the round trip fee"
+  },
+  "fills": {
+    "size": 0.02,
+    "lag": 1,
+    "maxImpact": 0.01,
+    "note": "payable price from the recorded reserves; a buy fills only when size / SOL reserve <= maxImpact; sells always fill"
+  },
+  "tape": {
+    "source": "trader.db",
+    "db": "C:\\Users\\ybmic\\Downloads\\claudeskillsvideo-to-website\\trader\\data\\trader.db",
+    "venue": "pumpswap",
+    "instruments": 2839,
+    "readings": 324480,
+    "eligible": 2839,
+    "sampled": false,
+    "scanned": 325148,
+    "loadMs": 2156,
+    "cadenceSeconds": 20.088,
+    "birthRows": 3025,
+    "origins": {
+      "migrated": 683,
+      "wallet": 2156,
+      "other": 0,
+      "unknown": 0
+    },
+    "agesMissing": 0
+  },
+  "sensors": {
+    "window": 6,
+    "list": [
+      {
+        "name": "realSol",
+        "type": "f64",
+        "unit": "SOL",
+        "doc": "the quote (SOL) reserve at the decision reading: the real SOL in the pool"
+      },
+      {
+        "name": "ageS",
+        "type": "f64",
+        "unit": "s",
+        "doc": "seconds since the pool was born (pool_state.age_s; 0 at the CreatePool reading)"
+      },
+      {
+        "name": "trades",
+        "type": "i32",
+        "unit": "readings",
+        "doc": "readings among the last SENSOR_WINDOW where the reserves moved along the curve since the reading before: at least one swap happened in between (a count of trading intervals; the tape cannot count swaps inside one interval)"
+      },
+      {
+        "name": "buyers",
+        "type": "i32",
+        "unit": "readings",
+        "doc": "readings among the last SENSOR_WINDOW where the SOL reserve ROSE since the reading before: net buying in that interval (buy-side intervals, NOT distinct wallets, which the tape does not carry)"
+      },
+      {
+        "name": "slope",
+        "type": "f64",
+        "unit": "ratio",
+        "doc": "the SOL reserve now over the SOL reserve SENSOR_WINDOW readings ago (or at birth when younger), minus one"
+      },
+      {
+        "name": "births",
+        "type": "i32",
+        "unit": "pools",
+        "doc": "pools of this venue born in the BIRTH_WINDOW_S seconds up to this reading, market wide (the pool table, by t_local: when the desk saw each birth)"
+      },
+      {
+        "name": "migrated",
+        "type": "u8",
+        "unit": "flag",
+        "doc": "1 when the pool was born by a cpi out of the pump.fun program (a graduated curve), 0 when a wallet or anything else created it"
+      }
+    ]
+  },
+  "split": {
+    "by": "instrument",
+    "hash": "hash32(salt + \":\" + signature) % 10000 < share * 10000",
+    "salt": "venue.holdout/1",
+    "share": 0.25,
+    "train": 2126,
+    "holdout": 713,
+    "trainReadings": 243045,
+    "holdoutReadings": 81435,
+    "disjoint": true,
+    "development": "train: the search, its two folds, its age baseline and every TRAIN line",
+    "heldOut": "holdout: read once after the search by gradeSensorElite and sensorAucs"
+  },
+  "search": {
+    "generations": 120,
+    "evaluations": 7548,
+    "cacheHits": 132,
+    "readingsReplayed": 1834503660,
+    "marketYearsReplayed": 1167.7538698151952,
+    "yearsArithmetic": "7548 evaluations x 243045 readings = 1834503660 readings; x 20.088 s per reading = 36851509522 market-seconds; / 31557600 s per year = 1.1678e+3 market-years replayed",
+    "archiveFill": 86,
+    "archiveCapacity": 98,
+    "archiveStats": {
+      "evaluated": 7680,
+      "placed": 86,
+      "replaced": 735,
+      "rejected": 6859,
+      "emitted": 0
+    },
+    "best": {
+      "id": "vg113-59",
+      "genome": {
+        "realSolMin": 12.193799894104265,
+        "realSolMax": 5208.037496323927,
+        "ageMin": 30.21542239302445,
+        "ageMax": 141.7697036044323,
+        "tradesMin": 3,
+        "buyersMin": 0,
+        "slopeMin": 0.09484984189398182,
+        "slopeMax": null,
+        "birthsMin": 2,
+        "birthsMax": 0,
+        "migrated": -1,
+        "maxEntries": 3,
+        "trail": 0.020144425514000974,
+        "trailArm": 0,
+        "stopLoss": 0.3768057100358419,
+        "maxHold": 49,
+        "takeProfit": 1.1792433937041054
+      },
+      "fitness": 13.730798274358678,
+      "tFolds": [
+        13.730798274358678,
+        14.964334712552505
+      ],
+      "trips": 1536,
+      "netPerTrip": -0.04063519781581034,
+      "gapPerTrip": 0.26944744036229673
+    },
+    "evalMs": 114585.35250000005,
+    "baseline": {
+      "entries": 86417,
+      "computed": 4660,
+      "reused": 2888,
+      "ms": 44813.61689999992
+    },
+    "manifest": {
+      "seed": "venue.sensors/1",
+      "popSize": 64,
+      "readingsPerEvaluation": 243045,
+      "trainInstruments": 2126,
+      "secondsPerTick": 20.088,
+      "secondsPerYear": 31557600,
+      "fitness": "min over two train folds (hash32 of \"venue.fold/1:\" + id, bit 0) of the t statistic over instruments of the per instrument sum of (trip return after the fee minus the mean return of every fillable entry of the same fold in the same age bin under the same exit); a genome under minTrips = 213 trips scores -1000 + trips / minTrips",
+      "genes": [
+        "realSolMin",
+        "realSolMax",
+        "ageMin",
+        "ageMax",
+        "tradesMin",
+        "buyersMin",
+        "slopeMin",
+        "slopeMax",
+        "birthsMin",
+        "birthsMax",
+        "migrated",
+        "maxEntries",
+        "trail",
+        "trailArm",
+        "stopLoss",
+        "maxHold",
+        "takeProfit"
+      ],
+      "exitGenes": [
+        "trail",
+        "trailArm",
+        "stopLoss",
+        "maxHold",
+        "takeProfit"
+      ],
+      "ageBins": 53,
+      "baselineEntries": 86417,
+      "crossoverRate": 0.3,
+      "mutationRate": 2,
+      "elite": 16,
+      "grid": [
+        "tripsPerInstrument",
+        "meanHeld",
+        "migrated gate (wallet vs any or migrated)"
+      ],
+      "gridCapacity": 98
+    },
+    "minTrips": 213,
+    "folds": [
+      1076,
+      1050
+    ],
+    "evoMs": 114590,
+    "history": [
+      {
+        "gen": 1,
+        "best": 5.638076,
+        "bestTrips": 4184,
+        "genMean": -140.97986,
+        "fill": 44,
+        "fresh": 64,
+        "ms": 1124.3
+      },
+      {
+        "gen": 2,
+        "best": 6.616309,
+        "bestTrips": 5028,
+        "genMean": -342.88799,
+        "fill": 53,
+        "fresh": 64,
+        "ms": 917.3
+      },
+      {
+        "gen": 3,
+        "best": 6.722462,
+        "bestTrips": 5159,
+        "genMean": -248.2329,
+        "fill": 58,
+        "fresh": 64,
+        "ms": 949.4
+      },
+      {
+        "gen": 4,
+        "best": 6.722462,
+        "bestTrips": 5159,
+        "genMean": -200.637957,
+        "fill": 65,
+        "fresh": 64,
+        "ms": 889.9
+      },
+      {
+        "gen": 5,
+        "best": 6.722462,
+        "bestTrips": 5159,
+        "genMean": -200.196039,
+        "fill": 66,
+        "fresh": 64,
+        "ms": 888.9
+      },
+      {
+        "gen": 6,
+        "best": 6.839154,
+        "bestTrips": 5051,
+        "genMean": -168.20234,
+        "fill": 70,
+        "fresh": 63,
+        "ms": 922.3
+      },
+      {
+        "gen": 7,
+        "best": 7.200413,
+        "bestTrips": 5319,
+        "genMean": -278.790265,
+        "fill": 70,
+        "fresh": 61,
+        "ms": 868.1
+      },
+      {
+        "gen": 8,
+        "best": 7.223512,
+        "bestTrips": 5340,
+        "genMean": -231.098322,
+        "fill": 71,
+        "fresh": 64,
+        "ms": 912.1
+      },
+      {
+        "gen": 9,
+        "best": 7.928917,
+        "bestTrips": 2703,
+        "genMean": -262.831532,
+        "fill": 75,
+        "fresh": 62,
+        "ms": 923.6
+      },
+      {
+        "gen": 10,
+        "best": 7.928917,
+        "bestTrips": 2703,
+        "genMean": -246.814744,
+        "fill": 76,
+        "fresh": 62,
+        "ms": 882.1
+      },
+      {
+        "gen": 11,
+        "best": 8.13694,
+        "bestTrips": 5879,
+        "genMean": -262.560951,
+        "fill": 77,
+        "fresh": 61,
+        "ms": 843.7
+      },
+      {
+        "gen": 12,
+        "best": 8.164746,
+        "bestTrips": 6707,
+        "genMean": -278.537597,
+        "fill": 77,
+        "fresh": 64,
+        "ms": 983.1
+      },
+      {
+        "gen": 13,
+        "best": 8.236972,
+        "bestTrips": 8091,
+        "genMean": -277.954311,
+        "fill": 78,
+        "fresh": 64,
+        "ms": 877
+      },
+      {
+        "gen": 14,
+        "best": 8.590632,
+        "bestTrips": 8533,
+        "genMean": -183.580488,
+        "fill": 79,
+        "fresh": 62,
+        "ms": 977.9
+      },
+      {
+        "gen": 15,
+        "best": 8.590632,
+        "bestTrips": 8533,
+        "genMean": -215.595666,
+        "fill": 80,
+        "fresh": 63,
+        "ms": 970.4
+      },
+      {
+        "gen": 16,
+        "best": 8.590632,
+        "bestTrips": 8533,
+        "genMean": -372.797075,
+        "fill": 80,
+        "fresh": 64,
+        "ms": 1012.5
+      },
+      {
+        "gen": 17,
+        "best": 8.612914,
+        "bestTrips": 8193,
+        "genMean": -324.793529,
+        "fill": 80,
+        "fresh": 63,
+        "ms": 953.4
+      },
+      {
+        "gen": 18,
+        "best": 8.808339,
+        "bestTrips": 8263,
+        "genMean": -324.908121,
+        "fill": 81,
+        "fresh": 64,
+        "ms": 923.4
+      },
+      {
+        "gen": 19,
+        "best": 8.808339,
+        "bestTrips": 8263,
+        "genMean": -183.321073,
+        "fill": 81,
+        "fresh": 61,
+        "ms": 954
+      },
+      {
+        "gen": 20,
+        "best": 8.808339,
+        "bestTrips": 8263,
+        "genMean": -215.020195,
+        "fill": 81,
+        "fresh": 63,
+        "ms": 880.2
+      },
+      {
+        "gen": 21,
+        "best": 8.808339,
+        "bestTrips": 8263,
+        "genMean": -231.347539,
+        "fill": 81,
+        "fresh": 64,
+        "ms": 915.4
+      },
+      {
+        "gen": 22,
+        "best": 9.243776,
+        "bestTrips": 9297,
+        "genMean": -182.940247,
+        "fill": 82,
+        "fresh": 64,
+        "ms": 900.9
+      },
+      {
+        "gen": 23,
+        "best": 9.243776,
+        "bestTrips": 9297,
+        "genMean": -183.777521,
+        "fill": 82,
+        "fresh": 64,
+        "ms": 959.2
+      },
+      {
+        "gen": 24,
+        "best": 9.431827,
+        "bestTrips": 4180,
+        "genMean": -262.294202,
+        "fill": 82,
+        "fresh": 64,
+        "ms": 945.6
+      },
+      {
+        "gen": 25,
+        "best": 9.637703,
+        "bestTrips": 9156,
+        "genMean": -230.496778,
+        "fill": 82,
+        "fresh": 64,
+        "ms": 902.6
+      },
+      {
+        "gen": 26,
+        "best": 9.637703,
+        "bestTrips": 9156,
+        "genMean": -183.38335,
+        "fill": 82,
+        "fresh": 63,
+        "ms": 953.1
+      },
+      {
+        "gen": 27,
+        "best": 9.637703,
+        "bestTrips": 9156,
+        "genMean": -230.681903,
+        "fill": 82,
+        "fresh": 63,
+        "ms": 921
+      },
+      {
+        "gen": 28,
+        "best": 9.637703,
+        "bestTrips": 9156,
+        "genMean": -167.605497,
+        "fill": 82,
+        "fresh": 60,
+        "ms": 858.1
+      },
+      {
+        "gen": 29,
+        "best": 9.661364,
+        "bestTrips": 9139,
+        "genMean": -293.455833,
+        "fill": 82,
+        "fresh": 63,
+        "ms": 913.9
+      },
+      {
+        "gen": 30,
+        "best": 9.825915,
+        "bestTrips": 7288,
+        "genMean": -292.656441,
+        "fill": 82,
+        "fresh": 63,
+        "ms": 867.6
+      },
+      {
+        "gen": 31,
+        "best": 9.845528,
+        "bestTrips": 7288,
+        "genMean": -292.804577,
+        "fill": 82,
+        "fresh": 64,
+        "ms": 913.6
+      },
+      {
+        "gen": 32,
+        "best": 9.863984,
+        "bestTrips": 7387,
+        "genMean": -182.897973,
+        "fill": 82,
+        "fresh": 64,
+        "ms": 967
+      },
+      {
+        "gen": 33,
+        "best": 10.067104,
+        "bestTrips": 6229,
+        "genMean": -261.090139,
+        "fill": 83,
+        "fresh": 64,
+        "ms": 1044.5
+      },
+      {
+        "gen": 34,
+        "best": 10.173967,
+        "bestTrips": 5225,
+        "genMean": -213.976126,
+        "fill": 83,
+        "fresh": 64,
+        "ms": 911.2
+      },
+      {
+        "gen": 35,
+        "best": 10.318572,
+        "bestTrips": 4597,
+        "genMean": -120.461128,
+        "fill": 83,
+        "fresh": 63,
+        "ms": 936.4
+      },
+      {
+        "gen": 36,
+        "best": 10.538616,
+        "bestTrips": 4594,
+        "genMean": -276.652166,
+        "fill": 83,
+        "fresh": 63,
+        "ms": 891.2
+      },
+      {
+        "gen": 37,
+        "best": 10.538616,
+        "bestTrips": 4594,
+        "genMean": -198.319261,
+        "fill": 83,
+        "fresh": 63,
+        "ms": 922.6
+      },
+      {
+        "gen": 38,
+        "best": 10.538616,
+        "bestTrips": 4594,
+        "genMean": -291.819177,
+        "fill": 84,
+        "fresh": 64,
+        "ms": 936.1
+      },
+      {
+        "gen": 39,
+        "best": 10.538616,
+        "bestTrips": 4594,
+        "genMean": -165.818458,
+        "fill": 84,
+        "fresh": 60,
+        "ms": 882.5
+      },
+      {
+        "gen": 40,
+        "best": 10.538616,
+        "bestTrips": 4594,
+        "genMean": -324.090166,
+        "fill": 84,
+        "fresh": 63,
+        "ms": 931.3
+      },
+      {
+        "gen": 41,
+        "best": 10.808877,
+        "bestTrips": 3998,
+        "genMean": -245.410537,
+        "fill": 84,
+        "fresh": 64,
+        "ms": 1020.4
+      },
+      {
+        "gen": 42,
+        "best": 10.808877,
+        "bestTrips": 3998,
+        "genMean": -198.126659,
+        "fill": 85,
+        "fresh": 64,
+        "ms": 1026.3
+      },
+      {
+        "gen": 43,
+        "best": 10.808877,
+        "bestTrips": 3998,
+        "genMean": -214.323503,
+        "fill": 85,
+        "fresh": 64,
+        "ms": 1002.4
+      },
+      {
+        "gen": 44,
+        "best": 10.855008,
+        "bestTrips": 3831,
+        "genMean": -244.578151,
+        "fill": 85,
+        "fresh": 64,
+        "ms": 899.4
+      },
+      {
+        "gen": 45,
+        "best": 11.175649,
+        "bestTrips": 3526,
+        "genMean": -261.264374,
+        "fill": 85,
+        "fresh": 64,
+        "ms": 978.3
+      },
+      {
+        "gen": 46,
+        "best": 11.179349,
+        "bestTrips": 3524,
+        "genMean": -244.940364,
+        "fill": 85,
+        "fresh": 63,
+        "ms": 1001.8
+      },
+      {
+        "gen": 47,
+        "best": 11.179349,
+        "bestTrips": 3524,
+        "genMean": -119.810997,
+        "fill": 85,
+        "fresh": 63,
+        "ms": 1085.9
+      },
+      {
+        "gen": 48,
+        "best": 11.192602,
+        "bestTrips": 3288,
+        "genMean": -260.380279,
+        "fill": 85,
+        "fresh": 61,
+        "ms": 1002.8
+      },
+      {
+        "gen": 49,
+        "best": 11.192602,
+        "bestTrips": 3288,
+        "genMean": -228.945311,
+        "fill": 85,
+        "fresh": 62,
+        "ms": 944.6
+      },
+      {
+        "gen": 50,
+        "best": 11.228892,
+        "bestTrips": 3288,
+        "genMean": -134.663253,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 1077.2
+      },
+      {
+        "gen": 51,
+        "best": 11.298912,
+        "bestTrips": 3549,
+        "genMean": -182.454545,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 978.6
+      },
+      {
+        "gen": 52,
+        "best": 11.981053,
+        "bestTrips": 1637,
+        "genMean": -197.201603,
+        "fill": 86,
+        "fresh": 61,
+        "ms": 972.4
+      },
+      {
+        "gen": 53,
+        "best": 12.592387,
+        "bestTrips": 1613,
+        "genMean": -322.997735,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 953.5
+      },
+      {
+        "gen": 54,
+        "best": 12.592387,
+        "bestTrips": 1613,
+        "genMean": -197.953494,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 958.4
+      },
+      {
+        "gen": 55,
+        "best": 12.89363,
+        "bestTrips": 1562,
+        "genMean": -165.899506,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 951.1
+      },
+      {
+        "gen": 56,
+        "best": 12.89363,
+        "bestTrips": 1562,
+        "genMean": -323.631674,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 968.8
+      },
+      {
+        "gen": 57,
+        "best": 12.89363,
+        "bestTrips": 1562,
+        "genMean": -165.551818,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 944.9
+      },
+      {
+        "gen": 58,
+        "best": 12.89363,
+        "bestTrips": 1562,
+        "genMean": -181.501105,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 948.4
+      },
+      {
+        "gen": 59,
+        "best": 12.912213,
+        "bestTrips": 1551,
+        "genMean": -196.052041,
+        "fill": 86,
+        "fresh": 60,
+        "ms": 840.4
+      },
+      {
+        "gen": 60,
+        "best": 13.028769,
+        "bestTrips": 1562,
+        "genMean": -211.88477,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 976.3
+      },
+      {
+        "gen": 61,
+        "best": 13.134973,
+        "bestTrips": 1514,
+        "genMean": -197.145238,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 915.8
+      },
+      {
+        "gen": 62,
+        "best": 13.134973,
+        "bestTrips": 1514,
+        "genMean": -150.150422,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 962.6
+      },
+      {
+        "gen": 63,
+        "best": 13.134973,
+        "bestTrips": 1514,
+        "genMean": -165.877665,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 965.3
+      },
+      {
+        "gen": 64,
+        "best": 13.229424,
+        "bestTrips": 1446,
+        "genMean": -180.833832,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 951.3
+      },
+      {
+        "gen": 65,
+        "best": 13.229424,
+        "bestTrips": 1446,
+        "genMean": -213.500307,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 1025.9
+      },
+      {
+        "gen": 66,
+        "best": 13.229424,
+        "bestTrips": 1446,
+        "genMean": -196.317604,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 998.1
+      },
+      {
+        "gen": 67,
+        "best": 13.229424,
+        "bestTrips": 1446,
+        "genMean": -276.011495,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 1048.9
+      },
+      {
+        "gen": 68,
+        "best": 13.392601,
+        "bestTrips": 1514,
+        "genMean": -196.803899,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 1070.1
+      },
+      {
+        "gen": 69,
+        "best": 13.392601,
+        "bestTrips": 1514,
+        "genMean": -150.265345,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 1046.2
+      },
+      {
+        "gen": 70,
+        "best": 13.392601,
+        "bestTrips": 1514,
+        "genMean": -275.125791,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 939.8
+      },
+      {
+        "gen": 71,
+        "best": 13.392601,
+        "bestTrips": 1514,
+        "genMean": -228.283657,
+        "fill": 86,
+        "fresh": 60,
+        "ms": 946.5
+      },
+      {
+        "gen": 72,
+        "best": 13.392601,
+        "bestTrips": 1514,
+        "genMean": -305.842242,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 890.6
+      },
+      {
+        "gen": 73,
+        "best": 13.392601,
+        "bestTrips": 1514,
+        "genMean": -227.760154,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 982
+      },
+      {
+        "gen": 74,
+        "best": 13.392601,
+        "bestTrips": 1514,
+        "genMean": -259.159407,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 919.9
+      },
+      {
+        "gen": 75,
+        "best": 13.392601,
+        "bestTrips": 1514,
+        "genMean": -228.167036,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 937.9
+      },
+      {
+        "gen": 76,
+        "best": 13.498302,
+        "bestTrips": 1514,
+        "genMean": -274.88733,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 948.4
+      },
+      {
+        "gen": 77,
+        "best": 13.498302,
+        "bestTrips": 1514,
+        "genMean": -227.756083,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 1001.5
+      },
+      {
+        "gen": 78,
+        "best": 13.498302,
+        "bestTrips": 1514,
+        "genMean": -181.195723,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 1026.6
+      },
+      {
+        "gen": 79,
+        "best": 13.498302,
+        "bestTrips": 1514,
+        "genMean": -243.969972,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 955
+      },
+      {
+        "gen": 80,
+        "best": 13.498302,
+        "bestTrips": 1514,
+        "genMean": -212.40194,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 892.4
+      },
+      {
+        "gen": 81,
+        "best": 13.534142,
+        "bestTrips": 1517,
+        "genMean": -275.685765,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 949.9
+      },
+      {
+        "gen": 82,
+        "best": 13.587984,
+        "bestTrips": 1523,
+        "genMean": -259.860242,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 983
+      },
+      {
+        "gen": 83,
+        "best": 13.587984,
+        "bestTrips": 1523,
+        "genMean": -259.235201,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 952.6
+      },
+      {
+        "gen": 84,
+        "best": 13.587984,
+        "bestTrips": 1523,
+        "genMean": -275.407213,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 943
+      },
+      {
+        "gen": 85,
+        "best": 13.587984,
+        "bestTrips": 1523,
+        "genMean": -148.82829,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 1022.6
+      },
+      {
+        "gen": 86,
+        "best": 13.587984,
+        "bestTrips": 1523,
+        "genMean": -228.047423,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 975.9
+      },
+      {
+        "gen": 87,
+        "best": 13.587984,
+        "bestTrips": 1523,
+        "genMean": -259.536379,
+        "fill": 86,
+        "fresh": 61,
+        "ms": 930.5
+      },
+      {
+        "gen": 88,
+        "best": 13.587984,
+        "bestTrips": 1523,
+        "genMean": -275.059323,
+        "fill": 86,
+        "fresh": 60,
+        "ms": 879.6
+      },
+      {
+        "gen": 89,
+        "best": 13.587984,
+        "bestTrips": 1523,
+        "genMean": -228.603,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 991.9
+      },
+      {
+        "gen": 90,
+        "best": 13.587984,
+        "bestTrips": 1523,
+        "genMean": -338.448856,
+        "fill": 86,
+        "fresh": 61,
+        "ms": 975
+      },
+      {
+        "gen": 91,
+        "best": 13.587984,
+        "bestTrips": 1523,
+        "genMean": -291.220499,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 863.5
+      },
+      {
+        "gen": 92,
+        "best": 13.587984,
+        "bestTrips": 1523,
+        "genMean": -291.215767,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 884.8
+      },
+      {
+        "gen": 93,
+        "best": 13.607028,
+        "bestTrips": 1523,
+        "genMean": -212.254728,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 927
+      },
+      {
+        "gen": 94,
+        "best": 13.607028,
+        "bestTrips": 1523,
+        "genMean": -227.872546,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 1005.7
+      },
+      {
+        "gen": 95,
+        "best": 13.607028,
+        "bestTrips": 1523,
+        "genMean": -133.70549,
+        "fill": 86,
+        "fresh": 61,
+        "ms": 893.7
+      },
+      {
+        "gen": 96,
+        "best": 13.607028,
+        "bestTrips": 1523,
+        "genMean": -164.024437,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 933.8
+      },
+      {
+        "gen": 97,
+        "best": 13.607028,
+        "bestTrips": 1523,
+        "genMean": -259.799498,
+        "fill": 86,
+        "fresh": 61,
+        "ms": 939.2
+      },
+      {
+        "gen": 98,
+        "best": 13.607028,
+        "bestTrips": 1523,
+        "genMean": -196.56571,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 895.1
+      },
+      {
+        "gen": 99,
+        "best": 13.607028,
+        "bestTrips": 1523,
+        "genMean": -244.500338,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 1008.1
+      },
+      {
+        "gen": 100,
+        "best": 13.607028,
+        "bestTrips": 1523,
+        "genMean": -228.772647,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 984.6
+      },
+      {
+        "gen": 101,
+        "best": 13.607028,
+        "bestTrips": 1523,
+        "genMean": -306.348132,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 839.5
+      },
+      {
+        "gen": 102,
+        "best": 13.607028,
+        "bestTrips": 1523,
+        "genMean": -195.720045,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 908
+      },
+      {
+        "gen": 103,
+        "best": 13.607028,
+        "bestTrips": 1523,
+        "genMean": -197.151584,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 1011.1
+      },
+      {
+        "gen": 104,
+        "best": 13.607028,
+        "bestTrips": 1523,
+        "genMean": -211.934556,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 915.5
+      },
+      {
+        "gen": 105,
+        "best": 13.684081,
+        "bestTrips": 1528,
+        "genMean": -259.374707,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 931.5
+      },
+      {
+        "gen": 106,
+        "best": 13.684081,
+        "bestTrips": 1528,
+        "genMean": -196.704236,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 947.4
+      },
+      {
+        "gen": 107,
+        "best": 13.684081,
+        "bestTrips": 1528,
+        "genMean": -213.087053,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 959.6
+      },
+      {
+        "gen": 108,
+        "best": 13.684081,
+        "bestTrips": 1528,
+        "genMean": -212.426604,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 928.2
+      },
+      {
+        "gen": 109,
+        "best": 13.684081,
+        "bestTrips": 1528,
+        "genMean": -196.451309,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 1012.5
+      },
+      {
+        "gen": 110,
+        "best": 13.684081,
+        "bestTrips": 1528,
+        "genMean": -243.097117,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 934.6
+      },
+      {
+        "gen": 111,
+        "best": 13.684081,
+        "bestTrips": 1528,
+        "genMean": -212.041223,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 965.6
+      },
+      {
+        "gen": 112,
+        "best": 13.684081,
+        "bestTrips": 1528,
+        "genMean": -259.26873,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 919.3
+      },
+      {
+        "gen": 113,
+        "best": 13.684081,
+        "bestTrips": 1528,
+        "genMean": -274.521236,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 998.3
+      },
+      {
+        "gen": 114,
+        "best": 13.730798,
+        "bestTrips": 1536,
+        "genMean": -227.739415,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 1062.7
+      },
+      {
+        "gen": 115,
+        "best": 13.730798,
+        "bestTrips": 1536,
+        "genMean": -213.054301,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 988.5
+      },
+      {
+        "gen": 116,
+        "best": 13.730798,
+        "bestTrips": 1536,
+        "genMean": -195.563982,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 1061.8
+      },
+      {
+        "gen": 117,
+        "best": 13.730798,
+        "bestTrips": 1536,
+        "genMean": -196.289835,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 1072.1
+      },
+      {
+        "gen": 118,
+        "best": 13.730798,
+        "bestTrips": 1536,
+        "genMean": -228.244179,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 1049.3
+      },
+      {
+        "gen": 119,
+        "best": 13.730798,
+        "bestTrips": 1536,
+        "genMean": -275.173354,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 1048.2
+      },
+      {
+        "gen": 120,
+        "best": 13.730798,
+        "bestTrips": 1536,
+        "genMean": -212.267001,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 1008
+      }
+    ]
+  },
+  "elite": {
+    "genome": {
+      "realSolMin": 12.193799894104265,
+      "realSolMax": 5208.037496323927,
+      "ageMin": 30.21542239302445,
+      "ageMax": 141.7697036044323,
+      "tradesMin": 3,
+      "buyersMin": 0,
+      "slopeMin": 0.09484984189398182,
+      "slopeMax": null,
+      "birthsMin": 2,
+      "birthsMax": 0,
+      "migrated": -1,
+      "maxEntries": 3,
+      "trail": 0.020144425514000974,
+      "trailArm": 0,
+      "stopLoss": 0.3768057100358419,
+      "maxHold": 49,
+      "takeProfit": 1.1792433937041054
+    },
+    "gatesOn": [
+      "realSolMin 12.19",
+      "realSolMax 5208",
+      "ageMin 30.22",
+      "ageMax 141.8",
+      "tradesMin 3",
+      "slopeMin 0.09485",
+      "birthsMin 2",
+      "maxEntries 3"
+    ],
+    "exit": "trail 0.02014, trailArm off, stopLoss 0.3768, maxHold 49, takeProfit 1.179",
+    "params": {
+      "realSolMin": 12.193799894104265,
+      "realSolMax": 5208.037496323927,
+      "ageMin": 30.21542239302445,
+      "ageMax": 141.7697036044323,
+      "tradesMin": 3,
+      "buyersMin": 0,
+      "slopeMin": 0.09484984189398182,
+      "slopeMax": null,
+      "birthsMin": 2,
+      "birthsMax": 0,
+      "migrated": -1,
+      "maxEntries": 3,
+      "trail": 0.020144425514000974,
+      "trailArm": 0,
+      "stopLoss": 0.3768057100358419,
+      "maxHold": 49,
+      "takeProfit": 1.1792433937041054,
+      "entryDir": 0,
+      "lookback": 1,
+      "entryUp": 0,
+      "minQuote": 0,
+      "maxEntryStep": 0,
+      "size": 0.02,
+      "maxOpen": 1000000000
+    },
+    "trainFitness": 13.730798274358678,
+    "trainTFolds": [
+      13.730798274358678,
+      14.964334712552505
+    ],
+    "trainTrips": 1536,
+    "trainGapPerTrip": 0.26944744036229673,
+    "trainNetPerTrip": -0.04063519781581034
+  },
+  "train": {
+    "instruments": 2126,
+    "instrumentsTraded": 1137,
+    "evolved": {
+      "trips": 1536,
+      "net": -62.4156638450846,
+      "netPerTrip": -0.040635197815810285,
+      "grossPerTrip": 0.004875475477529663,
+      "feesPerTrip": 0.04551067329333991,
+      "meanHeld": 11.110026041666666,
+      "impactRefused": 66,
+      "liqTrips": 172,
+      "why": {
+        "trail": 1154,
+        "maxHold": 223,
+        "takeProfit": 85,
+        "stopLoss": 61,
+        "tape ended": 13
+      },
+      "tail": {
+        "trips": 1536,
+        "net": -62.415663845085,
+        "meanPerTrip": -0.04063519781581055,
+        "winRate": 0.4733072916666667,
+        "wins": 727,
+        "tailRate": 0.026041666666666668,
+        "tailTrips": 40,
+        "top5pctTrips": 77,
+        "top5pctShareOfWinnings": 0.4837042262168853,
+        "kFor100": null,
+        "kFor100Share": null,
+        "best": 3.3816870541464885,
+        "worst": -1.0226999511350274
+      },
+      "netSol": -1.248313276901692
+    },
+    "ageControl": {
+      "draws": 16,
+      "tolS": 30,
+      "tripsMatched": 1536,
+      "shortDrawn": 0,
+      "unmatchedDraws": 0,
+      "drawnTrips": 24576,
+      "maxAgeGap": 29.985,
+      "candidates": {
+        "min": 1549,
+        "median": 1710,
+        "max": 1770
+      },
+      "net": -485.33134817488946,
+      "netPerTrip": -0.3159709298013603,
+      "tail": {
+        "trips": 24576,
+        "net": -7765.30157079862,
+        "meanPerTrip": -0.31597092980137614,
+        "winRate": 0.3430989583333333,
+        "wins": 8432,
+        "tailRate": 0.026285807291666668,
+        "tailTrips": 646,
+        "top5pctTrips": 1229,
+        "top5pctShareOfWinnings": 0.6161953205937277,
+        "kFor100": null,
+        "kFor100Share": null,
+        "best": 9.964684382447983,
+        "worst": -1.0226999511350323
+      },
+      "netSol": -9.70662696349779
+    },
+    "within": {
+      "tripsMatched": 1536,
+      "net": -183.0390388451893,
+      "netPerTrip": -0.11916604091483679,
+      "collisions": 1337,
+      "drawnTrips": 23239,
+      "netSol": -3.660780776903786
+    },
+    "hold": {
+      "trips": 1920,
+      "net": -381.90425945463534,
+      "netPerTrip": -0.19890846846595592,
+      "noEntry": 206,
+      "netSol": -7.638085189092707
+    },
+    "gapAge": {
+      "n": 2126,
+      "mean": 0.19892553,
+      "sd": 0.46385266,
+      "se": 0.01006001,
+      "lo": 0.17920791,
+      "hi": 0.21864315,
+      "bootLo": 0.17843946,
+      "bootHi": 0.21874483,
+      "boot": 2000,
+      "nFor95": 21,
+      "positive": 936,
+      "negative": 201,
+      "zero": 989,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapAgeTraded": {
+      "n": 1137,
+      "mean": 0.37195751,
+      "sd": 0.58142882,
+      "se": 0.01724314,
+      "lo": 0.33816095,
+      "hi": 0.40575406,
+      "bootLo": 0.339055,
+      "bootHi": 0.40387779,
+      "boot": 2000,
+      "nFor95": 10,
+      "positive": 936,
+      "negative": 201,
+      "zero": 0,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapAgePerTrip": {
+      "n": 1536,
+      "mean": 0.27533573,
+      "sd": 0.4738613,
+      "se": 0.01209082,
+      "lo": 0.25163773,
+      "hi": 0.29903373,
+      "bootLo": 0.25194992,
+      "bootHi": 0.29988014,
+      "boot": 2000,
+      "nFor95": 12,
+      "positive": 1282,
+      "negative": 254,
+      "zero": 0,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapWithin": {
+      "n": 2126,
+      "mean": 0.05673724,
+      "sd": 0.35072953,
+      "se": 0.0076066,
+      "lo": 0.0418283,
+      "hi": 0.07164618,
+      "bootLo": 0.04138148,
+      "bootHi": 0.07069014,
+      "boot": 2000,
+      "nFor95": 147,
+      "positive": 777,
+      "negative": 352,
+      "zero": 997,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapHold": {
+      "n": 2126,
+      "mean": 0.15027686,
+      "sd": 11.75960367,
+      "se": 0.25504162,
+      "lo": -0.34960472,
+      "hi": 0.65015843,
+      "bootLo": -0.4241791,
+      "bootHi": 0.47049796,
+      "boot": 2000,
+      "nFor95": 23525,
+      "positive": 1442,
+      "negative": 476,
+      "zero": 208,
+      "excludesZero": false,
+      "bootExcludesZero": false
+    },
+    "checks": {
+      "unmatchedTrips": 0,
+      "payableViolations": 0,
+      "tripsChecked": 26112,
+      "feeMaxDev": 9.992007221626409e-16,
+      "feesAboveFlat": 962
+    }
+  },
+  "holdout": {
+    "instruments": 713,
+    "instrumentsTraded": 390,
+    "evolved": {
+      "trips": 498,
+      "net": -47.487375430456005,
+      "netPerTrip": -0.09535617556316467,
+      "grossPerTrip": -0.05111652058033848,
+      "feesPerTrip": 0.04423965498282631,
+      "meanHeld": 12.793172690763052,
+      "impactRefused": 9,
+      "liqTrips": 76,
+      "why": {
+        "trail": 362,
+        "stopLoss": 22,
+        "maxHold": 88,
+        "tape ended": 4,
+        "takeProfit": 22
+      },
+      "tail": {
+        "trips": 498,
+        "net": -47.487375430456034,
+        "meanPerTrip": -0.09535617556316472,
+        "winRate": 0.4598393574297189,
+        "wins": 229,
+        "tailRate": 0.010040160642570281,
+        "tailTrips": 5,
+        "top5pctTrips": 25,
+        "top5pctShareOfWinnings": 0.41866021278909094,
+        "kFor100": null,
+        "kFor100Share": null,
+        "best": 1.9877609447831248,
+        "worst": -1.022699951135021
+      },
+      "netSol": -0.9497475086091202
+    },
+    "ageControl": {
+      "draws": 16,
+      "tolS": 30,
+      "tripsMatched": 498,
+      "shortDrawn": 0,
+      "unmatchedDraws": 0,
+      "drawnTrips": 7968,
+      "maxAgeGap": 29.539999999999992,
+      "candidates": {
+        "min": 515,
+        "median": 574,
+        "max": 586
+      },
+      "net": -162.44277426679173,
+      "netPerTrip": -0.32619030977267416,
+      "tail": {
+        "trips": 7968,
+        "net": -2599.084388268795,
+        "meanPerTrip": -0.32619030977269015,
+        "winRate": 0.34274598393574296,
+        "wins": 2731,
+        "tailRate": 0.011169678714859438,
+        "tailTrips": 89,
+        "top5pctTrips": 399,
+        "top5pctShareOfWinnings": 0.5311188982644668,
+        "kFor100": null,
+        "kFor100Share": null,
+        "best": 22.262370848609454,
+        "worst": -1.0226999511350314
+      },
+      "netSol": -3.2488554853358345
+    },
+    "within": {
+      "tripsMatched": 498,
+      "net": -77.35256100803436,
+      "netPerTrip": -0.1553264277269766,
+      "collisions": 428,
+      "drawnTrips": 7540,
+      "netSol": -1.5470512201606872
+    },
+    "hold": {
+      "trips": 651,
+      "net": -260.70528321806336,
+      "netPerTrip": -0.40046894503542757,
+      "noEntry": 62,
+      "netSol": -5.214105664361267
+    },
+    "gapAge": {
+      "n": 713,
+      "mean": 0.16122777,
+      "sd": 0.44157751,
+      "se": 0.01653721,
+      "lo": 0.12881484,
+      "hi": 0.1936407,
+      "bootLo": 0.13027153,
+      "bootHi": 0.19257853,
+      "boot": 2000,
+      "nFor95": 29,
+      "positive": 304,
+      "negative": 86,
+      "zero": 323,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapAgeTraded": {
+      "n": 390,
+      "mean": 0.29475743,
+      "sd": 0.56341645,
+      "se": 0.0285297,
+      "lo": 0.23883922,
+      "hi": 0.35067565,
+      "bootLo": 0.23998056,
+      "bootHi": 0.34902211,
+      "boot": 2000,
+      "nFor95": 15,
+      "positive": 304,
+      "negative": 86,
+      "zero": 0,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapAgePerTrip": {
+      "n": 498,
+      "mean": 0.23083413,
+      "sd": 0.46747479,
+      "se": 0.02094805,
+      "lo": 0.18977596,
+      "hi": 0.2718923,
+      "bootLo": 0.19034372,
+      "bootHi": 0.27180986,
+      "boot": 2000,
+      "nFor95": 16,
+      "positive": 403,
+      "negative": 95,
+      "zero": 0,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapWithin": {
+      "n": 713,
+      "mean": 0.04188666,
+      "sd": 0.32232518,
+      "se": 0.01207117,
+      "lo": 0.01822716,
+      "hi": 0.06554615,
+      "bootLo": 0.01742542,
+      "bootHi": 0.06463183,
+      "boot": 2000,
+      "nFor95": 228,
+      "positive": 249,
+      "negative": 137,
+      "zero": 327,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapHold": {
+      "n": 713,
+      "mean": 0.29904335,
+      "sd": 2.19259693,
+      "se": 0.0821134,
+      "lo": 0.13810108,
+      "hi": 0.45998561,
+      "bootLo": 0.11846495,
+      "bootHi": 0.45061148,
+      "boot": 2000,
+      "nFor95": 207,
+      "positive": 468,
+      "negative": 183,
+      "zero": 62,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "checks": {
+      "unmatchedTrips": 0,
+      "payableViolations": 0,
+      "tripsChecked": 8466,
+      "feeMaxDev": 7.771561172376096e-16,
+      "feesAboveFlat": 312
+    }
+  },
+  "reference": {
+    "eliteExitNoGate": {
+      "genome": {
+        "realSolMin": 0,
+        "realSolMax": 0,
+        "ageMin": 0,
+        "ageMax": 0,
+        "tradesMin": 0,
+        "buyersMin": 0,
+        "slopeMin": null,
+        "slopeMax": null,
+        "birthsMin": 0,
+        "birthsMax": 0,
+        "migrated": -1,
+        "maxEntries": 0,
+        "trail": 0.020144425514000974,
+        "trailArm": 0,
+        "stopLoss": 0.3768057100358419,
+        "maxHold": 49,
+        "takeProfit": 1.1792433937041054
+      },
+      "instruments": 713,
+      "instrumentsTraded": 651,
+      "evolved": {
+        "trips": 4259,
+        "net": -303.0855667731875,
+        "netPerTrip": -0.07116355171946173,
+        "grossPerTrip": -0.026361968402191505,
+        "feesPerTrip": 0.044801583317270306,
+        "meanHeld": 7.567504108945762,
+        "impactRefused": 1685,
+        "liqTrips": 607,
+        "why": {
+          "maxHold": 292,
+          "trail": 3234,
+          "tape ended": 163,
+          "takeProfit": 346,
+          "stopLoss": 224
+        },
+        "tail": {
+          "trips": 4259,
+          "net": -303.08556677318677,
+          "meanPerTrip": -0.07116355171946155,
+          "winRate": 0.3608828363465602,
+          "wins": 1537,
+          "tailRate": 0.020427330359239257,
+          "tailTrips": 87,
+          "top5pctTrips": 213,
+          "top5pctShareOfWinnings": 0.5393433699975752,
+          "kFor100": null,
+          "kFor100Share": null,
+          "best": 22.262370848609454,
+          "worst": -1.0226999511350325
+        },
+        "netSol": -6.06171133546375
+      },
+      "ageControl": {
+        "draws": 16,
+        "tolS": 30,
+        "tripsMatched": 4259,
+        "shortDrawn": 0,
+        "unmatchedDraws": 0,
+        "drawnTrips": 68144,
+        "maxAgeGap": 29.994,
+        "candidates": {
+          "min": 2,
+          "median": 281,
+          "max": 649
+        },
+        "net": -613.5196978107411,
+        "netPerTrip": -0.14405252355265113,
+        "tail": {
+          "trips": 68144,
+          "net": -9816.315164970352,
+          "meanPerTrip": -0.144052523552629,
+          "winRate": 0.3184873209673632,
+          "wins": 21703,
+          "tailRate": 0.022100258276590748,
+          "tailTrips": 1506,
+          "top5pctTrips": 3408,
+          "top5pctShareOfWinnings": 0.5791721384222028,
+          "kFor100": null,
+          "kFor100Share": null,
+          "best": 22.262370848609454,
+          "worst": -1.0226999511350492
+        },
+        "netSol": -12.270393956214823
+      },
+      "within": {
+        "tripsMatched": 4259,
+        "net": -337.5779512702695,
+        "netPerTrip": -0.07926225669647088,
+        "collisions": 27906,
+        "drawnTrips": 40238,
+        "netSol": -6.751559025405391
+      },
+      "hold": {
+        "trips": 651,
+        "net": -260.70528321806336,
+        "netPerTrip": -0.40046894503542757,
+        "noEntry": 62,
+        "netSol": -5.214105664361267
+      },
+      "gapAge": {
+        "n": 713,
+        "mean": 0.43539149,
+        "sd": 1.67350809,
+        "se": 0.06267337,
+        "lo": 0.31255168,
+        "hi": 0.55823129,
+        "bootLo": 0.3155509,
+        "bootHi": 0.56048319,
+        "boot": 2000,
+        "nFor95": 57,
+        "positive": 328,
+        "negative": 323,
+        "zero": 62,
+        "excludesZero": true,
+        "bootExcludesZero": true
+      },
+      "gapAgeTraded": {
+        "n": 651,
+        "mean": 0.47685734,
+        "sd": 1.74584151,
+        "se": 0.06842492,
+        "lo": 0.34274449,
+        "hi": 0.61097019,
+        "bootLo": 0.34755903,
+        "bootHi": 0.62205265,
+        "boot": 2000,
+        "nFor95": 52,
+        "positive": 328,
+        "negative": 323,
+        "zero": 0,
+        "excludesZero": true,
+        "bootExcludesZero": true
+      },
+      "gapAgePerTrip": {
+        "n": 4259,
+        "mean": 0.07288897,
+        "sd": 0.59412293,
+        "se": 0.0091038,
+        "lo": 0.05504553,
+        "hi": 0.09073241,
+        "bootLo": 0.0565656,
+        "bootHi": 0.09225396,
+        "boot": 2000,
+        "nFor95": 256,
+        "positive": 2541,
+        "negative": 1718,
+        "zero": 0,
+        "excludesZero": true,
+        "bootExcludesZero": true
+      },
+      "gapWithin": {
+        "n": 713,
+        "mean": 0.04837642,
+        "sd": 0.71169863,
+        "se": 0.02665332,
+        "lo": -0.0038641,
+        "hi": 0.10061693,
+        "bootLo": 0.00129705,
+        "bootHi": 0.10056496,
+        "boot": 2000,
+        "nFor95": 832,
+        "positive": 452,
+        "negative": 184,
+        "zero": 77,
+        "excludesZero": false,
+        "bootExcludesZero": true
+      },
+      "gapHold": {
+        "n": 713,
+        "mean": -0.05943939,
+        "sd": 2.01982053,
+        "se": 0.07564287,
+        "lo": -0.20769942,
+        "hi": 0.08882064,
+        "bootLo": -0.21299165,
+        "bootHi": 0.08559707,
+        "boot": 2000,
+        "nFor95": 4436,
+        "positive": 221,
+        "negative": 200,
+        "zero": 292,
+        "excludesZero": false,
+        "bootExcludesZero": false
+      },
+      "checks": {
+        "unmatchedTrips": 0,
+        "payableViolations": 0,
+        "tripsChecked": 72403,
+        "feeMaxDev": 9.43689570931383e-16,
+        "feesAboveFlat": 2188
+      }
+    },
+    "sensorBase": {
+      "genome": {
+        "realSolMin": 0,
+        "realSolMax": 0,
+        "ageMin": 0,
+        "ageMax": 0,
+        "tradesMin": 0,
+        "buyersMin": 0,
+        "slopeMin": null,
+        "slopeMax": null,
+        "birthsMin": 0,
+        "birthsMax": 0,
+        "migrated": -1,
+        "maxEntries": 0,
+        "trail": 0.1,
+        "trailArm": 0,
+        "stopLoss": 0,
+        "maxHold": 12,
+        "takeProfit": 0
+      },
+      "instruments": 713,
+      "instrumentsTraded": 651,
+      "evolved": {
+        "trips": 3613,
+        "net": -279.7329051264163,
+        "netPerTrip": -0.07742399809754119,
+        "grossPerTrip": -0.03276782778833654,
+        "feesPerTrip": 0.04465617030920488,
+        "meanHeld": 7.921948519236092,
+        "impactRefused": 4282,
+        "liqTrips": 636,
+        "why": {
+          "maxHold": 1682,
+          "trail": 1784,
+          "tape ended": 147
+        },
+        "tail": {
+          "trips": 3613,
+          "net": -279.7329051264162,
+          "meanPerTrip": -0.07742399809754116,
+          "winRate": 0.3575975643509549,
+          "wins": 1292,
+          "tailRate": 0.0168834763354553,
+          "tailTrips": 61,
+          "top5pctTrips": 181,
+          "top5pctShareOfWinnings": 0.49476899826897147,
+          "kFor100": null,
+          "kFor100Share": null,
+          "best": 13.633555807358105,
+          "worst": -1.0226999511352641
+        },
+        "netSol": -5.594658102528326
+      },
+      "ageControl": {
+        "draws": 16,
+        "tolS": 30,
+        "tripsMatched": 3612,
+        "shortDrawn": 1,
+        "unmatchedDraws": 16,
+        "drawnTrips": 57792,
+        "maxAgeGap": 29.999000000000024,
+        "candidates": {
+          "min": 0,
+          "median": 266,
+          "max": 649
+        },
+        "net": -372.6458145275791,
+        "netPerTrip": -0.10316883015713707,
+        "tail": {
+          "trips": 57792,
+          "net": -5962.333032441341,
+          "meanPerTrip": -0.10316883015713837,
+          "winRate": 0.33179332779623477,
+          "wins": 19175,
+          "tailRate": 0.014327242524916944,
+          "tailTrips": 828,
+          "top5pctTrips": 2890,
+          "top5pctShareOfWinnings": 0.5172626498424349,
+          "kFor100": null,
+          "kFor100Share": null,
+          "best": 16.6004674329736,
+          "worst": -1.0226999511352641
+        },
+        "netSol": -7.452916290551582
+      },
+      "within": {
+        "tripsMatched": 3613,
+        "net": -352.4750120039736,
+        "netPerTrip": -0.09755743481981001,
+        "collisions": 24615,
+        "drawnTrips": 33193,
+        "netSol": -7.049500240079472
+      },
+      "hold": {
+        "trips": 651,
+        "net": -260.70528321806336,
+        "netPerTrip": -0.40046894503542757,
+        "noEntry": 62,
+        "netSol": -5.214105664361267
+      },
+      "gapAge": {
+        "n": 713,
+        "mean": 0.13038963,
+        "sd": 1.35651592,
+        "se": 0.05080192,
+        "lo": 0.03081787,
+        "hi": 0.22996139,
+        "bootLo": 0.0333996,
+        "bootHi": 0.22895739,
+        "boot": 2000,
+        "nFor95": 416,
+        "positive": 284,
+        "negative": 367,
+        "zero": 62,
+        "excludesZero": true,
+        "bootExcludesZero": true
+      },
+      "gapAgeTraded": {
+        "n": 651,
+        "mean": 0.14280769,
+        "sd": 1.41911238,
+        "se": 0.0556194,
+        "lo": 0.03379367,
+        "hi": 0.25182171,
+        "bootLo": 0.03770068,
+        "bootHi": 0.25454339,
+        "boot": 2000,
+        "nFor95": 380,
+        "positive": 284,
+        "negative": 367,
+        "zero": 0,
+        "excludesZero": true,
+        "bootExcludesZero": true
+      },
+      "gapAgePerTrip": {
+        "n": 3612,
+        "mean": 0.0257386,
+        "sd": 0.58891612,
+        "se": 0.00979895,
+        "lo": 0.00653265,
+        "hi": 0.04494454,
+        "bootLo": 0.00692499,
+        "bootHi": 0.04492266,
+        "boot": 2000,
+        "nFor95": 2012,
+        "positive": 2040,
+        "negative": 1572,
+        "zero": 0,
+        "excludesZero": true,
+        "bootExcludesZero": true
+      },
+      "gapWithin": {
+        "n": 713,
+        "mean": 0.10202259,
+        "sd": 0.63630696,
+        "se": 0.02382988,
+        "lo": 0.05531602,
+        "hi": 0.14872916,
+        "bootLo": 0.05359031,
+        "bootHi": 0.14864533,
+        "boot": 2000,
+        "nFor95": 150,
+        "positive": 442,
+        "negative": 191,
+        "zero": 80,
+        "excludesZero": true,
+        "bootExcludesZero": true
+      },
+      "gapHold": {
+        "n": 713,
+        "mean": -0.02668671,
+        "sd": 1.9678572,
+        "se": 0.07369683,
+        "lo": -0.1711325,
+        "hi": 0.11775908,
+        "bootLo": -0.17470143,
+        "bootHi": 0.10825774,
+        "boot": 2000,
+        "nFor95": 20889,
+        "positive": 298,
+        "negative": 199,
+        "zero": 216,
+        "excludesZero": false,
+        "bootExcludesZero": false
+      },
+      "checks": {
+        "unmatchedTrips": 1,
+        "payableViolations": 0,
+        "tripsChecked": 61405,
+        "feeMaxDev": 2.886579864025407e-15,
+        "feesAboveFlat": 2005
+      }
+    }
+  },
+  "aucs": {
+    "holdout": {
+      "entries": 29597,
+      "instruments": 713,
+      "winRate": 0.306247,
+      "beatsAgeRate": 0.547184,
+      "meanPerEntry": -0.127253,
+      "tailRate": 0.022401,
+      "boot": 200,
+      "per": {
+        "realSol": {
+          "win": {
+            "auc": 0.494824,
+            "lo": 0.455067,
+            "hi": 0.546293,
+            "excludesHalf": false
+          },
+          "beatsAge": {
+            "auc": 0.542405,
+            "lo": 0.516149,
+            "hi": 0.573549,
+            "excludesHalf": true
+          }
+        },
+        "ageS": {
+          "win": {
+            "auc": 0.468151,
+            "lo": 0.443587,
+            "hi": 0.492476,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.35431,
+            "lo": 0.327835,
+            "hi": 0.381561,
+            "excludesHalf": true
+          }
+        },
+        "trades": {
+          "win": {
+            "auc": 0.535017,
+            "lo": 0.516584,
+            "hi": 0.557215,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.546314,
+            "lo": 0.527741,
+            "hi": 0.567203,
+            "excludesHalf": true
+          }
+        },
+        "buyers": {
+          "win": {
+            "auc": 0.559723,
+            "lo": 0.524317,
+            "hi": 0.591745,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.557951,
+            "lo": 0.536746,
+            "hi": 0.582786,
+            "excludesHalf": true
+          }
+        },
+        "slope": {
+          "win": {
+            "auc": 0.57711,
+            "lo": 0.556804,
+            "hi": 0.600386,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.572301,
+            "lo": 0.557821,
+            "hi": 0.590896,
+            "excludesHalf": true
+          }
+        },
+        "births": {
+          "win": {
+            "auc": 0.491994,
+            "lo": 0.473384,
+            "hi": 0.515577,
+            "excludesHalf": false
+          },
+          "beatsAge": {
+            "auc": 0.522533,
+            "lo": 0.498052,
+            "hi": 0.546759,
+            "excludesHalf": false
+          }
+        },
+        "migrated": {
+          "win": {
+            "auc": 0.393768,
+            "lo": 0.356889,
+            "hi": 0.430483,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.465682,
+            "lo": 0.445574,
+            "hi": 0.488266,
+            "excludesHalf": true
+          }
+        }
+      }
+    },
+    "train": {
+      "entries": 86417,
+      "instruments": 2126,
+      "winRate": 0.317426,
+      "beatsAgeRate": 0.559925,
+      "meanPerEntry": -0.126721,
+      "tailRate": 0.025053,
+      "boot": 200,
+      "per": {
+        "realSol": {
+          "win": {
+            "auc": 0.518814,
+            "lo": 0.494284,
+            "hi": 0.54755,
+            "excludesHalf": false
+          },
+          "beatsAge": {
+            "auc": 0.570556,
+            "lo": 0.554016,
+            "hi": 0.588256,
+            "excludesHalf": true
+          }
+        },
+        "ageS": {
+          "win": {
+            "auc": 0.457108,
+            "lo": 0.443833,
+            "hi": 0.468599,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.389275,
+            "lo": 0.375222,
+            "hi": 0.407269,
+            "excludesHalf": true
+          }
+        },
+        "trades": {
+          "win": {
+            "auc": 0.54365,
+            "lo": 0.531923,
+            "hi": 0.557175,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.556855,
+            "lo": 0.545241,
+            "hi": 0.572112,
+            "excludesHalf": true
+          }
+        },
+        "buyers": {
+          "win": {
+            "auc": 0.559738,
+            "lo": 0.540954,
+            "hi": 0.582042,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.555921,
+            "lo": 0.540083,
+            "hi": 0.574294,
+            "excludesHalf": true
+          }
+        },
+        "slope": {
+          "win": {
+            "auc": 0.570055,
+            "lo": 0.557566,
+            "hi": 0.582488,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.56875,
+            "lo": 0.559778,
+            "hi": 0.579882,
+            "excludesHalf": true
+          }
+        },
+        "births": {
+          "win": {
+            "auc": 0.503352,
+            "lo": 0.488382,
+            "hi": 0.517191,
+            "excludesHalf": false
+          },
+          "beatsAge": {
+            "auc": 0.520886,
+            "lo": 0.504653,
+            "hi": 0.534162,
+            "excludesHalf": true
+          }
+        },
+        "migrated": {
+          "win": {
+            "auc": 0.413785,
+            "lo": 0.393969,
+            "hi": 0.432093,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.482235,
+            "lo": 0.470035,
+            "hi": 0.497866,
+            "excludesHalf": true
+          }
+        }
+      }
+    },
+    "note": "every fillable entry once under the elite exit with no gate; win = return over zero after the fee; beatsAge = return over the mean of its age bin in the same census; intervals from resampling instruments"
+  },
+  "organism": {
+    "instruments": 12,
+    "readings": 1392,
+    "readingsPerInstrument": 116,
+    "organismTrips": 16,
+    "kernelTrips": 16,
+    "identical": true,
+    "maxAbsDiff": 5.204170427930421e-18,
+    "lag": 1,
+    "refused": 0,
+    "impactRefused": 0
+  },
+  "unmodelled": [
+    "the tape after our own order is the recorded tape: our fill moves nothing the next reading reports",
+    "every instrument is its own book: no cap on positions open at once across instruments",
+    "the fee is borrowed from pump.fun; the round trip cost of pumpswap has never been measured",
+    "the holdout is split by instrument, not by time: holdout instruments share the train instruments calendar",
+    "trades and buyers count reading intervals with a move (or a rise) of the SOL reserve, not swaps or wallets, which the tape does not carry"
+  ]
+}

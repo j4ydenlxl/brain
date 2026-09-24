@@ -1,0 +1,1349 @@
+{
+  "at": "2026-09-24T08:45:23.501Z",
+  "command": "node bench/venue.mjs --instruments 400 --generations 4 --pop 8 --boot 200 --auc-boot 20 --check 6",
+  "node": "v24.15.0",
+  "cpus": 32,
+  "platform": "win32",
+  "isTheBar": false,
+  "statement": "On the recorded pumpswap tape read only from trader.db (400 instruments, 46149 readings, SAMPLED by seed), 7 typed sensors (real SOL, age, trading and buying intervals in the last 6 readings, reserve slope, market births in 600 s, migrated origin) fed the venue.trader gate; 4 generations of 8 genomes (31 evaluations) over the gate and a trailing exit were selected on TRAIN only (300 instruments, the development set) by the smaller fold t statistic of the per instrument gap to an age binned baseline, and the one elite (gates realSolMin 707.8, birthsMax 38, migrated 1; exit trail 0.3037, trailArm 0.1552, stopLoss 0.3065, maxHold 102, takeProfit 1.793) was graded once on the 100 HELD OUT instruments at the payable price after the borrowed 0.0454 fee charged on both legs. It made 6 trips on 3 instruments at 0.55% per trip (0.00067 SOL), win rate 50.00%, its top 5 percent of trips carrying 40.16% of its winnings; its age matched control (the same 6 trips, 16 random entries each on other holdout instruments within 30 s of the same age, the same exit, size and fee; 0 trips had no instrument alive at their age and were excluded from both arms) made -29.37% per trip, win rate 21.88%. The per instrument gap is 0.01796 of size with a 95 percent interval [-0.00230, 0.03821] and nFor95 128, so the elite NULL AGAINST its control and the bar is NOT MET. Against random times on the SAME instruments (the board 8 control, same exit) the per instrument gap is -0.00031 [-0.00089, 0.00027]. Per trip the elite gains 0.29925 [-0.02502, 0.62352] over its age control; the same exit with no gate (193 trips) gains 0.07857 [-0.05922, 0.21635] per trip over its own (per instrument 0.15085 [-0.10561, 0.40731], larger because it trades more): the exit with no gate is not separable from its age control, so the gap is the gate, and the two per trip intervals overlap, so what the gate adds per trip is not separated. On the holdout census the sensors whose beats-the-age-bin AUC interval excludes 0.5 are ageS 0.4176, trades 0.5570, slope 0.5697, births 0.5530, migrated 0.4397. 0 of 102 trips filled better than the reported ratio, every trip paid the both legs fee of its own proceeds, the organism book was identical to the kernel on 3 holdout instruments, and a second grade was identical. Nothing placed an order; wall times are of a shared machine and no latency is claimed.",
+  "claim": "NULL: the per instrument gap between the sensor elite and its age matched control on the holdout has a 95 percent interval that spans zero; nFor95 128 instruments would be needed at the observed mean and spread",
+  "verdict": "NULL AGAINST",
+  "barMet": false,
+  "clearsFee": true,
+  "sound": true,
+  "checks": {
+    "tapeIsRecorded": true,
+    "tapeComplete": true,
+    "splitDisjointByInstrument": true,
+    "searchSawOnlyTrain": true,
+    "evolvedTraded": true,
+    "controlMatchesTradeCount": true,
+    "controlMatchesAges": true,
+    "payableNeverBeatsMid": true,
+    "feeOnBothLegs": true,
+    "deterministic": true,
+    "organismAgreesWithKernel": true
+  },
+  "wallMs": 2512,
+  "rssMb": 125.5,
+  "sharedMachine": "measured on a shared machine (other sessions and one Ollama queue); wall times are not latencies and no latency is claimed",
+  "config": {
+    "generations": 4,
+    "pop": 8,
+    "draws": 16,
+    "tolS": 30,
+    "instruments": 400,
+    "seed": "venue.sensors/1",
+    "share": 0.25,
+    "salt": "venue.holdout/1",
+    "foldSalt": "venue.fold/1",
+    "maxImpact": 0.01,
+    "size": 0.02,
+    "lag": 1,
+    "minReadings": 20,
+    "minTripsShare": 0.1,
+    "window": 6,
+    "boot": 200,
+    "aucBoot": 20,
+    "check": 6
+  },
+  "canonical": {
+    "generations": 120,
+    "pop": 64,
+    "draws": 16,
+    "tolS": 30,
+    "instruments": 0,
+    "seed": "venue.sensors/1",
+    "share": 0.25,
+    "salt": "venue.holdout/1",
+    "foldSalt": "venue.fold/1",
+    "maxImpact": 0.01,
+    "size": 0.02,
+    "lag": 1,
+    "minReadings": 20,
+    "minTripsShare": 0.1,
+    "window": 6,
+    "boot": 2000,
+    "aucBoot": 200,
+    "check": 12
+  },
+  "units": "every net, netPerTrip, gap and tail number is in units of the entry size (1.0 = one entry of size SOL) at the payable price after the fee on both legs; netSol = net x size; meanHeld in readings; ages in seconds",
+  "fee": {
+    "file": "trader/bench/verdicts/desk.json",
+    "assertion": "FEE_BAR is the measured 4.54% round trip",
+    "detail": "0.0454",
+    "venueMeasuredOn": "pump.fun",
+    "venueAppliedTo": "pumpswap (never measured: trader/bench/verdicts/instrument.json)",
+    "value": 0.0454,
+    "borrowed": true,
+    "legs": "fee/2 of the buy notional + fee/2 of the sell proceeds; a flat trip pays exactly the round trip fee"
+  },
+  "fills": {
+    "size": 0.02,
+    "lag": 1,
+    "maxImpact": 0.01,
+    "note": "payable price from the recorded reserves; a buy fills only when size / SOL reserve <= maxImpact; sells always fill"
+  },
+  "tape": {
+    "source": "trader.db",
+    "db": "C:\\Users\\ybmic\\Downloads\\claudeskillsvideo-to-website\\trader\\data\\trader.db",
+    "venue": "pumpswap",
+    "instruments": 400,
+    "readings": 46149,
+    "eligible": 2839,
+    "sampled": true,
+    "scanned": 325148,
+    "loadMs": 2272,
+    "cadenceSeconds": 20.089,
+    "birthRows": 3025,
+    "origins": {
+      "migrated": 93,
+      "wallet": 307,
+      "other": 0,
+      "unknown": 0
+    },
+    "agesMissing": 0
+  },
+  "sensors": {
+    "window": 6,
+    "list": [
+      {
+        "name": "realSol",
+        "type": "f64",
+        "unit": "SOL",
+        "doc": "the quote (SOL) reserve at the decision reading: the real SOL in the pool"
+      },
+      {
+        "name": "ageS",
+        "type": "f64",
+        "unit": "s",
+        "doc": "seconds since the pool was born (pool_state.age_s; 0 at the CreatePool reading)"
+      },
+      {
+        "name": "trades",
+        "type": "i32",
+        "unit": "readings",
+        "doc": "readings among the last SENSOR_WINDOW where the reserves moved along the curve since the reading before: at least one swap happened in between (a count of trading intervals; the tape cannot count swaps inside one interval)"
+      },
+      {
+        "name": "buyers",
+        "type": "i32",
+        "unit": "readings",
+        "doc": "readings among the last SENSOR_WINDOW where the SOL reserve ROSE since the reading before: net buying in that interval (buy-side intervals, NOT distinct wallets, which the tape does not carry)"
+      },
+      {
+        "name": "slope",
+        "type": "f64",
+        "unit": "ratio",
+        "doc": "the SOL reserve now over the SOL reserve SENSOR_WINDOW readings ago (or at birth when younger), minus one"
+      },
+      {
+        "name": "births",
+        "type": "i32",
+        "unit": "pools",
+        "doc": "pools of this venue born in the BIRTH_WINDOW_S seconds up to this reading, market wide (the pool table, by t_local: when the desk saw each birth)"
+      },
+      {
+        "name": "migrated",
+        "type": "u8",
+        "unit": "flag",
+        "doc": "1 when the pool was born by a cpi out of the pump.fun program (a graduated curve), 0 when a wallet or anything else created it"
+      }
+    ]
+  },
+  "split": {
+    "by": "instrument",
+    "hash": "hash32(salt + \":\" + signature) % 10000 < share * 10000",
+    "salt": "venue.holdout/1",
+    "share": 0.25,
+    "train": 300,
+    "holdout": 100,
+    "trainReadings": 34544,
+    "holdoutReadings": 11605,
+    "disjoint": true,
+    "development": "train: the search, its two folds, its age baseline and every TRAIN line",
+    "heldOut": "holdout: read once after the search by gradeSensorElite and sensorAucs"
+  },
+  "search": {
+    "generations": 4,
+    "evaluations": 31,
+    "cacheHits": 1,
+    "readingsReplayed": 1070864,
+    "marketYearsReplayed": 0.6816927426673765,
+    "yearsArithmetic": "31 evaluations x 34544 readings = 1070864 readings; x 20.089 s per reading = 21512587 market-seconds; / 31557600 s per year = 6.8169e-1 market-years replayed",
+    "archiveFill": 17,
+    "archiveCapacity": 98,
+    "archiveStats": {
+      "evaluated": 32,
+      "placed": 17,
+      "replaced": 4,
+      "rejected": 11,
+      "emitted": 0
+    },
+    "best": {
+      "id": "vg0-4",
+      "genome": {
+        "realSolMin": 707.8354875617185,
+        "realSolMax": 0,
+        "ageMin": 0,
+        "ageMax": 0,
+        "tradesMin": 0,
+        "buyersMin": 0,
+        "slopeMin": null,
+        "slopeMax": null,
+        "birthsMin": 0,
+        "birthsMax": 38,
+        "migrated": 1,
+        "maxEntries": 0,
+        "trail": 0.30372696553421835,
+        "trailArm": 0.1551770005499875,
+        "stopLoss": 0.30646882685832677,
+        "maxHold": 102,
+        "takeProfit": 1.7931883704172025
+      },
+      "fitness": 2.699143199841534,
+      "tFolds": [
+        2.699143199841534,
+        2.825904779034417
+      ],
+      "trips": 36,
+      "netPerTrip": -0.04130187841361542,
+      "gapPerTrip": 0.19404716484525547
+    },
+    "evalMs": 126.7208,
+    "baseline": {
+      "entries": 12300,
+      "computed": 23,
+      "reused": 8,
+      "ms": 61.777100000000004
+    },
+    "manifest": {
+      "seed": "venue.sensors/1",
+      "popSize": 8,
+      "readingsPerEvaluation": 34544,
+      "trainInstruments": 300,
+      "secondsPerTick": 20.089,
+      "secondsPerYear": 31557600,
+      "fitness": "min over two train folds (hash32 of \"venue.fold/1:\" + id, bit 0) of the t statistic over instruments of the per instrument sum of (trip return after the fee minus the mean return of every fillable entry of the same fold in the same age bin under the same exit); a genome under minTrips = 30 trips scores -1000 + trips / minTrips",
+      "genes": [
+        "realSolMin",
+        "realSolMax",
+        "ageMin",
+        "ageMax",
+        "tradesMin",
+        "buyersMin",
+        "slopeMin",
+        "slopeMax",
+        "birthsMin",
+        "birthsMax",
+        "migrated",
+        "maxEntries",
+        "trail",
+        "trailArm",
+        "stopLoss",
+        "maxHold",
+        "takeProfit"
+      ],
+      "exitGenes": [
+        "trail",
+        "trailArm",
+        "stopLoss",
+        "maxHold",
+        "takeProfit"
+      ],
+      "ageBins": 53,
+      "baselineEntries": 12300,
+      "crossoverRate": 0.3,
+      "mutationRate": 2,
+      "elite": 16,
+      "grid": [
+        "tripsPerInstrument",
+        "meanHeld",
+        "migrated gate (wallet vs any or migrated)"
+      ],
+      "gridCapacity": 98
+    },
+    "minTrips": 30,
+    "folds": [
+      154,
+      146
+    ],
+    "evoMs": 128,
+    "history": [
+      {
+        "gen": 1,
+        "best": 2.699143,
+        "bestTrips": 36,
+        "genMean": 0.434041,
+        "fill": 8,
+        "fresh": 8,
+        "ms": 50.6
+      },
+      {
+        "gen": 2,
+        "best": 2.699143,
+        "bestTrips": 36,
+        "genMean": -124.886694,
+        "fill": 12,
+        "fresh": 8,
+        "ms": 25.7
+      },
+      {
+        "gen": 3,
+        "best": 2.699143,
+        "bestTrips": 36,
+        "genMean": -124.976589,
+        "fill": 14,
+        "fresh": 7,
+        "ms": 23.8
+      },
+      {
+        "gen": 4,
+        "best": 2.699143,
+        "bestTrips": 36,
+        "genMean": -374.923728,
+        "fill": 17,
+        "fresh": 8,
+        "ms": 26.6
+      }
+    ]
+  },
+  "elite": {
+    "genome": {
+      "realSolMin": 707.8354875617185,
+      "realSolMax": 0,
+      "ageMin": 0,
+      "ageMax": 0,
+      "tradesMin": 0,
+      "buyersMin": 0,
+      "slopeMin": null,
+      "slopeMax": null,
+      "birthsMin": 0,
+      "birthsMax": 38,
+      "migrated": 1,
+      "maxEntries": 0,
+      "trail": 0.30372696553421835,
+      "trailArm": 0.1551770005499875,
+      "stopLoss": 0.30646882685832677,
+      "maxHold": 102,
+      "takeProfit": 1.7931883704172025
+    },
+    "gatesOn": [
+      "realSolMin 707.8",
+      "birthsMax 38",
+      "migrated 1"
+    ],
+    "exit": "trail 0.3037, trailArm 0.1552, stopLoss 0.3065, maxHold 102, takeProfit 1.793",
+    "params": {
+      "realSolMin": 707.8354875617185,
+      "realSolMax": 0,
+      "ageMin": 0,
+      "ageMax": 0,
+      "tradesMin": 0,
+      "buyersMin": 0,
+      "slopeMin": null,
+      "slopeMax": null,
+      "birthsMin": 0,
+      "birthsMax": 38,
+      "migrated": 1,
+      "maxEntries": 0,
+      "trail": 0.30372696553421846,
+      "trailArm": 0.1551770005499875,
+      "stopLoss": 0.30646882685832677,
+      "maxHold": 102,
+      "takeProfit": 1.7931883704172025,
+      "entryDir": 0,
+      "lookback": 1,
+      "entryUp": 0,
+      "minQuote": 0,
+      "maxEntryStep": 0,
+      "size": 0.02,
+      "maxOpen": 1000000000
+    },
+    "trainFitness": 2.699143199841534,
+    "trainTFolds": [
+      2.699143199841534,
+      2.825904779034417
+    ],
+    "trainTrips": 36,
+    "trainGapPerTrip": 0.19404716484525547,
+    "trainNetPerTrip": -0.04130187841361542
+  },
+  "train": {
+    "instruments": 300,
+    "instrumentsTraded": 20,
+    "evolved": {
+      "trips": 36,
+      "net": -1.486867622890155,
+      "netPerTrip": -0.04130187841361541,
+      "grossPerTrip": 0.004193309716959608,
+      "feesPerTrip": 0.04549518813057499,
+      "meanHeld": 59.111111111111114,
+      "impactRefused": 0,
+      "liqTrips": 1,
+      "why": {
+        "maxHold": 16,
+        "tape ended": 19,
+        "stopLoss": 1
+      },
+      "tail": {
+        "trips": 36,
+        "net": -1.486867622890155,
+        "meanPerTrip": -0.04130187841361541,
+        "winRate": 0.25,
+        "wins": 9,
+        "tailRate": 0,
+        "tailTrips": 0,
+        "top5pctTrips": 2,
+        "top5pctShareOfWinnings": 0.5734490720395522,
+        "kFor100": null,
+        "kFor100Share": null,
+        "best": 0.11060291176770344,
+        "worst": -1.0226958412552716
+      },
+      "netSol": -0.0297373524578031
+    },
+    "ageControl": {
+      "draws": 16,
+      "tolS": 30,
+      "tripsMatched": 36,
+      "shortDrawn": 0,
+      "unmatchedDraws": 0,
+      "drawnTrips": 576,
+      "maxAgeGap": 21.748999999999796,
+      "candidates": {
+        "min": 57,
+        "median": 260,
+        "max": 269
+      },
+      "net": -8.46421073199347,
+      "netPerTrip": -0.2351169647775964,
+      "tail": {
+        "trips": 576,
+        "net": -135.42737171189555,
+        "meanPerTrip": -0.23511696477759644,
+        "winRate": 0.2725694444444444,
+        "wins": 157,
+        "tailRate": 0.05555555555555555,
+        "tailTrips": 32,
+        "top5pctTrips": 29,
+        "top5pctShareOfWinnings": 0.5887038030209069,
+        "kFor100": null,
+        "kFor100Share": null,
+        "best": 3.5125162877729426,
+        "worst": -1.022699951135032
+      },
+      "netSol": -0.1692842146398694
+    },
+    "within": {
+      "tripsMatched": 36,
+      "net": -1.786511415646698,
+      "netPerTrip": -0.04962531710129717,
+      "collisions": 253,
+      "drawnTrips": 323,
+      "netSol": -0.03573022831293396
+    },
+    "hold": {
+      "trips": 273,
+      "net": -181.21528167955836,
+      "netPerTrip": -0.6637922405844628,
+      "noEntry": 27,
+      "netSol": -3.624305633591167
+    },
+    "gapAge": {
+      "n": 300,
+      "mean": 0.02325781,
+      "sd": 0.1191179,
+      "se": 0.00687728,
+      "lo": 0.00977835,
+      "hi": 0.03673727,
+      "bootLo": 0.00913852,
+      "bootHi": 0.03592018,
+      "boot": 200,
+      "nFor95": 101,
+      "positive": 18,
+      "negative": 2,
+      "zero": 280,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapAgeTraded": {
+      "n": 20,
+      "mean": 0.34886716,
+      "sd": 0.32205305,
+      "se": 0.07201325,
+      "lo": 0.20772118,
+      "hi": 0.49001313,
+      "bootLo": 0.19571854,
+      "bootHi": 0.47643745,
+      "boot": 200,
+      "nFor95": 4,
+      "positive": 18,
+      "negative": 2,
+      "zero": 0,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapAgePerTrip": {
+      "n": 36,
+      "mean": 0.19381509,
+      "sd": 0.29533649,
+      "se": 0.04922275,
+      "lo": 0.0973385,
+      "hi": 0.29029167,
+      "bootLo": 0.11246337,
+      "bootHi": 0.30163968,
+      "boot": 200,
+      "nFor95": 9,
+      "positive": 24,
+      "negative": 12,
+      "zero": 0,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapWithin": {
+      "n": 300,
+      "mean": 0.00099881,
+      "sd": 0.00670535,
+      "se": 0.00038713,
+      "lo": 0.00024003,
+      "hi": 0.00175759,
+      "bootLo": 0.000347,
+      "bootHi": 0.00196169,
+      "boot": 200,
+      "nFor95": 174,
+      "positive": 15,
+      "negative": 5,
+      "zero": 280,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapHold": {
+      "n": 300,
+      "mean": 0.59909471,
+      "sd": 0.900502,
+      "se": 0.05199051,
+      "lo": 0.49719332,
+      "hi": 0.70099611,
+      "bootLo": 0.49801582,
+      "bootHi": 0.69298015,
+      "boot": 200,
+      "nFor95": 9,
+      "positive": 222,
+      "negative": 51,
+      "zero": 27,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "checks": {
+      "unmatchedTrips": 0,
+      "payableViolations": 0,
+      "tripsChecked": 612,
+      "feeMaxDev": 5.273559366969494e-16,
+      "feesAboveFlat": 34
+    }
+  },
+  "holdout": {
+    "instruments": 100,
+    "instrumentsTraded": 3,
+    "evolved": {
+      "trips": 6,
+      "net": 0.0332531567297999,
+      "netPerTrip": 0.005542192788299983,
+      "grossPerTrip": 0.052125440282717726,
+      "feesPerTrip": 0.0465832474944177,
+      "meanHeld": 57.166666666666664,
+      "impactRefused": 0,
+      "liqTrips": 0,
+      "why": {
+        "maxHold": 3,
+        "tape ended": 3
+      },
+      "tail": {
+        "trips": 6,
+        "net": 0.033253156729799886,
+        "meanPerTrip": 0.005542192788299981,
+        "winRate": 0.5,
+        "wins": 3,
+        "tailRate": 0,
+        "tailTrips": 0,
+        "top5pctTrips": 1,
+        "top5pctShareOfWinnings": 0.40159152074316545,
+        "kFor100": 1,
+        "kFor100Share": 0.16666666666666666,
+        "best": 0.058041318017637566,
+        "worst": -0.03911612249731678
+      },
+      "netSol": 0.000665063134595998
+    },
+    "ageControl": {
+      "draws": 16,
+      "tolS": 30,
+      "tripsMatched": 6,
+      "shortDrawn": 0,
+      "unmatchedDraws": 0,
+      "drawnTrips": 96,
+      "maxAgeGap": 12.184999999999945,
+      "candidates": {
+        "min": 19,
+        "median": 85,
+        "max": 86
+      },
+      "net": -1.7622712849204618,
+      "netPerTrip": -0.293711880820077,
+      "tail": {
+        "trips": 96,
+        "net": -28.19634055872739,
+        "meanPerTrip": -0.293711880820077,
+        "winRate": 0.21875,
+        "wins": 21,
+        "tailRate": 0.03125,
+        "tailTrips": 3,
+        "top5pctTrips": 5,
+        "top5pctShareOfWinnings": 0.7805554662295304,
+        "kFor100": null,
+        "kFor100Share": null,
+        "best": 1.2854393050303918,
+        "worst": -1.0226999511350265
+      },
+      "netSol": -0.03524542569840924
+    },
+    "within": {
+      "tripsMatched": 6,
+      "net": 0.06407391424830394,
+      "netPerTrip": 0.010678985708050657,
+      "collisions": 45,
+      "drawnTrips": 51,
+      "netSol": 0.001281478284966079
+    },
+    "hold": {
+      "trips": 89,
+      "net": -21.921002972857604,
+      "netPerTrip": -0.24630340418941127,
+      "noEntry": 11,
+      "netSol": -0.43842005945715207
+    },
+    "gapAge": {
+      "n": 100,
+      "mean": 0.01795524,
+      "sd": 0.10336508,
+      "se": 0.01033651,
+      "lo": -0.00230431,
+      "hi": 0.0382148,
+      "bootLo": 0,
+      "bootHi": 0.04344467,
+      "boot": 200,
+      "nFor95": 128,
+      "positive": 3,
+      "negative": 0,
+      "zero": 97,
+      "excludesZero": false,
+      "bootExcludesZero": false
+    },
+    "gapAgeTraded": {
+      "n": 3,
+      "mean": 0.59850815,
+      "sd": 0.08761509,
+      "se": 0.0505846,
+      "lo": 0.49936234,
+      "hi": 0.69765396,
+      "bootLo": 0.53480179,
+      "bootHi": 0.69842402,
+      "boot": 200,
+      "nFor95": 1,
+      "positive": 3,
+      "negative": 0,
+      "zero": 0,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapAgePerTrip": {
+      "n": 6,
+      "mean": 0.29925407,
+      "sd": 0.40525349,
+      "se": 0.16544405,
+      "lo": -0.02501626,
+      "hi": 0.6235244,
+      "bootLo": 0.02899613,
+      "bootHi": 0.56625815,
+      "boot": 200,
+      "nFor95": 8,
+      "positive": 4,
+      "negative": 2,
+      "zero": 0,
+      "excludesZero": false,
+      "bootExcludesZero": true
+    },
+    "gapWithin": {
+      "n": 100,
+      "mean": -0.00030821,
+      "sd": 0.00295553,
+      "se": 0.00029555,
+      "lo": -0.00088749,
+      "hi": 0.00027108,
+      "bootLo": -0.00084431,
+      "bootHi": 0.00017535,
+      "boot": 200,
+      "nFor95": 354,
+      "positive": 1,
+      "negative": 2,
+      "zero": 97,
+      "excludesZero": false,
+      "bootExcludesZero": false
+    },
+    "gapHold": {
+      "n": 100,
+      "mean": 0.21954256,
+      "sd": 3.02112719,
+      "se": 0.30211272,
+      "lo": -0.37259837,
+      "hi": 0.81168349,
+      "bootLo": -0.54770904,
+      "bootHi": 0.70399309,
+      "boot": 200,
+      "nFor95": 728,
+      "positive": 73,
+      "negative": 16,
+      "zero": 11,
+      "excludesZero": false,
+      "bootExcludesZero": false
+    },
+    "checks": {
+      "unmatchedTrips": 0,
+      "payableViolations": 0,
+      "tripsChecked": 102,
+      "feeMaxDev": 2.914335439641036e-16,
+      "feesAboveFlat": 6
+    }
+  },
+  "reference": {
+    "eliteExitNoGate": {
+      "genome": {
+        "realSolMin": 0,
+        "realSolMax": 0,
+        "ageMin": 0,
+        "ageMax": 0,
+        "tradesMin": 0,
+        "buyersMin": 0,
+        "slopeMin": null,
+        "slopeMax": null,
+        "birthsMin": 0,
+        "birthsMax": 0,
+        "migrated": -1,
+        "maxEntries": 0,
+        "trail": 0.30372696553421846,
+        "trailArm": 0.1551770005499875,
+        "stopLoss": 0.30646882685832677,
+        "maxHold": 102,
+        "takeProfit": 1.7931883704172025
+      },
+      "instruments": 100,
+      "instrumentsTraded": 89,
+      "evolved": {
+        "trips": 193,
+        "net": -36.59856192312884,
+        "netPerTrip": -0.18962985452398362,
+        "grossPerTrip": -0.14757991867797357,
+        "feesPerTrip": 0.04204993584600996,
+        "meanHeld": 32.78756476683938,
+        "impactRefused": 132,
+        "liqTrips": 90,
+        "why": {
+          "takeProfit": 48,
+          "maxHold": 30,
+          "trail": 35,
+          "stopLoss": 52,
+          "tape ended": 28
+        },
+        "tail": {
+          "trips": 193,
+          "net": -36.598561923128855,
+          "meanPerTrip": -0.1896298545239837,
+          "winRate": 0.32642487046632124,
+          "wins": 63,
+          "tailRate": 0.08290155440414508,
+          "tailTrips": 16,
+          "top5pctTrips": 10,
+          "top5pctShareOfWinnings": 0.5057393545566127,
+          "kFor100": null,
+          "kFor100Share": null,
+          "best": 5.906681248831926,
+          "worst": -1.0226999511350263
+        },
+        "netSol": -0.7319712384625768
+      },
+      "ageControl": {
+        "draws": 16,
+        "tolS": 30,
+        "tripsMatched": 192,
+        "shortDrawn": 1,
+        "unmatchedDraws": 16,
+        "drawnTrips": 3072,
+        "maxAgeGap": 29.888999999999996,
+        "candidates": {
+          "min": 0,
+          "median": 82,
+          "max": 88
+        },
+        "net": -52.402689466985635,
+        "netPerTrip": -0.27293067430721685,
+        "tail": {
+          "trips": 3072,
+          "net": -838.4430314717554,
+          "meanPerTrip": -0.272930674307212,
+          "winRate": 0.2991536458333333,
+          "wins": 919,
+          "tailRate": 0.0771484375,
+          "tailTrips": 237,
+          "top5pctTrips": 154,
+          "top5pctShareOfWinnings": 0.49435609380993356,
+          "kFor100": null,
+          "kFor100Share": null,
+          "best": 5.906681248831926,
+          "worst": -1.0226999511350363
+        },
+        "netSol": -1.0480537893397126
+      },
+      "within": {
+        "tripsMatched": 193,
+        "net": -32.068759304049635,
+        "netPerTrip": -0.16615937463238153,
+        "collisions": 1100,
+        "drawnTrips": 1988,
+        "netSol": -0.6413751860809928
+      },
+      "hold": {
+        "trips": 89,
+        "net": -21.921002972857604,
+        "netPerTrip": -0.24630340418941127,
+        "noEntry": 11,
+        "netSol": -0.43842005945715207
+      },
+      "gapAge": {
+        "n": 100,
+        "mean": 0.15085218,
+        "sd": 1.30845827,
+        "se": 0.13084583,
+        "lo": -0.10560564,
+        "hi": 0.40731,
+        "bootLo": -0.09089137,
+        "bootHi": 0.39130525,
+        "boot": 200,
+        "nFor95": 290,
+        "positive": 31,
+        "negative": 58,
+        "zero": 11,
+        "excludesZero": false,
+        "bootExcludesZero": false
+      },
+      "gapAgeTraded": {
+        "n": 89,
+        "mean": 0.16949683,
+        "sd": 1.38667762,
+        "se": 0.14698753,
+        "lo": -0.11859873,
+        "hi": 0.4575924,
+        "bootLo": -0.06327651,
+        "bootHi": 0.52463972,
+        "boot": 200,
+        "nFor95": 258,
+        "positive": 31,
+        "negative": 58,
+        "zero": 0,
+        "excludesZero": false,
+        "bootExcludesZero": false
+      },
+      "gapAgePerTrip": {
+        "n": 192,
+        "mean": 0.07856885,
+        "sd": 0.97409053,
+        "se": 0.07029893,
+        "lo": -0.05921706,
+        "hi": 0.21635475,
+        "bootLo": -0.06340855,
+        "bootHi": 0.19507187,
+        "boot": 200,
+        "nFor95": 591,
+        "positive": 76,
+        "negative": 116,
+        "zero": 0,
+        "excludesZero": false,
+        "bootExcludesZero": false
+      },
+      "gapWithin": {
+        "n": 100,
+        "mean": -0.04529803,
+        "sd": 0.43543279,
+        "se": 0.04354328,
+        "lo": -0.13064285,
+        "hi": 0.0400468,
+        "bootLo": -0.14126561,
+        "bootHi": 0.04066008,
+        "boot": 200,
+        "nFor95": 355,
+        "positive": 66,
+        "negative": 22,
+        "zero": 12,
+        "excludesZero": false,
+        "bootExcludesZero": false
+      },
+      "gapHold": {
+        "n": 100,
+        "mean": -0.14677559,
+        "sd": 2.32813405,
+        "se": 0.2328134,
+        "lo": -0.60308986,
+        "hi": 0.30953868,
+        "bootLo": -0.60838459,
+        "bootHi": 0.23067753,
+        "boot": 200,
+        "nFor95": 967,
+        "positive": 15,
+        "negative": 23,
+        "zero": 62,
+        "excludesZero": false,
+        "bootExcludesZero": false
+      },
+      "checks": {
+        "unmatchedTrips": 1,
+        "payableViolations": 0,
+        "tripsChecked": 3265,
+        "feeMaxDev": 9.159339953157541e-16,
+        "feesAboveFlat": 78
+      }
+    },
+    "sensorBase": {
+      "genome": {
+        "realSolMin": 0,
+        "realSolMax": 0,
+        "ageMin": 0,
+        "ageMax": 0,
+        "tradesMin": 0,
+        "buyersMin": 0,
+        "slopeMin": null,
+        "slopeMax": null,
+        "birthsMin": 0,
+        "birthsMax": 0,
+        "migrated": -1,
+        "maxEntries": 0,
+        "trail": 0.1,
+        "trailArm": 0,
+        "stopLoss": 0,
+        "maxHold": 12,
+        "takeProfit": 0
+      },
+      "instruments": 100,
+      "instrumentsTraded": 89,
+      "evolved": {
+        "trips": 467,
+        "net": -42.31053551616121,
+        "netPerTrip": -0.090600718450024,
+        "grossPerTrip": -0.04625060723424126,
+        "feesPerTrip": 0.04435011121578271,
+        "meanHeld": 8.203426124197001,
+        "impactRefused": 627,
+        "liqTrips": 93,
+        "why": {
+          "trail": 217,
+          "maxHold": 230,
+          "tape ended": 20
+        },
+        "tail": {
+          "trips": 467,
+          "net": -42.31053551616119,
+          "meanPerTrip": -0.09060071845002396,
+          "winRate": 0.3811563169164882,
+          "wins": 178,
+          "tailRate": 0.014989293361884369,
+          "tailTrips": 7,
+          "top5pctTrips": 24,
+          "top5pctShareOfWinnings": 0.5629255102559857,
+          "kFor100": null,
+          "kFor100Share": null,
+          "best": 11.627277398679393,
+          "worst": -1.022699951135032
+        },
+        "netSol": -0.8462107103232243
+      },
+      "ageControl": {
+        "draws": 16,
+        "tolS": 30,
+        "tripsMatched": 461,
+        "shortDrawn": 6,
+        "unmatchedDraws": 96,
+        "drawnTrips": 7376,
+        "maxAgeGap": 29.178999999999974,
+        "candidates": {
+          "min": 0,
+          "median": 32,
+          "max": 88
+        },
+        "net": -46.35353250353726,
+        "netPerTrip": -0.10054996204671857,
+        "tail": {
+          "trips": 7376,
+          "net": -741.6565200565897,
+          "meanPerTrip": -0.10054996204671769,
+          "winRate": 0.3633405639913232,
+          "wins": 2680,
+          "tailRate": 0.015319956616052061,
+          "tailTrips": 113,
+          "top5pctTrips": 369,
+          "top5pctShareOfWinnings": 0.5721410253703951,
+          "kFor100": null,
+          "kFor100Share": null,
+          "best": 11.627827954516679,
+          "worst": -1.0226999511350348
+        },
+        "netSol": -0.9270706500707452
+      },
+      "within": {
+        "tripsMatched": 467,
+        "net": -44.53459188924939,
+        "netPerTrip": -0.0953631517971079,
+        "collisions": 3180,
+        "drawnTrips": 4292,
+        "netSol": -0.8906918377849878
+      },
+      "hold": {
+        "trips": 89,
+        "net": -21.921002972857604,
+        "netPerTrip": -0.24630340418941127,
+        "noEntry": 11,
+        "netSol": -0.43842005945715207
+      },
+      "gapAge": {
+        "n": 100,
+        "mean": 0.02778844,
+        "sd": 1.42103855,
+        "se": 0.14210385,
+        "lo": -0.25073511,
+        "hi": 0.306312,
+        "bootLo": -0.20903906,
+        "bootHi": 0.30900386,
+        "boot": 200,
+        "nFor95": 10047,
+        "positive": 36,
+        "negative": 53,
+        "zero": 11,
+        "excludesZero": false,
+        "bootExcludesZero": false
+      },
+      "gapAgeTraded": {
+        "n": 89,
+        "mean": 0.03122297,
+        "sd": 1.50720301,
+        "se": 0.1597632,
+        "lo": -0.2819129,
+        "hi": 0.34435884,
+        "bootLo": -0.24180457,
+        "bootHi": 0.38012389,
+        "boot": 200,
+        "nFor95": 8952,
+        "positive": 36,
+        "negative": 53,
+        "zero": 0,
+        "excludesZero": false,
+        "bootExcludesZero": false
+      },
+      "gapAgePerTrip": {
+        "n": 461,
+        "mean": 0.00602786,
+        "sd": 0.7309832,
+        "se": 0.03404528,
+        "lo": -0.06070089,
+        "hi": 0.07275661,
+        "bootLo": -0.05301104,
+        "bootHi": 0.08373726,
+        "boot": 200,
+        "nFor95": 56494,
+        "positive": 242,
+        "negative": 219,
+        "zero": 0,
+        "excludesZero": false,
+        "bootExcludesZero": false
+      },
+      "gapWithin": {
+        "n": 100,
+        "mean": 0.02224056,
+        "sd": 0.40224521,
+        "se": 0.04022452,
+        "lo": -0.0565995,
+        "hi": 0.10108062,
+        "bootLo": -0.06050446,
+        "bootHi": 0.10437533,
+        "boot": 200,
+        "nFor95": 1257,
+        "positive": 57,
+        "negative": 31,
+        "zero": 12,
+        "excludesZero": false,
+        "bootExcludesZero": false
+      },
+      "gapHold": {
+        "n": 100,
+        "mean": -0.20389533,
+        "sd": 2.75641305,
+        "se": 0.2756413,
+        "lo": -0.74415228,
+        "hi": 0.33636163,
+        "bootLo": -0.76135984,
+        "bootHi": 0.27754273,
+        "boot": 200,
+        "nFor95": 703,
+        "positive": 42,
+        "negative": 26,
+        "zero": 32,
+        "excludesZero": false,
+        "bootExcludesZero": false
+      },
+      "checks": {
+        "unmatchedTrips": 6,
+        "payableViolations": 0,
+        "tripsChecked": 7843,
+        "feeMaxDev": 2.886579864025407e-15,
+        "feesAboveFlat": 252
+      }
+    }
+  },
+  "aucs": {
+    "holdout": {
+      "entries": 3922,
+      "instruments": 100,
+      "winRate": 0.379398,
+      "beatsAgeRate": 0.32254,
+      "meanPerEntry": -0.057515,
+      "tailRate": 0.106323,
+      "boot": 20,
+      "per": {
+        "realSol": {
+          "win": {
+            "auc": 0.60038,
+            "lo": 0.496148,
+            "hi": 0.638302,
+            "excludesHalf": false
+          },
+          "beatsAge": {
+            "auc": 0.507387,
+            "lo": 0.435811,
+            "hi": 0.529882,
+            "excludesHalf": false
+          }
+        },
+        "ageS": {
+          "win": {
+            "auc": 0.581072,
+            "lo": 0.495671,
+            "hi": 0.650691,
+            "excludesHalf": false
+          },
+          "beatsAge": {
+            "auc": 0.417618,
+            "lo": 0.323956,
+            "hi": 0.476777,
+            "excludesHalf": true
+          }
+        },
+        "trades": {
+          "win": {
+            "auc": 0.606836,
+            "lo": 0.538764,
+            "hi": 0.65483,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.556993,
+            "lo": 0.518716,
+            "hi": 0.59734,
+            "excludesHalf": true
+          }
+        },
+        "buyers": {
+          "win": {
+            "auc": 0.568326,
+            "lo": 0.508009,
+            "hi": 0.644111,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.515076,
+            "lo": 0.474184,
+            "hi": 0.587263,
+            "excludesHalf": false
+          }
+        },
+        "slope": {
+          "win": {
+            "auc": 0.539167,
+            "lo": 0.491277,
+            "hi": 0.621235,
+            "excludesHalf": false
+          },
+          "beatsAge": {
+            "auc": 0.569723,
+            "lo": 0.532185,
+            "hi": 0.646673,
+            "excludesHalf": true
+          }
+        },
+        "births": {
+          "win": {
+            "auc": 0.541588,
+            "lo": 0.480289,
+            "hi": 0.582191,
+            "excludesHalf": false
+          },
+          "beatsAge": {
+            "auc": 0.55297,
+            "lo": 0.50034,
+            "hi": 0.617347,
+            "excludesHalf": true
+          }
+        },
+        "migrated": {
+          "win": {
+            "auc": 0.468141,
+            "lo": 0.365908,
+            "hi": 0.524769,
+            "excludesHalf": false
+          },
+          "beatsAge": {
+            "auc": 0.439712,
+            "lo": 0.366773,
+            "hi": 0.486348,
+            "excludesHalf": true
+          }
+        }
+      }
+    },
+    "train": {
+      "entries": 12300,
+      "instruments": 300,
+      "winRate": 0.315041,
+      "beatsAgeRate": 0.546667,
+      "meanPerEntry": -0.188707,
+      "tailRate": 0.056667,
+      "boot": 20,
+      "per": {
+        "realSol": {
+          "win": {
+            "auc": 0.535855,
+            "lo": 0.484589,
+            "hi": 0.596294,
+            "excludesHalf": false
+          },
+          "beatsAge": {
+            "auc": 0.665992,
+            "lo": 0.628153,
+            "hi": 0.70397,
+            "excludesHalf": true
+          }
+        },
+        "ageS": {
+          "win": {
+            "auc": 0.51197,
+            "lo": 0.46566,
+            "hi": 0.572027,
+            "excludesHalf": false
+          },
+          "beatsAge": {
+            "auc": 0.573331,
+            "lo": 0.521515,
+            "hi": 0.602606,
+            "excludesHalf": true
+          }
+        },
+        "trades": {
+          "win": {
+            "auc": 0.539847,
+            "lo": 0.523054,
+            "hi": 0.556246,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.50311,
+            "lo": 0.468059,
+            "hi": 0.530825,
+            "excludesHalf": false
+          }
+        },
+        "buyers": {
+          "win": {
+            "auc": 0.557108,
+            "lo": 0.524632,
+            "hi": 0.599142,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.498964,
+            "lo": 0.444976,
+            "hi": 0.537643,
+            "excludesHalf": false
+          }
+        },
+        "slope": {
+          "win": {
+            "auc": 0.556901,
+            "lo": 0.517342,
+            "hi": 0.600099,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.417103,
+            "lo": 0.387804,
+            "hi": 0.441337,
+            "excludesHalf": true
+          }
+        },
+        "births": {
+          "win": {
+            "auc": 0.496841,
+            "lo": 0.447495,
+            "hi": 0.516444,
+            "excludesHalf": false
+          },
+          "beatsAge": {
+            "auc": 0.501917,
+            "lo": 0.460726,
+            "hi": 0.545201,
+            "excludesHalf": false
+          }
+        },
+        "migrated": {
+          "win": {
+            "auc": 0.415715,
+            "lo": 0.375187,
+            "hi": 0.463809,
+            "excludesHalf": true
+          },
+          "beatsAge": {
+            "auc": 0.609439,
+            "lo": 0.555611,
+            "hi": 0.661396,
+            "excludesHalf": true
+          }
+        }
+      }
+    },
+    "note": "every fillable entry once under the elite exit with no gate; win = return over zero after the fee; beatsAge = return over the mean of its age bin in the same census; intervals from resampling instruments"
+  },
+  "organism": {
+    "instruments": 3,
+    "readings": 351,
+    "readingsPerInstrument": 117,
+    "organismTrips": 6,
+    "kernelTrips": 6,
+    "identical": true,
+    "maxAbsDiff": 3.469446951953614e-18,
+    "lag": 1,
+    "refused": 0,
+    "impactRefused": 0
+  },
+  "unmodelled": [
+    "the tape after our own order is the recorded tape: our fill moves nothing the next reading reports",
+    "every instrument is its own book: no cap on positions open at once across instruments",
+    "the fee is borrowed from pump.fun; the round trip cost of pumpswap has never been measured",
+    "the holdout is split by instrument, not by time: holdout instruments share the train instruments calendar",
+    "trades and buyers count reading intervals with a move (or a rise) of the SOL reserve, not swaps or wallets, which the tape does not carry"
+  ]
+}

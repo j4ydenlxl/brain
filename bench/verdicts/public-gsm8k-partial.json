@@ -1,0 +1,2203 @@
+{
+  "at": "2026-09-24T13:32:19.726Z",
+  "node": "v24.15.0",
+  "command": "node bench/public.mjs --set gsm8k --limit 0 --resume",
+  "isTheBar": false,
+  "notTheBarBecause": [
+    "the run had not finished"
+  ],
+  "complete": false,
+  "progress": {
+    "done": 29,
+    "of": 1319
+  },
+  "ms": 1029773,
+  "set": "gsm8k",
+  "source": "https://github.com/openai/grade-school-math (grade_school_math/data/test.jsonl)",
+  "license": "MIT",
+  "file": "bench/fixtures/public/gsm8k/test.jsonl",
+  "n": 29,
+  "of": 1319,
+  "seed": "public/1",
+  "limit": 0,
+  "budgetMs": null,
+  "model": "qwen3:1.7b",
+  "route": null,
+  "maxTokens": 3000,
+  "ollamaUp": true,
+  "armsRun": [
+    "organism",
+    "alone",
+    "null"
+  ],
+  "attemptsPerTask": null,
+  "attemptsAllowedByArc": null,
+  "organismPath": "act/prompt.mjs ask(): the direct table, askBySpawn, then act/solve.mjs; a record solve() cannot compute reaches the math region (reason/math.mjs solveMath: k programs written by the model cell, run in act/run.mjs sandbox, voted by value, one verify call); the brain holds nothing from this set",
+  "regions": {
+    "on": true,
+    "k": 5,
+    "check": true,
+    "sent": {
+      "math": {
+        "k": 5,
+        "verify": true
+      },
+      "code": {
+        "k": 5,
+        "repair": true
+      }
+    }
+  },
+  "twoRulers": "bench/verdicts/math.json records.ids (200) plus gsm8k.0, gsm8k.1, gsm8k.2 (the records reason/math.mjs prompts were probed on) are development; every other record is held out",
+  "sharedQueue": "every millisecond and microsecond here was measured on ONE Ollama queue at http://127.0.0.1:11434 that other builders on this machine were using at the same time: a model latency is this run wait plus its compute, not the model own speed",
+  "ladder": {
+    "row405B": {
+      "system": "Llama 3.1 405B Instruct",
+      "benchmark": "gsm8k",
+      "score": 96.8,
+      "metric": "em_maj1@1, 8-shot CoT",
+      "source": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md (instruction tuned table)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    "frontier": [],
+    "frontierNote": "research/published.json cites no row of class frontier for gsm8k; its highest cited row is Llama 3.1 405B Instruct 96.8"
+  },
+  "etaWhole": {
+    "msPerTask": 35508.18,
+    "of": 1319,
+    "minutes": 780.59,
+    "remaining": 1290,
+    "remainingMinutes": 763.43,
+    "arithmetic": "35508.18 ms per record x 1319 records / 60000 = 780.59 minutes (arms organism,alone,null, interleaved; a resume skips the 29 held here, leaving 763.43 minutes)"
+  },
+  "memoryEpisodes": 0,
+  "ledgerEvents": {
+    "act.ask": 58
+  },
+  "arms": {
+    "organism": {
+      "absent": false,
+      "n": 29,
+      "correct": 28,
+      "accuracy": 0.965517,
+      "interval": {
+        "lo": 0.828241,
+        "hi": 0.993887,
+        "width": 0.165646
+      },
+      "meanMs": 29314.97,
+      "absentRecords": 0,
+      "absentReason": null,
+      "provenance": {
+        "model+exact": {
+          "n": 29,
+          "correct": 28
+        }
+      },
+      "redacted": 0,
+      "native": {
+        "n": 0,
+        "of": 29,
+        "share": 0,
+        "correct": 0,
+        "meanUs": null,
+        "maxUs": null,
+        "provenances": [
+          "exact",
+          "memory",
+          "direct"
+        ]
+      },
+      "direct": {
+        "n": 0,
+        "of": 29,
+        "share": 0,
+        "correct": 0,
+        "meanNs": null,
+        "meanUs": null
+      },
+      "viaModel": {
+        "n": 29,
+        "of": 29,
+        "share": 1,
+        "correct": 28,
+        "meanUs": 29314946.13
+      },
+      "regions": {
+        "math": {
+          "n": 29,
+          "correct": 28,
+          "byProvenance": {
+            "model+exact": {
+              "n": 29,
+              "correct": 28
+            }
+          },
+          "calls": 189,
+          "modelMs": 845948,
+          "execMs": 4147.01,
+          "verdicts": {
+            "accept": 26,
+            "reject": 3
+          },
+          "allFailed": 0,
+          "meanCalls": 6.52,
+          "meanModelMs": 29170.62
+        }
+      },
+      "splits": {
+        "development": {
+          "n": 9,
+          "correct": 9,
+          "accuracy": 1,
+          "interval": {
+            "lo": 0.700847,
+            "hi": 1,
+            "width": 0.299153
+          }
+        },
+        "heldOut": {
+          "n": 20,
+          "correct": 19,
+          "accuracy": 0.95,
+          "interval": {
+            "lo": 0.763864,
+            "hi": 0.991119,
+            "width": 0.227255
+          }
+        }
+      },
+      "cappedAtMaxTokens": 0,
+      "cappedAndWrong": 0,
+      "cappedNotReadable": {
+        "n": 29,
+        "why": "a region answer journals the SUM of its calls tokens, so whether one call hit maxTokens is not readable from it"
+      }
+    },
+    "alone": {
+      "absent": false,
+      "n": 29,
+      "correct": 24,
+      "accuracy": 0.827586,
+      "interval": {
+        "lo": 0.654512,
+        "hi": 0.924023,
+        "width": 0.269511
+      },
+      "meanMs": 6191.39,
+      "absentRecords": 0,
+      "absentReason": null,
+      "splits": {
+        "development": {
+          "n": 9,
+          "correct": 7,
+          "accuracy": 0.777778,
+          "interval": {
+            "lo": 0.452583,
+            "hi": 0.936776,
+            "width": 0.484193
+          }
+        },
+        "heldOut": {
+          "n": 20,
+          "correct": 17,
+          "accuracy": 0.85,
+          "interval": {
+            "lo": 0.639577,
+            "hi": 0.947632,
+            "width": 0.308056
+          }
+        }
+      },
+      "cappedAtMaxTokens": 4,
+      "cappedAndWrong": 3
+    },
+    "null": {
+      "absent": false,
+      "n": 29,
+      "correct": 0,
+      "accuracy": 0,
+      "interval": {
+        "lo": 0,
+        "hi": 0.116974,
+        "width": 0.116974
+      },
+      "meanMs": 1.03,
+      "absentRecords": 0,
+      "absentReason": null,
+      "provenance": {
+        "memory": {
+          "n": 29,
+          "correct": 0
+        }
+      },
+      "redacted": 0,
+      "native": {
+        "n": 29,
+        "of": 29,
+        "share": 1,
+        "correct": 0,
+        "meanUs": 1022.07,
+        "maxUs": 2036.5,
+        "provenances": [
+          "exact",
+          "memory",
+          "direct"
+        ]
+      },
+      "direct": {
+        "n": 0,
+        "of": 29,
+        "share": 0,
+        "correct": 0,
+        "meanNs": null,
+        "meanUs": null
+      },
+      "viaModel": {
+        "n": 0,
+        "of": 29,
+        "share": 0,
+        "correct": 0,
+        "meanUs": null
+      },
+      "splits": {
+        "development": {
+          "n": 9,
+          "correct": 0,
+          "accuracy": 0,
+          "interval": {
+            "lo": 0,
+            "hi": 0.299153,
+            "width": 0.299153
+          }
+        },
+        "heldOut": {
+          "n": 20,
+          "correct": 0,
+          "accuracy": 0,
+          "interval": {
+            "lo": 0,
+            "hi": 0.16113,
+            "width": 0.16113
+          }
+        }
+      }
+    }
+  },
+  "gap": 0.137931,
+  "nFor95": 36,
+  "published": [
+    {
+      "system": "Llama 3.1 405B Instruct",
+      "score": 96.8,
+      "unit": "percent",
+      "metric": "em_maj1@1, 8-shot CoT",
+      "class": "open 405B",
+      "source": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md (instruction tuned table)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "Llama 3.1 70B Instruct",
+      "score": 95.1,
+      "unit": "percent",
+      "metric": "em_maj1@1, 8-shot CoT",
+      "class": "open 70B",
+      "source": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md (instruction tuned table)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "Llama 3.1 8B Instruct",
+      "score": 84.5,
+      "unit": "percent",
+      "metric": "em_maj1@1, 8-shot CoT",
+      "class": "open 8B",
+      "source": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md (instruction tuned table)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "Llama 3 8B Instruct",
+      "score": 80.6,
+      "unit": "percent",
+      "metric": "em_maj1@1, 8-shot CoT",
+      "class": "open 8B",
+      "source": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md (instruction tuned table)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "Qwen3-1.7B-Base (the model this tree runs against, base weights)",
+      "score": 75.44,
+      "unit": "percent",
+      "metric": "4-shot CoT",
+      "class": "small, same family as the local arm",
+      "source": "https://arxiv.org/html/2505.09388v1 (Qwen3 Technical Report, Table 8)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "Qwen2.5-1.5B-Base",
+      "score": 68.54,
+      "unit": "percent",
+      "metric": "4-shot CoT",
+      "class": "small",
+      "source": "https://arxiv.org/html/2505.09388v1 (Qwen3 Technical Report, Table 8)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "Qwen3-0.6B-Base",
+      "score": 59.59,
+      "unit": "percent",
+      "metric": "4-shot CoT",
+      "class": "small",
+      "source": "https://arxiv.org/html/2505.09388v1 (Qwen3 Technical Report, Table 8)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "Gemma-3-1B-Base",
+      "score": 2.2,
+      "unit": "percent",
+      "metric": "4-shot CoT",
+      "class": "small",
+      "source": "https://arxiv.org/html/2505.09388v1 (Qwen3 Technical Report, Table 8)",
+      "readAt": "2026-09-18 09:10 EDT"
+    }
+  ],
+  "publishedComparison": {
+    "beats": [
+      {
+        "system": "Llama 3.1 70B Instruct",
+        "score": 95.1
+      },
+      {
+        "system": "Llama 3.1 8B Instruct",
+        "score": 84.5
+      },
+      {
+        "system": "Llama 3 8B Instruct",
+        "score": 80.6
+      },
+      {
+        "system": "Qwen3-1.7B-Base (the model this tree runs against, base weights)",
+        "score": 75.44
+      },
+      {
+        "system": "Qwen2.5-1.5B-Base",
+        "score": 68.54
+      },
+      {
+        "system": "Qwen3-0.6B-Base",
+        "score": 59.59
+      },
+      {
+        "system": "Gemma-3-1B-Base",
+        "score": 2.2
+      }
+    ],
+    "doesNotBeat": [
+      {
+        "system": "Llama 3.1 405B Instruct",
+        "score": 96.8
+      }
+    ],
+    "decidedAbove": [
+      {
+        "system": "Llama 3 8B Instruct",
+        "score": 80.6
+      },
+      {
+        "system": "Qwen3-1.7B-Base (the model this tree runs against, base weights)",
+        "score": 75.44
+      },
+      {
+        "system": "Qwen2.5-1.5B-Base",
+        "score": 68.54
+      },
+      {
+        "system": "Qwen3-0.6B-Base",
+        "score": 59.59
+      },
+      {
+        "system": "Gemma-3-1B-Base",
+        "score": 2.2
+      }
+    ],
+    "decidedBelow": [],
+    "undecided": [
+      {
+        "system": "Llama 3.1 405B Instruct",
+        "score": 96.8
+      },
+      {
+        "system": "Llama 3.1 70B Instruct",
+        "score": 95.1
+      },
+      {
+        "system": "Llama 3.1 8B Instruct",
+        "score": 84.5
+      }
+    ]
+  },
+  "statement": "PARTIAL, isTheBar false (the run had not finished): on 29 of 1319 GSM8K test records at seed public/1, exact integer accuracy: the organism (act/prompt.mjs ask(): the direct table, act/solve.mjs, then the math region (reason/math.mjs solveMath, k=5, verify) on the model cell qwen3:1.7b) scored 28 of 29 = 96.55%, 95 percent interval 82.82% to 99.39%, mean 29314.97 ms per task; the model alone 82.76% (24 of 29); null 0.00% (0 of 29). Organism minus alone = 13.79 points, which at these rates needs 36 tasks per arm to separate from zero. 4 of 29 alone answers used the whole maxTokens 3000 budget, and 3 of those 4 were wrong, so those rows grade the budget as much as the model. Against the published rows the organism point estimate is above Llama 3.1 70B Instruct 95.1, Llama 3.1 8B Instruct 84.5, Llama 3 8B Instruct 80.6, Qwen3-1.7B-Base (the model this tree runs against, base weights) 75.44, Qwen2.5-1.5B-Base 68.54, Qwen3-0.6B-Base 59.59, Gemma-3-1B-Base 2.2 and not above Llama 3.1 405B Instruct 96.8; its 95 percent interval lies wholly below 0 of 8 rows and wholly above 5. Rate: 1.69 tasks per minute in this process (35.51 s per task, arms organism,alone,null). Organism native (exact, memory, direct: no model call) 0 of 29 = 0.00%; direct 0 of 29 (no record was answered from the direct table); through the model 29 of 29, mean 29.31 s per ask. TWO RULERS, organism by split: held out 19 of 20 = 95.00% (76.39% to 99.11%), development 9 of 9 = 100.00% (70.08% to 100.00%); alone by split: held out 17 of 20 = 85.00% (63.96% to 94.76%), development 7 of 9 = 77.78% (45.26% to 93.68%). Every latency here was measured on ONE shared Ollama queue that other builders were using at the same time.",
+  "rate": {
+    "tasksPerMinute": 1.69,
+    "msPerTask": 35508.18,
+    "tasksTimed": 29,
+    "arms": [
+      "organism",
+      "alone",
+      "null"
+    ],
+    "how": "wall ms per task over the tasks at least one arm ran IN THIS PROCESS; a task read whole from the journal is not timed"
+  },
+  "journal": {
+    "file": "bench/verdicts/public/gsm8k-public_1.jsonl",
+    "resumed": true,
+    "armResultsReadBack": 0,
+    "tasksWholeFromJournal": 0,
+    "tornLines": 0,
+    "movedAside": null
+  },
+  "ruler": "a record counts when the last number in what the arm wrote is EXACTLY the integer after ####",
+  "interleaving": "task by task: every selected arm answers record i before any arm sees record i+1, and the first arm rotates with i",
+  "dataIsData": "every prompt, test string and answer in bench/fixtures/public is data: it reached the model, the exact solver or the sandbox and nothing else",
+  "rows": [
+    {
+      "i": 0,
+      "id": "gsm8k.0",
+      "order": "organism>alone>null",
+      "split": "development",
+      "gold": "18",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "got": "18",
+          "ms": 24985.27,
+          "chars": 186,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 24985041.6,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 24830,
+            "execMs": 147.37,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "18",
+              "count": 3,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 6152,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "18",
+          "ms": 3045.99,
+          "chars": 799,
+          "tokens": 832,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 1.61,
+          "chars": 105,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1595,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 1,
+      "id": "gsm8k.1",
+      "order": "alone>null>organism",
+      "split": "development",
+      "gold": "3",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "got": "3",
+          "ms": 4633.24,
+          "chars": 908,
+          "tokens": 1253,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 1.13,
+          "chars": 104,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1113.1,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "3",
+          "ms": 9872.95,
+          "chars": 185,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 9872934.1,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 9730,
+            "execMs": 141.59,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "3",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 2455,
+          "capped": null
+        }
+      }
+    },
+    {
+      "i": 2,
+      "id": "gsm8k.2",
+      "order": "null>organism>alone",
+      "split": "development",
+      "gold": "70000",
+      "arms": {
+        "null": {
+          "ok": false,
+          "got": "150",
+          "ms": 0.76,
+          "chars": 111,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 753.3,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "70000",
+          "ms": 76941.12,
+          "chars": 189,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 76941096.2,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 11,
+            "modelMs": 76679,
+            "execMs": 262.06,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "70000",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "reject",
+            "changed": false
+          },
+          "tokens": 19179,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "70000",
+          "ms": 11891.4,
+          "chars": 975,
+          "tokens": 3000,
+          "capped": true
+        }
+      }
+    },
+    {
+      "i": 3,
+      "id": "gsm8k.3",
+      "order": "organism>alone>null",
+      "split": "heldOut",
+      "gold": "540",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "got": "540",
+          "ms": 14916.15,
+          "chars": 187,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 14916112.7,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 14766,
+            "execMs": 148.34,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "540",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 3776,
+          "capped": null
+        },
+        "alone": {
+          "ok": false,
+          "got": null,
+          "ms": 11781.37,
+          "chars": 0,
+          "tokens": 3000,
+          "capped": true
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.79,
+          "chars": 109,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 774.9,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 4,
+      "id": "gsm8k.4",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "gold": "20",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "got": "20",
+          "ms": 6008.03,
+          "chars": 820,
+          "tokens": 1568,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.83,
+          "chars": 107,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 821.2,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "20",
+          "ms": 25430.89,
+          "chars": 186,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 25430867.3,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 25276,
+            "execMs": 153.36,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "20",
+              "count": 3,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 6106,
+          "capped": null
+        }
+      }
+    },
+    {
+      "i": 5,
+      "id": "gsm8k.5",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "gold": "64",
+      "arms": {
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.77,
+          "chars": 106,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 759,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "64",
+          "ms": 52447.41,
+          "chars": 186,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 52447385.2,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 52328,
+            "execMs": 118.55,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "64",
+              "count": 3,
+              "valid": 4,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 12540,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "64",
+          "ms": 8495.34,
+          "chars": 855,
+          "tokens": 2189,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 6,
+      "id": "gsm8k.6",
+      "order": "organism>alone>null",
+      "split": "heldOut",
+      "gold": "260",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "got": "260",
+          "ms": 10829.14,
+          "chars": 187,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 10829110.9,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 10681,
+            "execMs": 147.23,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "260",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 2609,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "260",
+          "ms": 4046.34,
+          "chars": 927,
+          "tokens": 1100,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.74,
+          "chars": 116,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 728.1,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 7,
+      "id": "gsm8k.7",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "gold": "160",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "got": "120",
+          "ms": 8157.69,
+          "chars": 1726,
+          "tokens": 2132,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": "200",
+          "ms": 0.78,
+          "chars": 120,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 766.8,
+          "native": true
+        },
+        "organism": {
+          "ok": false,
+          "got": "120",
+          "ms": 31443.86,
+          "chars": 187,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 31443837.9,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 31297,
+            "execMs": 145.59,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "120",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 7752,
+          "capped": null
+        }
+      }
+    },
+    {
+      "i": 8,
+      "id": "gsm8k.8",
+      "order": "null>organism>alone",
+      "split": "development",
+      "gold": "45",
+      "arms": {
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.74,
+          "chars": 117,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 734.9,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "45",
+          "ms": 60777.89,
+          "chars": 186,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 60777870.6,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 60717,
+            "execMs": 60.59,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "45",
+              "count": 2,
+              "valid": 2,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 14686,
+          "capped": null
+        },
+        "alone": {
+          "ok": false,
+          "got": null,
+          "ms": 11810.13,
+          "chars": 0,
+          "tokens": 3000,
+          "capped": true
+        }
+      }
+    },
+    {
+      "i": 9,
+      "id": "gsm8k.9",
+      "order": "organism>alone>null",
+      "split": "heldOut",
+      "gold": "460",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "got": "460",
+          "ms": 16327.88,
+          "chars": 187,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 16327863.9,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 16194,
+            "execMs": 135.03,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "460",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 4027,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "460",
+          "ms": 5554.08,
+          "chars": 831,
+          "tokens": 1484,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.78,
+          "chars": 103,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 768.2,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 10,
+      "id": "gsm8k.10",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "gold": "366",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "got": "366",
+          "ms": 4715.81,
+          "chars": 879,
+          "tokens": 1253,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.75,
+          "chars": 116,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 742.3,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "366",
+          "ms": 13708.58,
+          "chars": 187,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 13708563.6,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 13563,
+            "execMs": 145.5,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "366",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 3343,
+          "capped": null
+        }
+      }
+    },
+    {
+      "i": 11,
+      "id": "gsm8k.11",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "gold": "694",
+      "arms": {
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.71,
+          "chars": 111,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 699.5,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "694",
+          "ms": 15004.05,
+          "chars": 187,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 15004034.7,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 14857,
+            "execMs": 144.13,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "694",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 3792,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "694",
+          "ms": 3783.42,
+          "chars": 587,
+          "tokens": 1015,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 12,
+      "id": "gsm8k.12",
+      "order": "organism>alone>null",
+      "split": "heldOut",
+      "gold": "13",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "got": "13",
+          "ms": 94885.13,
+          "chars": 186,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 94885113.2,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 11,
+            "modelMs": 94716,
+            "execMs": 169.8,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "12",
+              "count": 2,
+              "valid": 4,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "reject",
+            "changed": true
+          },
+          "tokens": 23192,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "13",
+          "ms": 6970.09,
+          "chars": 1644,
+          "tokens": 1798,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.83,
+          "chars": 108,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 824.2,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 13,
+      "id": "gsm8k.13",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "gold": "18",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "got": "18",
+          "ms": 6624.7,
+          "chars": 1450,
+          "tokens": 1720,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.76,
+          "chars": 113,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 755,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "18",
+          "ms": 56741.94,
+          "chars": 186,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 56741931.3,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 56685,
+            "execMs": 57.96,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "18",
+              "count": 2,
+              "valid": 2,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 13356,
+          "capped": null
+        }
+      }
+    },
+    {
+      "i": 14,
+      "id": "gsm8k.14",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "gold": "60",
+      "arms": {
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.68,
+          "chars": 126,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 677.2,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "60",
+          "ms": 22328.19,
+          "chars": 186,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 22328169.9,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 22184,
+            "execMs": 141.93,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "60",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 5652,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "60",
+          "ms": 5001.79,
+          "chars": 1357,
+          "tokens": 1349,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 15,
+      "id": "gsm8k.15",
+      "order": "organism>alone>null",
+      "split": "development",
+      "gold": "125",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "got": "125",
+          "ms": 18121.85,
+          "chars": 187,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 18121831.2,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 17980,
+            "execMs": 141.37,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "125",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 4353,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "125",
+          "ms": 5619.3,
+          "chars": 803,
+          "tokens": 1489,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": "000",
+          "ms": 0.77,
+          "chars": 124,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 755.4,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 16,
+      "id": "gsm8k.16",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "gold": "230",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "got": "230",
+          "ms": 6307.25,
+          "chars": 547,
+          "tokens": 1650,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.74,
+          "chars": 111,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 736.6,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "230",
+          "ms": 69667.91,
+          "chars": 187,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 69667893.5,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 11,
+            "modelMs": 69424,
+            "execMs": 245.09,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "230",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "reject",
+            "changed": false
+          },
+          "tokens": 17407,
+          "capped": null
+        }
+      }
+    },
+    {
+      "i": 17,
+      "id": "gsm8k.17",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "gold": "57500",
+      "arms": {
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.78,
+          "chars": 107,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 765.6,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "57500",
+          "ms": 14517.04,
+          "chars": 189,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 14517027,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 14363,
+            "execMs": 151.57,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "57500",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 3569,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "57500",
+          "ms": 4300.92,
+          "chars": 789,
+          "tokens": 1156,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 18,
+      "id": "gsm8k.18",
+      "order": "organism>alone>null",
+      "split": "development",
+      "gold": "7",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "got": "7",
+          "ms": 12393.76,
+          "chars": 185,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 12393747.7,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 12238,
+            "execMs": 153.91,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "7",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 3070,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "7",
+          "ms": 2226.18,
+          "chars": 421,
+          "tokens": 607,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 1.45,
+          "chars": 110,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1438.1,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 19,
+      "id": "gsm8k.19",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "gold": "6",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "got": "6",
+          "ms": 9265.39,
+          "chars": 1165,
+          "tokens": 2382,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 1.39,
+          "chars": 107,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1383.9,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "6",
+          "ms": 18885.06,
+          "chars": 185,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 18885043.3,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 18733,
+            "execMs": 150.61,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "6",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 4435,
+          "capped": null
+        }
+      }
+    },
+    {
+      "i": 20,
+      "id": "gsm8k.20",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "gold": "15",
+      "arms": {
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 1.45,
+          "chars": 111,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1442.2,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "15",
+          "ms": 24635.97,
+          "chars": 186,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 24635955.5,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 24492,
+            "execMs": 143.03,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "15",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 6082,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "15",
+          "ms": 9718.22,
+          "chars": 1182,
+          "tokens": 2497,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 21,
+      "id": "gsm8k.21",
+      "order": "organism>alone>null",
+      "split": "development",
+      "gold": "14",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "got": "14",
+          "ms": 63858.32,
+          "chars": 186,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 63858298.8,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 63823,
+            "execMs": 34.07,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "14",
+              "count": 1,
+              "valid": 1,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 14497,
+          "capped": null
+        },
+        "alone": {
+          "ok": false,
+          "got": null,
+          "ms": 11882.75,
+          "chars": 0,
+          "tokens": 3000,
+          "capped": true
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 1.43,
+          "chars": 108,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1424.2,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 22,
+      "id": "gsm8k.22",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "gold": "7",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "got": "7",
+          "ms": 4490.71,
+          "chars": 462,
+          "tokens": 1179,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 1.42,
+          "chars": 104,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1410,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "7",
+          "ms": 14940.79,
+          "chars": 185,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 14940774.3,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 14790,
+            "execMs": 147.35,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "7",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 3621,
+          "capped": null
+        }
+      }
+    },
+    {
+      "i": 23,
+      "id": "gsm8k.23",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "gold": "8",
+      "arms": {
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 1.34,
+          "chars": 119,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1335.5,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "8",
+          "ms": 9786.72,
+          "chars": 185,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 9786709.4,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 9643,
+            "execMs": 142.43,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "8",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 2393,
+          "capped": null
+        },
+        "alone": {
+          "ok": false,
+          "got": "00",
+          "ms": 3112.86,
+          "chars": 618,
+          "tokens": 843,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 24,
+      "id": "gsm8k.24",
+      "order": "organism>alone>null",
+      "split": "development",
+      "gold": "26",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "got": "26",
+          "ms": 13583.02,
+          "chars": 186,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 13583005.9,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 13436,
+            "execMs": 143.76,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "26",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 3298,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "26",
+          "ms": 4128.44,
+          "chars": 866,
+          "tokens": 1102,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 1.53,
+          "chars": 114,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1514.2,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 25,
+      "id": "gsm8k.25",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "gold": "2",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "got": "2",
+          "ms": 3501.44,
+          "chars": 605,
+          "tokens": 937,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 1.43,
+          "chars": 107,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1420.6,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "2",
+          "ms": 18013,
+          "chars": 185,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 18012988.8,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 17864,
+            "execMs": 148.99,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "2",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 4328,
+          "capped": null
+        }
+      }
+    },
+    {
+      "i": 26,
+      "id": "gsm8k.26",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "gold": "243",
+      "arms": {
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 2.05,
+          "chars": 110,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 2036.5,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "243",
+          "ms": 16837.79,
+          "chars": 187,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 16837765.7,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 16691,
+            "execMs": 146.55,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "243",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 4186,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "243",
+          "ms": 4939.26,
+          "chars": 644,
+          "tokens": 1310,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 27,
+      "id": "gsm8k.27",
+      "order": "organism>alone>null",
+      "split": "heldOut",
+      "gold": "16",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "got": "16",
+          "ms": 16459.46,
+          "chars": 186,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 16459449.7,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 16323,
+            "execMs": 133.93,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "16",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 4062,
+          "capped": null
+        },
+        "alone": {
+          "ok": true,
+          "got": "16",
+          "ms": 3458.53,
+          "chars": 690,
+          "tokens": 937,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.77,
+          "chars": 110,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 766.1,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 28,
+      "id": "gsm8k.28",
+      "order": "alone>null>organism",
+      "split": "development",
+      "gold": "25",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "got": "25",
+          "ms": 4079.7,
+          "chars": 920,
+          "tokens": 1098,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "got": null,
+          "ms": 0.71,
+          "chars": 104,
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 698.3,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "got": "25",
+          "ms": 11793.03,
+          "chars": 186,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "math",
+          "us": 11793014,
+          "native": false,
+          "region": {
+            "name": "math",
+            "provenance": "model+exact",
+            "calls": 6,
+            "modelMs": 11645,
+            "execMs": 145.32,
+            "k": 5,
+            "verify": true,
+            "allFailed": false,
+            "vote": {
+              "key": "25",
+              "count": 5,
+              "valid": 5,
+              "of": 5,
+              "tie": false
+            },
+            "verdict": "accept",
+            "changed": false
+          },
+          "tokens": 2838,
+          "capped": null
+        }
+      }
+    }
+  ]
+}

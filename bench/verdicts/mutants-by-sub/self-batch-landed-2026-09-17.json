@@ -1,0 +1,186 @@
+{
+  "at": "2026-09-18T02:48:49.507Z",
+  "node": "v24.15.0",
+  "conditions": {
+    "at": "2026-09-18T02:47:08.129Z",
+    "node": "v24.15.0",
+    "platform": "win32",
+    "cpus": 32,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900KF",
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "totalmemGB": 63.8,
+    "freememGB": 41.9,
+    "perMutantBudgetMs": 90000
+  },
+  "command": "node bench/mutants.mjs --sub act-web,act-shell,act-llm,simd,self,epochs --only aw,as,al,sm,sp,ey --timeout 90000 --budget 90000 --tag batch-landed-2026-09-17",
+  "suites": {
+    "self": [
+      "test/self.test.mjs"
+    ]
+  },
+  "tally": {
+    "mutants": 6,
+    "executed": 6,
+    "killed": 6,
+    "survived": 0,
+    "notExecuted": 0,
+    "score": 1,
+    "wallMs": 17533
+  },
+  "bySubsystem": {
+    "self": {
+      "suite": [
+        "test/self.test.mjs"
+      ],
+      "generated": 6,
+      "executed": 6,
+      "killed": 6,
+      "survived": 0,
+      "notExecuted": 0,
+      "unmutatedMs": 2473,
+      "unmutatedPass": 30,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 17533
+    }
+  },
+  "mutants": [
+    {
+      "id": "sp01",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH CAP: the prune cap collapses to its floor, so it stops scaling with the organism",
+      "executed": true,
+      "probeHits": 38,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune cap is the rule it publishes, at every organism size (mutants sp01, sp02, sp03)",
+        "error": "pruneCap(25601) disagrees with cap = max(256, ceil(edges * 0.01))"
+      },
+      "newFailures": 2,
+      "ms": 2511,
+      "passed": 28,
+      "status": "killed",
+      "find": "  return Math.max(floor, Math.ceil(finite(edges) * keep));",
+      "replace": "  return (__MUTP(), floor);"
+    },
+    {
+      "id": "sp02",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH CAP: the cap is ten times the declared share of the organism",
+      "executed": true,
+      "probeHits": 37,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune cap is the rule it publishes, at every organism size (mutants sp01, sp02, sp03)",
+        "error": "pruneCap(25600) disagrees with cap = max(256, ceil(edges * 0.01))"
+      },
+      "newFailures": 2,
+      "ms": 2538,
+      "passed": 28,
+      "status": "killed",
+      "find": "  return Math.max(floor, Math.ceil(finite(edges) * keep));",
+      "replace": "  return Math.max(floor, Math.ceil(finite(edges) * (__MUTP(), 0.1)));"
+    },
+    {
+      "id": "sp03",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH CAP: the published rule says a share the code does not use",
+      "executed": true,
+      "probeHits": 1,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune cap is the rule it publishes, at every organism size (mutants sp01, sp02, sp03)",
+        "error": "pruneCap(25600) disagrees with cap = max(256, ceil(edges * 0.02))"
+      },
+      "newFailures": 1,
+      "ms": 2503,
+      "passed": 29,
+      "status": "killed",
+      "find": "export const PRUNE_CAP_RULE = 'cap = max(256, ceil(edges * 0.01))';",
+      "replace": "export const PRUNE_CAP_RULE = (__MUTP(), 'cap = max(256, ceil(edges * 0.02))');"
+    },
+    {
+      "id": "sp04",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH: the floor is dropped, so a small stale population proposes a batch too small to move the rate",
+      "executed": true,
+      "probeHits": 28,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune batch is the floor, the share and the cap, one organism for each (mutants sp04, sp05, sp06)",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 1,
+      "ms": 2497,
+      "passed": 29,
+      "status": "killed",
+      "find": "      const batch = Math.max(8, Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * 0.02)));",
+      "replace": "      const batch = Math.max((__MUTP(), 0), Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * 0.02)));"
+    },
+    {
+      "id": "sp05",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH: the share of the stale population is a tenth of the declared 2%",
+      "executed": true,
+      "probeHits": 35,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune batch is the floor, the share and the cap, one organism for each (mutants sp04, sp05, sp06)",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 1,
+      "ms": 2487,
+      "passed": 29,
+      "status": "killed",
+      "find": "      const batch = Math.max(8, Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * 0.02)));",
+      "replace": "      const batch = Math.max(8, Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * (__MUTP(), 0.002))));"
+    },
+    {
+      "id": "sp06",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH: the cap is not a cap, so a batch larger than the armed gate maxEdges is proposed",
+      "executed": true,
+      "probeHits": 28,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune batch is the floor, the share and the cap, one organism for each (mutants sp04, sp05, sp06)",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 1,
+      "ms": 2516,
+      "passed": 29,
+      "status": "killed",
+      "find": "      const batch = Math.max(8, Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * 0.02)));",
+      "replace": "      const batch = Math.max(8, Math.max((__MUTP(), pruneCap(model.metrics.edges)), Math.ceil(model.metrics.staleEdges * 0.02)));"
+    }
+  ],
+  "verdict": "GREEN"
+}

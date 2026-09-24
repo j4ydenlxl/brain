@@ -1,0 +1,111 @@
+{
+  "at": "2026-09-18T02:46:22.996Z",
+  "node": "v24.15.0",
+  "conditions": {
+    "at": "2026-09-18T02:46:13.480Z",
+    "node": "v24.15.0",
+    "platform": "win32",
+    "cpus": 32,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900KF",
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "totalmemGB": 63.8,
+    "freememGB": 42,
+    "perMutantBudgetMs": 90000
+  },
+  "command": "node bench/mutants.mjs --sub self --only sp04,sp05,sp06 --timeout 90000 --budget 90000 --tag batch-pass1",
+  "suites": {
+    "self": [
+      "test/self.test.mjs"
+    ]
+  },
+  "tally": {
+    "mutants": 3,
+    "executed": 3,
+    "killed": 0,
+    "survived": 3,
+    "notExecuted": 0,
+    "score": 0,
+    "wallMs": 9234
+  },
+  "bySubsystem": {
+    "self": {
+      "suite": [
+        "test/self.test.mjs"
+      ],
+      "generated": 3,
+      "executed": 3,
+      "killed": 0,
+      "survived": 3,
+      "notExecuted": 0,
+      "unmutatedMs": 2319,
+      "unmutatedPass": 29,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 9234
+    }
+  },
+  "mutants": [
+    {
+      "id": "sp04",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH: the floor is dropped, so a small stale population proposes a batch too small to move the rate",
+      "executed": true,
+      "probeHits": 21,
+      "probeProcesses": 1,
+      "killed": false,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": null,
+      "newFailures": 0,
+      "ms": 2315,
+      "passed": 29,
+      "status": "survived",
+      "find": "      const batch = Math.max(8, Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * 0.02)));",
+      "replace": "      const batch = Math.max((__MUTP(), 0), Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * 0.02)));"
+    },
+    {
+      "id": "sp05",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH: the share of the stale population is a tenth of the declared 2%",
+      "executed": true,
+      "probeHits": 21,
+      "probeProcesses": 1,
+      "killed": false,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": null,
+      "newFailures": 0,
+      "ms": 2302,
+      "passed": 29,
+      "status": "survived",
+      "find": "      const batch = Math.max(8, Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * 0.02)));",
+      "replace": "      const batch = Math.max(8, Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * (__MUTP(), 0.002))));"
+    },
+    {
+      "id": "sp06",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH: the cap is not a cap, so a batch larger than the armed gate maxEdges is proposed",
+      "executed": true,
+      "probeHits": 21,
+      "probeProcesses": 1,
+      "killed": false,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": null,
+      "newFailures": 0,
+      "ms": 2292,
+      "passed": 29,
+      "status": "survived",
+      "find": "      const batch = Math.max(8, Math.min(pruneCap(model.metrics.edges), Math.ceil(model.metrics.staleEdges * 0.02)));",
+      "replace": "      const batch = Math.max(8, Math.max((__MUTP(), pruneCap(model.metrics.edges)), Math.ceil(model.metrics.staleEdges * 0.02)));"
+    }
+  ],
+  "verdict": "RED"
+}

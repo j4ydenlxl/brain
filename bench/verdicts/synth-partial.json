@@ -1,0 +1,466 @@
+{
+  "at": "2026-09-24T10:17:23.427Z",
+  "node": "v24.15.0",
+  "command": "node bench/synth.mjs",
+  "isTheBar": false,
+  "notTheBarBecause": "a snapshot while the run is still going",
+  "startedAt": "2026-09-24T08:27:59.330Z",
+  "model": "qwen3:1.7b",
+  "bigModel": "qwen3:30b-a3b",
+  "k": 5,
+  "repairK": 5,
+  "maxTokens": 4000,
+  "sandboxMsPerCandidate": 3000,
+  "hiddenGradeMs": 5000,
+  "bigMinutes": 25,
+  "codeHash": "e1610b561ea06103",
+  "development": {
+    "humaneval": "records 0 to 39 by index of bench/fixtures/public/humaneval/humaneval-js.jsonl (HumanEval_0 to HumanEval_41): the extractor was written reading these prompts",
+    "code": "the 40 task internal suite bench/fixtures/code-tasks.json",
+    "heldOut": "HumanEval records 40 to 160 by index (121 records): no model call here touched them; only their prompts were read, for extraction coverage"
+  },
+  "sharedQueue": "every latency here was measured on one Ollama queue shared with other builders; wall clock, not the model alone",
+  "nesting": "organism k=1 and k=5 are prefixes of the k=5+repair draw stream (seeded draws), graded separately",
+  "ruler": "HumanEval: the record's own tests string in act/run.mjs's sandbox on the arm's code cut at the record's stop tokens, as bench/public.mjs grades; code suite: every hidden case by act/run.mjs runCases",
+  "stages": {
+    "humaneval": {
+      "model": "qwen3:1.7b",
+      "journal": "bench/verdicts/synth/humaneval-qwen3_1.7b.jsonl",
+      "tornLines": 0,
+      "records": 40,
+      "of": 40,
+      "fromJournal": 0,
+      "partial": false,
+      "cutByClock": false,
+      "wallMs": 1707359,
+      "arms": {
+        "k5r": {
+          "label": "organism k=5+repair",
+          "n": 40,
+          "correct": 36,
+          "pass1": 0.9,
+          "interval": {
+            "lo": 0.769479,
+            "hi": 0.960421,
+            "width": 0.190942
+          },
+          "meanMs": 31519.56,
+          "callsPerRecord": 2.23,
+          "extracted": {
+            "records": 39,
+            "of": 40
+          },
+          "extractedShare": 0.975,
+          "provenance": {
+            "model+exact": 36,
+            "model": 4
+          },
+          "correctByProvenance": {
+            "model+exact": {
+              "n": 36,
+              "correct": 35
+            },
+            "model": {
+              "n": 4,
+              "correct": 1
+            }
+          }
+        },
+        "k5": {
+          "label": "organism k=5",
+          "n": 40,
+          "correct": 34,
+          "pass1": 0.85,
+          "interval": {
+            "lo": 0.709274,
+            "hi": 0.929389,
+            "width": 0.220115
+          },
+          "meanMs": 23731.07,
+          "callsPerRecord": 1.8,
+          "extracted": {
+            "records": 39,
+            "of": 40
+          },
+          "extractedShare": 0.975,
+          "provenance": {
+            "model+exact": 34,
+            "model": 6
+          },
+          "correctByProvenance": {
+            "model+exact": {
+              "n": 34,
+              "correct": 33
+            },
+            "model": {
+              "n": 6,
+              "correct": 1
+            }
+          }
+        },
+        "k1": {
+          "label": "organism k=1",
+          "n": 40,
+          "correct": 29,
+          "pass1": 0.725,
+          "interval": {
+            "lo": 0.571647,
+            "hi": 0.838921,
+            "width": 0.267274
+          },
+          "meanMs": 11740.2,
+          "callsPerRecord": 1,
+          "extracted": {
+            "records": 39,
+            "of": 40
+          },
+          "extractedShare": 0.975,
+          "provenance": {
+            "model+exact": 28,
+            "model": 12
+          },
+          "correctByProvenance": {
+            "model+exact": {
+              "n": 28,
+              "correct": 28
+            },
+            "model": {
+              "n": 12,
+              "correct": 1
+            }
+          }
+        },
+        "alone": {
+          "label": "model alone",
+          "n": 40,
+          "correct": 26,
+          "pass1": 0.65,
+          "interval": {
+            "lo": 0.495056,
+            "hi": 0.778657,
+            "width": 0.283601
+          },
+          "meanMs": 11084.34,
+          "callsPerRecord": 1,
+          "extracted": null
+        },
+        "null": {
+          "label": "null",
+          "n": 40,
+          "correct": 0,
+          "pass1": 0,
+          "interval": {
+            "lo": 0,
+            "hi": 0.087625,
+            "width": 0.087625
+          },
+          "meanMs": 18.36,
+          "callsPerRecord": 0,
+          "extracted": {
+            "records": 39,
+            "of": 40
+          },
+          "extractedShare": 0.975,
+          "provenance": {
+            "null": 40
+          },
+          "correctByProvenance": {
+            "null": {
+              "n": 40,
+              "correct": 0
+            }
+          }
+        }
+      },
+      "diagnostics": {
+        "assertionsExtracted": 80,
+        "shapes": {
+          "doctest": 80,
+          "example": 0,
+          "returns": 0
+        },
+        "oracle": {
+          "records": 36,
+          "of": 40,
+          "note": "records where ANY organism draw passed the hidden tests: the ceiling selection could reach"
+        },
+        "k1Raw": {
+          "correct": 29,
+          "of": 40,
+          "normalizedDraws": 0,
+          "note": "the first draw graded BEFORE stopSafe: organism k=1 minus this is what the stop-token rewrite did"
+        },
+        "hiddenPassButExtractedFail": 0,
+        "extractedPassButHiddenFail": 1,
+        "repairRecords": 5
+      },
+      "aloneNormalized": {
+        "correct": 26,
+        "of": 40,
+        "changed": 0,
+        "note": "model alone graded after the same stopSafe rewrite the organism applies: the share of the gap that is formatting"
+      },
+      "paired": {
+        "arm": "k5r",
+        "onlyOrganism": 11,
+        "onlyAlone": 1,
+        "mcnemarP": 0.006348
+      },
+      "bar": {
+        "gap": 0.25,
+        "overlap": 0.009178,
+        "met": true,
+        "disjoint": false,
+        "organism": {
+          "p": 0.9,
+          "lo": 0.769479,
+          "hi": 0.960421,
+          "width": 0.190942
+        },
+        "alone": {
+          "p": 0.65,
+          "lo": 0.495056,
+          "hi": 0.778657,
+          "width": 0.283601
+        },
+        "rule": "organism organism k=5+repair beats model alone by more than the overlap of their 95% Wilson intervals"
+      },
+      "aloneCappedAtMaxTokens": 9
+    },
+    "code": {
+      "model": "qwen3:1.7b",
+      "journal": "bench/verdicts/synth/code-qwen3_1.7b.jsonl",
+      "tornLines": 0,
+      "records": 40,
+      "of": 40,
+      "fromJournal": 0,
+      "partial": false,
+      "cutByClock": false,
+      "wallMs": 4856710,
+      "arms": {
+        "k5r": {
+          "label": "organism k=5+repair",
+          "n": 40,
+          "correct": 23,
+          "pass1": 0.575,
+          "interval": {
+            "lo": 0.421948,
+            "hi": 0.714908,
+            "width": 0.29296
+          },
+          "meanMs": 105502.85,
+          "callsPerRecord": 5.73,
+          "extracted": {
+            "records": 40,
+            "of": 40
+          },
+          "extractedShare": 1,
+          "provenance": {
+            "model+exact": 23,
+            "model": 17
+          },
+          "correctByProvenance": {
+            "model+exact": {
+              "n": 23,
+              "correct": 22
+            },
+            "model": {
+              "n": 17,
+              "correct": 1
+            }
+          }
+        },
+        "k5": {
+          "label": "organism k=5",
+          "n": 40,
+          "correct": 19,
+          "pass1": 0.475,
+          "interval": {
+            "lo": 0.329352,
+            "hi": 0.625029,
+            "width": 0.295677
+          },
+          "meanMs": 61552.74,
+          "callsPerRecord": 3.48,
+          "extracted": {
+            "records": 40,
+            "of": 40
+          },
+          "extractedShare": 1,
+          "provenance": {
+            "model+exact": 19,
+            "model": 21
+          },
+          "correctByProvenance": {
+            "model+exact": {
+              "n": 19,
+              "correct": 18
+            },
+            "model": {
+              "n": 21,
+              "correct": 1
+            }
+          }
+        },
+        "k1": {
+          "label": "organism k=1",
+          "n": 40,
+          "correct": 12,
+          "pass1": 0.3,
+          "interval": {
+            "lo": 0.180747,
+            "hi": 0.454303,
+            "width": 0.273556
+          },
+          "meanMs": 16227.97,
+          "callsPerRecord": 1,
+          "extracted": {
+            "records": 40,
+            "of": 40
+          },
+          "extractedShare": 1,
+          "provenance": {
+            "model": 28,
+            "model+exact": 12
+          },
+          "correctByProvenance": {
+            "model": {
+              "n": 28,
+              "correct": 1
+            },
+            "model+exact": {
+              "n": 12,
+              "correct": 11
+            }
+          }
+        },
+        "alone": {
+          "label": "model alone",
+          "n": 40,
+          "correct": 12,
+          "pass1": 0.3,
+          "interval": {
+            "lo": 0.180747,
+            "hi": 0.454303,
+            "width": 0.273556
+          },
+          "meanMs": 15815.58,
+          "callsPerRecord": 1,
+          "extracted": null
+        },
+        "null": {
+          "label": "null",
+          "n": 40,
+          "correct": 0,
+          "pass1": 0,
+          "interval": {
+            "lo": 0,
+            "hi": 0.087625,
+            "width": 0.087625
+          },
+          "meanMs": 16.96,
+          "callsPerRecord": 0,
+          "extracted": {
+            "records": 40,
+            "of": 40
+          },
+          "extractedShare": 1,
+          "provenance": {
+            "null": 40
+          },
+          "correctByProvenance": {
+            "null": {
+              "n": 40,
+              "correct": 0
+            }
+          }
+        }
+      },
+      "diagnostics": {
+        "assertionsExtracted": 122,
+        "shapes": {
+          "doctest": 120,
+          "example": 0,
+          "returns": 2
+        },
+        "oracle": {
+          "records": 23,
+          "of": 40,
+          "note": "records where ANY organism draw passed the hidden tests: the ceiling selection could reach"
+        },
+        "k1Raw": {
+          "correct": 12,
+          "of": 40,
+          "normalizedDraws": 0,
+          "note": "the first draw graded BEFORE stopSafe: organism k=1 minus this is what the stop-token rewrite did"
+        },
+        "hiddenPassButExtractedFail": 10,
+        "extractedPassButHiddenFail": 1,
+        "repairRecords": 21
+      },
+      "paired": {
+        "arm": "k5r",
+        "onlyOrganism": 11,
+        "onlyAlone": 0,
+        "mcnemarP": 0.000977
+      },
+      "bar": {
+        "gap": 0.275,
+        "overlap": 0.032355,
+        "met": true,
+        "disjoint": false,
+        "organism": {
+          "p": 0.575,
+          "lo": 0.421948,
+          "hi": 0.714908,
+          "width": 0.29296
+        },
+        "alone": {
+          "p": 0.3,
+          "lo": 0.180747,
+          "hi": 0.454303,
+          "width": 0.273556
+        },
+        "rule": "organism organism k=5+repair beats model alone by more than the overlap of their 95% Wilson intervals"
+      },
+      "aloneCappedAtMaxTokens": 16
+    }
+  },
+  "heldOutExtraction": {
+    "records": 121,
+    "from": 40,
+    "to": 160,
+    "withAtLeastOne": 115,
+    "share": 0.950413,
+    "assertions": 368,
+    "shapes": {
+      "doctest": 357,
+      "example": 9,
+      "returns": 2
+    },
+    "note": "prompts only; no model call, no tests string; the extractor was not tuned on these prompts"
+  },
+  "peakRssMb": 88.88,
+  "bar": {
+    "gap": 0.25,
+    "overlap": 0.009178,
+    "met": true,
+    "disjoint": false,
+    "organism": {
+      "p": 0.9,
+      "lo": 0.769479,
+      "hi": 0.960421,
+      "width": 0.190942
+    },
+    "alone": {
+      "p": 0.65,
+      "lo": 0.495056,
+      "hi": 0.778657,
+      "width": 0.283601
+    },
+    "rule": "organism organism k=5+repair beats model alone by more than the overlap of their 95% Wilson intervals",
+    "measuredOn": "HumanEval records 0 to 39, qwen3:1.7b"
+  },
+  "barMet": false,
+  "statement": "On MultiPL-E JavaScript HumanEval records 0 to 39 by index (development records) with qwen3:1.7b, the organism sampling up to 5 candidates, testing each against the examples it extracted from the prompt and repairing once passed 36 of 40 hidden suites (90.00%, 95% interval 76.95% to 96.04%) against 26 of 40 for one sample from the same model in bench/public.mjs's shape (65.00%, 49.51% to 77.87%). The nested arms read k=5 without repair 34 of 40 and k=1 29 of 40; the no-model null passed 0. The bar asks the gap (25.00%) to exceed the overlap of the two intervals (0.92%): it does, and the intervals are not disjoint. On the 40 task internal suite the same arms read 23, 19, 12, 12 and 0 of 40. Records 40 to 160 are held out: the public stage prints them separately. Latencies are wall clock on one Ollama queue shared with other runs."
+}

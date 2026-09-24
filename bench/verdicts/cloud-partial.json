@@ -1,0 +1,466 @@
+{
+  "at": "2026-09-24T02:33:42.645Z",
+  "command": "node bench/cloud.mjs",
+  "node": "v24.15.0",
+  "isTheBar": false,
+  "mode": "native",
+  "docker": {
+    "present": false,
+    "field": "docker",
+    "why": "docker is not on PATH (ENOENT); C:\\Program Files\\Docker absent; wsl: no answer",
+    "consequence": "no image was built, so imageBytes is null and the container caps (mem_limit 512m, cpus 1.0, read_only) were not exercised; bin/serve.mjs ran natively with the same environment and its own rss cap"
+  },
+  "seconds": 300,
+  "error": null,
+  "imageBytes": null,
+  "caps": {
+    "composeEnv": {
+      "BRAIN_NAME": "cloud",
+      "BRAIN_INSTANCE": "brain-1",
+      "BRAIN_MAJORS": "12",
+      "BRAIN_UNITS": "256",
+      "BRAIN_CHECKPOINT_EVERY": "1000",
+      "BRAIN_LEDGER": "summary",
+      "BRAIN_LEDGER_BUDGET_MB": "64",
+      "BRAIN_HEAP_MB": "224",
+      "BRAIN_RSS_CAP_MB": "448",
+      "BRAIN_DISK_CAP_MB": "2048",
+      "BRAIN_LADDER": "on",
+      "BRAIN_LADDER_HOUR": "4",
+      "TZ": "UTC",
+      "BRAIN_MODEL_URL": "http://host.docker.internal:11434",
+      "BRAIN_CHECKPOINT_URL": "",
+      "BRAIN_EGRESS_ALLOW": ""
+    },
+    "containerMemLimitMb": 512,
+    "cpus": 1,
+    "enforcedHere": "native: daemon heap BRAIN_HEAP_MB and the supervisor rss cap BRAIN_RSS_CAP_MB; no cpu cap, no read-only root"
+  },
+  "context": {
+    "files": 1548,
+    "bytes": 877125681,
+    "skipped": [
+      "organism/scale-52000/",
+      "site/.env.local",
+      "site/.vercel/",
+      "state/",
+      "web/dist/.env.local",
+      "web/dist/.vercel/"
+    ],
+    "secretHits": 0,
+    "planted": 8,
+    "textFilesScanned": 1529,
+    "textBytesScanned": 97097109,
+    "binaryNotScanned": 19,
+    "control": {
+      "patternsDropped": 14,
+      "extraFiles": 6,
+      "hitsInThem": 4,
+      "kinds": [
+        "jwt",
+        "env secret assignment"
+      ],
+      "files": [
+        "site/.env.local",
+        "web/dist/.env.local"
+      ]
+    }
+  },
+  "restartCount": 14,
+  "instancesAlive": 2,
+  "checkpointAgeS": 2.4,
+  "rssPeakMb": {
+    "daemonA": 610,
+    "serveA": 82,
+    "daemonB": 591,
+    "serveB": 66,
+    "instanceA": 692,
+    "instanceB": 657
+  },
+  "fitsContainerCap": false,
+  "pass": {
+    "restartCountIs1": false,
+    "resumedFromCheckpoint": true,
+    "duplicateCopied": true,
+    "secondFromCopy": true,
+    "instancesAlive2": true,
+    "exampleRefused": true,
+    "allowedHostReachedOrDocumented": true,
+    "healthOkBeforeAndAfter": false,
+    "noSecretInContext": true,
+    "secretControlSees": true,
+    "noOrphans": true
+  },
+  "allPass": false,
+  "rows": {
+    "mode": "native",
+    "healthBefore": {
+      "ok": false,
+      "at": "2026-09-24T02:29:35.668Z",
+      "instance": "bench-a",
+      "name": "cloud",
+      "uptimeS": 59.9,
+      "statusAgeS": 0.6,
+      "restarts": 2,
+      "budgetKills": 2,
+      "tick": 13371,
+      "ticksPerSec": 222,
+      "resumedAt": 11097,
+      "daemonPid": 36564,
+      "rssMb": 519,
+      "memory": {
+        "heapUsedMb": 79,
+        "arrayBuffersMb": 340,
+        "episodic": [
+          {
+            "name": "cloud",
+            "n": 14326,
+            "cap": 24040,
+            "max": 65536,
+            "d": 8192,
+            "keyMb": 188,
+            "boundMb": 512,
+            "evicted": 0
+          }
+        ]
+      },
+      "peak": {
+        "daemonRssMb": 599,
+        "serveRssMb": 62
+      },
+      "lastExit": {
+        "at": "2026-09-24T02:29:34.586Z",
+        "code": null,
+        "signal": "SIGKILL",
+        "afterS": 12.3,
+        "lastT": 13371,
+        "reason": "BUDGET KILLED rss 519 MB over cap 448 MB",
+        "planned": false
+      },
+      "checkpoint": {
+        "tick": 13097,
+        "savedAt": "2026-09-24T02:29:33.559Z",
+        "ageS": 2.1,
+        "bytes": 17605144
+      },
+      "ladder": {
+        "date": "2026-09-18",
+        "tier": 1,
+        "composite": 0.753828,
+        "columns": {
+          "answer": 1,
+          "code": 0.166667,
+          "capability": 1,
+          "health": 0.848646
+        },
+        "delta": null,
+        "file": "bench/verdicts/ladder/2026-09-18.json",
+        "at": "2026-09-18T14:41:30.239Z"
+      },
+      "nativeShare": null,
+      "nativeReason": "ladder.json has no native share yet",
+      "nextLadderAt": null,
+      "instancesAlive": 1,
+      "instances": [
+        "bench-a"
+      ],
+      "ledger": {
+        "level": "summary",
+        "budgetMb": 64,
+        "backstopRotations": 0,
+        "policy": "core/ledger.mjs setLedgerPolicy mode summary budget 64 MB"
+      },
+      "egressAllow": [
+        "127.0.0.1:11434"
+      ]
+    },
+    "kill": {
+      "pid": 11696,
+      "how": "process.kill(11696, SIGKILL) from the bench (Windows: TerminateProcess)",
+      "checkpointTickAtKill": 14097,
+      "tickAtKill": 14097,
+      "restartsBefore": 4,
+      "restartsAfter": 5,
+      "budgetKillsBefore": 4,
+      "budgetKillsAfter": 4,
+      "newPid": 43760,
+      "resumedAt": 14097,
+      "resumedFromCheckpoint": true,
+      "msToRestart": 10730,
+      "lastExit": {
+        "at": "2026-09-24T02:29:56.776Z",
+        "code": 1,
+        "signal": null,
+        "afterS": 3.2,
+        "lastT": 14097,
+        "reason": "exit",
+        "planned": false
+      },
+      "oldPidGone": true
+    },
+    "duplicate": {
+      "status": 200,
+      "ok": true,
+      "seed": 1,
+      "name": "dup-1",
+      "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\brain-cloud-bench-Pv9EMV\\dup-1",
+      "from": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\brain-cloud-bench-Pv9EMV\\cloud\\snapshot.json",
+      "bytes": 21917696,
+      "sha256": "c1e6efa937f11a0bf3481e4b31df38f8a22dd3bab5f35d14fcd61f558a463f38",
+      "fromTick": 17097,
+      "start": "BRAIN_NAME=dup-1 on the same /state volume resumes from this copy"
+    },
+    "duplicateAgain": {
+      "status": 409,
+      "error": "dup-1 already exists"
+    },
+    "second": {
+      "name": "dup-1",
+      "resumedAt": 17097,
+      "fromTick": 17097,
+      "resumedFromCopy": true,
+      "msToUp": 3570,
+      "instancesAliveSeenByA": 2,
+      "instancesSeenByA": [
+        "bench-a",
+        "bench-b"
+      ],
+      "instancesAliveSeenByB": 2
+    },
+    "instancesAlive": 2,
+    "egress": {
+      "guarded": {
+        "allowed": {
+          "url": "http://127.0.0.1:11434/api/tags",
+          "ok": true,
+          "status": 200,
+          "models": 2
+        },
+        "example": {
+          "url": "https://example.com/",
+          "refused": true,
+          "code": "EGRESS_REFUSED",
+          "error": "egress refused: example.com:443 is not on the egress allowlist (127.0.0.1:11434, 127.0.0.1:63573)"
+        },
+        "exampleHttp": {
+          "refused": true,
+          "code": "EGRESS_REFUSED"
+        },
+        "closedPort": {
+          "code": "ECONNREFUSED"
+        },
+        "guard": true
+      },
+      "controlClosedPortUnguarded": "ECONNREFUSED",
+      "where": "a separate node process with --import bin/serve.mjs (the same guard the daemon installs)"
+    },
+    "healthAfter": {
+      "ok": true,
+      "at": "2026-09-24T02:33:35.664Z",
+      "instance": "bench-a",
+      "name": "cloud",
+      "uptimeS": 299.9,
+      "statusAgeS": 0,
+      "restarts": 14,
+      "budgetKills": 13,
+      "tick": null,
+      "ticksPerSec": null,
+      "resumedAt": null,
+      "daemonPid": 31712,
+      "rssMb": null,
+      "memory": {
+        "heapUsedMb": null,
+        "arrayBuffersMb": null,
+        "episodic": null
+      },
+      "peak": {
+        "daemonRssMb": 610,
+        "serveRssMb": 82
+      },
+      "lastExit": {
+        "at": "2026-09-24T02:33:34.315Z",
+        "code": null,
+        "signal": "SIGKILL",
+        "afterS": 19.9,
+        "lastT": 19097,
+        "reason": "BUDGET KILLED rss 456 MB over cap 448 MB",
+        "planned": false
+      },
+      "checkpoint": {
+        "tick": 19097,
+        "savedAt": "2026-09-24T02:33:33.289Z",
+        "ageS": 2.4,
+        "bytes": 23986768
+      },
+      "ladder": {
+        "date": "2026-09-18",
+        "tier": 1,
+        "composite": 0.753828,
+        "columns": {
+          "answer": 1,
+          "code": 0.166667,
+          "capability": 1,
+          "health": 0.848646
+        },
+        "delta": null,
+        "file": "bench/verdicts/ladder/2026-09-18.json",
+        "at": "2026-09-18T14:41:30.239Z"
+      },
+      "nativeShare": null,
+      "nativeReason": "ladder.json has no native share yet",
+      "nextLadderAt": null,
+      "instancesAlive": 2,
+      "instances": [
+        "bench-a",
+        "bench-b"
+      ],
+      "ledger": {
+        "level": "summary",
+        "budgetMb": 64,
+        "backstopRotations": 0,
+        "policy": "core/ledger.mjs setLedgerPolicy mode summary budget 64 MB"
+      },
+      "egressAllow": [
+        "127.0.0.1:11434"
+      ]
+    },
+    "healthAfterB": {
+      "ok": false,
+      "at": "2026-09-24T02:33:35.668Z",
+      "instance": "bench-b",
+      "name": "dup-1",
+      "uptimeS": 164.9,
+      "statusAgeS": 0.7,
+      "restarts": 7,
+      "budgetKills": 7,
+      "tick": 20097,
+      "ticksPerSec": 153,
+      "resumedAt": 19097,
+      "daemonPid": 36564,
+      "rssMb": 585,
+      "memory": {
+        "heapUsedMb": 135,
+        "arrayBuffersMb": 351,
+        "episodic": [
+          {
+            "name": "cloud",
+            "n": 21480,
+            "cap": 40360,
+            "max": 65536,
+            "d": 8192,
+            "keyMb": 315,
+            "boundMb": 512,
+            "evicted": 0
+          }
+        ]
+      },
+      "peak": {
+        "daemonRssMb": 591,
+        "serveRssMb": 66
+      },
+      "lastExit": {
+        "at": "2026-09-24T02:32:52.464Z",
+        "code": null,
+        "signal": "SIGKILL",
+        "afterS": 9,
+        "lastT": 20097,
+        "reason": "BUDGET KILLED rss 585 MB over cap 448 MB",
+        "planned": false
+      },
+      "checkpoint": {
+        "tick": 19097,
+        "savedAt": "2026-09-24T02:31:10.531Z",
+        "ageS": 145.1,
+        "bytes": 23986672
+      },
+      "ladder": {
+        "date": "2026-09-18",
+        "tier": 1,
+        "composite": 0.753828,
+        "columns": {
+          "answer": 1,
+          "code": 0.166667,
+          "capability": 1,
+          "health": 0.848646
+        },
+        "delta": null,
+        "file": "bench/verdicts/ladder/2026-09-18.json",
+        "at": "2026-09-18T14:41:30.239Z"
+      },
+      "nativeShare": null,
+      "nativeReason": "ladder.json has no native share yet",
+      "nextLadderAt": null,
+      "instancesAlive": 2,
+      "instances": [
+        "bench-a",
+        "bench-b"
+      ],
+      "ledger": {
+        "level": "summary",
+        "budgetMb": 64,
+        "backstopRotations": 0,
+        "policy": "core/ledger.mjs setLedgerPolicy mode summary budget 64 MB"
+      },
+      "egressAllow": [
+        "127.0.0.1:11434"
+      ]
+    },
+    "restartsBreakdown": {
+      "total": 14,
+      "budgetKills": 13,
+      "fromTheBenchKill": 1,
+      "other": 0
+    },
+    "checkpoint": {
+      "ageS": 2.4,
+      "bytes": 23986768,
+      "tick": 19097,
+      "bytesAtBefore": 17605144,
+      "tickAtBefore": 13097
+    },
+    "ledger": {
+      "diskBytes": 49101,
+      "policy": "core/ledger.mjs setLedgerPolicy mode summary budget 64 MB",
+      "backstopRotations": 0
+    },
+    "egressLogLines": 22,
+    "stop": {
+      "a": {
+        "code": 0,
+        "signal": null
+      },
+      "b": {
+        "code": 0,
+        "signal": null
+      }
+    },
+    "rssPeakMb": {
+      "daemonA": 610,
+      "serveA": 82,
+      "daemonB": 591,
+      "serveB": 66,
+      "instanceA": 692,
+      "instanceB": 657
+    },
+    "orphans": [],
+    "stateBytesAtEnd": 70879317,
+    "finalTicks": {
+      "a": 19373,
+      "b": 20097
+    },
+    "wallMs": 306465
+  },
+  "wallMs": 307857,
+  "memoryAtEnd": {
+    "heapUsedMb": null,
+    "arrayBuffersMb": null,
+    "episodic": null
+  },
+  "restartsBreakdown": {
+    "total": 14,
+    "budgetKills": 13,
+    "fromTheBenchKill": 1,
+    "other": 0
+  },
+  "statement": "Docker is absent on this machine (docker is not on PATH (ENOENT); C:\\Program Files\\Docker absent; wsl: no answer), so no image was built and the verdict is partial: bin/serve.mjs ran natively for 300 s with the environment compose.yaml declares. The daemon (pid 11696) was killed with SIGKILL at t=14097 with its checkpoint at t=14097; the supervisor restarted it in 10730 ms, resumed at t=14097, and /health reported restarts 14 at the end. GET /duplicate?seed=1 copied 21917696 bytes (checkpoint t=17097) to dup-1; a second instance resumed from it at t=17097 and instances alive read 2. Egress: example.com was refused by the guard (EGRESS_REFUSED), the model endpoint answered 200 with 2 models. At the end the checkpoint was 2.4 s old and 23986768 bytes at t=19097 (it was 17605144 bytes at t=13097). Restart count at the end: 14 (1 from the bench kill, 13 budget kills when the daemon passed the 448 MB rss cap, 0 other). Peak RSS: {\"daemonA\":610,\"serveA\":82,\"daemonB\":591,\"serveB\":66,\"instanceA\":692,\"instanceB\":657} MB against the 512 MB container cap (fits: false). The build context is 1548 files and 877125681 bytes with 0 secret hits; the control scan without the secret lines of .dockerignore found 4 hits in 2 files."
+}

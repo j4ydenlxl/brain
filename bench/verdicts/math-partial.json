@@ -1,0 +1,570 @@
+{
+  "at": "2026-09-24T09:16:52.399Z",
+  "command": "node bench/math.mjs --limit 200 --seed 1 --report",
+  "node": "v24.15.0",
+  "isTheBar": false,
+  "met": false,
+  "whyNotTheBar": [
+    "not every small model arm graded all 200 records",
+    "a --report read of the journal bench/verdicts/math-journal-test-1.jsonl at 2026-09-24T09:16:52.398Z, no model call made"
+  ],
+  "statement": "PARTIAL, isTheBar false (not every small model arm graded all 200 records; a --report read of the journal bench/verdicts/math-journal-test-1.jsonl at 2026-09-24T09:16:52.398Z, no model call made). On 200 GSM8K test records at seed 1 (the train split was not on disk, so these are TEST records used for development; the public stage must print held-out numbers without them), exact integer accuracy on qwen3:1.7b: program of thought k=5 with verify 29 of 35 = 82.86%, k=5 29 of 35 = 82.86% (95 percent interval 67.32% to 91.90%), k=1 27 of 35 = 77.14%, the model alone in prose 30 of 35 = 85.71% (70.62% to 93.74%), null 0 of 35. The bar (the k=5 interval wholly above the alone interval) is MISSED: gap -2.85 points, clearance -0.2642, paired McNemar p 1 (0 records only k=5 got, 1 only alone got). Mean seconds per record standalone: k=5 verify 85.31, k=5 62.91, k=1 13.75, alone 13.71; model calls per record 6.5714, 5.0571, 1.1429, 1; records whose programs all failed 2 at k=5 and 5 at k=1. The verifier accepted 29, rejected 4, said neither 0; re-sampling changed 2 answers, 1 to right and 1 from right to wrong. On qwen3:30b-a3b (first 60 of these records, PARTIAL: not every record finished): PoT k=1 0 of 0 = n/a, alone 0 of 0 = n/a, mean 0 s and 0 s per record. Latencies were measured on one Ollama queue shared with other builders.",
+  "item": "math: reason/math.mjs program of thought with an exact executor (P4 toward the 405B GSM8K row)",
+  "records": {
+    "split": "test",
+    "file": "bench/fixtures/public/gsm8k/test.jsonl",
+    "fallbackToTest": true,
+    "of": 1319,
+    "n": 200,
+    "seed": "1",
+    "sampler": "bench/public.mjs sampleIds (nested: a smaller sample at one seed is a subset of a larger one)",
+    "development": true,
+    "developmentNote": "every record here is a DEVELOPMENT record for this item: the prompts in reason/math.mjs were probed on gsm8k.0 to gsm8k.2, which are outside this sample, and not tuned on these records, but they are still not held out",
+    "overlapWithPublicStage": "bench/public.mjs sampleIds is nested, so its GSM8K test samples at seed 1 of up to 200 records lie inside these 200 development records (its 6 record partial at seed 1 is inside them)",
+    "ids": [
+      "gsm8k.8",
+      "gsm8k.15",
+      "gsm8k.18",
+      "gsm8k.21",
+      "gsm8k.24",
+      "gsm8k.28",
+      "gsm8k.30",
+      "gsm8k.33",
+      "gsm8k.39",
+      "gsm8k.43",
+      "gsm8k.48",
+      "gsm8k.56",
+      "gsm8k.67",
+      "gsm8k.71",
+      "gsm8k.75",
+      "gsm8k.78",
+      "gsm8k.83",
+      "gsm8k.92",
+      "gsm8k.96",
+      "gsm8k.101",
+      "gsm8k.117",
+      "gsm8k.118",
+      "gsm8k.120",
+      "gsm8k.123",
+      "gsm8k.127",
+      "gsm8k.132",
+      "gsm8k.138",
+      "gsm8k.142",
+      "gsm8k.143",
+      "gsm8k.150",
+      "gsm8k.151",
+      "gsm8k.159",
+      "gsm8k.160",
+      "gsm8k.161",
+      "gsm8k.163",
+      "gsm8k.168",
+      "gsm8k.170",
+      "gsm8k.178",
+      "gsm8k.183",
+      "gsm8k.185",
+      "gsm8k.190",
+      "gsm8k.193",
+      "gsm8k.197",
+      "gsm8k.200",
+      "gsm8k.208",
+      "gsm8k.210",
+      "gsm8k.218",
+      "gsm8k.220",
+      "gsm8k.223",
+      "gsm8k.256",
+      "gsm8k.265",
+      "gsm8k.266",
+      "gsm8k.271",
+      "gsm8k.274",
+      "gsm8k.282",
+      "gsm8k.283",
+      "gsm8k.284",
+      "gsm8k.293",
+      "gsm8k.304",
+      "gsm8k.306",
+      "gsm8k.307",
+      "gsm8k.312",
+      "gsm8k.314",
+      "gsm8k.326",
+      "gsm8k.335",
+      "gsm8k.340",
+      "gsm8k.343",
+      "gsm8k.348",
+      "gsm8k.349",
+      "gsm8k.350",
+      "gsm8k.354",
+      "gsm8k.359",
+      "gsm8k.363",
+      "gsm8k.365",
+      "gsm8k.374",
+      "gsm8k.378",
+      "gsm8k.389",
+      "gsm8k.391",
+      "gsm8k.393",
+      "gsm8k.394",
+      "gsm8k.399",
+      "gsm8k.409",
+      "gsm8k.412",
+      "gsm8k.413",
+      "gsm8k.417",
+      "gsm8k.422",
+      "gsm8k.427",
+      "gsm8k.435",
+      "gsm8k.457",
+      "gsm8k.468",
+      "gsm8k.490",
+      "gsm8k.500",
+      "gsm8k.516",
+      "gsm8k.523",
+      "gsm8k.531",
+      "gsm8k.539",
+      "gsm8k.546",
+      "gsm8k.548",
+      "gsm8k.553",
+      "gsm8k.576",
+      "gsm8k.577",
+      "gsm8k.583",
+      "gsm8k.585",
+      "gsm8k.591",
+      "gsm8k.592",
+      "gsm8k.598",
+      "gsm8k.618",
+      "gsm8k.621",
+      "gsm8k.626",
+      "gsm8k.635",
+      "gsm8k.644",
+      "gsm8k.647",
+      "gsm8k.653",
+      "gsm8k.661",
+      "gsm8k.665",
+      "gsm8k.676",
+      "gsm8k.679",
+      "gsm8k.680",
+      "gsm8k.682",
+      "gsm8k.683",
+      "gsm8k.685",
+      "gsm8k.714",
+      "gsm8k.716",
+      "gsm8k.721",
+      "gsm8k.727",
+      "gsm8k.737",
+      "gsm8k.742",
+      "gsm8k.751",
+      "gsm8k.756",
+      "gsm8k.769",
+      "gsm8k.800",
+      "gsm8k.810",
+      "gsm8k.815",
+      "gsm8k.818",
+      "gsm8k.823",
+      "gsm8k.825",
+      "gsm8k.836",
+      "gsm8k.839",
+      "gsm8k.849",
+      "gsm8k.851",
+      "gsm8k.852",
+      "gsm8k.853",
+      "gsm8k.900",
+      "gsm8k.905",
+      "gsm8k.907",
+      "gsm8k.912",
+      "gsm8k.916",
+      "gsm8k.925",
+      "gsm8k.940",
+      "gsm8k.953",
+      "gsm8k.957",
+      "gsm8k.990",
+      "gsm8k.998",
+      "gsm8k.1002",
+      "gsm8k.1014",
+      "gsm8k.1025",
+      "gsm8k.1031",
+      "gsm8k.1043",
+      "gsm8k.1045",
+      "gsm8k.1056",
+      "gsm8k.1065",
+      "gsm8k.1074",
+      "gsm8k.1076",
+      "gsm8k.1090",
+      "gsm8k.1094",
+      "gsm8k.1095",
+      "gsm8k.1097",
+      "gsm8k.1104",
+      "gsm8k.1116",
+      "gsm8k.1118",
+      "gsm8k.1121",
+      "gsm8k.1132",
+      "gsm8k.1146",
+      "gsm8k.1151",
+      "gsm8k.1168",
+      "gsm8k.1170",
+      "gsm8k.1188",
+      "gsm8k.1194",
+      "gsm8k.1199",
+      "gsm8k.1209",
+      "gsm8k.1212",
+      "gsm8k.1214",
+      "gsm8k.1217",
+      "gsm8k.1221",
+      "gsm8k.1224",
+      "gsm8k.1228",
+      "gsm8k.1235",
+      "gsm8k.1236",
+      "gsm8k.1237",
+      "gsm8k.1247",
+      "gsm8k.1255",
+      "gsm8k.1261",
+      "gsm8k.1265",
+      "gsm8k.1275",
+      "gsm8k.1287",
+      "gsm8k.1289",
+      "gsm8k.1297",
+      "gsm8k.1300",
+      "gsm8k.1302",
+      "gsm8k.1311"
+    ]
+  },
+  "model": {
+    "small": "qwen3:1.7b",
+    "big": "qwen3:30b-a3b",
+    "sampling": null,
+    "samplingBig": null,
+    "potThink": null,
+    "tag": null,
+    "armsRun": [
+      "pot5v",
+      "pot5",
+      "pot1",
+      "alone",
+      "null"
+    ],
+    "maxTokens": 3000,
+    "verifyMaxTokens": 2000,
+    "seeds": "sample i at recordIndex*1000+1+i, verify +100, re-sample +200+i, prose +300",
+    "callTimeoutMs": 300000,
+    "base": "http://127.0.0.1:11434",
+    "sharedQueue": true
+  },
+  "sandbox": {
+    "runner": "act/run.mjs runCases, entry solve, no IO",
+    "timeoutMs": 2000,
+    "memoryMB": 64
+  },
+  "arms": {
+    "pot5v": {
+      "model": "qwen3:1.7b",
+      "how": "reason/math.mjs solveMath k=5, verify on",
+      "n": 35,
+      "correct": 29,
+      "accuracy": 0.8286,
+      "interval": {
+        "lo": 0.673174,
+        "hi": 0.918975,
+        "width": 0.245801
+      },
+      "absent": 0,
+      "meanMs": 85305.4,
+      "callsPerRecord": 6.5714,
+      "liveCallsPerRecord": 6.5714,
+      "allProgramsFailed": 2,
+      "allProgramsFailedShare": 0.0571,
+      "provenance": {
+        "none": {
+          "n": 1,
+          "correct": 0
+        },
+        "model+exact": {
+          "n": 33,
+          "correct": 29
+        },
+        "model": {
+          "n": 1,
+          "correct": 0
+        }
+      },
+      "samples": {
+        "drawn": 175,
+        "ran": 154,
+        "extract": 18,
+        "run": 3,
+        "timeout": 0,
+        "model": 0
+      },
+      "ties": 1,
+      "verify": {
+        "checked": 33,
+        "accept": 29,
+        "reject": 4,
+        "unparsed": 0,
+        "unreached": 0,
+        "resampled": 4,
+        "changed": 2,
+        "changedToRight": 1,
+        "changedToWrong": 1
+      }
+    },
+    "pot5": {
+      "model": "qwen3:1.7b",
+      "how": "reason/math.mjs solveMath k=5",
+      "n": 35,
+      "correct": 29,
+      "accuracy": 0.8286,
+      "interval": {
+        "lo": 0.673174,
+        "hi": 0.918975,
+        "width": 0.245801
+      },
+      "absent": 0,
+      "meanMs": 62912.46,
+      "callsPerRecord": 5.0571,
+      "liveCallsPerRecord": 0,
+      "allProgramsFailed": 2,
+      "allProgramsFailedShare": 0.0571,
+      "provenance": {
+        "none": {
+          "n": 1,
+          "correct": 0
+        },
+        "model+exact": {
+          "n": 33,
+          "correct": 29
+        },
+        "model": {
+          "n": 1,
+          "correct": 0
+        }
+      },
+      "samples": {
+        "drawn": 175,
+        "ran": 154,
+        "extract": 18,
+        "run": 3,
+        "timeout": 0,
+        "model": 0
+      },
+      "ties": 1
+    },
+    "pot1": {
+      "model": "qwen3:1.7b",
+      "how": "reason/math.mjs solveMath k=1",
+      "n": 35,
+      "correct": 27,
+      "accuracy": 0.7714,
+      "interval": {
+        "lo": 0.609824,
+        "hi": 0.879343,
+        "width": 0.269519
+      },
+      "absent": 0,
+      "meanMs": 13749.98,
+      "callsPerRecord": 1.1429,
+      "liveCallsPerRecord": 0.0857,
+      "allProgramsFailed": 5,
+      "allProgramsFailedShare": 0.1429,
+      "provenance": {
+        "none": {
+          "n": 2,
+          "correct": 0
+        },
+        "model+exact": {
+          "n": 30,
+          "correct": 26
+        },
+        "model": {
+          "n": 3,
+          "correct": 1
+        }
+      },
+      "samples": {
+        "drawn": 35,
+        "ran": 30,
+        "extract": 5,
+        "run": 0,
+        "timeout": 0,
+        "model": 0
+      },
+      "ties": 0
+    },
+    "alone": {
+      "model": "qwen3:1.7b",
+      "how": "the model alone, prose, bench/public.mjs ALONE_PROMPT, last number read",
+      "n": 35,
+      "correct": 30,
+      "accuracy": 0.8571,
+      "interval": {
+        "lo": 0.706241,
+        "hi": 0.937399,
+        "width": 0.231157
+      },
+      "absent": 0,
+      "meanMs": 13705.23,
+      "callsPerRecord": 1,
+      "liveCallsPerRecord": 0.8571,
+      "allProgramsFailed": null,
+      "allProgramsFailedShare": null,
+      "provenance": {
+        "model": {
+          "n": 35,
+          "correct": 30
+        }
+      }
+    },
+    "null": {
+      "model": "null",
+      "how": "solveMath with the null provider (no model, no socket)",
+      "n": 35,
+      "correct": 0,
+      "accuracy": 0,
+      "interval": {
+        "lo": 0,
+        "hi": 0.098904,
+        "width": 0.098904
+      },
+      "absent": 0,
+      "meanMs": 0.09,
+      "callsPerRecord": 6,
+      "liveCallsPerRecord": 0,
+      "allProgramsFailed": 35,
+      "allProgramsFailedShare": 1,
+      "provenance": {
+        "none": {
+          "n": 35,
+          "correct": 0
+        }
+      },
+      "samples": {
+        "drawn": 175,
+        "ran": 0,
+        "extract": 175,
+        "run": 0,
+        "timeout": 0,
+        "model": 0
+      },
+      "ties": 0
+    }
+  },
+  "bar": {
+    "met": false,
+    "gapPoints": -2.85,
+    "pot5Lo": 0.673174,
+    "aloneHi": 0.937399,
+    "clearance": -0.2642,
+    "why": [
+      "graded 35 and 35 of 200 records",
+      "the intervals overlap: pot5 lower edge 67.32% is not above alone upper edge 93.74%"
+    ]
+  },
+  "big": {
+    "model": "qwen3:30b-a3b",
+    "planned": 60,
+    "capMinutes": 25,
+    "spentMinutes": 0,
+    "stopped": null,
+    "partial": true,
+    "arms": {
+      "pot1@big": {
+        "model": "qwen3:30b-a3b",
+        "how": "solveMath k=1 on the big model",
+        "planned": 60,
+        "partial": true,
+        "n": 0,
+        "correct": 0,
+        "accuracy": null,
+        "interval": {
+          "lo": null,
+          "hi": null,
+          "width": null
+        },
+        "absent": 0,
+        "meanMs": null,
+        "callsPerRecord": null,
+        "liveCallsPerRecord": null,
+        "allProgramsFailed": null,
+        "allProgramsFailedShare": null,
+        "provenance": {}
+      },
+      "alone@big": {
+        "model": "qwen3:30b-a3b",
+        "how": "the big model alone, prose",
+        "planned": 60,
+        "partial": true,
+        "n": 0,
+        "correct": 0,
+        "accuracy": null,
+        "interval": {
+          "lo": null,
+          "hi": null,
+          "width": null
+        },
+        "absent": 0,
+        "meanMs": null,
+        "callsPerRecord": null,
+        "liveCallsPerRecord": null,
+        "allProgramsFailed": null,
+        "allProgramsFailedShare": null,
+        "provenance": {}
+      }
+    }
+  },
+  "compare": {
+    "pot5_vs_alone": {
+      "n": 35,
+      "both": 29,
+      "onlyA": 0,
+      "onlyB": 1,
+      "neither": 5,
+      "mcnemarP": 1
+    },
+    "pot5v_vs_pot5": {
+      "n": 35,
+      "both": 28,
+      "onlyA": 1,
+      "onlyB": 1,
+      "neither": 5,
+      "mcnemarP": 1
+    },
+    "pot5_vs_pot1": {
+      "n": 35,
+      "both": 27,
+      "onlyA": 2,
+      "onlyB": 0,
+      "neither": 6,
+      "mcnemarP": 0.5
+    },
+    "pot1_vs_alone": {
+      "n": 35,
+      "both": 27,
+      "onlyA": 0,
+      "onlyB": 3,
+      "neither": 5,
+      "mcnemarP": 0.25
+    },
+    "pot1@big_vs_alone@big": {
+      "n": 0,
+      "both": 0,
+      "onlyA": 0,
+      "onlyB": 0,
+      "neither": 0,
+      "mcnemarP": 1
+    },
+    "pot1_vs_alone_on_big_records": {
+      "n": 35,
+      "both": 27,
+      "onlyA": 0,
+      "onlyB": 3,
+      "neither": 5,
+      "mcnemarP": 0.25
+    }
+  },
+  "sharedDraws": "one memo per record keyed by model, seed, token budget and prompt: pot1 is the first sample of pot5, pot5 the first round of pot5v, and the prose fallback and the alone arm are one draw; calls per record and mean ms count every arm as if it ran alone (replayed calls add back their original ms); liveCallsPerRecord is what the queue served",
+  "published": {
+    "gsm8k405B": "Llama 3.1 405B GSM8K 96.8 (the row bench/public.mjs keeps inside each public verdict with its source, research/published.json)"
+  },
+  "rate": {
+    "smallRecordsRunHere": 0,
+    "smallMinutes": 0,
+    "bigRecordsRunHere": 0,
+    "wallMinutes": 0
+  },
+  "journal": "bench/verdicts/math-journal-test-1.jsonl"
+}

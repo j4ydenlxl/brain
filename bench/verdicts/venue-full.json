@@ -1,0 +1,1533 @@
+{
+  "at": "2026-09-23T20:55:19.063Z",
+  "command": "node bench/venue.mjs --full",
+  "node": "v24.15.0",
+  "cpus": 32,
+  "platform": "win32",
+  "isTheBar": true,
+  "statement": "On the recorded pumpswap tape read only from trader.db (2839 instruments, 324480 readings, every instrument with at least 20 readings), split by a stable hash of the instrument id into 2126 train and 713 holdout instruments, 120 generations of 64 venue.trader genomes (7390 evaluations, 239.1 per wall second) were selected on net after the borrowed 0.0454 round trip fee per trip on train. Perfect foresight clears the fee on 580 of 713 holdout instruments. On the holdout the evolved trader made 66 trips on 56 instruments for 0.32297 SOL (24.47% per trip), its matched random control (the same trips per instrument, random fillable entries, the same exit rule) -0.26070 SOL (-19.75% per trip), and hold -5.32149 SOL over 651 trips (-40.87% per trip). The paired gap evolved minus control is 0.04093 of size per instrument with a 95 percent interval [-0.03121, 0.11307] and nFor95 2215, so the evolved trader NULL AGAINST its control; against hold the gap is 0.39582 [0.21966, 0.57199]. The organism ran the best genome on 12 holdout instruments and its book was identical to the kernel trip for trip. Nothing placed an order: replay only.",
+  "claim": "NULL: the paired gap between the evolved trader and its matched random control on the holdout has a 95 percent interval that spans zero; nFor95 2215 instruments would be needed at the observed mean and spread",
+  "verdict": "NULL AGAINST",
+  "clearsFee": true,
+  "sound": true,
+  "checks": {
+    "tapeIsRecorded": true,
+    "everyEligibleInstrumentLoaded": true,
+    "splitDisjointByInstrument": true,
+    "searchSawOnlyTrain": true,
+    "evolvedTraded": true,
+    "controlTripMatched": true,
+    "everyTripPaidTheFee": true,
+    "deterministic": true,
+    "organismAgreesWithKernel": true
+  },
+  "wallMs": 33278,
+  "config": {
+    "generations": 120,
+    "pop": 64,
+    "draws": 16,
+    "instruments": 0,
+    "seed": "venue.full/1",
+    "share": 0.25,
+    "salt": "venue.holdout/1",
+    "maxImpact": 0.01,
+    "size": 0.02,
+    "lag": 1,
+    "minReadings": 20,
+    "minTripsShare": 0.1,
+    "boot": 2000,
+    "check": 12
+  },
+  "canonical": {
+    "generations": 120,
+    "pop": 64,
+    "draws": 16,
+    "instruments": 0,
+    "seed": "venue.full/1",
+    "share": 0.25,
+    "salt": "venue.holdout/1",
+    "maxImpact": 0.01,
+    "size": 0.02,
+    "lag": 1,
+    "minReadings": 20,
+    "minTripsShare": 0.1,
+    "boot": 2000,
+    "check": 12
+  },
+  "units": "every net, netPerTrip, grossPerTrip, liqNet and every paired gap is in units of the entry size (1.0 = one entry of size SOL); netSol = net x size in SOL; meanHeld is in readings",
+  "fee": {
+    "file": "trader/bench/verdicts/desk.json",
+    "assertion": "FEE_BAR is the measured 4.54% round trip",
+    "detail": "0.0454",
+    "venueMeasuredOn": "pump.fun",
+    "venueAppliedTo": "pumpswap (never measured: trader/bench/verdicts/instrument.json)",
+    "value": 0.0454,
+    "borrowed": true
+  },
+  "fills": {
+    "size": 0.02,
+    "lag": 1,
+    "maxImpact": 0.01,
+    "note": "payable price from the recorded reserves; a buy fills only when size / quote reserve <= maxImpact; sells always fill; the fee is charged once per closed trip on its size"
+  },
+  "tape": {
+    "source": "trader.db",
+    "db": "C:\\Users\\ybmic\\Downloads\\claudeskillsvideo-to-website\\trader\\data\\trader.db",
+    "venue": "pumpswap",
+    "instruments": 2839,
+    "readings": 324480,
+    "eligible": 2839,
+    "minReadings": 20,
+    "sampled": false,
+    "scanned": 325148,
+    "loadMs": 2240,
+    "cadenceSeconds": 20.088,
+    "liqEvents": 4003,
+    "liqThreshold": 0.05
+  },
+  "split": {
+    "by": "instrument",
+    "hash": "hash32(salt + \":\" + signature) % 10000 < share * 10000",
+    "salt": "venue.holdout/1",
+    "share": 0.25,
+    "train": 2126,
+    "holdout": 713,
+    "trainReadings": 243045,
+    "holdoutReadings": 81435,
+    "disjoint": true
+  },
+  "ceiling": {
+    "all": {
+      "instruments": 2839,
+      "clears": 2327,
+      "clearsSwapOnly": 2326,
+      "noEntry": 268,
+      "share": 0.8196548080309969,
+      "shareSwapOnly": 0.8193025713279324,
+      "bestTrip": {
+        "p10": 0.006690989776388621,
+        "median": 0.5020604021349592,
+        "p90": 5.0230194610772125,
+        "max": 1451.9763958668573
+      }
+    },
+    "train": {
+      "instruments": 2126,
+      "clears": 1747,
+      "clearsSwapOnly": 1746,
+      "noEntry": 206,
+      "share": 0.8217309501411101,
+      "shareSwapOnly": 0.8212605832549389,
+      "bestTrip": {
+        "p10": 0.010401460188376975,
+        "median": 0.5219682985152482,
+        "p90": 5.172760421857988,
+        "max": 1451.9763958668573
+      }
+    },
+    "holdout": {
+      "instruments": 713,
+      "clears": 580,
+      "clearsSwapOnly": 580,
+      "noEntry": 62,
+      "share": 0.8134642356241234,
+      "shareSwapOnly": 0.8134642356241234,
+      "bestTrip": {
+        "p10": -0.0030500914154166572,
+        "median": 0.4283355386273521,
+        "p90": 4.480015997502137,
+        "max": 91.10170758730291
+      }
+    }
+  },
+  "search": {
+    "generations": 120,
+    "evaluations": 7390,
+    "cacheHits": 290,
+    "readingsReplayed": 1796102550,
+    "marketYearsReplayed": 1143.3096314168379,
+    "yearsArithmetic": "7390 evaluations x 243045 readings = 1796102550 readings; x 20.088 s per reading = 36080108024 market-seconds; / 31557600 s per year = 1.1433e+3 market-years replayed",
+    "archiveFill": 88,
+    "archiveCapacity": 98,
+    "archiveStats": {
+      "evaluated": 7680,
+      "placed": 88,
+      "replaced": 501,
+      "rejected": 7091,
+      "emitted": 0
+    },
+    "best": {
+      "id": "vg65-29",
+      "genome": {
+        "lookback": 1,
+        "entryUp": 0.4499553763171273,
+        "entryDir": -1,
+        "trail": 0.310533672224558,
+        "maxHold": 113,
+        "takeProfit": 0,
+        "minQuote": 8.17926377620303,
+        "maxEntryStep": 45
+      },
+      "fitness": 6.369889744464248,
+      "trips": 213,
+      "netPerTrip": 6.369889744464248
+    },
+    "evalMs": 30906.184199999992,
+    "manifest": {
+      "seed": "venue.full/1",
+      "popSize": 64,
+      "readingsPerEvaluation": 243045,
+      "trainInstruments": 2126,
+      "secondsPerTick": 20.088,
+      "secondsPerYear": 31557600,
+      "fitness": "net after the fee per round trip on the training instruments; a genome under minTrips = 213 trips scores -3 + trips / minTrips, under any real trader",
+      "genes": [
+        "lookback",
+        "entryUp",
+        "entryDir",
+        "trail",
+        "maxHold",
+        "takeProfit",
+        "minQuote",
+        "maxEntryStep"
+      ],
+      "crossoverRate": 0.3,
+      "mutationRate": 2,
+      "elite": 16,
+      "grid": [
+        "tripsPerInstrument",
+        "meanHeld",
+        "entryDir"
+      ],
+      "gridCapacity": 98
+    },
+    "minTrips": 213,
+    "evoMs": 30911,
+    "evaluationsPerWallSecond": 239.0734689916211,
+    "readingsPerWallSecond": 58105611.27106855,
+    "history": [
+      {
+        "gen": 1,
+        "best": 1.853041,
+        "bestTrips": 346,
+        "genMean": -0.515352,
+        "fill": 34,
+        "fresh": 64,
+        "ms": 299.6
+      },
+      {
+        "gen": 2,
+        "best": 1.853041,
+        "bestTrips": 346,
+        "genMean": -0.405535,
+        "fill": 47,
+        "fresh": 63,
+        "ms": 297.5
+      },
+      {
+        "gen": 3,
+        "best": 2.71315,
+        "bestTrips": 398,
+        "genMean": -0.426947,
+        "fill": 55,
+        "fresh": 63,
+        "ms": 274.8
+      },
+      {
+        "gen": 4,
+        "best": 2.855072,
+        "bestTrips": 380,
+        "genMean": -0.188062,
+        "fill": 58,
+        "fresh": 63,
+        "ms": 273.2
+      },
+      {
+        "gen": 5,
+        "best": 3.234468,
+        "bestTrips": 380,
+        "genMean": -0.319453,
+        "fill": 62,
+        "fresh": 62,
+        "ms": 265.4
+      },
+      {
+        "gen": 6,
+        "best": 4.212137,
+        "bestTrips": 298,
+        "genMean": -0.071279,
+        "fill": 64,
+        "fresh": 63,
+        "ms": 270.6
+      },
+      {
+        "gen": 7,
+        "best": 4.212137,
+        "bestTrips": 298,
+        "genMean": -0.019785,
+        "fill": 68,
+        "fresh": 64,
+        "ms": 278.4
+      },
+      {
+        "gen": 8,
+        "best": 4.212137,
+        "bestTrips": 298,
+        "genMean": 0.109503,
+        "fill": 70,
+        "fresh": 63,
+        "ms": 289.5
+      },
+      {
+        "gen": 9,
+        "best": 4.29807,
+        "bestTrips": 309,
+        "genMean": 0.22804,
+        "fill": 73,
+        "fresh": 63,
+        "ms": 257.4
+      },
+      {
+        "gen": 10,
+        "best": 5.937359,
+        "bestTrips": 224,
+        "genMean": 0.480227,
+        "fill": 75,
+        "fresh": 63,
+        "ms": 275.6
+      },
+      {
+        "gen": 11,
+        "best": 6.12533,
+        "bestTrips": 220,
+        "genMean": 0.263077,
+        "fill": 77,
+        "fresh": 64,
+        "ms": 272.5
+      },
+      {
+        "gen": 12,
+        "best": 6.129032,
+        "bestTrips": 220,
+        "genMean": 0.232952,
+        "fill": 79,
+        "fresh": 63,
+        "ms": 255.9
+      },
+      {
+        "gen": 13,
+        "best": 6.175447,
+        "bestTrips": 218,
+        "genMean": 0.562302,
+        "fill": 81,
+        "fresh": 63,
+        "ms": 261.9
+      },
+      {
+        "gen": 14,
+        "best": 6.175447,
+        "bestTrips": 218,
+        "genMean": 0.251176,
+        "fill": 81,
+        "fresh": 64,
+        "ms": 268.5
+      },
+      {
+        "gen": 15,
+        "best": 6.175447,
+        "bestTrips": 218,
+        "genMean": 0.696492,
+        "fill": 81,
+        "fresh": 63,
+        "ms": 278.8
+      },
+      {
+        "gen": 16,
+        "best": 6.275451,
+        "bestTrips": 215,
+        "genMean": -0.094232,
+        "fill": 82,
+        "fresh": 63,
+        "ms": 272.6
+      },
+      {
+        "gen": 17,
+        "best": 6.275451,
+        "bestTrips": 215,
+        "genMean": 0.403224,
+        "fill": 83,
+        "fresh": 63,
+        "ms": 271.4
+      },
+      {
+        "gen": 18,
+        "best": 6.275451,
+        "bestTrips": 215,
+        "genMean": 0.311397,
+        "fill": 84,
+        "fresh": 62,
+        "ms": 262.9
+      },
+      {
+        "gen": 19,
+        "best": 6.285234,
+        "bestTrips": 215,
+        "genMean": 0.326069,
+        "fill": 84,
+        "fresh": 61,
+        "ms": 258.6
+      },
+      {
+        "gen": 20,
+        "best": 6.285234,
+        "bestTrips": 215,
+        "genMean": 0.426446,
+        "fill": 84,
+        "fresh": 60,
+        "ms": 244.9
+      },
+      {
+        "gen": 21,
+        "best": 6.285234,
+        "bestTrips": 215,
+        "genMean": 0.120365,
+        "fill": 84,
+        "fresh": 64,
+        "ms": 262.3
+      },
+      {
+        "gen": 22,
+        "best": 6.285234,
+        "bestTrips": 215,
+        "genMean": 0.141879,
+        "fill": 84,
+        "fresh": 61,
+        "ms": 249.3
+      },
+      {
+        "gen": 23,
+        "best": 6.31213,
+        "bestTrips": 213,
+        "genMean": 0.579858,
+        "fill": 84,
+        "fresh": 62,
+        "ms": 250
+      },
+      {
+        "gen": 24,
+        "best": 6.31213,
+        "bestTrips": 213,
+        "genMean": 0.356023,
+        "fill": 84,
+        "fresh": 62,
+        "ms": 250.7
+      },
+      {
+        "gen": 25,
+        "best": 6.31213,
+        "bestTrips": 213,
+        "genMean": 0.291086,
+        "fill": 84,
+        "fresh": 63,
+        "ms": 249.8
+      },
+      {
+        "gen": 26,
+        "best": 6.327779,
+        "bestTrips": 213,
+        "genMean": 0.188261,
+        "fill": 84,
+        "fresh": 63,
+        "ms": 254.2
+      },
+      {
+        "gen": 27,
+        "best": 6.327779,
+        "bestTrips": 213,
+        "genMean": 0.012167,
+        "fill": 84,
+        "fresh": 62,
+        "ms": 244.4
+      },
+      {
+        "gen": 28,
+        "best": 6.327779,
+        "bestTrips": 213,
+        "genMean": 0.037899,
+        "fill": 84,
+        "fresh": 63,
+        "ms": 260
+      },
+      {
+        "gen": 29,
+        "best": 6.327779,
+        "bestTrips": 213,
+        "genMean": 0.372441,
+        "fill": 84,
+        "fresh": 64,
+        "ms": 262.2
+      },
+      {
+        "gen": 30,
+        "best": 6.327779,
+        "bestTrips": 213,
+        "genMean": 0.332547,
+        "fill": 84,
+        "fresh": 64,
+        "ms": 275.9
+      },
+      {
+        "gen": 31,
+        "best": 6.327779,
+        "bestTrips": 213,
+        "genMean": 0.42267,
+        "fill": 84,
+        "fresh": 61,
+        "ms": 262.4
+      },
+      {
+        "gen": 32,
+        "best": 6.327779,
+        "bestTrips": 213,
+        "genMean": -0.294216,
+        "fill": 84,
+        "fresh": 62,
+        "ms": 255.7
+      },
+      {
+        "gen": 33,
+        "best": 6.327779,
+        "bestTrips": 213,
+        "genMean": -0.315382,
+        "fill": 84,
+        "fresh": 62,
+        "ms": 254.3
+      },
+      {
+        "gen": 34,
+        "best": 6.327779,
+        "bestTrips": 213,
+        "genMean": 0.628234,
+        "fill": 84,
+        "fresh": 62,
+        "ms": 254
+      },
+      {
+        "gen": 35,
+        "best": 6.35978,
+        "bestTrips": 213,
+        "genMean": 0.673515,
+        "fill": 84,
+        "fresh": 61,
+        "ms": 249.3
+      },
+      {
+        "gen": 36,
+        "best": 6.35978,
+        "bestTrips": 213,
+        "genMean": 0.198752,
+        "fill": 84,
+        "fresh": 63,
+        "ms": 265.9
+      },
+      {
+        "gen": 37,
+        "best": 6.35978,
+        "bestTrips": 213,
+        "genMean": 0.119715,
+        "fill": 84,
+        "fresh": 64,
+        "ms": 261.9
+      },
+      {
+        "gen": 38,
+        "best": 6.35978,
+        "bestTrips": 213,
+        "genMean": 0.337067,
+        "fill": 84,
+        "fresh": 64,
+        "ms": 257.8
+      },
+      {
+        "gen": 39,
+        "best": 6.35978,
+        "bestTrips": 213,
+        "genMean": -0.017928,
+        "fill": 84,
+        "fresh": 62,
+        "ms": 261.4
+      },
+      {
+        "gen": 40,
+        "best": 6.35978,
+        "bestTrips": 213,
+        "genMean": 0.182484,
+        "fill": 84,
+        "fresh": 62,
+        "ms": 253
+      },
+      {
+        "gen": 41,
+        "best": 6.35978,
+        "bestTrips": 213,
+        "genMean": 0.707698,
+        "fill": 84,
+        "fresh": 62,
+        "ms": 254.1
+      },
+      {
+        "gen": 42,
+        "best": 6.35978,
+        "bestTrips": 213,
+        "genMean": 0.32691,
+        "fill": 85,
+        "fresh": 63,
+        "ms": 261.4
+      },
+      {
+        "gen": 43,
+        "best": 6.369654,
+        "bestTrips": 213,
+        "genMean": 0.736426,
+        "fill": 85,
+        "fresh": 60,
+        "ms": 246.4
+      },
+      {
+        "gen": 44,
+        "best": 6.369654,
+        "bestTrips": 213,
+        "genMean": 0.097825,
+        "fill": 85,
+        "fresh": 62,
+        "ms": 260.5
+      },
+      {
+        "gen": 45,
+        "best": 6.369654,
+        "bestTrips": 213,
+        "genMean": -0.344863,
+        "fill": 85,
+        "fresh": 62,
+        "ms": 270.4
+      },
+      {
+        "gen": 46,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.222738,
+        "fill": 86,
+        "fresh": 61,
+        "ms": 265.3
+      },
+      {
+        "gen": 47,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.038009,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 264.4
+      },
+      {
+        "gen": 48,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": -0.00805,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 256.7
+      },
+      {
+        "gen": 49,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.175926,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 268
+      },
+      {
+        "gen": 50,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": -0.201483,
+        "fill": 86,
+        "fresh": 60,
+        "ms": 245.2
+      },
+      {
+        "gen": 51,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.304736,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 275.4
+      },
+      {
+        "gen": 52,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.092029,
+        "fill": 86,
+        "fresh": 61,
+        "ms": 261.2
+      },
+      {
+        "gen": 53,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.127603,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 261
+      },
+      {
+        "gen": 54,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.156327,
+        "fill": 86,
+        "fresh": 64,
+        "ms": 259.3
+      },
+      {
+        "gen": 55,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.068339,
+        "fill": 86,
+        "fresh": 63,
+        "ms": 259.2
+      },
+      {
+        "gen": 56,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.071913,
+        "fill": 86,
+        "fresh": 60,
+        "ms": 252.3
+      },
+      {
+        "gen": 57,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.704121,
+        "fill": 86,
+        "fresh": 62,
+        "ms": 253.6
+      },
+      {
+        "gen": 58,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.703408,
+        "fill": 87,
+        "fresh": 63,
+        "ms": 253.6
+      },
+      {
+        "gen": 59,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.372279,
+        "fill": 87,
+        "fresh": 60,
+        "ms": 248.9
+      },
+      {
+        "gen": 60,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": -0.170556,
+        "fill": 87,
+        "fresh": 64,
+        "ms": 263
+      },
+      {
+        "gen": 61,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.19702,
+        "fill": 87,
+        "fresh": 63,
+        "ms": 252.3
+      },
+      {
+        "gen": 62,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.296683,
+        "fill": 87,
+        "fresh": 64,
+        "ms": 276.5
+      },
+      {
+        "gen": 63,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.577843,
+        "fill": 87,
+        "fresh": 63,
+        "ms": 279.9
+      },
+      {
+        "gen": 64,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.026607,
+        "fill": 87,
+        "fresh": 63,
+        "ms": 277.1
+      },
+      {
+        "gen": 65,
+        "best": 6.369817,
+        "bestTrips": 213,
+        "genMean": 0.402468,
+        "fill": 87,
+        "fresh": 61,
+        "ms": 245.7
+      },
+      {
+        "gen": 66,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.527673,
+        "fill": 87,
+        "fresh": 64,
+        "ms": 269
+      },
+      {
+        "gen": 67,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.130521,
+        "fill": 87,
+        "fresh": 61,
+        "ms": 255.7
+      },
+      {
+        "gen": 68,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.485062,
+        "fill": 87,
+        "fresh": 61,
+        "ms": 260.5
+      },
+      {
+        "gen": 69,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.802774,
+        "fill": 87,
+        "fresh": 62,
+        "ms": 245.8
+      },
+      {
+        "gen": 70,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.466466,
+        "fill": 87,
+        "fresh": 59,
+        "ms": 243.7
+      },
+      {
+        "gen": 71,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.223371,
+        "fill": 87,
+        "fresh": 62,
+        "ms": 248.6
+      },
+      {
+        "gen": 72,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.701164,
+        "fill": 87,
+        "fresh": 62,
+        "ms": 256.1
+      },
+      {
+        "gen": 73,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.896552,
+        "fill": 88,
+        "fresh": 59,
+        "ms": 240.7
+      },
+      {
+        "gen": 74,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.172462,
+        "fill": 88,
+        "fresh": 59,
+        "ms": 237.3
+      },
+      {
+        "gen": 75,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.105503,
+        "fill": 88,
+        "fresh": 59,
+        "ms": 248.7
+      },
+      {
+        "gen": 76,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.055391,
+        "fill": 88,
+        "fresh": 62,
+        "ms": 255.8
+      },
+      {
+        "gen": 77,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.347696,
+        "fill": 88,
+        "fresh": 64,
+        "ms": 259.7
+      },
+      {
+        "gen": 78,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": -0.382958,
+        "fill": 88,
+        "fresh": 59,
+        "ms": 242.2
+      },
+      {
+        "gen": 79,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.533287,
+        "fill": 88,
+        "fresh": 61,
+        "ms": 255.5
+      },
+      {
+        "gen": 80,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.365173,
+        "fill": 88,
+        "fresh": 60,
+        "ms": 238.7
+      },
+      {
+        "gen": 81,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.13506,
+        "fill": 88,
+        "fresh": 63,
+        "ms": 259.6
+      },
+      {
+        "gen": 82,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.295002,
+        "fill": 88,
+        "fresh": 63,
+        "ms": 257.7
+      },
+      {
+        "gen": 83,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": -0.045922,
+        "fill": 88,
+        "fresh": 59,
+        "ms": 246.3
+      },
+      {
+        "gen": 84,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.233054,
+        "fill": 88,
+        "fresh": 58,
+        "ms": 237.9
+      },
+      {
+        "gen": 85,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.068519,
+        "fill": 88,
+        "fresh": 60,
+        "ms": 257.3
+      },
+      {
+        "gen": 86,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.166415,
+        "fill": 88,
+        "fresh": 60,
+        "ms": 242.9
+      },
+      {
+        "gen": 87,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.954041,
+        "fill": 88,
+        "fresh": 63,
+        "ms": 256.9
+      },
+      {
+        "gen": 88,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.701264,
+        "fill": 88,
+        "fresh": 62,
+        "ms": 279.5
+      },
+      {
+        "gen": 89,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.193772,
+        "fill": 88,
+        "fresh": 58,
+        "ms": 240.4
+      },
+      {
+        "gen": 90,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.374652,
+        "fill": 88,
+        "fresh": 57,
+        "ms": 228.7
+      },
+      {
+        "gen": 91,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.539005,
+        "fill": 88,
+        "fresh": 63,
+        "ms": 269.8
+      },
+      {
+        "gen": 92,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.926153,
+        "fill": 88,
+        "fresh": 61,
+        "ms": 249.8
+      },
+      {
+        "gen": 93,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.461637,
+        "fill": 88,
+        "fresh": 62,
+        "ms": 251.9
+      },
+      {
+        "gen": 94,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 1.058403,
+        "fill": 88,
+        "fresh": 60,
+        "ms": 239.8
+      },
+      {
+        "gen": 95,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.079996,
+        "fill": 88,
+        "fresh": 61,
+        "ms": 250.2
+      },
+      {
+        "gen": 96,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.457891,
+        "fill": 88,
+        "fresh": 60,
+        "ms": 253.6
+      },
+      {
+        "gen": 97,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.583749,
+        "fill": 88,
+        "fresh": 63,
+        "ms": 275.2
+      },
+      {
+        "gen": 98,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.584157,
+        "fill": 88,
+        "fresh": 56,
+        "ms": 251
+      },
+      {
+        "gen": 99,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.19548,
+        "fill": 88,
+        "fresh": 63,
+        "ms": 269.9
+      },
+      {
+        "gen": 100,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.175782,
+        "fill": 88,
+        "fresh": 59,
+        "ms": 236.8
+      },
+      {
+        "gen": 101,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.261311,
+        "fill": 88,
+        "fresh": 62,
+        "ms": 262.9
+      },
+      {
+        "gen": 102,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": -0.229856,
+        "fill": 88,
+        "fresh": 63,
+        "ms": 259.5
+      },
+      {
+        "gen": 103,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.125805,
+        "fill": 88,
+        "fresh": 61,
+        "ms": 248.8
+      },
+      {
+        "gen": 104,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.454471,
+        "fill": 88,
+        "fresh": 62,
+        "ms": 247.4
+      },
+      {
+        "gen": 105,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": -0.024085,
+        "fill": 88,
+        "fresh": 60,
+        "ms": 251.5
+      },
+      {
+        "gen": 106,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.268892,
+        "fill": 88,
+        "fresh": 62,
+        "ms": 258.3
+      },
+      {
+        "gen": 107,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.189049,
+        "fill": 88,
+        "fresh": 57,
+        "ms": 240
+      },
+      {
+        "gen": 108,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.491801,
+        "fill": 88,
+        "fresh": 62,
+        "ms": 254.9
+      },
+      {
+        "gen": 109,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.250547,
+        "fill": 88,
+        "fresh": 60,
+        "ms": 261.8
+      },
+      {
+        "gen": 110,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": -0.16677,
+        "fill": 88,
+        "fresh": 60,
+        "ms": 269.2
+      },
+      {
+        "gen": 111,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": -0.102037,
+        "fill": 88,
+        "fresh": 64,
+        "ms": 274
+      },
+      {
+        "gen": 112,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.35586,
+        "fill": 88,
+        "fresh": 58,
+        "ms": 271.7
+      },
+      {
+        "gen": 113,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": -0.03872,
+        "fill": 88,
+        "fresh": 57,
+        "ms": 230.8
+      },
+      {
+        "gen": 114,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.184289,
+        "fill": 88,
+        "fresh": 58,
+        "ms": 239.2
+      },
+      {
+        "gen": 115,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": -0.062279,
+        "fill": 88,
+        "fresh": 63,
+        "ms": 258.5
+      },
+      {
+        "gen": 116,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 1.076311,
+        "fill": 88,
+        "fresh": 54,
+        "ms": 217.8
+      },
+      {
+        "gen": 117,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.105753,
+        "fill": 88,
+        "fresh": 61,
+        "ms": 247.5
+      },
+      {
+        "gen": 118,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.827278,
+        "fill": 88,
+        "fresh": 59,
+        "ms": 238.9
+      },
+      {
+        "gen": 119,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.508834,
+        "fill": 88,
+        "fresh": 59,
+        "ms": 237.7
+      },
+      {
+        "gen": 120,
+        "best": 6.36989,
+        "bestTrips": 213,
+        "genMean": 0.225978,
+        "fill": 88,
+        "fresh": 61,
+        "ms": 246.7
+      }
+    ]
+  },
+  "best": {
+    "genome": {
+      "lookback": 1,
+      "entryUp": 0.4499553763171273,
+      "entryDir": -1,
+      "trail": 0.310533672224558,
+      "maxHold": 113,
+      "takeProfit": 0,
+      "minQuote": 8.17926377620303,
+      "maxEntryStep": 45
+    },
+    "trainFitness": 6.369889744464248,
+    "trainTrips": 213,
+    "trainNetPerTrip": 6.369889744464248
+  },
+  "train": {
+    "instruments": 2126,
+    "evolved": {
+      "trips": 213,
+      "net": 1356.7865155708841,
+      "netPerTrip": 6.369889744464245,
+      "grossPerTrip": 6.415289744464248,
+      "meanHeld": 22.539906103286384,
+      "impactRefused": 11,
+      "liqTrips": 103,
+      "liqNet": -52.0303115677127,
+      "instrumentsTraded": 180,
+      "netSol": 27.135730311417685
+    },
+    "control": {
+      "tripsMatched": 213,
+      "drawnTrips": 3183,
+      "draws": 16,
+      "collisions": 225,
+      "net": 286.25919173869187,
+      "netPerTrip": 1.3439398673178022,
+      "drawnNetPerTrip": 0.8746383356512006,
+      "liqTrips": 1005,
+      "liqNet": -483.0184754855102,
+      "matchedShare": 1,
+      "fillShare": 0.9339788732394366,
+      "netSol": 5.725183834773837
+    },
+    "hold": {
+      "trips": 1920,
+      "net": -388.7501748231193,
+      "netPerTrip": -0.2024740493870413,
+      "noEntry": 206,
+      "liqTrips": 1577,
+      "liqNet": -853.9860161120978,
+      "netSol": -7.775003496462387
+    },
+    "gapVsControl": {
+      "n": 2126,
+      "mean": 0.5035406,
+      "sd": 16.79780893,
+      "se": 0.36430993,
+      "lo": -0.21050686,
+      "hi": 1.21758806,
+      "bootLo": 0.03195772,
+      "bootHi": 1.36870338,
+      "boot": 2000,
+      "nFor95": 4276,
+      "positive": 80,
+      "negative": 100,
+      "zero": 1946,
+      "excludesZero": false,
+      "bootExcludesZero": true
+    }
+  },
+  "holdout": {
+    "instruments": 713,
+    "evolved": {
+      "trips": 66,
+      "net": 16.148272652801293,
+      "netPerTrip": 0.24467079776971656,
+      "grossPerTrip": 0.2900707977697167,
+      "meanHeld": 19.545454545454547,
+      "impactRefused": 3,
+      "liqTrips": 41,
+      "liqNet": -21.7065383474949,
+      "instrumentsTraded": 56,
+      "netSol": 0.32296545305602586
+    },
+    "control": {
+      "tripsMatched": 66,
+      "drawnTrips": 989,
+      "draws": 16,
+      "collisions": 67,
+      "net": -13.034967194429733,
+      "netPerTrip": -0.19749950294590504,
+      "drawnNetPerTrip": -0.20070582685778598,
+      "liqTrips": 414,
+      "liqNet": -168.69455264418696,
+      "matchedShare": 1,
+      "fillShare": 0.9365530303030303,
+      "netSol": -0.26069934388859467
+    },
+    "hold": {
+      "trips": 651,
+      "net": -266.07426137118983,
+      "netPerTrip": -0.4087162233044391,
+      "noEntry": 62,
+      "liqTrips": 525,
+      "liqNet": -484.08467657143177,
+      "netSol": -5.321485227423797
+    },
+    "gapVsControl": {
+      "n": 713,
+      "mean": 0.04093021,
+      "sd": 0.98273649,
+      "se": 0.03680377,
+      "lo": -0.03120518,
+      "hi": 0.1130656,
+      "bootLo": -0.0136456,
+      "bootHi": 0.12144464,
+      "boot": 2000,
+      "nFor95": 2215,
+      "positive": 25,
+      "negative": 31,
+      "zero": 657,
+      "excludesZero": false,
+      "bootExcludesZero": false
+    },
+    "gapVsHold": {
+      "n": 713,
+      "mean": 0.39582403,
+      "sd": 2.3999842,
+      "se": 0.08988011,
+      "lo": 0.21965901,
+      "hi": 0.57198906,
+      "bootLo": 0.21245023,
+      "bootHi": 0.57059162,
+      "boot": 2000,
+      "nFor95": 142,
+      "positive": 535,
+      "negative": 115,
+      "zero": 63,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    },
+    "gapVsControlOnTraded": {
+      "n": 56,
+      "mean": 0.52112928,
+      "sd": 3.49964983,
+      "se": 0.46766038,
+      "lo": -0.39548506,
+      "hi": 1.43774363,
+      "bootLo": -0.19909234,
+      "bootHi": 1.5406705,
+      "boot": 2000,
+      "nFor95": 174,
+      "positive": 25,
+      "negative": 31,
+      "zero": 0,
+      "excludesZero": false,
+      "bootExcludesZero": false
+    }
+  },
+  "incumbentOnHoldout": {
+    "genome": {
+      "lookback": 3,
+      "entryUp": 0.02,
+      "entryDir": 1,
+      "trail": 0.1,
+      "maxHold": 12,
+      "takeProfit": 0,
+      "minQuote": 0,
+      "maxEntryStep": 0
+    },
+    "instruments": 713,
+    "evolved": {
+      "trips": 2106,
+      "net": -253.77894631416765,
+      "netPerTrip": -0.12050282351100079,
+      "grossPerTrip": -0.0751028235110006,
+      "meanHeld": 7.370845204178537,
+      "impactRefused": 429,
+      "liqTrips": 405,
+      "liqNet": -329.76590977219206,
+      "instrumentsTraded": 583,
+      "netSol": -5.075578926283353
+    },
+    "control": {
+      "tripsMatched": 2106,
+      "drawnTrips": 23211,
+      "draws": 16,
+      "collisions": 10485,
+      "net": -222.4921398347249,
+      "netPerTrip": -0.10564679004497858,
+      "drawnNetPerTrip": -0.14586935402063658,
+      "liqTrips": 5185,
+      "liqNet": -4364.643037757763,
+      "matchedShare": 1,
+      "fillShare": 0.6888354700854701,
+      "netSol": -4.449842796694498
+    },
+    "hold": {
+      "trips": 651,
+      "net": -266.07426137118983,
+      "netPerTrip": -0.4087162233044391,
+      "noEntry": 62,
+      "liqTrips": 525,
+      "liqNet": -484.08467657143177,
+      "netSol": -5.321485227423797
+    },
+    "gapVsControl": {
+      "n": 713,
+      "mean": -0.04388051,
+      "sd": 0.47340076,
+      "se": 0.017729,
+      "lo": -0.07862935,
+      "hi": -0.00913168,
+      "bootLo": -0.07988767,
+      "bootHi": -0.00983723,
+      "boot": 2000,
+      "nFor95": 448,
+      "positive": 271,
+      "negative": 290,
+      "zero": 152,
+      "excludesZero": true,
+      "bootExcludesZero": true
+    }
+  },
+  "organism": {
+    "instruments": 12,
+    "readings": 1368,
+    "readingsPerInstrument": 114,
+    "organismTrips": 5,
+    "kernelTrips": 5,
+    "identical": true,
+    "maxAbsDiff": 3.469446951953614e-18,
+    "lag": 1,
+    "refused": 0,
+    "impactRefused": 0
+  },
+  "unmodelled": [
+    "the tape after our own order is the recorded tape: our fill moves nothing the next reading reports",
+    "every instrument is its own book: no cap on positions open at once across instruments",
+    "the fee is borrowed from pump.fun; the round trip cost of pumpswap has never been measured",
+    "the holdout is split by instrument, not by time: holdout instruments share the train instruments calendar (2026-09-07 to 2026-09-11)"
+  ]
+}

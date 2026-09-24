@@ -1,0 +1,2526 @@
+{
+  "at": "2026-09-24T13:14:25.312Z",
+  "node": "v24.15.0",
+  "command": "node bench/public.mjs --set humaneval --limit 30 --name smoke",
+  "isTheBar": false,
+  "notTheBarBecause": [
+    "a sample of 30 of 161, not the whole set (--limit 0, or --bar to declare a sample the bar)"
+  ],
+  "complete": true,
+  "progress": {
+    "done": 30,
+    "of": 30
+  },
+  "ms": 1350236,
+  "set": "humaneval",
+  "source": "https://huggingface.co/datasets/nuprl/MultiPL-E (config humaneval-js, split test), the JavaScript translation of https://github.com/openai/human-eval",
+  "license": "BSD 3-Clause with Machine Learning Restriction (MultiPL-E), MIT (the original HumanEval)",
+  "file": "bench/fixtures/public/humaneval/humaneval-js.jsonl",
+  "n": 30,
+  "of": 161,
+  "seed": "public/1",
+  "limit": 30,
+  "budgetMs": null,
+  "model": "qwen3:1.7b",
+  "route": null,
+  "maxTokens": 4000,
+  "ollamaUp": true,
+  "armsRun": [
+    "organism",
+    "alone",
+    "null"
+  ],
+  "attemptsPerTask": null,
+  "attemptsAllowedByArc": null,
+  "organismPath": "act/prompt.mjs ask(): the direct table, askBySpawn, then act/solve.mjs; a record solve() cannot compute reaches the code region (reason/synth.mjs synthesize: the prompt examples read out as assertions, k candidates tested against them in the sandbox, one repair round); the organism is handed the record OWN prompt, the alone arm the Board 8 act/code.mjs firstPrompt; the brain holds nothing from this set",
+  "regions": {
+    "on": true,
+    "k": 5,
+    "check": true,
+    "sent": {
+      "math": {
+        "k": 5,
+        "verify": true
+      },
+      "code": {
+        "k": 5,
+        "repair": true
+      }
+    }
+  },
+  "twoRulers": "records 0 to 39 by index of the file are development (bench/verdicts/synth.json development.humaneval: the extractor was written reading them); 40 to 160 are held out",
+  "sharedQueue": "every millisecond and microsecond here was measured on ONE Ollama queue at http://127.0.0.1:11434 that other builders on this machine were using at the same time: a model latency is this run wait plus its compute, not the model own speed",
+  "ladder": {
+    "row405B": {
+      "system": "Llama 3.1 405B Instruct",
+      "benchmark": "gsm8k",
+      "score": 96.8,
+      "metric": "em_maj1@1, 8-shot CoT",
+      "source": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md (instruction tuned table)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    "frontier": [
+      {
+        "system": "o4-mini-high",
+        "score": 99.3,
+        "metric": "pass@1",
+        "class": "frontier reasoning",
+        "source": "https://github.com/openai/simple-evals (README table)",
+        "readAt": "2026-09-18 09:10 EDT"
+      },
+      {
+        "system": "o3-high",
+        "score": 88.4,
+        "metric": "pass@1",
+        "class": "frontier reasoning",
+        "source": "https://github.com/openai/simple-evals (README table)",
+        "readAt": "2026-09-18 09:10 EDT"
+      },
+      {
+        "system": "gpt-4.1-2025-04-14",
+        "score": 94.5,
+        "metric": "pass@1",
+        "class": "frontier",
+        "source": "https://github.com/openai/simple-evals (README table)",
+        "readAt": "2026-09-18 09:10 EDT"
+      },
+      {
+        "system": "gpt-4o-2024-11-20",
+        "score": 90.2,
+        "metric": "pass@1",
+        "class": "frontier",
+        "source": "https://github.com/openai/simple-evals (README table)",
+        "readAt": "2026-09-18 09:10 EDT"
+      },
+      {
+        "system": "Claude 3.5 Sonnet (reported)",
+        "score": 92,
+        "metric": "pass@1",
+        "class": "frontier",
+        "source": "https://github.com/openai/simple-evals (README table)",
+        "readAt": "2026-09-18 09:10 EDT"
+      }
+    ],
+    "frontierNote": null
+  },
+  "etaWhole": {
+    "msPerTask": 45006.3,
+    "of": 161,
+    "minutes": 120.77,
+    "remaining": 131,
+    "remainingMinutes": 98.26,
+    "arithmetic": "45006.3 ms per record x 161 records / 60000 = 120.77 minutes (arms organism,alone,null, interleaved; a resume skips the 30 held here, leaving 98.26 minutes)"
+  },
+  "memoryEpisodes": 0,
+  "ledgerEvents": {
+    "act.ask": 60
+  },
+  "arms": {
+    "organism": {
+      "absent": false,
+      "n": 30,
+      "correct": 23,
+      "accuracy": 0.766667,
+      "interval": {
+        "lo": 0.590713,
+        "hi": 0.882078,
+        "width": 0.291364
+      },
+      "meanMs": 34881.88,
+      "absentRecords": 0,
+      "absentReason": null,
+      "provenance": {
+        "model+exact": {
+          "n": 25,
+          "correct": 22
+        },
+        "model": {
+          "n": 5,
+          "correct": 1
+        }
+      },
+      "redacted": 0,
+      "native": {
+        "n": 0,
+        "of": 30,
+        "share": 0,
+        "correct": 0,
+        "meanUs": null,
+        "maxUs": null,
+        "provenances": [
+          "exact",
+          "memory",
+          "direct"
+        ]
+      },
+      "direct": {
+        "n": 0,
+        "of": 30,
+        "share": 0,
+        "correct": 0,
+        "meanNs": null,
+        "meanUs": null
+      },
+      "viaModel": {
+        "n": 30,
+        "of": 30,
+        "share": 1,
+        "correct": 23,
+        "meanUs": 34866635.59
+      },
+      "regions": {
+        "code": {
+          "n": 30,
+          "correct": 23,
+          "byProvenance": {
+            "model+exact": {
+              "n": 25,
+              "correct": 22
+            },
+            "model": {
+              "n": 5,
+              "correct": 1
+            }
+          },
+          "calls": 87,
+          "modelMs": 1045059,
+          "execMs": 0,
+          "repaired": 5,
+          "noExamples": 1,
+          "meanCalls": 2.9,
+          "meanModelMs": 34835.3
+        }
+      },
+      "splits": {
+        "development": {
+          "n": 7,
+          "correct": 7,
+          "accuracy": 1,
+          "interval": {
+            "lo": 0.645661,
+            "hi": 1,
+            "width": 0.354339
+          }
+        },
+        "heldOut": {
+          "n": 23,
+          "correct": 16,
+          "accuracy": 0.695652,
+          "interval": {
+            "lo": 0.491339,
+            "hi": 0.843962,
+            "width": 0.352623
+          }
+        }
+      },
+      "cappedAtMaxTokens": 12,
+      "cappedAndWrong": 5,
+      "cutByStopToken": 0,
+      "testTimedOut": 0
+    },
+    "alone": {
+      "absent": false,
+      "n": 30,
+      "correct": 14,
+      "accuracy": 0.466667,
+      "interval": {
+        "lo": 0.302321,
+        "hi": 0.63858,
+        "width": 0.336259
+      },
+      "meanMs": 10107.2,
+      "absentRecords": 0,
+      "absentReason": null,
+      "splits": {
+        "development": {
+          "n": 7,
+          "correct": 4,
+          "accuracy": 0.571429,
+          "interval": {
+            "lo": 0.250454,
+            "hi": 0.841783,
+            "width": 0.591329
+          }
+        },
+        "heldOut": {
+          "n": 23,
+          "correct": 10,
+          "accuracy": 0.434783,
+          "interval": {
+            "lo": 0.256344,
+            "hi": 0.63189,
+            "width": 0.375546
+          }
+        }
+      },
+      "cappedAtMaxTokens": 9,
+      "cappedAndWrong": 9,
+      "cutByStopToken": 1,
+      "testTimedOut": 0
+    },
+    "null": {
+      "absent": false,
+      "n": 30,
+      "correct": 0,
+      "accuracy": 0,
+      "interval": {
+        "lo": 0,
+        "hi": 0.113517,
+        "width": 0.113517
+      },
+      "meanMs": 16.04,
+      "absentRecords": 0,
+      "absentReason": null,
+      "provenance": {
+        "memory": {
+          "n": 30,
+          "correct": 0
+        }
+      },
+      "redacted": 0,
+      "native": {
+        "n": 30,
+        "of": 30,
+        "share": 1,
+        "correct": 0,
+        "meanUs": 979.72,
+        "maxUs": 2141,
+        "provenances": [
+          "exact",
+          "memory",
+          "direct"
+        ]
+      },
+      "direct": {
+        "n": 0,
+        "of": 30,
+        "share": 0,
+        "correct": 0,
+        "meanNs": null,
+        "meanUs": null
+      },
+      "viaModel": {
+        "n": 0,
+        "of": 30,
+        "share": 0,
+        "correct": 0,
+        "meanUs": null
+      },
+      "splits": {
+        "development": {
+          "n": 7,
+          "correct": 0,
+          "accuracy": 0,
+          "interval": {
+            "lo": 0,
+            "hi": 0.354339,
+            "width": 0.354339
+          }
+        },
+        "heldOut": {
+          "n": 23,
+          "correct": 0,
+          "accuracy": 0,
+          "interval": {
+            "lo": 0,
+            "hi": 0.143121,
+            "width": 0.143121
+          }
+        }
+      },
+      "cutByStopToken": 0,
+      "testTimedOut": 0
+    }
+  },
+  "gap": 0.3,
+  "nFor95": 19,
+  "published": [
+    {
+      "system": "o4-mini-high",
+      "score": 99.3,
+      "unit": "percent",
+      "metric": "pass@1",
+      "class": "frontier reasoning",
+      "source": "https://github.com/openai/simple-evals (README table)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "o3-high",
+      "score": 88.4,
+      "unit": "percent",
+      "metric": "pass@1",
+      "class": "frontier reasoning",
+      "source": "https://github.com/openai/simple-evals (README table)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "gpt-4.1-2025-04-14",
+      "score": 94.5,
+      "unit": "percent",
+      "metric": "pass@1",
+      "class": "frontier",
+      "source": "https://github.com/openai/simple-evals (README table)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "gpt-4o-2024-11-20",
+      "score": 90.2,
+      "unit": "percent",
+      "metric": "pass@1",
+      "class": "frontier",
+      "source": "https://github.com/openai/simple-evals (README table)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "Claude 3.5 Sonnet (reported)",
+      "score": 92,
+      "unit": "percent",
+      "metric": "pass@1",
+      "class": "frontier",
+      "source": "https://github.com/openai/simple-evals (README table)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "Llama 3.1 8b",
+      "score": 72.6,
+      "unit": "percent",
+      "metric": "pass@1",
+      "class": "open 8B",
+      "source": "https://github.com/openai/simple-evals (README table)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "Codex 12B (2021)",
+      "score": 28.8,
+      "unit": "percent",
+      "metric": "pass@1",
+      "class": "origin",
+      "source": "https://arxiv.org/abs/2107.03374 (Codex paper abstract)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "Codex 12B, 100 samples (2021)",
+      "score": 70.2,
+      "unit": "percent",
+      "metric": "pass@100",
+      "class": "origin",
+      "source": "https://arxiv.org/abs/2107.03374 (Codex paper abstract)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "GPT-J (2021)",
+      "score": 11.4,
+      "unit": "percent",
+      "metric": "pass@1",
+      "class": "origin",
+      "source": "https://arxiv.org/abs/2107.03374 (Codex paper abstract)",
+      "readAt": "2026-09-18 09:10 EDT"
+    },
+    {
+      "system": "GPT-3 (2021)",
+      "score": 0,
+      "unit": "percent",
+      "metric": "pass@1",
+      "class": "origin",
+      "source": "https://arxiv.org/abs/2107.03374 (Codex paper abstract)",
+      "readAt": "2026-09-18 09:10 EDT"
+    }
+  ],
+  "publishedComparison": {
+    "beats": [
+      {
+        "system": "Llama 3.1 8b",
+        "score": 72.6
+      },
+      {
+        "system": "Codex 12B (2021)",
+        "score": 28.8
+      },
+      {
+        "system": "Codex 12B, 100 samples (2021)",
+        "score": 70.2
+      },
+      {
+        "system": "GPT-J (2021)",
+        "score": 11.4
+      },
+      {
+        "system": "GPT-3 (2021)",
+        "score": 0
+      }
+    ],
+    "doesNotBeat": [
+      {
+        "system": "o4-mini-high",
+        "score": 99.3
+      },
+      {
+        "system": "o3-high",
+        "score": 88.4
+      },
+      {
+        "system": "gpt-4.1-2025-04-14",
+        "score": 94.5
+      },
+      {
+        "system": "gpt-4o-2024-11-20",
+        "score": 90.2
+      },
+      {
+        "system": "Claude 3.5 Sonnet (reported)",
+        "score": 92
+      }
+    ],
+    "decidedAbove": [
+      {
+        "system": "Codex 12B (2021)",
+        "score": 28.8
+      },
+      {
+        "system": "GPT-J (2021)",
+        "score": 11.4
+      },
+      {
+        "system": "GPT-3 (2021)",
+        "score": 0
+      }
+    ],
+    "decidedBelow": [
+      {
+        "system": "o4-mini-high",
+        "score": 99.3
+      },
+      {
+        "system": "o3-high",
+        "score": 88.4
+      },
+      {
+        "system": "gpt-4.1-2025-04-14",
+        "score": 94.5
+      },
+      {
+        "system": "gpt-4o-2024-11-20",
+        "score": 90.2
+      },
+      {
+        "system": "Claude 3.5 Sonnet (reported)",
+        "score": 92
+      }
+    ],
+    "undecided": [
+      {
+        "system": "Llama 3.1 8b",
+        "score": 72.6
+      },
+      {
+        "system": "Codex 12B, 100 samples (2021)",
+        "score": 70.2
+      }
+    ]
+  },
+  "statement": "PARTIAL, isTheBar false (a sample of 30 of 161, not the whole set (--limit 0, or --bar to declare a sample the bar)): on 30 of 161 MultiPL-E JavaScript HumanEval records at seed public/1, pass@1 on one sample: the organism (act/prompt.mjs ask(): the direct table, act/solve.mjs, then the code region (reason/synth.mjs synthesize, k=5, repair) on the model cell qwen3:1.7b) scored 23 of 30 = 76.67%, 95 percent interval 59.07% to 88.21%, mean 34881.88 ms per task; the model alone 46.67% (14 of 30); null 0.00% (0 of 30). Organism minus alone = 30.00 points, which at these rates needs 19 tasks per arm to separate from zero. 12 of 30 organism answers and 9 of 30 alone answers used the whole maxTokens 4000 budget, and 14 of those 21 were wrong, so those rows grade the budget as much as the model. Against the published rows the organism point estimate is above Llama 3.1 8b 72.6, Codex 12B (2021) 28.8, Codex 12B, 100 samples (2021) 70.2, GPT-J (2021) 11.4, GPT-3 (2021) 0 and not above o4-mini-high 99.3, o3-high 88.4, gpt-4.1-2025-04-14 94.5, gpt-4o-2024-11-20 90.2, Claude 3.5 Sonnet (reported) 92; its 95 percent interval lies wholly below 5 of 10 rows and wholly above 3. Rate: 1.33 tasks per minute in this process (45.01 s per task, arms organism,alone,null). Organism native (exact, memory, direct: no model call) 0 of 30 = 0.00%; direct 0 of 30 (no record was answered from the direct table); through the model 30 of 30, mean 34.87 s per ask. TWO RULERS, organism by split: held out 16 of 23 = 69.57% (49.13% to 84.40%), development 7 of 7 = 100.00% (64.57% to 100.00%); alone by split: held out 10 of 23 = 43.48% (25.63% to 63.19%), development 4 of 7 = 57.14% (25.05% to 84.18%). Every latency here was measured on ONE shared Ollama queue that other builders were using at the same time.",
+  "rate": {
+    "tasksPerMinute": 1.33,
+    "msPerTask": 45006.3,
+    "tasksTimed": 30,
+    "arms": [
+      "organism",
+      "alone",
+      "null"
+    ],
+    "how": "wall ms per task over the tasks at least one arm ran IN THIS PROCESS; a task read whole from the journal is not timed"
+  },
+  "journal": {
+    "file": "bench/verdicts/public/humaneval-public_1.jsonl",
+    "resumed": false,
+    "armResultsReadBack": 0,
+    "tasksWholeFromJournal": 0,
+    "tornLines": 0,
+    "movedAside": null
+  },
+  "ruler": "a record counts when the record's own tests string runs to the end without throwing, inside act/run.mjs's sandbox, on the code act/code.mjs extractCode reads out of what the arm wrote, cut at the record's stop tokens; pass@1 on one sample",
+  "interleaving": "task by task: every selected arm answers record i before any arm sees record i+1, and the first arm rotates with i",
+  "dataIsData": "every prompt, test string and answer in bench/fixtures/public is data: it reached the model, the exact solver or the sandbox and nothing else",
+  "rows": [
+    {
+      "i": 0,
+      "id": "HumanEval_6_parse_nested_parens",
+      "order": "organism>alone>null",
+      "split": "development",
+      "index": 6,
+      "entry": "parse_nested_parens",
+      "visibleSeen": 1,
+      "visibleParsed": 1,
+      "arms": {
+        "organism": {
+          "ok": true,
+          "ms": 5074.98,
+          "testMs": 15.224,
+          "codeChars": 564,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 5059544.8,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 5036,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 1,
+            "passedExtracted": 1,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 1327,
+          "capped": false
+        },
+        "alone": {
+          "ok": true,
+          "ms": 6959.32,
+          "testMs": 17.844,
+          "codeChars": 630,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "tokens": 1785,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "ms": 19.04,
+          "testMs": 16.864,
+          "codeChars": 134,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 2141,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 1,
+      "id": "HumanEval_10_make_palindrome",
+      "order": "alone>null>organism",
+      "split": "development",
+      "index": 10,
+      "entry": "make_palindrome",
+      "visibleSeen": 3,
+      "visibleParsed": 3,
+      "arms": {
+        "alone": {
+          "ok": true,
+          "ms": 12630.82,
+          "testMs": 16.402,
+          "codeChars": 558,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "tokens": 3122,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "ms": 16.02,
+          "testMs": 15.141,
+          "codeChars": 130,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 837.4,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 110374.42,
+          "testMs": 15.133,
+          "codeChars": 369,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 110359228.5,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 8,
+            "modelMs": 110294,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 3,
+            "passedExtracted": 3,
+            "keptPhase": "repair",
+            "repaired": true
+          },
+          "tokens": 27087,
+          "capped": true
+        }
+      }
+    },
+    {
+      "i": 2,
+      "id": "HumanEval_12_longest",
+      "order": "null>organism>alone",
+      "split": "development",
+      "index": 12,
+      "entry": "longest",
+      "visibleSeen": 3,
+      "visibleParsed": 2,
+      "arms": {
+        "null": {
+          "ok": false,
+          "ms": 15.96,
+          "testMs": 15.19,
+          "codeChars": 118,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 743.5,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 5556.74,
+          "testMs": 15.104,
+          "codeChars": 294,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 5541594.9,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 5524,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 3,
+            "passedExtracted": 3,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 1416,
+          "capped": false
+        },
+        "alone": {
+          "ok": true,
+          "ms": 11682.08,
+          "testMs": 16.067,
+          "codeChars": 375,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "tokens": 2898,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 3,
+      "id": "HumanEval_25_factorize",
+      "order": "organism>alone>null",
+      "split": "development",
+      "index": 25,
+      "entry": "factorize",
+      "visibleSeen": 3,
+      "visibleParsed": 3,
+      "arms": {
+        "organism": {
+          "ok": true,
+          "ms": 16365,
+          "testMs": 15.105,
+          "codeChars": 379,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 16349850,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 16333,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 3,
+            "passedExtracted": 3,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 3937,
+          "capped": false
+        },
+        "alone": {
+          "ok": false,
+          "ms": 16640.46,
+          "testMs": 16.138,
+          "codeChars": 0,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "ReferenceError: factorize is not defined",
+          "tokens": 4000,
+          "capped": true
+        },
+        "null": {
+          "ok": false,
+          "ms": 16.03,
+          "testMs": 15.165,
+          "codeChars": 121,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 844.7,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 4,
+      "id": "HumanEval_30_get_positive",
+      "order": "alone>null>organism",
+      "split": "development",
+      "index": 30,
+      "entry": "get_positive",
+      "visibleSeen": 2,
+      "visibleParsed": 2,
+      "arms": {
+        "alone": {
+          "ok": true,
+          "ms": 2201.7,
+          "testMs": 15.2,
+          "codeChars": 65,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "tokens": 563,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "ms": 15.86,
+          "testMs": 15.228,
+          "codeChars": 94,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 614,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 2479.67,
+          "testMs": 15.05,
+          "codeChars": 163,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 2464578.5,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 2448,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 2,
+            "passedExtracted": 2,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 641,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 5,
+      "id": "HumanEval_34_unique",
+      "order": "null>organism>alone",
+      "split": "development",
+      "index": 33,
+      "entry": "unique",
+      "visibleSeen": 1,
+      "visibleParsed": 1,
+      "arms": {
+        "null": {
+          "ok": false,
+          "ms": 15.53,
+          "testMs": 15.013,
+          "codeChars": 81,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 497.6,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 27878.73,
+          "testMs": 15.469,
+          "codeChars": 70,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 27863219.6,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 5,
+            "modelMs": 27802,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 1,
+            "passedExtracted": 1,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 7125,
+          "capped": true
+        },
+        "alone": {
+          "ok": false,
+          "ms": 2743.67,
+          "testMs": 15.246,
+          "codeChars": 62,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "AssertionError: deepEqual failed between: [0,123,2,3,5,9] and [0,2,3,5,9,123]",
+          "tokens": 731,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 6,
+      "id": "HumanEval_39_prime_fib",
+      "order": "organism>alone>null",
+      "split": "development",
+      "index": 37,
+      "entry": "prime_fib",
+      "visibleSeen": 5,
+      "visibleParsed": 5,
+      "arms": {
+        "organism": {
+          "ok": true,
+          "ms": 30950.27,
+          "testMs": 14.789,
+          "codeChars": 530,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 30935437.3,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 2,
+            "modelMs": 30903,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 5,
+            "passedExtracted": 5,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 7589,
+          "capped": true
+        },
+        "alone": {
+          "ok": false,
+          "ms": 16656.04,
+          "testMs": 15.81,
+          "codeChars": 481,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'is'",
+          "tokens": 4000,
+          "capped": true
+        },
+        "null": {
+          "ok": false,
+          "ms": 15.72,
+          "testMs": 15.157,
+          "codeChars": 87,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 541.6,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 7,
+      "id": "HumanEval_42_incr_list",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "index": 40,
+      "entry": "incr_list",
+      "visibleSeen": 2,
+      "visibleParsed": 2,
+      "arms": {
+        "alone": {
+          "ok": true,
+          "ms": 1720.09,
+          "testMs": 15.298,
+          "codeChars": 57,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "tokens": 441,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "ms": 15.32,
+          "testMs": 14.7,
+          "codeChars": 94,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 604.6,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 2582.04,
+          "testMs": 15.158,
+          "codeChars": 57,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 2566846.3,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 2551,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 2,
+            "passedExtracted": 2,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 675,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 8,
+      "id": "HumanEval_44_change_base",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "index": 42,
+      "entry": "change_base",
+      "visibleSeen": 3,
+      "visibleParsed": 3,
+      "arms": {
+        "null": {
+          "ok": false,
+          "ms": 15.67,
+          "testMs": 14.88,
+          "codeChars": 131,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 769.4,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 11712.97,
+          "testMs": 15.226,
+          "codeChars": 331,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 11697715.8,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 11680,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 3,
+            "passedExtracted": 3,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 2959,
+          "capped": false
+        },
+        "alone": {
+          "ok": false,
+          "ms": 16408.68,
+          "testMs": 16.096,
+          "codeChars": 0,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "ReferenceError: change_base is not defined",
+          "tokens": 4000,
+          "capped": true
+        }
+      }
+    },
+    {
+      "i": 9,
+      "id": "HumanEval_53_add",
+      "order": "organism>alone>null",
+      "split": "heldOut",
+      "index": 50,
+      "entry": "add",
+      "visibleSeen": 2,
+      "visibleParsed": 2,
+      "arms": {
+        "organism": {
+          "ok": true,
+          "ms": 1595.47,
+          "testMs": 15.393,
+          "codeChars": 37,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 1580044.1,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 1564,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 2,
+            "passedExtracted": 2,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 410,
+          "capped": false
+        },
+        "alone": {
+          "ok": true,
+          "ms": 1407.71,
+          "testMs": 15.284,
+          "codeChars": 38,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "tokens": 377,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "ms": 15.44,
+          "testMs": 15.026,
+          "codeChars": 54,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 387.9,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 10,
+      "id": "HumanEval_58_common",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "index": 55,
+      "entry": "common",
+      "visibleSeen": 2,
+      "visibleParsed": 2,
+      "arms": {
+        "alone": {
+          "ok": false,
+          "ms": 5272.83,
+          "testMs": 15.276,
+          "codeChars": 207,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "AssertionError: deepEqual failed between: [1,5,5,653] and [1,5,653]",
+          "tokens": 1388,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "ms": 15.73,
+          "testMs": 15.047,
+          "codeChars": 100,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 660.6,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 4855.82,
+          "testMs": 15.579,
+          "codeChars": 187,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 4840203.5,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 4823,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 2,
+            "passedExtracted": 2,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 1272,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 11,
+      "id": "HumanEval_61_correct_bracketing",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "index": 58,
+      "entry": "correct_bracketing",
+      "visibleSeen": 4,
+      "visibleParsed": 4,
+      "arms": {
+        "null": {
+          "ok": false,
+          "ms": 16.17,
+          "testMs": 15.429,
+          "codeChars": 143,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 719.8,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 3132,
+          "testMs": 14.998,
+          "codeChars": 340,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 3116976.1,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 3101,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 4,
+            "passedExtracted": 4,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 830,
+          "capped": false
+        },
+        "alone": {
+          "ok": true,
+          "ms": 4643.76,
+          "testMs": 15.162,
+          "codeChars": 356,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "tokens": 1227,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 12,
+      "id": "HumanEval_63_fibfib",
+      "order": "organism>alone>null",
+      "split": "heldOut",
+      "index": 60,
+      "entry": "fibfib",
+      "visibleSeen": 3,
+      "visibleParsed": 3,
+      "arms": {
+        "organism": {
+          "ok": true,
+          "ms": 8619.85,
+          "testMs": 14.98,
+          "codeChars": 352,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 8604843.8,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 8589,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 5,
+            "passedExtracted": 5,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 2213,
+          "capped": false
+        },
+        "alone": {
+          "ok": true,
+          "ms": 8964.84,
+          "testMs": 15.426,
+          "codeChars": 267,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "tokens": 2294,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "ms": 15.75,
+          "testMs": 14.979,
+          "codeChars": 138,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 750,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 13,
+      "id": "HumanEval_70_strange_sort_list",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "index": 67,
+      "entry": "strange_sort_list",
+      "visibleSeen": 3,
+      "visibleParsed": 3,
+      "arms": {
+        "alone": {
+          "ok": false,
+          "ms": 12860.16,
+          "testMs": 15.837,
+          "codeChars": 420,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "AssertionError: deepEqual failed between: [5,null] and [5,5,5,5]",
+          "tokens": 3207,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "ms": 15.77,
+          "testMs": 14.979,
+          "codeChars": 125,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 772.5,
+          "native": true
+        },
+        "organism": {
+          "ok": false,
+          "ms": 35913.68,
+          "testMs": 15.623,
+          "codeChars": 331,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "AssertionError: deepEqual failed between: [5,9,6,8,7,7] and [5,9,6,8,7]",
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 35898026.2,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 3,
+            "modelMs": 35849,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 3,
+            "passedExtracted": 3,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 8893,
+          "capped": true
+        }
+      }
+    },
+    {
+      "i": 14,
+      "id": "HumanEval_72_will_it_fly",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "index": 69,
+      "entry": "will_it_fly",
+      "visibleSeen": 4,
+      "visibleParsed": 4,
+      "arms": {
+        "null": {
+          "ok": false,
+          "ms": 15.66,
+          "testMs": 14.962,
+          "codeChars": 123,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 682.9,
+          "native": true
+        },
+        "organism": {
+          "ok": false,
+          "ms": 113604.52,
+          "testMs": 15.366,
+          "codeChars": 175,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "AssertionError: deepEqual failed between: true and false",
+          "provenance": "model",
+          "redacted": false,
+          "route": "code",
+          "us": 113589122.7,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model",
+            "calls": 10,
+            "modelMs": 113460,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 4,
+            "passedExtracted": 3,
+            "keptPhase": "sample",
+            "repaired": true
+          },
+          "tokens": 28145,
+          "capped": true
+        },
+        "alone": {
+          "ok": true,
+          "ms": 8891.48,
+          "testMs": 15.963,
+          "codeChars": 355,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "tokens": 2219,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 15,
+      "id": "HumanEval_75_is_multiply_prime",
+      "order": "organism>alone>null",
+      "split": "heldOut",
+      "index": 72,
+      "entry": "is_multiply_prime",
+      "visibleSeen": 1,
+      "visibleParsed": 1,
+      "arms": {
+        "organism": {
+          "ok": false,
+          "ms": 164921.11,
+          "testMs": 15.302,
+          "codeChars": 54,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'code'",
+          "provenance": "model",
+          "redacted": false,
+          "route": "code",
+          "us": 164905789,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model",
+            "calls": 10,
+            "modelMs": 164875,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 1,
+            "passedExtracted": 0,
+            "keptPhase": "sample",
+            "repaired": true
+          },
+          "tokens": 40000,
+          "capped": true
+        },
+        "alone": {
+          "ok": false,
+          "ms": 16343.84,
+          "testMs": 16.094,
+          "codeChars": 13,
+          "cutAt": "\nfunction ",
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected end of input",
+          "tokens": 4000,
+          "capped": true
+        },
+        "null": {
+          "ok": false,
+          "ms": 15.83,
+          "testMs": 15.048,
+          "codeChars": 131,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 761.4,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 16,
+      "id": "HumanEval_79_decimal_to_binary",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "index": 76,
+      "entry": "decimal_to_binary",
+      "visibleSeen": 2,
+      "visibleParsed": 2,
+      "arms": {
+        "alone": {
+          "ok": true,
+          "ms": 8178.96,
+          "testMs": 15.413,
+          "codeChars": 80,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "tokens": 2106,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "ms": 15.2,
+          "testMs": 14.303,
+          "codeChars": 120,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 879.1,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 6777.82,
+          "testMs": 15.079,
+          "codeChars": 85,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 6762701.7,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 6747,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 2,
+            "passedExtracted": 2,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 1756,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 17,
+      "id": "HumanEval_80_is_happy",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "index": 77,
+      "entry": "is_happy",
+      "visibleSeen": 6,
+      "visibleParsed": 6,
+      "arms": {
+        "null": {
+          "ok": false,
+          "ms": 15.54,
+          "testMs": 14.844,
+          "codeChars": 123,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 683.9,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 4456.49,
+          "testMs": 15.087,
+          "codeChars": 236,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 4441371.5,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 4425,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 6,
+            "passedExtracted": 6,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 1170,
+          "capped": false
+        },
+        "alone": {
+          "ok": false,
+          "ms": 4520.27,
+          "testMs": 15.311,
+          "codeChars": 272,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "AssertionError: deepEqual failed between: true and false",
+          "tokens": 1193,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 18,
+      "id": "HumanEval_99_closest_integer",
+      "order": "organism>alone>null",
+      "split": "heldOut",
+      "index": 96,
+      "entry": "closest_integer",
+      "visibleSeen": 2,
+      "visibleParsed": 2,
+      "arms": {
+        "organism": {
+          "ok": true,
+          "ms": 20774.71,
+          "testMs": 15.212,
+          "codeChars": 404,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 20759466.6,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 2,
+            "modelMs": 20726,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 3,
+            "passedExtracted": 3,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 5215,
+          "capped": true
+        },
+        "alone": {
+          "ok": false,
+          "ms": 11747.97,
+          "testMs": 15.938,
+          "codeChars": 348,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "ReferenceError: parseFloat is not defined",
+          "tokens": 2908,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "ms": 15.82,
+          "testMs": 15.053,
+          "codeChars": 132,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 744.9,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 19,
+      "id": "HumanEval_101_words_string",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "index": 98,
+      "entry": "words_string",
+      "visibleSeen": 2,
+      "visibleParsed": 2,
+      "arms": {
+        "alone": {
+          "ok": false,
+          "ms": 16482.99,
+          "testMs": 15.724,
+          "codeChars": 0,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "ReferenceError: words_string is not defined",
+          "tokens": 4000,
+          "capped": true
+        },
+        "null": {
+          "ok": false,
+          "ms": 15.81,
+          "testMs": 14.961,
+          "codeChars": 117,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 833.6,
+          "native": true
+        },
+        "organism": {
+          "ok": false,
+          "ms": 7692.74,
+          "testMs": 15.51,
+          "codeChars": 105,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "AssertionError: deepEqual failed between: [\"One,\",\"two\",\"three\",\"four\",\"five\",\"six,\"] and [\"One\",\"two\",\"three\",\"four\",\"five\",\"six\"]",
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 7677206.5,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 7660,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 2,
+            "passedExtracted": 2,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 1984,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 20,
+      "id": "HumanEval_107_even_odd_palindrome",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "index": 104,
+      "entry": "even_odd_palindrome",
+      "visibleSeen": 2,
+      "visibleParsed": 2,
+      "arms": {
+        "null": {
+          "ok": false,
+          "ms": 16.26,
+          "testMs": 14.919,
+          "codeChars": 119,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1325.1,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 25235.84,
+          "testMs": 15.179,
+          "codeChars": 362,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 25220637.5,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 2,
+            "modelMs": 25188,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 2,
+            "passedExtracted": 2,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 6236,
+          "capped": true
+        },
+        "alone": {
+          "ok": true,
+          "ms": 7506.94,
+          "testMs": 15.262,
+          "codeChars": 421,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "tokens": 1926,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 21,
+      "id": "HumanEval_113_odd_count",
+      "order": "organism>alone>null",
+      "split": "heldOut",
+      "index": 110,
+      "entry": "odd_count",
+      "visibleSeen": 2,
+      "visibleParsed": 2,
+      "arms": {
+        "organism": {
+          "ok": true,
+          "ms": 7207.99,
+          "testMs": 14.882,
+          "codeChars": 416,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 7193081.6,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 7176,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 2,
+            "passedExtracted": 2,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 1856,
+          "capped": false
+        },
+        "alone": {
+          "ok": false,
+          "ms": 16462.6,
+          "testMs": 15.61,
+          "codeChars": 0,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "ReferenceError: odd_count is not defined",
+          "tokens": 4000,
+          "capped": true
+        },
+        "null": {
+          "ok": false,
+          "ms": 16.48,
+          "testMs": 15.069,
+          "codeChars": 119,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1390.8,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 22,
+      "id": "HumanEval_115_max_fill",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "index": 112,
+      "entry": "max_fill",
+      "visibleSeen": 3,
+      "visibleParsed": 3,
+      "arms": {
+        "alone": {
+          "ok": true,
+          "ms": 10001.25,
+          "testMs": 15.523,
+          "codeChars": 202,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "tokens": 2500,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "ms": 16.28,
+          "testMs": 14.795,
+          "codeChars": 123,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1461.8,
+          "native": true
+        },
+        "organism": {
+          "ok": false,
+          "ms": 7379.7,
+          "testMs": 15.291,
+          "codeChars": 173,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "AssertionError: deepEqual failed between: 1 and 2",
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 7364383,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 7347,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 3,
+            "passedExtracted": 3,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 1855,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 23,
+      "id": "HumanEval_130_tri",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "index": 127,
+      "entry": "tri",
+      "visibleSeen": 1,
+      "visibleParsed": 1,
+      "arms": {
+        "null": {
+          "ok": false,
+          "ms": 16.73,
+          "testMs": 15.351,
+          "codeChars": 138,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1358.3,
+          "native": true
+        },
+        "organism": {
+          "ok": false,
+          "ms": 166745.39,
+          "testMs": 15.562,
+          "codeChars": 54,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'code'",
+          "provenance": "model",
+          "redacted": false,
+          "route": "code",
+          "us": 166729804.2,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model",
+            "calls": 10,
+            "modelMs": 166714,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 3,
+            "passedExtracted": 0,
+            "keptPhase": "sample",
+            "repaired": true
+          },
+          "tokens": 40000,
+          "capped": true
+        },
+        "alone": {
+          "ok": false,
+          "ms": 16481.05,
+          "testMs": 16.208,
+          "codeChars": 0,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "ReferenceError: tri is not defined",
+          "tokens": 4000,
+          "capped": true
+        }
+      }
+    },
+    {
+      "i": 24,
+      "id": "HumanEval_140_fix_spaces",
+      "order": "organism>alone>null",
+      "split": "heldOut",
+      "index": 137,
+      "entry": "fix_spaces",
+      "visibleSeen": 4,
+      "visibleParsed": 4,
+      "arms": {
+        "organism": {
+          "ok": false,
+          "ms": 152796.43,
+          "testMs": 15.662,
+          "codeChars": 690,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "AssertionError: deepEqual failed between: \"Exa___mple\" and \"Exa-mple\"",
+          "provenance": "model",
+          "redacted": false,
+          "route": "code",
+          "us": 152780737.9,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model",
+            "calls": 10,
+            "modelMs": 152716,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 4,
+            "passedExtracted": 1,
+            "keptPhase": "repair",
+            "repaired": true
+          },
+          "tokens": 37401,
+          "capped": true
+        },
+        "alone": {
+          "ok": false,
+          "ms": 16369.23,
+          "testMs": 15.621,
+          "codeChars": 0,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "ReferenceError: fix_spaces is not defined",
+          "tokens": 4000,
+          "capped": true
+        },
+        "null": {
+          "ok": false,
+          "ms": 16.59,
+          "testMs": 15.06,
+          "codeChars": 132,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1508.3,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 25,
+      "id": "HumanEval_141_file_name_check",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "index": 138,
+      "entry": "file_name_check",
+      "visibleSeen": 2,
+      "visibleParsed": 2,
+      "arms": {
+        "alone": {
+          "ok": false,
+          "ms": 15644.64,
+          "testMs": 16.242,
+          "codeChars": 638,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "AssertionError: deepEqual failed between: \"No\" and \"Yes\"",
+          "tokens": 3772,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "ms": 16.89,
+          "testMs": 15.307,
+          "codeChars": 128,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1567.7,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 48767.85,
+          "testMs": 15.093,
+          "codeChars": 641,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 48752720.5,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 4,
+            "modelMs": 48688,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 2,
+            "passedExtracted": 2,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 11933,
+          "capped": true
+        }
+      }
+    },
+    {
+      "i": 26,
+      "id": "HumanEval_142_sum_squares",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "index": 139,
+      "entry": "sum_squares",
+      "visibleSeen": 0,
+      "visibleParsed": 0,
+      "arms": {
+        "null": {
+          "ok": false,
+          "ms": 16.08,
+          "testMs": 14.706,
+          "codeChars": 120,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1358.5,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 11606.82,
+          "testMs": 15.001,
+          "codeChars": 321,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model",
+          "redacted": false,
+          "route": "code",
+          "us": 11591791,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model",
+            "calls": 1,
+            "modelMs": 11574,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 0,
+            "passedExtracted": 0,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 2866,
+          "capped": false
+        },
+        "alone": {
+          "ok": false,
+          "ms": 16676.09,
+          "testMs": 15.309,
+          "codeChars": 0,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "ReferenceError: sum_squares is not defined",
+          "tokens": 4000,
+          "capped": true
+        }
+      }
+    },
+    {
+      "i": 27,
+      "id": "HumanEval_144_simplify",
+      "order": "organism>alone>null",
+      "split": "heldOut",
+      "index": 141,
+      "entry": "simplify",
+      "visibleSeen": 3,
+      "visibleParsed": 3,
+      "arms": {
+        "organism": {
+          "ok": true,
+          "ms": 26864.77,
+          "testMs": 15.176,
+          "codeChars": 235,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 26849563.6,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 3,
+            "modelMs": 26799,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 3,
+            "passedExtracted": 3,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 6550,
+          "capped": true
+        },
+        "alone": {
+          "ok": false,
+          "ms": 5991.42,
+          "testMs": 15.603,
+          "codeChars": 259,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "ReferenceError: parseInt is not defined",
+          "tokens": 1555,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "ms": 16.05,
+          "testMs": 14.822,
+          "codeChars": 133,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1208.4,
+          "native": true
+        }
+      }
+    },
+    {
+      "i": 28,
+      "id": "HumanEval_157_right_angle_triangle",
+      "order": "alone>null>organism",
+      "split": "heldOut",
+      "index": 154,
+      "entry": "right_angle_triangle",
+      "visibleSeen": 2,
+      "visibleParsed": 2,
+      "arms": {
+        "alone": {
+          "ok": true,
+          "ms": 5186.92,
+          "testMs": 15.092,
+          "codeChars": 155,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "tokens": 1343,
+          "capped": false
+        },
+        "null": {
+          "ok": false,
+          "ms": 16.08,
+          "testMs": 14.663,
+          "codeChars": 118,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1395.3,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 4364.89,
+          "testMs": 15.326,
+          "codeChars": 157,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 4349538.8,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 4332,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 2,
+            "passedExtracted": 2,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 1135,
+          "capped": false
+        }
+      }
+    },
+    {
+      "i": 29,
+      "id": "HumanEval_158_find_max",
+      "order": "null>organism>alone",
+      "split": "heldOut",
+      "index": 155,
+      "entry": "find_max",
+      "visibleSeen": 3,
+      "visibleParsed": 3,
+      "arms": {
+        "null": {
+          "ok": false,
+          "ms": 15.88,
+          "testMs": 14.51,
+          "codeChars": 126,
+          "cutAt": null,
+          "timedOut": false,
+          "error": "SyntaxError: Unexpected identifier 'matches'",
+          "provenance": "memory",
+          "redacted": false,
+          "route": "direct",
+          "us": 1347,
+          "native": true
+        },
+        "organism": {
+          "ok": true,
+          "ms": 10167.7,
+          "testMs": 14.63,
+          "codeChars": 415,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "provenance": "model+exact",
+          "redacted": false,
+          "route": "code",
+          "us": 10153042.3,
+          "native": false,
+          "region": {
+            "name": "code",
+            "provenance": "model+exact",
+            "calls": 1,
+            "modelMs": 10135,
+            "execMs": 0,
+            "k": 5,
+            "repair": true,
+            "extracted": 3,
+            "passedExtracted": 3,
+            "keptPhase": "sample",
+            "repaired": false
+          },
+          "tokens": 2554,
+          "capped": false
+        },
+        "alone": {
+          "ok": true,
+          "ms": 5938.15,
+          "testMs": 20.218,
+          "codeChars": 427,
+          "cutAt": null,
+          "timedOut": false,
+          "error": null,
+          "tokens": 1521,
+          "capped": false
+        }
+      }
+    }
+  ]
+}

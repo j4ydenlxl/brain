@@ -1,0 +1,120 @@
+{
+  "at": "2026-09-18T02:36:57.134Z",
+  "node": "v24.15.0",
+  "conditions": {
+    "at": "2026-09-18T02:36:47.718Z",
+    "node": "v24.15.0",
+    "platform": "win32",
+    "cpus": 32,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900KF",
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "totalmemGB": 63.8,
+    "freememGB": 42.3,
+    "perMutantBudgetMs": 90000
+  },
+  "command": "node bench/mutants.mjs --sub self --only sp --timeout 90000 --budget 90000 --tag pass2",
+  "suites": {
+    "self": [
+      "test/self.test.mjs"
+    ]
+  },
+  "tally": {
+    "mutants": 3,
+    "executed": 3,
+    "killed": 3,
+    "survived": 0,
+    "notExecuted": 0,
+    "score": 1,
+    "wallMs": 9150
+  },
+  "bySubsystem": {
+    "self": {
+      "suite": [
+        "test/self.test.mjs"
+      ],
+      "generated": 3,
+      "executed": 3,
+      "killed": 3,
+      "survived": 0,
+      "notExecuted": 0,
+      "unmutatedMs": 2301,
+      "unmutatedPass": 29,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 9150
+    }
+  },
+  "mutants": [
+    {
+      "id": "sp01",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH CAP: the prune cap collapses to its floor, so it stops scaling with the organism",
+      "executed": true,
+      "probeHits": 30,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune cap is the rule it publishes, at every organism size (mutants sp01, sp02, sp03)",
+        "error": "pruneCap(25601) disagrees with cap = max(256, ceil(edges * 0.01))"
+      },
+      "newFailures": 1,
+      "ms": 2293,
+      "passed": 28,
+      "status": "killed",
+      "find": "  return Math.max(floor, Math.ceil(finite(edges) * keep));",
+      "replace": "  return (__MUTP(), floor);"
+    },
+    {
+      "id": "sp02",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH CAP: the cap is ten times the declared share of the organism",
+      "executed": true,
+      "probeHits": 29,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune cap is the rule it publishes, at every organism size (mutants sp01, sp02, sp03)",
+        "error": "pruneCap(25600) disagrees with cap = max(256, ceil(edges * 0.01))"
+      },
+      "newFailures": 1,
+      "ms": 2270,
+      "passed": 28,
+      "status": "killed",
+      "find": "  return Math.max(floor, Math.ceil(finite(edges) * keep));",
+      "replace": "  return Math.max(floor, Math.ceil(finite(edges) * (__MUTP(), 0.1)));"
+    },
+    {
+      "id": "sp03",
+      "sub": "self",
+      "file": "self/propose.mjs",
+      "why": "BATCH CAP: the published rule says a share the code does not use",
+      "executed": true,
+      "probeHits": 1,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/self.test.mjs :: the prune cap is the rule it publishes, at every organism size (mutants sp01, sp02, sp03)",
+        "error": "pruneCap(25600) disagrees with cap = max(256, ceil(edges * 0.02))"
+      },
+      "newFailures": 1,
+      "ms": 2280,
+      "passed": 28,
+      "status": "killed",
+      "find": "export const PRUNE_CAP_RULE = 'cap = max(256, ceil(edges * 0.01))';",
+      "replace": "export const PRUNE_CAP_RULE = (__MUTP(), 'cap = max(256, ceil(edges * 0.02))');"
+    }
+  ],
+  "verdict": "GREEN"
+}

@@ -1,0 +1,618 @@
+{
+  "bench": "census",
+  "at": "2026-09-23T21:26:30.141Z",
+  "command": "node --max-old-space-size=28000 tools/organism-census.mjs --seed organism/scale-52000 --ticks 20",
+  "node": "v24.15.0",
+  "isTheBar": false,
+  "statement": "The bar command for organism/scale-52000 did not fit in RAM and printed no error. It started at 16:35:08 and in 39 minutes printed one line, \"census organism/scale-52000: imported 87 modules in 2.0 s\", and never finished its first arm (load, 20 drive ticks, the hosted problems). Sampled every 20 s from 16:49:42, its private memory rose from 34.27 GB to 62.01 GB (at 17:14:04) on a machine with 63.84 GB installed, while its working set peaked at 46.34 GB, so the machine was paging; it was stopped by hand after that sample and its shell recorded \"exit 1\". A drive only retry with --progress 1 printed load at 32.9 s (rss 5839.8 MB, hypervector heap 65536 of 65536 slots, 159104 fallbacks) and drive tick 3 at 39.6 s (rss 6100.8 MB) before another agent's watchdog stopped it; that watchdog stops every census of scale-52000 while it runs (3 stops logged). No cell, edge or line count of scale-52000 was taken.",
+  "seed": "organism/scale-52000",
+  "ticks": 20,
+  "printed": {
+    "barRun": [
+      "census organism/scale-52000: imported 87 modules in 2.0 s",
+      "exit 1"
+    ],
+    "driveOnlyRetry": [
+      "census organism/scale-52000: imported 87 modules in 1.5 s",
+      "progress   load tick 0 at 32.9 s: rss 5839.8 MB, heap used 2031.8 of 2163 MB, array buffers 2731.9 MB, free 47894.7 of 65370.1 MB, hv heap 65536 of 65536 slots, 159104 fallbacks",
+      "progress   drive tick 1 at 39.3 s: rss 6016.1 MB, heap used 2222.3 of 2342.2 MB, array buffers 2746.5 MB, free 47736.7 of 65370.1 MB, hv heap 65536 of 65536 slots, 159104 fallbacks",
+      "progress   drive tick 2 at 39.4 s: rss 6061.2 MB, heap used 2287.7 of 2382.2 MB, array buffers 2746.5 MB, free 47688.9 of 65370.1 MB, hv heap 65536 of 65536 slots, 159104 fallbacks",
+      "progress   drive tick 3 at 39.6 s: rss 6100.8 MB, heap used 2314.7 of 2422.1 MB, array buffers 2746.5 MB, free 47646.2 of 65370.1 MB, hv heap 65536 of 65536 slots, 159104 fallbacks"
+    ],
+    "watchdogStops": [
+      "17:18:06 killed pid 12856 (3547 MB): census at scale-52000 (took 44.8 GB before) :: \"C:\\Program Files\\nodejs\\node.exe\" -",
+      "17:19:06 killed pid 12568 (6101 MB): census at scale-52000 (took 44.8 GB before) :: \"C:\\Program Files\\nodejs\\node.exe\" -",
+      "17:20:06 killed pid 22108 (5406 MB): census at scale-52000 (took 44.8 GB before) :: \"C:\\Program Files\\nodejs\\node.exe\" -"
+    ]
+  },
+  "processSamples": {
+    "every": "20 s, Get-Process on the census pid (private bytes, working set, peak working set, cpu seconds) and Win32_OperatingSystem free virtual memory",
+    "rows": [
+      {
+        "at": "16:49:42",
+        "private_GB": 34.27,
+        "ws_GB": 32.4,
+        "peak_ws_GB": 32.4,
+        "cpu_s": 3412,
+        "commit_free_GB": 9.93
+      },
+      {
+        "at": "16:50:02",
+        "private_GB": 34.84,
+        "ws_GB": 32.97,
+        "peak_ws_GB": 32.97,
+        "cpu_s": 3504,
+        "commit_free_GB": 8.07
+      },
+      {
+        "at": "16:50:23",
+        "private_GB": 35.37,
+        "ws_GB": 33.48,
+        "peak_ws_GB": 33.48,
+        "cpu_s": 3594,
+        "commit_free_GB": 8.04
+      },
+      {
+        "at": "16:50:43",
+        "private_GB": 35.92,
+        "ws_GB": 34.03,
+        "peak_ws_GB": 34.03,
+        "cpu_s": 3683,
+        "commit_free_GB": 7.6
+      },
+      {
+        "at": "16:51:04",
+        "private_GB": 36.51,
+        "ws_GB": 34.61,
+        "peak_ws_GB": 34.61,
+        "cpu_s": 3774,
+        "commit_free_GB": 6.79
+      },
+      {
+        "at": "16:51:25",
+        "private_GB": 37.02,
+        "ws_GB": 35.11,
+        "peak_ws_GB": 35.11,
+        "cpu_s": 3864,
+        "commit_free_GB": 6.19
+      },
+      {
+        "at": "16:51:45",
+        "private_GB": 37.57,
+        "ws_GB": 35.66,
+        "peak_ws_GB": 35.66,
+        "cpu_s": 3953,
+        "commit_free_GB": 6.35
+      },
+      {
+        "at": "16:52:05",
+        "private_GB": 38.14,
+        "ws_GB": 36.22,
+        "peak_ws_GB": 36.22,
+        "cpu_s": 4044,
+        "commit_free_GB": 5.61
+      },
+      {
+        "at": "16:52:26",
+        "private_GB": 38.55,
+        "ws_GB": 36.62,
+        "peak_ws_GB": 36.62,
+        "cpu_s": 4138,
+        "commit_free_GB": 2.85
+      },
+      {
+        "at": "16:52:47",
+        "private_GB": 38.87,
+        "ws_GB": 36.93,
+        "peak_ws_GB": 36.93,
+        "cpu_s": 4230,
+        "commit_free_GB": 2.35
+      },
+      {
+        "at": "16:53:07",
+        "private_GB": 39.19,
+        "ws_GB": 37.26,
+        "peak_ws_GB": 37.26,
+        "cpu_s": 4306,
+        "commit_free_GB": 1.92
+      },
+      {
+        "at": "16:53:28",
+        "private_GB": 39.52,
+        "ws_GB": 37.58,
+        "peak_ws_GB": 37.58,
+        "cpu_s": 4400,
+        "commit_free_GB": 1.85
+      },
+      {
+        "at": "16:53:49",
+        "private_GB": 39.94,
+        "ws_GB": 37.98,
+        "peak_ws_GB": 37.98,
+        "cpu_s": 4489,
+        "commit_free_GB": 3.71
+      },
+      {
+        "at": "16:54:09",
+        "private_GB": 40.43,
+        "ws_GB": 38.47,
+        "peak_ws_GB": 38.5,
+        "cpu_s": 4577,
+        "commit_free_GB": 3.03
+      },
+      {
+        "at": "16:54:30",
+        "private_GB": 40.94,
+        "ws_GB": 38.98,
+        "peak_ws_GB": 38.98,
+        "cpu_s": 4670,
+        "commit_free_GB": 2.6
+      },
+      {
+        "at": "16:54:50",
+        "private_GB": 41.51,
+        "ws_GB": 39.55,
+        "peak_ws_GB": 39.55,
+        "cpu_s": 4764,
+        "commit_free_GB": 1.85
+      },
+      {
+        "at": "16:55:11",
+        "private_GB": 41.99,
+        "ws_GB": 40.01,
+        "peak_ws_GB": 40.01,
+        "cpu_s": 4856,
+        "commit_free_GB": 1.35
+      },
+      {
+        "at": "16:55:31",
+        "private_GB": 42.49,
+        "ws_GB": 40.5,
+        "peak_ws_GB": 40.5,
+        "cpu_s": 4949,
+        "commit_free_GB": 1.03
+      },
+      {
+        "at": "16:55:52",
+        "private_GB": 42.95,
+        "ws_GB": 40.96,
+        "peak_ws_GB": 40.96,
+        "cpu_s": 5040,
+        "commit_free_GB": 0.49
+      },
+      {
+        "at": "16:56:12",
+        "private_GB": 43.42,
+        "ws_GB": 41.42,
+        "peak_ws_GB": 41.42,
+        "cpu_s": 5126,
+        "commit_free_GB": 1.01
+      },
+      {
+        "at": "16:56:32",
+        "private_GB": 43.86,
+        "ws_GB": 41.85,
+        "peak_ws_GB": 41.85,
+        "cpu_s": 5219,
+        "commit_free_GB": 1.73
+      },
+      {
+        "at": "16:56:53",
+        "private_GB": 44.34,
+        "ws_GB": 42.33,
+        "peak_ws_GB": 42.33,
+        "cpu_s": 5311,
+        "commit_free_GB": 1.19
+      },
+      {
+        "at": "16:57:13",
+        "private_GB": 44.81,
+        "ws_GB": 42.79,
+        "peak_ws_GB": 42.79,
+        "cpu_s": 5404,
+        "commit_free_GB": 0.79
+      },
+      {
+        "at": "16:57:34",
+        "private_GB": 45.26,
+        "ws_GB": 43.06,
+        "peak_ws_GB": 43.06,
+        "cpu_s": 5495,
+        "commit_free_GB": 1.38
+      },
+      {
+        "at": "16:57:54",
+        "private_GB": 45.73,
+        "ws_GB": 43.04,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 5586,
+        "commit_free_GB": 0.91
+      },
+      {
+        "at": "16:58:15",
+        "private_GB": 46.15,
+        "ws_GB": 42.66,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 5679,
+        "commit_free_GB": 0.48
+      },
+      {
+        "at": "16:58:35",
+        "private_GB": 46.58,
+        "ws_GB": 41.8,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 5771,
+        "commit_free_GB": 1.04
+      },
+      {
+        "at": "16:58:56",
+        "private_GB": 47.02,
+        "ws_GB": 42.07,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 5862,
+        "commit_free_GB": 0.58
+      },
+      {
+        "at": "16:59:16",
+        "private_GB": 47.51,
+        "ws_GB": 41.45,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 5954,
+        "commit_free_GB": 1.15
+      },
+      {
+        "at": "16:59:37",
+        "private_GB": 47.92,
+        "ws_GB": 40.73,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 6042,
+        "commit_free_GB": 0.74
+      },
+      {
+        "at": "16:59:57",
+        "private_GB": 48.32,
+        "ws_GB": 41.13,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 6127,
+        "commit_free_GB": 0.26
+      },
+      {
+        "at": "17:00:18",
+        "private_GB": 48.67,
+        "ws_GB": 40.45,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 6214,
+        "commit_free_GB": 0.49
+      },
+      {
+        "at": "17:00:39",
+        "private_GB": 48.95,
+        "ws_GB": 40.66,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 6311,
+        "commit_free_GB": 1.25
+      },
+      {
+        "at": "17:01:00",
+        "private_GB": 49.23,
+        "ws_GB": 40.02,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 6400,
+        "commit_free_GB": 0.71
+      },
+      {
+        "at": "17:01:20",
+        "private_GB": 49.59,
+        "ws_GB": 39.9,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 6493,
+        "commit_free_GB": 0.65
+      },
+      {
+        "at": "17:01:41",
+        "private_GB": 49.9,
+        "ws_GB": 40.2,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 6582,
+        "commit_free_GB": 2.75
+      },
+      {
+        "at": "17:02:01",
+        "private_GB": 50.33,
+        "ws_GB": 40.62,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 6671,
+        "commit_free_GB": 2.2
+      },
+      {
+        "at": "17:02:22",
+        "private_GB": 50.79,
+        "ws_GB": 41.07,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 6766,
+        "commit_free_GB": 1.73
+      },
+      {
+        "at": "17:02:42",
+        "private_GB": 51.19,
+        "ws_GB": 41.47,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 6859,
+        "commit_free_GB": 0.93
+      },
+      {
+        "at": "17:03:03",
+        "private_GB": 51.63,
+        "ws_GB": 41.9,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 6950,
+        "commit_free_GB": 0.8
+      },
+      {
+        "at": "17:03:24",
+        "private_GB": 51.93,
+        "ws_GB": 41.92,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 7047,
+        "commit_free_GB": 0.56
+      },
+      {
+        "at": "17:03:44",
+        "private_GB": 52.19,
+        "ws_GB": 41.83,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 7135,
+        "commit_free_GB": 1.08
+      },
+      {
+        "at": "17:04:05",
+        "private_GB": 52.52,
+        "ws_GB": 41.78,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 7231,
+        "commit_free_GB": 0.69
+      },
+      {
+        "at": "17:04:26",
+        "private_GB": 52.76,
+        "ws_GB": 41.24,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 7321,
+        "commit_free_GB": 0.5
+      },
+      {
+        "at": "17:04:46",
+        "private_GB": 53.12,
+        "ws_GB": 41.61,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 7419,
+        "commit_free_GB": 0.59
+      },
+      {
+        "at": "17:05:07",
+        "private_GB": 53.49,
+        "ws_GB": 41.96,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 7512,
+        "commit_free_GB": 2.06
+      },
+      {
+        "at": "17:05:27",
+        "private_GB": 53.9,
+        "ws_GB": 42.36,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 7602,
+        "commit_free_GB": 1.63
+      },
+      {
+        "at": "17:05:48",
+        "private_GB": 54.41,
+        "ws_GB": 42.88,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 7693,
+        "commit_free_GB": 1.04
+      },
+      {
+        "at": "17:06:08",
+        "private_GB": 54.79,
+        "ws_GB": 43.24,
+        "peak_ws_GB": 43.35,
+        "cpu_s": 7786,
+        "commit_free_GB": 1.25
+      },
+      {
+        "at": "17:06:31",
+        "private_GB": 55.1,
+        "ws_GB": 43.52,
+        "peak_ws_GB": 43.54,
+        "cpu_s": 7878,
+        "commit_free_GB": 1.12
+      },
+      {
+        "at": "17:06:52",
+        "private_GB": 55.44,
+        "ws_GB": 43.03,
+        "peak_ws_GB": 43.54,
+        "cpu_s": 7972,
+        "commit_free_GB": 2.5
+      },
+      {
+        "at": "17:07:12",
+        "private_GB": 55.82,
+        "ws_GB": 43.42,
+        "peak_ws_GB": 43.54,
+        "cpu_s": 8064,
+        "commit_free_GB": 2.12
+      },
+      {
+        "at": "17:07:33",
+        "private_GB": 56.2,
+        "ws_GB": 43.79,
+        "peak_ws_GB": 43.79,
+        "cpu_s": 8156,
+        "commit_free_GB": 1.87
+      },
+      {
+        "at": "17:07:53",
+        "private_GB": 56.63,
+        "ws_GB": 44.23,
+        "peak_ws_GB": 44.23,
+        "cpu_s": 8247,
+        "commit_free_GB": 1.43
+      },
+      {
+        "at": "17:08:14",
+        "private_GB": 56.87,
+        "ws_GB": 43.7,
+        "peak_ws_GB": 44.27,
+        "cpu_s": 8344,
+        "commit_free_GB": 3.19
+      },
+      {
+        "at": "17:08:34",
+        "private_GB": 57.26,
+        "ws_GB": 44.09,
+        "peak_ws_GB": 44.27,
+        "cpu_s": 8423,
+        "commit_free_GB": 2.68
+      },
+      {
+        "at": "17:08:55",
+        "private_GB": 57.55,
+        "ws_GB": 44.36,
+        "peak_ws_GB": 44.36,
+        "cpu_s": 8516,
+        "commit_free_GB": 0.47
+      },
+      {
+        "at": "17:09:16",
+        "private_GB": 57.79,
+        "ws_GB": 44.6,
+        "peak_ws_GB": 44.6,
+        "cpu_s": 8611,
+        "commit_free_GB": 0.68
+      },
+      {
+        "at": "17:09:37",
+        "private_GB": 58,
+        "ws_GB": 44.81,
+        "peak_ws_GB": 44.81,
+        "cpu_s": 8695,
+        "commit_free_GB": 0.5
+      },
+      {
+        "at": "17:09:58",
+        "private_GB": 58.19,
+        "ws_GB": 45,
+        "peak_ws_GB": 45,
+        "cpu_s": 8792,
+        "commit_free_GB": 0.61
+      },
+      {
+        "at": "17:10:18",
+        "private_GB": 58.45,
+        "ws_GB": 45.14,
+        "peak_ws_GB": 45.14,
+        "cpu_s": 8880,
+        "commit_free_GB": 1.04
+      },
+      {
+        "at": "17:10:39",
+        "private_GB": 58.73,
+        "ws_GB": 45.4,
+        "peak_ws_GB": 45.4,
+        "cpu_s": 8978,
+        "commit_free_GB": 3.27
+      },
+      {
+        "at": "17:10:59",
+        "private_GB": 59.06,
+        "ws_GB": 45.73,
+        "peak_ws_GB": 45.73,
+        "cpu_s": 9068,
+        "commit_free_GB": 2.85
+      },
+      {
+        "at": "17:11:20",
+        "private_GB": 59.44,
+        "ws_GB": 46.11,
+        "peak_ws_GB": 46.11,
+        "cpu_s": 9164,
+        "commit_free_GB": 2.42
+      },
+      {
+        "at": "17:11:40",
+        "private_GB": 59.76,
+        "ws_GB": 41.32,
+        "peak_ws_GB": 46.34,
+        "cpu_s": 9256,
+        "commit_free_GB": 1.97
+      },
+      {
+        "at": "17:12:01",
+        "private_GB": 60.18,
+        "ws_GB": 41.75,
+        "peak_ws_GB": 46.34,
+        "cpu_s": 9344,
+        "commit_free_GB": 12.41
+      },
+      {
+        "at": "17:12:22",
+        "private_GB": 60.44,
+        "ws_GB": 41.99,
+        "peak_ws_GB": 46.34,
+        "cpu_s": 9440,
+        "commit_free_GB": 11.69
+      },
+      {
+        "at": "17:12:42",
+        "private_GB": 60.76,
+        "ws_GB": 42.32,
+        "peak_ws_GB": 46.34,
+        "cpu_s": 9530,
+        "commit_free_GB": 11.41
+      },
+      {
+        "at": "17:13:03",
+        "private_GB": 61,
+        "ws_GB": 42.54,
+        "peak_ws_GB": 46.34,
+        "cpu_s": 9623,
+        "commit_free_GB": 10.59
+      },
+      {
+        "at": "17:13:23",
+        "private_GB": 61.36,
+        "ws_GB": 42.9,
+        "peak_ws_GB": 46.34,
+        "cpu_s": 9713,
+        "commit_free_GB": 10.15
+      },
+      {
+        "at": "17:13:44",
+        "private_GB": 61.72,
+        "ws_GB": 43.27,
+        "peak_ws_GB": 46.34,
+        "cpu_s": 9809,
+        "commit_free_GB": 9.98
+      },
+      {
+        "at": "17:14:04",
+        "private_GB": 62.01,
+        "ws_GB": 43.54,
+        "peak_ws_GB": 46.34,
+        "cpu_s": 9899,
+        "commit_free_GB": 9.44
+      },
+      {
+        "at": "17:14:25",
+        "private_GB": 32.03,
+        "ws_GB": 31.41,
+        "peak_ws_GB": 46.34,
+        "cpu_s": 9984,
+        "commit_free_GB": 26.85
+      }
+    ]
+  },
+  "why": "see bench/verdicts/census-partial.json and census-gc-partial.json (organism/gen-0 with --progress): the hypervector heap is full by tick 30, every vector after that is an array buffer, and array buffers still grow tick by tick after a full gc, so memory grows with ticks times cells"
+}

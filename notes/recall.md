@@ -1,0 +1,15 @@
+# recall (Board 10, his P4 native share and P10)
+
+Files owned: `act/prompt.mjs` (the memory recall step only), `bench/recall.mjs`, `test/recall.test.mjs`, `bench/verdicts/recall.json`, `bench/verdicts/recall-tune-partial.json`.
+
+**What changed.** memory/knowledge.mjs (Board 9) held 284749 Simple English Wikipedia articles and the ask path never asked it. `ask()` in act/prompt.mjs now runs: spawn, then for a DEFINITIONAL question ("what/who/which is/are/was/were X", nothing after its question mark) solve() first, then `knowledgeAnswer()`, then the chosen route (region or direct) as before. At or above the confidence floor the tier's answer is returned with provenance `memory`, `provenance.tier` `knowledge`, `provenance.title` the article title, route `knowledge`, and no model cell reached on either route. Below it the model cell is asked with the recalled facts in its system block, and `provenance.knowledge` records the attempt. The ledger line carries the hash and the confidence, never the title.
+
+**Confidence** is the first answer's share of the summed scores of every answer `KnowledgeStore.answer()` offers. **The floor, 0.2**, comes from `node bench/recall.mjs --tune` on the 428 held-out records outside the bar's draw: qwen3:1.7b alone was right on 10 of 40 sampled records read generously (3 of 40 on the tier's own ruler), and 0.20 maximises the tier's correct answers plus the model's generous accuracy times the questions below the floor (expected 280.8 of 428).
+
+**Opening.** Lazily on the first definitional question, only when `bench/fixtures/wiki/store/meta.json` exists and every file it lists has its listed size (an unfinished or half rewritten ingest is refused). `knowledge: false` turns the tier off; a directory or an open store replaces the default. Resident once open: about 124.5 MB (store.residentBytes).
+
+**Printed (node bench/recall.mjs, 2026-09-24T02:07:10.747Z):** wiki tier on: native 176/200 (88.0%), accuracy 122/200 (61.0%), native mean 8940.3 us, model calls 24; tier off: native 0/200, accuracy 0/200, model calls 200. Suite 200/200 accurate and native in both arms, 0 model calls. 0 hidden sentences in the store. Bar met. The model cell ran on the offline provider, so the model's own accuracy is not in this bar.
+
+**Live model rung (partial, isTheBar false):** `node --max-old-space-size=4000 bench/recall.mjs --n 40 --provider ollama --model qwen3:1.7b` printed: wiki tier on: native 36/40 (90.0%), accuracy 28/40 (70.0%), native correct 27/36, model calls 4; tier off: native 0/40, accuracy 18/40 (45.0%), model calls 40. Suite 200/200 in both arms, 0 model calls. 240 questions x 2 arms in 59.9 s, peak rss 272.6 MB. Written to bench/verdicts/recall-partial.json because 40 is below the bar's 200. So with a live model cell the tier still raises accuracy on these 40 (28 against 18) and cuts model calls from 40 to 4.
+
+**Next rung.** The tier answers definitional questions only; a question with an instruction after it ("What is X? Answer in one word.") still goes to the model.

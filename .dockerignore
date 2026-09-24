@@ -1,0 +1,31 @@
+# .dockerignore: what never enters the image (docs/CLOUD.md). tools/deploy-host.mjs reads this
+# same file to decide what it packs, and test/cloud.test.mjs scans what is left for secrets.
+
+# the organism's live state is a volume (/state), never baked into an image
+state
+# the 5,125,448 line seed that reached 62 GB: never shipped, never loaded whole
+organism/scale-*
+
+# secrets never enter the image. site/.env.local and web/dist/.env.local hold a Vercel token
+# (found 2026-09-23 by the scan this item added): a copy of the whole tree would have shipped it
+**/.env
+**/.env.*
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/id_rsa*
+**/id_ed25519*
+**/id_ecdsa*
+**/.npmrc
+**/.netrc
+**/.ssh
+**/.aws
+**/.vercel
+
+# version control, editor and dependency state
+.git
+**/.git
+**/node_modules
+.claude
+**/.claude

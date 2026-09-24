@@ -1,0 +1,274 @@
+{
+  "at": "2026-09-18T02:48:49.507Z",
+  "node": "v24.15.0",
+  "conditions": {
+    "at": "2026-09-18T02:47:08.129Z",
+    "node": "v24.15.0",
+    "platform": "win32",
+    "cpus": 32,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900KF",
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "totalmemGB": 63.8,
+    "freememGB": 41.9,
+    "perMutantBudgetMs": 90000
+  },
+  "command": "node bench/mutants.mjs --sub act-web,act-shell,act-llm,simd,self,epochs --only aw,as,al,sm,sp,ey --timeout 90000 --budget 90000 --tag batch-landed-2026-09-17",
+  "suites": {
+    "act-shell": [
+      "test/act-shell.test.mjs"
+    ]
+  },
+  "tally": {
+    "mutants": 10,
+    "executed": 10,
+    "killed": 10,
+    "survived": 0,
+    "notExecuted": 0,
+    "score": 1,
+    "wallMs": 42616
+  },
+  "bySubsystem": {
+    "act-shell": {
+      "suite": [
+        "test/act-shell.test.mjs"
+      ],
+      "generated": 10,
+      "executed": 10,
+      "killed": 10,
+      "survived": 0,
+      "notExecuted": 0,
+      "unmutatedMs": 3180,
+      "unmutatedPass": 19,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 42616
+    }
+  },
+  "mutants": [
+    {
+      "id": "as01",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ARGV ALLOW LIST: only argv[0] is compared, so git push runs on a policy that allows git log",
+      "executed": true,
+      "probeHits": 18,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: allowArgv: the shipped default allows nothing, and a prefix must match element by element",
+        "error": "a different subcommand is not the declared prefix"
+      },
+      "newFailures": 2,
+      "ms": 3158,
+      "passed": 17,
+      "status": "killed",
+      "find": "    for (let i = 1; i < entry.length; i++) if (argv[i] !== entry[i]) { all = false; break; }",
+      "replace": "    for (let i = 1; (__MUTP(), i < 0); i++) if (argv[i] !== entry[i]) { all = false; break; }"
+    },
+    {
+      "id": "as02",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ARGV ALLOW LIST: the length test is inverted, so an argv longer than its prefix is refused",
+      "executed": true,
+      "probeHits": 18,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: allowArgv: a shell string, an empty argv and a bad element are all refused before anything runs",
+        "error": "the allowed program is allowed"
+      },
+      "newFailures": 14,
+      "ms": 11003,
+      "passed": 5,
+      "status": "killed",
+      "find": "    if (entry.length > argv.length) continue;",
+      "replace": "    if (__MUTP() && entry.length < argv.length) continue;"
+    },
+    {
+      "id": "as03",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ARGV ALLOW LIST: an argv element carrying a null byte is accepted",
+      "executed": true,
+      "probeHits": 67,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: allowArgv: a shell string, an empty argv and a bad element are all refused before anything runs",
+        "error": "a null byte is refused"
+      },
+      "newFailures": 1,
+      "ms": 3149,
+      "passed": 18,
+      "status": "killed",
+      "find": "    if (a.includes('\\0')) return { ok: false, reason: 'an argv element contains a null byte' };",
+      "replace": "    if (__MUTP() && false) return { ok: false, reason: 'an argv element contains a null byte' };"
+    },
+    {
+      "id": "as04",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ARGV ALLOW LIST: the element count cap is not enforced",
+      "executed": true,
+      "probeHits": 27,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: allowArgv: a shell string, an empty argv and a bad element are all refused before anything runs",
+        "error": "too many elements are refused"
+      },
+      "newFailures": 1,
+      "ms": 3181,
+      "passed": 18,
+      "status": "killed",
+      "find": "  if (argv.length > policy.maxArgs) return { ok: false, reason: argv.length + ' argv elements is over the cap ' + policy.maxArgs };",
+      "replace": "  if (__MUTP() && false) return { ok: false, reason: argv.length + ' argv elements is over the cap ' + policy.maxArgs };"
+    },
+    {
+      "id": "as05",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ARGV ALLOW LIST: the per element length cap is not enforced",
+      "executed": true,
+      "probeHits": 69,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: allowArgv: a shell string, an empty argv and a bad element are all refused before anything runs",
+        "error": "an over long element is refused"
+      },
+      "newFailures": 1,
+      "ms": 3131,
+      "passed": 18,
+      "status": "killed",
+      "find": "    if (a.length > policy.maxArgLength) return { ok: false, reason: 'an argv element of ' + a.length + ' chars is over the cap ' + policy.maxArgLength };",
+      "replace": "    if (__MUTP() && false) return { ok: false, reason: 'an argv element of ' + a.length + ' chars is over the cap ' + policy.maxArgLength };"
+    },
+    {
+      "id": "as06",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ARGV ALLOW LIST: a shell string is refused for the wrong reason, so the reason stops being evidence",
+      "executed": true,
+      "probeHits": 25,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: allowArgv: a shell string, an empty argv and a bad element are all refused before anything runs",
+        "error": "The input did not match the regular expression /never a shell string/. Input:"
+      },
+      "newFailures": 1,
+      "ms": 3141,
+      "passed": 18,
+      "status": "killed",
+      "find": "  if (typeof argv === 'string') return { ok: false, reason: 'argv must be an array of strings, never a shell string:",
+      "replace": "  if (__MUTP() && false) return { ok: false, reason: 'argv must be an array of strings, never a shell string:"
+    },
+    {
+      "id": "as07",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ENV NAMES: every variable of the parent environment reaches the child, not only the named ones",
+      "executed": true,
+      "probeHits": 10,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: the ledger holds one event per run, with argv, code and ms, and never an output or a secret value",
+        "error": "an unnamed variable never reaches the child"
+      },
+      "newFailures": 1,
+      "ms": 3174,
+      "passed": 18,
+      "status": "killed",
+      "find": "  const names = strings(envNames);\n  for (const name of names) if (process.env[name] !== undefined) out[name] = process.env[name];",
+      "replace": "  const names = strings(envNames);\n  for (const name of (__MUTP(), Object.keys(process.env))) if (process.env[name] !== undefined) out[name] = process.env[name];"
+    },
+    {
+      "id": "as08",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ENV NAMES: the ledger event stops naming the variables that were forwarded",
+      "executed": true,
+      "probeHits": 7,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: the ledger holds one event per run, with argv, code and ms, and never an output or a secret value",
+        "error": "the event names the variable"
+      },
+      "newFailures": 1,
+      "ms": 3168,
+      "passed": 18,
+      "status": "killed",
+      "find": "    env: names, reason: res.reason || null,",
+      "replace": "    env: (__MUTP(), []), reason: res.reason || null,"
+    },
+    {
+      "id": "as09",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "ENV NAMES: opts.env with VALUES in it is accepted, so this code would handle a credential",
+      "executed": true,
+      "probeHits": 13,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: opts.env with values is refused: this code never handles a credential",
+        "error": "it was refused"
+      },
+      "newFailures": 1,
+      "ms": 3190,
+      "passed": 18,
+      "status": "killed",
+      "find": "  if (opts.env !== undefined && opts.env !== null) return refuse('opts.env is refused:",
+      "replace": "  if (__MUTP() && false) return refuse('opts.env is refused:"
+    },
+    {
+      "id": "as10",
+      "sub": "act-shell",
+      "file": "act/shell.mjs",
+      "why": "a caller may WIDEN a policy cap instead of only tightening it",
+      "executed": true,
+      "probeHits": 21,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-shell.test.mjs :: a 5 MB stdout is capped, and the cap is measured against the bytes the child produced",
+        "error": "a caller may not widen the policy cap"
+      },
+      "newFailures": 1,
+      "ms": 3122,
+      "passed": 18,
+      "status": "killed",
+      "find": "  return Number.isFinite(n) && n > 0 && n < limit ? n : limit;",
+      "replace": "  return (__MUTP(), Number.isFinite(n) && n > 0) ? n : limit;"
+    }
+  ],
+  "verdict": "GREEN"
+}

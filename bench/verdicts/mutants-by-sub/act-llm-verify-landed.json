@@ -1,0 +1,164 @@
+{
+  "at": "2026-09-18T02:53:25.669Z",
+  "node": "v24.15.0",
+  "conditions": {
+    "at": "2026-09-18T02:51:44.320Z",
+    "node": "v24.15.0",
+    "platform": "win32",
+    "cpus": 32,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900KF",
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "totalmemGB": 63.8,
+    "freememGB": 41.6,
+    "perMutantBudgetMs": 90000
+  },
+  "command": "node bench/mutants.mjs --sub act-web,act-shell,act-llm,simd,self,epochs --only aw,as,al,sm,sp,ey --timeout 90000 --budget 90000 --tag verify-landed",
+  "suites": {
+    "act-llm": [
+      "test/act-llm.test.mjs"
+    ]
+  },
+  "tally": {
+    "mutants": 5,
+    "executed": 5,
+    "killed": 5,
+    "survived": 0,
+    "notExecuted": 0,
+    "score": 1,
+    "wallMs": 1014
+  },
+  "bySubsystem": {
+    "act-llm": {
+      "suite": [
+        "test/act-llm.test.mjs"
+      ],
+      "generated": 5,
+      "executed": 5,
+      "killed": 5,
+      "survived": 0,
+      "notExecuted": 0,
+      "unmutatedMs": 172,
+      "unmutatedPass": 15,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 1014
+    }
+  },
+  "mutants": [
+    {
+      "id": "al01",
+      "sub": "act-llm",
+      "file": "act/llm.mjs",
+      "why": "SCRUB: scrub hands the string back untouched, so a key travels with the answer",
+      "executed": true,
+      "probeHits": 6,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-llm.test.mjs :: env provider: the header arrives, and the key is in nothing that comes back",
+        "error": "no returned object carries the key"
+      },
+      "newFailures": 3,
+      "ms": 173,
+      "passed": 12,
+      "status": "killed",
+      "find": "  return str.split(String(secret)).join(REDACTED);",
+      "replace": "  return (__MUTP(), str);"
+    },
+    {
+      "id": "al02",
+      "sub": "act-llm",
+      "file": "act/llm.mjs",
+      "why": "SCRUB: the minimum secret length is raised above a real key, so a real key is left alone",
+      "executed": true,
+      "probeHits": 6,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-llm.test.mjs :: env provider: the header arrives, and the key is in nothing that comes back",
+        "error": "no returned object carries the key"
+      },
+      "newFailures": 3,
+      "ms": 168,
+      "passed": 12,
+      "status": "killed",
+      "find": "  if (!secret || String(secret).length < 4) return str;",
+      "replace": "  if (!secret || (__MUTP(), String(secret).length < 64)) return str;"
+    },
+    {
+      "id": "al03",
+      "sub": "act-llm",
+      "file": "act/llm.mjs",
+      "why": "SCRUB: only the FIRST occurrence of the key is replaced",
+      "executed": true,
+      "probeHits": 7,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-llm.test.mjs :: scrub replaces EVERY occurrence of the key, not the first (mutant al03)",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 1,
+      "ms": 167,
+      "passed": 14,
+      "status": "killed",
+      "find": "  return str.split(String(secret)).join(REDACTED);",
+      "replace": "  return (__MUTP(), str.replace(String(secret), REDACTED));"
+    },
+    {
+      "id": "al04",
+      "sub": "act-llm",
+      "file": "act/llm.mjs",
+      "why": "SCRUB: the words the provider itself sent are not scrubbed, so an echoed header returns the key",
+      "executed": true,
+      "probeHits": 2,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-llm.test.mjs :: env provider: the header arrives, and the key is in nothing that comes back",
+        "error": "no returned object carries the key"
+      },
+      "newFailures": 2,
+      "ms": 169,
+      "passed": 13,
+      "status": "killed",
+      "find": "    const text = safe(String((choice && choice.message && choice.message.content) ?? (choice && choice.text) ?? j.response ?? ''));",
+      "replace": "    const text = (__MUTP(), String((choice && choice.message && choice.message.content) ?? (choice && choice.text) ?? j.response ?? ''));"
+    },
+    {
+      "id": "al05",
+      "sub": "act-llm",
+      "file": "act/llm.mjs",
+      "why": "the ledger records the prompt itself instead of how long it was",
+      "executed": true,
+      "probeHits": 3,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-llm.test.mjs :: env provider through the cell: the key is in no ledger event",
+        "error": "the ledger records how it went, not what was said"
+      },
+      "newFailures": 1,
+      "ms": 156,
+      "passed": 14,
+      "status": "killed",
+      "find": "            promptChars: String(prompt).length, ok: r.ok, reason: r.reason, fellBack: r.fellBack,",
+      "replace": "            promptChars: String(prompt).length, prompt: (__MUTP(), String(prompt)), ok: r.ok, reason: r.reason, fellBack: r.fellBack,"
+    }
+  ],
+  "verdict": "GREEN"
+}

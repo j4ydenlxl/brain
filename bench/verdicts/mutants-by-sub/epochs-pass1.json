@@ -1,0 +1,130 @@
+{
+  "at": "2026-09-18T02:34:13.769Z",
+  "node": "v24.15.0",
+  "conditions": {
+    "at": "2026-09-18T02:34:09.372Z",
+    "node": "v24.15.0",
+    "platform": "win32",
+    "cpus": 32,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900KF",
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "totalmemGB": 63.8,
+    "freememGB": 42.5,
+    "perMutantBudgetMs": 90000
+  },
+  "command": "node bench/mutants.mjs --sub epochs --only ey --timeout 90000 --budget 90000 --tag pass1",
+  "suites": {
+    "epochs": [
+      "test/epochs.test.mjs"
+    ]
+  },
+  "tally": {
+    "mutants": 4,
+    "executed": 4,
+    "killed": 0,
+    "survived": 4,
+    "notExecuted": 0,
+    "score": 0,
+    "wallMs": 4142
+  },
+  "bySubsystem": {
+    "epochs": {
+      "suite": [
+        "test/epochs.test.mjs"
+      ],
+      "generated": 4,
+      "executed": 4,
+      "killed": 0,
+      "survived": 4,
+      "notExecuted": 0,
+      "unmutatedMs": 844,
+      "unmutatedPass": 28,
+      "unmutatedFail": 1,
+      "timeoutCountsAsKill": true,
+      "wallMs": 4142
+    }
+  },
+  "mutants": [
+    {
+      "id": "ey01",
+      "sub": "epochs",
+      "file": "generations/epochs.mjs",
+      "why": "YEAR ARITHMETIC: the year is a 365 day calendar year, not the Julian year the file declares",
+      "executed": true,
+      "probeHits": 1,
+      "probeProcesses": 1,
+      "killed": false,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": null,
+      "newFailures": 0,
+      "ms": 814,
+      "passed": 28,
+      "status": "survived",
+      "find": "export const SECONDS_PER_YEAR = 31_557_600;",
+      "replace": "export const SECONDS_PER_YEAR = (__MUTP(), 31_536_000);"
+    },
+    {
+      "id": "ey02",
+      "sub": "epochs",
+      "file": "generations/epochs.mjs",
+      "why": "YEAR ARITHMETIC: years per generation counts one organism, not the population that was run",
+      "executed": true,
+      "probeHits": 4,
+      "probeProcesses": 1,
+      "killed": false,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": null,
+      "newFailures": 0,
+      "ms": 832,
+      "passed": 28,
+      "status": "survived",
+      "find": "      yearsPerGeneration: (this.ticks * this.popSize * this.secondsPerTick) / SECONDS_PER_YEAR,",
+      "replace": "      yearsPerGeneration: (__MUTP(), this.ticks * this.secondsPerTick) / SECONDS_PER_YEAR,"
+    },
+    {
+      "id": "ey03",
+      "sub": "epochs",
+      "file": "generations/epochs.mjs",
+      "why": "YEAR ARITHMETIC: the lineage clock counts one generation more than has been run",
+      "executed": true,
+      "probeHits": 14,
+      "probeProcesses": 1,
+      "killed": false,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": null,
+      "newFailures": 0,
+      "ms": 812,
+      "passed": 28,
+      "status": "survived",
+      "find": "    const lineage = (this.generation * this.ticks * this.secondsPerTick) / SECONDS_PER_YEAR;",
+      "replace": "    const lineage = (__MUTP(), (this.generation + 1) * this.ticks * this.secondsPerTick) / SECONDS_PER_YEAR;"
+    },
+    {
+      "id": "ey04",
+      "sub": "epochs",
+      "file": "generations/epochs.mjs",
+      "why": "YEAR ARITHMETIC: the printed arithmetic states a different number than the years it reports",
+      "executed": true,
+      "probeHits": 14,
+      "probeProcesses": 1,
+      "killed": false,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": null,
+      "newFailures": 0,
+      "ms": 832,
+      "passed": 28,
+      "status": "survived",
+      "find": "        ' organism-seconds; / ' + SECONDS_PER_YEAR + ' s/year = ' + yrs.toExponential(6) + ' organism-years',",
+      "replace": "        ' organism-seconds; / ' + SECONDS_PER_YEAR + ' s/year = ' + (__MUTP(), yrs * 2).toExponential(6) + ' organism-years',"
+    }
+  ],
+  "verdict": "RED"
+}

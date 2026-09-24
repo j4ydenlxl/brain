@@ -1,0 +1,515 @@
+{
+  "at": "2026-09-17T12:51:10.603Z",
+  "node": "v24.15.0",
+  "conditions": {
+    "at": "2026-09-17T12:46:35.943Z",
+    "node": "v24.15.0",
+    "platform": "win32",
+    "cpus": 32,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900KF",
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "totalmemGB": 63.8,
+    "freememGB": 43.9,
+    "perMutantBudgetMs": 90000
+  },
+  "suites": {
+    "mind": [
+      "test/mind.test.mjs"
+    ]
+  },
+  "tally": {
+    "mutants": 21,
+    "executed": 21,
+    "killed": 21,
+    "survived": 0,
+    "notExecuted": 0,
+    "score": 1,
+    "wallMs": 274427
+  },
+  "bySubsystem": {
+    "mind": {
+      "suite": [
+        "test/mind.test.mjs"
+      ],
+      "generated": 21,
+      "executed": 21,
+      "killed": 21,
+      "survived": 0,
+      "notExecuted": 0,
+      "unmutatedMs": 8957,
+      "unmutatedPass": 21,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 274427
+    }
+  },
+  "mutants": [
+    {
+      "id": "mn01",
+      "sub": "mind",
+      "file": "mind/tokenizer.mjs",
+      "why": "a pair packs in the wrong order, so a merge stands for the reversed bytes",
+      "executed": true,
+      "probeHits": 14311043,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: tokenizer: a merge stands for its pair IN ORDER, and a tie goes to the lower pair",
+        "error": "the left byte of the first merge"
+      },
+      "newFailures": 2,
+      "ms": 11477,
+      "passed": 19,
+      "status": "killed",
+      "find": "const packPair = (a, b) => a * PAIR_SHIFT + b;",
+      "replace": "const packPair = (a, b) => (__MUTP(), b * PAIR_SHIFT + a);"
+    },
+    {
+      "id": "mn02",
+      "sub": "mind",
+      "file": "mind/tokenizer.mjs",
+      "why": "ties between equally frequent pairs break toward the LARGER pair",
+      "executed": true,
+      "probeHits": 111,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: tokenizer: a merge stands for its pair IN ORDER, and a tie goes to the lower pair",
+        "error": "the tie goes to the LOWEST packed pair key"
+      },
+      "newFailures": 1,
+      "ms": 8976,
+      "passed": 20,
+      "status": "killed",
+      "find": "        if (c > bestCount || (c === bestCount && bestKey >= 0 && k < bestKey)) { bestCount = c; bestKey = k; }",
+      "replace": "        if (c > bestCount || (c === bestCount && bestKey >= 0 && (__MUTP(), k > bestKey))) { bestCount = c; bestKey = k; }"
+    },
+    {
+      "id": "mn03",
+      "sub": "mind",
+      "file": "mind/tokenizer.mjs",
+      "why": "off-by-one on the merge floor: a pair AT minCount is refused",
+      "executed": true,
+      "probeHits": 196,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: tokenizer: the merge floor is a floor, so a pair AT minCount is merged",
+        "error": "a pair seen exactly minCount times is merged"
+      },
+      "newFailures": 1,
+      "ms": 8863,
+      "passed": 20,
+      "status": "killed",
+      "find": "      if (bestKey < 0 || bestCount < this.minCount) break;",
+      "replace": "      if (bestKey < 0 || (__MUTP(), bestCount <= this.minCount)) break;"
+    },
+    {
+      "id": "mn04",
+      "sub": "mind",
+      "file": "mind/tokenizer.mjs",
+      "why": "encode reads one token past the end of the sequence",
+      "executed": true,
+      "probeHits": 13914917,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: tokenizer round trip is exact, byte for byte",
+        "error": "round trip failed for \"-------------------------------- verdict\""
+      },
+      "newFailures": 1,
+      "ms": 8846,
+      "passed": 20,
+      "status": "killed",
+      "find": "        if (i + 1 < n && seq[i] === a && seq[i + 1] === b) { seq[w++] = id; i++; hit = true; }",
+      "replace": "        if ((__MUTP(), i + 1 <= n) && seq[i] === a && seq[i + 1] === b) { seq[w++] = id; i++; hit = true; }"
+    },
+    {
+      "id": "mn05",
+      "sub": "mind",
+      "file": "mind/tokenizer.mjs",
+      "why": "encode returns one token short",
+      "executed": true,
+      "probeHits": 11,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: tokenizer round trip is exact, byte for byte",
+        "error": "round trip failed for \"a\""
+      },
+      "newFailures": 2,
+      "ms": 8898,
+      "passed": 19,
+      "status": "killed",
+      "find": "    return seq.slice(0, n);",
+      "replace": "    return seq.slice(0, (__MUTP(), n - 1));"
+    },
+    {
+      "id": "mn06",
+      "sub": "mind",
+      "file": "mind/tokenizer.mjs",
+      "why": "decode advances one byte per token instead of the token width",
+      "executed": true,
+      "probeHits": 187,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: tokenizer round trip is exact, byte for byte",
+        "error": "round trip failed for \"the cell is a persistent computational o\""
+      },
+      "newFailures": 2,
+      "ms": 8757,
+      "passed": 19,
+      "status": "killed",
+      "find": "    for (const id of ids) { out.set(this.vocab[id], o); o += this.vocab[id].length; }",
+      "replace": "    for (const id of ids) { out.set(this.vocab[id], o); o += (__MUTP(), 1); }"
+    },
+    {
+      "id": "mn07",
+      "sub": "mind",
+      "file": "mind/tokenizer.mjs",
+      "why": "every position in a sequence is permuted by 1, so order stops being part of the code",
+      "executed": true,
+      "probeHits": 1014883,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: a sequence is a bundle of permuted quanta, and order matters",
+        "error": "a reversed sequence must not be the same vector: sim 1"
+      },
+      "newFailures": 1,
+      "ms": 8617,
+      "passed": 20,
+      "status": "killed",
+      "find": "      list[j] = S.permute(this.quantum(id), j + 1);",
+      "replace": "      list[j] = S.permute(this.quantum(id), (__MUTP(), 1));"
+    },
+    {
+      "id": "mn08",
+      "sub": "mind",
+      "file": "mind/tokenizer.mjs",
+      "why": "a sequence takes the max of the window and the length, so it reads past the start",
+      "executed": true,
+      "probeHits": 1,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": true,
+      "timeoutCredited": true,
+      "killedBy": {
+        "test": "the suite stopped halting",
+        "error": "aborted after 90000ms"
+      },
+      "newFailures": 1,
+      "ms": 90010,
+      "passed": 0,
+      "status": "killed",
+      "find": "    const take = Math.min(k, ids.length);",
+      "replace": "    const take = (__MUTP(), Math.max(k, ids.length));"
+    },
+    {
+      "id": "mn09",
+      "sub": "mind",
+      "file": "mind/model.mjs",
+      "why": "LEAK: the context of a prediction includes the token being predicted",
+      "executed": true,
+      "probeHits": 1471050,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: n gram: the context of a prediction never contains the token being predicted",
+        "error": "order 1: the key changed when only ids[3] changed, so the context leaks the target"
+      },
+      "newFailures": 1,
+      "ms": 8950,
+      "passed": 20,
+      "status": "killed",
+      "find": "    for (let j = i - back; j < i; j++) s += (j < 0 ? -1 : ids[j]) + ',';",
+      "replace": "    for (let j = i - back; (__MUTP(), j <= i); j++) s += (j < 0 ? -1 : ids[j]) + ',';"
+    },
+    {
+      "id": "mn10",
+      "sub": "mind",
+      "file": "mind/model.mjs",
+      "why": "the backoff ladder is never climbed: every probability is the unigram",
+      "executed": true,
+      "probeHits": 49838,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: n gram: the backoff ladder is climbed, and the higher orders are worth real bits",
+        "error": "the default maxOrder IS the declared order"
+      },
+      "newFailures": 1,
+      "ms": 8710,
+      "passed": 20,
+      "status": "killed",
+      "find": "  probAt(ids, i, maxOrder = this.order) {",
+      "replace": "  probAt(ids, i, maxOrder = (__MUTP(), 1)) {"
+    },
+    {
+      "id": "mn11",
+      "sub": "mind",
+      "file": "mind/model.mjs",
+      "why": "a context counts its tokens but never its total, so the denominator is only alpha",
+      "executed": true,
+      "probeHits": 224102,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: n gram beats the uniform null, and every arm is finite",
+        "error": "unigram is -4.788863267244235"
+      },
+      "newFailures": 5,
+      "ms": 8811,
+      "passed": 16,
+      "status": "killed",
+      "find": "      e.total++;",
+      "replace": "      __MUTP();"
+    },
+    {
+      "id": "mn12",
+      "sub": "mind",
+      "file": "mind/model.mjs",
+      "why": "the address boundary flips: a similarity of exactly zero becomes a zero bit",
+      "executed": true,
+      "probeHits": 956524,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: hv memory: an address is exactly bits wide, and a similarity of zero is a one",
+        "error": "a similarity of exactly zero is a ONE bit"
+      },
+      "newFailures": 1,
+      "ms": 8807,
+      "passed": 20,
+      "status": "killed",
+      "find": "    for (let i = 0; i < this.bits; i++) b = (b << 1) | (S.sim(this.probes[i], v) >= 0 ? 1 : 0);",
+      "replace": "    for (let i = 0; i < this.bits; i++) b = (b << 1) | ((__MUTP(), S.sim(this.probes[i], v) > 0) ? 1 : 0);"
+    },
+    {
+      "id": "mn13",
+      "sub": "mind",
+      "file": "mind/model.mjs",
+      "why": "the address shifts two bits per probe, so the memory addresses past its own capacity",
+      "executed": true,
+      "probeHits": 948624,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: hv memory: an address is exactly bits wide, and a similarity of zero is a one",
+        "error": "address 1344 is outside [0, 1024)"
+      },
+      "newFailures": 1,
+      "ms": 7479,
+      "passed": 20,
+      "status": "killed",
+      "find": "    for (let i = 0; i < this.bits; i++) b = (b << 1) | (S.sim(this.probes[i], v) >= 0 ? 1 : 0);",
+      "replace": "    for (let i = 0; i < this.bits; i++) b = (b << (__MUTP(), 2)) | (S.sim(this.probes[i], v) >= 0 ? 1 : 0);"
+    },
+    {
+      "id": "mn14",
+      "sub": "mind",
+      "file": "mind/model.mjs",
+      "why": "the bucket keeps the LAST token instead of the superposition of all of them",
+      "executed": true,
+      "probeHits": 114683904,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: hv memory: a bucket is a superposition, so two tokens at one address are both recalled",
+        "error": "the FIRST token written is still recalled: -0.139"
+      },
+      "newFailures": 1,
+      "ms": 8805,
+      "passed": 20,
+      "status": "killed",
+      "find": "    for (let i = 0; i < this.d; i++) a[i] += q[i];",
+      "replace": "    for (let i = 0; i < this.d; i++) a[i] = (__MUTP(), q[i]);"
+    },
+    {
+      "id": "mn15",
+      "sub": "mind",
+      "file": "mind/model.mjs",
+      "why": "the background floor is dropped, so a token the bucket never saw has probability zero",
+      "executed": true,
+      "probeHits": 12939264,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: hv memory: the floored distribution is still a distribution, and the floor is a floor",
+        "error": "every bucket distribution must sum to one: worst |sum - 1| 0.050000005634501576"
+      },
+      "newFailures": 1,
+      "ms": 8834,
+      "passed": 20,
+      "status": "killed",
+      "find": "    for (let t = 0; t < V; t++) out[t] = g * out[t] + f * background[t];",
+      "replace": "    for (let t = 0; t < V; t++) out[t] = (__MUTP(), g * out[t]);"
+    },
+    {
+      "id": "mn16",
+      "sub": "mind",
+      "file": "mind/model.mjs",
+      "why": "the floor is added without making room for it, so the distribution sums past one",
+      "executed": true,
+      "probeHits": 33696,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: hv memory: the floored distribution is still a distribution, and the floor is a floor",
+        "error": "every bucket distribution must sum to one: worst |sum - 1| 0.05000000703148544"
+      },
+      "newFailures": 1,
+      "ms": 8769,
+      "passed": 20,
+      "status": "killed",
+      "find": "    const f = this.floor, g = (1 - f) / sum;",
+      "replace": "    const f = this.floor, g = (__MUTP(), 1 / sum);"
+    },
+    {
+      "id": "mn17",
+      "sub": "mind",
+      "file": "mind/model.mjs",
+      "why": "the dev slice is empty, so beta and the weights are chosen on nothing",
+      "executed": true,
+      "probeHits": 1,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: the mixture is at most the n gram bits per byte plus 0.05 on held out",
+        "error": "mixture 3.8963245794911763 against ngram 3.150082583654368 plus 0.05"
+      },
+      "newFailures": 2,
+      "ms": 7122,
+      "passed": 19,
+      "status": "killed",
+      "find": "    const devStart = Math.floor(ids.length * (1 - this.opts.devFraction));",
+      "replace": "    const devStart = (__MUTP(), ids.length);"
+    },
+    {
+      "id": "mn18",
+      "sub": "mind",
+      "file": "mind/generate.mjs",
+      "why": "temperature zero is no longer greedy, it is a division by zero",
+      "executed": true,
+      "probeHits": 73,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: sampling is reproducible from its seed, and decodes to text",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 1,
+      "ms": 8645,
+      "passed": 20,
+      "status": "killed",
+      "find": "  if (temperature <= 0) { // greedy: all mass on the argmax",
+      "replace": "  if ((__MUTP(), temperature < 0)) { // greedy: all mass on the argmax"
+    },
+    {
+      "id": "mn19",
+      "sub": "mind",
+      "file": "mind/generate.mjs",
+      "why": "top k keeps one candidate too many",
+      "executed": true,
+      "probeHits": 73,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: sampling is reproducible from its seed, and decodes to text",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 1,
+      "ms": 8773,
+      "passed": 20,
+      "status": "killed",
+      "find": "    for (let r = topK; r < V; r++) out[order[r]] = 0;",
+      "replace": "    for (let r = (__MUTP(), topK + 1); r < V; r++) out[order[r]] = 0;"
+    },
+    {
+      "id": "mn20",
+      "sub": "mind",
+      "file": "mind/generate.mjs",
+      "why": "generation runs one token past the budget it was given",
+      "executed": true,
+      "probeHits": 78,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: sampling is reproducible from its seed, and decodes to text",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 1,
+      "ms": 8647,
+      "passed": 20,
+      "status": "killed",
+      "find": "  for (let k = 0; k < maxTokens; k++) {",
+      "replace": "  for (let k = 0; (__MUTP(), k <= maxTokens); k++) {"
+    },
+    {
+      "id": "mn21",
+      "sub": "mind",
+      "file": "mind/corpus.mjs",
+      "why": "LEAK: every held out document is in the training text as well",
+      "executed": true,
+      "probeHits": 217,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/mind.test.mjs :: corpus is ours, split by file, and both sides have bytes",
+        "error": "no file may be on both sides"
+      },
+      "newFailures": 2,
+      "ms": 8635,
+      "passed": 19,
+      "status": "killed",
+      "find": "  docs.forEach((d, i) => ((i % every === every - 1) ? heldDocs : trainDocs).push(d));",
+      "replace": "  docs.forEach((d, i) => { __MUTP(); trainDocs.push(d); if (i % every === every - 1) heldDocs.push(d); });"
+    }
+  ],
+  "verdict": "GREEN"
+}

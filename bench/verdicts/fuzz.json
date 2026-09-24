@@ -1,0 +1,47 @@
+{
+  "at": "2026-09-16T20:48:33.999Z",
+  "node": "v24.15.0",
+  "file": "test/fuzz.test.mjs",
+  "tally": {
+    "tests": 6,
+    "passed": 6,
+    "failed": 0,
+    "ms": 270
+  },
+  "measured": [
+    "hv identities: 310 random pairs across widths 16, 64, 8192 and 40",
+    "bundle margins: d=16 every member above every outsider in 9/60 trials, mean member sim 0.4986 vs outsider 0.0063, worst per-trial mean margin 0.2875 | d=64 every member above every outsider in 56/60 trials, mean member sim 0.4960 vs outsider 0.0018, worst per-trial mean margin 0.3865 | d=8192 every member above every outsider in 20/20 trials, mean member sim 0.5003 vs outsider -0.0008, worst per-trial mean margin 0.4948",
+    "rationals: 10000 operations graded, {\"add\":1304,\"sub\":1213,\"mul\":1224,\"div\":1205,\"cmp\":1312,\"pow\":1275,\"neg\":1197,\"roundtrip\":1270}",
+    "connectome index: 200 graphs, 2391 edges grown, 17781 index reads graded against a naive scan",
+    "ledger: 517 seqs traced, deepest walk 9 events",
+    "random brains: 8 brains, 67 cells, 120 edges, 6161 cell runs, 0 errors"
+  ],
+  "tests": [
+    {
+      "name": "hv: bind is self inverse, permute round trips, sim is symmetric, hamming follows sim exactly",
+      "ms": 15
+    },
+    {
+      "name": "hv: a bundle keeps every member above the random baseline, with the margin measured",
+      "ms": 28
+    },
+    {
+      "name": "exact rationals: 10000 random operations agree with an independent BigInt implementation",
+      "ms": 16
+    },
+    {
+      "name": "connectome: the CSR index equals a naive scan on 200 random graphs",
+      "ms": 15
+    },
+    {
+      "name": "ledger: trace terminates on every seq of a random run and only ever points backwards",
+      "ms": 16
+    },
+    {
+      "name": "random brains: random compatible wiring ticks 200 times with no cell error and restores identically",
+      "ms": 119
+    }
+  ],
+  "failures": [],
+  "verdict": "GREEN"
+}

@@ -1,0 +1,2737 @@
+{
+  "at": "2026-09-18T13:53:11.217Z",
+  "node": "v24.15.0",
+  "command": "node bench/code.mjs",
+  "verdict": "GREEN",
+  "isTheBar": true,
+  "wroteTo": "bench/verdicts/code.json",
+  "notTheBarBecause": null,
+  "shape": {
+    "name": "full",
+    "tasksRun": 40,
+    "tasksInFixture": 40,
+    "armsRun": [
+      "organism",
+      "alone",
+      "null"
+    ]
+  },
+  "progress": {
+    "tasksDone": 40,
+    "tasksTotal": 40,
+    "complete": true
+  },
+  "checks": {
+    "everyTaskGotEverySelectedArm": true,
+    "everyTaskHadHiddenCases": true,
+    "everyTaskSaysWhereItsExpectedValuesCameFrom": true,
+    "armsRotated": true,
+    "theNullArmSpentNoRound": true,
+    "absentArmsCarryAReason": true,
+    "everyTaskWasReached": true
+  },
+  "ms": 902104,
+  "model": "qwen3:1.7b",
+  "base": "http://127.0.0.1:11434",
+  "ollamaUp": true,
+  "armsRun": [
+    "organism",
+    "alone",
+    "null"
+  ],
+  "rounds": 3,
+  "sandbox": {
+    "limitMs": 2000,
+    "memoryMB": 128,
+    "maxTokens": 1600,
+    "numCtx": 4096
+  },
+  "tasks": {
+    "total": 40,
+    "seed": "code-2026-09-18",
+    "fixture": "bench/fixtures/code-tasks.json",
+    "byKind": {
+      "bigint": 6,
+      "string": 6,
+      "array": 6,
+      "date": 6,
+      "parser": 6,
+      "hand": 10
+    },
+    "byExpectedFrom": {
+      "a reference implementation in bench/code.mjs": 30,
+      "typed by hand into this fixture": 10
+    },
+    "hiddenCases": 160,
+    "visibleCases": 120
+  },
+  "ruler": "a task counts when EVERY hidden case passes; hiddenCasePassRate is the generous edge and decides nothing",
+  "interleaving": "task by task: all three arms answer task i before any arm sees task i+1, and the first arm rotates with i",
+  "armsDiffer": "organism and alone use the same model, the same first prompt, the same extraction and the same sandbox; alone gets one call and no repair round",
+  "arms": {
+    "organism": {
+      "absent": false,
+      "reason": null,
+      "asked": 40,
+      "n": 40,
+      "passed": 16,
+      "accuracy": 0.4,
+      "interval": {
+        "lo": 0.263481,
+        "hi": 0.554044,
+        "width": 0.290563
+      },
+      "meanRounds": 2.28,
+      "meanMs": 15676.65,
+      "hiddenCasePassRate": 0.4,
+      "hiddenCases": {
+        "passed": 64,
+        "of": 160
+      },
+      "byKind": {
+        "bigint": {
+          "n": 6,
+          "passed": 2,
+          "accuracy": 0.333333
+        },
+        "string": {
+          "n": 6,
+          "passed": 3,
+          "accuracy": 0.5
+        },
+        "array": {
+          "n": 6,
+          "passed": 4,
+          "accuracy": 0.666667
+        },
+        "date": {
+          "n": 6,
+          "passed": 1,
+          "accuracy": 0.166667
+        },
+        "parser": {
+          "n": 6,
+          "passed": 0,
+          "accuracy": 0
+        },
+        "hand": {
+          "n": 10,
+          "passed": 6,
+          "accuracy": 0.6
+        }
+      }
+    },
+    "alone": {
+      "absent": false,
+      "reason": null,
+      "asked": 40,
+      "n": 40,
+      "passed": 8,
+      "accuracy": 0.2,
+      "interval": {
+        "lo": 0.104999,
+        "hi": 0.347576,
+        "width": 0.242577
+      },
+      "meanRounds": 1,
+      "meanMs": 6841.5,
+      "hiddenCasePassRate": 0.21875,
+      "hiddenCases": {
+        "passed": 35,
+        "of": 160
+      },
+      "byKind": {
+        "bigint": {
+          "n": 6,
+          "passed": 1,
+          "accuracy": 0.166667
+        },
+        "string": {
+          "n": 6,
+          "passed": 1,
+          "accuracy": 0.166667
+        },
+        "array": {
+          "n": 6,
+          "passed": 2,
+          "accuracy": 0.333333
+        },
+        "date": {
+          "n": 6,
+          "passed": 1,
+          "accuracy": 0.166667
+        },
+        "parser": {
+          "n": 6,
+          "passed": 0,
+          "accuracy": 0
+        },
+        "hand": {
+          "n": 10,
+          "passed": 3,
+          "accuracy": 0.3
+        }
+      }
+    },
+    "null": {
+      "absent": false,
+      "reason": null,
+      "asked": 40,
+      "n": 40,
+      "passed": 0,
+      "accuracy": 0,
+      "interval": {
+        "lo": 0,
+        "hi": 0.087625,
+        "width": 0.087625
+      },
+      "meanRounds": 0,
+      "meanMs": 33,
+      "hiddenCasePassRate": 0,
+      "hiddenCases": {
+        "passed": 0,
+        "of": 160
+      },
+      "byKind": {
+        "bigint": {
+          "n": 6,
+          "passed": 0,
+          "accuracy": 0
+        },
+        "string": {
+          "n": 6,
+          "passed": 0,
+          "accuracy": 0
+        },
+        "array": {
+          "n": 6,
+          "passed": 0,
+          "accuracy": 0
+        },
+        "date": {
+          "n": 6,
+          "passed": 0,
+          "accuracy": 0
+        },
+        "parser": {
+          "n": 6,
+          "passed": 0,
+          "accuracy": 0
+        },
+        "hand": {
+          "n": 10,
+          "passed": 0,
+          "accuracy": 0
+        }
+      }
+    }
+  },
+  "winner": "organism",
+  "runnerUp": "alone",
+  "gap": 0.2,
+  "nFor95": 39,
+  "statement": "organism won: 16/40 = 40.00% of tasks fully solved against alone 8/40 = 20.00%, a gap of 20.00 points. The 95% interval is 29.06 points wide on the winner and 24.26 on the runner up, and a gap this size at these rates needs 39 tasks per arm to separate from zero.",
+  "rows": [
+    {
+      "i": 0,
+      "id": "bigint.mulAdd.0",
+      "kind": "bigint",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 5220,
+          "codeChars": 87,
+          "firstFailure": null
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7356,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "6571225922613813057",
+              "78423342535194",
+              "187172950914794"
+            ],
+            "expected": "515337501405289281907726510142852",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 32,
+          "codeChars": 39,
+          "firstFailure": {
+            "args": [
+              "6571225922613813057",
+              "78423342535194",
+              "187172950914794"
+            ],
+            "expected": "515337501405289281907726510142852",
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "i": 1,
+      "id": "bigint.powMod.1",
+      "kind": "bigint",
+      "hidden": 4,
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7352,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "218911821740459",
+              "8147",
+              "13337089231"
+            ],
+            "expected": "11860000958",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 39,
+          "firstFailure": {
+            "args": [
+              "218911821740459",
+              "8147",
+              "13337089231"
+            ],
+            "expected": "11860000958",
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 21958,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "218911821740459",
+              "8147",
+              "13337089231"
+            ],
+            "expected": "11860000958",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        }
+      }
+    },
+    {
+      "i": 2,
+      "id": "bigint.fib.2",
+      "kind": "bigint",
+      "hidden": 4,
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 34,
+          "codeChars": 36,
+          "firstFailure": {
+            "args": [
+              173
+            ],
+            "expected": "638817435613190341905763972389505493",
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 6697,
+          "codeChars": 248,
+          "firstFailure": null
+        },
+        "alone": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 6278,
+          "codeChars": 216,
+          "firstFailure": null
+        }
+      }
+    },
+    {
+      "i": 3,
+      "id": "bigint.factSum.3",
+      "kind": "bigint",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 19155,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              48
+            ],
+            "expected": 234,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 6286,
+          "codeChars": 233,
+          "firstFailure": {
+            "args": [
+              48
+            ],
+            "expected": 234,
+            "got": null,
+            "error": "TypeError: Cannot mix BigInt and other types, use explicit conversions"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 50,
+          "firstFailure": {
+            "args": [
+              48
+            ],
+            "expected": 234,
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "i": 4,
+      "id": "bigint.binomial.4",
+      "kind": "bigint",
+      "hidden": 4,
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7207,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              79,
+              2
+            ],
+            "expected": "3081",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 41,
+          "firstFailure": {
+            "args": [
+              79,
+              2
+            ],
+            "expected": "3081",
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 21715,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              79,
+              2
+            ],
+            "expected": "3081",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        }
+      }
+    },
+    {
+      "i": 5,
+      "id": "bigint.gcd.5",
+      "kind": "bigint",
+      "hidden": 4,
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 32,
+          "codeChars": 39,
+          "firstFailure": {
+            "args": [
+              "61446905363974146413984259228688",
+              "5797224742372942"
+            ],
+            "expected": "2",
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 21957,
+          "codeChars": 297,
+          "firstFailure": {
+            "args": [
+              "61446905363974146413984259228688",
+              "5797224742372942"
+            ],
+            "expected": "2",
+            "got": null,
+            "error": "RangeError: Division by zero"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7324,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "61446905363974146413984259228688",
+              "5797224742372942"
+            ],
+            "expected": "2",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        }
+      }
+    },
+    {
+      "i": 6,
+      "id": "string.reverse.0",
+      "kind": "string",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 20231,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "z"
+            ],
+            "expected": "z",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7245,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "z"
+            ],
+            "expected": "z",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 32,
+          "codeChars": 50,
+          "firstFailure": {
+            "args": [
+              "z"
+            ],
+            "expected": "z",
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "i": 7,
+      "id": "string.toggle.1",
+      "kind": "string",
+      "hidden": 4,
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 6663,
+          "codeChars": 206,
+          "firstFailure": null
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 31,
+          "codeChars": 48,
+          "firstFailure": {
+            "args": [
+              "a👍bé"
+            ],
+            "expected": "A👍Bé",
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 4957,
+          "codeChars": 402,
+          "firstFailure": null
+        }
+      }
+    },
+    {
+      "i": 8,
+      "id": "string.rle.2",
+      "kind": "string",
+      "hidden": 4,
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 34,
+          "codeChars": 48,
+          "firstFailure": {
+            "args": [
+              "Mixed CASE 123"
+            ],
+            "expected": "M1i1x1e1d1 1C1A1S1E1 1112131",
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 20018,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "Mixed CASE 123"
+            ],
+            "expected": "M1i1x1e1d1 1C1A1S1E1 1112131",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7269,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "Mixed CASE 123"
+            ],
+            "expected": "M1i1x1e1d1 1C1A1S1E1 1112131",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        }
+      }
+    },
+    {
+      "i": 9,
+      "id": "string.count.3",
+      "kind": "string",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 21517,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "naïve café",
+              "c"
+            ],
+            "expected": 1,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7314,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "naïve café",
+              "c"
+            ],
+            "expected": 1,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 32,
+          "codeChars": 47,
+          "firstFailure": {
+            "args": [
+              "naïve café",
+              "c"
+            ],
+            "expected": 1,
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "i": 10,
+      "id": "string.collapse.4",
+      "kind": "string",
+      "hidden": 4,
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7250,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              " "
+            ],
+            "expected": "",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 32,
+          "codeChars": 47,
+          "firstFailure": {
+            "args": [
+              " "
+            ],
+            "expected": "",
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 6794,
+          "codeChars": 70,
+          "firstFailure": null
+        }
+      }
+    },
+    {
+      "i": 11,
+      "id": "string.length.5",
+      "kind": "string",
+      "hidden": 4,
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 48,
+          "firstFailure": {
+            "args": [
+              "中文字"
+            ],
+            "expected": 3,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": true,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 20727,
+          "codeChars": 146,
+          "firstFailure": null
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7259,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "中文字"
+            ],
+            "expected": 3,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        }
+      }
+    },
+    {
+      "i": 12,
+      "id": "array.rotate.0",
+      "kind": "array",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 21858,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              [
+                17,
+                -9,
+                19
+              ],
+              -1
+            ],
+            "expected": [
+              19,
+              17,
+              -9
+            ],
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7276,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              [
+                17,
+                -9,
+                19
+              ],
+              -1
+            ],
+            "expected": [
+              19,
+              17,
+              -9
+            ],
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 32,
+          "codeChars": 43,
+          "firstFailure": {
+            "args": [
+              [
+                17,
+                -9,
+                19
+              ],
+              -1
+            ],
+            "expected": [
+              19,
+              17,
+              -9
+            ],
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "i": 13,
+      "id": "array.kth.1",
+      "kind": "array",
+      "hidden": 4,
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7322,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              [
+                9,
+                7,
+                6,
+                20,
+                6,
+                15,
+                -1,
+                14
+              ],
+              4
+            ],
+            "expected": 9,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 43,
+          "firstFailure": {
+            "args": [
+              [
+                9,
+                7,
+                6,
+                20,
+                6,
+                15,
+                -1,
+                14
+              ],
+              4
+            ],
+            "expected": 9,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 5841,
+          "codeChars": 127,
+          "firstFailure": null
+        }
+      }
+    },
+    {
+      "i": 14,
+      "id": "array.run.2",
+      "kind": "array",
+      "hidden": 4,
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 43,
+          "firstFailure": {
+            "args": [
+              [
+                2,
+                2,
+                1,
+                0,
+                -2,
+                -2
+              ]
+            ],
+            "expected": 2,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 4906,
+          "codeChars": 379,
+          "firstFailure": null
+        },
+        "alone": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 5221,
+          "codeChars": 379,
+          "firstFailure": null
+        }
+      }
+    },
+    {
+      "i": 15,
+      "id": "array.windows.3",
+      "kind": "array",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 6914,
+          "codeChars": 307,
+          "firstFailure": null
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7292,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              [
+                11,
+                -6,
+                13,
+                19,
+                5,
+                17,
+                -2,
+                16,
+                5
+              ],
+              10
+            ],
+            "expected": [],
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 34,
+          "codeChars": 43,
+          "firstFailure": {
+            "args": [
+              [
+                11,
+                -6,
+                13,
+                19,
+                5,
+                17,
+                -2,
+                16,
+                5
+              ],
+              10
+            ],
+            "expected": [],
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "i": 16,
+      "id": "array.lower.4",
+      "kind": "array",
+      "hidden": 4,
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7316,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              [
+                -9,
+                -3,
+                8,
+                9
+              ],
+              -4
+            ],
+            "expected": 1,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 43,
+          "firstFailure": {
+            "args": [
+              [
+                -9,
+                -3,
+                8,
+                9
+              ],
+              -4
+            ],
+            "expected": 1,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 6722,
+          "codeChars": 316,
+          "firstFailure": null
+        }
+      }
+    },
+    {
+      "i": 17,
+      "id": "array.drop.5",
+      "kind": "array",
+      "hidden": 4,
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 36,
+          "codeChars": 45,
+          "firstFailure": {
+            "args": [
+              [
+                13,
+                13,
+                3,
+                13,
+                20,
+                8,
+                14,
+                11
+              ],
+              1
+            ],
+            "expected": [],
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 22044,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              [
+                13,
+                13,
+                3,
+                13,
+                20,
+                8,
+                14,
+                11
+              ],
+              1
+            ],
+            "expected": [],
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 7193,
+          "codeChars": 175,
+          "firstFailure": null
+        }
+      }
+    },
+    {
+      "i": 18,
+      "id": "date.between.0",
+      "kind": "date",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 22098,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "2002-10-01",
+              "2049-11-21"
+            ],
+            "expected": 17218,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7303,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "2002-10-01",
+              "2049-11-21"
+            ],
+            "expected": 17218,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 44,
+          "firstFailure": {
+            "args": [
+              "2002-10-01",
+              "2049-11-21"
+            ],
+            "expected": 17218,
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "i": 19,
+      "id": "date.doy.1",
+      "kind": "date",
+      "hidden": 4,
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7314,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "1899-12-31"
+            ],
+            "expected": 365,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 42,
+          "firstFailure": {
+            "args": [
+              "1899-12-31"
+            ],
+            "expected": 365,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 21864,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "1899-12-31"
+            ],
+            "expected": 365,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        }
+      }
+    },
+    {
+      "i": 20,
+      "id": "date.weekday.2",
+      "kind": "date",
+      "hidden": 4,
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 35,
+          "codeChars": 45,
+          "firstFailure": {
+            "args": [
+              "1899-12-31"
+            ],
+            "expected": 0,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 21908,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "1899-12-31"
+            ],
+            "expected": 0,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7313,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "1899-12-31"
+            ],
+            "expected": 0,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        }
+      }
+    },
+    {
+      "i": 21,
+      "id": "date.add.3",
+      "kind": "date",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 22069,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "1899-12-31",
+              447
+            ],
+            "expected": "1901-03-23",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7382,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "1899-12-31",
+              447
+            ],
+            "expected": "1901-03-23",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 40,
+          "firstFailure": {
+            "args": [
+              "1899-12-31",
+              447
+            ],
+            "expected": "1901-03-23",
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "i": 22,
+      "id": "date.leap.4",
+      "kind": "date",
+      "hidden": 4,
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 3055,
+          "codeChars": 143,
+          "firstFailure": null
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 32,
+          "codeChars": 39,
+          "firstFailure": {
+            "args": [
+              2024
+            ],
+            "expected": true,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 3254,
+          "codeChars": 147,
+          "firstFailure": null
+        }
+      }
+    },
+    {
+      "i": 23,
+      "id": "date.eom.5",
+      "kind": "date",
+      "hidden": 4,
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 43,
+          "firstFailure": {
+            "args": [
+              "1899-12-31"
+            ],
+            "expected": "1899-12-31",
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 22053,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "1899-12-31"
+            ],
+            "expected": "1899-12-31",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7399,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "1899-12-31"
+            ],
+            "expected": "1899-12-31",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        }
+      }
+    },
+    {
+      "i": 24,
+      "id": "parser.eval.0",
+      "kind": "parser",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 22076,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "3 - 12 / 3"
+            ],
+            "expected": -1,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7347,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "3 - 12 / 3"
+            ],
+            "expected": -1,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 41,
+          "firstFailure": {
+            "args": [
+              "3 - 12 / 3"
+            ],
+            "expected": -1,
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "i": 25,
+      "id": "parser.eval.1",
+      "kind": "parser",
+      "hidden": 4,
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7346,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "4"
+            ],
+            "expected": 4,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 41,
+          "firstFailure": {
+            "args": [
+              "4"
+            ],
+            "expected": 4,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 22103,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "4"
+            ],
+            "expected": 4,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        }
+      }
+    },
+    {
+      "i": 26,
+      "id": "parser.eval.2",
+      "kind": "parser",
+      "hidden": 4,
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 34,
+          "codeChars": 41,
+          "firstFailure": {
+            "args": [
+              "(((20 * 9 / 7) - (10 + 4) * 14 - 15) - (20 + 7) + 12 / 9)"
+            ],
+            "expected": -212,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 22111,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "(((20 * 9 / 7) - (10 + 4) * 14 - 15) - (20 + 7) + 12 / 9)"
+            ],
+            "expected": -212,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7340,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "(((20 * 9 / 7) - (10 + 4) * 14 - 15) - (20 + 7) + 12 / 9)"
+            ],
+            "expected": -212,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        }
+      }
+    },
+    {
+      "i": 27,
+      "id": "parser.eval.3",
+      "kind": "parser",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 22160,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "13"
+            ],
+            "expected": 13,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7418,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "13"
+            ],
+            "expected": 13,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 32,
+          "codeChars": 41,
+          "firstFailure": {
+            "args": [
+              "13"
+            ],
+            "expected": 13,
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "i": 28,
+      "id": "parser.eval.4",
+      "kind": "parser",
+      "hidden": 4,
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7416,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "13 / 4"
+            ],
+            "expected": 3,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 32,
+          "codeChars": 41,
+          "firstFailure": {
+            "args": [
+              "13 / 4"
+            ],
+            "expected": 3,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 22236,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "13 / 4"
+            ],
+            "expected": 3,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        }
+      }
+    },
+    {
+      "i": 29,
+      "id": "parser.eval.5",
+      "kind": "parser",
+      "hidden": 4,
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 41,
+          "firstFailure": {
+            "args": [
+              "(((5 * 2 / 1) / 5) + 13 / 2 - (13 - (8 / 9)))"
+            ],
+            "expected": -5,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 22266,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "(((5 * 2 / 1) / 5) + 13 / 2 - (13 - (8 / 9)))"
+            ],
+            "expected": -5,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7402,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "(((5 * 2 / 1) / 5) + 13 / 2 - (13 - (8 / 9)))"
+            ],
+            "expected": -5,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        }
+      }
+    },
+    {
+      "i": 30,
+      "id": "hand.countLetter",
+      "kind": "hand",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 4550,
+          "codeChars": 171,
+          "firstFailure": null
+        },
+        "alone": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 4145,
+          "codeChars": 199,
+          "firstFailure": null
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 44,
+          "firstFailure": {
+            "args": [
+              "mississippi",
+              "s"
+            ],
+            "expected": 4,
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "i": 31,
+      "id": "hand.sumToN",
+      "kind": "hand",
+      "hidden": 4,
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7275,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              100
+            ],
+            "expected": 5050,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 31,
+          "codeChars": 39,
+          "firstFailure": {
+            "args": [
+              100
+            ],
+            "expected": 5050,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 6248,
+          "codeChars": 71,
+          "firstFailure": null
+        }
+      }
+    },
+    {
+      "i": 32,
+      "id": "hand.palindrome",
+      "kind": "hand",
+      "hidden": 4,
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 33,
+          "codeChars": 45,
+          "firstFailure": {
+            "args": [
+              "Was it a car or a cat I saw"
+            ],
+            "expected": true,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 4214,
+          "codeChars": 156,
+          "firstFailure": null
+        },
+        "alone": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 7182,
+          "codeChars": 212,
+          "firstFailure": null
+        }
+      }
+    },
+    {
+      "i": 33,
+      "id": "hand.fizzbuzz",
+      "kind": "hand",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 5162,
+          "codeChars": 158,
+          "firstFailure": null
+        },
+        "alone": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 3748,
+          "codeChars": 158,
+          "firstFailure": null
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 31,
+          "codeChars": 41,
+          "firstFailure": {
+            "args": [
+              5
+            ],
+            "expected": "Buzz",
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "i": 34,
+      "id": "hand.median",
+      "kind": "hand",
+      "hidden": 4,
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 3,
+          "hiddenOf": 4,
+          "ms": 4171,
+          "codeChars": 177,
+          "firstFailure": {
+            "args": [
+              [
+                10,
+                2,
+                38,
+                23,
+                38,
+                23,
+                21
+              ]
+            ],
+            "expected": 23,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 35,
+          "codeChars": 39,
+          "firstFailure": {
+            "args": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ]
+            ],
+            "expected": 3.5,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": true,
+          "rounds": 2,
+          "candidates": 2,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 11615,
+          "codeChars": 213,
+          "firstFailure": null
+        }
+      }
+    },
+    {
+      "i": 35,
+      "id": "hand.roman",
+      "kind": "hand",
+      "hidden": 4,
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 34,
+          "codeChars": 43,
+          "firstFailure": {
+            "args": [
+              "IV"
+            ],
+            "expected": 4,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 22065,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "IV"
+            ],
+            "expected": 4,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7253,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "IV"
+            ],
+            "expected": 4,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        }
+      }
+    },
+    {
+      "i": 36,
+      "id": "hand.titleCase",
+      "kind": "hand",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 22052,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "a"
+            ],
+            "expected": "A",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7365,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "a"
+            ],
+            "expected": "A",
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 32,
+          "codeChars": 42,
+          "firstFailure": {
+            "args": [
+              "a"
+            ],
+            "expected": "A",
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "i": 37,
+      "id": "hand.balanced",
+      "kind": "hand",
+      "hidden": 4,
+      "order": "alone>null>organism",
+      "arms": {
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7327,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "([)]"
+            ],
+            "expected": false,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 32,
+          "codeChars": 41,
+          "firstFailure": {
+            "args": [
+              "([)]"
+            ],
+            "expected": false,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": true,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": true,
+          "hiddenPassed": 4,
+          "hiddenOf": 4,
+          "ms": 4547,
+          "codeChars": 745,
+          "firstFailure": null
+        }
+      }
+    },
+    {
+      "i": 38,
+      "id": "hand.binaryGap",
+      "kind": "hand",
+      "hidden": 4,
+      "order": "null>organism>alone",
+      "arms": {
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 34,
+          "codeChars": 42,
+          "firstFailure": {
+            "args": [
+              9
+            ],
+            "expected": 2,
+            "got": "@undefined",
+            "error": null
+          }
+        },
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 22116,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              9
+            ],
+            "expected": 2,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7381,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              9
+            ],
+            "expected": 2,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        }
+      }
+    },
+    {
+      "i": 39,
+      "id": "hand.digitSum",
+      "kind": "hand",
+      "hidden": 4,
+      "order": "organism>alone>null",
+      "arms": {
+        "organism": {
+          "ok": false,
+          "rounds": 3,
+          "candidates": 3,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 19068,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "9"
+            ],
+            "expected": 9,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "alone": {
+          "ok": false,
+          "rounds": 1,
+          "candidates": 1,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 7355,
+          "codeChars": 0,
+          "firstFailure": {
+            "args": [
+              "9"
+            ],
+            "expected": 9,
+            "got": null,
+            "error": "Error: no function was defined by the candidate"
+          }
+        },
+        "null": {
+          "ok": false,
+          "rounds": 0,
+          "candidates": 0,
+          "solvedVisible": false,
+          "hiddenPassed": 0,
+          "hiddenOf": 4,
+          "ms": 37,
+          "codeChars": 41,
+          "firstFailure": {
+            "args": [
+              "9"
+            ],
+            "expected": 9,
+            "got": "@undefined",
+            "error": null
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "at": "2026-09-18T02:53:25.669Z",
+  "node": "v24.15.0",
+  "conditions": {
+    "at": "2026-09-18T02:51:44.320Z",
+    "node": "v24.15.0",
+    "platform": "win32",
+    "cpus": 32,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900KF",
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "totalmemGB": 63.8,
+    "freememGB": 41.6,
+    "perMutantBudgetMs": 90000
+  },
+  "command": "node bench/mutants.mjs --sub act-web,act-shell,act-llm,simd,self,epochs --only aw,as,al,sm,sp,ey --timeout 90000 --budget 90000 --tag verify-landed",
+  "suites": {
+    "simd": [
+      "test/hvheap.test.mjs",
+      "test/simd.test.mjs"
+    ]
+  },
+  "tally": {
+    "mutants": 5,
+    "executed": 5,
+    "killed": 5,
+    "survived": 0,
+    "notExecuted": 0,
+    "score": 1,
+    "wallMs": 32035
+  },
+  "bySubsystem": {
+    "simd": {
+      "suite": [
+        "test/hvheap.test.mjs",
+        "test/simd.test.mjs"
+      ],
+      "generated": 5,
+      "executed": 5,
+      "killed": 5,
+      "survived": 0,
+      "notExecuted": 0,
+      "unmutatedMs": 362,
+      "unmutatedPass": 19,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 32035
+    }
+  },
+  "mutants": [
+    {
+      "id": "sm01",
+      "sub": "simd",
+      "file": "core/simd.mjs",
+      "why": "SLOT ARITHMETIC: a view is placed at s * n instead of s * SLOT, so two slots overlap",
+      "executed": true,
+      "probeHits": 72490,
+      "probeProcesses": 3,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/hvheap.test.mjs :: when every slot is taken the kernel wrappers still answer, into plain arrays, and the slots come back on release",
+        "error": "every held slot came back"
+      },
+      "newFailures": 6,
+      "ms": 347,
+      "passed": 13,
+      "status": "killed",
+      "find": "  const view = new Int8Array(BUF, HEAP_BASE + s * SLOT, n);",
+      "replace": "  const view = new Int8Array(BUF, HEAP_BASE + (__MUTP(), s * n), n);"
+    },
+    {
+      "id": "sm02",
+      "sub": "simd",
+      "file": "core/simd.mjs",
+      "why": "SLOT ARITHMETIC: a handed out slot is never marked used, so release refuses its own view",
+      "executed": true,
+      "probeHits": 68249,
+      "probeProcesses": 3,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/hvheap.test.mjs :: alloc hands out distinct slot-aligned views; release returns the slot at once; a second release, a plain array and an unaligned view are refused",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 8,
+      "ms": 10329,
+      "passed": 11,
+      "status": "killed",
+      "find": "  used[s] = 1; inUse++; if (inUse > peak) peak = inUse; allocs++;",
+      "replace": "  __MUTP(); inUse++; if (inUse > peak) peak = inUse; allocs++;"
+    },
+    {
+      "id": "sm03",
+      "sub": "simd",
+      "file": "core/simd.mjs",
+      "why": "SLOT ARITHMETIC: returning a slot does not advance its generation, so a stale finalizer frees the new owner",
+      "executed": true,
+      "probeHits": 69698,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/hvheap.test.mjs :: a dropped view returns its slot through the finalizer after a collection and a turn; a stale finalizer cannot free a slot handed out again",
+        "error": "the old view's finalizer fired and was recognised as stale"
+      },
+      "newFailures": 1,
+      "ms": 10354,
+      "passed": 18,
+      "status": "killed",
+      "find": "  used[slot] = 0; gen[slot] = (gen[slot] + 1) >>> 0; free[freeTop++] = slot; inUse--;",
+      "replace": "  used[slot] = 0; __MUTP(); free[freeTop++] = slot; inUse--;"
+    },
+    {
+      "id": "sm04",
+      "sub": "simd",
+      "file": "core/simd.mjs",
+      "why": "SLOT ARITHMETIC: the finalizer handle packs the slot and the generation the other way round",
+      "executed": true,
+      "probeHits": 70604,
+      "probeProcesses": 3,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/hvheap.test.mjs :: a dropped view returns its slot through the finalizer after a collection and a turn; a stale finalizer cannot free a slot handed out again",
+        "error": "reclaimed 1 of 4096"
+      },
+      "newFailures": 1,
+      "ms": 10342,
+      "passed": 18,
+      "status": "killed",
+      "find": "  REGISTRY.register(view, gen[s] * slots + s, view);",
+      "replace": "  REGISTRY.register(view, (__MUTP(), gen[s] + s * slots), view);"
+    },
+    {
+      "id": "sm05",
+      "sub": "simd",
+      "file": "core/simd.mjs",
+      "why": "SLOT ARITHMETIC: the full heap test can never be true, so alloc reads past the free list",
+      "executed": true,
+      "probeHits": 74672,
+      "probeProcesses": 3,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/hvheap.test.mjs :: a full heap falls back to plain arrays, counts every fallback, reports the transition to BRAIN_HV_HEAP_REPORT, and computes the same lanes",
+        "error": "Expected values to be strictly equal:"
+      },
+      "newFailures": 7,
+      "ms": 293,
+      "passed": 12,
+      "status": "killed",
+      "find": "  if (freeTop === 0) {",
+      "replace": "  if (__MUTP() && freeTop < 0) {"
+    }
+  ],
+  "verdict": "GREEN"
+}

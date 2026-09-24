@@ -1,0 +1,87 @@
+{
+  "at": "2026-09-17T21:20:20.939Z",
+  "node": "v24.15.0",
+  "platform": "win32",
+  "what": "the three assertions that turned the gate RED on test/web.test.mjs, their cause and their fix",
+  "redAt": "2026-09-17T19:37:12.070Z (bench/verdicts/gate.json)",
+  "failures": [
+    {
+      "test": "parity: the same seed builds the same organism in the browser port",
+      "assertion": "AssertionError: edge count at majors 40\n\n3355 !== 3395",
+      "actualWeb": 3355,
+      "expectedNode": 3395,
+      "cause": "seeds/organism.mjs was edited today at 15:11:25 -0400 (mtime), adding the six grid kinds to the perception roster and seq.fit to the cognitive roster. web/src/organism.js, last written 2026-09-16 22:19:31 -0400, still carried the old two rosters, so the browser port grew a different organism.",
+      "fix": "the two rosters in web/src/organism.js now carry the same entries in the same order as seeds/organism.mjs"
+    },
+    {
+      "test": "parity: cell identity, kind, region and circuit agree cell for cell",
+      "assertion": "AssertionError: cell 10 kind\n+ actual - expected\n+ 'encode.hv'\n- 'grid.rotate'",
+      "cause": "same cause: the perception roster is cycled in order, so a roster short by six entries puts a different kind in every major past the tenth cell.",
+      "fix": "same fix; cell 10 is grid.rotate on both sides now"
+    },
+    {
+      "test": "parity: ports and delays agree edge for edge",
+      "assertion": "AssertionError: Expected values to be strictly equal:\n\n3355 !== 3395",
+      "actualWeb": 3355,
+      "expectedNode": 3395,
+      "cause": "same cause: a different roster is a different acceptor index, so a different edge set.",
+      "fix": "same fix"
+    }
+  ],
+  "alsoChanged": [
+    "web/src/kinds.js gained seven rows: grid.crop, grid.flip, grid.rotate, grid.tile, grid.translate, grid.transpose (in:event / out:event, update inert) and seq.fit (terms:event / next:event, update predict). Without them the browser table cannot host the new roster entries at all.",
+    "test/web.test.mjs: the kind count floor moved from 47 to 54, the number the test itself printed, following the roster change in seeds/organism.mjs. The per kind port comparison against the node registry is untouched."
+  ],
+  "portsChecked": 54,
+  "parity": [
+    {
+      "majors": 7,
+      "nodeCells": 56,
+      "webCells": 56,
+      "nodeEdges": 309,
+      "webEdges": 309,
+      "nodeHash": "e63b585c51d8d19d21bae34db2c6991876be76660f82d6ed2deedf22be5b5415",
+      "webHash": "e63b585c51d8d19d21bae34db2c6991876be76660f82d6ed2deedf22be5b5415",
+      "cell10NodeKind": "hv.bind",
+      "cell10WebKind": "hv.bind"
+    },
+    {
+      "majors": 40,
+      "nodeCells": 320,
+      "webCells": 320,
+      "nodeEdges": 3395,
+      "webEdges": 3395,
+      "nodeHash": "7332de144a050280a02df2f5d5e48b8bbae5b9e3ffc3bd9e84d9bb84714be335",
+      "webHash": "7332de144a050280a02df2f5d5e48b8bbae5b9e3ffc3bd9e84d9bb84714be335",
+      "cell10NodeKind": "grid.rotate",
+      "cell10WebKind": "grid.rotate"
+    },
+    {
+      "majors": 60,
+      "nodeCells": 480,
+      "webCells": 480,
+      "nodeEdges": 5165,
+      "webEdges": 5165,
+      "nodeHash": "4bcc09451c39b1e6fcc15d7b4d44134a57e2608d77a9b872d13d7b33639bf031",
+      "webHash": "4bcc09451c39b1e6fcc15d7b4d44134a57e2608d77a9b872d13d7b33639bf031",
+      "cell10NodeKind": "grid.rotate",
+      "cell10WebKind": "grid.rotate"
+    },
+    {
+      "majors": 120,
+      "nodeCells": 960,
+      "webCells": 960,
+      "nodeEdges": 10681,
+      "webEdges": 10681,
+      "nodeHash": "90e78e53d9c84168ca77cda89f9d3592ce8453a08e8bda729575d0bc44a0eeef",
+      "webHash": "90e78e53d9c84168ca77cda89f9d3592ce8453a08e8bda729575d0bc44a0eeef",
+      "cell10NodeKind": "grid.rotate",
+      "cell10WebKind": "grid.rotate"
+    }
+  ],
+  "webTest": {
+    "pass": 11,
+    "fail": 0,
+    "bundle": "bundle  index.html 3347 bytes, app.js 63425 bytes, total 66772 bytes (target 163840, cap 225280)"
+  }
+}

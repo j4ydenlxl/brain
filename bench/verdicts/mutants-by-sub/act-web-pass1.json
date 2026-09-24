@@ -1,0 +1,265 @@
+{
+  "at": "2026-09-18T02:33:51.488Z",
+  "node": "v24.15.0",
+  "conditions": {
+    "at": "2026-09-18T02:32:32.006Z",
+    "node": "v24.15.0",
+    "platform": "win32",
+    "cpus": 32,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900KF",
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "totalmemGB": 63.8,
+    "freememGB": 42.7,
+    "perMutantBudgetMs": 90000
+  },
+  "command": "node bench/mutants.mjs --sub act-web,act-shell,act-llm,simd --timeout 90000 --budget 90000 --tag pass1",
+  "suites": {
+    "act-web": [
+      "test/act-web.test.mjs"
+    ]
+  },
+  "tally": {
+    "mutants": 10,
+    "executed": 10,
+    "killed": 7,
+    "survived": 3,
+    "notExecuted": 0,
+    "score": 0.7,
+    "wallMs": 3184
+  },
+  "bySubsystem": {
+    "act-web": {
+      "suite": [
+        "test/act-web.test.mjs"
+      ],
+      "generated": 10,
+      "executed": 10,
+      "killed": 7,
+      "survived": 3,
+      "notExecuted": 0,
+      "unmutatedMs": 319,
+      "unmutatedPass": 15,
+      "unmutatedFail": 0,
+      "timeoutCountsAsKill": true,
+      "wallMs": 3184
+    }
+  },
+  "mutants": [
+    {
+      "id": "aw01",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "ADDRESS FAMILY: carrier private 100.64.0.0/10 stops being a refused family",
+      "executed": true,
+      "probeHits": 2,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: the address families are read from the address, not from the spelling",
+        "error": "100.64.0.1 read as null, wanted carrier private"
+      },
+      "newFailures": 1,
+      "ms": 275,
+      "passed": 14,
+      "status": "killed",
+      "find": "  if (a === 100 && b >= 64 && b <= 127) return 'carrier private (100.64.0.0/10)';",
+      "replace": "  if (__MUTP() && a === 100 && b >= 64 && b <= 63) return 'carrier private (100.64.0.0/10)';"
+    },
+    {
+      "id": "aw02",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "ADDRESS FAMILY: the private block is read as /11, so a public 172.32 address is refused",
+      "executed": true,
+      "probeHits": 4,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: the address families are read from the address, not from the spelling",
+        "error": "172.32.0.1 was blocked as private (172.16.0.0/12)"
+      },
+      "newFailures": 1,
+      "ms": 291,
+      "passed": 14,
+      "status": "killed",
+      "find": "  if (a === 172 && b >= 16 && b <= 31) return 'private (172.16.0.0/12)';",
+      "replace": "  if (__MUTP() && a === 172 && b >= 16 && b <= 63) return 'private (172.16.0.0/12)';"
+    },
+    {
+      "id": "aw03",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "ADDRESS FAMILY: the metadata address is read with its last two octets swapped",
+      "executed": true,
+      "probeHits": 3,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: the address families are read from the address, not from the spelling",
+        "error": "169.254.169.254 read as link local (169.254.0.0/16), wanted cloud metadata"
+      },
+      "newFailures": 2,
+      "ms": 294,
+      "passed": 13,
+      "status": "killed",
+      "find": "o[2] === 169 && o[3] === 254 ? 'cloud metadata (169.254.169.254)' : 'link local (169.254.0.0/16)'",
+      "replace": "(__MUTP() && o[2] === 254 && o[3] === 169) ? 'cloud metadata (169.254.169.254)' : 'link local (169.254.0.0/16)'"
+    },
+    {
+      "id": "aw04",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "ADDRESS FAMILY: an ipv4 mapped ipv6 address is not unwrapped, so ::ffff:127.0.0.1 is reachable",
+      "executed": true,
+      "probeHits": 3,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: the address families are read from the address, not from the spelling",
+        "error": "::ffff:127.0.0.1 read as null, wanted ipv4 mapped"
+      },
+      "newFailures": 1,
+      "ms": 287,
+      "passed": 14,
+      "status": "killed",
+      "find": "  if (groups.slice(0, 5).every((g) => g === 0) && groups[5] === 0xffff) {",
+      "replace": "  if (__MUTP() && false) {"
+    },
+    {
+      "id": "aw05",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "ADDRESS FAMILY: the octal spelling of an address is read as decimal, so 0177.0.0.1 is not 127.0.0.1",
+      "executed": true,
+      "probeHits": 12,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: the address families are read from the address, not from the spelling",
+        "error": "Expected values to be strictly deep-equal:"
+      },
+      "newFailures": 1,
+      "ms": 274,
+      "passed": 14,
+      "status": "killed",
+      "find": "    else if (/^0[0-7]+$/.test(p)) n = parseInt(p.slice(1), 8);",
+      "replace": "    else if (__MUTP() && /^0[0-7]+$/.test(p)) n = parseInt(p.slice(1), 10);"
+    },
+    {
+      "id": "aw06",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "REDIRECT HOP: the test loopback flag applies to every hop, so a redirect into loopback is followed",
+      "executed": true,
+      "probeHits": 9,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: a redirect into loopback is refused at the hop, and the hop never leaves",
+        "error": "a redirect into loopback must be refused"
+      },
+      "newFailures": 1,
+      "ms": 293,
+      "passed": 14,
+      "status": "killed",
+      "find": "    const guard = guardUrl(current, { ...pol, allowLoopbackForTests: firstHop && opts.allowLoopbackForTests === true });",
+      "replace": "    const guard = guardUrl(current, { ...pol, allowLoopbackForTests: (__MUTP(), opts.allowLoopbackForTests === true) });"
+    },
+    {
+      "id": "aw07",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "REDIRECT HOP: the url guard is only consulted on the first url, never on a url the server chose",
+      "executed": true,
+      "probeHits": 11,
+      "probeProcesses": 1,
+      "killed": false,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": null,
+      "newFailures": 0,
+      "ms": 278,
+      "passed": 15,
+      "status": "survived",
+      "find": "    if (!guard.ok) {",
+      "replace": "    if (__MUTP() && firstHop && !guard.ok) {"
+    },
+    {
+      "id": "aw08",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "REDIRECT HOP: the resolved addresses of a name are no longer judged, so DNS chooses the host",
+      "executed": true,
+      "probeHits": 2,
+      "probeProcesses": 1,
+      "killed": true,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": {
+        "test": "test/act-web.test.mjs :: guardResolved judges a name by what it resolves to, and a literal by the guard that already read it",
+        "error": "localhost resolved to ::1, 127.0.0.1 and was allowed"
+      },
+      "newFailures": 1,
+      "ms": 295,
+      "passed": 14,
+      "status": "killed",
+      "find": "    if (cls.blocked) return { ok: false, reason: 'host ' + guard.hostname + ' resolves to ' + a + ' which is ' + cls.blocked, addresses };",
+      "replace": "    if (__MUTP() && false) return { ok: false, reason: 'host ' + guard.hostname + ' resolves to ' + a + ' which is ' + cls.blocked, addresses };"
+    },
+    {
+      "id": "aw09",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "credentials in a url stop being refused, so the host before the at sign is what a reader sees",
+      "executed": true,
+      "probeHits": 27,
+      "probeProcesses": 1,
+      "killed": false,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": null,
+      "newFailures": 0,
+      "ms": 274,
+      "passed": 15,
+      "status": "survived",
+      "find": "  if (u.username || u.password) return { ok: false, reason: 'credentials in the url are refused: the host is '",
+      "replace": "  if (__MUTP() && false) return { ok: false, reason: 'credentials in the url are refused: the host is '"
+    },
+    {
+      "id": "aw10",
+      "sub": "act-web",
+      "file": "act/web.mjs",
+      "why": "the wildcard allow entry loses its dot, so *.docs.example matches notdocs.example",
+      "executed": true,
+      "probeHits": 6,
+      "probeProcesses": 1,
+      "killed": false,
+      "timedOut": false,
+      "timeoutCredited": false,
+      "killedBy": null,
+      "newFailures": 0,
+      "ms": 282,
+      "passed": 15,
+      "status": "survived",
+      "find": "    if (e.startsWith('*.') && (name === e.slice(2) || name.endsWith(e.slice(1)))) return e;",
+      "replace": "    if (__MUTP() && e.startsWith('*.') && (name === e.slice(2) || name.endsWith(e.slice(2)))) return e;"
+    }
+  ],
+  "verdict": "RED"
+}
