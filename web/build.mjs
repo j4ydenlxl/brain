@@ -30,6 +30,9 @@ import { generatePortfolio } from '../tools/portfolio-page.mjs';
 // The ladder page is his P4 ruler rendered from bench/verdicts at build time (web/ladder.mjs).
 // It throws when a digit on the page is not a traced field, so a build cannot publish one.
 import { generateLadder } from './ladder.mjs';
+// The handoff page is docs/HANDOFF.md (written by tools/handoff.mjs from the machine's own
+// measurements) rendered at /handoff at every build. It throws when a secret pattern is in the file.
+import { generateHandoff } from './handoff.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SRC = join(HERE, 'src');
@@ -175,11 +178,12 @@ export function write(opts = {}) {
   const findings = generateFindings();
   const portfolio = generatePortfolio();
   const ladder = generateLadder();
+  const handoff = generateHandoff();
   return {
     js: Buffer.byteLength(js), html: Buffer.byteLength(html),
     total: Buffer.byteLength(js) + Buffer.byteLength(html),
     jsPath: join(DIST, 'app.js'), htmlPath: join(DIST, 'index.html'),
-    findings, portfolio, ladder,
+    findings, portfolio, ladder, handoff,
   };
 }
 
@@ -199,6 +203,15 @@ if (process.argv[1] && process.argv[1].endsWith('build.mjs')) {
   console.log('dist ladder/index.html ' + String(r.ladder.bytes).padStart(9) + ' bytes   ' + r.ladder.numbers + ' numbers traced in ' + r.ladder.spans
     + ' spans from ' + r.ladder.files + ' verdict files; ' + r.ladder.sets.map((x) => x.key + ' ' + x.status).join(', ')
     + '; native ' + r.ladder.native.status + ', years ' + r.ladder.years.status);
-  const pages = ['index.html', 'findings/index.html', 'portfolio/index.html', 'ladder/index.html'];
+  console.log('dist handoff/index.html ' + String(r.handoff.bytes).padStart(8) + ' bytes   '
+    + (r.handoff.missing ? 'docs/HANDOFF.md absent: run node tools/handoff.mjs' : r.handoff.sections + ' sections, ' + r.handoff.blocks + ' blocks, '
+      + r.handoff.commands + ' command lines from docs/HANDOFF.md (' + r.handoff.mdBytes + ' bytes, served as handoff/HANDOFF.md)'));
+  const pages = ['index.html', 'findings/index.html', 'portfolio/index.html', 'ladder/index.html', 'handoff/index.html'];
   console.log('pages built: ' + pages.length + ' (' + pages.join(', ') + ')');
 }
+
+// /tools: the Code Universe factory (his 2026-09-13 order; it lived at dilation.dev/tools/ from the
+// universe/factory deploy and a later whole-site deploy of web/dist removed it). Static, copied verbatim.
+import { cpSync as cpSyncTools } from 'node:fs';
+cpSyncTools(new URL('./tools/', import.meta.url), new URL('./dist/tools/', import.meta.url), { recursive: true });
+console.log('tools: /tools copied from web/tools');
