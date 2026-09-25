@@ -17,6 +17,7 @@ This page is the manual. Every number on it was printed by a command named next 
 | `tools/deploy-host.mjs` | `node tools/deploy-host.mjs user@host`: tar over ssh, `docker compose up -d --build`, wait for `/health` |
 | `bench/cloud.mjs` | the bar |
 | `test/cloud.test.mjs` | the tests |
+| `.github/workflows/cloud.yml`, `tools/cloud-github.mjs`, `bench/cloud-host.mjs` | the host: see "The host: GitHub Actions on his account" below |
 
 ## Run it
 
@@ -89,6 +90,42 @@ The organism may reach three things and nothing else:
 
 - `site/.env.local` and `web/dist/.env.local` hold Vercel tokens, found while building this item. `.dockerignore` keeps them, and every `.env`, key and `.vercel` file, out of the build context.
 - The bench's control scan, run without those `.dockerignore` lines, finds hits in exactly those two files. That proves the scan can see what the ignore file hides. Values are never printed.
+
+## The host: GitHub Actions on his account
+
+His words of 2026-09-25, relayed: "set up the p13 idk how idk". The host is an ASSUMPTION of the orchestrator, his to overturn: **GitHub Actions in a PRIVATE repository on his account** (his 2026-09-17: "Make sure nobody can copy our ideas"). A public repository is a flag, `--public --yes`, that prints those words first. The builder's record, the cost arithmetic and the deviations are in `notes/cloud-host.md`.
+
+What runs: `.github/workflows/cloud.yml` ("brain cloud"), once a day at `0 8 * * *` UTC (04:00 in New York under EDT, 03:00 under EST) and on demand. It restores the checkpoint from the Actions cache into `state-cloud/`, builds the image, runs the organism with the caps of compose.yaml for the wall (55 minutes by default), polls `/health` every 60 s into `health.log`, stops it with SIGINT, runs the ladder in its own container on a scheduled run, writes the job summary table, saves the checkpoint back to the cache, and uploads the readings as the artifact `brain-cloud` (kept 90 days). Secrets are only `${{ secrets.NAME }}` references; with none set, the optional store upload prints "no store configured".
+
+His steps:
+
+1. `gh auth login` (once). On 2026-09-25 the bar read gh as logged in on this machine, and `origin` is `j4ydenlxl/brain`, PRIVATE, default branch master.
+2. Commit `.github/workflows/cloud.yml` together with `bench/fixtures/answer-questions.json` (`git add -f bench/fixtures/answer-questions.json`: `-f` commits it whatever `.gitignore` says; the daemon opens it at boot, and the committed tree without it does not boot), then:
+
+```
+node tools/cloud-github.mjs          # push, enable the workflow, dispatch one 55-minute run, print its URL
+node tools/cloud-github.mjs --dry    # the same plan, nothing written
+```
+
+The deploy refuses (exit 2, nothing written) when gh is not logged in ("run: gh auth login"), when the workflow is not committed at HEAD, when a secret pattern is in a tracked file or a secret-looking name is in the history, when a blob is over 100 MB, when the root is not the top of its repository, when `--public` or a relay on a private repository comes without `--yes`, when the checkout trial at the same HEAD read built false, and when a file a checkout trial (at any HEAD) saw the daemon open and the commit lack is still not committed (it names `git add -f <file>`). With no origin it runs `gh repo create brain --private --source . --push`.
+
+A run that crash-loops ends early: the poll stops when serve has restarted the daemon 5 times or `/health` has been silent for 10 polls in a row, the readings and the checkpoint are still saved, the run concludes failure, and it is never relayed. The ladder step probes the model endpoint on the runner first and prints what it found in the log, the job summary and `run.json`: a runner has no Ollama, so the ladder's model arm reads absent while its organism and null arms run.
+
+How to check: `gh run watch <id>` (the deploy prints it), the job summary table (`uptime s | restarts | tick | checkpoint age s | checkpoint bytes | ticks per hour`), and `node bench/cloud-host.mjs`, which reads the runs of the last 7 days with `gh run list` and `gh run download`, read only, and writes `bench/verdicts/cloud-host.json`. `--checkout-trial 90` also boots exactly what a push sends (`git archive HEAD`) on this PC for 90 s; `--counterfactual FILE --repeat 3` adds three trials of HEAD plus that working-tree file and prints their band. Each trial runs in its own process inside a copy the ruler owns: a trial process that dies is recorded with its exit code, what it left running is killed, the copy is deleted, and it is tried once more; copies a dead run left behind are swept before the next trial.
+
+How to stop: commit an empty `state-cloud/STOP` (every step after the check is skipped; the run prints "stopped by state-cloud/STOP" and exits 0), or `gh workflow disable cloud.yml`.
+
+Nothing stays on his PC after the push: the organism runs on the runner, its checkpoint lives in the Actions cache, its readings in the artifacts, and the deploy and the ruler write nothing on the PC but the verdict. Nothing reaches the runner from outside: the health port is published on 127.0.0.1 only.
+
+Measured (`node tools/budget.mjs --ram-mb 6000 --disk-mb 500 ... -- node bench/cloud-host.mjs --checkout-trial 90 --counterfactual bench/fixtures/answer-questions.json --repeat 3`, verdict `bench/verdicts/cloud-host.json`, at 2026-09-25T22:33:30.073Z, replacing the file of 2026-09-25T22:10:15.303Z, barMet false):
+
+- From the host: gh logged in; the repository read; every row that needs a run reads "not measured: cloud.yml is not on the default branch (master) of j4ydenlxl/brain yet".
+- On this PC: the workflow parses and passes 27 of 27 structural checks; 10 of 10 tree files it names exist.
+- The control, the committed tree alone (HEAD bd04dac, 785 files, 100400578 bytes, 90 s): built false, restarts 6, no checkpoint; the daemon opened `bench/fixtures/answer-questions.json`, which the commit lacks.
+- The counterfactual, the same HEAD plus that file (6591 bytes), 3 trials: built 3 of 3, restarts 0, first checkpoint at 2 s, 210..213 ticks/s, daemon peak rss 560..563 MB (the container allows 512 MB; serve kills at 448 MB), budget kills 0..1. All three readings are over 512 MB.
+- One trial process of the five died with exit 3221226505 (0xC0000409) at 65.7 s, silently; the ruler recorded it, its copy was deleted, and the retry completed.
+- The bar function said true on a planted passing reading and false on each of its 8 planted failures.
+- `node --test test/cloud-host.test.mjs`: 24 pass, 0 fail.
 
 ## Measured
 

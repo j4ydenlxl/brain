@@ -1,0 +1,354 @@
+# .github/workflows/cloud.yml: the organism on a cloud host (his P13, 2026-09-23 17:30: "It should
+# live 24/7 on the cloud remember Its literally a sandboxed ARTIFICIAL SUPERINTELLIGENCE").
+#
+# THE HOST IS AN ASSUMPTION, the orchestrator's (2026-09-25, under his "set up the p13 idk how idk"),
+# not his words; test: his confirmation. GitHub Actions on the brain repository: the one cloud he
+# already asked for (2026-09-24 07:54 "Shouldnt it be a github repo?"), no card, Docker present on
+# ubuntu-latest. PRIVATE by default (his 2026-09-17 "Make sure nobody can copy our ideas"): 2,000
+# free minutes a month, so the free cloud is ONE BOUNDED DAILY JOB (wallMinutes, 55 by default), not
+# 24 hours, and bench/cloud-host.mjs prints that uptime fraction as it is. A PUBLIC repository runs
+# unlimited minutes: relay=true hands the checkpoint to the next job (each under 6 hours) through
+# the Actions cache. docs/CLOUD.md, section "The host: GitHub Actions on his account", is the manual;
+# tools/cloud-github.mjs is the one deploy command; bench/cloud-host.mjs reads the ruler back.
+#
+# SANDBOX. One container, the Dockerfile's image, compose.yaml's caps (512 MB, no swap, 1 CPU, 256
+# pids, read-only root, all capabilities dropped, no new privileges). The health port is bound to
+# the runner's 127.0.0.1 and this job's poll loop is its only client: a runner accepts no inbound
+# connection from the internet. No secret enters the container: the optional store upload reads
+# secrets.SUPABASE_URL and secrets.SUPABASE_SERVICE_KEY in a runner step only, and the relay uses
+# the job's own token in a runner step only. The egress allowlist is bin/serve.mjs's guard.
+#
+# STOP: commit a file named state-cloud/STOP (any content) and every later run prints
+# "stopped by state-cloud/STOP" and exits 0 before it builds anything; or run
+# gh workflow disable cloud.yml.
+
+name: brain cloud
+
+on:
+  schedule:
+    # 08:00 UTC is 04:00 America/New_York during EDT (the ladder hour). GitHub cron is UTC only, so
+    # between the November and March DST changes this fires at 03:00 EST: it drifts one hour at each
+    # DST change. GitHub may start a scheduled run late when its queue is busy.
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+    inputs:
+      wallMinutes:
+        description: "minutes this job keeps the organism alive (55 fits 2,000 private minutes a month; at most 330)"
+        required: false
+        default: "55"
+      relay:
+        description: "true: dispatch the next run at the end (a public repository; a private one spends its minutes in under 2 days)"
+        required: false
+        default: "false"
+      ladder:
+        description: "true: run the ladder in this dispatched run too (a scheduled run always runs it)"
+        required: false
+        default: "false"
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: brain-cloud
+  cancel-in-progress: false
+
+jobs:
+  organism:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    defaults:
+      run:
+        shell: bash
+    env:
+      # dispatch inputs win; a scheduled run reads the repository variables tools/cloud-github.mjs
+      # sets with --relay (so the daily run keeps a relay alive), else the defaults
+      WALL_MINUTES: ${{ github.event_name == 'workflow_dispatch' && inputs.wallMinutes || vars.BRAIN_WALL_MINUTES || '55' }}
+      RELAY: ${{ github.event_name == 'workflow_dispatch' && inputs.relay || vars.BRAIN_RELAY || 'false' }}
+      IN_LADDER: ${{ github.event_name == 'workflow_dispatch' && inputs.ladder || 'false' }}
+      LADDER_MINUTES: "15"
+      BRAIN_INSTANCE: gh-${{ github.run_number }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: STOP check
+        run: |
+          if [ -f state-cloud/STOP ]; then
+            echo "stopped by state-cloud/STOP"
+            echo "BRAIN_STOP=1" >> "$GITHUB_ENV"
+          else
+            echo "no state-cloud/STOP in the checkout: the organism runs"
+          fi
+          exit 0
+
+      - name: restore the last checkpoint
+        id: restore
+        if: env.BRAIN_STOP != '1'
+        uses: actions/cache/restore@v4
+        with:
+          path: state-cloud/
+          key: brain-state-${{ github.run_number }}
+          restore-keys: brain-state-
+
+      - name: restored or fresh, the wall, the ladder
+        if: env.BRAIN_STOP != '1'
+        env:
+          MATCHED: ${{ steps.restore.outputs.cache-matched-key }}
+        run: |
+          mkdir -p state-cloud out
+          if [ -n "$MATCHED" ]; then
+            echo "restored $MATCHED: $(du -sb state-cloud | cut -f1) bytes"
+          else
+            echo "fresh: no checkpoint in the cache, the organism is built from its seed"
+          fi
+          wall="$WALL_MINUTES"
+          case "$wall" in ''|*[!0-9]*) echo "wallMinutes must be whole minutes, got '$wall'"; exit 1;; esac
+          if [ "$wall" -gt 330 ]; then echo "wallMinutes $wall is over 330 (the job times out at 350): 330 used"; wall=330; fi
+          if [ "$wall" -lt 2 ]; then wall=2; fi
+          ladder=false; why="not a scheduled run"
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then ladder=true; why="a scheduled run"; fi
+          if [ "$ladder" = false ] && [ "$IN_LADDER" = "true" ]; then ladder=true; why="dispatched with ladder=true"; fi
+          if [ "$ladder" = false ] && [ "$RELAY" = "true" ]; then
+            today=$(date -u +%F)
+            if [ "$(date -u +%H)" -ge 8 ] && ! ls state-cloud/verdicts/ladder/"$today"*.json > /dev/null 2>&1; then ladder=true; why="relay: no ladder yet for $today after 08:00 UTC"; fi
+          fi
+          daemon=$wall
+          if [ "$ladder" = true ]; then daemon=$(( wall > LADDER_MINUTES + 1 ? wall - LADDER_MINUTES : 1 )); fi
+          echo "wall $wall min: organism $daemon min, ladder $ladder ($why), relay $RELAY"
+          { echo "WALL=$wall"; echo "DAEMON_MINUTES=$daemon"; echo "LADDER=$ladder"; } >> "$GITHUB_ENV"
+          # the caps and the environment, shared by the organism and the ladder containers
+          ep=$(grep -oE 'BRAIN_EPISODES_MAX[=: ]+"?[0-9]+' Dockerfile | grep -oE '[0-9]+$' | head -n 1 || true)
+          if [ -z "$ep" ]; then ep=$(grep -oE 'BRAIN_EPISODES_MAX[=: ]+"?[0-9]+' compose.yaml | grep -oE '[0-9]+$' | head -n 1 || true); fi
+          if [ -n "$ep" ]; then echo "BRAIN_EPISODES_MAX $ep (from the Dockerfile, else compose.yaml)"; else echo "BRAIN_EPISODES_MAX: declared in neither the Dockerfile nor compose.yaml; the daemon's own bound applies"; fi
+          {
+            echo 'base=(--init --cpus 1 --pids-limit 256 --read-only --tmpfs /tmp:size=64m,mode=1777 --cap-drop ALL --security-opt no-new-privileges:true --add-host host.docker.internal:host-gateway)'
+            echo "base+=(--user $(id -u):$(id -g) -v $PWD/state-cloud:/state)"
+            # the organism: compose.yaml's 512 MB. The ladder runs only after the organism stopped, and
+            # bench/ladder.mjs --quick alone peaked at 502.7 MB on his PC (notes/cloud-host.md), so
+            # the ruler gets 1 GB and tools/budget.mjs kills its tree at 960 MB
+            echo 'caps=("${base[@]}" --memory 512m --memory-swap 512m)'
+            echo 'lcaps=("${base[@]}" --memory 1g --memory-swap 1g)'
+            echo 'envs=(-e BRAIN_STATE_DIR=/state -e BRAIN_NAME=cloud -e BRAIN_MAJORS=12 -e BRAIN_UNITS=256 -e BRAIN_CHECKPOINT_EVERY=1000 -e BRAIN_LEDGER=summary -e BRAIN_LEDGER_BUDGET_MB=64 -e BRAIN_HEAP_MB=224 -e BRAIN_RSS_CAP_MB=448 -e BRAIN_DISK_CAP_MB=2048 -e BRAIN_LADDER=off -e BRAIN_LADDER_HOUR=4 -e TZ=UTC -e BRAIN_MODEL_URL=http://host.docker.internal:11434 -e BRAIN_CHECKPOINT_URL= -e BRAIN_EGRESS_ALLOW=)'
+            echo "envs+=(-e BRAIN_INSTANCE=$BRAIN_INSTANCE)"
+            if [ -n "$ep" ]; then echo "envs+=(-e BRAIN_EPISODES_MAX=$ep)"; fi
+          } > "$RUNNER_TEMP/caps.sh"
+
+      - name: docker build
+        if: env.BRAIN_STOP != '1'
+        run: |
+          docker version --format 'docker server {{.Server.Version}}'
+          docker build -t brain .
+          docker image inspect brain --format 'image bytes {{.Size}}'
+
+      - name: docker run under the caps
+        if: env.BRAIN_STOP != '1'
+        run: |
+          source "$RUNNER_TEMP/caps.sh"
+          # BRAIN_LADDER=off: the ladder cannot share 512 MB with a live daemon (bin/serve.mjs says so
+          # and stops the daemon for it), so this job runs it after the stop, in the same image under
+          # the same caps on the same /state
+          docker run -d --name brain --restart always --stop-signal SIGINT "${caps[@]}" "${envs[@]}" -p 127.0.0.1:8080:8080 brain
+          date -u +%s > "$RUNNER_TEMP/started"
+          echo "started brain at $(date -u +%FT%TZ)"
+
+      - name: health poll, the runner is the only client
+        if: env.BRAIN_STOP != '1'
+        timeout-minutes: 335
+        run: |
+          start=$(cat "$RUNNER_TEMP/started")
+          end=$(( start + DAEMON_MINUTES * 60 ))
+          : > out/health.log
+          # a crash loop (serve restarted the daemon 5 times, or /health silent for 10 polls in a
+          # row) ends the poll early: the minutes past it buy nothing, and the run concludes failure
+          silent=0
+          while :; do
+            now=$(date -u +%s)
+            at=$(date -u +%FT%TZ)
+            body=$(curl -fsS --max-time 10 http://127.0.0.1:8080/health 2> /dev/null || true)
+            if [ -n "$body" ] && printf '%s' "$body" | jq -e . > /dev/null 2>&1; then
+              silent=0
+              printf '%s' "$body" | jq -c --arg at "$at" --argjson epoch "$now" '{at: $at, epoch: $epoch, health: .}' >> out/health.log
+              restarts=$(printf '%s' "$body" | jq -r '.restarts // 0' 2> /dev/null || echo 0)
+              case "$restarts" in ''|*[!0-9]*) restarts=0;; esac
+              if [ "$restarts" -ge 5 ]; then
+                echo "CRASH_LOOP=1" >> "$GITHUB_ENV"
+                echo "crash loop: serve restarted the daemon $restarts times by $at; the poll ends early"
+                break
+              fi
+            else
+              silent=$(( silent + 1 ))
+              jq -nc --arg at "$at" --argjson epoch "$now" '{at: $at, epoch: $epoch, error: "no answer from /health"}' >> out/health.log
+              if [ "$silent" -ge 10 ]; then
+                echo "CRASH_LOOP=1" >> "$GITHUB_ENV"
+                echo "crash loop: /health was silent for $silent polls in a row by $at; the poll ends early"
+                break
+              fi
+            fi
+            if [ "$now" -ge "$end" ]; then break; fi
+            left=$(( end - now ))
+            sleep $(( left < 60 ? left : 60 ))
+          done
+          echo "polls $(wc -l < out/health.log)"
+          tail -n 1 out/health.log
+
+      - name: stop with SIGINT, the checkpoint is written
+        if: always() && env.BRAIN_STOP != '1'
+        run: |
+          mkdir -p out
+          if ! curl -fsS --max-time 10 http://127.0.0.1:8080/health > out/health.json 2> /dev/null; then
+            echo '{"ok": false, "error": "no answer from /health at the end of the wall"}' > out/health.json
+          fi
+          docker stop --time 60 brain || echo "docker stop failed or no container"
+          docker logs brain > out/serve.log 2>&1 || true
+          if docker inspect brain > "$RUNNER_TEMP/inspect.json" 2> /dev/null; then
+            jq '.[0] | {restartCount: .RestartCount, oomKilled: .State.OOMKilled, exitCode: .State.ExitCode, startedAt: .State.StartedAt, finishedAt: .State.FinishedAt}' "$RUNNER_TEMP/inspect.json" > out/container.json
+          else
+            echo '{"restartCount": null, "error": "no container to inspect"}' > out/container.json
+          fi
+          snap=state-cloud/cloud/snapshot.json
+          if [ -f "$snap" ]; then
+            echo "CKPT_AGE_AT_STOP=$(( $(date -u +%s) - $(stat -c %Y "$snap") ))" >> "$GITHUB_ENV"
+            echo "CKPT_BYTES_AT_STOP=$(stat -c %s "$snap")" >> "$GITHUB_ENV"
+            echo "checkpoint after the stop: $(stat -c %s "$snap") bytes, $(( $(date -u +%s) - $(stat -c %Y "$snap") )) s old"
+          else
+            echo "no checkpoint at $snap after the stop"
+          fi
+          cat out/container.json
+
+      - name: the 04:00 ladder, on the cloud host
+        if: always() && env.BRAIN_STOP != '1' && env.LADDER == 'true'
+        timeout-minutes: 25
+        run: |
+          source "$RUNNER_TEMP/caps.sh"
+          mkdir -p state-cloud/verdicts/ladder state-cloud/budget
+          # the model endpoint: a runner has no Ollama unless one is installed, so the ladder's model
+          # arm reads absent (bench/answer.mjs names why) while its organism and null arms run and
+          # its LADDER line still prints; the probe says which case this run was
+          if curl -fsS --max-time 3 http://127.0.0.1:11434/api/tags > /dev/null 2>&1; then
+            model="answers at 127.0.0.1:11434 on the runner"
+          else
+            model="absent on the runner (no Ollama at 127.0.0.1:11434): the ladder's model arm reads absent"
+          fi
+          echo "model endpoint: $model"
+          echo "MODEL_ENDPOINT=$model" >> "$GITHUB_ENV"
+          # the organism is checkpointed and stopped; the ladder runs in its own container, same image,
+          # same sandbox, same /state, the egress guard loaded into every node process, and
+          # tools/budget.mjs kills its whole tree at 960 MB under the 1 GB wall
+          docker run -d --name brain-ladder "${lcaps[@]}" "${envs[@]}" -e BRAIN_EGRESS_GUARD=1 -e NODE_OPTIONS=--import=file:///app/bin/serve.mjs \
+            brain node tools/budget.mjs --ram-mb 960 --disk-mb 2048 --dir /state --record /state/budget/ladder.json --status-s 60 -- node --max-old-space-size=384 bench/ladder.mjs --log
+          if ! timeout "$(( LADDER_MINUTES * 60 ))s" docker wait brain-ladder; then
+            echo "the ladder passed $LADDER_MINUTES minutes: stopped"
+            docker stop --time 30 brain-ladder || true
+          fi
+          docker logs brain-ladder > out/ladder.log 2>&1 || true
+          docker rm -f brain-ladder > /dev/null 2>&1 || true
+          grep -m 1 '^LADDER [0-9]' out/ladder.log || echo "no LADDER line in ladder.log"
+          mkdir -p out/ladder
+          today=$(date -u +%F)
+          cp state-cloud/verdicts/ladder/"$today"* out/ladder/ 2> /dev/null || true
+          ls -la out/ladder
+
+      - name: job summary and run.json
+        if: always() && env.BRAIN_STOP != '1'
+        run: |
+          mkdir -p out
+          [ -f out/health.log ] || : > out/health.log
+          [ -f out/health.json ] || echo '{"ok": false, "error": "no health read"}' > out/health.json
+          [ -f out/container.json ] || echo '{}' > out/container.json
+          # the daemon's ledger summary: a copy capped at 4 MB a file keeps 90 days of artifacts
+          # inside the 500 MB a free account stores
+          if [ -d state-cloud/cloud/ledger ]; then
+            mkdir -p out/ledger
+            for f in state-cloud/cloud/ledger/*; do
+              if [ -f "$f" ]; then tail -c 4194304 "$f" > "out/ledger/$(basename "$f")"; fi
+            done
+          fi
+          ladder_line=$(grep -m 1 '^LADDER [0-9]' out/ladder.log 2> /dev/null || true)
+          jq -n \
+            --slurpfile log out/health.log --slurpfile h out/health.json --slurpfile c out/container.json \
+            --arg event "$GITHUB_EVENT_NAME" --arg runId "$GITHUB_RUN_ID" --arg runNumber "$GITHUB_RUN_NUMBER" \
+            --arg ladder "${LADDER:-false}" --arg relay "$RELAY" --arg ladderLine "$ladder_line" \
+            --arg model "${MODEL_ENDPOINT:-not probed: no ladder in this job}" --arg crashLoop "${CRASH_LOOP:-0}" \
+            --argjson wall "${WALL:-null}" --argjson daemon "${DAEMON_MINUTES:-null}" \
+            --argjson ageAtStop "${CKPT_AGE_AT_STOP:-null}" --argjson bytesAtStop "${CKPT_BYTES_AT_STOP:-null}" \
+            '($log | map(select(.health.tick != null))) as $t
+            | { event: $event, runId: $runId, runNumber: $runNumber, wallMinutes: $wall, organismMinutes: $daemon,
+                ladder: $ladder, relay: $relay, ladderLine: (if $ladderLine == "" then null else $ladderLine end),
+                modelEndpoint: $model, crashLoop: ($crashLoop == "1"),
+                polls: ($log | length), okPolls: ($log | map(select(.health.ok == true)) | length),
+                ticksPerHour: (if ($t | length) > 1 and ($t[-1].epoch > $t[0].epoch) then ((($t[-1].health.tick - $t[0].health.tick) / ($t[-1].epoch - $t[0].epoch) * 3600) | floor) else null end),
+                health: { ok: $h[0].ok, uptimeS: $h[0].uptimeS, restarts: $h[0].restarts, budgetKills: $h[0].budgetKills, tick: $h[0].tick,
+                          checkpointAgeS: $h[0].checkpoint.ageS, checkpointBytes: $h[0].checkpoint.bytes },
+                container: $c[0], checkpointAgeAtStopS: $ageAtStop, checkpointBytesAtStop: $bytesAtStop }' > out/run.json
+          {
+            echo "## brain cloud, run $GITHUB_RUN_NUMBER ($GITHUB_EVENT_NAME)"
+            echo
+            echo "| uptime s | restarts | tick | checkpoint age s | checkpoint bytes | ticks per hour |"
+            echo "|---|---|---|---|---|---|"
+            jq -r '"| \(.health.uptimeS) | \(.health.restarts) | \(.health.tick) | \(.health.checkpointAgeS) | \(.health.checkpointBytes) | \(.ticksPerHour) |"' out/run.json
+            echo
+            jq -r '"health ok \(.health.ok); container restarts \(.container.restartCount); OOM killed \(.container.oomKilled); budget kills \(.health.budgetKills); polls \(.okPolls) ok of \(.polls); checkpoint after the stop \(.checkpointAgeAtStopS) s old, \(.checkpointBytesAtStop) bytes"' out/run.json
+            echo
+            echo "ladder: ${ladder_line:-not run in this job}"
+            echo
+            echo "model endpoint: ${MODEL_ENDPOINT:-not probed: no ladder in this job}"
+            if [ "${CRASH_LOOP:-0}" = "1" ]; then echo; echo "CRASH LOOP: the poll ended early; serve.log in the artifact names the cause"; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "artifact bytes $(du -sb out | cut -f1)"
+          cat out/run.json
+
+      - name: is there a checkpoint to save
+        id: ck
+        if: always() && env.BRAIN_STOP != '1'
+        run: |
+          # an empty state would become the newest cache and the next run would start from nothing
+          if [ -f state-cloud/cloud/snapshot.json ]; then echo "has=true" >> "$GITHUB_OUTPUT"; echo "checkpoint present"; else echo "has=false" >> "$GITHUB_OUTPUT"; echo "no checkpoint: the cache is not saved"; fi
+
+      - name: save the checkpoint
+        if: always() && env.BRAIN_STOP != '1' && steps.ck.outputs.has == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: state-cloud/
+          key: brain-state-${{ github.run_number }}
+
+      - name: upload the host readings
+        if: always() && env.BRAIN_STOP != '1'
+        uses: actions/upload-artifact@v4
+        with:
+          name: brain-cloud
+          path: out/
+          retention-days: 90
+          if-no-files-found: warn
+
+      - name: health to the store, when he configured one
+        if: always() && env.BRAIN_STOP != '1'
+        continue-on-error: true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_KEY" ] && [ -f out/health.json ]; then
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 -X POST "${SUPABASE_URL%/}/storage/v1/object/brain-cloud/health/latest.json" \
+              -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" -H "apikey: $SUPABASE_SERVICE_KEY" -H "x-upsert: true" \
+              -H "Content-Type: application/json" --data-binary @out/health.json || echo 000)
+            echo "store upload: HTTP $code (bucket brain-cloud, object health/latest.json)"
+          else
+            echo "no store configured"
+          fi
+
+      - name: a crash loop fails the run
+        if: always() && env.BRAIN_STOP != '1' && env.CRASH_LOOP == '1'
+        run: |
+          echo "::error::the organism crash-looped (serve restarted the daemon 5 times, or /health was silent for 10 polls): serve.log in the brain-cloud artifact names the cause; the checkpoint and readings above were still saved"
+          exit 1
+
+      - name: relay the next run
+        if: ${{ !cancelled() && env.BRAIN_STOP != '1' && env.CRASH_LOOP != '1' && env.RELAY == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run cloud.yml -R "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" -f wallMinutes="$WALL" -f relay=true
+          echo "relayed: the next run waits in the brain-cloud concurrency group and restores this checkpoint"

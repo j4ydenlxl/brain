@@ -32,7 +32,7 @@ import { registerMind, getMind, installLanguage, sealRegion, MindModel } from '.
 import { split as splitCorpus } from '../mind/corpus.mjs';
 import { attachWorld, armWorld, loadPolicy, normalizePolicy, WORLD_KINDS } from '../world/index.mjs';
 import { attach as attachLearning } from '../learning/index.mjs';
-import { MemorySystem, attachMemory } from '../memory/index.mjs';
+import { MemorySystem, attachMemory, EpisodicStore } from '../memory/index.mjs';
 import { attachWorkspace, attachAttention, defineWorld } from '../simulate/index.mjs';
 import { installAskRegion, ASK_REGION, ASK_CELLS } from '../act/region.mjs';
 
@@ -114,6 +114,19 @@ export function clockIds(brain) {
     ids[periodLabel(c.policy.period)] = c.id;
   }
   return ids;
+}
+
+// The episodic record's bound for this organism: opts.episodic.maxEpisodes, else BRAIN_EPISODES_MAX,
+// else null (memory/episodic.mjs EPISODIC_DEFAULTS, 65536 keys of 8192 lanes = 512 MB). A container
+// names a smaller one (compose.yaml, bin/serve.mjs), since the default bound is the whole 512 MB cap.
+export function episodicBound(opts = {}, env = process.env) {
+  const o = opts && opts.episodic ? opts.episodic.maxEpisodes : undefined;
+  const e = env ? env.BRAIN_EPISODES_MAX : undefined;
+  const raw = o !== undefined && o !== null ? o : (e === undefined || e === '' ? null : e);
+  if (raw === null) return null;
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n < 1) throw new Error('episodic bound (opts.episodic.maxEpisodes or BRAIN_EPISODES_MAX) must be a positive integer, got ' + JSON.stringify(raw));
+  return n;
 }
 
 // ---------------------------------------------------------------- build
@@ -209,7 +222,8 @@ export function buildWhole(opts = {}) {
   ids.phasor.memory = ['me.phv.enc', 'me.phv.bundle', 'me.phv.sim', 'me.phv.mem'];
 
   // 5. the memory system and its cells in region memory
-  const memSys = attachMemory(brain, { name });
+  const epBound = episodicBound(opts);
+  const memSys = attachMemory(brain, epBound ? { name, episodic: { maxEpisodes: epBound } } : { name });
   circuit('memory', 'me.system', 'the memory system: working, episodic, semantic, sequence, self, consolidate, forget', 1);
   const memParams = { system: name };
   add('mem.working', 'memory.working', 'memory', 'me.system', memParams);
@@ -599,7 +613,12 @@ export function restoreWhole(dir, opts = {}) {
     const gateOpts = extras.genome.runtime && extras.genome.runtime.gate;
     if (gateOpts && typeof gateOpts === 'object') brain.gate.policy = monomorphicGrowth(gateOpts);
   }
-  const sys = extras.memory ? MemorySystem.from(extras.memory) : new MemorySystem({ name: extras.name });
+  // a bound named for this run (opts.episodic.maxEpisodes or BRAIN_EPISODES_MAX) replaces the one the
+  // snapshot recorded, before a single key is decoded: above it the eviction rule keeps exactly the bound
+  const epBound = episodicBound(opts);
+  let memJ = extras.memory;
+  if (memJ && memJ.episodic && epBound) memJ = { ...memJ, episodic: EpisodicStore.bounded(memJ.episodic, epBound) };
+  const sys = memJ ? MemorySystem.from(memJ) : new MemorySystem({ name: extras.name, ...(epBound ? { episodic: { maxEpisodes: epBound } } : {}) });
   restoreCodebookSlots(sys, extras.codebooks);
   attachMemory(brain, sys);
   brain.capability = { registry: extras.capability ? SkillRegistry.from(extras.capability) : new SkillRegistry({ name: extras.name + ':skills' }) };

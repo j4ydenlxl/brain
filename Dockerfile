@@ -14,6 +14,7 @@ ENV NODE_ENV=production \
     BRAIN_NAME=cloud \
     BRAIN_MAJORS=12 \
     BRAIN_LEDGER=summary \
+    BRAIN_EPISODES_MAX=2048 \
     HEALTH_HOST=0.0.0.0 \
     HEALTH_PORT=8080
 

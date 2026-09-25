@@ -4,6 +4,12 @@
 // cold, which removes an episode from similarity retrieval but keeps it on the record. At
 // the bound (maxEpisodes) the oldest cold episodes leave the record first, then the oldest
 // warm ones, until three quarters of the bound remain; the ledger keeps what it logged.
+// The slot arrays never pass the bound: capacity starts at min(capacity, maxEpisodes), a grow
+// doubles up to the bound and no further, and a restore allocates at most the bound. Before
+// 2026-09-25 capacity doubled past it (65536 bound: 8192 -> 16384 -> 32768 keys of 8192 lanes)
+// and EpisodicStore.from restored with min(n, max) * 2, so a 512 MB container passed its RSS cap
+// (bench/cloud.mjs, 14 restarts in 300 s). maxEpisodes is a per store option; EPISODIC_DEFAULTS
+// stays frozen, and a deployment names its own bound (seeds/whole.mjs, BRAIN_EPISODES_MAX).
 // Without the bound the soak's tier held 176238 episodes at t=4000, 1.84 GB of a 2.64 GB
 // checkpoint, growing 5.6x between t=2000 and t=4000 (2026-09-17).
 //
@@ -59,7 +65,7 @@ export class EpisodicStore {
     this.maxEpisodes = Math.max(16, o.maxEpisodes);
 
     this.n = 0;
-    this.cap = Math.max(16, o.capacity);
+    this.cap = Math.min(Math.max(16, o.capacity), this.maxEpisodes); // never allocated past the bound
     this.keys = new Int8Array(this.cap * this.d);
     this.sig = new Uint32Array(this.cap * this.words);
     this.times = new Float64Array(this.cap);
@@ -86,7 +92,10 @@ export class EpisodicStore {
   size() { return this.n; }
 
   _grow() {
-    const cap = this.cap * 2;
+    // doubling stops AT the bound: append() compacts at n >= maxEpisodes before it grows, so a
+    // full store at its bound never reaches here
+    const cap = Math.min(this.cap * 2, this.maxEpisodes);
+    if (cap <= this.cap) throw new Error('episodic: capacity ' + this.cap + ' is at the bound ' + this.maxEpisodes + ' and the store did not compact');
     const keys = new Int8Array(cap * this.d); keys.set(this.keys.subarray(0, this.n * this.d));
     const sig = new Uint32Array(cap * this.words); sig.set(this.sig.subarray(0, this.n * this.words));
     const times = new Float64Array(cap); times.set(this.times.subarray(0, this.n));
@@ -427,15 +436,51 @@ export class EpisodicStore {
   }
 
   /**
-   * Rebuild from serialize().
+   * A serialized store put under a new bound, without decoding a key. When n passes the bound,
+   * the eviction rule of _compact picks who leaves, in one pass: cold before warm, then the
+   * oldest t, then the lowest id; the survivors keep their order and exactly maxEpisodes remain.
+   * @param {object} j serialize() output
+   * @param {number} maxEpisodes the new bound (at least 16, as in the constructor)
+   * @returns {object} a serialize() shaped object
+   */
+  static bounded(j, maxEpisodes) {
+    const m = Number(maxEpisodes);
+    if (!Number.isFinite(m) || m < 1) throw new Error('episodic: maxEpisodes must be a positive number, got ' + JSON.stringify(maxEpisodes));
+    const bound = Math.max(16, Math.floor(m));
+    const n = j.n;
+    if (n <= bound) return { ...j, maxEpisodes: bound };
+    const cold = (i) => (j.cold[i] === 1 ? 1 : 0);
+    const order = Array.from({ length: n }, (_, i) => i);
+    order.sort((a, b) => (cold(b) - cold(a)) || (j.times[a] - j.times[b]) || (a - b));
+    const gone = new Uint8Array(n);
+    for (let i = 0; i < n - bound; i++) gone[order[i]] = 1;
+    const keep = [];
+    for (let i = 0; i < n; i++) if (!gone[i]) keep.push(i);
+    const pick = (a) => keep.map((i) => a[i]);
+    let keys;
+    if (typeof j.keys === 'string') { // snapshots before 2026-09-17: one string for every key
+      const all = dataFromJSON('hv', j.keys);
+      keys = keep.map((i) => dataToJSON('hv', all.subarray(i * j.d, (i + 1) * j.d)));
+    } else keys = pick(j.keys);
+    const stats = { ...(j.stats || {}) };
+    stats.evicted = (stats.evicted || 0) + (n - bound);
+    return { ...j, maxEpisodes: bound, n: keep.length, keys, times: pick(j.times), gens: pick(j.gens), cold: pick(j.cold), values: pick(j.values), items: pick(j.items), stats };
+  }
+
+  /**
+   * Rebuild from serialize(). The capacity restored is at most the bound: min(bound, 2n).
    * @param {object} j
+   * @param {object} [opts] { maxEpisodes }: a bound that replaces the recorded one; above it the
+   *   eviction rule keeps exactly maxEpisodes (see bounded)
    * @returns {EpisodicStore}
    */
-  static from(j) {
+  static from(j, opts = {}) {
+    if (opts && opts.maxEpisodes !== undefined && opts.maxEpisodes !== null) j = EpisodicStore.bounded(j, opts.maxEpisodes);
+    const max = Math.max(16, j.maxEpisodes ?? EPISODIC_DEFAULTS.maxEpisodes);
     const s = new EpisodicStore({
       d: j.d, seed: j.seed, bands: j.bands, bandBits: j.bandBits,
-      rescore: j.rescore, minCandidates: j.minCandidates, maxEpisodes: j.maxEpisodes ?? EPISODIC_DEFAULTS.maxEpisodes,
-      capacity: Math.max(16, Math.min(j.n, j.maxEpisodes ?? EPISODIC_DEFAULTS.maxEpisodes) * 2),
+      rescore: j.rescore, minCandidates: j.minCandidates, maxEpisodes: max,
+      capacity: Math.min(max, Math.max(16, j.n * 2)),
     });
     // snapshots before 2026-09-17 hold every key in one string
     const keys = typeof j.keys === 'string' ? dataFromJSON('hv', j.keys) : null;

@@ -35,6 +35,10 @@
 //   HEALTH_PORT 8080  HEALTH_HOST 127.0.0.1 (0.0.0.0 in the image)  BRAIN_INSTANCE host-pid
 //   BRAIN_INSTANCE_EVERY_MS 60000       BRAIN_LADDER on|off  BRAIN_LADDER_HOUR 4  BRAIN_LADDER_HEAP_MB 384
 //   BRAIN_SAMPLE_MS 1000                BRAIN_DISK_CAP_MB 2048
+//   BRAIN_EPISODES_MAX 2048             the episodic record's bound, handed to the daemon child
+//                                       (seeds/whole.mjs): 2048 keys x 8192 Int8 lanes = 16 MB
+//                                       (notes/cloud.md, Measured: 8192 held about 55 MB more
+//                                       RSS and the same rulers; board 16 builder, fit item)
 import { fork, spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync, statSync, readdirSync, appendFileSync, rmSync, cpSync } from 'node:fs';
 import http from 'node:http';
@@ -57,6 +61,20 @@ const firstLine = (e) => String((e && e.message) || e).split('\n')[0];
 const sleepSync = (ms) => { try { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms); } catch { /* no wait available */ } };
 
 // ---------------------------------------------------------------- configuration
+/** The episodic bound the daemon gets when BRAIN_EPISODES_MAX is unset: 2048 keys x 8192 lanes = 16 MB. */
+export const DEFAULT_EPISODES_MAX = 2048;
+/**
+ * The episodic record's bound from the environment. Pure: no process, no file.
+ * @returns {{ maxEpisodes: number, from: string }}
+ */
+export function episodicOptions(env = process.env) {
+  const v = env.BRAIN_EPISODES_MAX;
+  if (v === undefined || String(v).trim() === '') return { maxEpisodes: DEFAULT_EPISODES_MAX, from: 'default' };
+  const n = Number(String(v).trim());
+  if (!Number.isInteger(n) || n < 16) throw new Error('BRAIN_EPISODES_MAX must be an integer of at least 16, got ' + JSON.stringify(v));
+  return { maxEpisodes: n, from: 'BRAIN_EPISODES_MAX' };
+}
+
 export function config(env = process.env) {
   const num = (k, d) => {
     const v = env[k];
@@ -77,6 +95,7 @@ export function config(env = process.env) {
     ledger: env.BRAIN_LEDGER || 'summary',
     ledgerBudgetMb: num('BRAIN_LEDGER_BUDGET_MB', 64),
     heapMb: num('BRAIN_HEAP_MB', 224),
+    episodesMax: episodicOptions(env).maxEpisodes,
     rssCapMb: num('BRAIN_RSS_CAP_MB', 448),
     nodeFlags: (env.BRAIN_NODE_FLAGS === undefined ? '--max-semi-space-size=1 --optimize-for-size' : env.BRAIN_NODE_FLAGS).split(/\s+/).filter(Boolean),
     selfEvery: opt('BRAIN_SELF_EVERY'),
@@ -378,7 +397,7 @@ export class Supervisor {
       startedAt: iso(this.startedAt), updatedAt: iso(), restarts: this.restarts, plannedStops: this.plannedStops, budgetKills: this.budgetKills, starts: this.starts,
       child: c ? { pid: c.pid, startedAt: iso(c.startedAt), built: c.built, resumedAt: c.resumedAt, lastT: c.lastT, lastAt: c.lastAt ? iso(c.lastAt) : null, rssMb: c.rssMb, maxRssMb: c.maxRssMb, heapUsedMb: c.heapUsedMb, heapTotalMb: c.heapTotalMb, externalMb: c.externalMb, arrayBuffersMb: c.arrayBuffersMb, episodic: c.episodic, cpuS: c.cpuS, ticksPerSec: c.tps, ledgerPolicy: c.ledgerPolicy, guard: c.guard } : null,
       lastExit: this.lastExit, peak: this.peak,
-      budget: { heapMb: this.cfg.heapMb, rssCapMb: this.cfg.rssCapMb, diskCapMb: this.cfg.diskCapMb, nodeFlags: this.cfg.nodeFlags, sampler: this.sampler },
+      budget: { heapMb: this.cfg.heapMb, episodesMax: this.cfg.episodesMax, rssCapMb: this.cfg.rssCapMb, diskCapMb: this.cfg.diskCapMb, nodeFlags: this.cfg.nodeFlags, sampler: this.sampler },
       ledger: this.ledger, stateBytes: this.stateBytes,
       ladder: { ...this.ladderState, nextAt: this.ladderState.nextAt ? iso(this.ladderState.nextAt) : null },
       egress: { allow: this.allow.entries, route: this.allow.route, venueDeclared: this.allow.venueDeclared },
@@ -392,7 +411,7 @@ export class Supervisor {
 
   spawnChild() {
     const cfg = this.cfg;
-    const env = { ...process.env, BRAIN_STATE_DIR: cfg.stateDir, BRAIN_NAME: cfg.name, BRAIN_EGRESS_GUARD: '1', BRAIN_EGRESS_LIST: JSON.stringify(this.allow) };
+    const env = { ...process.env, BRAIN_STATE_DIR: cfg.stateDir, BRAIN_NAME: cfg.name, BRAIN_EGRESS_GUARD: '1', BRAIN_EGRESS_LIST: JSON.stringify(this.allow), BRAIN_EPISODES_MAX: String(cfg.episodesMax) };
     const execArgv = ['--max-old-space-size=' + cfg.heapMb, ...cfg.nodeFlags];
     const child = fork(SELF, ['--child'], { cwd: ROOT, env, execArgv, stdio: ['ignore', 'inherit', 'inherit', 'ipc'] });
     this.starts++;
@@ -532,7 +551,7 @@ export class Supervisor {
     installGuard({ env: { ...process.env, BRAIN_EGRESS_LIST: JSON.stringify(this.allow) }, stateDir: cfg.stateDir });
     const { startHealth } = await import('../daemon/health.mjs');
     this.health = await startHealth({ port: cfg.healthPort, host: cfg.healthHost, stateDir: cfg.stateDir, name: cfg.name, diskCapMb: cfg.diskCapMb });
-    this.say('[serve] ' + cfg.instance + ' health ' + this.health.url + '/health, state ' + cfg.stateDir + ', brain ' + cfg.name + ' (' + cfg.majors + ' majors, ' + cfg.units + ' units), heap ' + cfg.heapMb + ' MB, rss cap ' + cfg.rssCapMb + ' MB, ledger ' + cfg.ledger + ' budget ' + cfg.ledgerBudgetMb + ' MB, sampler ' + this.sampler);
+    this.say('[serve] ' + cfg.instance + ' health ' + this.health.url + '/health, state ' + cfg.stateDir + ', brain ' + cfg.name + ' (' + cfg.majors + ' majors, ' + cfg.units + ' units), heap ' + cfg.heapMb + ' MB, episodes max ' + cfg.episodesMax + ', rss cap ' + cfg.rssCapMb + ' MB, ledger ' + cfg.ledger + ' budget ' + cfg.ledgerBudgetMb + ' MB, sampler ' + this.sampler);
     this.say('[serve] egress allowlist: ' + (this.allow.entries.map((e) => e.host + ':' + e.port + ' (' + e.why + ')').join(', ') || 'empty') + (this.allow.route ? '; route ' + this.allow.route.from + ' -> ' + this.allow.route.to : '') + '; venue hosts declared in world/policy.json: ' + this.allow.venueDeclared);
     this.diskSample();
     this.spawnChild();

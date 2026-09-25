@@ -19,7 +19,61 @@ The bar is `node bench/cloud.mjs`. It was run once for 300 s, natively, because 
 
 ## Measured
 
-### The bar: `node bench/cloud.mjs` (2026-09-24T02:33:42Z, node v24.15.0, 308 s)
+### Board 16 fit item: the episodic bound (2026-09-25, board 16 builder)
+
+**What changed.** memory/episodic.mjs never allocates past maxEpisodes: a grow doubles up to the bound and stops, EpisodicStore.from restores at capacity min(bound, 2n), and EpisodicStore.bounded(j, m) evicts a saved record down to a new bound. seeds/whole.mjs passes `{ episodic: { maxEpisodes } }` to attachMemory, from opts.episodic.maxEpisodes or BRAIN_EPISODES_MAX, on a build and on a restore. bin/serve.mjs reads BRAIN_EPISODES_MAX (default 2048) and hands it to the daemon child. compose.yaml and the Dockerfile set BRAIN_EPISODES_MAX 2048. The daemon heap flag is unchanged (224 MB).
+
+**The eviction rule.** At the bound the store compacts in one batch down to three quarters of the bound. Cold episodes leave first, then the oldest by t, then the lowest id. The store has no salience field, so "lowest salience" has nothing to read. Cold is the store's own forgetting mark (an episode that no longer answers retrieval), so it goes first, and age breaks ties. The batch keeps eviction O(1) amortised: one sort and one reindex per maxEpisodes/4 appends (512 at 2048). test/memory.test.mjs pins this rule.
+
+**The arithmetic** (printed by node):
+
+    65536 keys x 8192 lanes = 536870912 bytes = 512 MB   (the old default bound)
+    16384 keys x 8192 lanes = 134217728 bytes = 128 MB   (the ceiling: keys stay under it)
+    8192 keys x 8192 lanes = 67108864 bytes = 64 MB
+    2048 keys x 8192 lanes = 16777216 bytes = 16 MB      (compose.yaml and the Dockerfile)
+
+**The memory probe.** A scratch probe ran bin/serve.mjs natively with compose.yaml's environment. It lifted the RSS cap to 2000 MB, took a census every 5 s from /health, and used a local stub as the model endpoint (0 hits in every probe). Its last line at 180 s:
+
+- before (no bound, 65536): `s=181 tick=21873 rss=668 heapUsed=66 arrayBuffers=407 episodic n=24200 cap=32768 max=65536 keyMb=256 evicted=0 restarts=0 budgetKills=0 peakDaemonRss=814`
+- bound 8192: `s=181 tick=31392 rss=520 heapUsed=59 arrayBuffers=214 episodic n=7911 cap=8192 max=8192 keyMb=64 evicted=26624 heapTotal=67 external=281 restarts=0 budgetKills=0 peakDaemonRss=623`
+- bound 2048 (after, the value shipped): `s=181 tick=26035 rss=433 heapUsed=59 arrayBuffers=166 episodic n=1914 cap=2048 max=2048 keyMb=16 evicted=26624 heapTotal=66 external=233 restarts=0 budgetKills=0 peakDaemonRss=484`
+
+**Why 2048 and not 8192.** In the 300 s probes before t=20000, the daemon read rss 431 to 450 at 8192 (s=65 to 115) and 361 to 388 at 2048 (s=40 to 140). The peak before t=20000 was 523 at 8192 and 470 at 2048. The rulers read the same at both: k=19 exact 36/36 carried 36/36, and k=39 exact 36/36 carried 34/36.
+
+Caveat: the before probe and the 8192 probes ran without a bench flag. Their daemons started the self-code worker at t=20000 (see Open). The 2048 probe and every bench run below had the flag up. The comparison above uses only samples from before t=20000.
+
+**The bar:** `node tools/budget.mjs --ram-mb 6000 --disk-mb 2000 --dir <scratch> -- node --max-old-space-size=512 bench/cloud.mjs`, native. It wrote bench/verdicts/cloud.json at 2026-09-25T22:03:32.193Z (node v24.15.0, 354 s wall), with isTheBar true and **barMet false**.
+
+- health before (60 s): ok true, restarts 0, budget kills 0, tick 9001, daemon rss 359 MB (peak 461), episodic n=1540 cap=2048 keyMb=16, checkpoint 5.8 s old.
+- `kill: daemon pid 36604 killed at t=11041 (checkpoint t=10097); restart count 1 after 3691 ms, new pid 23640, resumed at t=10097 (from checkpoint: true)`
+- `restart count 3 (1 from the bench kill, 2 budget kills at the rss cap, 0 other); B: restarts 1, budget kills 1`
+- health after (300 s): ok true, restarts 3, budget kills 2, tick 39965, daemon rss 291 MB (peak 525), last exit "BUDGET KILLED rss 456 MB over cap 448 MB" at t=39892, checkpoint 16.4 s old.
+- `rss peak: {"daemonA":525,"serveA":71,"daemonB":564,"serveB":67,"instanceA":596,"instanceB":631}`
+- `bar {"restartCount1NoBudgetKill":false,"resumedFromCheckpoint":true,"duplicate200Then409SecondFromCopy":true,"egressModelEndpointAllowed":true,"egressExampleRefused":true,"healthOkAfter":true,"daemonPeakRssUnderCap":false,"checkpointAgeUnder60s":true} barMet false`
+- Every budget kill came at a self round (selfEvery 20000): A at t=20097 (rss 513), B at t=21384 (rss 475), and A at t=39892 (rss 456).
+- In this run the egress row read "not reached: 23 The operation was aborted due to timeout", while the stub counted GET /api/tags 1. The guard let the request through, but the stub could not answer it: it runs in the bench process, and a blocking spawnSync held that process. The probe now spawns asynchronously, and the control run below read 200.
+
+**The control** (the same command with `--episodes-max 65536`, the old bound; bench/verdicts/cloud-control-partial.json, isTheBar false): `restart count 14 (1 from the bench kill, 13 budget kills at the rss cap, 0 other); B: restarts 11, budget kills 11`. rss peak daemonA 602, daemonB 709. At the end the episodic record held n=20270 in a capacity of 40040 (313 MB of keys).
+
+**Run-to-run noise** (the bar command repeated, with its verdict written to a scratch path): `restart count 3 (1 from the bench kill, 2 budget kills at the rss cap, 0 other); B: restarts 0, budget kills 0` (B was budget killed after that reading, at t=40257, rss 537). rss peak daemonA 518, daemonB 554, against 525 and 564 in the bar. The checkpoint was 118 s old at the end, against 16.4 s in the bar: A resumed at t=39249 and then sat in the second self round. Its budget kills were at t=20112 (rss 479) and t=39774 (rss 450). So the bar's restart count 3 and the control's 14 differ by more than the repeat moved (3 to 3). The checkpoint age row is noise-bound at the second self round: 16.4 s in the bar, 118 s in the repeat.
+
+**What is left, and where it lives.** These were measured in the 2048 probe and the bar. None of them is the episodic record, and none of their files belongs to this item:
+
+1. **The knowledge store.** Growth mode opens bench/fixtures/wiki/store (daemon/run.mjs ingestStep calls memory/knowledge.mjs KnowledgeStore.open). Array buffers stepped from 46 to 166 MB, and the peak from 304 to 470, between s=25 and s=30. meta.json gives residentBytes 115742256 (110.4 MB). readTyped reads each file with readFileSync and then copies it into a new ArrayBuffer, so sigs.bin (70294144 bytes, 67.0 MB) is held twice while it loads. .dockerignore does not exclude the store, so the image carries it.
+2. **The self rounds** (selfEvery 20000). In the probe, rss went from 387 to 438 at t=20000, as cells grew from 173 to 210 and edges from 913 to 1756. Every budget kill of the bar came at one. At the second round (t=40000), the tick stayed at 39867 or 39872 for 40 s or more in both 300 s probes, and the stop needed SIGKILL after 25 s.
+3. **The self-code worker** (selfCodeEvery 20000). With no bench flag up it starts at t=20000 and runs the tree's self/autopilot.mjs. In the 8192 probe, rss went from 450 to 513 when it started and stayed between 507 and 545 to the end. The bench now raises a flag, so the bar did not measure the worker.
+
+**Bench changes** (bench/cloud.mjs, board 16 builder):
+- Native mode is the documented fallback, and a completed 300 s native run is the bar (isTheBar true).
+- barMet is the conjunction of the 8 bar rows. This is new: there was no barMet before, and a native run was always partial.
+- `--episodes-max N` runs the control. A control run is always partial.
+- The model endpoint is a local stub (model off).
+- A bench flag keeps the daemons from running self-code on the real tree.
+- The egress probe no longer blocks the stub.
+
+**Tests.** `node --test test/cloud-fit.test.mjs test/cloud.test.mjs test/memory.test.mjs`: 30 tests, 29 pass, 1 fail. test/cloud-fit.test.mjs passes 4 of 4. The one failure is "no secret pattern appears in the build context". It fails on test/handoff.test.mjs:43, a planted sk_live_ string in a file this item does not own (untracked, written 16:52 on 2026-09-25).
+
+### The bar of 2026-09-24: `node bench/cloud.mjs` (2026-09-24T02:33:42Z, node v24.15.0, 308 s)
 
 Verdict: `bench/verdicts/cloud-partial.json`, `isTheBar: false`, exit 1.
 
@@ -71,12 +125,13 @@ Verdict: `bench/verdicts/cloud-partial.json`, `isTheBar: false`, exit 1.
 
 ## Open
 
-OPEN: the organism does not fit 512 MB, and the fix is outside this item. Three changes, in the owners' files:
-  1. `seeds/whole.mjs` should take an episodic option and pass it to `attachMemory(brain, { name, episodic: { maxEpisodes } })`.
-  2. `memory/episodic.mjs` `EpisodicStore.from` should cap its restore capacity at `maxEpisodes`; at the bound, `min(n, max) * 2` allocates twice the bound.
-  3. serve.mjs will then pass `BRAIN_EPISODES_MAX` from compose.yaml.
-
-  Until then the bar row "restart count 1" stays missed: 14 in 300 s.
+OPEN: the bar of 2026-09-25 is missed on two rows: restart count 3 (2 budget kills) and daemon peak RSS 525 and 564 MB against 448. The three episodic changes landed (Measured, Board 16 fit item), and restarts fell from 14 to 3. The rest of the RSS sits in files this item does not own:
+  1. memory/knowledge.mjs readTyped should read each file straight into its ArrayBuffer (fs.readSync into a Uint8Array view), so no file is held twice. sigs.bin alone is 67.0 MB.
+  2. The self rounds of daemon/run.mjs (selfEvery 20000) sit under every budget kill of the bar. The second round held the tick 40 s or more.
+  3. Whether a container should load the 110.4 MB knowledge store at all (.dockerignore, daemon/run.mjs ingestStep).
+OPEN: in a container no bench flag is up, so the self-code worker runs, and its memory is not in the bar. In the 8192 probe, rss went from 450 to 513 when it started.
+OPEN: my probes without a bench flag let their daemons run the real tree's self/autopilot.mjs at t=20000. They appended notes.open rows to bench/verdicts/autopilot/2026-09-25.jsonl: runId 20260925T213200240Z (20 rows), 20260925T213834535Z (31 rows) and 20260925T214255723Z (33 rows). They also left state/self-code/autopilot.lock naming dead pid 40856; autopilot takes over a dead pid's lock. The rows were not removed, because that journal belongs to another item. Natively, any daemon run without a bench flag does the same.
+OPEN: test/cloud.test.mjs fails 1 of its tests, and bench/cloud.mjs reads noSecretInContext false, on a planted sk_live_ string at test/handoff.test.mjs:43. That file is not this item's.
 OPEN: Docker is absent on this machine. The Docker path of bench/cloud.mjs has never run: build, run with the caps, `docker exec` kill, `docker stats`, the second container. Image bytes are unmeasured. The build context is 877125681 bytes, and the wiki fixtures under bench/fixtures/wiki are most of it.
 OPEN: the guard lives in the process, not the network. `fetch`, `http` and `https` are guarded in every node process under the supervisor. Raw `net`/`tls` sockets, `dgram`, and child processes that are not node are not. Worker threads are not measured. A network wall needs an egress proxy or a docker network policy.
 OPEN: the loopback exception trusts control.json files the organism itself writes. In a container, loopback is the container. Natively it is the host.
