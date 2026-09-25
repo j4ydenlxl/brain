@@ -19,8 +19,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const ROOT = path.resolve(HERE, '..', '..');
-const MANUAL = path.join(ROOT, 'brain', 'MANUAL.md');
+const BRAIN = path.resolve(HERE, '..'); // brain/ itself: works both nested in the parent checkout and as its own clone
+const MANUAL = path.join(BRAIN, 'MANUAL.md');
 const STAMP = path.join(HERE, '.reorient-stamp');
 const event = process.argv[2] === 'PostCompact' ? 'PostCompact' : 'SessionStart';
 
@@ -28,7 +28,7 @@ let source = 'startup';
 try { source = JSON.parse(readFileSync(0, 'utf8') || '{}').source || source; } catch {}
 
 const sh = (cmd) => {
-  try { return execSync(cmd, { cwd: path.join(ROOT, 'brain'), encoding: 'utf8', timeout: 10000, stdio: ['ignore', 'pipe', 'ignore'] }).trim(); }
+  try { return execSync(cmd, { cwd: BRAIN, encoding: 'utf8', timeout: 10000, stdio: ['ignore', 'pipe', 'ignore'] }).trim(); }
   catch { return ''; }
 };
 const emit = (text) => {
@@ -77,7 +77,7 @@ out.push('');
 out.push('## §B objectives (head)');
 out.push(cap(stIdx >= 0 ? objectives.slice(0, stIdx) : objectives, 1500, false));
 out.push('');
-const LOG = path.join(ROOT, 'brain', 'docs', 'LOG.md');
+const LOG = path.join(BRAIN, 'docs', 'LOG.md');
 let tail = progress;
 try { const ll = readFileSync(LOG, 'utf8').split(String.fromCharCode(10)).filter(l => l.startsWith('- ')); tail = '### Last 3 lines of docs/LOG.md (' + ll.length + ' lines in all)' + String.fromCharCode(10) + ll.slice(-3).join(String.fromCharCode(10)); } catch {}
 out.push(cap(tail, 1400, true));
