@@ -139,6 +139,10 @@ The five end-state tests of the brief must be met by about 2026-10-10. The launc
 
 Not started here, in his order: queue item 2 beyond the env provider wiring (LOCAL Ollama runs, below), 4 (LOCAL, the trader's tapes), 6 (LOCAL, the builder on Ollama), the LOCAL halves of 5 and 7, board 17's dead-share, ladder-arc and imagine items (the last needs the knowledge store, LOCAL).
 
+### The paradigm research (his 19:41 EDT order)
+
+docs/RESEARCH-PARADIGM.md: six routes off the current way (program induction over a DSL, the organism's own small program-emitting model, structure-nearest cases, the model as teacher only, verified test-time compute for the ladder, the census growing programs), each with its first experiment and its bar. The reading: from matching text to inducing and executing programs, the model a teacher at build time and a verifier at the ladder, never the answer. The first number that shows the shift is heldOut.share above 0 with provenance program in bench/verdicts/ns.json. The two-week order puts Route A's board first.
+
 ### The launch order for the next session (his 17:32 EDT words withdrew the separate session; board 21 was launched here at 17:32 EDT and its result is in the table above)
 
 1. `Workflow({scriptPath: "docs/boards/board-17.js", args: {root: "<checkout>", marker: "<scratch>/board17.marker", only: ["dead-share", "ladder-arc"]}})` (the two board 17 items not run here; imagine needs the wiki store, LOCAL).
