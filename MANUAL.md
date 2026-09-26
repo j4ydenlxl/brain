@@ -311,6 +311,7 @@ whole project done tonight. Lets goo!" (2026-09-17 22:18)
 - 2026-09-26 about 16:30 EDT, his words verbatim: "Try to compact the context window in the session now. You are on high session limits 500k. You have $111 left. So you have exhausted 50 percent more than. You have half left. You are now in the flow. The workflow. Efficiently and not wastefully, utilize TESSERACT working mode. WHat you completed in the first 50 percent, you should try to complete up to 5x more work in the last half."
 - 2026-09-26 about 17:12 EDT, his words verbatim: "$88 left work like hell"
 - 2026-09-26 17:16 EDT, his words verbatim (mid-turn, after the three running boards died with an interrupted turn): "The baords are stopped.... Is the vision close to done> u still have $81 left. After boards 17 and 20 ill spend the rest of money in a seperate cloud sesssion." Read as: finish boards 17 and 20, then stop; the rest of the money goes to a separate cloud session; his card read $81 at 17:16 EDT.
+- 2026-09-26 17:18 EDT, his words verbatim (on the answer that the vision is not close to done): "well the vision NEEDS TO BE DONE THOUGH???? WTFFFF. EVERYTHIGN NEEDS TO BE DONE"
 
 ## §B. OBJECTIVES + PROGRESS (mine; terse; updated only after re-reading §A)
 
