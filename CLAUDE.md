@@ -9,6 +9,7 @@ Rules that bind every session, local or cloud:
 - Context economy: batch tool calls, extract with node, never cat a file over 20 KB into context.
 - `state/` is runtime and gitignored: never commit it, never push it. Secrets never in chat or in the repository.
 - Every landing rewrites STATE in section B of `MANUAL.md` after re-reading section A, and adds one dated line to `docs/LOG.md`.
+- Research while working (his order, 2026-09-26 19:46 EDT, verbatim in section A): before a new path is written, read the published way and the tree's own prior attempt; when something goes wrong, read why before fixing and once more after; bounded, never a session of its own.
 
 # Standing rule for every subagent (his order, 2026-09-24 17:56 EDT; recorded verbatim in MANUAL.md section A)
 
