@@ -395,7 +395,7 @@ export class Supervisor {
     return {
       instance: this.cfg.instance, name: this.cfg.name, pid: process.pid, host: os.hostname(), node: process.version,
       startedAt: iso(this.startedAt), updatedAt: iso(), restarts: this.restarts, plannedStops: this.plannedStops, budgetKills: this.budgetKills, starts: this.starts,
-      child: c ? { pid: c.pid, startedAt: iso(c.startedAt), built: c.built, resumedAt: c.resumedAt, lastT: c.lastT, lastAt: c.lastAt ? iso(c.lastAt) : null, rssMb: c.rssMb, maxRssMb: c.maxRssMb, heapUsedMb: c.heapUsedMb, heapTotalMb: c.heapTotalMb, externalMb: c.externalMb, arrayBuffersMb: c.arrayBuffersMb, episodic: c.episodic, cpuS: c.cpuS, ticksPerSec: c.tps, ledgerPolicy: c.ledgerPolicy, guard: c.guard } : null,
+      child: c ? { pid: c.pid, startedAt: iso(c.startedAt), built: c.built, resumedAt: c.resumedAt, lastT: c.lastT, lastAt: c.lastAt ? iso(c.lastAt) : null, rssMb: c.rssMb, maxRssMb: c.maxRssMb, heapUsedMb: c.heapUsedMb, heapTotalMb: c.heapTotalMb, externalMb: c.externalMb, arrayBuffersMb: c.arrayBuffersMb, episodic: c.episodic, knowledge: c.knowledge ?? null, fit: c.fit ?? null, cpuS: c.cpuS, ticksPerSec: c.tps, ledgerPolicy: c.ledgerPolicy, guard: c.guard } : null,
       lastExit: this.lastExit, peak: this.peak,
       budget: { heapMb: this.cfg.heapMb, episodesMax: this.cfg.episodesMax, rssCapMb: this.cfg.rssCapMb, diskCapMb: this.cfg.diskCapMb, nodeFlags: this.cfg.nodeFlags, sampler: this.sampler },
       ledger: this.ledger, stateBytes: this.stateBytes,
@@ -423,7 +423,7 @@ export class Supervisor {
       if (m.type === 'status') {
         if (Number.isFinite(m.t)) { info.lastT = m.t; info.lastAt = now(); }
         if (Number.isFinite(m.tps)) info.tps = m.tps;
-        info.rssMb = m.rssMb; info.maxRssMb = m.maxRssMb; info.heapUsedMb = m.heapUsedMb; info.heapTotalMb = m.heapTotalMb ?? null; info.externalMb = m.externalMb ?? null; info.arrayBuffersMb = m.arrayBuffersMb ?? null; info.episodic = m.episodic ?? null; info.cpuS = m.cpuS;
+        info.rssMb = m.rssMb; info.maxRssMb = m.maxRssMb; info.heapUsedMb = m.heapUsedMb; info.heapTotalMb = m.heapTotalMb ?? null; info.externalMb = m.externalMb ?? null; info.arrayBuffersMb = m.arrayBuffersMb ?? null; info.episodic = m.episodic ?? null; info.knowledge = m.knowledge ?? null; info.fit = m.fit ?? null; info.cpuS = m.cpuS;
         if (m.ledgerPolicy) { info.ledgerPolicy = m.ledgerPolicy; this.ledger.policy = m.ledgerPolicy; }
         if (m.guard) info.guard = m.guard;
         if (m.event === 'start') {
@@ -561,7 +561,12 @@ export class Supervisor {
     every(cfg.sampleMs, () => this.sample());
     every(30_000, () => this.diskSample());
     every(cfg.instanceEveryMs, () => this.beat());
-    every(60_000, () => { const c = this.childInfo; this.say('[serve] up ' + Math.round((now() - this.startedAt) / 1000) + ' s, restarts ' + this.restarts + ', t=' + (c && c.lastT) + ', daemon rss ' + (c && c.rssMb) + ' MB (peak ' + this.peak.daemonRssMb + '), state ' + this.stateBytes + ' bytes'); });
+    every(60_000, () => {
+      const c = this.childInfo;
+      const k = c && Array.isArray(c.knowledge) ? c.knowledge.map((r) => 'knowledge ' + r.mode + ' ' + r.residentBytes + ' of ' + r.capBytes + ' bytes resident (cap ' + r.capMb + ' MB), evictions ' + r.evictions).join('; ') : 'knowledge none open';
+      const ft = c && c.fit ? 'self rounds run ' + c.fit.guard.run + ' pruned ' + c.fit.guard.prune + ' deferred ' + c.fit.guard.defer + ', hold max ' + c.fit.holds.maxMs + ' ms, self-code starts ' + c.fit.selfCode.starts + ' refused ' + c.fit.selfCode.refusals + (c.fit.selfCode.lastRefusal ? ' (' + c.fit.selfCode.lastRefusal.why + ')' : '') : 'fit census none';
+      this.say('[serve] up ' + Math.round((now() - this.startedAt) / 1000) + ' s, restarts ' + this.restarts + ', t=' + (c && c.lastT) + ', daemon rss ' + (c && c.rssMb) + ' MB (peak ' + this.peak.daemonRssMb + '), state ' + this.stateBytes + ' bytes; ' + k + '; ' + ft);
+    });
     this.scheduleLadder();
     this.writeStatus();
     return this;
@@ -614,11 +619,21 @@ async function runChild() {
     }
     return rows;
   };
+  // Board 13 fit: the knowledge store's resident set against its cap (memory/knowledge.mjs), and
+  // the daemon's self-round guard, holds and self-code floor (daemon/run.mjs fitCensus), read-only
+  let kMod = null, runMod = null;
+  import('../memory/knowledge.mjs').then((m) => { kMod = m; }, () => {});
+  import('../daemon/run.mjs').then((m) => { runMod = m; }, () => {});
+  const knowledgeCensus = () => {
+    if (!kMod || typeof kMod.knowledgeCensus !== 'function') return null;
+    try { return kMod.knowledgeCensus().map((c) => ({ mode: c.mode, residentBytes: c.residentBytes, capBytes: c.capBytes, capMb: c.capMb, capFrom: c.capFrom, evictions: c.evictions, reads: c.reads, peakBytes: c.peakBytes, indexBytes: c.indexBytes, trims: c.trims ?? 0 })); } catch { return null; }
+  };
+  const fitCensus = () => (runMod && typeof runMod.fitCensus === 'function' ? runMod.fitCensus() : null);
   const send = (extra = {}) => {
     if (!process.send || !process.connected) return;
     const mu = process.memoryUsage(), cpu = process.cpuUsage();
     try {
-      process.send({ type: 'status', t: lastT, tps: lastTps, rssMb: Math.round(mu.rss / 1048576), maxRssMb: Math.round((process.resourceUsage().maxRSS || 0) / 1024), heapUsedMb: Math.round(mu.heapUsed / 1048576), heapTotalMb: Math.round(mu.heapTotal / 1048576), externalMb: Math.round(mu.external / 1048576), arrayBuffersMb: Math.round(mu.arrayBuffers / 1048576), cpuS: Math.round((cpu.user + cpu.system) / 1e4) / 100, episodic: memCensus(), ...extra });
+      process.send({ type: 'status', t: lastT, tps: lastTps, rssMb: Math.round(mu.rss / 1048576), maxRssMb: Math.round((process.resourceUsage().maxRSS || 0) / 1024), heapUsedMb: Math.round(mu.heapUsed / 1048576), heapTotalMb: Math.round(mu.heapTotal / 1048576), externalMb: Math.round(mu.external / 1048576), arrayBuffersMb: Math.round(mu.arrayBuffers / 1048576), cpuS: Math.round((cpu.user + cpu.system) / 1e4) / 100, episodic: memCensus(), knowledge: knowledgeCensus(), fit: fitCensus(), ...extra });
     } catch { /* the supervisor is gone */ }
   };
   const out = (line) => {

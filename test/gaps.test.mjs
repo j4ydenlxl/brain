@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync, rmSync, existsSync, utimesSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { buildLedger, writeLedger, readLedger, classifyBar, summarize, measureOf, LEDGER_REL } from '../self/gaps.mjs';
+import { buildLedger, writeLedger, readLedger, classifyBar, summarize, measureOf, LEDGER_REL , rowTrial } from '../self/gaps.mjs';
 import { runTrial } from '../bench/gaps.mjs';
 import { plantTree, put, EXPECTED, BAROBJ_MEASURE, plantedLadder, plantedGate } from './gaps-plant.mjs';
 
@@ -65,7 +65,8 @@ test('gate rows and OPEN lines: red and slow files, a red row, one OPEN line', a
     const red = lines.find((l) => l.id === 'gate-red:test/thing.test.mjs');
     assert.equal(red.subsystem, 'Things');
     assert.equal(red.trial.key, 'test:test/thing.test.mjs');
-    assert.equal(lines.find((l) => l.id === 'gate-red:row:boundary').trial, null);
+    assert.equal(lines.find((l) => l.id === 'gate-red:row:boundary').trial.key, 'row:boundary', 'a red row with a row-only command carries its trial');
+    assert.equal(rowTrial('budget'), null, 'a red row without one keeps trial null');
     assert.deepEqual(lines.find((l) => l.kind === 'open').files, ['core/thing.mjs']);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });

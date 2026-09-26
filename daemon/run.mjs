@@ -28,7 +28,8 @@
 //   spawn        one suite question the last ruler found no held cell for is asked through
 //                act/spawn.mjs on the live brain, so genome/spawn.mjs grows the circuit
 //   ingest       (growth mode only) the next articles of the knowledge store become episodes
-//   self-code    self/autopilot.mjs --auto in a worker, gated, at most once per selfCodeEvery
+//   self-code    self/autopilot.mjs --auto in a child under tools/budget.mjs, gated by a floor
+//                (Board 13 fit, FIT_DEFAULTS below), at most once per selfCodeEvery
 //                ticks, and never while another process holds a bench flag (state/bench-flags)
 // Every step writes one 'daemon.step' ledger row with its wall milliseconds.
 //
@@ -399,16 +400,134 @@ class GenerationsWorker {
 }
 export { GenerationsWorker };
 
-// The self-code worker: self/autopilot.mjs runFromCli (what `brain self-code --auto` runs) in
-// its own thread, so a gate or a verification that takes minutes never stalls the ticks.
-const SELF_CODE_WORKER = [
-  "const { parentPort, workerData } = require('node:worker_threads');",
-  'import(workerData.url).then((m) => {',
-  '  let r;',
-  '  try { r = m.runFromCli(workerData.opts); } catch (e) { parentPort.postMessage({ ok: false, error: String(e && e.stack || e) }); return; }',
-  '  parentPort.postMessage({ ok: true, result: { ok: r.ok, reason: r.reason || null, dry: r.dry, candidates: r.candidates, counts: r.counts || null, sources: r.sources ? Object.keys(r.sources) : [], author: !!(r.author && r.author.on), exitCode: r.exitCode, ledgerFile: r.ledgerFile || null } });',
-  '}).catch((e) => parentPort.postMessage({ ok: false, error: String(e && e.stack || e) }));',
+// The self-code step: self/autopilot.mjs runFromCli (what `brain self-code --auto` runs) off the
+// tick path, so a gate or a verification that takes minutes never stalls the ticks. Board 13 fit:
+// it was a worker thread, whose heap was this process's rss; it is now a child process under
+// tools/budget.mjs with its own rss cap (SELF_CODE_CHILD below).
+
+// ---------------------------------------------------------------- Board 13 fit (his P13: 24/7 in 512m)
+// THE SELF ROUND'S MEMORY GUARD. Before each round the daemon reads its own rss against a floor
+// (BRAIN_SELF_FLOOR_MB, default 380, under the supervisor's 448 MB cap): under it the round runs;
+// over it, the round PRUNES when what the knowledge store can release (its resident segments,
+// counted by the store) would bring rss under the floor, and then runs one candidate; otherwise it
+// DEFERS and is tried again selfDeferTicks later. Every decision is printed with its numbers.
+// THE HOLD. MEASURED (probe of 2026-09-26, the cloud config, model off): round 2 held the runner
+// 121351 ms at t=40000, because round 1 pruned 7 stale edges of the ask region, every one of the
+// 12 ask-suite questions then ran to askSuite's 10 s deadline on a clone, and the runner stayed
+// paused for all of it (askThroughRegion 102985 ms of the 126 s window in the CPU profile). The
+// suites now run with the runner ticking (they read a clone, never the live brain), and only the
+// synchronous rest of the round (observe, propose, trials, apply, checkpoint) holds the tick. That
+// rest is ticks of trial arms (a control plus one per candidate, trialTicks each), so its cost is
+// the live tick cost times the arms: MEASURED on the tiny test organism, the same one-candidate
+// round held 232 ms at 2 ms a tick and 5279 ms once a tick cost 28 ms. So before every hold the
+// live tick cost is measured, after the suites (whose work inflated it 10x when read beside them),
+// as the median per-tick wall time over measureMs of ticking, and holdPlan() sizes the round from
+// it and from the last round's own ratio of hold to arm ticks: candidates first, then the trial
+// window (never under a quarter of it), else the round DEFERS. A stop asked meanwhile skips it.
+// The budget is selfHoldMs (BRAIN_SELF_HOLD_MS, default 1000).
+// THE SELF-CODE FLOOR. The self-code step runs in a CHILD under tools/budget.mjs with its own rss
+// cap (the headroom under the floor, floor minus rss), never in a thread of this process, and starts
+// only when rss plus its measured need stays under the floor. The need is the larger of the peak its
+// last run's budget record printed for the whole process tree and the child's own maxRSS, kept in
+// state/<name>/self-code/need.json; before any run is measured it is unknown and the first start
+// is bounded by its cap alone. MEASURED 2026-09-26: a dry run of the default sources peaked at
+// 328.9 MB over 3 processes (tools/budget.mjs, 250 ms samples), its main process at 82 MB.
+// A refusal is printed and counted in the census bin/serve.mjs sends.
+export const FIT_DEFAULTS = Object.freeze({ selfFloorMb: 380, selfHoldMs: 1000, selfDeferTicks: 1000, selfCodeSampleMs: 500, armK: 2, minWindowFrac: 0.25, measureMs: 150 });
+export const SELF_CODE_MARK = '@@brain.self-code.result ';
+
+/** A positive number from opts, else the env var, else the default, and where it came from. */
+function numFrom(v, envVal, envName, dflt, what) {
+  let x = v, from = 'the option';
+  if (x === undefined || x === null) { x = envVal; from = envName; }
+  if (x === undefined || x === null || String(x).trim() === '') return { mb: dflt, from: 'default' };
+  const n = Number(String(x).trim());
+  if (!Number.isFinite(n) || n <= 0) throw new Error(what + ': ' + from + ' must be a positive number, got ' + JSON.stringify(x));
+  return { mb: n, from };
+}
+/** The self floor: opts.selfFloorMb, else BRAIN_SELF_FLOOR_MB, else 380. */
+export function selfFloorMb(opts = {}, env = process.env) { return numFrom(opts.selfFloorMb, env.BRAIN_SELF_FLOOR_MB, 'BRAIN_SELF_FLOOR_MB', FIT_DEFAULTS.selfFloorMb, 'self floor'); }
+/** The hold budget of one round in ms: opts.selfHoldMs, else BRAIN_SELF_HOLD_MS, else 1000. */
+export function selfHoldMs(opts = {}, env = process.env) { return numFrom(opts.selfHoldMs, env.BRAIN_SELF_HOLD_MS, 'BRAIN_SELF_HOLD_MS', FIT_DEFAULTS.selfHoldMs, 'self hold').mb; }
+/** The self-code need before any measurement: opts.selfCodeNeedMb, else BRAIN_SELF_CODE_NEED_MB, else 0 (unknown). */
+export function selfCodeNeedMb(opts = {}, env = process.env) { return numFrom(opts.selfCodeNeedMb, env.BRAIN_SELF_CODE_NEED_MB, 'BRAIN_SELF_CODE_NEED_MB', 0, 'self-code need'); }
+
+/**
+ * The memory guard's decision for one round (pure). releasableMb: what a prune can give back now.
+ * @returns {{decision: 'run'|'prune'|'defer', why: string}}
+ */
+export function selfRoundGuard({ rssMb, floorMb, releasableMb = 0 }) {
+  const r = Math.round(rssMb), f = Math.round(floorMb), rel = Math.round(releasableMb * 10) / 10;
+  if (!(rssMb > floorMb)) return { decision: 'run', why: 'rss ' + r + ' MB is under the floor ' + f + ' MB' };
+  if (releasableMb > 0 && rssMb - releasableMb <= floorMb) return { decision: 'prune', why: 'rss ' + r + ' MB is over the floor ' + f + ' MB and the ' + rel + ' MB of knowledge segments a prune releases brings it to ' + Math.round(rssMb - releasableMb) + ' MB' };
+  return { decision: 'defer', why: 'rss ' + r + ' MB is over the floor ' + f + ' MB and a prune releases only ' + rel + ' MB (' + Math.round(rssMb - releasableMb) + ' MB would remain)' };
+}
+
+/**
+ * The candidates the next round may trial and still hold the tick under budgetMs (pure): the last
+ * hold spread over its arms (every candidate plus the shared control), 90% of the budget, at least
+ * one, at most max. Without a measured hold it is 1. (A ceiling only: holdPlan decides the round.)
+ */
+export function holdCandidates({ holdMs = null, trials = null, budgetMs = FIT_DEFAULTS.selfHoldMs, max = 4 } = {}) {
+  if (!(holdMs > 0) || !(trials >= 0)) return Math.min(1, max);
+  const perArm = holdMs / (trials + 1);
+  return Math.max(1, Math.min(max, Math.floor((budgetMs * 0.9) / perArm) - 1));
+}
+
+/** The median of a list of numbers, or null when it is empty (pure). */
+export function medianOf(xs) {
+  if (!xs || xs.length === 0) return null;
+  const a = [...xs].sort((x, y) => x - y), m = a.length >> 1;
+  return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
+}
+
+/**
+ * The plan of one hold (pure). An arm costs k x window x msPerTick: msPerTick is the live tick cost
+ * measured just before the hold, k the last round's own hold over its arm ticks (armK, 2, before
+ * any round). Within 90% of budgetMs: as many candidates as fit (at most max) at the full window;
+ * else one candidate at a shorter window, never under minWindow; else the round defers.
+ * @returns {{decision: 'run'|'defer', candidates: number, window: number, predictMs: number, why: string}}
+ */
+export function holdPlan({ msPerTick, window, k = FIT_DEFAULTS.armK, budgetMs = FIT_DEFAULTS.selfHoldMs, max = 4, minWindow = null }) {
+  const lo = Math.max(1, minWindow ?? Math.ceil(window * FIT_DEFAULTS.minWindowFrac));
+  const cap = budgetMs * 0.9, r1 = (x) => Math.round(x * 10) / 10;
+  if (!(msPerTick > 0)) return { decision: 'run', candidates: Math.min(1, max), window, predictMs: null, why: 'no live tick cost measured: one candidate at the full window' };
+  const arm = (w) => k * w * msPerTick;
+  const c = Math.min(max, Math.floor(cap / arm(window)) - 1);
+  const head = 'a tick costs ' + r1(msPerTick) + ' ms and an arm ' + r1(k) + ' x ' + window + ' ticks of it (' + Math.round(arm(window)) + ' ms)';
+  if (c >= 1) return { decision: 'run', candidates: c, window, predictMs: Math.round((c + 1) * arm(window)), why: head + ': ' + c + ' candidate' + (c > 1 ? 's' : '') + ' and the control fit ' + budgetMs + ' ms' };
+  const w = Math.min(window, Math.floor(cap / (2 * k * msPerTick)));
+  if (w >= lo) return { decision: 'run', candidates: 1, window: w, predictMs: Math.round(2 * arm(w)), why: head + ': one candidate fits ' + budgetMs + ' ms only at a window of ' + w + ' ticks (at least ' + lo + ')' };
+  return { decision: 'defer', candidates: 0, window, predictMs: Math.round(2 * arm(lo)), why: head + ': one candidate at the shortest window, ' + lo + ' ticks, would hold ' + Math.round(2 * arm(lo)) + ' ms, over ' + budgetMs + ' ms' };
+}
+
+/** The self-code floor's decision (pure): start only when rss plus the measured need stays under the floor. */
+export function selfCodeFloor({ rssMb, needMb, floorMb, needFrom = 'default' }) {
+  const sum = rssMb + needMb;
+  const ok = sum <= floorMb;
+  return { ok, capMb: Math.max(1, Math.floor(floorMb - rssMb)), why: 'rss ' + Math.round(rssMb) + ' MB + need ' + Math.round(needMb) + ' MB (' + needFrom + ') = ' + Math.round(sum) + ' MB, ' + (ok ? 'under' : 'over') + ' the floor ' + Math.round(floorMb) + ' MB' };
+}
+
+// The self-code child: the call the worker made, in its own process, its result on one marked line.
+const SELF_CODE_CHILD = [
+  'const m = await import(process.argv[1]);',
+  'let out;',
+  'try {',
+  '  const r = m.runFromCli(JSON.parse(process.argv[2]));',
+  '  const v = r.verdict ? { file: r.verdict.file ?? null, isTheBar: r.verdict.isTheBar ?? null, barMet: r.verdict.barMet ?? null } : null;',
+  '  out = { ok: true, result: { ok: r.ok, reason: r.reason || null, dry: r.dry, candidates: r.candidates, counts: r.counts || null, sources: r.sources ? Object.keys(r.sources) : [], author: !!(r.author && r.author.on), exitCode: r.exitCode, ledgerFile: r.ledgerFile || null, soak: r.soak || null, runId: r.runId || null, status: r.status || null, attempts: r.attempts || null, stopped: !!r.stopped, verdict: v }, maxRssMb: Math.round(process.resourceUsage().maxRSS / 1024) };',
+  '} catch (e) { out = { ok: false, error: String(e && e.stack || e) }; }',
+  'process.stdout.write("\\n" + ' + JSON.stringify(SELF_CODE_MARK) + ' + JSON.stringify(out) + "\\n");',
 ].join('\n');
+/** The last marked result line of a self-code child's stdout, or null. */
+export function selfCodeResult(text) {
+  const lines = String(text || '').split(/\r?\n/).filter((l) => l.startsWith(SELF_CODE_MARK));
+  if (!lines.length) return null;
+  try { return JSON.parse(lines[lines.length - 1].slice(SELF_CODE_MARK.length)); } catch { return null; }
+}
+let FIT_CENSUS = null;
+/** The live daemon's fit census (self guard, holds, self-code floor), or null outside a live run. */
+export function fitCensus() { try { return FIT_CENSUS ? FIT_CENSUS() : null; } catch { return null; } }
 
 // The region whose genes stray furthest from the default organism genome is the one the
 // elite differs in, so it is the region the elite replaces.
@@ -519,10 +638,36 @@ export async function live(opts = {}) {
     refused: Object.fromEntries(STEP_KINDS.map((k) => [k, 0])), refusals: [], busy: { generations: 0, 'self-code': 0 },
     dream: { every: 0, dreamed: 0, skipped: 0, why: {}, ownAsks: 0 }, spawn: { carried: 0, declined: 0, correct: 0, grew: 0, kept: 0, tried: new Set() },
     ingest: { cursor: priorLoop && Number.isInteger(priorLoop.ingestCursor) ? priorLoop.ingestCursor : 0, added: 0, of: null, store: null, reason: null },
-    selfCode: { every: Math.max(0, Math.floor(opts.selfCodeEvery ?? DEFAULTS.selfCodeEvery)), lastT: brain.clock.t, dry: opts.selfCodeDry === true, last: null, errors: [] },
+    selfCode: { every: Math.max(0, Math.floor(opts.selfCodeEvery ?? DEFAULTS.selfCodeEvery)), lastT: brain.clock.t, dry: opts.selfCodeDry === true || process.env.BRAIN_SELF_CODE_DRY === '1', last: null, errors: [] },
     errors: [],
   };
   const benchFlagDir = opts.benchFlagDir || BENCH_FLAG_DIR;
+  // Board 13 fit: the self round's memory guard and hold, and the self-code floor (FIT_DEFAULTS)
+  const selfCodeNeedFile = path.join(L.dir, 'self-code', 'need.json');
+  const selfFit = {
+    floor: selfFloorMb(opts), holdBudgetMs: selfHoldMs(opts), deferTicks: Math.max(1, Math.floor(opts.selfDeferTicks ?? FIT_DEFAULTS.selfDeferTicks)), retryAt: null,
+    maxCandidates: Math.max(1, Math.floor(opts.selfCandidates ?? DEFAULTS.selfCandidates)), nextCandidates: null,
+    guard: { run: 0, prune: 0, defer: 0, releasedBytes: 0, last: null, rows: [] },
+    holds: { n: 0, maxMs: 0, lastMs: null, overBudget: 0, suiteMsMax: 0, rows: [] },
+    window: Math.max(1, Math.floor(opts.selfTrialTicks ?? DEFAULTS.selfTrialTicks)), armK: FIT_DEFAULTS.armK, armKFrom: 'default', lastPlan: null, planDefers: 0,
+    selfCode: { starts: 0, refusals: 0, lastRefusal: null, lastStart: null, need: null, lastRecord: null, kills: 0, exemptPid: Number(process.env.BRAIN_BENCH_FLAG_EXEMPT) > 0 ? Number(process.env.BRAIN_BENCH_FLAG_EXEMPT) : null },
+  };
+  selfFit.nextCandidates = holdCandidates({ max: selfFit.maxCandidates });
+  selfFit.selfCode.need = (() => {
+    try { const j = JSON.parse(readFileSync(selfCodeNeedFile, 'utf8')); if (Number(j.peakRssMb) > 0) return { mb: Number(j.peakRssMb), from: 'measured at t=' + j.t + ' (' + j.outcome + ')' }; } catch { /* none measured yet */ }
+    // before any run is measured the need is what the option or BRAIN_SELF_CODE_NEED_MB names, else
+    // unknown (0): that first start is still bounded, by the child's own cap of floor minus rss
+    const given = selfCodeNeedMb(opts);
+    return given.from === 'default' ? { mb: 0, from: 'not measured yet; the start is bounded by its cap' } : given;
+  })();
+  const fitRow = () => ({
+    floorMb: selfFit.floor.mb, floorFrom: selfFit.floor.from, holdBudgetMs: selfFit.holdBudgetMs, nextCandidates: selfFit.nextCandidates, maxCandidates: selfFit.maxCandidates, retryAt: selfFit.retryAt,
+    guard: { run: selfFit.guard.run, prune: selfFit.guard.prune, defer: selfFit.guard.defer, releasedBytes: selfFit.guard.releasedBytes, last: selfFit.guard.last },
+    holds: { n: selfFit.holds.n, maxMs: selfFit.holds.maxMs, lastMs: selfFit.holds.lastMs, overBudget: selfFit.holds.overBudget, suiteMsMax: selfFit.holds.suiteMsMax, last: selfFit.holds.rows[selfFit.holds.rows.length - 1] || null },
+    plan: { armK: selfFit.armK, armKFrom: selfFit.armKFrom, window: selfFit.window, defers: selfFit.planDefers, last: selfFit.lastPlan },
+    selfCode: { starts: selfFit.selfCode.starts, refusals: selfFit.selfCode.refusals, kills: selfFit.selfCode.kills, needMb: selfFit.selfCode.need.mb, needFrom: selfFit.selfCode.need.from, lastRefusal: selfFit.selfCode.lastRefusal, lastStart: selfFit.selfCode.lastStart, lastRecord: selfFit.selfCode.lastRecord },
+  });
+  FIT_CENSUS = fitRow;
   const stepDone = (kind, ms, detail = {}) => {
     if (detail.refused) { loop.refused[kind]++; loop.refusals.push({ kind, t: brain.clock.t, why: detail.refused }); if (loop.refusals.length > 16) loop.refusals.shift(); }
     else { loop.steps[kind]++; loop.stepMs[kind] += ms; }
@@ -641,7 +786,7 @@ export async function live(opts = {}) {
   // the slow loops: flags set inside the tick, acted on between runner chunks
   const due = { self: false, gen: false, loop: false };
   brain.hooks.afterTick.push((b, t) => {
-    if (selfEvery > 0 && t > 0 && t % selfEvery === 0) { due.self = true; if (selfState.daemon) runner.pause(); }
+    if (selfEvery > 0 && t > 0 && (t % selfEvery === 0 || (selfFit.retryAt !== null && t >= selfFit.retryAt))) { selfFit.retryAt = null; due.self = true; if (selfState.daemon) runner.pause(); }
     if (genEvery > 0 && t > 0 && t % genEvery === 0) due.gen = true;
     if (loopOn && t > 0 && t % loopEvery === 0) due.loop = true;
   });
@@ -747,15 +892,32 @@ export async function live(opts = {}) {
     sc.lastT = brain.clock.t;
     // Board 14: the switch. While state/self/STOP exists no self-code step starts.
     if (existsSync(path.join(BRAIN_ROOT, 'state', 'self', 'STOP'))) { stepDone('self-code', 0, { refused: 'stop', reason: 'stopped by state/self/STOP' }); say('[self-code] refused at t=' + brain.clock.t + ': stopped by state/self/STOP'); return; }
-    const flag = benchFlag({ dir: benchFlagDir, selfPid: process.pid });
+    // Board 13 fit: a bench may exempt its OWN flag (BRAIN_BENCH_FLAG_EXEMPT, its pid) for a DRY
+    // step only, so its daemons can measure a self-code start while every other daemon still sees
+    // the flag; a wet step never passes any flag
+    const flag = benchFlag({ dir: benchFlagDir, selfPid: sc.dry && selfFit.selfCode.exemptPid ? selfFit.selfCode.exemptPid : process.pid });
     if (flag) { stepDone('self-code', 0, { refused: 'bench', flagPid: flag.pid, flagCommand: flag.command ? String(flag.command).slice(0, 160) : null }); say('[self-code] refused at t=' + brain.clock.t + ': a bench is running (pid ' + flag.pid + ')'); return; }
     if (selfCodeBusy) { loop.busy['self-code']++; return; }
+    // Board 13 fit: the floor. rss plus the measured need must stay under it, or no child starts.
+    const rssMb = process.memoryUsage().rss / MB, need = selfFit.selfCode.need;
+    const fl = selfCodeFloor({ rssMb, needMb: need.mb, floorMb: selfFit.floor.mb, needFrom: need.from });
+    if (!fl.ok) {
+      selfFit.selfCode.refusals++;
+      selfFit.selfCode.lastRefusal = { t: brain.clock.t, rssMb: Math.round(rssMb), needMb: need.mb, needFrom: need.from, floorMb: selfFit.floor.mb, why: fl.why };
+      stepDone('self-code', 0, { refused: 'floor', why: fl.why });
+      say('[self-code] refused at t=' + brain.clock.t + ': ' + fl.why);
+      return;
+    }
     selfCodeBusy = true;
     const c0 = performance.now(), at = brain.clock.t;
     const cliOpts = selfCodeCliOpts(opts, { dry: sc.dry });
     let settled = false;
-    const w = new Worker(SELF_CODE_WORKER, { eval: true, workerData: { url: pathToFileURL(path.join(BRAIN_ROOT, 'self', 'autopilot.mjs')).href, opts: cliOpts }, resourceLimits: { maxOldGenerationSizeMb: opts.selfCodeHeapMb ?? DEFAULTS.selfCodeHeapMb } });
-    selfCodeWorker = w;
+    selfFit.selfCode.starts++;
+    selfFit.selfCode.lastStart = { t: at, rssMb: Math.round(rssMb), needMb: need.mb, capMb: fl.capMb, dry: sc.dry, why: fl.why };
+    say('[self-code] start at t=' + at + ': ' + fl.why + '; the child runs under tools/budget.mjs with an rss cap of ' + fl.capMb + ' MB');
+    const ac = new AbortController();
+    let stdout = '';
+    selfCodeWorker = { terminate: async () => { ac.abort(); } };
     const done = (m) => {
       if (settled) return;
       settled = true; selfCodeBusy = false; selfCodeWorker = null;
@@ -767,9 +929,27 @@ export async function live(opts = {}) {
       stepDone('self-code', performance.now() - c0, { from: at, dry: sc.dry, ok: res ? res.ok : false, reason: res ? res.reason : sc.last.error, candidates: res ? res.candidates ?? null : null, counts: res ? res.counts ?? null : null, soak: soakOf });
       say('[self-code] ' + (res ? (sc.dry ? 'dry ' : '') + (soakOf ? 'soak from t=' + at + ': ' + (soakOf.stopped ? 'stopped by state/self/STOP' : soakOf.status + ', ' + JSON.stringify(soakOf.attempts) + (soakOf.verdict && soakOf.verdict.file ? ', verdict ' + soakOf.verdict.file + ' barMet ' + soakOf.verdict.barMet : '')) : 'run from t=' + at + ': ' + res.candidates + ' candidates, ' + JSON.stringify(res.counts)) : 'failed from t=' + at + ': ' + sc.last.error));
     };
-    w.on('message', (m) => { done(m); w.terminate().catch(() => {}); });
-    w.on('error', (e) => done({ ok: false, error: String(e && e.message || e) }));
-    w.on('exit', (code) => done({ ok: false, error: 'the self-code worker exited ' + code + ' before it answered' }));
+    const heapMb = opts.selfCodeHeapMb ?? DEFAULTS.selfCodeHeapMb;
+    const args = ['--max-old-space-size=' + heapMb, '--input-type=module', '-e', SELF_CODE_CHILD, pathToFileURL(path.join(BRAIN_ROOT, 'self', 'autopilot.mjs')).href, JSON.stringify(cliOpts)];
+    import('../tools/budget.mjs').then(({ budget }) => budget(process.execPath, args, {
+      ramMb: fl.capMb, record: path.join(L.dir, 'self-code', 'budget.json'), stdio: ['ignore', 'pipe', 'inherit'], signal: ac.signal, statusMs: 3_600_000, intervalMs: FIT_DEFAULTS.selfCodeSampleMs,
+      log: (l) => say('[self-code] ' + l),
+      onSpawn: (child) => { if (child.stdout) child.stdout.on('data', (b) => { stdout += b; if (stdout.length > 1 << 20) stdout = stdout.slice(-(1 << 19)); }); },
+    })).then((rec) => {
+      // the need is what this run measured: its tree's peak working set, for the next start's floor
+      const m = selfCodeResult(stdout);
+      const peak = Math.max(Number(rec && rec.peakRssMb) || 0, Number(m && m.maxRssMb) || 0);
+      const killed = !!rec && rec.outcome === 'killed';
+      if (killed) selfFit.selfCode.kills++;
+      selfFit.selfCode.lastRecord = { t: at, outcome: rec ? rec.outcome : null, exitCode: rec ? rec.exitCode : null, peakRssMb: peak, treePeakMb: rec ? rec.peakRssMb : null, childMaxRssMb: m ? m.maxRssMb ?? null : null, capMb: fl.capMb, wallS: rec ? rec.wallS : null, samples: rec ? rec.samples : null, maxProcs: rec ? rec.maxProcs : null };
+      if (peak > 0 && !(rec && rec.outcome === 'aborted')) {
+        // a kill proves the need is at least what was measured before it too: the need never falls on one
+        const mb = killed ? Math.max(peak, selfFit.selfCode.need.mb) : peak;
+        selfFit.selfCode.need = { mb, from: 'measured at t=' + at + ' (' + (rec.outcome || 'exit') + ')' };
+        try { mkdirSync(path.dirname(selfCodeNeedFile), { recursive: true }); writeFileSync(selfCodeNeedFile, JSON.stringify({ t: at, peakRssMb: mb, measuredMb: peak, outcome: rec.outcome || null, capMb: fl.capMb, at: new Date().toISOString() }) + '\n'); } catch { /* the next run measures again */ }
+      }
+      done(m || { ok: false, error: 'the self-code child ended (' + (rec ? rec.outcome : 'no record') + ', exit ' + (rec ? rec.exitCode : null) + ', peak ' + peak + ' MB of a ' + fl.capMb + ' MB cap) without a result line' });
+    }).catch((e) => done({ ok: false, error: firstLine(e) }));
   };
   const runPeriod = () => {
     loop.periods++;
@@ -783,6 +963,106 @@ export async function live(opts = {}) {
     } catch (e) { loop.errors.push('t=' + brain.clock.t + ': ' + firstLine(e)); }
   };
 
+  // Board 13 fit: one self round, entered and left with the runner paused (the caller resumes it).
+  // The memory guard decides first (run, prune or defer, printed with its numbers); the suites
+  // (the ask suite on a clone) then run with the runner ticking; only the synchronous rest of the
+  // round holds the tick, with as many candidates as the last hold says fit selfHoldMs.
+  let measureSuitesFn = null;
+  const selfRound = async () => {
+    const d = selfState.daemon, t = brain.clock.t;
+    const rssMb = process.memoryUsage().rss / MB;
+    const store = loop.ingest.store && typeof loop.ingest.store.trim === 'function' ? loop.ingest.store : null;
+    const releasableMb = store ? store.releasableBytes() / MB : 0;
+    const g = selfRoundGuard({ rssMb, floorMb: selfFit.floor.mb, releasableMb });
+    selfFit.guard[g.decision]++;
+    const grow = { t, round: d.round + 1, decision: g.decision, rssMb: Math.round(rssMb), floorMb: selfFit.floor.mb, releasableMb: r3(releasableMb), releasedBytes: 0, why: g.why };
+    selfFit.guard.last = grow; selfFit.guard.rows.push(grow); if (selfFit.guard.rows.length > 16) selfFit.guard.rows.shift();
+    if (g.decision === 'defer') {
+      selfFit.retryAt = t + selfFit.deferTicks;
+      say('[self] round deferred at t=' + t + ': ' + g.why + '; tried again at t=' + selfFit.retryAt);
+      return;
+    }
+    let candidates = selfFit.nextCandidates;
+    if (g.decision === 'prune') {
+      grow.releasedBytes = store ? store.trim() : 0;
+      selfFit.guard.releasedBytes += grow.releasedBytes;
+      candidates = 1;
+      say('[self] round pruned at t=' + t + ': ' + g.why + '; released ' + grow.releasedBytes + ' bytes of knowledge segments, this round trials 1 candidate of ' + selfFit.maxCandidates);
+    }
+    // the suites, beside the ticking organism: they ask a clone and never move the live brain
+    let pre = null, suiteMs = 0;
+    const wanted = typeof d.askSuites === 'function' ? d.askSuites() : null;
+    if (wanted) {
+      const s0 = performance.now();
+      try {
+        if (!measureSuitesFn) measureSuitesFn = (await import('../self/observe.mjs')).measureSuites;
+        if (running) runner.resume();
+        pre = await measureSuitesFn(wanted);
+      } catch (e) {
+        const why = 'the suites failed beside the organism: ' + firstLine(e);
+        pre = Object.fromEntries(wanted.map((w) => [typeof w === 'string' ? w : w.name, { n: 0, correct: 0, accuracy: null, ms: 0, error: why }]));
+      }
+      suiteMs = performance.now() - s0;
+    }
+    // the live tick cost, read with the runner ticking alone for measureMs (at least 4 ticks, at
+    // most 2 s more), after the suites so their work does not inflate it. It is the MEDIAN wall
+    // time per tick over the 5 ms steps of that window, so a checkpoint that blocks one step
+    // (about 0.6 s at the cloud config) does not become the tick cost the next hold is sized by.
+    const m0 = performance.now(), mt0 = brain.clock.t, perTick = [];
+    if (running) {
+      runner.resume();
+      let pw = m0, pt = mt0;
+      while (running && (performance.now() - m0 < FIT_DEFAULTS.measureMs || brain.clock.t - mt0 < 4) && performance.now() - m0 < FIT_DEFAULTS.measureMs + 2000) {
+        await sleep(5);
+        const w = performance.now(), tt = brain.clock.t;
+        if (tt > pt) { perTick.push((w - pw) / (tt - pt)); pw = w; pt = tt; }
+      }
+    }
+    runner.pause();
+    // a stop asked during the suites: no hold at all (a trial now would only delay the stop)
+    if (!running) { say('[self] round skipped at t=' + brain.clock.t + ': the organism is stopping, no hold'); return; }
+    // no whole tick in the window: a tick costs at least the window, a lower bound the plan defers on
+    const measured = perTick.length ? medianOf(perTick) : (performance.now() - m0) / Math.max(1, brain.clock.t - mt0);
+    const plan = holdPlan({ msPerTick: measured, window: selfFit.window, k: selfFit.armK, budgetMs: selfFit.holdBudgetMs, max: candidates });
+    selfFit.lastPlan = { t, msPerTick: measured === null ? null : r3(measured), ticks: brain.clock.t - mt0, ...plan };
+    if (plan.decision === 'defer') {
+      selfFit.planDefers++;
+      selfFit.retryAt = brain.clock.t + selfFit.deferTicks;
+      say('[self] round deferred at t=' + brain.clock.t + ': ' + plan.why + '; tried again at t=' + selfFit.retryAt);
+      return;
+    }
+    candidates = plan.candidates;
+    const savedSuites = d.opts.suites, savedCandidates = d.opts.candidates, savedWindow = d.opts.trialTicks;
+    if (pre) d.opts.suites = Object.keys(pre).map((name) => ({ name, run: async () => { const r = pre[name]; if (r.error) throw new Error(r.error); return r; } }));
+    d.opts.candidates = candidates;
+    d.opts.trialTicks = plan.window;
+    const h0 = performance.now(), at = brain.clock.t;
+    let row = null;
+    try {
+      // The label is selfState.daemon.round, not the separately kept selfState.rounds
+      // counter. runRound() increments the daemon's OWN round number as its very first
+      // statement, so the moment it returns, that field IS the round that just ran, by
+      // construction, and it is the SAME number the daemon's own "round N: candidates
+      //..." line (printed from inside runRound(), through this same say(), '[self] '
+      // prefixed) reports for that round: the two lines can never disagree again.
+      // selfState.rounds is a second counter, local to this process, that used to be
+      // printed here instead; the live soak's log showed it one round behind the
+      // daemon's own number for the same event (2026-09-17, notes/self.md). It is kept
+      // below only as this process's own round tally, never as the label.
+      try { row = await selfState.daemon.runRound(); selfState.rounds++; selfState.applied = selfState.daemon.applied ? selfState.daemon.applied.length : selfState.applied; say('[self] round ' + selfState.daemon.round + ' done at t=' + brain.clock.t + ', applied so far ' + selfState.applied); }
+      catch (e) { selfState.errors.push('round: ' + String(e && e.message).split('\n')[0]); }
+    } finally { d.opts.suites = savedSuites; d.opts.candidates = savedCandidates; d.opts.trialTicks = savedWindow; }
+    const holdMs = performance.now() - h0;
+    const trials = row ? row.candidates : null;
+    const h = selfFit.holds;
+    h.n++; h.lastMs = r3(holdMs); if (holdMs > h.maxMs) h.maxMs = r3(holdMs); if (holdMs > selfFit.holdBudgetMs) h.overBudget++; if (suiteMs > h.suiteMsMax) h.suiteMsMax = r3(suiteMs);
+    h.rows.push({ round: d.round, t: at, holdMs: r3(holdMs), predictMs: plan.predictMs, msPerTick: selfFit.lastPlan.msPerTick, window: plan.window, suiteMs: r3(suiteMs), asked: candidates, trials, decision: g.decision }); if (h.rows.length > 16) h.rows.shift();
+    if (row) selfFit.nextCandidates = holdCandidates({ holdMs, trials, budgetMs: selfFit.holdBudgetMs, max: selfFit.maxCandidates });
+    // the ratio of this hold to its arm ticks at the measured cost calibrates the next plan
+    if (row && trials > 0 && measured > 0) { selfFit.armK = r3(holdMs / ((trials + 1) * plan.window * measured)); selfFit.armKFrom = 'round ' + d.round; }
+    say('[self] round ' + d.round + ' held the tick ' + Math.round(holdMs) + ' ms with ' + trials + ' candidates at a window of ' + plan.window + ' ticks (planned ' + plan.predictMs + ' ms: ' + plan.why + '; budget ' + selfFit.holdBudgetMs + ' ms' + (holdMs > selfFit.holdBudgetMs ? ', OVER' : '') + '); the suites ran ' + Math.round(suiteMs) + ' ms beside the ticking organism; the next arm ratio ' + selfFit.armK);
+  };
+
   const orchestrator = (async () => {
     let stopAt = null;
     for (;;) {
@@ -790,18 +1070,7 @@ export async function live(opts = {}) {
         due.self = false;
         if (selfState.daemon) {
           if (running) runner.pause();
-          // The label is selfState.daemon.round, not the separately kept selfState.rounds
-          // counter. runRound() increments the daemon's OWN round number as its very first
-          // statement, so the moment it returns, that field IS the round that just ran, by
-          // construction, and it is the SAME number the daemon's own "round N: candidates
-          //..." line (printed from inside runRound(), through this same say(), '[self] '
-          // prefixed) reports for that round: the two lines can never disagree again.
-          // selfState.rounds is a second counter, local to this process, that used to be
-          // printed here instead; the live soak's log showed it one round behind the
-          // daemon's own number for the same event (2026-09-17, notes/self.md). It is kept
-          // below only as this process's own round tally, never as the label.
-          try { await selfState.daemon.runRound(); selfState.rounds++; selfState.applied = selfState.daemon.applied ? selfState.daemon.applied.length : selfState.applied; say('[self] round ' + selfState.daemon.round + ' done at t=' + brain.clock.t + ', applied so far ' + selfState.applied); }
-          catch (e) { selfState.errors.push('round: ' + String(e && e.message).split('\n')[0]); }
+          await selfRound();
           if (running) runner.resume();
         }
       }
@@ -888,6 +1157,7 @@ export async function live(opts = {}) {
     checkpointBytes: { total: checkpointBytes, last: lastCheckpointBytes },
     runner: jsonSafe(finalState), periods, illegal: report.illegal, regions: Object.keys(report.regions), kinds: report.kindCount,
     self: { every: selfEvery, rounds: selfState.rounds, applied: selfState.applied, errors: selfState.errors },
+    fit: fitRow(),
     generations: { every: loopOn ? loopEvery : genEvery, steps: genState.steps, boot: genState.boot, best: genState.best ? { id: genState.best.id, key: genState.best.key, fitness: genState.best.fitness } : null, promotions: genState.promotions, errors: genState.errors },
     ledger: { asked: led.asked, level: led.level, budgetMb: led.budgetMb, budgetFrom: led.budgetFrom, downgraded: led.downgraded, ...ledgerEnd },
     loop: loopOn ? {

@@ -53,7 +53,17 @@
 //             print N/A on any copy or plant; while a live autopilot holds its lock they are
 //             printed as referees and do not rule (see the block above autonomyRow).
 //
+// ONE MORE (Board 13, RULES (1): a bar verdict names its split), printed last:
+//
+//   CONTAMINATION  every bench/verdicts/*.json with isTheBar true must carry a split object. RED for a
+//             bar file with no split, a split that is not an object (a dataset split name such as
+//             "evaluation"), or contaminated true with a statement that does not say so. Prints the
+//             count of bar files, with a split object, contaminated and labelled, contaminated and
+//             unlabelled, and every file behind a cause by name. A referee under a live autopilot
+//             lock, like the two rows above (see the block above contaminationRow).
+//
 //   node bench/gate.mjs [--quiet]
+//   node bench/gate.mjs --contamination      the CONTAMINATION row alone, no test run, no gate.json
 import { readdirSync, readFileSync, statSync, writeFileSync, mkdirSync, existsSync, mkdtempSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -924,6 +934,80 @@ export function handoffRow({ root = ROOT, now = Date.now(), task = null, taskQue
   return { ok, graded: true, rules: !ref.referee, referee: ref, installation: inst, exists: true, generatedAt: genAt, ageHours: ageH, commands: cmds.length, checks: checked, missing, pending, placeholders, undone: { doc: U.found ? docTotal : null, ledger: L ? L.rows.length : null, diffs }, causes, line };
 }
 
+// ---------------------------------------------------------------- CONTAMINATION: every bar file names its split (Board 13)
+// RULES (1) of every board since Board 11: a verdict JSON carries a "split" object naming what was
+// development and what was held out, and "contaminated": true with the reason when a held-out record
+// was ever seen in development. Board 11's math bench developed on GSM8K TEST records (there is no
+// train split on disk), so a held-out claim from those records would be a contaminated one; this row
+// makes the rule a check instead of a sentence. It reads every bench/verdicts/*.json (the top level,
+// as the rule names it) and grades the BAR files, those with isTheBar true:
+//   RED  a bar file with no split at all;
+//   RED  a bar file whose split is not an object: a string such as "evaluation" names the dataset's
+//        own split, not what the run developed on and what it held out;
+//   RED  a bar file marked contaminated (contaminated true anywhere in its split, or at its top level)
+//        whose statement does not say so (no word beginning "contaminat" in it).
+// A contaminated bar file whose statement says so is counted and is not a cause: the rule is that the
+// reader is told, not that no bench may reuse a record. A file that does not parse is counted as
+// unread, never as clean. The line prints the count of bar files, with a split object, contaminated
+// and labelled, contaminated and unlabelled, and names every file behind a cause, so the orchestrator
+// can decide about the older ones. Like AUTONOMY and HANDOFF it is a REFEREE, printed in full and not
+// ruling, while a live autopilot holds state/self-code/autopilot.lock: no code patch that gate judges
+// can move a verdict's split, and a ruling red row there would revert every patch.
+export const CONTAMINATION_WORD = /contaminat/i;
+const SPLIT_DEPTH = 4;
+/** True when contaminated === true sits anywhere in the split (to a small depth). */
+function markedContaminated(x, depth = 0) {
+  if (!x || typeof x !== 'object' || depth > SPLIT_DEPTH) return false;
+  if (x.contaminated === true) return true;
+  return Object.values(x).some((y) => markedContaminated(y, depth + 1));
+}
+/** The shape of a verdict's split: object, none (absent or null), string, array or the typeof. */
+export function splitShapeOf(v) {
+  const s = v ? v.split : undefined;
+  if (s === undefined || s === null) return 'none';
+  if (Array.isArray(s)) return 'array';
+  return typeof s === 'object' ? 'object' : typeof s;
+}
+/** One record per bench/verdicts/*.json: its name, whether it is a bar file, its split shape, and the contamination marks. */
+export function contaminationRecords(verdictsDir = path.join(ROOT, 'bench', 'verdicts')) {
+  let names; try { names = readdirSync(verdictsDir).filter((n) => n.endsWith('.json')).sort(); } catch { return { dir: verdictsDir, read: false, records: [] }; }
+  const records = [];
+  for (const file of names) {
+    let v; try { v = JSON.parse(readFileSync(path.join(verdictsDir, file), 'utf8')); } catch { records.push({ file, unread: true, bar: null }); continue; }
+    if (!v || typeof v !== 'object' || Array.isArray(v)) { records.push({ file, unread: false, bar: false, notAnObject: true }); continue; }
+    const shape = splitShapeOf(v);
+    const contaminated = v.contaminated === true || (shape === 'object' && markedContaminated(v.split));
+    const labelled = contaminated && typeof v.statement === 'string' && CONTAMINATION_WORD.test(v.statement);
+    records.push({ file, unread: false, bar: v.isTheBar === true, split: shape, splitValue: shape === 'string' ? v.split : undefined, contaminated, labelled });
+  }
+  return { dir: verdictsDir, read: true, records };
+}
+/** The CONTAMINATION row from contaminationRecords() and the referee (refereeOf, or { referee: false }). */
+export function contaminationRow(census, { referee = { referee: false, why: 'not asked' } } = {}) {
+  const recs = census && Array.isArray(census.records) ? census.records : [];
+  const bars = recs.filter((r) => r.bar === true);
+  const unread = recs.filter((r) => r.unread).map((r) => r.file);
+  const withSplit = bars.filter((r) => r.split === 'object');
+  const noSplit = bars.filter((r) => r.split === 'none').map((r) => r.file);
+  const notObject = bars.filter((r) => r.split !== 'object' && r.split !== 'none');
+  const labelled = bars.filter((r) => r.contaminated && r.labelled).map((r) => r.file);
+  const unlabelled = bars.filter((r) => r.contaminated && !r.labelled).map((r) => r.file);
+  const causes = [];
+  if (noSplit.length) causes.push(noSplit.length + ' bar file(s) with no split: ' + noSplit.join(', '));
+  if (notObject.length) causes.push(notObject.length + ' bar file(s) whose split is not an object: ' + notObject.map((r) => r.file + ' (' + r.split + (r.split === 'string' ? ' "' + String(r.splitValue).slice(0, 40) + '"' : '') + ')').join(', '));
+  if (unlabelled.length) causes.push(unlabelled.length + ' bar file(s) contaminated with a statement that does not say so: ' + unlabelled.join(', '));
+  const ok = causes.length === 0;
+  const counts = { files: recs.length, unread: unread.length, bar: bars.length, withSplit: withSplit.length, noSplit: noSplit.length, splitNotObject: notObject.length, contaminated: labelled.length + unlabelled.length, labelled: labelled.length, unlabelled: unlabelled.length };
+  const where = census && census.read === false ? 'no bench/verdicts directory' : counts.files + ' verdict files';
+  const line = headOf('CONTAMINATION', ok, referee)
+    + 'bar files (isTheBar true) ' + counts.bar + ' of ' + where + (counts.bar ? '' : ', so nothing was graded')
+    + ', with a split object ' + counts.withSplit + ', contaminated and labelled ' + counts.labelled + (labelled.length ? ' (' + labelled.join(', ') + ')' : '')
+    + ', contaminated and unlabelled ' + counts.unlabelled + ', with no split ' + counts.noSplit + ', split not an object ' + counts.splitNotObject
+    + (unread.length ? ', unread ' + unread.length + ' (' + unread.join(', ') + ', counted as unread, not clean)' : '')
+    + (causes.length ? '; CAUSES (' + causes.length + '): ' + causes.join('; ') : '');
+  return { ok, graded: true, rules: !(referee && referee.referee), referee, counts, noSplit, splitNotObject: notObject.map((r) => ({ file: r.file, split: r.split, value: r.splitValue ?? null })), labelled, unlabelled, unread, causes, line };
+}
+
 // ---------------------------------------------------------------- the gate
 async function main() {
   const args = new Set(process.argv.slice(2));
@@ -1012,12 +1096,15 @@ async function main() {
   // AUTONOMY and HANDOFF (Board 15): one schtasks /query read serves both
   const installTask = taskOf(AUTONOMY_TASK);
   rows.autonomy = await guarded('AUTONOMY', async () => autonomyRow({ root: ROOT, task: installTask }));
-  rows.handoff = await guarded('HANDOFF', async () => handoffRow({ root: ROOT, task: installTask }));
+  rows.handoff = await guarded('HANDOFF', async () => handoffRow({ root: ROOT, task: installTask }));  // CONTAMINATION (Board 13): every bar file names its split; a referee while a live autopilot holds the lock
+  rows.contamination = await guarded('CONTAMINATION', async () => contaminationRow(contaminationRecords(path.join(ROOT, 'bench', 'verdicts')), { referee: refereeOf(ROOT) }));
+
   // a referee row (a live autopilot holds the lock) is printed and recorded but does not rule
   const rules = (r) => r.rules !== false;
 
   const rowsPass = rows.budget.ok && rows.compress.ok && rows.hisData.ok && rows.loadBearing.ok && rows.boundary.ok
-    && (rows.autonomy.ok || !rules(rows.autonomy)) && (rows.handoff.ok || !rules(rows.handoff));
+    && (rows.autonomy.ok || !rules(rows.autonomy)) && (rows.handoff.ok || !rules(rows.handoff))
+    && (rows.contamination.ok || !rules(rows.contamination));
   const allPass = tests.every(t => t.exit === 0) && emDash.length === 0 && badImports.length === 0 && rowsPass;
   const verdict = {
     at: new Date().toISOString(), startedAt, node: process.version, command: 'node bench/gate.mjs' + (args.has('--quiet') ? ' --quiet' : ''),
@@ -1025,14 +1112,14 @@ async function main() {
     assertionsPassed: tests.reduce((a, t) => a + (t.pass || 0), 0), assertionsFailed: tests.reduce((a, t) => a + (t.fail || 0), 0),
     lines: { code: codeLines, prose: proseLines, codeFiles, generated: generatedLines, generatedFiles, byArea: counts },
     emDash, emDashCopiedSkipped, badImports, notes,
-    rows: { budget: rows.budget, compress: rows.compress, hisData: rows.hisData, loadBearing: rows.loadBearing, boundary: rows.boundary, autonomy: rows.autonomy, handoff: rows.handoff },
+    rows: { budget: rows.budget, compress: rows.compress, hisData: rows.hisData, loadBearing: rows.loadBearing, boundary: rows.boundary, autonomy: rows.autonomy, handoff: rows.handoff, contamination: rows.contamination },
     verdict: allPass ? 'GREEN' : 'RED',
   };
   const gr = (r) => (r.ok ? 'GREEN' : 'RED');
   const gr2 = (r) => (r.graded === false ? 'N/A' : gr(r) + (rules(r) ? '' : ' (referee)'));
   // the summary line is kept in gate.json too, so a verdict that pastes it pastes what was printed
   verdict.line = 'GATE ' + verdict.verdict + ': test files ' + verdict.testsPassed + '/' + verdict.testsTotal + ', assertions ' + verdict.assertionsPassed + ' pass / ' + verdict.assertionsFailed + ' fail, authored code lines ' + codeLines + ' in ' + codeFiles + ' files, prose lines ' + proseLines + ', generated organism lines ' + generatedLines + ' in ' + generatedFiles + ' files, em-dash files ' + emDash.length + ', bad imports ' + badImports.length
-    + ', budget ' + gr(rows.budget) + ', compress ' + gr(rows.compress) + ', his data ' + gr(rows.hisData) + ', load-bearing ' + gr(rows.loadBearing) + ', boundary ' + gr(rows.boundary) + ', autonomy ' + gr2(rows.autonomy) + ', handoff ' + gr2(rows.handoff);
+    + ', budget ' + gr(rows.budget) + ', compress ' + gr(rows.compress) + ', his data ' + gr(rows.hisData) + ', load-bearing ' + gr(rows.loadBearing) + ', boundary ' + gr(rows.boundary) + ', autonomy ' + gr2(rows.autonomy) + ', handoff ' + gr2(rows.handoff) + ', contamination ' + gr2(rows.contamination);
   mkdirSync(path.join(HERE, 'verdicts'), { recursive: true });
   writeFileSync(path.join(HERE, 'verdicts', 'gate.json'), JSON.stringify(verdict, null, 2));
   console.log('');
@@ -1043,6 +1130,8 @@ async function main() {
   console.log(rows.boundary.line);
   console.log(rows.autonomy.line);
   console.log(rows.handoff.line);
+  console.log(rows.contamination.line);
+
   console.log('\n' + verdict.line);
   if (emDash.length) console.log('em-dashes in: ' + emDash.join(', '));
   if (emDashCopiedSkipped) console.log('em-dashes in copied files skipped: ' + emDashCopiedSkipped + ' (web/tools and web/dist/tools, the Code Universe factory copy)');
@@ -1052,4 +1141,10 @@ async function main() {
 }
 
 const isMain = Boolean(process.argv[1]) && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isMain) await main();
+// node bench/gate.mjs --contamination: the CONTAMINATION row alone, in milliseconds, with no test run
+// and no gate.json written; the exit code is the row (1 only when it is red and rules)
+if (isMain && process.argv.includes('--contamination')) {
+  const r = contaminationRow(contaminationRecords(path.join(ROOT, 'bench', 'verdicts')), { referee: refereeOf(ROOT) });
+  console.log(r.line);
+  process.exitCode = r.ok || !r.rules ? 0 : 1;
+} else if (isMain) await main();

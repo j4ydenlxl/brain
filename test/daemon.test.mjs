@@ -29,7 +29,9 @@ const lines = (file) => (existsSync(file) ? readFileSync(file, 'utf8').split('\n
 // one loop run shared by the default, every-kind and read-back tests
 let shared = null;
 function sharedRun() {
-  if (!shared) shared = live({ ...TINY, name: 'loop', seed: 'daemon-test', ticks: 300, benchFlagDir: path.join(STATE, 'flags-none') });
+  // selfFloorMb lifted: the self round's memory guard (Board 13 fit) is graded by test/cloud-fit.test.mjs; this run measures
+  // every step kind, and the test process's own rss (741 MB peak under the gate) sits over the 380 MB default floor.
+  if (!shared) shared = live({ ...TINY, name: 'loop', seed: 'daemon-test', ticks: 300, selfFloorMb: 1e6, benchFlagDir: path.join(STATE, 'flags-none') });
   return shared;
 }
 

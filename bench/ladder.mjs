@@ -61,6 +61,17 @@
 // verdicts is printed PARTIAL with its sample size and the reason; a set with no verdict is
 // printed "not measured". It rewrites bench/verdicts/ladder.json with the board beside the
 // daily series (days, deltas, line), which daemon/health.mjs and the site read.
+//
+// BOARD 13 adds five readings, each from the verdicts on disk and each printing "not measured"
+// or "partial" where a verdict is missing or narrow, never a zero: CLIMB (per public set, the
+// newest board's number against the board before it, with both Wilson intervals; a verdict's
+// board is its board field, else its landing window in docs/BOARDS.json), PLATEAU (the plateau
+// second and the score gained after it, from plateau.json, beside Board 11's years.json),
+// CLOCK (solved against clock from grid-clock.json and the whole-400 count, beside Board 11's
+// grid-library.json), DIRECT (the leak-free recall from direct-clean.json beside the swept table
+// of native.json and its control), and the truth about Board 12's MULTIPLYING bar: the builder's
+// run and the verifier's rerun disagree in sign, every pick shares one searched fitness, and no
+// run printed seed-to-seed noise, so the block prints "decided by tie-break noise, not a bar".
 import { mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync, appendFileSync, statSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
@@ -926,7 +937,7 @@ export function narrowReasons(name, v) {
 export function multiplyOf({ dir = VERDICTS_DIR } = {}) {
   const names = ['multiply.json', 'multiply-partial.json'];
   const found = names.map((n) => ({ name: n, v: readJsonSafe(path.join(dir, n)) })).filter((x) => x.v && typeof x.v === 'object');
-  if (!found.length) return { source: null, reason: 'no bench/verdicts/multiply.json or multiply-partial.json' };
+  if (!found.length) return { source: null, reason: 'no bench/verdicts/multiply.json or multiply-partial.json', tieBreak: tieBreakOf({ dir }) };
   const { name, v } = found[0];
   const partialBecause = narrowReasons(name, v);
   const arm = (a) => (a && typeof a === 'object' ? {
@@ -944,6 +955,7 @@ export function multiplyOf({ dir = VERDICTS_DIR } = {}) {
     bar: { met: typeof bar.met === 'boolean' ? bar.met : null, singleFresh: numOr(bar.singleFresh), populationFresh: numOr(bar.populationFresh), freshT: numOr(bar.freshT), atOrAbove: typeof bar.atOrAbove === 'boolean' ? bar.atOrAbove : null, cameBack: typeof bar.cameBack === 'boolean' ? bar.cameBack : null },
     single: arm(v.arms && v.arms.single), population: arm(v.arms && v.arms.population), kill, modelCalls: numOr(v.modelCalls),
     alsoOnDisk: found.slice(1).map((x) => ({ file: boardRel(path.join(dir, x.name)), at: x.v.at || null, isTheBar: x.v.isTheBar === true, singleFresh: numOr(x.v.bar && x.v.bar.singleFresh), populationFresh: numOr(x.v.bar && x.v.bar.populationFresh), freshT: numOr(x.v.bar && x.v.bar.freshT), met: x.v.bar && typeof x.v.bar.met === 'boolean' ? x.v.bar.met : null, wallS: numOr(x.v.config && x.v.config.wallS) })),
+    tieBreak: tieBreakOf({ dir }),
   };
 }
 
@@ -1354,6 +1366,357 @@ export function undoneLines(u) {
   return L;
 }
 
+// ---------------------------------------------------------------- Board 13: CLIMB, PLATEAU, CLOCK, DIRECT and the tie-break
+// Five readings of the verdicts on disk, run like the rest of the board: nothing is run, a missing
+// verdict prints "not measured", a -partial or isTheBar false one prints "partial", and a number a
+// verdict does not carry prints "n/a", never a zero. PLATEAU, CLOCK and the leak-free half of
+// DIRECT read verdicts other builders of this board write; their field names are not fixed here, so
+// those blocks print the verdict's own fields by path (fieldGroups) and a reader checks each one
+// against the file named beside it. Board 11's number is printed beside each as the baseline.
+
+/** The landed boards of docs/BOARDS.json in landing order, and the board in progress (the lowest with no landing). */
+export function boardWindowsOf(boardsFile = path.join(BOARD_ROOT, 'docs', 'BOARDS.json')) {
+  const bj = readJsonSafe(boardsFile);
+  const arr = Array.isArray(bj) ? bj : bj && Array.isArray(bj.boards) ? bj.boards : [];
+  const landed = arr.filter((b) => b && isNum(b.board) && Number.isFinite(Date.parse(b.at))).map((b) => ({ board: b.board, at: b.at, ms: Date.parse(b.at) })).sort((a, b) => a.ms - b.ms);
+  const open = arr.filter((b) => b && isNum(b.board) && !Number.isFinite(Date.parse(b.at))).map((b) => b.board).sort((a, b) => a - b);
+  return { source: boardRel(boardsFile), read: !!bj, landed, inProgress: open.length ? open[0] : null };
+}
+
+/**
+ * The board a verdict belongs to: its own board field; else the first landing in docs/BOARDS.json
+ * at or after its at (the first landing takes everything before it, so it reads "or earlier");
+ * after the last landing, the board in progress.
+ */
+export function boardOfVerdict(v, windows) {
+  if (v && isNum(v.board)) return { board: v.board, how: 'its board field', orEarlier: false, inProgress: false };
+  const t = Date.parse(v && v.at);
+  if (!Number.isFinite(t)) return { board: null, how: 'no at', orEarlier: false, inProgress: false };
+  const i = windows.landed.findIndex((b) => b.ms >= t);
+  if (i >= 0) return { board: windows.landed[i].board, how: 'landing window', orEarlier: i === 0, inProgress: false };
+  return { board: windows.inProgress, how: 'after the last landing', orEarlier: false, inProgress: true };
+}
+
+/** The sets the CLIMB block reads: the ladder's two public sets and the ARC evaluation set with Board 11's library run and this board's whole-400 clock run. */
+export const CLIMB_SETS = Object.freeze([
+  Object.freeze({ key: 'gsm8k', name: 'GSM8K', match: PUBLIC_SETS[0].match }),
+  Object.freeze({ key: 'humaneval', name: 'HumanEval', match: PUBLIC_SETS[1].match }),
+  Object.freeze({ key: 'arc', name: 'ARC-AGI-1 evaluation', match: /^(?:(?:public-arc|grid-evaluation|grid-clock-whole)(?:-[a-z0-9]+)*|grid-library(?:-partial)?)\.json$/ }),
+]);
+const CONTROL_ARM = /^(?:base|control|fixed|plain|none|null|alone|off|no-?library)$/i;
+
+/**
+ * The organism's count in one verdict: its organism arm; else, for a verdict whose arms are a list
+ * (grid-library.json), the one arm outside the controls (base, control, fixed, plain, none, null,
+ * alone, off, no-library), its first run. Two intervention arms is no reading, never a pick.
+ */
+export function climbArmOf(v) {
+  if (v && Array.isArray(v.arms)) {
+    const named = v.arms.filter((x) => x && typeof x === 'object' && typeof x.arm === 'string' && !CONTROL_ARM.test(x.arm) && isNum(countOf(x)) && isNum(x.n) && x.n > 0);
+    const names = [...new Set(named.map((x) => x.arm))];
+    if (names.length === 1) {
+      const x = named[0], c = countOf(x);
+      return { absent: false, arm: x.arm + (x.label ? ' (' + x.label + ')' : ''), n: x.n, correct: c, accuracy: bR6(c / x.n), interval: wilson95(c, x.n), intervalFrom: 'the ladder (Wilson 95)' };
+    }
+    return { absent: true, reason: names.length ? 'intervention arms ' + names.join(', ') + ': no one arm to read' : 'no arm outside the controls carries a count' };
+  }
+  const a = armsOf(v).organism;
+  if (a && !a.absent && isNum(a.correct) && isNum(a.n) && a.n > 0) return { ...a, arm: 'organism' };
+  return { absent: true, reason: a && a.reason ? a.reason : 'no organism arm' };
+}
+
+/** CLIMB: per public set, the newest board's number against the board before it, with both intervals. */
+export function climbOf({ dir = VERDICTS_DIR, boardsFile = path.join(BOARD_ROOT, 'docs', 'BOARDS.json') } = {}) {
+  const windows = boardWindowsOf(boardsFile);
+  let names = []; try { names = readdirSync(dir).sort(); } catch { names = []; }
+  const lastLanding = windows.landed.length ? windows.landed[windows.landed.length - 1] : null;
+  const sets = CLIMB_SETS.map((set) => {
+    const vs = names.filter((n) => set.match.test(n)).map((name) => ({ name, v: readJsonSafe(path.join(dir, name)) })).filter((x) => x.v && typeof x.v === 'object' && !Array.isArray(x.v));
+    const ofs = vs.map((x) => sampleOf(x.v).of).filter(isNum);
+    const setOf = ofs.length ? Math.max(...ofs) : null;
+    const rows = vs.map(({ name, v }) => {
+      const s = sampleOf(v);
+      const arm = climbArmOf(v);
+      // a verdict that records n and no of (grid-library.json) is held to the largest of its set records
+      const view = s.of === null && setOf !== null ? { ...v, n: s.n ?? (arm.absent ? null : arm.n), of: setOf } : v;
+      const reasons = partialReasons(name, view);
+      const b = boardOfVerdict(v, windows);
+      const sv = sampleOf(view);
+      return {
+        file: boardRel(path.join(dir, name)), at: v.at ? String(v.at) : null, board: b.board, boardHow: b.how, orEarlier: b.orEarlier, inProgress: b.inProgress,
+        status: reasons.length ? 'PARTIAL' : 'whole', reasons, n: sv.n, of: sv.of, model: v.model === undefined ? null : v.model,
+        arm: arm.absent ? null : { name: arm.arm, correct: arm.correct, n: arm.n, accuracy: arm.accuracy, interval: arm.interval, intervalFrom: arm.intervalFrom },
+        armReason: arm.absent ? arm.reason : null,
+      };
+    });
+    // one number per board: its newest whole verdict with an organism count, else its newest partial one
+    const byBoard = new Map();
+    for (const r of rows.filter((x) => x.arm && x.board !== null)) {
+      const cur = byBoard.get(r.board);
+      const better = !cur || (r.status === 'whole' && cur.status !== 'whole') || (r.status === cur.status && String(r.at) > String(cur.at));
+      if (better) byBoard.set(r.board, r);
+    }
+    const reps = [...byBoard.values()].sort((a, b) => String(a.at).localeCompare(String(b.at)));
+    const current = reps.length ? reps[reps.length - 1] : null;
+    const previous = reps.length > 1 ? reps[reps.length - 2] : null;
+    let delta = null;
+    if (current && previous) {
+      const c = current.arm, p = previous.arm;
+      const decided = isNum(c.interval.lo) && isNum(p.interval.hi) && c.interval.lo > p.interval.hi ? 'up'
+        : isNum(c.interval.hi) && isNum(p.interval.lo) && c.interval.hi < p.interval.lo ? 'down' : null;
+      delta = { points: bR2((c.accuracy - p.accuracy) * 100), decided, partial: current.status !== 'whole' || previous.status !== 'whole', sameModel: current.model === previous.model };
+    }
+    const thisBoard = windows.inProgress === null ? null : { board: windows.inProgress, measured: !!(current && current.board === windows.inProgress) };
+    return {
+      key: set.key, name: set.name, files: rows.length, rows, current, previous, delta, thisBoard,
+      unread: rows.filter((r) => !r.arm).map((r) => ({ file: r.file, reason: r.armReason })),
+      reason: rows.length ? null : 'no verdict file under ' + boardRel(dir) + ' matches ' + set.match,
+    };
+  });
+  return { source: windows.source, boardsRead: windows.read, inProgress: windows.inProgress, lastLanding: lastLanding ? { board: lastLanding.board, at: lastLanding.at } : null, sets };
+}
+
+const pctIv = (a) => pctOf(a.accuracy) + '% [' + pctOf(a.interval.lo) + ', ' + pctOf(a.interval.hi) + ']';
+function climbRowText(r) {
+  return 'board ' + na(r.board) + (r.orEarlier ? ' or earlier' : '') + (r.inProgress ? ' (in progress)' : '') + ': ' + (r.status === 'whole' ? 'whole' : 'PARTIAL (' + r.reasons.join(', ') + ')')
+    + ', ' + r.file + ' at ' + na(r.at) + ', model ' + (r.model === null ? 'none' : r.model) + ', n ' + na(r.n) + ' of ' + na(r.of)
+    + ': ' + r.arm.name + ' ' + r.arm.correct + '/' + r.arm.n + ' = ' + pctIv(r.arm);
+}
+
+/** The CLIMB block. */
+export function climbLines(c) {
+  const L = ['CLIMB: per public set, the newest board\'s number against the board before it (a verdict\'s board is its board field, else the first landing in ' + c.source + ' at or after its at, else the board in progress'
+    + (c.inProgress !== null ? ', ' + c.inProgress : '') + (c.boardsRead ? '' : '; ' + c.source + ' could not be read, so every verdict is the board in progress') + ')'];
+  for (const s of c.sets) {
+    if (!s.files) { L.push('  ' + s.name + ': not measured (' + s.reason + ')'); continue; }
+    if (s.thisBoard && !s.thisBoard.measured) L.push('  ' + s.name + ': board ' + s.thisBoard.board + ' (in progress): not measured, no ' + s.name + ' verdict after the last landing' + (c.lastLanding ? ' (board ' + c.lastLanding.board + ' at ' + c.lastLanding.at + ')' : ''));
+    else L.push('  ' + s.name + ':');
+    if (!s.current) L.push('    newest: not measured (' + s.files + ' verdict file(s), none with an organism count the ladder can read: ' + s.unread.map((u) => u.file + ', ' + u.reason).join('; ') + ')');
+    else L.push('    newest, ' + climbRowText(s.current));
+    if (s.current) L.push('    before: ' + (s.previous ? climbRowText(s.previous) : 'not measured (no earlier board holds a ' + s.name + ' verdict with an organism count)'));
+    const d = s.delta;
+    if (s.current) L.push('    delta: ' + (!d ? 'not measured (one board only)'
+      : (d.points > 0 ? '+' : '') + d.points.toFixed(2) + ' points (' + pctOf(s.current.arm.accuracy) + ' against ' + pctOf(s.previous.arm.accuracy) + '), '
+        + (d.decided ? d.decided + ', the intervals separate' : 'the intervals overlap (undecided)')
+        + (d.partial ? '; partial: a sample on at least one side, not a whole-set climb' : '; whole against whole')
+        + (d.sameModel ? '' : '; the models differ (' + (s.current.model ?? 'none') + ' against ' + (s.previous.model ?? 'none') + ')')));
+    if (s.unread.length && s.current) L.push('    not read (no organism count): ' + s.unread.map((u) => u.file).join(', '));
+  }
+  return L;
+}
+
+/**
+ * The verdict's own fields by path: every object (to a small depth) whose scalar fields include a key
+ * matching re, printed as that object's path and its matching fields, plus the fields that name it
+ * (arm, plane, label, name, mode, seed, intervention, clock). A number printed is a field.
+ */
+const NAMING_KEY = /^(?:arm|plane|label|name|mode|seed|seeds|intervention|clock|clockS|clockMs|kind|set|split)$/;
+export function fieldGroups(obj, re, { max = 16, depth = 5 } = {}) {
+  const groups = [];
+  let total = 0;
+  const scalar = (x) => (typeof x === 'number' && Number.isFinite(x)) || typeof x === 'boolean' || (typeof x === 'string' && x.length <= 48);
+  const shown = (x) => (typeof x === 'string' ? '"' + x + '"' : Array.isArray(x) ? '[' + x.join(', ') + ']' : String(x));
+  const visit = (o, p, d) => {
+    if (!o || typeof o !== 'object' || d > depth) return;
+    if (Array.isArray(o)) { o.forEach((x, i) => visit(x, p + '[' + i + ']', d + 1)); return; }
+    const fields = [];
+    for (const [k, x] of Object.entries(o)) {
+      const numList = Array.isArray(x) && x.length > 0 && x.length <= 8 && x.every((y) => typeof y === 'number' && Number.isFinite(y));
+      if (!(scalar(x) || numList)) continue;
+      if (typeof x !== 'string' && re.test(k)) fields.push([k, x, true]);
+      else if (NAMING_KEY.test(k)) fields.push([k, x, false]);
+    }
+    if (fields.some((f) => f[2])) {
+      total++;
+      if (groups.length < max) groups.push({ path: p || '(top)', fields: fields.map(([k, x]) => k + ' ' + shown(x)) });
+    }
+    for (const [k, x] of Object.entries(o)) if (x && typeof x === 'object' && !['statement', 'rows', 'journal'].includes(k)) visit(x, p ? p + '.' + k : k, d + 1);
+  };
+  visit(obj, '', 0);
+  return { groups, total };
+}
+
+/** The first of these verdict files that parses, with why it is narrow; null when none does. */
+function firstVerdictOf(dir, names) {
+  for (const name of names) {
+    const v = readJsonSafe(path.join(dir, name));
+    if (!v || typeof v !== 'object' || Array.isArray(v)) continue;
+    const partialBecause = narrowReasons(name, v);
+    return { name, v, file: boardRel(path.join(dir, name)), at: v.at || null, command: v.command || null, isTheBar: v.isTheBar === true, barMet: typeof v.barMet === 'boolean' ? v.barMet : null, partial: partialBecause.length > 0, partialBecause };
+  }
+  return null;
+}
+const headOfVerdict = (f) => f.file + ', ' + (f.partial ? 'PARTIAL: ' + f.partialBecause.join(', ') : 'whole, isTheBar true') + ', ' + na(f.at) + (f.barMet === null ? '' : ', barMet ' + f.barMet);
+const summaryOf = (f, re, max) => { const g = fieldGroups(f.v, re, { max }); return { file: f.file, at: f.at, command: f.command, isTheBar: f.isTheBar, barMet: f.barMet, partial: f.partial, partialBecause: f.partialBecause, groups: g.groups, groupsTotal: g.total }; };
+function groupLines(s, indent) {
+  const L = [];
+  if (!s.groups.length) L.push(indent + 'no field of it matches what this block reads; open the file');
+  for (const g of s.groups) L.push(indent + g.path + ': ' + g.fields.join(', '));
+  if (s.groupsTotal > s.groups.length) L.push(indent + '(' + s.groups.length + ' of ' + s.groupsTotal + ' matching objects printed; the rest are in the file)');
+  return L;
+}
+
+/** PLATEAU: the plateau second and the score gained after it, from plateau.json, beside Board 11's first plateau (years.json). */
+export const PLATEAU_FIELDS = /plateau|gain|after|noise|final|perMillion/i;
+export function plateauOf({ dir = VERDICTS_DIR } = {}) {
+  const y = readJsonSafe(path.join(dir, 'years.json'));
+  const baseline = y && y.bar && Array.isArray(y.bar.perPlane) ? {
+    file: boardRel(path.join(dir, 'years.json')), at: y.at || null,
+    planes: y.bar.perPlane.map((p) => ({ plane: p && p.plane ? String(p.plane) : null, firstPlateauS: numOr(p && p.firstPlateauS), start: numOr(p && p.start), end: numOr(p && p.end), gained: numOr(p && p.gained), organismYears: numOr(p && p.organismYears) })),
+  } : null;
+  const f = firstVerdictOf(dir, ['plateau.json', 'plateau-partial.json']);
+  if (!f) return { source: null, reason: 'no bench/verdicts/plateau.json or plateau-partial.json', baseline };
+  return { source: f.file, ...summaryOf(f, PLATEAU_FIELDS, 16), baseline };
+}
+export function plateauLines(p) {
+  const L = [];
+  const b = p.baseline;
+  const base = b ? 'Board 11 baseline (' + b.file + ', ' + na(b.at) + '): ' + b.planes.map((x) => na(x.plane) + ' plane first plateau ' + (x.firstPlateauS === null ? 'n/a' : x.firstPlateauS.toFixed(3) + ' s') + ', score ' + na(x.start) + ' to ' + na(x.end) + ' over ' + na(x.organismYears) + ' organism-years').join('; ')
+    : 'Board 11 baseline: not measured (no bench/verdicts/years.json with bar.perPlane)';
+  if (!p.source) { L.push('PLATEAU: not measured (' + p.reason + ')'); L.push('  ' + base); return L; }
+  L.push('PLATEAU (' + headOfVerdict(p) + '): the plateau second and the score gained after it, the verdict\'s own fields by path');
+  L.push(...groupLines(p, '  '));
+  L.push('  ' + base);
+  return L;
+}
+
+/** CLOCK: solved against clock (grid-clock.json) and the whole-400 count (grid-clock-whole.json), beside Board 11's library run. */
+export const CLOCK_FIELDS = /solved|timed|wrong|noise|budget|perSecond|wall|clock/i;
+export function clockOf({ dir = VERDICTS_DIR } = {}) {
+  const gl = readJsonSafe(path.join(dir, 'grid-library.json'));
+  let baseline = null;
+  if (gl && Array.isArray(gl.arms)) {
+    const lib = gl.arms.find((a) => a && a.arm === 'library');
+    const base = gl.arms.filter((a) => a && a.arm === 'base');
+    baseline = { file: boardRel(path.join(dir, 'grid-library.json')), at: gl.at || null, budgetMs: numOr(gl.budgetMs), library: lib ? { solved: numOr(lib.solved), n: numOr(lib.n), timedOut: numOr(lib.timedOut), foundButWrong: numOr(lib.foundButWrong) } : null, base: base.map((a) => numOr(a.solved)), noise: numOr(gl.noise) };
+  }
+  const curve = firstVerdictOf(dir, ['grid-clock.json', 'grid-clock-partial.json']);
+  const whole = firstVerdictOf(dir, ['grid-clock-whole.json', 'grid-clock-whole-partial.json']);
+  return {
+    curve: curve ? summaryOf(curve, CLOCK_FIELDS, 24) : null, curveReason: curve ? null : 'no bench/verdicts/grid-clock.json or grid-clock-partial.json',
+    whole: whole ? summaryOf(whole, CLOCK_FIELDS, 12) : null, wholeReason: whole ? null : 'no bench/verdicts/grid-clock-whole.json or grid-clock-whole-partial.json',
+    baseline,
+  };
+}
+export function clockLines(c) {
+  const L = ['CLOCK: solved against clock on the ARC evaluation set, and the whole-400 count'];
+  if (!c.curve) L.push('  curve: not measured (' + c.curveReason + ')');
+  else { L.push('  curve (' + headOfVerdict(c.curve) + '):'); L.push(...groupLines(c.curve, '    ')); }
+  if (!c.whole) L.push('  whole 400: not measured (' + c.wholeReason + ')');
+  else { L.push('  whole 400 (' + headOfVerdict(c.whole) + '):'); L.push(...groupLines(c.whole, '    ')); }
+  const b = c.baseline;
+  L.push('  Board 11 baseline: ' + (!b ? 'not measured (no bench/verdicts/grid-library.json with its arms)'
+    : b.file + ', ' + na(b.at) + ', clock ' + na(b.budgetMs) + ' ms per task: library ' + (b.library ? na(b.library.solved) + ' of ' + na(b.library.n) + ' solved, ' + na(b.library.timedOut) + ' timed out, ' + na(b.library.foundButWrong) + ' found but wrong' : 'n/a')
+      + '; no-library runs ' + (b.base.length ? b.base.map(na).join(' and ') : 'n/a') + ', noise ' + na(b.noise)));
+  return L;
+}
+
+/** DIRECT: the leak-free recall (direct-clean.json) beside Board 11's swept table (native.json) and null. */
+export const DIRECT_FIELDS = /recall|hit|null|ns$|Ns|overlap|leak|warm|tally|correct|miss|swept|clean/i;
+export function directRecallOf({ dir = VERDICTS_DIR } = {}) {
+  const nv = readJsonSafe(path.join(dir, 'native.json'));
+  const w = nv && nv.wiki && nv.wiki.arms ? nv.wiki : null;
+  const arm = (k) => (w && w.arms[k] ? { recall: numOr(w.arms[k].recallAt1), n: numOr(w.arms[k].n ?? w.n), direct: numOr(w.arms[k].direct), directCorrect: numOr(w.arms[k].directCorrect) } : null);
+  const iv = (a) => (a && isNum(a.recall) && isNum(a.n) && a.n > 0 ? wilson95(a.recall, a.n) : null);
+  const swept = w ? {
+    file: boardRel(path.join(dir, 'native.json')), at: nv.at || null, isTheBar: nv.isTheBar === true,
+    table: arm('direct'), control: arm('control'), none: arm('none'),
+    hitNsMedian: numOr(nv.timing && nv.timing.hitNsMedian), missNsMedian: numOr(nv.timing && nv.timing.missNsMedian),
+    titlesSwept: numOr(nv.fill && nv.fill.of), drawnInControl: numOr(nv.fill && nv.fill.drawnInControl),
+  } : null;
+  if (swept) for (const k of ['table', 'control', 'none']) if (swept[k]) swept[k].interval = iv(swept[k]);
+  const f = firstVerdictOf(dir, ['direct-clean.json', 'direct-clean-partial.json']);
+  return { clean: f ? summaryOf(f, DIRECT_FIELDS, 16) : null, cleanReason: f ? null : 'no bench/verdicts/direct-clean.json or direct-clean-partial.json', swept, sweptReason: swept ? null : 'no bench/verdicts/native.json with wiki.arms' };
+}
+export function directRecallLines(d) {
+  const L = ['DIRECT: recall@1 with no model call, the leak-free table beside the swept one and null'];
+  if (!d.clean) L.push('  leak-free (filled only from asks): not measured (' + d.cleanReason + ')');
+  else { L.push('  leak-free (' + headOfVerdict(d.clean) + '):'); L.push(...groupLines(d.clean, '    ')); }
+  const s = d.swept;
+  if (!s) { L.push('  swept (Board 11): not measured (' + d.sweptReason + ')'); return L; }
+  const one = (a) => (!a ? 'n/a' : na(a.recall) + ' of ' + na(a.n) + (a.interval ? ' [' + pctOf(a.interval.lo) + ', ' + pctOf(a.interval.hi) + ']' : ''));
+  L.push('  swept (Board 11, ' + s.file + ', ' + na(s.at) + '): the table ' + one(s.table) + ' with ' + (s.table ? na(s.table.direct) : 'n/a') + ' direct hits (' + (s.table ? na(s.table.directCorrect) : 'n/a') + ' correct), '
+    + na(s.hitNsMedian) + ' ns median per hit, ' + na(s.missNsMedian) + ' ns per miss; filled by sweeping ' + na(s.titlesSwept) + ' titles, the drawn ones included, so it is memoisation of the tier');
+  L.push('  control (the swept table with the drawn titles left out) ' + one(s.control) + ' with ' + (s.control ? na(s.control.direct) : 'n/a') + ' direct hits; null ' + one(s.none));
+  return L;
+}
+
+/**
+ * The truth about Board 12's MULTIPLYING bar: the builder's run (notes/multiply.md) and the verifier's
+ * rerun (bench/verdicts/multiply.json, the bar file), the searched fitness of every pick, and whether
+ * any run printed seed-to-seed noise. While the picks share one searched fitness, or no run printed a
+ * noise, or no gap is wider than it, the fresh number is decided by the tie-break and is not a bar.
+ */
+// the builder's note sits beside the verdicts of a tree (<root>/notes/multiply.md for <root>/bench/verdicts);
+// any other directory has no note, so a temp directory never reads the real one
+const notesOfDir = (dir) => (path.basename(dir) === 'verdicts' && path.basename(path.dirname(dir)) === 'bench' ? path.join(path.dirname(path.dirname(dir)), 'notes', 'multiply.md') : null);
+export function tieBreakOf({ dir = VERDICTS_DIR, notesFile = notesOfDir(dir) } = {}) {
+  const runs = [];
+  let text = null; try { text = notesFile ? readFileSync(notesFile, 'utf8') : null; } catch { text = null; }
+  const noteRel = notesFile ? boardRel(notesFile) : null;
+  if (text) {
+    const lines = text.split(/\r?\n/);
+    const find = (re) => { for (let i = 0; i < lines.length; i++) { const m = re.exec(lines[i]); if (m) return { m, line: i + 1 }; } return null; };
+    const s = find(/^\[bar\] single: (\d+)\/(\d+) fresh/);
+    const p = find(/^\[bar\] population pick by the searched objective: (\d+)\/(\d+) fresh/);
+    const f = find(/ended on the same searched score\b.*?fitness (0\.\d+)/);
+    const mm = find(/the means were ([\d.]+) \(population\) and ([\d.]+) \(single\)/);
+    if (s && p) runs.push({ who: 'builder', source: noteRel + ':' + s.line + ',' + p.line, at: null, wallS: null, single: Number(s.m[1]), population: Number(p.m[1]), freshT: Number(s.m[2]),
+      picks: f ? [{ arm: 'single', fitness: Number(f.m[1]) }, { arm: 'population', fitness: Number(f.m[1]) }] : [], fitnessSource: f ? noteRel + ':' + f.line : null,
+      freshMoreMean: mm ? { population: Number(mm.m[1]), single: Number(mm.m[2]), source: noteRel + ':' + mm.line } : null, noise: null });
+  }
+  const noiseOf = (v) => {
+    for (const x of [v.seedNoise, v.noise, v.bar && v.bar.noise, v.bar && v.bar.seedNoise]) {
+      if (isNum(x)) return x;
+      if (x && typeof x === 'object') for (const k of ['seedToSeed', 'fresh', 'width', 'sd']) if (isNum(x[k])) return x[k];
+    }
+    return null;
+  };
+  for (const [who, name] of [['bar file', 'multiply.json'], ['partial', 'multiply-partial.json']]) {
+    const v = readJsonSafe(path.join(dir, name));
+    if (!v || typeof v !== 'object' || !v.bar) continue;
+    const pick = (k) => (v.arms && v.arms[k] && v.arms[k].pick ? v.arms[k].pick : null);
+    const picks = ['single', 'population'].map((k) => ({ arm: k, fitness: numOr(pick(k) && pick(k).fitness) })).filter((x) => x.fitness !== null);
+    const fm = (k) => numOr(pick(k) && pick(k).freshMoreMean);
+    runs.push({ who, source: boardRel(path.join(dir, name)), at: v.at || null, wallS: numOr(v.config && v.config.wallS), single: numOr(v.bar.singleFresh), population: numOr(v.bar.populationFresh), freshT: numOr(v.bar.freshT),
+      picks, fitnessSource: picks.length ? boardRel(path.join(dir, name)) + ' arms.*.pick.fitness' : null,
+      freshMoreMean: fm('population') !== null || fm('single') !== null ? { population: fm('population'), single: fm('single'), source: boardRel(path.join(dir, name)) + ' arms.*.pick.freshMoreMean' } : null, noise: noiseOf(v) });
+  }
+  for (const r of runs) r.gap = isNum(r.population) && isNum(r.single) ? r.population - r.single : null;
+  const whole = runs.filter((r) => r.who !== 'partial');
+  const fits = whole.flatMap((r) => r.picks.map((x) => x.fitness));
+  const shared = fits.length >= 2 && fits.every((x) => x === fits[0]) ? fits[0] : null;
+  const noises = whole.map((r) => r.noise).filter(isNum);
+  const noise = noises.length ? Math.max(...noises) : null;
+  const gaps = whole.map((r) => r.gap).filter(isNum);
+  const b = whole.find((r) => r.who === 'builder'), v = whole.find((r) => r.who === 'bar file');
+  const moved = b && v ? { population: isNum(b.population) && isNum(v.population) ? Math.abs(v.population - b.population) : null, single: isNum(b.single) && isNum(v.single) ? Math.abs(v.single - b.single) : null } : null;
+  const measured = whole.length > 0;
+  const tie = !measured ? null : shared !== null || noise === null || !gaps.length || gaps.some((g) => Math.abs(g) <= noise);
+  return {
+    measured, runs, picks: fits.length, sharedFitness: shared, noise, moved, tieBreak: tie,
+    label: tie === null ? 'not measured' : tie ? 'decided by tie-break noise, not a bar' : 'decided by a gap wider than the seed-to-seed noise',
+    rule: 'the label lifts only when a run prints its seed-to-seed noise and a gap wider than it, between picks of different searched fitness',
+  };
+}
+export function tieBreakLines(t) {
+  if (!t || !Array.isArray(t.runs)) return ['  TRUTH: not measured (no tie-break reading on this board)'];
+  const L = [];
+  const gapText = (g) => (g === null ? 'n/a' : (g > 0 ? '+' : '') + g);
+  L.push('  TRUTH: ' + (t.measured ? t.label + ' (' + t.rule + ')' : 'not measured (no whole run: neither notes/multiply.md nor bench/verdicts/multiply.json holds one)'));
+  for (const r of t.runs) {
+    L.push('    ' + (r.who === 'builder' ? 'the builder\'s run' : r.who === 'bar file' ? 'the bar file (the verifier\'s rerun)' : 'the partial run') + ' (' + r.source + (r.at ? ', ' + r.at : '') + (isNum(r.wallS) ? ', ' + r.wallS + ' wall s per arm' : '') + '): population '
+      + na(r.population) + '/' + na(r.freshT) + ' against single ' + na(r.single) + '/' + na(r.freshT) + ', gap ' + gapText(r.gap)
+      + (r.picks.length ? '; pick fitness ' + r.picks.map((x) => x.arm + ' ' + x.fitness).join(', ') + ' (' + r.fitnessSource + ')' : '; pick fitness not recorded')
+      + (r.freshMoreMean ? '; mean over the other fresh draws population ' + na(r.freshMoreMean.population) + ', single ' + na(r.freshMoreMean.single) : ''));
+  }
+  if (t.measured) L.push('    ' + (t.sharedFitness !== null ? 'every one of the ' + t.picks + ' picks with a recorded fitness shares one searched fitness, ' + t.sharedFitness + ', so the fresh number is chosen by the tie-break among equal libraries'
+    : t.picks ? 'the ' + t.picks + ' picks with a recorded fitness do not all share one' : 'no pick records its searched fitness')
+    + (t.moved ? '; the same command moved the population pick by ' + na(t.moved.population) + ' and the single by ' + na(t.moved.single) + ' between the two runs' : '')
+    + '; seed-to-seed noise ' + (t.noise === null ? 'printed by no run, so no gap is called real' : t.noise));
+  return L;
+}
+
 /** The whole board, read from disk. */
 export async function boardOf({ dir = VERDICTS_DIR, publishedFile = PUBLISHED_FILE, logFile = LOG_FILE, states = stateDirs(BOARD_ROOT), now = Date.now(), boardsFile = path.join(BOARD_ROOT, 'docs', 'BOARDS.json'), root = BOARD_ROOT, orchestrator = undefined } = {}) {
   const published = readJsonSafe(publishedFile);
@@ -1372,6 +1735,10 @@ export async function boardOf({ dir = VERDICTS_DIR, publishedFile = PUBLISHED_FI
     gaps: gapsOf({ root, dir, now }),
     magnitude: magnitudeOf({ root, dir, orchestrator: orchestrator === undefined ? await orchestratorOf(root) : orchestrator }),
     undone: undoneOf({ root, dir, now }),
+    climb: climbOf({ dir, boardsFile }),
+    plateau: plateauOf({ dir }),
+    clock: clockOf({ dir }),
+    directRecall: directRecallOf({ dir }),
     hisRate: HIS_RATE,
     publishedFile: boardRel(publishedFile),
   };
@@ -1404,7 +1771,7 @@ const frac = (a, b) => na(a) + '/' + na(b);
 
 /** The MULTIPLYING block. */
 export function multiplyingLines(m) {
-  if (!m.source) return ['MULTIPLYING: not measured (' + m.reason + ')'];
+  if (!m.source) return ['MULTIPLYING: not measured (' + m.reason + ')', ...(m.tieBreak && m.tieBreak.measured ? tieBreakLines(m.tieBreak) : [])];
   const L = [];
   const p = m.population || {}, s = m.single || {};
   const alive = (a) => na(a.alive) + (a.aliveAtS !== null && a.aliveAtS !== undefined ? ' at ' + a.aliveAtS + ' s' : '') + (a.ids ? ' (' + a.ids.join(', ') + ')' : '') + ', at most ' + na(a.maxAlive) + ' at once';
@@ -1416,6 +1783,7 @@ export function multiplyingLines(m) {
     + '; elites imported ' + na(p.elitesImported) + ', exported ' + na(p.elitesExported));
   L.push('  kill: ' + (m.kill ? na(m.kill.id) + ' at ' + na(m.kill.atS) + ' s, back from its checkpoint t=' + na(m.kill.checkpointT) + ': ' + yesNo(m.kill.cameBack) : 'not recorded') + '; bar met ' + yesNo(m.bar.met) + (m.partial ? ' in a PARTIAL run, so it is not claimed' : ''));
   for (const a of m.alsoOnDisk) L.push('  also on disk: ' + a.file + ' (' + (a.isTheBar ? 'isTheBar true' : 'partial, isTheBar false') + ', ' + a.at + ', ' + na(a.wallS) + ' wall s): population ' + frac(a.populationFresh, a.freshT) + ' against single ' + frac(a.singleFresh, a.freshT) + ', bar met ' + yesNo(a.met));
+  if (m.tieBreak) L.push(...tieBreakLines(m.tieBreak));
   return L;
 }
 
@@ -1523,6 +1891,10 @@ export function boardLines(b) {
   if (b.gaps) L.push(...gapsLines(b.gaps));
   if (b.magnitude) L.push(...magnitudeLines(b.magnitude));
   if (b.undone) L.push(...undoneLines(b.undone));
+  if (b.climb) L.push(...climbLines(b.climb));
+  if (b.plateau) L.push(...plateauLines(b.plateau));
+  if (b.clock) L.push(...clockLines(b.clock));
+  if (b.directRecall) L.push(...directRecallLines(b.directRecall));
   return L;
 }
 
@@ -1553,7 +1925,28 @@ export function boardStatement(b) {
     + (b.knowledge ? 'Knowledge: ' + b.knowledge.sources.map((s) => s.primary ? s.name + ' holds ' + na(s.primary.held) + ' articles' + (s.primary.partial ? ' (partial)' : '') + ', recall@1 ' + na(s.primary.recall1) + ' against null ' + na(s.primary.null1) : s.name + ' is not measured').join('; ') + '. ' : '')
     + (b.bytesPerPoint.bar ? 'Bytes per score point ' + b.bytesPerPoint.bar.bytesPerScorePoint + ' at the compress bar. ' : '')
     + (im.source ? 'Improvement per wall second ' + im.percentPerSecond + ' percent of the suite against his ' + b.hisRate.percentPerSecond + '.' : 'Improvement per wall second is not measured.')
-    + loopSentence(b);
+    + loopSentence(b) + board13Sentence(b);
+}
+
+/** CLIMB, PLATEAU, CLOCK, DIRECT and the Board 12 tie-break in one sentence each, from their own fields (Board 13). */
+function board13Sentence(b) {
+  const out = [];
+  if (b.climb) out.push('Climb: ' + b.climb.sets.map((s) => {
+    if (!s.current) return s.name + ' is not measured';
+    const side = (r) => 'board ' + na(r.board) + (r.orEarlier ? ' or earlier' : '') + (r.status === 'whole' ? ' ' : ' partial ') + pctOf(r.arm.accuracy) + ' percent';
+    return s.name + ' ' + side(s.current) + (s.delta ? ' against ' + side(s.previous) + ', ' + (s.delta.decided ? s.delta.decided + ' with separate intervals' : 'undecided') : ', no earlier board')
+      + (s.thisBoard && !s.thisBoard.measured ? ', board ' + s.thisBoard.board + ' not measured' : '');
+  }).join('; ') + '.');
+  const where = (f) => (f ? 'in ' + f.file + (f.partial ? ' (partial)' : '') : 'not measured');
+  if (b.plateau) out.push('The plateau is ' + (b.plateau.source ? where(b.plateau) : 'not measured') + '.');
+  if (b.clock) out.push('Solved against clock is ' + where(b.clock.curve) + ' and the whole-400 count is ' + where(b.clock.whole) + '.');
+  if (b.directRecall) {
+    const sw = b.directRecall.swept;
+    out.push('Leak-free direct recall is ' + where(b.directRecall.clean) + (sw && sw.table ? '; the swept table recalled ' + na(sw.table.recall) + ' of ' + na(sw.table.n) + ' and its control ' + (sw.control ? na(sw.control.recall) : 'n/a') : '') + '.');
+  }
+  const t = b.multiplying && b.multiplying.tieBreak;
+  if (t && t.measured) out.push('Board 12 multiplying is ' + t.label + ': ' + t.runs.filter((r) => r.who !== 'partial').map((r) => r.who + ' population ' + na(r.population) + ' against single ' + na(r.single)).join(', ') + '.');
+  return out.length ? ' ' + out.join(' ') : '';
 }
 
 /** The GAPS, MAGNITUDE and UNDONE blocks in one sentence each, from their own fields (Board 15). */
@@ -1570,6 +1963,11 @@ function loopSentence(b) {
 export function seriesDocOf({ series, board, command, nFor95 = null, at = new Date().toISOString() }) {
   return {
     at, node: process.version, command, isTheBar: true,
+    split: {
+      development: 'none: the board trains and tunes nothing; it reads the verdicts on disk, each of which carries its own split',
+      heldOut: 'the daily series: each dated run draws its items seeded ladder/<date>, so a day is scored on items no earlier day drew',
+      contaminated: false,
+    },
     statement: board && !board.error ? boardStatement(board) : 'The daily series; the board could not be read: ' + (board ? board.error : 'not built') + '.',
     columns: COLUMNS,
     how: 'every dated file under bench/verdicts/ladder/ is one run; the series takes the LAST run of each day. composite is the mean of the four columns, each in [0, 1]. A delta is a percent OF THE PREVIOUS DAY, not a difference in points. board is read from the verdicts on disk by node bench/ladder.mjs.',
@@ -1624,27 +2022,41 @@ export async function runBoard({ dir = VERDICTS_DIR, seriesFile = SERIES_FILE, l
 // verdict is bench/verdicts/rows.json (isTheBar true, barMet true); otherwise rows-partial.json
 // (isTheBar false, barMet false). A rows file an earlier board wrote is copied to
 // rows-board<N>.json (rows-partial-board<N>.json) before the first Board 15 write replaces it.
-export const ROWS_BOARD = 15;
+
+// Board 13 widened it once more: the board carries CLIMB, PLATEAU, CLOCK and DIRECT and the
+// MULTIPLYING block carries the tie-break truth, the gate prints eight rows (CONTAMINATION last:
+// every bar file carries a split object, and a contaminated one says so), and the tests it runs
+// include test/gate-contamination.test.mjs. A RED CONTAMINATION row misses the bar like any other.
+// Before the first Board 13 write, rows.json and rows-partial.json of an earlier board are both
+// copied aside (rows-board<N>.json, rows-partial-board<N>.json), whichever this run writes.
+export const ROWS_BOARD = 13;
 
 /** The files the rows item owns. A gate that started before one of them changed did not see it. */
-export const ROWS_OWNED = Object.freeze(['bench/ladder.mjs', 'bench/gate.mjs', 'test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs', 'test/gate-autonomy.test.mjs', 'notes/ladder.md']);
+export const ROWS_OWNED = Object.freeze(['bench/ladder.mjs', 'bench/gate.mjs', 'test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs', 'test/gate-autonomy.test.mjs', 'test/gate-contamination.test.mjs', 'notes/ladder.md']);
 /** The test files node bench/ladder.mjs --rows runs itself, under the gate's budget caps. */
-export const ROWS_TESTS = Object.freeze(['test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs', 'test/gate-autonomy.test.mjs']);
-const ROW_KEYS = Object.freeze([['budget', 'BUDGET'], ['compress', 'COMPRESS'], ['hisData', 'HIS DATA'], ['loadBearing', 'LOAD-BEARING'], ['boundary', 'BOUNDARY'], ['autonomy', 'AUTONOMY'], ['handoff', 'HANDOFF']]);
+export const ROWS_TESTS = Object.freeze(['test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs', 'test/gate-autonomy.test.mjs', 'test/gate-contamination.test.mjs']);
+const ROW_KEYS = Object.freeze([['budget', 'BUDGET'], ['compress', 'COMPRESS'], ['hisData', 'HIS DATA'], ['loadBearing', 'LOAD-BEARING'], ['boundary', 'BOUNDARY'], ['autonomy', 'AUTONOMY'], ['handoff', 'HANDOFF'], ['contamination', 'CONTAMINATION']]);
 /** The rows that read the installation: they must have graded it, not printed N/A. */
 const INSTALL_ROWS = Object.freeze(['autonomy', 'handoff']);
 // a block is on the board when its object is there with the fields this bench writes for it,
 // "not measured" included: a block that says not measured was printed
 const BOARD_BLOCKS = Object.freeze([
-  ['multiplying', 'MULTIPLYING', (x) => !!x && typeof x === 'object' && 'source' in x],
+  ['multiplying', 'MULTIPLYING', (x) => !!x && typeof x === 'object' && 'source' in x && !!x.tieBreak && typeof x.tieBreak === 'object' && 'label' in x.tieBreak],
   ['authored', 'AUTHORED', (x) => !!x && typeof x === 'object' && 'lastBoard' in x && 'perSourcePerDay' in x],
   ['knowledge', 'KNOWLEDGE', (x) => !!x && typeof x === 'object' && Array.isArray(x.sources)],
   ['gaps', 'GAPS', (x) => !!x && typeof x === 'object' && 'ledger' in x && 'decisions' in x && 'closed' in x],
   ['magnitude', 'MAGNITUDE', (x) => !!x && typeof x === 'object' && !!x.organism && !!x.orchestrator && !!x.simulated],
   ['undone', 'UNDONE', (x) => !!x && typeof x === 'object' && 'items' in x && 'attempts' in x && 'partial' in x && 'proposed' in x],
+  ['climb', 'CLIMB', (x) => !!x && typeof x === 'object' && Array.isArray(x.sets) && x.sets.length === CLIMB_SETS.length],
+  ['plateau', 'PLATEAU', (x) => !!x && typeof x === 'object' && 'source' in x && 'baseline' in x],
+  ['clock', 'CLOCK', (x) => !!x && typeof x === 'object' && 'curve' in x && 'whole' in x && 'baseline' in x],
+  ['directRecall', 'DIRECT', (x) => !!x && typeof x === 'object' && 'clean' in x && 'swept' in x],
 ]);
 // the printed block of each, rebuilt from the board in ladder.json by the functions that printed it
-const PRINTERS = Object.freeze({ gaps: (b) => gapsLines(b.gaps), magnitude: (b) => magnitudeLines(b.magnitude), undone: (b) => undoneLines(b.undone), authoredShare: (b) => authoredLines(b.authored).filter((l) => l.startsWith('  AUTHORED SHARE')) });
+const PRINTERS = Object.freeze({
+  gaps: (b) => gapsLines(b.gaps), magnitude: (b) => magnitudeLines(b.magnitude), undone: (b) => undoneLines(b.undone), authoredShare: (b) => authoredLines(b.authored).filter((l) => l.startsWith('  AUTHORED SHARE')),
+  climb: (b) => climbLines(b.climb), plateau: (b) => plateauLines(b.plateau), clock: (b) => clockLines(b.clock), direct: (b) => directRecallLines(b.directRecall), tieBreak: (b) => tieBreakLines(b.multiplying.tieBreak),
+});
 const printedOf = (board) => Object.fromEntries(Object.entries(PRINTERS).map(([k, p]) => { try { return [k, p(board)]; } catch (e) { return [k, ['not printable from ladder.json: ' + String((e && e.message) || e).split('\n')[0]]]; } }));
 const isoOf = (ms) => new Date(ms).toISOString();
 
@@ -1685,6 +2097,9 @@ export function rowsVerdictOf({ ladder, gate, tests, owned = [], at = new Date()
   const badImports = g ? (g.badImports || []) : [];
   if (g && printed.length < ROW_KEYS.length) reasons.push('the gate printed ' + printed.length + ' of the ' + ROW_KEYS.length + ' rows');
   const ungraded = INSTALL_ROWS.filter((k) => rows[k] && rows[k].graded === false).map((k) => ROW_KEYS.find(([x]) => x === k)[1]);
+  const con = rows.contamination && typeof rows.contamination === 'object' ? rows.contamination : null;
+  const conCauses = con && con.ok === false && Array.isArray(con.causes) ? con.causes : [];
+  if (conCauses.length) reasons.push('CONTAMINATION: ' + conCauses.join('; '));
   if (ungraded.length) reasons.push('the ' + ungraded.join(' and ') + ' row(s) printed N/A, so the run graded no installation');
   const refereeRed = ROW_KEYS.filter(([k]) => rows[k] && rows[k].ok === false && rows[k].rules === false).map(([, label]) => label);
   if (g && g.verdict === 'GREEN' && refereeRed.length) reasons.push('red rows printed as referees (a live autopilot held the lock): ' + refereeRed.join(', '));
@@ -1708,7 +2123,7 @@ export function rowsVerdictOf({ ladder, gate, tests, owned = [], at = new Date()
   const kill = (f) => f.killed ? ', killed on ' + f.killed + ' at ' + f.peakRssMb + ' MB' : '';
   const testText = (t) => t.file + (t.missing ? ' is not in the tree' : (passed(t) ? ' passed ' : ' did not pass, ') + t.pass + ' of ' + t.total + ' (fail ' + t.fail + ', exit ' + t.exit + ') in ' + t.ms + ' ms, peak RSS ' + (t.budget ? t.budget.peakRssMb : null) + ' MB');
   const sentences = [
-    'Board ' + ROWS_BOARD + ' item rows (the GAPS, MAGNITUDE and UNDONE blocks on the ladder, the AUTONOMY and HANDOFF rows on the gate), composed by ' + command + ' from the verdicts on disk and one run of each of ' + runs.length + ' test files.',
+    'Board ' + ROWS_BOARD + ' item rows (the CLIMB, PLATEAU, CLOCK and DIRECT blocks and the tie-break truth in MULTIPLYING on the ladder, the CONTAMINATION row on the gate, every earlier block and row still graded), composed by ' + command + ' from the verdicts on disk and one run of each of ' + runs.length + ' test files.',
     lad ? 'The board: bench/verdicts/ladder.json was written at ' + lad.at + ' by ' + lad.command + ', isTheBar ' + lad.isTheBar + (boardOk ? ', with the board for ' + lad.board.sets.map((s) => s.name + ' (' + s.status + ')').join(', ') + ' and the blocks ' + (blocks.length ? blocks.join(', ') : 'none') + (missingBlocks.length ? ' (missing: ' + missingBlocks.join(', ') + ')' : '') + '.' : ', with no board.') : 'The board: bench/verdicts/ladder.json could not be read.',
     g ? 'The gate: ' + g.command + ' ran from ' + (g.startedAt || 'an unrecorded start') + ' to ' + g.at + ' and is ' + g.verdict + ': test files ' + g.testsPassed + ' of ' + g.testsTotal
       + (failing.length ? ' (failing: ' + failing.map((f) => f.file + kill(f)).join('; ') + ')' : '')
@@ -1726,8 +2141,9 @@ export function rowsVerdictOf({ ladder, gate, tests, owned = [], at = new Date()
     statement: sentences.join(' '),
     item: 'rows', board: ROWS_BOARD, principles: { ladder: 'P15', gate: 'P8' }, met, reasons,
     split: {
-      development: 'test/ladder.test.mjs, test/gate-rows.test.mjs and test/gate-autonomy.test.mjs plant ledgers, decision files, brief and resume logs, a HANDOFF.md and schtasks output under temp directories, with the task query and the lock holder injected; no real task is queried and no model is called',
-      heldOut: 'the real tree: the real state/self/gaps.jsonl, decision files, brief and resume logs, docs/HANDOFF.md, the real read-only schtasks /query of BrainAutopilot, and the gate run to completion on it',
+      development: 'test/ladder.test.mjs, test/gate-rows.test.mjs, test/gate-autonomy.test.mjs and test/gate-contamination.test.mjs plant verdicts, ledgers, decision files, brief and resume logs, a HANDOFF.md and schtasks output under temp directories, with the task query and the lock holder injected; no real task is queried and no model is called',
+      heldOut: 'the real tree: every real bench/verdicts/*.json, the real state/self/gaps.jsonl, decision files, brief and resume logs, docs/HANDOFF.md, the real read-only schtasks /query of BrainAutopilot, and the gate run to completion on it',
+      contaminated: false,
     },
     parts: {
       ladder: lad ? { file: 'bench/verdicts/ladder.json', at: lad.at, command: lad.command, isTheBar: lad.isTheBar, board: boardOk, sets: boardOk ? lad.board.sets.map((s) => ({ name: s.name, status: s.status })) : [], blocks, missingBlocks } : null,
@@ -1737,6 +2153,7 @@ export function rowsVerdictOf({ ladder, gate, tests, owned = [], at = new Date()
         failing, emDashFiles: emDash.length, emDash, badImports, rowsExpected: ROW_KEYS.length, rowsPrintedCount: printed.length, rowsPrinted: printed, redRows,
         lines: Object.fromEntries(ROW_KEYS.map(([k]) => [k, rows[k] ? rows[k].line : null])),
         gateLine: typeof g.line === 'string' ? g.line : null, ungraded, refereeRed,
+        contamination: con ? { ok: con.ok ?? null, counts: con.counts ?? null, noSplit: Array.isArray(con.noSplit) ? con.noSplit : null, splitNotObject: Array.isArray(con.splitNotObject) ? con.splitNotObject : null, unlabelled: Array.isArray(con.unlabelled) ? con.unlabelled : null, labelled: Array.isArray(con.labelled) ? con.labelled : null, causes: Array.isArray(con.causes) ? con.causes : null } : null,
       } : null,
       printed: printedBlocks,
       tests: runs.map((t) => ({ file: t.file, command: 'node --max-old-space-size=6000 --test ' + t.file, tests: t.total ?? null, pass: t.pass ?? null, fail: t.fail ?? null, exit: t.exit ?? null, ms: t.ms ?? null, peakRssMb: t.budget ? t.budget.peakRssMb : null, budget: t.budget ? t.budget.outcome : null, missing: !!t.missing })),
@@ -1776,9 +2193,12 @@ export async function runRows({ root = BOARD_ROOT, verdictsDir = VERDICTS_DIR, r
   if (write) {
     const out = path.join(verdictsDir, v.file);
     let prior = null; try { prior = JSON.parse(readFileSync(out, 'utf8')); } catch { prior = null; }
-    if (prior && prior.board !== ROWS_BOARD) {
-      const aside = out.replace(/\.json$/, '-board' + (prior.board ?? 'unknown') + '.json');
-      if (!existsSync(aside)) { writeFileSync(aside, readFileSync(out)); log('rows: copied ' + boardRel(out) + ' (board ' + prior.board + ') to ' + boardRel(aside) + ' before this board writes it'); }
+    for (const name of ['rows.json', 'rows-partial.json']) {
+      const f = path.join(verdictsDir, name);
+      let p = null; try { p = JSON.parse(readFileSync(f, 'utf8')); } catch { p = null; }
+      if (!p || p.board === ROWS_BOARD) continue;
+      const aside = f.replace(/\.json$/, '-board' + (p.board ?? 'unknown') + '.json');
+      if (!existsSync(aside)) { writeFileSync(aside, readFileSync(f)); log('rows: copied ' + boardRel(f) + ' (board ' + p.board + ') to ' + boardRel(aside) + ' before this board writes it'); }
     }
     if (v.met && prior && prior.board === ROWS_BOARD && prior.barMet === true) log('rows: ' + boardRel(out) + ' already holds the bar and is written once; this run is printed, not written');
     else {

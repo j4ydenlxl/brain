@@ -538,3 +538,81 @@ What is not done: the HANDOFF count check compares against a ledger that self/ga
 every run, and nothing regenerates docs/HANDOFF.md when it does, so the row goes red whenever the
 two drift until tools/handoff.mjs is run again. The missed gaps whose verdict form self/gaps.mjs
 does not know carry no trial, and AUTONOMY stays red on them until that file learns the forms.
+
+## the climb, the clock, the plateau, the direct recall and a split on every bar (Board 13, 2026-09-26)
+
+Board 13 asked the board five more readings and the gate one more row. Every reading comes from the
+verdicts on disk, as before: nothing is run, a missing verdict prints "not measured", a narrow one
+prints PARTIAL with its reasons, and a number a verdict does not carry prints n/a, never 0.
+
+CLIMB puts, per public set, the newest board's number beside the board before it, with both Wilson
+intervals and the delta in points. A verdict belongs to its own board field when it has one, else to
+the first landing in docs/BOARDS.json at or after its at (the first landing takes everything before
+it, so it reads "or earlier"), else to the board in progress, which is the lowest board with no
+landing: 13. One number stands for each board, its newest whole verdict, else its newest partial one.
+On this tree it printed, for GSM8K, board 15's partial 366/407 = 89.93% [86.62, 92.49] against board
+11's partial 27/30 = 90.00% [74.38, 96.54], -0.07 points, the intervals overlapping; for HumanEval,
+board 11's partial 23/30 = 76.67% [59.07, 88.21] against 5/6 = 83.33% [43.65, 96.99] from board 8 or
+earlier, -6.67 points, overlapping; for the ARC evaluation set, board 11's library arm of
+grid-library.json at 73/400 = 18.25% [14.77, 22.33] against board 10's grid-evaluation.json at
+71/400 = 17.75% [14.32, 21.80], +0.50 points, overlapping, whole against whole. Board 13 is not
+measured on any of the three. The GSM8K and HumanEval rows are samples, so neither is a whole-set
+climb, and the line says so.
+
+PLATEAU, CLOCK and the leak-free half of DIRECT read verdicts other builders of this board write
+(plateau.json, grid-clock.json, grid-clock-whole.json, direct-clean.json). None was on disk when the
+board was written, so each printed "not measured". Their field names are not fixed here, so when a
+file lands the block prints that verdict's own fields by path, and a reader checks each against the
+file named beside it. Board 11's numbers are printed as the baselines: years.json's first plateau at
+0.400 s on both planes (grid 49 to 148 over 704435 organism-years, synthetic 89 to 256 over 967321);
+grid-library.json's library arm at 73 of 400 with 319 timed out and 7 found but wrong on a clock of
+3000 ms per task, against no-library runs of 71 and 71, noise 0; native.json's swept table at 122 of
+200 with 176 direct hits (122 correct), 42.89 ns median per hit, filled by sweeping 284749 titles,
+and its control, the table with the drawn titles left out, at the same 122 of 200 with 0 direct hits.
+
+The truth about Board 12's MULTIPLYING bar is now printed inside that block. The builder's run
+printed population 133/160 against single 134/160 (notes/multiply.md lines 110 and 111); the
+verifier's rerun, the bar file bench/verdicts/multiply.json, printed 136/160 against 134/160; the 80 s
+partial printed 133 against 134. All four picks of the two whole runs share one searched fitness,
+0.9320403696498054, so the fresh number is chosen by the tie-break among libraries the search could
+not tell apart; the same command moved the population pick by 3 and the single by 0, and no run
+printed a seed-to-seed noise. The block prints "decided by tie-break noise, not a bar" with both runs'
+numbers. The rule it states for lifting the label: a run prints its seed-to-seed noise and a gap wider
+than it, between picks of different searched fitness. That is this board's reading of "until a run
+prints seed-to-seed noise that makes the gap real"; a noise printed while the picks still share one
+fitness does not lift it.
+
+The gate's CONTAMINATION row makes a rule of every board since Board 11 a check. Every
+bench/verdicts/*.json with isTheBar true must carry a split object; a bar file with no split is red,
+one whose split is a string (the dataset's own split, such as "evaluation") is red, and one marked
+contaminated (contaminated true at its top level or anywhere in its split) whose statement does not
+say so is red. A contaminated bar file whose statement says so is counted and is not a cause. A file
+that does not parse is counted as unread, never as clean. Like AUTONOMY and HANDOFF it is a referee
+while a live autopilot holds the lock. `node bench/gate.mjs --contamination` prints the row alone.
+After the board itself gained a split, and before the gate run below, it printed 53 bar files of
+184, 24 with a split object, 1 contaminated and labelled (brief.json), 0 contaminated and unlabelled, 25 with no split and 4 whose
+split is a string, so the row is RED and names every file. The older bar files are the orchestrator's
+to decide: each needs its split written by the bench that owns it, which this item does not own.
+
+A red CONTAMINATION row has knock-on effects this item cannot change from its own files: on a gate
+already red, the autopilot keeps a patch only when the gate shows it fixed a red file and turned no
+green one red; self/gaps.mjs turns the red row into a gap with no trial; and the brief stops when the
+gate on its copy is not GREEN. The rows verdict names the causes, and a red row misses its bar, as it
+should.
+
+The tests plant every verdict under temp directories. Each rule has a control that turns on the defect
+alone, and the real tree is held to an independent census:
+
+```
+node tools/budget.mjs --ram-mb 6000 --disk-mb 512 --dir <scratchpad>/tests-out -- node --max-old-space-size=6000 --test --test-concurrency=1 test/ladder.test.mjs test/gate.test.mjs test/gate-rows.test.mjs test/gate-autonomy.test.mjs test/gate-contamination.test.mjs
+ℹ tests 56
+ℹ pass 56
+ℹ fail 0
+ℹ duration_ms 11931.1668
+BUDGET done exit 0: wall 12.08 s, peak ram 606.1MB, peak dir 0.0MB, cpu 7.08 s, 6 samples, record state/budget/last.json
+```
+
+What is not done: PLATEAU, CLOCK and the leak-free DIRECT are not measured until their verdicts land,
+and CLIMB cannot put a Board 13 number on any set until a Board 13 public or ARC verdict exists. The
+25 bar files with no split and the 4 with a string split keep CONTAMINATION red until their benches
+write a split object.

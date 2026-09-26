@@ -337,6 +337,11 @@ export const FORMS = Object.freeze({
     minutes: 8, needsModel: false, where: 'tree', writes: [], parser: 'cloudHost', diskMb: 100,
     doc: 'bench/cloud-host.mjs without --checkout-trial reads gh and the tree only; --out under the trial temp dir keeps its always-isTheBar verdict out of bench/verdicts',
   },
+  'cloud-fit': {
+    bench: 'bench/cloud.mjs', argv: [HEAP, 'bench/cloud.mjs', '--native', '--seconds', '300', '--out', 'bench/verdicts/cloud-fit-partial.json'],
+    minutes: 8, needsModel: false, where: 'copy', fixtures: ['bench/fixtures/wiki/store'], writes: ['bench/verdicts/cloud-fit-partial.json'], parser: 'cloudFit', diskMb: 2048,
+    doc: 'bench/cloud.mjs --seconds 300 is the documented short form of the Board 13 fit bar (1800 s); under 1800 s it writes isTheBar false; the metric is instance A budget kills at the rss cap',
+  },
   gaps: {
     bench: 'self/gaps.mjs', argv: ['self/gaps.mjs', '--dry'],
     minutes: 2, needsModel: false, where: 'tree', writes: [], parser: 'gapsDry', diskMb: 100,
@@ -367,7 +372,7 @@ export const FORMS = Object.freeze({
 });
 
 /** Which form measures a missed or unreadable verdict again, by stem. */
-export const VERDICT_FORMS = Object.freeze({ compress: 'compress', math: 'math', 'venue-full': 'venue', venue: 'venue', authorship: 'authorship', 'schedule-autopilot': 'schedule', gaps: 'gaps', 'grid-evaluation': 'grid', daemon: 'daemon', spread: 'spread', 'spread-control': 'spread', operators: 'operators', autopilot: 'autopilot', 'autopilot-board10': 'autopilot', 'autopilot-board14-first': 'autopilot', cloud: 'cloud', 'cloud-2': 'cloud', 'cloud-host': 'cloud-host' });
+export const VERDICT_FORMS = Object.freeze({ compress: 'compress', math: 'math', 'venue-full': 'venue', venue: 'venue', authorship: 'authorship', 'schedule-autopilot': 'schedule', gaps: 'gaps', 'grid-evaluation': 'grid', daemon: 'daemon', spread: 'spread', 'spread-control': 'spread', operators: 'operators', autopilot: 'autopilot', 'autopilot-board10': 'autopilot', 'autopilot-board14-first': 'autopilot', cloud: 'cloud', 'cloud-2': 'cloud', 'cloud-host': 'cloud-host', 'cloud-fit': 'cloud-fit', 'cloud-fit-300': 'cloud-fit', 'cloud-fit-control': 'cloud-fit' });
 /** Which form measures a ladder block again, by the block's id. */
 export const LADDER_FORMS = Object.freeze({ 'sets.gsm8k': 'public-gsm8k', 'sets.humaneval': 'public-humaneval', 'sets.arc': 'grid', improvement: 'daemon', target: 'ladder-daily' });
 /** Census ticks per seed where the bar's 200 does not fit: census-h20-partial.json ran gen-0 at 20 ticks with rssAfterFull 3600.6 MB. */
@@ -396,6 +401,19 @@ export function trialOf(key, form = FORMS[key]) {
   if (t.dry) t.dry.command = commandOf({ ...t, argv: t.dry.argv });
   return t;
 }
+
+/** A red gate row's bounded trial, where the tool has a row-only command. Rows without one keep trial null. */
+export const ROW_FORMS = Object.freeze({
+  contamination: {
+    bench: 'bench/gate.mjs', argv: [HEAP, 'bench/gate.mjs', '--contamination'], minutes: 3, needsModel: false, where: 'tree', writes: [], parser: 'contamination', diskMb: 50,
+    doc: 'bench/gate.mjs --contamination grades the CONTAMINATION row alone from bench/verdicts and prints its line; it reads only',
+  },
+  boundary: {
+    bench: 'tools/boundary-audit.mjs', argv: [HEAP, 'tools/boundary-audit.mjs', '--bar'], minutes: 8, needsModel: false, where: 'copy', writes: ['bench/verdicts/boundary.json'], parser: 'boundary', diskMb: 2048,
+    doc: 'tools/boundary-audit.mjs --bar runs the static scan, the allowlist check, the probe and the touched tests on the copy and prints the allowlist line (unlisted, stale, over cap)',
+  },
+});
+export function rowTrial(name) { return ROW_FORMS[name] ? trialOf('row:' + name, ROW_FORMS[name]) : null; }
 
 export function testTrial(file, ms) {
   const minutes = Math.min(TRIAL_MAX_MINUTES - 1, Math.max(1, Math.ceil((3 * (num(ms) || 60_000)) / 60_000)));
@@ -442,6 +460,9 @@ export const PARSERS = Object.freeze({
   autopilot: { name: 'checks passed', file: () => 'bench/verdicts/autopilot-partial.json', read: (v) => num(v && v.passed) },
   cloud: { name: 'restarts at the cap', file: () => 'bench/verdicts/cloud-partial.json', read: (v) => num(v && v.restartCount) },
   cloudHost: { name: 'workflow checks passed', stdout: true, read: (out) => { const m = String(out).match(/(\d+) of (\d+) checks/); return m ? num(Number(m[1])) : null; } },
+  contamination: { name: 'bar files without a split object, plus contaminated and unlabelled', stdout: true, read: (out) => { const s = String(out); const a = s.match(/with no split (\d+)/), b = s.match(/split not an object (\d+)/), c = s.match(/contaminated and unlabelled (\d+)/); return a && b && c ? num(Number(a[1]) + Number(b[1]) + Number(c[1])) : null; } },
+  boundary: { name: 'unlisted plus over-cap boundaries', stdout: true, read: (out) => { const m = String(out).match(/unlisted (\d+), stale (\d+), over cap (\d+)/); return m ? num(Number(m[1]) + Number(m[3])) : null; } },
+  cloudFit: { name: 'budget kills at the rss cap, instance A', file: () => 'bench/verdicts/cloud-fit-partial.json', read: (v) => num(v && v.restartsBreakdown && v.restartsBreakdown.budgetKills) },
   test: { name: 'wall ms', row: true },
 });
 
@@ -612,7 +633,7 @@ export function gateGaps({ root = ROOT, gate, file = 'bench/verdicts/gate.json',
   const s13 = entries.find((e) => e.section === 13);
   for (const [name, row] of Object.entries(rows)) {
     if (!row || row.ok !== false) continue;
-    lines.push(lineOf({ ...common, id: 'gate-red:row:' + name, kind: 'gate red', subsystem: s13 ? s13.name : 'unmapped', trial: null, files: [], why: 'row ' + name + ' is not ok: ' + String(row.line || '').slice(0, 200) + '; the row is computed over the whole gate run, which has no bounded form' }));
+    lines.push(lineOf({ ...common, id: 'gate-red:row:' + name, kind: 'gate red', subsystem: s13 ? s13.name : 'unmapped', trial: rowTrial(name), files: [], why: 'row ' + name + ' is not ok: ' + String(row.line || '').slice(0, 200) + '; the row is computed over the whole gate run, which has no bounded form' }));
   }
   for (const [key, label] of [['badImports', 'an import that points nowhere'], ['emDash', 'an em dash']]) {
     const list = Array.isArray(gate[key]) ? gate[key] : [];

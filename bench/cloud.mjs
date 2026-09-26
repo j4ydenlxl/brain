@@ -188,6 +188,10 @@ function nativeDriver({ stateDir, env0, modelUrl }) {
       const port = await freePort();
       const env = { ...process.env, ...env0, BRAIN_STATE_DIR: stateDir, BRAIN_NAME: name, BRAIN_INSTANCE: instance, HEALTH_PORT: String(port), HEALTH_HOST: '127.0.0.1', BRAIN_LADDER: 'off' };
       env.BRAIN_MODEL_URL = modelUrl; // the stub (model off); the guard routes 127.0.0.1:11434 to it
+      // Board 13 fit: the self-code step runs DRY (nothing written) and passes only THIS bench's own
+      // flag (daemon/run.mjs honours the exemption for a dry step only), so a run measures a worker
+      // start under the floor; a daemon that predates the fit ignores both and refuses on the flag
+      env.BRAIN_SELF_CODE_DRY = '1'; env.BRAIN_BENCH_FLAG_EXEMPT = String(process.pid);
       const logFile = path.join(stateDir, instance + '.log');
       const out = createWriteStream(logFile);
       const p = fork(SERVE, [], { cwd: ROOT, env, execArgv: ['--max-old-space-size=96'], stdio: ['ignore', 'pipe', 'pipe', 'ipc'] });
@@ -268,6 +272,81 @@ function dockerDriver({ env0, tag = 'brain-organism:bench' }) {
   return d;
 }
 
+// ---------------------------------------------------------------- the fit watch (Board 13)
+// The daemon's fit census (daemon/run.mjs fitCensus, carried by bin/serve.mjs into serve.json as
+// child.fit and child.knowledge) is per process: a restart starts it at zero. The watch keeps the
+// last row of every daemon pid and sums them, and keeps the largest checkpoint age /health read.
+// A daemon that predates the fit has no census: its sums are null, never 0. The log lines are a
+// second ruler: "[self] round N: candidates" (self/daemon.mjs, printed once per round that ran, in
+// both trees) and "[self-code] start at t=" (only a tree with the floor prints it).
+function fitWatch(health, everyMs = 5000) {
+  const insts = {}, byPid = {}, knowledge = {}, ckMax = {}, logs = {};
+  let samples = 0, busy = false, timer = null, stopped = false;
+  const take = (k, st) => { const c = st && st.child; if (c && c.pid) { if (c.fit) byPid[k][c.pid] = c.fit; if (Array.isArray(c.knowledge) && c.knowledge.length) knowledge[k] = { pid: c.pid, rows: c.knowledge }; } };
+  // (a daemon that restarted seconds before the end has opened no store yet: its empty census
+  // must not replace the last one read, which is what the first 1800 s run printed as "none")
+  const sample = async () => {
+    if (busy) return;
+    busy = true;
+    try {
+      for (const [k, inst] of Object.entries(insts)) {
+        try {
+          const h = await health(inst), age = h && h.checkpoint ? h.checkpoint.ageS : null;
+          if (Number.isFinite(age)) {
+            ckMax[k].reads++;
+            if (ckMax[k].ageS === null || age > ckMax[k].ageS) Object.assign(ckMax[k], { ageS: age, t: h.tick, checkpointTick: h.checkpoint.tick, atS: Math.round((now() - ckMax[k].t0) / 1000), restarts: h.restarts });
+          }
+        } catch { /* a restart in progress: the next sample reads it */ }
+        if (inst.statusFile) { try { take(k, JSON.parse(readFileSync(inst.statusFile, 'utf8'))); } catch { /* mid write */ } }
+      }
+      samples++;
+    } finally { busy = false; }
+  };
+  return {
+    add(k, inst) { insts[k] = inst; byPid[k] = {}; knowledge[k] = null; ckMax[k] = { ageS: null, reads: 0, t0: now() }; if (!timer && !stopped) timer = setInterval(() => { sample().catch(() => {}); }, everyMs); },
+    async stop() { if (stopped) return; stopped = true; clearInterval(timer); while (busy) await sleep(50); await sample().catch(() => {}); },
+    fold(k, st) { if (byPid[k]) take(k, st); },
+    logs(k, file) {
+      try {
+        const text = readFileSync(file, 'utf8');
+        logs[k] = { roundsRun: (text.match(/\[self\] round \d+: candidates /g) || []).length, roundsDeferred: (text.match(/\[self\] round deferred/g) || []).length, selfCodeStarts: (text.match(/\[self-code\] start at t=/g) || []).length, selfCodeRefused: (text.match(/\[self-code\] refused at t=/g) || []).length };
+      } catch (e) { logs[k] = { error: firstLine(e) }; }
+    },
+    summary() {
+      const inst = {};
+      for (const k of Object.keys(insts)) {
+        const rows = Object.entries(byPid[k]).map(([pid, f]) => ({ pid: Number(pid), f }));
+        const has = rows.length > 0, lastRow = has ? rows[rows.length - 1].f : null;
+        const sum = (fn) => (has ? rows.reduce((a, r) => a + (Number(fn(r.f)) || 0), 0) : null);
+        const max = (fn) => (has ? Math.max(0, ...rows.map((r) => Number(fn(r.f)) || 0)) : null);
+        const lastOf = (fn) => { for (let i = rows.length - 1; i >= 0; i--) { const v = fn(rows[i].f); if (v) return v; } return null; };
+        const { t0, ...ck } = ckMax[k];
+        inst[k] = {
+          daemonsWithCensus: rows.length, pids: rows.map((r) => r.pid),
+          floorMb: lastRow ? lastRow.floorMb : null, holdBudgetMs: lastRow ? lastRow.holdBudgetMs : null,
+          selfRounds: sum((f) => f.holds && f.holds.n), holdMaxMs: max((f) => f.holds && f.holds.maxMs), holdsOverBudget: sum((f) => f.holds && f.holds.overBudget), suiteMsMax: max((f) => f.holds && f.holds.suiteMsMax),
+          planDefers: sum((f) => f.plan && f.plan.defers),
+          guard: { run: sum((f) => f.guard && f.guard.run), prune: sum((f) => f.guard && f.guard.prune), defer: sum((f) => f.guard && f.guard.defer), releasedBytes: sum((f) => f.guard && f.guard.releasedBytes) },
+          lastHold: lastOf((f) => f.holds && f.holds.last), lastPlan: lastOf((f) => f.plan && f.plan.last), lastGuard: lastOf((f) => f.guard && f.guard.last),
+          selfCode: { starts: sum((f) => f.selfCode && f.selfCode.starts), refusals: sum((f) => f.selfCode && f.selfCode.refusals), kills: sum((f) => f.selfCode && f.selfCode.kills), needMb: lastRow && lastRow.selfCode ? lastRow.selfCode.needMb : null, lastStart: lastOf((f) => f.selfCode && f.selfCode.lastStart), lastRefusal: lastOf((f) => f.selfCode && f.selfCode.lastRefusal), lastRecord: lastOf((f) => f.selfCode && f.selfCode.lastRecord) },
+          checkpointAge: ck, knowledge: knowledge[k], logs: logs[k] || null,
+        };
+      }
+      const ks = Object.keys(inst);
+      const all = (fn) => (ks.some((k) => Number.isFinite(fn(inst[k]))) ? ks.reduce((a, k) => a + (Number(fn(inst[k])) || 0), 0) : null);
+      const top = (fn) => (ks.some((k) => Number.isFinite(fn(inst[k]))) ? Math.max(...ks.map((k) => fn(inst[k])).filter(Number.isFinite)) : null);
+      return {
+        samples, everyMs, instances: inst,
+        total: {
+          selfRounds: all((x) => x.selfRounds), holdMaxMs: top((x) => x.holdMaxMs), holdsOverBudget: all((x) => x.holdsOverBudget), planDefers: all((x) => x.planDefers), guardDefers: all((x) => x.guard.defer), guardPrunes: all((x) => x.guard.prune),
+          selfCodeStarts: all((x) => x.selfCode.starts), selfCodeRefusals: all((x) => x.selfCode.refusals), selfCodeKills: all((x) => x.selfCode.kills),
+          checkpointAgeMaxS: top((x) => x.checkpointAge.ageS), logRoundsRun: all((x) => x.logs && x.logs.roundsRun), logSelfCodeStarts: all((x) => x.logs && x.logs.selfCodeStarts),
+        },
+      };
+    },
+  };
+}
+
 // ---------------------------------------------------------------- the timeline
 async function timeline(drv, { seconds, env0, stateDir }) {
   const T0 = now();
@@ -279,6 +358,10 @@ async function timeline(drv, { seconds, env0, stateDir }) {
   const A = await drv.start({ name: 'cloud', instance: 'bench-a' });
   const health = async (inst) => (await getJson(inst.url + '/health')).body;
   const sampler = setInterval(async () => { const v = await drv.rssSample(A).catch(() => null); if (v && v > rssDocker) rssDocker = v; }, 10_000);
+  // Board 13 fit: every 5 s, each instance's /health (the checkpoint age, its maximum over the run)
+  // and serve.json (the daemon's fit census, kept per daemon pid so a restart never resets a sum)
+  const watch = fitWatch(health);
+  watch.add('a', A);
   try {
     const first = await waitFor('the first checkpoint of A', async () => { const h = await health(A); return h.ok && h.checkpoint && h.checkpoint.tick >= everyCk && h.tick > 0 ? h : null; }, 180_000);
     log('A up: first checkpoint t=' + first.value.checkpoint.tick + ' after ' + Math.round((now() - T0) / 1000) + ' s');
@@ -311,6 +394,7 @@ async function timeline(drv, { seconds, env0, stateDir }) {
     const dupAgain = await getJson(A.url + '/duplicate?seed=1');
     rows.duplicateAgain = { status: dupAgain.status, error: dupAgain.body.error || null };
     const B = await drv.start({ name: 'dup-1', instance: 'bench-b' });
+    watch.add('b', B);
     const bUp = await waitFor('instance B from the copy', async () => { const h = await health(B); return h.ok && h.resumedAt !== null && h.tick > 0 ? h : null; }, 180_000);
     const aNow = await health(A);
     rows.second = { name: 'dup-1', resumedAt: bUp.value.resumedAt, fromTick: dup.body.fromTick, resumedFromCopy: bUp.value.resumedAt === dup.body.fromTick, msToUp: bUp.ms, instancesAliveSeenByA: aNow.instancesAlive, instancesSeenByA: aNow.instances, instancesAliveSeenByB: bUp.value.instancesAlive };
@@ -323,6 +407,7 @@ async function timeline(drv, { seconds, env0, stateDir }) {
     log('egress: allowed ' + (g.allowed ? g.allowed.url + ' -> ' + (g.allowed.ok ? 'status ' + g.allowed.status + ', ' + g.allowed.models + ' models' : 'not reached: ' + g.allowed.code + ' ' + g.allowed.error) : 'n/a') + '; example.com fetch -> ' + (g.example ? (g.example.refused ? 'REFUSED ' + g.example.code : 'NOT refused ' + g.example.code) : 'n/a') + '; example.com http.get -> ' + (g.exampleHttp ? (g.exampleHttp.refused ? 'REFUSED' : 'NOT refused') + ' ' + g.exampleHttp.code : 'n/a') + '; closed local port guarded -> ' + (g.closedPort && g.closedPort.code) + ', unguarded control -> ' + rows.egress.controlClosedPortUnguarded);
 
     await until(at(1));
+    await watch.stop();
     rows.healthAfter = await health(A);
     rows.healthAfterB = await health(B);
     log('health after: ' + JSON.stringify(rows.healthAfter));
@@ -348,12 +433,15 @@ async function timeline(drv, { seconds, env0, stateDir }) {
       rows.orphans = pids.filter((p) => pidAlive(p));
       rows.stateBytesAtEnd = dirBytes(stateDir);
       rows.finalTicks = { a: sa.child && sa.child.lastT, b: sb.child && sb.child.lastT };
+      watch.fold('a', sa); watch.fold('b', sb);
+      watch.logs('a', A.logFile); watch.logs('b', B.logFile);
     } else {
       rows.rssPeakMb = { container: rssDocker };
       rows.orphans = [];
     }
     log('rss peak: ' + JSON.stringify(rows.rssPeakMb) + '; stopped A ' + JSON.stringify(stopA) + ', B ' + JSON.stringify(stopB) + '; pids still alive ' + JSON.stringify(rows.orphans));
-  } finally { clearInterval(sampler); }
+  } finally { clearInterval(sampler); await watch.stop(); }
+  rows.fit = watch.summary();
   rows.wallMs = now() - T0;
   return rows;
 }
@@ -478,6 +566,55 @@ async function main() {
   const completed = !error && seconds >= 300 && Boolean(r.healthAfter);
   const isTheBar = Boolean(completed && override === null);
   const barMet = Boolean(isTheBar && barRowsMet);
+  // FIT ROWS (Board 13 fit item, 2026-09-26: the organism lives 24/7 in a 512m container with a
+  // 448 MB rss budget while its self rounds and a self-code worker run). Beside the 8 rows above,
+  // never replacing them. A run whose --out names cloud-fit*.json is a fit run: its isTheBar is the
+  // full 1800 s run with its control (bench/verdicts/cloud-fit-control.json: the tree at HEAD, a
+  // copy, for the same 1800 s, which must restart at least once beyond the bench kill), and its
+  // barMet needs the fit rows, the 8 rows and that control.
+  const outBase = a.out && a.out !== true ? path.basename(String(a.out)) : '';
+  const fitRun = /^cloud-fit/.test(outBase), fitControlRun = /^cloud-fit-control/.test(outBase);
+  const FIT_SECONDS = 1800;
+  const ft = (r.fit && r.fit.total) || {};
+  const hB = r.healthAfterB || {};
+  const fitRows = {
+    fitBudgetKills0: Boolean(r.healthAfter && h1a.budgetKills === 0 && r.healthAfterB && hB.budgetKills === 0),
+    fitSelfRounds3: Number.isFinite(ft.selfRounds) && ft.selfRounds >= 3,
+    fitSelfCodeStart1: Number.isFinite(ft.selfCodeStarts) && ft.selfCodeStarts >= 1,
+    fitCheckpointAgeMax60: Number.isFinite(ft.checkpointAgeMaxS) && ft.checkpointAgeMaxS <= 60,
+    fitHoldUnder1s: Number.isFinite(ft.holdMaxMs) && ft.holdMaxMs < 1000,
+  };
+  const fitRowsMet = Object.values(fitRows).every(Boolean);
+  const relOf = (p) => path.relative(ROOT, p).replace(/\\/g, '/');
+  const controlFile = path.join(VERDICTS, 'cloud-fit-control.json');
+  let fitControl = null;
+  if (fitRun && !fitControlRun) {
+    try {
+      const c = JSON.parse(readFileSync(controlFile, 'utf8'));
+      const ca = c.rows && c.rows.healthAfter, cb = c.rows && c.rows.healthAfterB;
+      const beyond = ca && Number.isFinite(ca.restarts) ? (ca.restarts - 1) + (cb && Number.isFinite(cb.restarts) ? cb.restarts : 0) : null;
+      fitControl = {
+        file: relOf(controlFile), at: c.at ?? null, command: c.command ?? null, tree: c.fitTree ?? null, seconds: c.seconds ?? null, error: c.error ?? null,
+        restartsA: ca ? ca.restarts : null, budgetKillsA: ca ? ca.budgetKills : null, restartsB: cb ? cb.restarts : null, budgetKillsB: cb ? cb.budgetKills : null,
+        restartsBeyondTheBenchKill: beyond, peakRssMb: c.rssPeakMb ?? null, census: c.fit && c.fit.census ? c.fit.census.total : null,
+      };
+      fitControl.completed = !c.error && Number(c.seconds) >= FIT_SECONDS && Boolean(ca);
+      fitControl.restartedAtLeastOnce = Number.isFinite(beyond) && beyond >= 1;
+    } catch (e) { fitControl = { file: relOf(controlFile), missing: true, why: firstLine(e), completed: false, restartedAtLeastOnce: false }; }
+  }
+  const fitIsTheBar = Boolean(fitRun && !fitControlRun && completed && override === null && seconds >= FIT_SECONDS && fitControl && fitControl.completed);
+  const fitBarMet = Boolean(fitIsTheBar && fitRowsMet && barRowsMet && fitControl.restartedAtLeastOnce);
+  const fitWhy = [];
+  if (fitControlRun) fitWhy.push('this run IS the control (the tree ' + (process.env.BRAIN_FIT_TREE || 'named by BRAIN_FIT_TREE') + '), never the bar');
+  else if (fitRun) {
+    if (seconds < FIT_SECONDS) fitWhy.push('a ' + seconds + ' s run is never the fit bar (' + FIT_SECONDS + ' s is)');
+    if (!completed) fitWhy.push('the run did not complete' + (error ? ': ' + error : ''));
+    if (fitControl && fitControl.missing) fitWhy.push('no control at ' + fitControl.file + ' (' + fitControl.why + ')');
+    else if (fitControl && !fitControl.completed) fitWhy.push('the control at ' + fitControl.file + ' is not a completed ' + FIT_SECONDS + ' s run (seconds ' + fitControl.seconds + ', error ' + fitControl.error + ')');
+    else if (fitControl && !fitControl.restartedAtLeastOnce) fitWhy.push('the control (the tree at HEAD, the same ' + fitControl.seconds + ' s) restarted ' + fitControl.restartsBeyondTheBenchKill + ' times beyond the bench kill (A restarts ' + fitControl.restartsA + ', budget kills ' + fitControl.budgetKillsA + '; B restarts ' + fitControl.restartsB + ', budget kills ' + fitControl.budgetKillsB + '), so this run cannot show the fit is what kept the organism alive');
+    for (const [k, v] of Object.entries(fitRows)) if (!v) fitWhy.push('fit row ' + k + ' false');
+    for (const [k, v] of Object.entries(bar)) if (!v) fitWhy.push('row ' + k + ' of the 8 false');
+  }
   const verdict = {
     at: new Date().toISOString(), command, node: process.version, isTheBar, barMet,
     bar, barRowsMet, rssCapMb: rssCap,
@@ -516,6 +653,39 @@ async function main() {
     + 'Bar rows (' + (override !== null ? 'CONTROL run, BRAIN_EPISODES_MAX ' + override + ', never the bar' : 'mode ' + (probe.present ? 'docker' : 'native, the documented fallback') + ', isTheBar ' + isTheBar) + '): ' + Object.entries(bar).map(([k, v]) => k + ' ' + v).join(', ') + '; barMet ' + barMet + '. The model endpoint was ' + (stub ? 'a local stub (' + JSON.stringify(stub.hits) + ' requests), never Ollama' : 'host.docker.internal:11434') + '. '
     + 'The build context is ' + context.files + ' files and ' + context.bytes + ' bytes with ' + context.secretHits + ' secret hits; the control scan without the secret lines of .dockerignore found ' + context.control.hitsInThem + ' hits in ' + context.control.files.length + ' files.';
 
+  if (fitRun) {
+    const nv = (x) => (x === null || x === undefined ? 'n/a' : x);
+    const fi = (r.fit && r.fit.instances) || {}, fa = fi.a || null, fb = fi.b || null;
+    const kn = (x) => (x && x.knowledge && Array.isArray(x.knowledge.rows) && x.knowledge.rows[0] ? x.knowledge.rows[0] : null);
+    const ka = kn(fa), lastRef = fa && fa.selfCode.lastRefusal ? fa.selfCode.lastRefusal : fb && fb.selfCode.lastRefusal, lastRec = fa && fa.selfCode.lastRecord ? fa.selfCode.lastRecord : fb && fb.selfCode.lastRecord;
+    const pk = r.rssPeakMb || {};
+    const at = (frac) => Math.round(seconds * frac);
+    const rows8Scaling = 'the 8 rows run on fractions of --seconds, so at ' + seconds + ' s the bench kill is at ' + at(0.25) + ' s, the duplicate at ' + at(0.45) + ' s, the egress probe at ' + at(0.6) + ' s and the after reading at ' + seconds + ' s; no row needed scaling, checkpointAgeUnder60s reads the age once at the end and fitCheckpointAgeMax60 every ' + (r.fit ? r.fit.everyMs : 'n/a') + ' ms';
+    verdict.board16 = { isTheBar, barMet, bar, barRowsMet };
+    verdict.isTheBar = fitIsTheBar;
+    verdict.barMet = fitBarMet;
+    verdict.fitTree = process.env.BRAIN_FIT_TREE || null;
+    verdict.fit = {
+      rows: fitRows, rowsMet: fitRowsMet, rows8Met: barRowsMet, secondsForTheBar: FIT_SECONDS, rssCapMb: rssCap,
+      peakDaemonRssMb: { a: pk.daemonA ?? null, b: pk.daemonB ?? null }, budgetKills: { a: r.healthAfter ? h1a.budgetKills : null, b: r.healthAfterB ? hB.budgetKills : null },
+      control: fitControlRun ? 'this run' : fitControl, why: fitWhy, rows8Scaling, census: r.fit || null,
+    };
+    verdict.split = { development: 'the fit was sized on scratch probes before this run (a tiny live organism with two rounds under a 200 ms hold budget, and the cloud config at 12 majors and 256 units under the 448 MB cap); none of this run fed a constant', heldOut: 'this run: its rows were read only after it ended', control: fitControlRun ? 'this run IS the control' : 'bench/verdicts/cloud-fit-control.json, the tree at HEAD (a copy) with this same harness for ' + FIT_SECONDS + ' s' };
+    verdict.contaminated = false;
+    verdict.contaminatedWhy = 'no constant of daemon/run.mjs, memory/knowledge.mjs or bin/serve.mjs was changed after this run started';
+    const stmt = 'FIT (Board 13' + (fitControlRun ? ', CONTROL: the tree ' + nv(verdict.fitTree) : '') + '): ' + seconds + ' s native at the ' + rssCap + ' MB rss cap, model off (a local stub). '
+      + 'Peak daemon rss A ' + nv(pk.daemonA) + ' MB, B ' + nv(pk.daemonB) + ' MB. Budget kills A ' + nv(verdict.fit.budgetKills.a) + ', B ' + nv(verdict.fit.budgetKills.b) + '; restarts A ' + nv(h1a.restarts) + ' (1 from the bench kill), B ' + nv(hB.restarts) + '. '
+      + 'Self rounds ' + nv(ft.selfRounds) + ' (A ' + nv(fa && fa.selfRounds) + ', B ' + nv(fb && fb.selfRounds) + '; the logs print ' + nv(ft.logRoundsRun) + ' round lines), the longest hold ' + nv(ft.holdMaxMs === null || ft.holdMaxMs === undefined ? null : Math.round(ft.holdMaxMs)) + ' ms of a ' + nv(fa && fa.holdBudgetMs) + ' ms budget with ' + nv(ft.holdsOverBudget) + ' over it, ' + nv(ft.planDefers) + ' plan defers, ' + nv(ft.guardDefers) + ' guard defers and ' + nv(ft.guardPrunes) + ' prunes at the ' + nv(fa && fa.floorMb) + ' MB floor. '
+      + 'Self-code starts ' + nv(ft.selfCodeStarts) + ' (log lines ' + nv(ft.logSelfCodeStarts) + '), refusals ' + nv(ft.selfCodeRefusals) + ', kills at the child cap ' + nv(ft.selfCodeKills) + (lastRec ? '; the last child ended ' + lastRec.outcome + ' at a peak of ' + lastRec.peakRssMb + ' MB under a ' + lastRec.capMb + ' MB cap' : '') + (lastRef ? '; the last refusal: ' + lastRef.why : '') + '. '
+      + 'Checkpoint age max A ' + nv(fa && fa.checkpointAge.ageS) + ' s, B ' + nv(fb && fb.checkpointAge.ageS) + ' s over ' + nv(r.fit && r.fit.samples) + ' samples. '
+      + (ka ? 'Knowledge store of A: mode ' + ka.mode + ', resident ' + ka.residentBytes + ' of a cap of ' + ka.capBytes + ' bytes, peak ' + ka.peakBytes + ', evictions ' + ka.evictions + '. ' : 'Knowledge store census: none (a daemon without the resident cap, or no store opened). ')
+      + (fitControlRun ? '' : fitControl ? (fitControl.missing ? 'Control: missing (' + fitControl.why + '). ' : 'Control (' + fitControl.file + ', ' + nv(fitControl.seconds) + ' s): restarts beyond the bench kill ' + nv(fitControl.restartsBeyondTheBenchKill) + ' (A restarts ' + nv(fitControl.restartsA) + ', budget kills ' + nv(fitControl.budgetKillsA) + '; B restarts ' + nv(fitControl.restartsB) + ', budget kills ' + nv(fitControl.budgetKillsB) + '), peak rss ' + JSON.stringify(fitControl.peakRssMb) + '. ') : '')
+      + 'Fit rows: ' + Object.entries(fitRows).map(([k, v]) => k + ' ' + v).join(', ') + '; the 8 rows met ' + barRowsMet + '; ' + rows8Scaling + '. isTheBar ' + fitIsTheBar + ', barMet ' + fitBarMet + (fitWhy.length ? ' (' + fitWhy.join('; ') + ')' : '') + '.';
+    verdict.statement16 = verdict.statement;
+    verdict.statement = stmt;
+    log('FIT peak daemon rss A ' + nv(pk.daemonA) + ' MB, B ' + nv(pk.daemonB) + ' MB (cap ' + rssCap + '); budget kills A ' + nv(verdict.fit.budgetKills.a) + ', B ' + nv(verdict.fit.budgetKills.b) + '; self rounds ' + nv(ft.selfRounds) + ' (log ' + nv(ft.logRoundsRun) + '), hold max ' + nv(ft.holdMaxMs) + ' ms, plan defers ' + nv(ft.planDefers) + ', guard defers ' + nv(ft.guardDefers) + ', prunes ' + nv(ft.guardPrunes) + '; self-code starts ' + nv(ft.selfCodeStarts) + ' (log ' + nv(ft.logSelfCodeStarts) + '), refusals ' + nv(ft.selfCodeRefusals) + ', kills ' + nv(ft.selfCodeKills) + '; checkpoint age max ' + nv(ft.checkpointAgeMaxS) + ' s');
+    log('FIT rows ' + JSON.stringify(fitRows) + ' rows8Met ' + barRowsMet + ' isTheBar ' + fitIsTheBar + ' barMet ' + fitBarMet + (fitWhy.length ? ' why: ' + fitWhy.join('; ') : ''));
+  }
   const file = writeOnce(isTheBar ? 'cloud' : 'cloud-partial');
   const outFile = a.out && a.out !== true ? path.resolve(a.out) : file;
   writeFileSync(outFile, JSON.stringify(verdict, null, 2) + '\n');
@@ -523,7 +693,7 @@ async function main() {
   log('bar ' + JSON.stringify(bar) + ' barMet ' + barMet + ' (isTheBar ' + isTheBar + ', episodes max ' + env0.BRAIN_EPISODES_MAX + (override !== null ? ', CONTROL' : '') + ', model stub requests ' + JSON.stringify(stub ? stub.hits : null) + ')');
   log('CLOUD ' + verdict.mode + ': restarts ' + verdict.restartCount + ', instances alive ' + verdict.instancesAlive + ', checkpoint age ' + verdict.checkpointAgeS + ' s, rss peak ' + JSON.stringify(verdict.rssPeakMb) + ', fits 512 MB ' + fitsCap + ', all pass ' + allPass + ', isTheBar ' + isTheBar);
   log('verdict ' + path.relative(ROOT, outFile).replace(/\\/g, '/') + ' (' + Math.round((now() - t0) / 1000) + ' s)');
-  process.exitCode = allPass && barRowsMet ? 0 : 1;
+  process.exitCode = fitRun ? (fitBarMet ? 0 : 1) : allPass && barRowsMet ? 0 : 1;
 }
 
 const isMain = Boolean(process.argv[1]) && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);

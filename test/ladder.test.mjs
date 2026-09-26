@@ -16,10 +16,12 @@
 //       Wilson 95 as the verdicts store it, instances under the health window, the P15 rows
 //       each from its file, and the board on the real verdicts held to their own fields.
 //   (o) and (p) the rows item verdict node bench/ladder.mjs --rows writes: met only when the
-//       board with its six blocks (Board 12's three and Board 15's GAPS, MAGNITUDE, UNDONE), a
-//       GREEN gate with its seven rows (AUTONOMY and HANDOFF graded, not N/A, and not red as a
-//       referee) and the ladder and gate tests all hold; a gate that started before a file this
-//       item owns changed is STALE; rows.json is written once, and an earlier board's is kept.
+//       board with its ten blocks (Board 12's three, Board 15's GAPS, MAGNITUDE, UNDONE, Board 13's
+//       CLIMB, PLATEAU, CLOCK, DIRECT, and the tie-break truth inside MULTIPLYING), a GREEN gate
+//       with its eight rows (AUTONOMY and HANDOFF graded, not N/A, CONTAMINATION last with its
+//       causes named, none red as a referee) and the ladder and gate tests all hold; a gate that
+//       started before a file this item owns changed is STALE; rows.json is written once, and an
+//       earlier board's rows.json and rows-partial.json are both kept.
 //   (q) to (s) the Board 12 blocks on hand written verdicts: MULTIPLYING, AUTHORED (the share,
 //       patches per source per day, days since the last board) and KNOWLEDGE, each printing
 //       "not measured" for a missing verdict, PARTIAL for a -partial one, and n/a, never 0, for
@@ -30,6 +32,12 @@
 //       attempts and the wall each refusal hit, partial bars resumed, proposed boards), and the
 //       AUTHORED SHARE line naming the boards its denominator counts; each prints "not measured"
 //       for a missing file and never a zero for a missing number.
+//   (x) to (ab) the Board 13 blocks on planted verdicts: CLIMB (the landing windows, the newest
+//       board against the one before with both intervals, partial, one board only, a model
+//       change), PLATEAU, CLOCK and DIRECT (each verdict by its own fields beside Board 11's
+//       baseline), and the MULTIPLYING truth (tie-break noise while the picks share one searched
+//       fitness or no run prints a noise, lifted only by a printed noise narrower than the gap
+//       between picks of different fitness), held to the real notes/multiply.md and multiply.json.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, writeFileSync, statSync, readFileSync, mkdirSync } from 'node:fs';
@@ -44,6 +52,7 @@ import {
   instancesOf, substrateOf, authoredOf, bytesPerPointOf, improvementOf, HIS_RATE,
   multiplyOf, multiplyingLines, authoredLines, lastBoardOf, perSourcePerDayOf, knowledgeOf, knowledgeLines, narrowReasons,
   gapsOf, gapsLines, magnitudeOf, magnitudeLines, undoneOf, undoneLines,
+  climbOf, climbLines, boardWindowsOf, boardOfVerdict, plateauOf, plateauLines, clockOf, clockLines, directRecallOf, directRecallLines, tieBreakOf, tieBreakLines,
 } from '../bench/ladder.mjs';
 import { ANSWER_PROVENANCE as PROVENANCE } from '../act/prompt.mjs';
 import { ALIVE_WINDOW_MS } from '../daemon/health.mjs';
@@ -542,6 +551,17 @@ test('(n) the board on the real verdicts equals their fields, and runBoard write
     } else assert.ok(printed.some((l) => l.startsWith('MULTIPLYING: not measured') || l.includes('multiply-partial.json, PARTIAL')));
     const kv = (() => { try { return JSON.parse(readFileSync(path.join(ROOT, 'bench', 'verdicts', 'knowledge.json'), 'utf8')); } catch { return null; } })();
     if (kv) assert.equal(doc.board.knowledge.sources[0].primary.held, kv.breadth.held);
+    // the Board 13 blocks are printed, and each CLIMB count is its verdict's own field
+    for (const b of ['CLIMB', 'PLATEAU', 'CLOCK', 'DIRECT']) assert.ok(printed.some((l) => l.startsWith(b)), b + ' printed');
+    assert.ok(printed.some((l) => l.startsWith('  TRUTH: ')), 'the tie-break truth printed');
+    assert.equal(doc.split.contaminated, false);
+    for (const s of doc.board.climb.sets) for (const r of [s.current, s.previous].filter(Boolean)) {
+      const v = JSON.parse(readFileSync(path.join(ROOT, r.file), 'utf8'));
+      const name = r.arm.name.split(' ')[0];
+      const a = Array.isArray(v.arms) ? v.arms.find((x) => x.arm === name) : v.arms && v.arms.organism ? v.arms.organism : v.partial && v.partial.acc ? v.partial.acc.organism : { solved: v.solved, n: v.n };
+      assert.equal(r.arm.correct, a.correct ?? a.passed ?? a.solved, r.file);
+      assert.equal(r.arm.n, a.n, r.file);
+    }
   } finally { rmSync(dir, { recursive: true, force: true }); }
   const after = (() => { try { return statSync(real).mtimeMs; } catch { return null; } })();
   assert.equal(after, before, 'bench/verdicts/ladder.json is untouched by a test');
@@ -560,12 +580,16 @@ function rowsInputs() {
       at: '2026-09-24T01:00:00.000Z', command: 'node bench/ladder.mjs', isTheBar: true,
       board: {
         sets: [{ name: 'GSM8K', status: 'PARTIAL' }, { name: 'ARC-AGI-1 evaluation', status: 'whole' }],
-        multiplying: { source: 'bench/verdicts/multiply.json' },
+        multiplying: { source: 'bench/verdicts/multiply.json', tieBreak: { measured: true, runs: [], picks: 0, sharedFitness: null, noise: null, moved: null, tieBreak: true, label: 'decided by tie-break noise, not a bar', rule: 'the rule' } },
         authored: { source: null, reason: 'none', perSourcePerDay: { rows: [] }, lastBoard: { newest: null } },
         knowledge: { sources: [{ name: 'simplewiki', status: 'not measured' }] },
         gaps: { at: '2026-09-24T01:00:00.000Z', windowDays: 7, sources: { ledger: 'state/self/gaps.jsonl', decisions: 'bench/verdicts/autopilot/*.jsonl', authored: 'state/self/authored.jsonl' }, ledger: { open: 12, unparsed: 0, withTrial: 9, byKind: { missed: 3, open: 9 } }, decisions: null, authored: null, closed: null },
         magnitude: { organism: { measured: false, reason: 'no bench/verdicts/soak.json' }, orchestrator: { measured: false, reason: 'not loaded' }, simulated: { measured: false, reason: 'no bench/verdicts/spread.json' } },
         undone: { at: '2026-09-24T01:00:00.000Z', windowDays: 7, sources: { ledger: 'l', brief: 'b', decisions: 'd', authored: 'a', resume: 'r', proposed: 'p/*.md' }, items: { total: 4, byBoard: { 13: 4 } }, attempts: null, plants: null, authoredOnItems: null, partial: null, proposed: null },
+        climb: { source: 'docs/BOARDS.json', boardsRead: true, inProgress: 13, lastLanding: null, sets: ['GSM8K', 'HumanEval', 'ARC-AGI-1 evaluation'].map((name) => ({ key: name, name, files: 0, rows: [], current: null, previous: null, delta: null, thisBoard: { board: 13, measured: false }, unread: [], reason: 'no verdict file under bench/verdicts matches it' })) },
+        plateau: { source: null, reason: 'no bench/verdicts/plateau.json or plateau-partial.json', baseline: null },
+        clock: { curve: null, curveReason: 'no bench/verdicts/grid-clock.json or grid-clock-partial.json', whole: null, wholeReason: 'no bench/verdicts/grid-clock-whole.json or grid-clock-whole-partial.json', baseline: null },
+        directRecall: { clean: null, cleanReason: 'no bench/verdicts/direct-clean.json or direct-clean-partial.json', swept: null, sweptReason: 'no bench/verdicts/native.json with wiki.arms' },
       },
     },
     gate: {
@@ -576,6 +600,7 @@ function rowsInputs() {
         budget: { ok: true, line: line('BUDGET', true) }, compress: { ok: true, line: line('COMPRESS', true) }, hisData: { ok: true, line: line('HIS DATA', true) },
         loadBearing: { ok: true, line: line('LOAD-BEARING', true) }, boundary: { ok: true, line: line('BOUNDARY', true) },
         autonomy: { ok: true, graded: true, rules: true, line: line('AUTONOMY', true) }, handoff: { ok: true, graded: true, rules: true, line: line('HANDOFF', true) },
+        contamination: { ok: true, graded: true, rules: true, line: line('CONTAMINATION', true), counts: { bar: 2, withSplit: 2, noSplit: 0, splitNotObject: 0, contaminated: 0, labelled: 0, unlabelled: 0 }, noSplit: [], splitNotObject: [], labelled: [], unlabelled: [], causes: [] },
       },
       line: 'GATE GREEN: test files 2/2, assertions 37 pass / 0 fail',
     },
@@ -584,6 +609,7 @@ function rowsInputs() {
       { file: 'test/gate.test.mjs', pass: 6, fail: 0, total: 6, exit: 0, ms: 4210, budget: { outcome: 'exit', peakRssMb: 140.5 } },
       { file: 'test/gate-rows.test.mjs', pass: 9, fail: 0, total: 9, exit: 0, ms: 1730, budget: { outcome: 'exit', peakRssMb: 96.25 } },
       { file: 'test/gate-autonomy.test.mjs', pass: 11, fail: 0, total: 11, exit: 0, ms: 2210, budget: { outcome: 'exit', peakRssMb: 97.5 } },
+      { file: 'test/gate-contamination.test.mjs', pass: 6, fail: 0, total: 6, exit: 0, ms: 1450, budget: { outcome: 'exit', peakRssMb: 95.75 } },
     ],
     owned: [{ file: 'bench/ladder.mjs', mtimeMs: T('00:30:00') }, { file: 'bench/gate.mjs', mtimeMs: T('00:31:00') }, { file: 'notes/ladder.md', mtimeMs: T('00:59:00') }],
     at: '2026-09-24T03:00:00.000Z',
@@ -657,20 +683,20 @@ test('(o) the rows verdict: met only when board, GREEN gate and tests all hold, 
   const one = rowsInputs(); one.tests = one.tests[0];
   assert.equal(rowsVerdictOf(one).met, true, 'a single run row is still read');
   const mr = rowsInputs(); delete mr.gate.rows.compress;
-  assert.ok(rowsVerdictOf(mr).reasons.includes('the gate printed 6 of the 7 rows'));
+  assert.ok(rowsVerdictOf(mr).reasons.includes('the gate printed 7 of the 8 rows'));
   const nb = rowsInputs(); delete nb.gate.rows.loadBearing; delete nb.gate.rows.boundary;
   const nbv = rowsVerdictOf(nb);
-  assert.ok(nbv.reasons.includes('the gate printed 5 of the 7 rows'), nbv.reasons.join(' | '));
-  assert.deepEqual(nbv.doc.parts.gate.rowsPrinted, ['BUDGET', 'COMPRESS', 'HIS DATA', 'AUTONOMY', 'HANDOFF']);
+  assert.ok(nbv.reasons.includes('the gate printed 6 of the 8 rows'), nbv.reasons.join(' | '));
+  assert.deepEqual(nbv.doc.parts.gate.rowsPrinted, ['BUDGET', 'COMPRESS', 'HIS DATA', 'AUTONOMY', 'HANDOFF', 'CONTAMINATION']);
   const rb = rowsInputs(); rb.gate.verdict = 'RED'; rb.gate.rows.loadBearing = { ok: false, line: 'LOAD-BEARING RED: a row line' };
   assert.ok(rowsVerdictOf(rb).reasons.includes('the gate is RED: red rows LOAD-BEARING'));
   const mb = rowsInputs(); delete mb.ladder.board.knowledge; mb.ladder.board.authored = { share: 0.1 };
   const mbv = rowsVerdictOf(mb);
   assert.ok(mbv.reasons.includes('the board in ladder.json carries no AUTHORED, KNOWLEDGE block'), mbv.reasons.join(' | '));
-  assert.deepEqual(mbv.doc.parts.ladder.blocks, ['MULTIPLYING', 'GAPS', 'MAGNITUDE', 'UNDONE']);
-  assert.deepEqual(ok.doc.parts.ladder.blocks, ['MULTIPLYING', 'AUTHORED', 'KNOWLEDGE', 'GAPS', 'MAGNITUDE', 'UNDONE']);
-  assert.equal(ok.doc.parts.tests.length, 4);
-  assert.equal(ok.doc.board, 15);
+  assert.deepEqual(mbv.doc.parts.ladder.blocks, ['MULTIPLYING', 'GAPS', 'MAGNITUDE', 'UNDONE', 'CLIMB', 'PLATEAU', 'CLOCK', 'DIRECT']);
+  assert.deepEqual(ok.doc.parts.ladder.blocks, ['MULTIPLYING', 'AUTHORED', 'KNOWLEDGE', 'GAPS', 'MAGNITUDE', 'UNDONE', 'CLIMB', 'PLATEAU', 'CLOCK', 'DIRECT']);
+  assert.equal(ok.doc.parts.tests.length, 5);
+  assert.equal(ok.doc.board, 13);
   // Board 15: the verdict carries barMet at the top, a split, the printed blocks and the gate line
   assert.equal(ok.doc.barMet, true);
   assert.equal(stale.doc.barMet, false);
@@ -695,7 +721,38 @@ test('(o) the rows verdict: met only when board, GREEN gate and tests all hold, 
   // a ruling red row turns the gate red and is named
   const rh = rowsInputs(); rh.gate.verdict = 'RED'; rh.gate.rows.autonomy = { ok: false, graded: true, rules: true, line: 'AUTONOMY RED: x' };
   assert.ok(rowsVerdictOf(rh).reasons.includes('the gate is RED: red rows AUTONOMY'), rowsVerdictOf(rh).reasons.join(' | '));
-  console.log('(o) met ' + ok.met + ', stale reasons ' + stale.reasons.length + ', red reasons ' + red.reasons.length);
+  // Board 13: a MULTIPLYING block without the tie-break truth is not the block
+  const mt = rowsInputs(); delete mt.ladder.board.multiplying.tieBreak;
+  assert.ok(rowsVerdictOf(mt).reasons.includes('the board in ladder.json carries no MULTIPLYING block'), rowsVerdictOf(mt).reasons.join(' | '));
+  const nc = rowsInputs(); delete nc.ladder.board.climb; delete nc.ladder.board.directRecall;
+  assert.ok(rowsVerdictOf(nc).reasons.includes('the board in ladder.json carries no CLIMB, DIRECT block'), rowsVerdictOf(nc).reasons.join(' | '));
+  // the printed blocks are rebuilt from ladder.json, and the verdict says it is not contaminated
+  assert.equal(ok.doc.parts.printed.plateau[0], 'PLATEAU: not measured (no bench/verdicts/plateau.json or plateau-partial.json)');
+  assert.ok(ok.doc.parts.printed.climb[0].startsWith('CLIMB: '), ok.doc.parts.printed.climb[0]);
+  assert.equal(ok.doc.parts.printed.climb[1], '  GSM8K: not measured (no verdict file under bench/verdicts matches it)');
+  assert.ok(ok.doc.parts.printed.tieBreak[0].startsWith('  TRUTH: decided by tie-break noise, not a bar'), ok.doc.parts.printed.tieBreak[0]);
+  assert.equal(ok.doc.split.contaminated, false);
+  // a ruling RED CONTAMINATION row misses the bar with every cause named, from the row's own fields
+  const rc = rowsInputs(); rc.gate.verdict = 'RED';
+  rc.gate.rows.contamination = {
+    ok: false, graded: true, rules: true, line: 'CONTAMINATION RED: x', counts: { bar: 3, withSplit: 1, noSplit: 1, splitNotObject: 1, contaminated: 0, labelled: 0, unlabelled: 0 },
+    noSplit: ['a.json'], splitNotObject: [{ file: 'b.json', split: 'string', value: 'evaluation' }], labelled: [], unlabelled: [],
+    causes: ['1 bar file(s) with no split: a.json', '1 bar file(s) whose split is not an object: b.json (string "evaluation")'],
+  };
+  const rcv = rowsVerdictOf(rc);
+  assert.equal(rcv.met, false);
+  assert.ok(rcv.reasons.includes('CONTAMINATION: 1 bar file(s) with no split: a.json; 1 bar file(s) whose split is not an object: b.json (string "evaluation")'), rcv.reasons.join(' | '));
+  assert.ok(rcv.reasons.includes('the gate is RED: red rows CONTAMINATION'), rcv.reasons.join(' | '));
+  assert.deepEqual(rcv.doc.parts.gate.contamination.noSplit, ['a.json']);
+  assert.deepEqual(rcv.doc.parts.gate.redRows, ['CONTAMINATION']);
+  assert.deepEqual(statementNumbersInFields(rcv.doc), [], 'a statement number that is no field');
+  // the same row as a referee leaves the gate GREEN and still misses, named twice: referee and causes
+  const rr = rowsInputs(); rr.gate.rows.contamination = { ...rc.gate.rows.contamination, rules: false, line: 'CONTAMINATION RED (REFEREE, not ruling: a lock): x' };
+  const rrv = rowsVerdictOf(rr);
+  assert.equal(rrv.met, false);
+  assert.ok(rrv.reasons.includes('red rows printed as referees (a live autopilot held the lock): CONTAMINATION'), rrv.reasons.join(' | '));
+  assert.ok(rrv.reasons.some((r) => r.startsWith('CONTAMINATION: 1 bar file(s) with no split: a.json')), rrv.reasons.join(' | '));
+  console.log('(o) met ' + ok.met + ', stale reasons ' + stale.reasons.length + ', red reasons ' + red.reasons.length + ', contamination reasons ' + rcv.reasons.length);
 });
 
 test('(p) runRows writes rows-partial.json when missed, rows.json once when met, and runs the ladder and gate tests', async () => {
@@ -723,7 +780,7 @@ test('(p) runRows writes rows-partial.json when missed, rows.json once when met,
     const logs = [];
     const a = await runRows({ root, verdictsDir: vd, runTests, log: (l) => logs.push(l), at: inp.at });
     assert.deepEqual(ran, [...ROWS_TESTS]);
-    assert.deepEqual(ROWS_TESTS, ['test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs', 'test/gate-autonomy.test.mjs']);
+    assert.deepEqual(ROWS_TESTS, ['test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs', 'test/gate-autonomy.test.mjs', 'test/gate-contamination.test.mjs']);
     assert.equal(a.met, false);
     const partial = JSON.parse(readFileSync(path.join(vd, 'rows-partial.json'), 'utf8'));
     assert.equal(partial.isTheBar, false);
@@ -736,14 +793,19 @@ test('(p) runRows writes rows-partial.json when missed, rows.json once when met,
     // second met run leaves it byte for byte
     const board12 = JSON.stringify({ at: '2026-09-24T15:52:08.292Z', isTheBar: true, board: 12, met: true });
     writeFileSync(path.join(vd, 'rows.json'), board12);
+    // an earlier board's partial file is kept aside too, though this run writes rows.json
+    const partial15 = JSON.stringify({ at: '2026-09-26T05:36:42.000Z', isTheBar: false, board: 15, met: false });
+    writeFileSync(path.join(vd, 'rows-partial.json'), partial15);
     writeFileSync(path.join(vd, 'gate.json'), JSON.stringify(inp.gate));
     const b = await runRows({ root, verdictsDir: vd, runTests, log: () => {}, at: inp.at });
     assert.equal(b.met, true, b.lines.join(' | '));
     const first = readFileSync(path.join(vd, 'rows.json'), 'utf8');
     assert.equal(JSON.parse(first).isTheBar, true);
     assert.equal(JSON.parse(first).barMet, true);
-    assert.equal(JSON.parse(first).board, 15);
+    assert.equal(JSON.parse(first).board, 13);
     assert.equal(readFileSync(path.join(vd, 'rows-board12.json'), 'utf8'), board12, 'the earlier board\'s verdict is kept, byte for byte');
+    assert.equal(readFileSync(path.join(vd, 'rows-partial-board15.json'), 'utf8'), partial15, 'the earlier board\'s partial is kept, byte for byte');
+    assert.equal(readFileSync(path.join(vd, 'rows-partial.json'), 'utf8'), partial15, 'a met run does not write rows-partial.json');
     const c = await runRows({ root, verdictsDir: vd, runTests, log: () => {}, at: '2026-09-24T04:00:00.000Z' });
     assert.equal(c.wrote, null, 'the bar file is written once');
     assert.equal(readFileSync(path.join(vd, 'rows.json'), 'utf8'), first);
@@ -752,7 +814,7 @@ test('(p) runRows writes rows-partial.json when missed, rows.json once when met,
     rmSync(path.join(root, 'test', 'gate-rows.test.mjs'));
     ran.length = 0;
     const d = await runRows({ root, verdictsDir: vd, runTests, log: () => {}, write: false, at: inp.at });
-    assert.deepEqual(ran, ['test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-autonomy.test.mjs']);
+    assert.deepEqual(ran, ['test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-autonomy.test.mjs', 'test/gate-contamination.test.mjs']);
     assert.equal(d.met, false);
     assert.ok(d.reasons.includes('test/gate-rows.test.mjs did not pass: not in the tree'), d.reasons.join(' | '));
     assert.equal(d.wrote, null);
@@ -1085,4 +1147,255 @@ test('(w) AUTHORED SHARE names the boards its denominator counts, and the board 
       assert.equal(b.magnitude.orchestrator.boards, 3);
     } finally { rmSync(root, { recursive: true, force: true }); }
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+// ---------------------------------------------------------------- (x) to (ab) the Board 13 blocks
+// Each reads its verdict and prints what it carries: "not measured" for a missing verdict, PARTIAL
+// for a narrow one, n/a and never 0 for a number it does not carry. CLIMB's board of a verdict is
+// its board field, else its landing window in docs/BOARDS.json; the tie-break truth is held to the
+// real notes/multiply.md and bench/verdicts/multiply.json.
+const okRows = (c, n) => Array.from({ length: n }, (_, i) => ({ ok: i < c, ms: 1, provenance: 'model' }));
+function boards13(dir) {
+  const f = path.join(dir, 'BOARDS.json');
+  writeFileSync(f, JSON.stringify([
+    { board: 10, at: '2026-09-23T22:00:00Z', launched: true }, { board: 11, at: '2026-09-24T13:40:00Z', launched: true },
+    { board: 14, at: null, launched: false }, { board: 13, at: null, launched: false },
+  ]));
+  return f;
+}
+
+test('(x) CLIMB: the newest board against the one before with both intervals, partial and not measured named, never a zero', () => {
+  const dir = tmp();
+  try {
+    const boardsFile = boards13(dir);
+    const vd = path.join(dir, 'verdicts');
+    mkdirSync(vd);
+    let c = climbOf({ dir: vd, boardsFile });
+    assert.equal(c.inProgress, 13, 'the lowest board with no landing is the board in progress');
+    let L = climbLines(c);
+    assert.equal(L.length, 4, L.join(' | '));
+    for (const l of L.slice(1)) assert.match(l, /^ {2}(GSM8K|HumanEval|ARC-AGI-1 evaluation): not measured \(no verdict file under /);
+    for (const l of L) assert.equal(NOT_ZERO.test(l), false, l);
+
+    // the landing windows: the first landing takes everything before it, after the last is the board in progress
+    const w = boardWindowsOf(boardsFile);
+    assert.deepEqual(boardOfVerdict({ at: '2026-09-20T00:00:00Z' }, w), { board: 10, how: 'landing window', orEarlier: true, inProgress: false });
+    assert.equal(boardOfVerdict({ at: '2026-09-23T22:00:00Z' }, w).board, 10, 'a verdict at the landing instant is that board');
+    assert.equal(boardOfVerdict({ at: '2026-09-23T22:00:00.001Z' }, w).board, 11);
+    assert.deepEqual(boardOfVerdict({ at: '2026-09-25T00:00:00Z' }, w), { board: 13, how: 'after the last landing', orEarlier: false, inProgress: true });
+    assert.equal(boardOfVerdict({ at: '2026-09-25T00:00:00Z', board: 11 }, w).board, 11, 'a board field wins over the window');
+    assert.equal(boardOfVerdict({}, w).board, null);
+
+    // GSM8K: a partial sample on Board 10 against the whole set on the board in progress: up, decided
+    put(vd, 'public-gsm8k-smoke-partial.json', publicVerdict({ at: '2026-09-20T00:00:00.000Z', n: 30, of: 1319, isTheBar: false, rows: okRows(15, 30) }));
+    put(vd, 'public-gsm8k.json', publicVerdict({ at: '2026-09-25T00:00:00.000Z', n: 1319, of: 1319, rows: okRows(1100, 1319) }));
+    // HumanEval: one board only
+    put(vd, 'public-humaneval-partial.json', publicVerdict({ at: '2026-09-24T00:00:00.000Z', n: 30, of: 161, isTheBar: false, rows: okRows(23, 30) }));
+    // ARC: Board 10's evaluation run, Board 11's library run (arms as a list, no of) and a newer partial
+    // of the same board, and a run whose two intervention arms cannot be read as one
+    put(vd, 'grid-evaluation.json', { at: '2026-09-23T21:00:00.000Z', isTheBar: true, model: null, solved: 71, n: 400, of: 400 });
+    put(vd, 'grid-library.json', { at: '2026-09-24T10:00:00.000Z', isTheBar: true, model: null, arms: [{ arm: 'base', solved: 71, n: 400 }, { arm: 'library', label: 'library run 1', solved: 73, n: 400 }, { arm: 'base', solved: 71, n: 400 }] });
+    put(vd, 'grid-library-partial.json', { at: '2026-09-24T11:00:00.000Z', isTheBar: false, model: null, arms: [{ arm: 'base', solved: 71, n: 400 }, { arm: 'library', solved: 70, n: 400 }] });
+    put(vd, 'public-arc-crossover-partial.json', { at: '2026-09-24T12:00:00.000Z', isTheBar: false, model: null, arms: [{ arm: 'library', solved: 70, n: 400 }, { arm: 'crossover', solved: 72, n: 400 }] });
+    c = climbOf({ dir: vd, boardsFile });
+    const [g, h, a] = c.sets;
+    assert.equal(g.current.board, 13);
+    assert.equal(g.current.inProgress, true);
+    assert.equal(g.current.status, 'whole');
+    assert.equal(g.previous.board, 10);
+    assert.equal(g.previous.orEarlier, true);
+    assert.equal(g.previous.status, 'PARTIAL');
+    assert.equal(g.delta.points, Math.round((1100 / 1319 - 15 / 30) * 10000) / 100);
+    assert.equal(g.delta.decided, 'up', 'the whole-set interval sits above the sample one');
+    assert.equal(g.delta.partial, true);
+    assert.equal(g.thisBoard.measured, true);
+    assert.equal(h.previous, null);
+    assert.equal(h.delta, null);
+    assert.equal(a.current.file.endsWith('grid-library.json'), true, 'the whole verdict of a board wins over its newer partial one');
+    assert.equal(a.current.arm.name, 'library (library run 1)');
+    assert.equal(a.current.arm.correct, 73);
+    assert.equal(a.current.of, 400, 'a verdict with no of is held to the largest of its set');
+    assert.equal(a.previous.arm.correct, 71);
+    assert.deepEqual(a.unread.map((u) => u.reason), ['intervention arms library, crossover: no one arm to read']);
+    assert.equal(a.delta.decided, null, 'overlapping intervals decide nothing');
+    L = climbLines(c);
+    const at = (name) => L.slice(L.findIndex((l) => l.startsWith('  ' + name)));
+    const G = at('GSM8K');
+    const iv = wilson95(1100, 1319);
+    assert.equal(G[0], '  GSM8K:');
+    assert.ok(G[1].startsWith('    newest, board 13 (in progress): whole, '), G[1]);
+    assert.ok(G[1].endsWith(': organism 1100/1319 = ' + (1100 / 1319 * 100).toFixed(2) + '% [' + (iv.lo * 100).toFixed(2) + ', ' + (iv.hi * 100).toFixed(2) + ']'), G[1]);
+    assert.ok(G[2].startsWith('    before: board 10 or earlier: PARTIAL (the file is named -partial, isTheBar false, a sample of 30 of 1319), '), G[2]);
+    assert.ok(G[3].startsWith('    delta: +' + g.delta.points.toFixed(2) + ' points (83.40 against 50.00), up, the intervals separate; partial: a sample on at least one side'), G[3]);
+    const Hh = at('HumanEval');
+    assert.equal(Hh[0], '  HumanEval: board 13 (in progress): not measured, no HumanEval verdict after the last landing (board 11 at 2026-09-24T13:40:00Z)');
+    assert.equal(Hh[2], '    before: not measured (no earlier board holds a HumanEval verdict with an organism count)');
+    assert.equal(Hh[3], '    delta: not measured (one board only)');
+    const A = at('ARC-AGI-1');
+    assert.ok(A[3].startsWith('    delta: +0.50 points (18.25 against 17.75), the intervals overlap (undecided); whole against whole'), A[3]);
+    assert.ok(A[4].startsWith('    not read (no organism count): ') && A[4].endsWith('public-arc-crossover-partial.json'), A[4]);
+    for (const l of [...Hh.slice(0, 4), ...A.slice(0, 5)]) assert.equal(NOT_ZERO.test(l), false, l);
+    // a model change is named on the delta
+    put(vd, 'public-humaneval.json', publicVerdict({ at: '2026-09-25T00:00:00.000Z', n: 161, of: 161, rows: okRows(120, 161), model: 'qwen3:30b-a3b' }));
+    const hv = climbLines(climbOf({ dir: vd, boardsFile })).find((l) => l.startsWith('    delta:') && l.includes('models differ'));
+    assert.ok(hv && hv.includes('the models differ (qwen3:30b-a3b against qwen3:1.7b)'), String(hv));
+    // an unreadable BOARDS.json says so: every verdict is then the board in progress, which is unknown
+    const u = climbOf({ dir: vd, boardsFile: path.join(dir, 'none.json') });
+    assert.equal(u.boardsRead, false);
+    assert.ok(climbLines(u)[0].includes('none.json could not be read'), climbLines(u)[0]);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('(y) PLATEAU: the plateau verdict by its own fields beside Board 11\'s first plateau, not measured when absent', () => {
+  const dir = tmp();
+  try {
+    let L = plateauLines(plateauOf({ dir }));
+    assert.deepEqual(L, ['PLATEAU: not measured (no bench/verdicts/plateau.json or plateau-partial.json)', '  Board 11 baseline: not measured (no bench/verdicts/years.json with bar.perPlane)']);
+    for (const l of L) assert.equal(NOT_ZERO.test(l), false, l);
+    put(dir, 'years.json', { at: '2026-09-24T09:22:14.434Z', isTheBar: true, bar: { perPlane: [{ plane: 'grid', firstPlateauS: 0.40016879999637606, start: 49, end: 148, organismYears: 704435 }, { plane: 'synthetic', firstPlateauS: null, start: 89, end: 256 }] } });
+    put(dir, 'plateau-partial.json', { at: '2026-09-26T01:00:00.000Z', command: 'node bench/plateau.mjs --quick', isTheBar: false, perPlane: [{ plane: 'grid', plateauS: 12.5, gainedAfter: 7, noise: 2 }, { plane: 'synthetic', plateauS: null, gainedAfter: 0 }], statement: 'plateau 99 in prose is not read' });
+    L = plateauLines(plateauOf({ dir }));
+    assert.ok(L[0].startsWith('PLATEAU (') && L[0].includes('plateau-partial.json, PARTIAL: the file is named -partial, isTheBar false, 2026-09-26T01:00:00.000Z)'), L[0]);
+    assert.equal(L[1], '  perPlane[0]: plane "grid", plateauS 12.5, gainedAfter 7, noise 2');
+    assert.equal(L[2], '  perPlane[1]: plane "synthetic", gainedAfter 0', 'a null field is not printed, a measured zero is');
+    assert.ok(L[3].endsWith('grid plane first plateau 0.400 s, score 49 to 148 over 704435 organism-years; synthetic plane first plateau n/a, score 89 to 256 over n/a organism-years'), L[3]);
+    assert.equal(L.some((l) => l.includes('99')), false, 'the statement is prose, not a field');
+    put(dir, 'plateau.json', { at: '2026-09-26T02:00:00.000Z', isTheBar: true, barMet: false, plateauS: 30, gainedAfterPlateau: 3 });
+    L = plateauLines(plateauOf({ dir }));
+    assert.ok(L[0].includes('plateau.json, whole, isTheBar true, 2026-09-26T02:00:00.000Z, barMet false)'), L[0]);
+    assert.equal(L[1], '  (top): plateauS 30, gainedAfterPlateau 3');
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('(z) CLOCK: solved against clock and the whole-400 count by their own fields beside Board 11\'s library run', () => {
+  const dir = tmp();
+  try {
+    let L = clockLines(clockOf({ dir }));
+    assert.deepEqual(L, [
+      'CLOCK: solved against clock on the ARC evaluation set, and the whole-400 count',
+      '  curve: not measured (no bench/verdicts/grid-clock.json or grid-clock-partial.json)',
+      '  whole 400: not measured (no bench/verdicts/grid-clock-whole.json or grid-clock-whole-partial.json)',
+      '  Board 11 baseline: not measured (no bench/verdicts/grid-library.json with its arms)',
+    ]);
+    for (const l of L) assert.equal(NOT_ZERO.test(l), false, l);
+    put(dir, 'grid-library.json', { at: '2026-09-24T10:04:57.617Z', isTheBar: true, budgetMs: 3000, noise: 0, arms: [{ arm: 'base', solved: 71, n: 400 }, { arm: 'library', solved: 73, n: 400, timedOut: 319, foundButWrong: 7 }, { arm: 'base', solved: 71, n: 400 }] });
+    put(dir, 'grid-clock.json', { at: '2026-09-26T03:00:00.000Z', isTheBar: true, curve: [{ clockMs: 3000, solved: 73 }, { clockMs: 30000, solved: 80, timedOut: 250 }] });
+    put(dir, 'grid-clock-whole-partial.json', { at: '2026-09-26T04:00:00.000Z', isTheBar: false, n: 120, of: 400, solved: 30 });
+    L = clockLines(clockOf({ dir }));
+    assert.ok(L[1].startsWith('  curve (') && L[1].endsWith('grid-clock.json, whole, isTheBar true, 2026-09-26T03:00:00.000Z):'), L[1]);
+    assert.equal(L[2], '    curve[0]: clockMs 3000, solved 73');
+    assert.equal(L[3], '    curve[1]: clockMs 30000, solved 80, timedOut 250');
+    assert.ok(L[4].includes('grid-clock-whole-partial.json, PARTIAL: the file is named -partial, isTheBar false, 2026-09-26T04:00:00.000Z'), L[4]);
+    assert.equal(L[5], '    (top): solved 30');
+    assert.ok(L[6].endsWith(', clock 3000 ms per task: library 73 of 400 solved, 319 timed out, 7 found but wrong; no-library runs 71 and 71, noise 0'), L[6]);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('(aa) DIRECT: the leak-free recall beside the swept table, its control and null', () => {
+  const dir = tmp();
+  try {
+    let L = directRecallLines(directRecallOf({ dir }));
+    assert.deepEqual(L, [
+      'DIRECT: recall@1 with no model call, the leak-free table beside the swept one and null',
+      '  leak-free (filled only from asks): not measured (no bench/verdicts/direct-clean.json or direct-clean-partial.json)',
+      '  swept (Board 11): not measured (no bench/verdicts/native.json with wiki.arms)',
+    ]);
+    for (const l of L) assert.equal(NOT_ZERO.test(l), false, l);
+    put(dir, 'native.json', { at: '2026-09-24T08:58:51.160Z', isTheBar: true, wiki: { n: 200, arms: { direct: { recallAt1: 122, direct: 176, directCorrect: 122 }, control: { recallAt1: 122, direct: 0 }, none: { recallAt1: 0 } } }, timing: { hitNsMedian: 42.89, missNsMedian: 15.38 }, fill: { of: 284749, drawnInControl: 0 } });
+    put(dir, 'direct-clean.json', { at: '2026-09-26T05:00:00.000Z', isTheBar: true, arms: { clean: { recallAt1: 40, n: 200, directHits: 45 }, null: { recallAt1: 0, n: 200 } }, overlap: { leakedTitles: 0 } });
+    L = directRecallLines(directRecallOf({ dir }));
+    assert.ok(L[1].startsWith('  leak-free (') && L[1].endsWith('direct-clean.json, whole, isTheBar true, 2026-09-26T05:00:00.000Z):'), L[1]);
+    assert.equal(L[2], '    arms.clean: recallAt1 40, directHits 45');
+    assert.equal(L[3], '    arms.null: recallAt1 0');
+    assert.equal(L[4], '    overlap: leakedTitles 0');
+    const iv = (c, n) => '[' + (wilson95(c, n).lo * 100).toFixed(2) + ', ' + (wilson95(c, n).hi * 100).toFixed(2) + ']';
+    assert.ok(L[5].endsWith('): the table 122 of 200 ' + iv(122, 200) + ' with 176 direct hits (122 correct), 42.89 ns median per hit, 15.38 ns per miss; filled by sweeping 284749 titles, the drawn ones included, so it is memoisation of the tier'), L[5]);
+    assert.equal(L[6], '  control (the swept table with the drawn titles left out) 122 of 200 ' + iv(122, 200) + ' with 0 direct hits; null 0 of 200 ' + iv(0, 200));
+    // an arm the verdict does not carry is n/a, never 0
+    put(dir, 'native.json', { at: 'a', wiki: { n: 200, arms: { direct: { recallAt1: 122 } } } });
+    L = directRecallLines(directRecallOf({ dir }));
+    assert.ok(L[L.length - 1].startsWith('  control (the swept table with the drawn titles left out) n/a with n/a direct hits; null n/a'), L[L.length - 1]);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('(ab) MULTIPLYING truth: one searched fitness or no printed noise is tie-break noise, not a bar; the real Board 12 runs', () => {
+  const dir = tmp();
+  try {
+    const vd = path.join(dir, 'bench', 'verdicts');
+    mkdirSync(vd, { recursive: true });
+    let t = tieBreakOf({ dir: vd });
+    assert.equal(t.measured, false);
+    assert.equal(t.tieBreak, null);
+    assert.deepEqual(tieBreakLines(t), ['  TRUTH: not measured (no whole run: neither notes/multiply.md nor bench/verdicts/multiply.json holds one)']);
+    // the builder's note beside this tree's verdicts, and the rerun's bar file: gaps of opposite sign, one fitness
+    mkdirSync(path.join(dir, 'notes'));
+    writeFileSync(path.join(dir, 'notes', 'multiply.md'), [
+      '# multiply', '', '[bar] single: 134/160 fresh (s0, 598 searched)', '[bar] population pick by the searched objective: 133/160 fresh (i0, 598 searched)', '',
+      '- **Every instance of both arms ended on the same searched score:** 598/640, length 96, fitness 0.9320403696498054. More.',
+      '- On the four other fresh draws the means were 133.5 (population) and 137 (single).',
+    ].join('\n'));
+    const pick = (fitness, fresh, freshMoreMean) => ({ fitness, fresh, freshT: 160, freshMoreMean });
+    const same = { single: { pick: pick(0.9320403696498054, 134, 137) }, population: { pick: pick(0.9320403696498054, 136, 137.25) } };
+    const mv = (o = {}) => ({ at: '2026-09-24T14:36:34.385Z', isTheBar: true, config: { wallS: 240 }, bar: { met: true, singleFresh: 134, populationFresh: 136, freshT: 160 }, arms: same, ...o });
+    put(vd, 'multiply.json', mv());
+    t = tieBreakOf({ dir: vd });
+    assert.equal(t.label, 'decided by tie-break noise, not a bar');
+    assert.deepEqual(t.runs.map((r) => [r.who, r.population, r.single, r.gap]), [['builder', 133, 134, -1], ['bar file', 136, 134, 2]]);
+    assert.equal(t.sharedFitness, 0.9320403696498054);
+    assert.equal(t.picks, 4);
+    assert.deepEqual(t.moved, { population: 3, single: 0 });
+    let L = tieBreakLines(t);
+    assert.equal(L[0], '  TRUTH: decided by tie-break noise, not a bar (the label lifts only when a run prints its seed-to-seed noise and a gap wider than it, between picks of different searched fitness)');
+    assert.ok(L[1].includes('multiply.md:3,4): population 133/160 against single 134/160, gap -1; pick fitness single 0.9320403696498054, population 0.9320403696498054 (') && L[1].endsWith('multiply.md:6); mean over the other fresh draws population 133.5, single 137'), L[1]);
+    assert.ok(L[2].includes('240 wall s per arm): population 136/160 against single 134/160, gap +2'), L[2]);
+    assert.ok(L[3].includes('every one of the 4 picks with a recorded fitness shares one searched fitness, 0.9320403696498054') && L[3].includes('moved the population pick by 3 and the single by 0') && L[3].endsWith('seed-to-seed noise printed by no run, so no gap is called real'), L[3]);
+    // a printed noise does not lift it while the picks share one fitness
+    put(vd, 'multiply.json', mv({ seedNoise: 1 }));
+    t = tieBreakOf({ dir: vd });
+    assert.equal(t.noise, 1);
+    assert.equal(t.tieBreak, true);
+    // one fitness still holds it with the note gone: the rerun's gap of 2 is wider than a noise of 1
+    rmSync(path.join(dir, 'notes', 'multiply.md'));
+    t = tieBreakOf({ dir: vd });
+    assert.deepEqual([t.runs.length, t.runs[0].gap, t.noise, t.sharedFitness], [1, 2, 1, 0.9320403696498054]);
+    assert.equal(t.tieBreak, true, 'a gap wider than the noise between picks of one searched fitness is still the tie-break');
+    // different fitness and no printed noise: still the tie-break
+    const diff = { single: { pick: pick(0.9, 134, 137) }, population: { pick: pick(0.95, 140, 141) } };
+    const bar140 = { met: true, singleFresh: 134, populationFresh: 140, freshT: 160 };
+    put(vd, 'multiply.json', mv({ arms: diff, bar: bar140 }));
+    t = tieBreakOf({ dir: vd });
+    assert.equal(t.sharedFitness, null);
+    assert.equal(t.tieBreak, true);
+    // the control: different fitness and a printed noise narrower than the gap lifts the label, and a gap inside it does not
+    put(vd, 'multiply.json', mv({ arms: diff, bar: bar140, seedNoise: 2 }));
+    t = tieBreakOf({ dir: vd });
+    assert.equal(t.tieBreak, false);
+    assert.equal(t.label, 'decided by a gap wider than the seed-to-seed noise');
+    put(vd, 'multiply.json', mv({ arms: diff, bar: bar140, bar2: 0, seedNoise: 6 }));
+    assert.equal(tieBreakOf({ dir: vd }).tieBreak, true, 'a gap of 6 inside a noise of 6 is not real');
+    // a partial run alone is printed and measures nothing
+    rmSync(path.join(vd, 'multiply.json'));
+    put(vd, 'multiply-partial.json', mv({ isTheBar: false, config: { wallS: 80 }, bar: { met: false, singleFresh: 134, populationFresh: 133, freshT: 160 } }));
+    t = tieBreakOf({ dir: vd });
+    assert.equal(t.measured, false);
+    L = tieBreakLines(t);
+    assert.equal(L.length, 2);
+    assert.ok(L[1].startsWith('    the partial run (') && L[1].includes('80 wall s per arm): population 133/160 against single 134/160, gap -1'), L[1]);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+  // the real Board 12 runs: the builder's note and the verifier's bar file, each number read back independently
+  const noteFile = path.join(ROOT, 'notes', 'multiply.md'), barFile = path.join(ROOT, 'bench', 'verdicts', 'multiply.json');
+  let note = null, rv = null;
+  try { note = readFileSync(noteFile, 'utf8'); rv = JSON.parse(readFileSync(barFile, 'utf8')); } catch { note = null; }
+  if (note && rv) {
+    const real = tieBreakOf();
+    const b = real.runs.find((r) => r.who === 'builder'), v = real.runs.find((r) => r.who === 'bar file');
+    assert.ok(note.includes('[bar] single: ' + b.single + '/' + b.freshT + ' fresh'), 'the builder single is the note line');
+    assert.ok(note.includes('[bar] population pick by the searched objective: ' + b.population + '/' + b.freshT + ' fresh'), 'the builder population is the note line');
+    assert.equal(v.population, rv.bar.populationFresh);
+    assert.equal(v.single, rv.bar.singleFresh);
+    assert.equal(real.sharedFitness, rv.arms.population.pick.fitness);
+    assert.equal(real.sharedFitness, rv.arms.single.pick.fitness);
+    assert.equal(real.label, 'decided by tie-break noise, not a bar');
+    console.log('(ab) ' + JSON.stringify({ builder: [b.population, b.single], rerun: [v.population, v.single], fitness: real.sharedFitness, noise: real.noise, label: real.label }));
+  }
 });

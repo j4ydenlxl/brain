@@ -635,64 +635,251 @@ export function hash2(s) {
 }
 
 // ------------------------------------------------------------------------- reader
-function readTyped(file, Ctor) {
-  const b = fs.readFileSync(file);
-  const ab = new ArrayBuffer(b.length);
-  new Uint8Array(ab).set(b);
-  return new Ctor(ab);
+// THE RESIDENT CAP (Board 13 fit item; his P13: "It should live 24/7 on the cloud", in a 512m
+// container with a 448 MB rss budget). open() used to read every index file whole with
+// readFileSync and copy it into a new ArrayBuffer, so sigs.bin (67.0 MB) was held twice while it
+// loaded and the wiki store held 110.4 MB for good (notes/cloud.md, "What is left"). Now a store
+// holds at most capBytes of its index files: opts.residentMb, else env BRAIN_KNOWLEDGE_RESIDENT_MB,
+// else RESIDENT_DEFAULT_MB (64).
+//   whole   the index files fit under the cap together: each is read ONCE with windowed
+//           fs.readSync straight into its own ArrayBuffer (no second copy) and held.
+//   paged   they do not: a file is read in SEGMENT_BYTES segments on first touch, into one
+//           segment cache per store, and before a new segment would pass the cap the least
+//           recently read segments are evicted, in one batch, down to 7/8 of the cap.
+// Both modes answer identically (test/cloud-fit.test.mjs: recall, answer and locate equal on a
+// planted store under a cap a fraction of its size). census() prints the mode, residentBytes,
+// the cap, segments read and evictions; residentGuard() counts the ArrayBuffers a store object
+// actually reaches, never the store's own counter, so a store that ignores its cap is caught.
+// The per-query candidate mark (a Uint32Array of every item, 8.8 MB on the wiki store) is gone:
+// the query's own via map already says whether an item was added.
+export const RESIDENT_DEFAULT_MB = 64;
+export const SEGMENT_BYTES = 16384;
+const RMB = 1048576;
+const MIN_CAP_BYTES = 4 * SEGMENT_BYTES;
+export const INDEX_FILES = Object.freeze(['items.bin', 'sigs.bin', 'articles.bin', 'dict.bin', 'tbands.bin', 'ttable.bin', 'thash.bin', 'catdir.bin']);
+const OPEN_STORES = new Set();
+
+/** The resident cap in bytes: opts.residentMb, else BRAIN_KNOWLEDGE_RESIDENT_MB, else 64 MB. */
+export function residentCap(opts = {}, env = process.env) {
+  let v = opts.residentMb, from = 'the residentMb option';
+  if (v === undefined || v === null) { v = env.BRAIN_KNOWLEDGE_RESIDENT_MB; from = 'BRAIN_KNOWLEDGE_RESIDENT_MB'; }
+  if (v === undefined || v === null || String(v).trim() === '') return { bytes: RESIDENT_DEFAULT_MB * RMB, mb: RESIDENT_DEFAULT_MB, from: 'default' };
+  const n = Number(String(v).trim());
+  if (!Number.isFinite(n) || n <= 0) throw new Error('knowledge: ' + from + ' must be a positive number of MB, got ' + JSON.stringify(v));
+  return { bytes: Math.max(MIN_CAP_BYTES, Math.floor(n * RMB)), mb: n, from };
 }
+
+function readInto(fd, u8, pos, file) {
+  for (let got = 0; got < u8.length;) {
+    const r = fs.readSync(fd, u8, got, Math.min(u8.length - got, 1 << 24), pos + got);
+    if (r <= 0) throw new Error('knowledge: ' + file + ' ended ' + got + ' bytes into a read of ' + u8.length + ' at ' + pos);
+    got += r;
+  }
+  return u8;
+}
+
+/** A whole file in a fresh ArrayBuffer, read by windowed fs.readSync (never held twice). */
+function readTyped(file, Ctor) {
+  const fd = fs.openSync(file, 'r');
+  try { return new Ctor(readInto(fd, new Uint8Array(fs.fstatSync(fd).size), 0, file).buffer); }
+  finally { fs.closeSync(fd); }
+}
+
+/**
+ * One store's segment cache: the least recently read eviction, and the buffers it reuses. Every
+ * segment lives in a SEGMENT_BYTES buffer, and an evicted segment's buffer goes to a free pool
+ * the next read takes from, so the cache allocates at most cap bytes over its whole life and a
+ * query stream never leaves evicted buffers behind for the collector (measured before the pool:
+ * rss 120 MB over baseline with 64 MB resident, the rest evicted garbage).
+ */
+class SegmentCache {
+  constructor(capBytes) {
+    this.cap = capBytes; this.bytes = 0; this.peak = 0; this.arrays = []; this.pool = [];
+    this.reads = 0; this.readBytes = 0; this.evictions = 0; this.evictedBytes = 0; this.batches = 0;
+  }
+  /** A SEGMENT_BYTES buffer: from the pool, else new while under the cap, else after a batch eviction. */
+  take() {
+    if (this.pool.length === 0 && this.bytes + SEGMENT_BYTES > this.cap && this.bytes > 0) this.evict();
+    if (this.pool.length > 0) return this.pool.pop();
+    this.bytes += SEGMENT_BYTES; if (this.bytes > this.peak) this.peak = this.bytes;
+    return new ArrayBuffer(SEGMENT_BYTES);
+  }
+  /** The least recently read segments, oldest first, into the pool until 1/8 of the cap is free. */
+  evict() {
+    const rows = [];
+    for (const a of this.arrays) for (let p = 0; p < a.pages.length; p++) if (a.pages[p] !== undefined) rows.push([a.stamps[p], a, p]);
+    rows.sort((x, y) => x[0] - y[0]);
+    const want = Math.max(1, Math.floor(this.cap / 8 / SEGMENT_BYTES));
+    for (const [, a, p] of rows) {
+      if (this.pool.length >= want) break;
+      this.pool.push(a.pages[p].buffer);
+      a.pages[p] = undefined; this.evictions++; this.evictedBytes += SEGMENT_BYTES;
+    }
+    this.batches++;
+  }
+}
+
+/** A Uint32 index file: one pinned segment (whole) or SEGMENT_BYTES segments read on touch (paged). */
+class SegArray {
+  constructor(name, bytes, { whole = null, cache = null, fd = null } = {}) {
+    this.name = name; this.bytes = bytes; this.length = bytes >>> 2; this.cache = cache; this.fd = fd;
+    if (whole) { this.shift = 31; this.mask = 0x7fffffff; this.pages = [whole]; this.stamps = new Float64Array(1); }
+    else {
+      const per = SEGMENT_BYTES >>> 2;
+      this.shift = Math.log2(per); this.mask = per - 1;
+      this.pages = new Array(Math.ceil(bytes / SEGMENT_BYTES)).fill(undefined);
+      this.stamps = new Float64Array(this.pages.length);
+      cache.arrays.push(this);
+    }
+  }
+  get(i) {
+    const p = i >>> this.shift, a = this.pages[p];
+    this.stamps[p] = ++SEG_CLOCK.t;
+    return (a !== undefined ? a : this.load(p))[i & this.mask];
+  }
+  load(p) {
+    const c = this.cache, off = p * SEGMENT_BYTES, len = Math.min(SEGMENT_BYTES, this.bytes - off);
+    const buf = c.take();
+    readInto(this.fd, new Uint8Array(buf, 0, len), off, this.name);
+    const a = new Uint32Array(buf, 0, len >>> 2);
+    this.pages[p] = a; c.reads++; c.readBytes += len;
+    return a;
+  }
+  /** The segment that holds index i (read on a miss); the caller indexes it with i & mask. */
+  seg(i) {
+    const p = i >>> this.shift, a = this.pages[p];
+    this.stamps[p] = ++SEG_CLOCK.t;
+    return a !== undefined ? a : this.load(p);
+  }
+  /** Bytes this array holds now (a paged segment holds its whole buffer). */
+  held() { let n = 0; for (const a of this.pages) if (a !== undefined) n += a.buffer.byteLength; return n; }
+}
+const SEG_CLOCK = { t: 0 };
+
+/**
+ * The ArrayBuffer bytes a store object reaches (own properties, four levels down), each buffer
+ * once, and whether they sit under its cap. The store's fixed 64 KB text scratch is reported, not
+ * charged. Never reads the store's own counters: a store that loads past its cap is caught here.
+ * An object met first with little depth left (the segment cache reaches every array at its edge)
+ * is walked again when a shorter path reaches it with more, so no page hides behind that edge.
+ */
+export function residentGuard(store) {
+  const seen = new Set(), expanded = new Map();
+  let held = 0, scratch = 0;
+  const walk = (v, depth, key) => {
+    if (v === null || typeof v !== 'object') return;
+    if (expanded.has(v) && expanded.get(v) >= depth) return;
+    expanded.set(v, depth);
+    if (ArrayBuffer.isView(v)) { if (!seen.has(v.buffer)) { seen.add(v.buffer); if (key === '_textBuf') scratch += v.buffer.byteLength; else held += v.buffer.byteLength; } return; }
+    if (v instanceof ArrayBuffer) { if (!seen.has(v)) { seen.add(v); held += v.byteLength; } return; }
+    if (depth <= 0 || v instanceof Map || v instanceof Set || v === store.meta) return;
+    for (const k of Object.keys(v)) walk(v[k], depth - 1, k);
+  };
+  for (const k of Object.keys(store)) walk(store[k], 4, k);
+  const capBytes = Number.isFinite(store.capBytes) ? store.capBytes : null;
+  const ok = capBytes !== null && held <= capBytes;
+  return { ok, heldBytes: held, scratchBytes: scratch, capBytes, mode: store.mode ?? null, why: capBytes === null ? 'the store states no cap' : ok ? 'held ' + held + ' bytes, under the cap ' + capBytes : 'held ' + held + ' bytes, OVER the cap ' + capBytes };
+}
+
+/** The census of every open store (bin/serve.mjs sends it to the supervisor once a second). */
+export function knowledgeCensus() { return [...OPEN_STORES].map((s) => s.census()); }
 
 export const RECALL_DEFAULTS = Object.freeze({ k: 5, titleK: 3, titleMin: 0.5, rescore: 32, maxCandidates: 20000, maxPosting: 200000 });
 
 export class KnowledgeStore {
-  /** @param {string} dir a directory a KnowledgeWriter finished */
-  static open(dir) { return new KnowledgeStore(dir); }
+  /**
+   * @param {string} dir a directory a KnowledgeWriter finished
+   * @param {object} [opts] { residentMb }: the resident cap (else BRAIN_KNOWLEDGE_RESIDENT_MB, else 64)
+   */
+  static open(dir, opts = {}) { return new KnowledgeStore(dir, opts); }
 
-  constructor(dir) {
+  constructor(dir, opts = {}) {
     this.dir = dir;
     this.meta = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8'));
     if (this.meta.format !== FORMAT || this.meta.sigBits !== SIG_BITS) throw new Error('knowledge: store format ' + this.meta.format + '/' + this.meta.sigBits + ' is not ' + FORMAT + '/' + SIG_BITS);
-    const items = readTyped(path.join(dir, 'items.bin'), Uint8Array);
-    this.n = items.length / 8;
-    this.itemOff = new Uint32Array(items.buffer); // stride 2
-    this.itemU16 = new Uint16Array(items.buffer); // len at 4i + 2
-    this.itemU8 = items;                          // kind at 8i + 6, section at 8i + 7
-    this.sigs = readTyped(path.join(dir, 'sigs.bin'), Uint32Array);
-    const arts = readTyped(path.join(dir, 'articles.bin'), Uint32Array);
-    this.A = arts.length / 3;
-    this.art = arts;
-    this.dict = readTyped(path.join(dir, 'dict.bin'), Uint32Array);
-    this.V = this.dict.length / 4;
-    this.bands = readTyped(path.join(dir, 'tbands.bin'), Uint32Array);
-    this.table = readTyped(path.join(dir, 'ttable.bin'), Uint32Array);
-    this.thash = readTyped(path.join(dir, 'thash.bin'), Uint32Array);
+    const cap = residentCap(opts);
+    this.capBytes = cap.bytes; this.capFrom = cap.from;
+    const sizes = {};
+    for (const f of INDEX_FILES) sizes[f] = fs.statSync(path.join(dir, f)).size;
+    this.indexBytes = Object.values(sizes).reduce((s, b) => s + b, 0);
+    // the per-segment read stamps are resident too, so they come out of the cap first: 8 bytes a
+    // file when whole, 8 bytes a segment when paged (56.5 KB on the wiki store)
+    let segs = 0;
+    for (const f of INDEX_FILES) segs += Math.ceil(sizes[f] / SEGMENT_BYTES);
+    this.mode = this.indexBytes + 8 * INDEX_FILES.length <= this.capBytes ? 'whole' : 'paged';
+    this.stampBytes = this.mode === 'whole' ? 8 * INDEX_FILES.length : 8 * segs;
+    this.fdIdx = [];
+    this._cache = new SegmentCache(Math.max(SEGMENT_BYTES, this.capBytes - this.stampBytes));
+    const arr = (f) => {
+      if (this.mode === 'whole') return new SegArray(f, sizes[f], { whole: readTyped(path.join(dir, f), Uint32Array) });
+      const fd = fs.openSync(path.join(dir, f), 'r');
+      this.fdIdx.push(fd);
+      return new SegArray(f, sizes[f], { cache: this._cache, fd });
+    };
+    this.items = arr('items.bin');                 // item i: word 2i offset, word 2i+1 len | kind << 16 | section << 24
+    this.n = sizes['items.bin'] / 8;
+    // the old typed view, whole mode only (a test reads itemOff): null when the store is paged
+    this.itemOff = this.mode === 'whole' ? this.items.pages[0] : null;
+    this.sigs = arr('sigs.bin');
+    this.art = arr('articles.bin');
+    this.A = sizes['articles.bin'] / 12;
+    this.dict = arr('dict.bin');
+    this.V = sizes['dict.bin'] / 16;
+    this.bands = arr('tbands.bin');
+    this.table = arr('ttable.bin');
+    this.tableMask = (sizes['ttable.bin'] >>> 2) - 1;
+    this.thash = arr('thash.bin');
     this.fdRec = fs.openSync(path.join(dir, 'records.bin'), 'r');
     this.fdPost = fs.openSync(path.join(dir, 'postings.bin'), 'r');
-    this.catdir = readTyped(path.join(dir, 'catdir.bin'), Uint32Array);
-    this.C = this.catdir.length / 4;
+    this.catdir = arr('catdir.bin');
+    this.C = sizes['catdir.bin'] / 16;
     this.fdCat = fs.openSync(path.join(dir, 'catheads.txt'), 'r');
-    this._mark = new Uint32Array(this.n);
-    this._stamp = 0;
     this.stats = { queries: 0, candidates: 0, rescored: 0, postingsRead: 0, titleHits: 0 };
     this._textBuf = Buffer.allocUnsafe(65536);
+    OPEN_STORES.add(this);
   }
 
   close() {
     if (this.fdRec !== null) { fs.closeSync(this.fdRec); this.fdRec = null; }
     if (this.fdPost !== null) { fs.closeSync(this.fdPost); this.fdPost = null; }
     if (this.fdCat !== null) { fs.closeSync(this.fdCat); this.fdCat = null; }
+    for (const fd of this.fdIdx) { try { fs.closeSync(fd); } catch { /* closed */ } }
+    this.fdIdx = [];
+    OPEN_STORES.delete(this);
   }
 
-  /** Bytes this store holds in memory once open. */
+  /** Bytes this store holds in memory now (whole: every index file; paged: the segments resident), stamps included. */
   residentBytes() {
-    return this.itemU8.byteLength + this.sigs.byteLength + this.art.byteLength + this.dict.byteLength + this.bands.byteLength + this.table.byteLength + this.thash.byteLength + this.catdir.byteLength + this._mark.byteLength;
+    let n = this.stampBytes + this._cache.pool.length * SEGMENT_BYTES;
+    for (const a of [this.items, this.sigs, this.art, this.dict, this.bands, this.table, this.thash, this.catdir]) n += a.held();
+    return n;
   }
 
-  kindOf(i) { return this.itemU8[8 * i + 6]; }
-  sectionOf(i) { return this.itemU8[8 * i + 7]; }
+  /** Bytes a trim() would give back now: every paged segment and pooled buffer (a whole store gives none). */
+  releasableBytes() { return this.mode === 'paged' ? this.residentBytes() - this.stampBytes : 0; }
+  /**
+   * Release every paged segment and the free pool (the daemon's self-round memory guard prunes
+   * with this). The next read reloads what it needs. Returns the bytes released.
+   */
+  trim() {
+    if (this.mode !== 'paged') return 0;
+    const c = this._cache, before = this.releasableBytes();
+    for (const a of c.arrays) for (let p = 0; p < a.pages.length; p++) if (a.pages[p] !== undefined) { a.pages[p] = undefined; c.evictions++; c.evictedBytes += SEGMENT_BYTES; }
+    c.pool = []; c.bytes = 0; c.trims = (c.trims || 0) + 1;
+    return before;
+  }
+
+  /** mode, residentBytes, the cap, segments read and evicted: one row of the health census. */
+  census() {
+    const c = this._cache;
+    return { dir: this.dir, mode: this.mode, residentBytes: this.residentBytes(), capBytes: this.capBytes, capMb: Math.round(this.capBytes / RMB * 100) / 100, capFrom: this.capFrom, indexBytes: this.indexBytes, peakBytes: this.stampBytes + (this.mode === 'whole' ? this.indexBytes : c.peak), segmentBytes: SEGMENT_BYTES, reads: c.reads, readBytes: c.readBytes, evictions: c.evictions, evictedBytes: c.evictedBytes, batches: c.batches, trims: c.trims || 0, queries: this.stats.queries };
+  }
+
+  kindOf(i) { return (this.items.get(2 * i + 1) >>> 16) & 0xff; }
+  sectionOf(i) { return this.items.get(2 * i + 1) >>> 24; }
   /** The text of item i, read from records.bin. */
   text(i) {
-    const off = this.itemOff[2 * i], len = this.itemU16[4 * i + 2];
+    const off = this.items.get(2 * i), len = this.items.get(2 * i + 1) & 0xffff;
     const b = len <= this._textBuf.length ? this._textBuf : Buffer.allocUnsafe(len);
     let got = 0;
     while (got < len) { const r = fs.readSync(this.fdRec, b, got, len - got, off + got); if (r <= 0) break; got += r; }
@@ -701,19 +888,19 @@ export class KnowledgeStore {
   /** The article an item belongs to (articles hold contiguous item ranges). */
   articleOf(i) {
     let lo = 0, hi = this.A - 1;
-    while (lo < hi) { const mid = (lo + hi + 1) >>> 1; if (this.art[3 * mid] <= i) lo = mid; else hi = mid - 1; }
+    while (lo < hi) { const mid = (lo + hi + 1) >>> 1; if (this.art.get(3 * mid) <= i) lo = mid; else hi = mid - 1; }
     return lo;
   }
-  titleItem(a) { return this.art[3 * a]; }
-  title(a) { return this.text(this.art[3 * a]); }
-  itemsOf(a) { const f = this.art[3 * a], n = this.art[3 * a + 1]; const out = []; for (let i = f + 1; i < f + n; i++) out.push(i); return out; }
+  titleItem(a) { return this.art.get(3 * a); }
+  title(a) { return this.text(this.art.get(3 * a)); }
+  itemsOf(a) { const f = this.art.get(3 * a), n = this.art.get(3 * a + 1); const out = []; for (let i = f + 1; i < f + n; i++) out.push(i); return out; }
 
   /** Articles whose normalised title equals this one's. */
   titleLookup(q) {
-    const nt = normTitle(q), h = hash32(nt), T = this.table, mask = T.length - 1, out = [];
-    for (let s = h & mask; T[s] !== 0; s = (s + 1) & mask) {
-      const a = T[s] - 1;
-      if (this.thash[a] === h && normTitle(this.title(a)) === nt) out.push(a);
+    const nt = normTitle(q), h = hash32(nt), T = this.table, mask = this.tableMask, out = [];
+    for (let s = h & mask; T.get(s) !== 0; s = (s + 1) & mask) {
+      const a = T.get(s) - 1;
+      if (this.thash.get(a) === h && normTitle(this.title(a)) === nt) out.push(a);
     }
     return out;
   }
@@ -723,12 +910,12 @@ export class KnowledgeStore {
     const a = hash32(name), b = hash2(name), d = this.catdir;
     let lo = 0, hi = this.C - 1;
     while (lo <= hi) {
-      const mid = (lo + hi) >>> 1, x = d[4 * mid], y = d[4 * mid + 1];
+      const mid = (lo + hi) >>> 1, x = d.get(4 * mid), y = d.get(4 * mid + 1);
       if (x < a || (x === a && y < b)) lo = mid + 1;
       else if (x > a || (x === a && y > b)) hi = mid - 1;
       else {
-        const buf = Buffer.allocUnsafe(d[4 * mid + 3]);
-        fs.readSync(this.fdCat, buf, 0, buf.length, d[4 * mid + 2]);
+        const buf = Buffer.allocUnsafe(d.get(4 * mid + 3));
+        fs.readSync(this.fdCat, buf, 0, buf.length, d.get(4 * mid + 2));
         const j = JSON.parse(buf.toString('utf8')), heads = [];
         for (let k = 1; k + 1 < j.length; k += 2) heads.push([j[k], j[k + 1]]);
         return { total: j[0], heads };
@@ -738,7 +925,7 @@ export class KnowledgeStore {
   }
   /** The category names of article a (its categories fact), or []. */
   categoriesOf(a) {
-    const f = this.art[3 * a], n = this.art[3 * a + 1];
+    const f = this.art.get(3 * a), n = this.art.get(3 * a + 1);
     for (let i = f + n - 1; i > f; i--) if (this.kindOf(i) === KIND.categories) return categoryNames(this.text(i));
     return [];
   }
@@ -748,10 +935,10 @@ export class KnowledgeStore {
     const a = hash32(w), b = hash2(w), d = this.dict;
     let lo = 0, hi = this.V - 1;
     while (lo <= hi) {
-      const mid = (lo + hi) >>> 1, x = d[4 * mid], y = d[4 * mid + 1];
+      const mid = (lo + hi) >>> 1, x = d.get(4 * mid), y = d.get(4 * mid + 1);
       if (x < a || (x === a && y < b)) lo = mid + 1;
       else if (x > a || (x === a && y > b)) hi = mid - 1;
-      else return { off: d[4 * mid + 2], cnt: d[4 * mid + 3] };
+      else return { off: d.get(4 * mid + 2), cnt: d.get(4 * mid + 3) };
     }
     return null;
   }
@@ -764,9 +951,14 @@ export class KnowledgeStore {
   }
 
   _sigSim(i, qs, table) {
-    const S = table ?? this.sigs, off = i * SIG_WORDS;
+    const off = i * SIG_WORDS;
     let h = 0;
-    for (let w = 0; w < SIG_WORDS; w++) h += popcount32(S[off + w] ^ qs[w]);
+    if (table) { for (let w = 0; w < SIG_WORDS; w++) h += popcount32(table[off + w] ^ qs[w]); }
+    else {
+      // an item's SIG_WORDS words never cross a segment (SEGMENT_BYTES is a multiple of 32)
+      const S = this.sigs, a = S.seg(off), o = off & S.mask;
+      for (let w = 0; w < SIG_WORDS; w++) h += popcount32(a[o + w] ^ qs[w]);
+    }
     return 1 - (2 * h) / SIG_BITS;
   }
 
@@ -790,8 +982,8 @@ export class KnowledgeStore {
     const tcand = new Set(this.titleLookup(querySubject(query)));
     for (let b = 0; b < BANDS; b++) {
       const base = b * (65537 + this.A), v = (qs[b >>> 1] >>> ((b & 1) * 16)) & 0xffff;
-      const s = this.bands[base + v], e = this.bands[base + v + 1];
-      for (let x = s; x < e && tcand.size < 4096; x++) tcand.add(this.bands[base + 65537 + x]);
+      const s = this.bands.get(base + v), e = this.bands.get(base + v + 1);
+      for (let x = s; x < e && tcand.size < 4096; x++) tcand.add(this.bands.get(base + 65537 + x));
     }
     const tscored = [];
     for (const a of tcand) tscored.push([a, this._sigSim(this.titleItem(a), qs)]);
@@ -806,8 +998,8 @@ export class KnowledgeStore {
     const top = titles.slice(0, o.titleK);
     this.stats.titleHits += top.length ? 1 : 0;
     // candidates: every fact of the matched articles, then facts the text index finds
-    const stamp = ++this._stamp, cand = [], via = new Map();
-    const add = (i, how) => { if (this._mark[i] !== stamp) { this._mark[i] = stamp; cand.push(i); via.set(i, how); } };
+    const cand = [], via = new Map();
+    const add = (i, how) => { if (!via.has(i)) { cand.push(i); via.set(i, how); } };
     for (const t of top) for (const i of this.itemsOf(t.article)) add(i, 'hv.title');
     // (2) the text index: rarest word first, intersected while the intersection is not empty
     const posts = words.map((w) => [w, this.posting(w)]).filter(([, p]) => p && p.cnt > 0 && p.cnt <= o.maxPosting).sort((x, y) => x[1].cnt - y[1].cnt);
@@ -924,7 +1116,7 @@ export class KnowledgeStore {
     const cap = Number.isFinite(opts.n) ? opts.n : semantic.capacity;
     if (!Number.isFinite(cap)) throw new Error('knowledge.promote: the semantic tier states no capacity (its byte budget over its bytes per key)');
     const n = Math.min(cap, this.A);
-    const order = Array.from({ length: this.A }, (_, a) => a).sort((x, y) => this.art[3 * y + 1] - this.art[3 * x + 1] || x - y).slice(0, n);
+    const order = Array.from({ length: this.A }, (_, a) => a).sort((x, y) => this.art.get(3 * y + 1) - this.art.get(3 * x + 1) || x - y).slice(0, n);
     for (const a of order) semantic.learn('knowledge:' + this.title(a), keyVector(titleWords(this.title(a))));
     return order.length;
   }
