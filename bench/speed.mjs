@@ -15,12 +15,17 @@
 //
 //   node bench/speed.mjs [--organism organism/gen-0] [--ticks 50] [--warm 5]
 //                        [--shards 1,2,4,8,16,32] [--verify 4] [--skip-baseline]
+//                        [--ask-only] [--ask-repeats 1000]
+//
+// THE WHOLE ASK runs first (board 20 builder, queue item 3; the section "THE WHOLE ASK" below): act/prompt.mjs
+// ask() with the model off on the direct, solved, exact and knowledge routes, broken into its terms, with the
+// ASK_FAST control, in four more processes. Its rule (ASK_RULE) is the bench's bar: the tick arms state none.
 //
 // --verify W also runs W shards for --ticks ticks and compares the per cell fire count
 // against the single process arm, cell by cell.
 import { spawnSync } from 'node:child_process';
-import { writeFileSync, mkdirSync, readFileSync, existsSync, rmSync } from 'node:fs';
-import { tmpdir, availableParallelism } from 'node:os';
+import { writeFileSync, mkdirSync, readFileSync, existsSync, rmSync, readdirSync } from 'node:fs';
+import { tmpdir, availableParallelism, loadavg, freemem } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -674,10 +679,448 @@ async function armCluster(W) {
   };
 }
 
+// ================================================================ THE WHOLE ASK (board 20 builder)
+// Queue item 3 (docs/CLOUD-SESSION.md): "Efficiency: the whole ask in microseconds, measured, not the table
+// alone." His words, 2026-09-26 10:05 EDT: "Every request should be less than a token and it should be done in
+// microseconds". The arms above time the organism's table (ticks, runs); these time the ASK: act/prompt.mjs
+// ask(), MODEL OFF (provider 'null': no socket, and every socket the arm opens is counted), on a brain built in
+// memory the way act/ask-http.mjs (board 18) builds the one dilation.dev/ask answers from (seeds/basic.mjs,
+// ledger full, ring 4096, warmed the same way), on each sub-token route with a prompt that lands on it:
+//
+//   direct     'what is 17 times 23' after ONE learn into a memory/direct.mjs DirectTable: the table holds its
+//              exact answer and the ask is one lookup
+//   solved     a GSM8K question a template answers: reason/solved.mjs fillFromRows on the journals bench/ns.mjs
+//              fills from (bench/verdicts/**/*.jsonl, model-off grading journals left out), the first rows with
+//              a program until ASK_BAR.fill templates are kept; the question of the first template, asked the
+//              way bench/ns.mjs asks it (bench/public.mjs ALONE_PROMPT)
+//   exact      'what is 17 times 23' with no table: act/solve.mjs computes it on the early exact path
+//   knowledge  'What is photosynthesis?' with the direct step off, through the knowledge tier, when its store
+//              is ingested. When bench/fixtures/wiki/store is ABSENT the route prints "not measured: store absent
+//              on this host", and the knowledge lookup's cost is what an absent store costs every factual
+//              question: knowledgeReady() returning false (the fall-through row below carries it)
+//
+// Timing is bench/ns.mjs's: process.hrtime.bigint around each of 1,000 asks, each ask a fresh copy of the
+// string, two passes a process, beside an empty bracket, after an untimed warm up. Then the ask is broken
+// into its TERMS with the same clock, each term the same function ask() calls with the same arguments, timed
+// in the order ask() runs them (timeTermsInOrder): the route's own compute (the lookup, the match, solve()), the answer object, the promptHash inside
+// it, the ledger event write (brain.log with the very event the route wrote), the steps that miss before the
+// route (the direct step, the solved check, the spawn check), the async frame, and on the fall-through the
+// knowledge probe and recall. A term is 'answer' (the answer itself) or 'constant' (paid whatever the answer),
+// and the LARGEST CONSTANT TERM is printed by name with its microseconds and its share of the ask that pays it.
+// The three sub-token rows print the sum of their terms beside the whole ask (coverage), so a breakdown that
+// misses a term shows it.
+//
+// THE CONTROL: act/prompt.mjs ASK_FAST (askFast(false)) turns the intervention off. Four processes, one arm
+// each, interleaved: control, default, control, default (ASK_BAR.processes a setting, ASK_BAR.passes passes a
+// process). A route or a term moved only when the gap between the two settings' medians is larger than the
+// run-to-run noise band (the largest minus the smallest pass median, the wider of the two settings).
+//
+// THE RULE (ASK_RULE; the tick arms state none, so this is the bench's rule, written here and in the verdict,
+// never widened to pass). Load (os.loadavg, what `uptime` prints) and free RAM (os.freemem, what `free` prints)
+// are read before every timed pass and printed beside its numbers.
+export const ASK_BAR = Object.freeze({ repeats: 1000, passes: 2, processes: 2, warm: 500, limitUs: 1000, fill: 4, fillRows: 40 });
+export const ASK_ROUTES = Object.freeze(['direct', 'solved', 'exact', 'knowledge']);
+export const ASK_PROMPTS = Object.freeze({ direct: 'what is 17 times 23', exact: 'what is 17 times 23', knowledge: 'What is photosynthesis?' });
+export const STORE_ABSENT = 'not measured: store absent on this host';
+export const ASK_RULE = 'barMet is true when every MEASURED route of the four (direct, solved, exact, knowledge) has a whole ask() median under '
+  + ASK_BAR.limitUs + ' us in EVERY timed pass of the default arm (act/prompt.mjs ASK_FAST on, the shipped default: ' + ASK_BAR.processes
+  + ' processes x ' + ASK_BAR.passes + ' passes x ' + ASK_BAR.repeats + ' asks), model off, on this host, and the direct and exact routes are '
+  + 'both measured. A route not measured is printed as not measured and is not counted. The tick arms state no bar and are not part of '
+  + 'this rule. Never widened to pass.';
+const ASK_LANDS = Object.freeze({ direct: (a) => a.provenance.answer === 'direct', solved: (a) => a.provenance.answer === 'solved', exact: (a) => a.provenance.answer === 'exact', knowledge: (a) => a.provenance.tier === 'knowledge' });
+const FACT_MISS = 'factMiss';
+const FACT_MISS_LABEL = 'knowledge, store absent: the factual question falls through to recall and the null model cell (context, not a bar route)';
+const u = (rel) => pathToFileURL(path.join(ROOT, rel)).href;
+// a brain with no log(): an answer builder handed it builds the answer and its event and writes nothing (logAsk
+// returns at its first line), so the builder's term holds no part of the ledger write the next term times
+const NOLOG = Object.freeze({});
+const askFrame = async (x) => x;
+
+const r1 = (x) => (x === null || x === undefined || !Number.isFinite(x) ? null : Math.round(x * 10) / 10);
+const r2 = (x) => (x === null || x === undefined || !Number.isFinite(x) ? null : Math.round(x * 100) / 100);
+const r3 = (x) => (x === null || x === undefined || !Number.isFinite(x) ? null : Math.round(x * 1000) / 1000);
+/** Median, p90, p99, min, max and mean of nanosecond samples (a Float64Array, sorted in place). */
+export function nsDist(a) {
+  a.sort();
+  const q = (p) => a[Math.floor(p * (a.length - 1))];
+  let s = 0;
+  for (let i = 0; i < a.length; i++) s += a[i];
+  return a.length ? { n: a.length, median: r1(q(0.5)), p90: r1(q(0.9)), p99: r1(q(0.99)), min: r1(a[0]), max: r1(a[a.length - 1]), mean: r1(s / a.length) } : { n: 0, median: null };
+}
+function copies(text, n) { const out = new Array(n); for (let i = 0; i < n; i++) out[i] = Buffer.from(text).toString(); return out; }
+async function timeAsync(fn, text, reps) {
+  const cs = copies(text, reps), ns = new Float64Array(reps);
+  for (let i = 0; i < reps; i++) { const t0 = process.hrtime.bigint(); await fn(cs[i]); ns[i] = Number(process.hrtime.bigint() - t0); }
+  return ns;
+}
+// THE TERMS, timed in the order ask() runs them: one fresh copy of the prompt an iteration, handed to every term in
+// turn (as ask() hands one string down its path), each term in its own bracket. Timed this way each term runs among
+// the others, with the caches and the branch history the whole ask leaves it; timed alone in a loop of its own, a
+// term runs hot and the sum of the terms reads below the whole (measured on this host: 91.8% on the direct route).
+async function timeTermsInOrder(terms, text, reps) {
+  const cs = copies(text, reps), ns = terms.map(() => new Float64Array(reps));
+  for (let i = 0; i < reps; i++) {
+    const s = cs[i];
+    for (let j = 0; j < terms.length; j++) {
+      const t = terms[j];
+      if (t.async) { const t0 = process.hrtime.bigint(); await t.fn(s); ns[j][i] = Number(process.hrtime.bigint() - t0); }
+      else { const t0 = process.hrtime.bigint(); t.fn(s); ns[j][i] = Number(process.hrtime.bigint() - t0); }
+    }
+  }
+  return ns;
+}
+function timeEmptyBracket(reps) {
+  const ns = new Float64Array(reps);
+  for (let i = 0; i < reps; i++) { const t0 = process.hrtime.bigint(); ns[i] = Number(process.hrtime.bigint() - t0); }
+  return ns;
+}
+// the event a route wrote, as the route handed it to act/prompt.mjs logAsk ({ t, gen, type, ... }): the ledger's
+// own seq taken off, and rebuilt by JSON.parse so it has the fast properties of the literal the route builds
+function lastEvent(brain) {
+  const L = brain.ledger;
+  const e = L.ring[(L.seq - 1) % L.ringSize];
+  if (!e) return null;
+  const { seq, ...ev } = e;
+  return JSON.parse(JSON.stringify(ev));
+}
+function journalFilesUnder(dir) {
+  const out = [];
+  const walk = (d) => {
+    let es = [];
+    try { es = readdirSync(d, { withFileTypes: true }); } catch { return; }
+    for (const e of es) { const p = path.join(d, e.name); if (e.isDirectory()) walk(p); else if (e.isFile() && p.endsWith('.jsonl')) out.push(p); }
+  };
+  walk(dir);
+  return out.sort();
+}
+
+/**
+ * The solved route's memory: fillFromRows on the journals bench/ns.mjs fills from, the first rows with a program
+ * (at most rowsLimit a journal) until `want` templates are kept. Never reads state/.
+ * @returns {Promise<{memory, text, template, kept, rows, journals: string[], why: string|null}>}
+ */
+export async function fillSolvedForAsk({ want = ASK_BAR.fill, rowsLimit = ASK_BAR.fillRows, verdictsDir = path.join(HERE, 'verdicts') } = {}) {
+  const S = await import(u('reason/solved.mjs'));
+  let PUB = null, gsm = null;
+  try { PUB = await import(u('bench/public.mjs')); gsm = PUB.loadGsm8k(); } catch (e) { return { memory: null, text: null, template: null, kept: 0, rows: 0, journals: [], why: 'not measured: the GSM8K fixture is absent on this host (' + String(e && e.message || e).slice(0, 120) + ')' }; }
+  const { modelOffJournal } = await import(u('bench/ns.mjs'));
+  const byId = new Map(gsm.map((r) => [r.id, r]));
+  const memory = new S.SolvedMemory({ capacity: 64 });
+  const used = [];
+  let rows = 0, kept = 0;
+  for (const f of journalFilesUnder(verdictsDir)) {
+    if (kept >= want) break;
+    let text = '';
+    try { text = readFileSync(f, 'utf8'); } catch { continue; }
+    if (modelOffJournal(text)) continue;
+    const j = S.scanJournal(f);
+    if (!j.withProgram) continue;
+    const slice = j.rowsWithProgram.slice(0, rowsLimit);
+    const rep = await S.fillFromRows({ rows: slice, questionOf: (id) => (byId.get(id) ? byId.get(id).question : null), memory, file: path.relative(ROOT, f) });
+    rows += rep.rows; kept += rep.kept;
+    used.push(path.relative(ROOT, f).split(path.sep).join('/'));
+  }
+  const template = memory.templates.find((t) => t.source && byId.has(t.source.record)) || null;
+  if (!template) return { memory: null, text: null, template: null, kept, rows, journals: used, why: 'not measured: the fill kept no template from ' + rows + ' journal rows' };
+  const text = PUB.ALONE_PROMPT(byId.get(template.source.record).question);
+  return { memory, text, template: { id: template.id, record: template.source.record, fast: !!template.fast }, kept, rows, journals: used, why: null };
+}
+
+/**
+ * Everything one ask arm times: the brain, the routes (a prompt, its options, the planted ask that proves it
+ * lands, and its terms). fast false is the control (act/prompt.mjs askFast(false)).
+ */
+export async function askContext({ fast = true, solved = true, warm = ASK_BAR.warm, fill = {} } = {}) {
+  const P = await import(u('act/prompt.mjs'));
+  P.askFast(fast);
+  const { seedBasic } = await import(u('seeds/basic.mjs'));
+  const { DirectTable } = await import(u('memory/direct.mjs'));
+  const { solve } = await import(u('act/solve.mjs'));
+  const { askBySpawn } = await import(u('act/spawn.mjs'));
+  const { solvedFor } = await import(u('reason/solved.mjs'));
+  const T = P.ASK_TERMS;
+  const brain = seedBasic({ name: 'speed-ask', ledger: 'full', ledgerRing: 4096 });
+  const base = { provider: 'null', k: 5, events: [] };
+  // the warm up act/ask-http.mjs coldStart runs, on a throwaway brain with the ledger off
+  solve('what is 17 times 23'); solve('write a poem about the sea');
+  const wb = seedBasic({ name: 'warm', ledger: 'off' });
+  for (const q of ['what is 17 times 23', 'write a poem about the sea']) await P.ask(wb, q, base);
+
+  const routes = {};
+  const plant = async (name, text, opts) => {
+    const a = await P.ask(brain, text, opts);
+    const lands = name === FACT_MISS ? a.provenance.answer === 'memory' && !a.provenance.tier : ASK_LANDS[name](a);
+    return { a, lands, ev: lastEvent(brain) };
+  };
+  const common = (o, ev) => [
+    { name: 'ledger write', kind: 'constant', fn: () => T.logAsk(brain, ev) },
+    { name: 'ask frame (the async call and its await)', kind: 'constant', async: true, fn: (s) => askFrame(s) },
+  ];
+
+  // direct: ONE learn, then the lookup answers
+  const table = new DirectTable({ learn: true });
+  await P.ask(brain, ASK_PROMPTS.direct, { ...base, direct: table, learnDirect: true });
+  {
+    const opts = { ...base, direct: table };
+    const p = await plant('direct', ASK_PROMPTS.direct, opts);
+    const hit = P.directAnswer(ASK_PROMPTS.direct, opts);
+    routes.direct = !p.lands || !hit ? { measured: false, why: 'not measured: the learned question did not land on the direct table (' + p.a.provenance.answer + ')' } : {
+      measured: true, text: ASK_PROMPTS.direct, opts, provenance: p.a.provenance.answer, answer: String(p.a.exact ? p.a.exact.answer : ''), learned: table.n,
+      terms: [
+        { name: 'direct lookup (the key and the probe)', kind: 'answer', fn: (s) => P.directAnswer(s, opts) },
+        { name: 'answer object', kind: 'answer', fn: (s) => T.answerFromDirect(NOLOG, s, hit, Date.now()) },
+        { name: 'promptHash', kind: 'constant', within: 'answer object', fn: (s) => P.promptHash(s) },
+        ...common(opts, p.ev),
+      ],
+    };
+  }
+  // exact: the early exact path, no table
+  {
+    const opts = base;
+    const p = await plant('exact', ASK_PROMPTS.exact, opts);
+    const sv = solve(ASK_PROMPTS.exact);
+    routes.exact = !p.lands || !sv ? { measured: false, why: 'not measured: the question did not land on the exact path (' + p.a.provenance.answer + ')' } : {
+      measured: true, text: ASK_PROMPTS.exact, opts, provenance: p.a.provenance.answer, answer: String(p.a.exact.answer),
+      terms: [
+        { name: 'direct step, a miss', kind: 'constant', fn: (s) => P.directAnswer(s, opts) },
+        { name: 'solved check (solvedFor)', kind: 'constant', fn: () => solvedFor(opts) },
+        { name: 'spawn check (askBySpawn)', kind: 'constant', fn: (s) => askBySpawn(brain, s, opts) },
+        { name: 'solve (the exact path computes, with its clock)', kind: 'answer', fn: (s) => { const t0 = process.hrtime.bigint(); solve(s); return Number(process.hrtime.bigint() - t0); } },
+        { name: 'answer object', kind: 'answer', fn: (s) => T.answerFromExact(NOLOG, s, sv, 0, Date.now()) },
+        { name: 'promptHash', kind: 'constant', within: 'answer object', fn: (s) => P.promptHash(s) },
+        ...common(opts, p.ev),
+      ],
+    };
+  }
+  // solved: a template the fill from the journals kept
+  const filled = solved ? await fillSolvedForAsk(fill) : { memory: null, why: 'not measured: the solved route was left out of this run', kept: 0, rows: 0, journals: [] };
+  if (filled.memory) {
+    const mem = filled.memory;
+    const opts = { ...base, solved: mem };
+    const p = await plant('solved', filled.text, opts);
+    const m0 = mem.match(filled.text);
+    routes.solved = !p.lands || !m0.hit || m0.pending ? { measured: false, why: 'not measured: the template question did not land on the solved route (' + p.a.provenance.answer + (m0.pending ? ', a sandbox template' : '') + ')' } : {
+      measured: true, text: filled.text, opts, provenance: p.a.provenance.answer, answer: String(m0.answer), template: filled.template,
+      terms: [
+        { name: 'direct step, a miss', kind: 'constant', fn: (s) => P.directAnswer(s, opts) },
+        { name: 'solved check (solvedFor)', kind: 'constant', fn: () => solvedFor(opts) },
+        { name: 'solved match (with its clock)', kind: 'answer', fn: (s) => { const t0 = process.hrtime.bigint(); mem.match(s); return Number(process.hrtime.bigint() - t0); } },
+        { name: 'answer object', kind: 'answer', fn: (s) => T.answerFromSolved(NOLOG, s, m0, 0, Date.now()) },
+        { name: 'promptHash', kind: 'constant', within: 'answer object', fn: (s) => P.promptHash(s) },
+        ...common(opts, p.ev),
+      ],
+    };
+  } else routes.solved = { measured: false, why: filled.why };
+  // knowledge: the tier when its store is ingested; else not measured, and the fall-through carries the probe
+  const ready = P.knowledgeReady();
+  if (ready.ok) {
+    const opts = { ...base, direct: false };
+    const p = await plant('knowledge', ASK_PROMPTS.knowledge, opts);
+    routes.knowledge = !p.lands ? { measured: false, why: 'not measured: the question did not land on the knowledge tier (' + p.a.provenance.answer + ')' } : {
+      measured: true, text: ASK_PROMPTS.knowledge, opts, provenance: 'knowledge', answer: String(p.a.knowledge && p.a.knowledge.answer),
+      terms: [
+        { name: 'knowledge lookup (knowledgeAnswer)', kind: 'answer', fn: (s) => P.knowledgeAnswer(s, opts) },
+        { name: 'knowledge probe (knowledgeReady)', kind: 'constant', fn: () => P.knowledgeReady() },
+        { name: 'ledger write', kind: 'constant', fn: () => T.logAsk(brain, p.ev) },
+      ],
+      partial: 'the knowledge row names its lookup, probe and ledger write; its coverage is not claimed',
+    };
+  } else {
+    routes.knowledge = { measured: false, why: STORE_ABSENT, reason: ready.reason ? path.relative(ROOT, String(ready.reason)) : null };
+    const opts = base;
+    const p = await plant(FACT_MISS, ASK_PROMPTS.knowledge, opts);
+    routes[FACT_MISS] = !p.lands ? { measured: false, why: 'not measured: the factual question did not fall through to memory (' + p.a.provenance.answer + ')' } : {
+      measured: true, context: true, label: FACT_MISS_LABEL, text: ASK_PROMPTS.knowledge, opts, provenance: p.a.provenance.answer,
+      terms: [
+        { name: 'direct step, a miss', kind: 'constant', fn: (s) => P.directAnswer(s, opts) },
+        { name: 'solved check (solvedFor)', kind: 'constant', fn: () => solvedFor(opts) },
+        { name: 'spawn check (askBySpawn)', kind: 'constant', fn: (s) => askBySpawn(brain, s, opts) },
+        { name: 'solve (the early exact path, a miss)', kind: 'constant', fn: (s) => solve(s) },
+        // the knowledge block ran solve() again on the same text; ASK_FAST reuses the early miss, so the default arm pays nothing here
+        ...(fast ? [] : [{ name: 'solve again (the knowledge block)', kind: 'constant', fn: (s) => solve(s) }]),
+        { name: 'knowledge probe (knowledgeReady() returning false: the store absent)', kind: 'constant', fn: () => P.knowledgeReady() },
+        { name: 'recall', kind: 'answer', fn: (s) => P.recall(brain, s, opts) },
+        { name: 'promptHash', kind: 'constant', fn: (s) => P.promptHash(s) },
+        ...common(opts, p.ev),
+      ],
+    };
+  }
+  // the untimed warm up: every ask and every term, so the timed passes see the steady state
+  for (const r of Object.values(routes)) {
+    if (!r.measured) continue;
+    await timeAsync((s) => P.ask(brain, s, r.opts), r.text, warm);
+    await timeTermsInOrder(r.terms, r.text, warm);
+  }
+  const meta = Object.fromEntries(Object.entries(routes).map(([k, r]) => [k, r.measured ? { measured: true, context: !!r.context, label: r.label || null, text: r.text.length > 80 ? r.text.slice(0, 77) + '...' : r.text, chars: r.text.length, provenance: r.provenance, answer: r.answer ?? null, template: r.template || null, learned: r.learned ?? null } : { measured: false, why: r.why }]));
+  return { P, brain, fast, routes, meta, fill: { kept: filled.kept, rows: filled.rows, journals: filled.journals, template: filled.template || null, why: filled.why || null } };
+}
+
+/** One timed pass: the load and free RAM first, the empty bracket, then every measured route's whole ask and its terms. */
+export async function askPass(ctx, reps = ASK_BAR.repeats) {
+  const out = { at: new Date().toISOString(), load1: r2(loadavg()[0]), freeMB: Math.round(freemem() / 1048576), empty: nsDist(timeEmptyBracket(reps)), routes: {} };
+  for (const [name, r] of Object.entries(ctx.routes)) {
+    if (!r.measured) { out.routes[name] = { measured: false, why: r.why }; continue; }
+    const whole = nsDist(await timeAsync((s) => ctx.P.ask(ctx.brain, s, r.opts), r.text, reps));
+    const tn = await timeTermsInOrder(r.terms, r.text, reps);
+    const terms = r.terms.map((t, j) => ({ name: t.name, kind: t.kind, within: t.within || null, ...nsDist(tn[j]) }));
+    out.routes[name] = { measured: true, whole, terms };
+  }
+  return out;
+}
+
+async function armAsk() {
+  const fast = arg('fast', 'on') !== 'off';
+  const reps = Math.max(1, parseInt(arg('ask-repeats', String(ASK_BAR.repeats)), 10) || ASK_BAR.repeats);
+  // MODEL OFF, and proven off: every socket this process opens is counted (the verdict carries the count)
+  const net = await import('node:net');
+  let sockets = 0;
+  const connect0 = net.Socket.prototype.connect;
+  net.Socket.prototype.connect = function counted(...a) { sockets++; return connect0.apply(this, a); };
+  // the solved route is the fill's own memory: BRAIN_SOLVED=1 would put the default one (state/self/ns-templates.jsonl)
+  // in front of every other ask, so the arm runs without it (and this bench never reads state/)
+  const solvedEnv = process.env.BRAIN_SOLVED === undefined ? 'unset' : 'unset for the arm (was set)';
+  delete process.env.BRAIN_SOLVED;
+  const ctx = await askContext({ fast });
+  const passes = [];
+  for (let p = 0; p < ASK_BAR.passes; p++) passes.push(await askPass(ctx, reps));
+  return { arm: 'ask', fast, pid: process.pid, node: process.version, reps, passes, routes: ctx.meta, fill: ctx.fill, sockets, brainSolved: solvedEnv };
+}
+
+// ---------------------------------------------------------------- the ask's summary (a pure function of the arms)
+const midOf = (xs) => { const s = xs.filter(Number.isFinite).sort((a, b) => a - b); if (!s.length) return null; const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+const bandOf = (xs) => { const s = xs.filter(Number.isFinite); return s.length ? Math.max(...s) - Math.min(...s) : null; };
+function setStats(passMediansNs) {
+  const us = passMediansNs.filter(Number.isFinite).map((x) => x / 1000);
+  return { passMediansUs: us.map(r3), medianUs: r3(midOf(us)), noiseUs: r3(bandOf(us)), maxUs: us.length ? r3(Math.max(...us)) : null, passes: us.length };
+}
+
+/**
+ * The ask section of the verdict from the arms' timing tables: each route's median (the median of its pass
+ * medians) and noise band a setting, each term's, the coverage of the sub-token rows, the gap and whether it
+ * moved, the largest constant term before (control) and after (default), the one line, and the bar.
+ * @param {object[]} arms each { fast, passes: [{ load1, freeMB, empty, routes: { name: { measured, whole, terms } } }], routes }
+ */
+export function summarizeAsk(arms, { limitUs = ASK_BAR.limitUs } = {}) {
+  const settings = { control: arms.filter((a) => a.fast === false), default: arms.filter((a) => a.fast === true) };
+  const passesOf = (k) => settings[k].flatMap((a) => a.passes);
+  const meta = Object.assign({}, ...arms.map((a) => a.routes || {}));
+  const names = [...ASK_ROUTES, ...Object.keys(meta).filter((k) => !ASK_ROUTES.includes(k))];
+  const routes = {};
+  for (const name of names) {
+    const row = { route: name, context: !!(meta[name] && meta[name].context), label: meta[name] && meta[name].label || null, meta: meta[name] || null };
+    for (const k of ['control', 'default']) {
+      const ps = passesOf(k).map((p) => p.routes[name]).filter(Boolean);
+      const measured = ps.length > 0 && ps.every((p) => p.measured);
+      if (!measured) { row[k] = { measured: false, why: (ps.find((p) => !p.measured) || meta[name] || {}).why || 'not measured' }; continue; }
+      const whole = setStats(ps.map((p) => p.whole.median));
+      const termNames = [];
+      for (const p of ps) for (const t of p.terms) if (!termNames.includes(t.name)) termNames.push(t.name);
+      const terms = termNames.map((tn) => {
+        const got = ps.map((p) => p.terms.find((t) => t.name === tn)).filter(Boolean);
+        const first = got[0];
+        return { name: tn, kind: first.kind, within: first.within, ...setStats(got.map((t) => t.median)), shareOfWhole: whole.medianUs ? r3(midOf(got.map((t) => t.median / 1000)) / whole.medianUs) : null };
+      });
+      const top = terms.filter((t) => !t.within);
+      const sumUs = r3(top.reduce((s, t) => s + (t.medianUs || 0), 0));
+      // the whole ask was read inside ONE clock bracket and the k terms inside k: the k - 1 extra empty brackets
+      // (their median, read in the same passes) come off the sum before it is set beside the whole
+      const emptyUs = midOf(passesOf(k).map((p) => (p.empty ? p.empty.median : null)).filter(Number.isFinite)) / 1000;
+      const extraUs = Number.isFinite(emptyUs) ? r3(Math.max(0, top.length - 1) * emptyUs) : 0;
+      const netUs = r3(sumUs - extraUs);
+      row[k] = { measured: true, whole, terms, sumOfTermsUs: sumUs, extraBracketsUs: extraUs, netSumUs: netUs, coverage: whole.medianUs ? r3(netUs / whole.medianUs) : null, unattributedUs: r3(whole.medianUs - netUs) };
+    }
+    if (row.control && row.default && row.control.measured && row.default.measured) {
+      const noise = Math.max(row.control.whole.noiseUs || 0, row.default.whole.noiseUs || 0);
+      const gap = row.control.whole.medianUs - row.default.whole.medianUs;
+      row.gap = { us: r3(gap), noiseUs: r3(noise), moved: Math.abs(gap) > noise, faster: gap > noise };
+    }
+    routes[name] = row;
+  }
+  const largest = (k) => {
+    let best = null;
+    for (const r of Object.values(routes)) {
+      const s = r[k];
+      if (!s || !s.measured) continue;
+      for (const t of s.terms) if (t.kind === 'constant' && Number.isFinite(t.medianUs) && (!best || t.medianUs > best.us)) best = { name: t.name, route: r.route, us: t.medianUs, noiseUs: t.noiseUs, share: t.shareOfWhole, wholeUs: s.whole.medianUs };
+    }
+    return best;
+  };
+  const before = largest('control'), after = largest('default');
+  // and on each route, the largest constant term that route's asks pay, before and after
+  const byRoute = {};
+  for (const r of Object.values(routes)) {
+    const pick = (k) => { const s = r[k]; if (!s || !s.measured) return null; let m = null; for (const t of s.terms) if (t.kind === 'constant' && Number.isFinite(t.medianUs) && (!m || t.medianUs > m.us)) m = { name: t.name, us: t.medianUs, noiseUs: t.noiseUs, share: t.shareOfWhole }; return m; };
+    const b = pick('control'), a = pick('default');
+    if (b || a) byRoute[r.route] = { before: b, after: a };
+  }
+  // the same term, by name and route, in the other setting (the before term measured after the intervention)
+  const termIn = (k, route, name) => { const s = routes[route] && routes[route][k]; const t = s && s.measured ? s.terms.find((x) => x.name === name) : null; return t ? { us: t.medianUs, noiseUs: t.noiseUs, share: t.shareOfWhole } : null; };
+  const beforeAfter = before ? termIn('default', before.route, before.name) : null;
+  const termGap = before && beforeAfter ? { us: r3(before.us - beforeAfter.us), noiseUs: r3(Math.max(before.noiseUs || 0, beforeAfter.noiseUs || 0)) } : null;
+  if (termGap) termGap.moved = Math.abs(termGap.us) > termGap.noiseUs;
+  // every constant term, before and after, with its gap against its own noise
+  const constants = [];
+  for (const r of Object.values(routes)) {
+    if (!(r.control && r.control.measured && r.default && r.default.measured)) continue;
+    const c = r.control.terms, d = r.default.terms;
+    const tn = [...new Set([...c, ...d].filter((t) => t.kind === 'constant').map((t) => t.name))];
+    for (const n of tn) {
+      const a = c.find((t) => t.name === n), b = d.find((t) => t.name === n);
+      const noise = Math.max(a ? a.noiseUs || 0 : 0, b ? b.noiseUs || 0 : 0);
+      const gap = (a ? a.medianUs : 0) - (b ? b.medianUs : 0);
+      constants.push({ route: r.route, name: n, beforeUs: a ? a.medianUs : null, afterUs: b ? b.medianUs : 0, notPaidAfter: !b, gapUs: r3(gap), noiseUs: r3(noise), moved: Math.abs(gap) > noise });
+    }
+  }
+  const lineUs = (name) => { const s = routes[name] && routes[name].default; return s && s.measured ? String(r2(s.whole.medianUs)) : null; };
+  const kw = routes.knowledge && routes.knowledge.default;
+  const knowledgeText = kw && kw.measured ? String(r2(kw.whole.medianUs)) : (kw && kw.why) || STORE_ABSENT;
+  const line = 'ask median us: direct ' + (lineUs('direct') ?? routeWhy(routes.direct)) + ', solved ' + (lineUs('solved') ?? routeWhy(routes.solved)) + ', exact ' + (lineUs('exact') ?? routeWhy(routes.exact)) + ', knowledge ' + knowledgeText;
+  const barRoutes = ASK_ROUTES.filter((n) => routes[n] && routes[n].default && routes[n].default.measured);
+  const worst = Object.fromEntries(barRoutes.map((n) => [n, routes[n].default.whole.maxUs]));
+  const barMet = barRoutes.includes('direct') && barRoutes.includes('exact') && barRoutes.every((n) => routes[n].default.whole.passes > 0 && routes[n].default.whole.maxUs < limitUs);
+  const conditions = arms.map((a) => ({ fast: a.fast, pid: a.pid ?? null, passes: a.passes.map((p) => ({ at: p.at, load1: p.load1, freeMB: p.freeMB, emptyBracketNs: p.empty ? p.empty.median : null })) }));
+  return { line, routes, barRoutes, worstPassUs: worst, limitUs, barMet, rule: ASK_RULE, largest: { before, beforeMeasuredAfter: beforeAfter, gap: termGap, after, byRoute }, constants, conditions, sockets: arms.reduce((s, a) => s + (a.sockets || 0), 0) };
+}
+function routeWhy(r) { const s = r && (r.default || r.control); return s && !s.measured ? s.why : 'not measured'; }
+
+/** The printed table of the ask section (the lines the verdict keeps). */
+export function askLines(sum) {
+  const L = [];
+  const f = (x) => (x === null || x === undefined ? 'n/a' : String(x));
+  L.push('THE WHOLE ASK, model off (provider null), microseconds: the median of the pass medians, and the noise band (largest minus smallest pass median)');
+  for (const c of sum.conditions) for (const [i, p] of c.passes.entries()) L.push('  conditions ' + (c.fast ? 'default (ASK_FAST on) ' : 'control (ASK_FAST off)') + ' pid ' + c.pid + ' pass ' + (i + 1) + ': load ' + p.load1 + ', free RAM ' + p.freeMB + ' MB, empty bracket median ' + p.emptyBracketNs + ' ns, at ' + p.at);
+  for (const r of Object.values(sum.routes)) {
+    const label = r.context ? r.route + ' (' + r.label + ')' : r.route;
+    if (!r.default.measured && !r.control.measured) { L.push(label + ': ' + (r.default.why || r.control.why)); continue; }
+    const m = r.meta || {};
+    L.push(label + ': "' + m.text + '" (' + m.chars + ' chars) lands on ' + m.provenance + (m.answer ? ', answer ' + m.answer : '') + (m.template ? ', template ' + m.template.id + ' of ' + m.template.record : ''));
+    for (const k of ['control', 'default']) {
+      const s = r[k];
+      if (!s || !s.measured) continue;
+      L.push('  ' + k.padEnd(8) + ' whole ask ' + f(s.whole.medianUs) + ' us (passes ' + s.whole.passMediansUs.join(' / ') + ', noise ' + f(s.whole.noiseUs) + ')'
+        + (r.context ? '' : '; the terms sum to ' + f(s.sumOfTermsUs) + ' us, less ' + f(s.extraBracketsUs) + ' us of extra empty brackets = ' + f(s.netSumUs) + ' us = ' + f(r3(100 * s.coverage)) + '% of it'));
+      for (const t of s.terms) L.push('    ' + (t.within ? '  of which ' : '') + t.name.padEnd(t.within ? 60 : 70) + String(f(t.medianUs)).padStart(9) + ' us  noise ' + f(t.noiseUs).padStart(7) + '  ' + t.kind + (t.shareOfWhole !== null ? '  ' + f(r3(100 * t.shareOfWhole)) + '% of the ask' : ''));
+    }
+    if (r.gap) L.push('  gap control minus default ' + r.gap.us + ' us against a noise band of ' + r.gap.noiseUs + ' us: ' + (r.gap.moved ? (r.gap.faster ? 'MOVED (faster)' : 'MOVED (slower)') : 'not moved'));
+  }
+  const b = sum.largest.before, a = sum.largest.after, ba = sum.largest.beforeMeasuredAfter, g = sum.largest.gap;
+  if (b) L.push('largest constant term BEFORE (control): ' + b.name + ' on ' + b.route + ', ' + b.us + ' us (noise ' + b.noiseUs + '), ' + f(r3(100 * b.share)) + '% of that ask (' + b.wholeUs + ' us)');
+  if (b && ba) L.push('  the same term AFTER (default): ' + ba.us + ' us (noise ' + ba.noiseUs + '), ' + f(r3(100 * ba.share)) + '% of that ask; gap ' + g.us + ' us against a noise band of ' + g.noiseUs + ' us: ' + (g.moved ? 'MOVED' : 'not moved'));
+  else if (b) L.push('  the same term AFTER (default): not paid');
+  if (a) L.push('largest constant term AFTER (default): ' + a.name + ' on ' + a.route + ', ' + a.us + ' us (noise ' + a.noiseUs + '), ' + f(r3(100 * a.share)) + '% of that ask (' + a.wholeUs + ' us)');
+  for (const [rn, x] of Object.entries(sum.largest.byRoute || {})) L.push('  on ' + rn + ': largest constant term before ' + (x.before ? x.before.name + ' ' + x.before.us + ' us' : 'n/a') + ', after ' + (x.after ? x.after.name + ' ' + x.after.us + ' us' : 'n/a'));
+  for (const c of sum.constants) if (c.moved || c.notPaidAfter) L.push('  constant term moved: ' + c.route + ' / ' + c.name + ' ' + c.beforeUs + ' us to ' + (c.notPaidAfter ? 'not paid' : c.afterUs + ' us') + ' (gap ' + c.gapUs + ', noise ' + c.noiseUs + ')');
+  L.push('sockets opened by the ask arms: ' + sum.sockets + ' (model off)');
+  L.push(sum.line);
+  L.push('bar (' + sum.rule + '): worst default pass per measured route ' + Object.entries(sum.worstPassUs).map(([k, v]) => k + ' ' + v + ' us').join(', ') + ' against ' + sum.limitUs + ' us: barMet ' + sum.barMet);
+  return L;
+}
+
 // ---------------------------------------------------------------- child arm entry
 const ARM = arg('arm', null);
 if (ARM) {
-  const run = ARM === 'cluster' ? armCluster(Number(arg('shards', 4)))
+  const run = ARM === 'ask' ? armAsk()
+    : ARM === 'cluster' ? armCluster(Number(arg('shards', 4)))
     : ARM === 'profile' ? armProfile()
     : ARM === 'hvbundle' ? armHvBundle()
     : ARM === 'bundlekernel' ? armBundleKernel()
@@ -725,10 +1168,120 @@ function barrierLine(o) {
     + '  cut delay histogram=' + JSON.stringify(f.cutDelayHist));
 }
 
+// ---------------------------------------------------------------- the bench: the ask, then the tick arms
+// (board 20 builder) node bench/speed.mjs runs THE WHOLE ASK first (four processes: control, default, control,
+// default) and then the tick arms of the table when the organism is on this host. The verdict is written ONCE, at
+// the end: bench/verdicts/speed.json, or speed-partial.json (isTheBar false) for a narrow run (--ask-only, or
+// --ask-repeats under ASK_BAR.repeats). When the tick arms will run, the ask is written first to speed-partial.json
+// so a failure in the long tick half loses nothing. When the organism is absent (it is gitignored; genome/emit.mjs
+// emits it) the tick arms print "not measured" and the table's fields of the previous verdict are carried in the
+// verdict verbatim under tickArms.carriedFrom (their own at, node and threads), never as this run's measurements.
+export const ASK_OWNED = Object.freeze(['at', 'command', 'node', 'threads', 'platform', 'author', 'isTheBar', 'barMet', 'rule', 'split', 'statement', 'askLine', 'largestConstantTerm', 'ask', 'tickArms']);
+
+/** The table's fields of a previous verdict, and where they came from, for a run whose tick arms did not run. */
+export function carryTick(prev) {
+  if (!prev || typeof prev !== 'object') return { fields: {}, carriedFrom: null };
+  const fields = {};
+  for (const [k, v] of Object.entries(prev)) if (!ASK_OWNED.includes(k)) fields[k] = v;
+  const was = prev.tickArms && prev.tickArms.carriedFrom ? prev.tickArms.carriedFrom
+    : Object.keys(fields).length ? { at: prev.at ?? null, node: prev.node ?? null, threads: prev.threads ?? null, organism: prev.organism ?? null } : null;
+  return { fields, carriedFrom: was };
+}
+
+/** The verdict's own fields for the ask (everything but the carried or measured table). */
+export function askVerdictFields({ started, command, sum, arms, lines, narrow, tickReason, carriedFrom = null, threads = availableParallelism() }) {
+  const R = sum.routes, f = (x) => (x === null || x === undefined ? 'n/a' : String(x));
+  const rn = (n) => (n === FACT_MISS ? 'fall-through (a factual question with the knowledge store absent)' : n);
+  const b = sum.largest.before, a = sum.largest.after, ba = sum.largest.beforeMeasuredAfter, g = sum.largest.gap;
+  const gaps = ASK_ROUTES.filter((n) => R[n] && R[n].gap).map((n) => n + ' ' + R[n].gap.us + ' us (noise ' + R[n].gap.noiseUs + ', ' + (R[n].gap.moved ? (R[n].gap.faster ? 'moved, faster' : 'moved, slower') : 'not moved') + ')');
+  const ledger = sum.constants.filter((c) => c.name === 'ledger write' && ASK_ROUTES.includes(c.route)).map((c) => c.route + ' ' + c.beforeUs + ' to ' + c.afterUs + ' us' + (c.moved ? '' : ' (not moved)'));
+  const hash = sum.constants.filter((c) => c.name === 'promptHash' && ASK_ROUTES.includes(c.route)).map((c) => c.route + ' ' + c.beforeUs + ' to ' + c.afterUs + ' us' + (c.moved ? '' : ' (not moved)'));
+  const cov = ASK_ROUTES.filter((n) => R[n] && R[n].default && R[n].default.measured && R[n].default.coverage !== null && !R[n].context).map((n) => n + ' ' + f(r3(100 * R[n].default.coverage)) + '%');
+  const loads = sum.conditions.flatMap((c) => c.passes.map((p) => p.load1)), frees = sum.conditions.flatMap((c) => c.passes.map((p) => p.freeMB));
+  const statement = 'On this host (' + process.platform + ', ' + threads + ' threads, node ' + process.version + '), model off (provider null; the ask arms opened '
+    + sum.sockets + ' sockets), the whole act/prompt.mjs ask() on a brain built in memory the way act/ask-http.mjs builds it measured: ' + sum.line
+    + ' (the median of ' + (sum.routes.direct && sum.routes.direct.default && sum.routes.direct.default.whole ? sum.routes.direct.default.whole.passes : 0) + ' pass medians of the default arm, ASK_FAST on, '
+    + ASK_BAR.processes + ' processes x ' + ASK_BAR.passes + ' passes x ' + (arms[0] ? arms[0].reps : ASK_BAR.repeats) + ' asks; load ' + Math.min(...loads) + ' to ' + Math.max(...loads) + ', free RAM ' + Math.min(...frees) + ' to ' + Math.max(...frees) + ' MB at the passes). '
+    + (b ? 'The largest constant term before the intervention (the control arm, ASK_FAST off) was the ' + b.name + ' on the ' + rn(b.route) + ' ask at ' + b.us + ' us (' + f(r3(100 * b.share)) + '% of that ask, ' + b.wholeUs + ' us); '
+      + (ba ? 'with ASK_FAST on the same term measured ' + ba.us + ' us, a gap of ' + g.us + ' us against a noise band of ' + g.noiseUs + ' us (' + (g.moved ? 'moved' : 'not moved') + '). ' : 'with ASK_FAST on it is not paid. ') : '')
+    + (a ? 'After it the largest constant term is the ' + a.name + ' on the ' + rn(a.route) + ' ask at ' + a.us + ' us (' + f(r3(100 * a.share)) + '% of that ask). ' : '')
+    + (ledger.length ? 'The ledger write went ' + ledger.join(', ') + '; the promptHash ' + hash.join(', ') + '. ' : '')
+    + (gaps.length ? 'The whole ask, control minus default: ' + gaps.join(', ') + '. ' : '')
+    + (cov.length ? 'The terms, timed in the order ask() runs them, sum to ' + cov.join(', ') + ' of the whole ask. ' : '')
+    + 'The rule: ' + ASK_RULE + ' Worst default pass per measured route: ' + Object.entries(sum.worstPassUs).map(([k, v]) => k + ' ' + v + ' us').join(', ') + '; barMet ' + sum.barMet + '. '
+    + (tickReason ? 'The tick arms were ' + tickReason + (carriedFrom ? '; the table\'s fields are carried from the verdict at ' + carriedFrom.at + ' (node ' + carriedFrom.node + ', ' + carriedFrom.threads + ' threads), not re-measured.' : '.') : 'The tick arms ran in this same run.')
+    + (narrow ? ' A narrow run: isTheBar false.' : '');
+  const routesOut = {};
+  for (const [n, r] of Object.entries(R)) routesOut[n] = { context: r.context, label: r.label, meta: r.meta, control: r.control, default: r.default, gap: r.gap || null };
+  return {
+    at: started, command, node: process.version, threads, platform: process.platform + '/' + process.arch,
+    author: 'board 20 builder (the ask section, its rule and the verdict writer)',
+    isTheBar: !narrow, barMet: sum.barMet, rule: ASK_RULE,
+    split: {
+      development: 'the four prompts and the fill: "what is 17 times 23" (direct after one learn, and exact), "What is photosynthesis?" (knowledge), the solved question of the first template the fill kept from the journals; the terms and the intervention were written looking at these prompts timed on this host',
+      heldOut: 'none: a timing bench; no answer is graded, each planted ask is checked to land on its route (its provenance) and its answer is printed',
+      contaminated: false,
+      why: 'the intervention holds nothing prompt specific (a hash function, one object copy less, a probe without a throw, a solve() result reused on the same string), so it cannot have been fitted to these prompts',
+    },
+    statement,
+    askLine: sum.line,
+    largestConstantTerm: { before: b, sameTermAfter: ba, gap: g, after: a },
+    ask: { bar: ASK_BAR, prompts: ASK_PROMPTS, routes: routesOut, constants: sum.constants, conditions: sum.conditions, sockets: sum.sockets, worstPassUs: sum.worstPassUs, fill: arms[0] ? arms[0].fill : null, arms: arms.map((x) => ({ fast: x.fast, pid: x.pid, node: x.node, reps: x.reps, sockets: x.sockets })), printed: lines },
+  };
+}
+
+function writeVerdict(name, verdict) {
+  mkdirSync(path.join(HERE, 'verdicts'), { recursive: true });
+  writeFileSync(path.join(HERE, 'verdicts', name), JSON.stringify(verdict, null, 2) + '\n');
+  console.log('\nwrote bench/verdicts/' + name);
+}
+
 async function main() {
   if (ARM) return;
   const started = new Date().toISOString();
-  console.log('CONDITIONS at=' + started + ' organism=' + ORGANISM + ' ticks=' + TICKS + ' warm=' + WARM
+  const command = 'node ' + ['bench/speed.mjs', ...argv].join(' ');
+  const askOnly = has('ask-only');
+  const askReps = Math.max(1, parseInt(arg('ask-repeats', String(ASK_BAR.repeats)), 10) || ASK_BAR.repeats);
+  const narrow = askOnly || askReps < ASK_BAR.repeats;
+  console.log('CONDITIONS (the ask) at=' + started + ' command=' + command + ' node=' + process.version + ' threads=' + availableParallelism()
+    + ' platform=' + process.platform + '/' + process.arch + ' load=' + loadavg().map((x) => x.toFixed(2)).join(',') + ' freeMB=' + Math.round(freemem() / 1048576)
+    + ' askRepeats=' + askReps + ' model=off(provider null)');
+  const arms = [];
+  for (let i = 0; i < ASK_BAR.processes; i++) {
+    for (const fast of [false, true]) {
+      const r = child(['--arm', 'ask', '--fast', fast ? 'on' : 'off', '--ask-repeats', String(askReps)], 'ask ' + (fast ? 'default' : 'control') + ' ' + (i + 1));
+      arms.push(r);
+      console.log('ask arm ' + (fast ? 'default (ASK_FAST on) ' : 'control (ASK_FAST off)') + ' process ' + (i + 1) + ' pid ' + r.pid + ': '
+        + Object.entries(r.passes[r.passes.length - 1].routes).map(([n, x]) => n + ' ' + (x.measured ? r3(x.whole.median / 1000) + ' us' : 'not measured')).join(', ') + ' (last pass), sockets ' + r.sockets);
+    }
+  }
+  const sum = summarizeAsk(arms);
+  const lines = askLines(sum);
+  console.log('');
+  for (const l of lines) console.log(l);
+  const organismDir = path.isAbsolute(ORGANISM) ? ORGANISM : path.join(ROOT, ORGANISM);
+  const tickReason = askOnly ? 'not measured: --ask-only' : (!existsSync(organismDir) ? 'not measured: ' + ORGANISM + ' absent on this host (gitignored; genome/emit.mjs emits it)' : null);
+  if (tickReason) {
+    console.log('\nTICK ARMS ' + tickReason);
+    let prev = null;
+    try { prev = JSON.parse(readFileSync(path.join(HERE, 'verdicts', 'speed.json'), 'utf8')); } catch { prev = null; }
+    const carried = carryTick(prev);
+    if (carried.carriedFrom) console.log('  the table\'s fields are carried from bench/verdicts/speed.json at ' + carried.carriedFrom.at + ' (node ' + carried.carriedFrom.node + ', ' + carried.carriedFrom.threads + ' threads), not re-measured');
+    const own = askVerdictFields({ started, command, sum, arms, lines, narrow, tickReason, carriedFrom: carried.carriedFrom });
+    writeVerdict(narrow ? 'speed-partial.json' : 'speed.json', { ...carried.fields, ...own, tickArms: { measured: false, reason: tickReason, carriedFrom: carried.carriedFrom } });
+    return;
+  }
+  const own = askVerdictFields({ started, command, sum, arms, lines, narrow: true, tickReason: 'still to run when this partial was written' });
+  writeVerdict('speed-partial.json', { ...own, isTheBar: false, tickArms: { measured: false, reason: 'the tick arms run after this partial' } });
+  const tick = await tickMain(started);
+  const fields = askVerdictFields({ started, command, sum, arms, lines, narrow, tickReason: null });
+  writeVerdict(narrow ? 'speed-partial.json' : 'speed.json', { ...tick, ...fields, tickArms: { measured: true } });
+}
+
+// The tick arms of the table (the bench as it was before the ask section): the verdict's table fields, returned
+// to main() instead of written (board 20 builder).
+async function tickMain(started) {
+  console.log('\nCONDITIONS at=' + started + ' organism=' + ORGANISM + ' ticks=' + TICKS + ' warm=' + WARM
     + ' threads=' + availableParallelism() + ' node=' + process.version + ' platform=' + process.platform + '/' + process.arch
     + ' shardCounts=' + SHARDS.join(',') + ' armsAreSeparateProcesses=yes headlineRepeats=2'
     + ' tickLoop=one-tick-per-event-loop-turn hvHeapMB=' + (HV_HEAP_MB === null ? 'core-default' : HV_HEAP_MB) + '/' + (HV_HEAP_MB_CLUSTER === null ? 'core-default' : HV_HEAP_MB_CLUSTER) + '(cluster)'
@@ -1010,8 +1563,7 @@ async function main() {
     barrier: clusterRows.map(r => ({ shards: r.shards, ...r.barrier })).concat([{ shards: ceiling.shards, cut: 'zero', ...ceiling.barrier }]),
     verify: clusterRows.map(r => r.verify).filter(Boolean),
   };
-  writeFileSync(path.join(HERE, 'verdicts', 'speed.json'), JSON.stringify(verdict, null, 2));
-  console.log('\nwrote bench/verdicts/speed.json');
+  return verdict;
 }
 
 // A tick of the headline arm, split into five slices that add up to the wall clock. Four of

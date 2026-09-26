@@ -1,0 +1,869 @@
+{
+  "at": "2026-09-26T21:55:30.548Z",
+  "command": "node bench/spawn.mjs --census 20",
+  "node": "v24.9.0",
+  "by": "board 20 builder",
+  "isTheBar": true,
+  "barMet": true,
+  "verdict": "GREEN",
+  "statement": "Model off, 20 census rounds (self/census-round.mjs) read the gap ledger (state/self/gaps.jsonl) and picked the red bench missed:grid-library.json of kind grid primitive. The real arm spawned one grid primitive through genome/spawn.mjs for the first development item the held cells missed (15 rounds had one) and kept 14; the placebo arm spawned one random grid primitive per round by the same path and kept 4. A cell was kept only when the bench, re-run on a copy of the state with growth off, answered more of its 386 development items with no item lost and no fewer of 30 control rows right. Kept per hour of the 97.10 s census wall: real 519.04, placebo 148.30, bootstrap 95% band of the difference [222.45, 519.04]. The 381 held-out items were answered by cells 0 times at open and 0 at close. The kept lineage holds 46 cells, 30 edges and 22 kinds (it started at 17 cells). The bar (kept per hour above the placebo with the band above zero, at least 20 rounds) is met.",
+  "split": {
+    "development": {
+      "what": "the red bench read from the gap ledger (missed:grid-library.json, kind grid primitive): its development items decide every keep",
+      "ledger": "state/self/gaps.jsonl",
+      "bench": "missed:grid-library.json",
+      "items": "ARC-AGI-1 training split, every task with one test input",
+      "n": 386
+    },
+    "heldOut": {
+      "what": "ARC-AGI-1 evaluation split, every task with one test input: never read inside a round, graded by the same cells-only path at census open and close; the control rows (bench/answer.mjs algebra, sequence, grid, 30 questions) are read only as a no-regression check",
+      "n": 381
+    },
+    "contaminated": false
+  },
+  "bar": {
+    "rule": "keptPerHour > placeboKeptPerHour and the bootstrap 95% band of their difference above zero, at n >= 20 rounds",
+    "rounds": 20
+  },
+  "n": 20,
+  "rounds": 20,
+  "roundsAsked": 20,
+  "cells": 46,
+  "edges": 30,
+  "kinds": 22,
+  "spawnRegion": 29,
+  "spawnKinds": {
+    "grid.colormap": 5,
+    "task.tap": 14,
+    "grid.crop": 2,
+    "grid.tile": 2,
+    "grid.rotate": 2,
+    "grid.flip": 2,
+    "grid.transpose": 1,
+    "grid.translate": 1
+  },
+  "kept": 14,
+  "keptPerHour": 519.039984443518,
+  "placeboKept": 4,
+  "placeboKeptPerHour": 148.29713841243375,
+  "perHourOf": "the whole census wall (wallSeconds): open with the spawn operator's planning, every round of both arms, close",
+  "armKeptPerHour": 169681.23676128106,
+  "armPlaceboKeptPerHour": 52789.982467351925,
+  "realSeconds": 0.29702753800000936,
+  "placeboSeconds": 0.27277902599997467,
+  "wallSeconds": 97.102345697,
+  "band": {
+    "lo": 222.4457076186506,
+    "hi": 519.039984443518,
+    "resamples": 2000
+  },
+  "noise": {
+    "devRuns": [
+      0,
+      0
+    ],
+    "diff": 0
+  },
+  "bench": {
+    "id": "missed:grid-library.json",
+    "kind": "grid primitive",
+    "measured": null,
+    "bar": null,
+    "verdictFile": "bench/verdicts/grid-library.json",
+    "source": "arc",
+    "skipped": []
+  },
+  "ledger": {
+    "from": "state/self/gaps.jsonl",
+    "lines": 268
+  },
+  "start": "a copy of the live state/dilation/snapshot.json (the live state is never written)",
+  "startCensus": {
+    "cells": 17,
+    "edges": 13,
+    "kinds": 14,
+    "spawnRegion": 0,
+    "spawnKinds": {}
+  },
+  "placeboCensus": {
+    "cells": 25,
+    "edges": 17,
+    "kinds": 19,
+    "spawnRegion": 8,
+    "spawnKinds": {
+      "grid.crop": 1,
+      "task.tap": 4,
+      "grid.rotate": 1,
+      "grid.tile": 1,
+      "grid.flip": 1
+    }
+  },
+  "heldOut": {
+    "n": 381,
+    "before": 0,
+    "after": 0,
+    "placeboAfter": 0
+  },
+  "development": {
+    "n": 386,
+    "before": 0,
+    "after": 16,
+    "placeboAfter": 4
+  },
+  "controls": {
+    "n": 30,
+    "before": 30,
+    "after": 30
+  },
+  "planSeconds": 96.34453751899993,
+  "openSeconds": 96.523569246,
+  "workDeleted": true,
+  "modelCalls": 0,
+  "completed": true,
+  "error": null,
+  "perRound": [
+    {
+      "round": 1,
+      "real": {
+        "target": "training/0d3d703e",
+        "steps": [
+          "spawn.grid/colormap{\"1\":5,\"2\":6,\"3\":4,\"4\":3,\"5\":1,\"6\":2,\"8\":9,\"9\":8}"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 0,
+        "after": 1,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 0 -> 1 with no regression",
+        "ms": 19.248116000002483
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/colormap{\"1\":2,\"2\":7,\"3\":1}"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 0,
+        "after": 0,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (0 -> 0)",
+        "ms": 13.43889499999932
+      }
+    },
+    {
+      "round": 2,
+      "real": {
+        "target": "training/1cf80156",
+        "steps": [
+          "spawn.grid/cropBBox"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 1,
+        "after": 2,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 1 -> 2 with no regression",
+        "ms": 16.54806600000302
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/roll(1,1)"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 0,
+        "after": 0,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (0 -> 0)",
+        "ms": 28.194839000003412
+      }
+    },
+    {
+      "round": 3,
+      "real": {
+        "target": "training/28bf18c6",
+        "steps": [
+          "spawn.grid/cropBBox",
+          "spawn.grid/cropBBox/tile2x1"
+        ],
+        "spawned": 2,
+        "edges": 2,
+        "before": 2,
+        "after": 3,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 2 -> 3 with no regression",
+        "ms": 37.1585330000089
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/roll(1,-1)",
+          "spawn.grid/roll(1,-1)/roll(0,-1)"
+        ],
+        "spawned": 3,
+        "edges": 2,
+        "before": 0,
+        "after": 0,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (0 -> 0)",
+        "ms": 27.38179400000081
+      }
+    },
+    {
+      "round": 4,
+      "real": {
+        "target": "training/3c9b0459",
+        "steps": [
+          "spawn.grid/rotate2"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 3,
+        "after": 5,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 3 -> 5 with no regression",
+        "ms": 27.34558900000411
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/cropBBox"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 0,
+        "after": 1,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 0 -> 1 with no regression",
+        "ms": 13.435276999996859
+      }
+    },
+    {
+      "round": 5,
+      "real": {
+        "target": "training/67a3c6ac",
+        "steps": [
+          "spawn.grid/flipH"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 5,
+        "after": 6,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 5 -> 6 with no regression",
+        "ms": 17.12393200000224
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/roll(-1,0)"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 1,
+        "after": 1,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (1 -> 1)",
+        "ms": 15.847343000001274
+      }
+    },
+    {
+      "round": 6,
+      "real": {
+        "target": "training/68b16354",
+        "steps": [
+          "spawn.grid/flipV"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 6,
+        "after": 7,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 6 -> 7 with no regression",
+        "ms": 17.32675599999493
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/rotate3"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 1,
+        "after": 2,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 1 -> 2 with no regression",
+        "ms": 11.245054999992135
+      }
+    },
+    {
+      "round": 7,
+      "real": {
+        "target": "training/7468f01a",
+        "steps": [
+          "spawn.grid/flipH",
+          "spawn.grid/flipH/cropBBox"
+        ],
+        "spawned": 2,
+        "edges": 2,
+        "before": 7,
+        "after": 8,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 7 -> 8 with no regression",
+        "ms": 17.56471099999908
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/tile2x2",
+          "spawn.grid/tile2x2/roll(1,0)"
+        ],
+        "spawned": 3,
+        "edges": 2,
+        "before": 2,
+        "after": 2,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (2 -> 2)",
+        "ms": 16.702934999993886
+      }
+    },
+    {
+      "round": 8,
+      "real": {
+        "target": "training/74dd1130",
+        "steps": [
+          "spawn.grid/transpose"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 8,
+        "after": 10,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 8 -> 10 with no regression",
+        "ms": 16.2541249999922
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/tile2x1"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 2,
+        "after": 3,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 2 -> 3 with no regression",
+        "ms": 10.732573999994202
+      }
+    },
+    {
+      "round": 9,
+      "real": {
+        "target": "training/a416b8f3",
+        "steps": [
+          "spawn.grid/tile2x1"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 10,
+        "after": 11,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 10 -> 11 with no regression",
+        "ms": 16.0045250000112
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/flipV"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 3,
+        "after": 4,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 3 -> 4 with no regression",
+        "ms": 11.196022000003722
+      }
+    },
+    {
+      "round": 10,
+      "real": {
+        "target": "training/a79310a0",
+        "steps": [
+          "spawn.grid/roll(0,1)",
+          "spawn.grid/roll(0,1)/colormap{\"0\":0,\"8\":2}"
+        ],
+        "spawned": 3,
+        "edges": 2,
+        "before": 11,
+        "after": 12,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 11 -> 12 with no regression",
+        "ms": 16.352966999984346
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/flipV",
+          "spawn.grid/flipV/colormap{\"5\":3,\"6\":2,\"9\":7}"
+        ],
+        "spawned": 2,
+        "edges": 2,
+        "before": 4,
+        "after": 4,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (4 -> 4)",
+        "ms": 10.085169999991194
+      }
+    },
+    {
+      "round": 11,
+      "real": {
+        "target": "training/aabf363d",
+        "steps": [
+          "spawn.grid/colormap{\"0\":0,\"2\":4,\"3\":6,\"4\":0,\"6\":0}"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 12,
+        "after": 12,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (12 -> 12)",
+        "ms": 18.6266639999958
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/colormap{\"4\":6}"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 4,
+        "after": 4,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (4 -> 4)",
+        "ms": 10.473332999987178
+      }
+    },
+    {
+      "round": 12,
+      "real": {
+        "target": "training/b1948b0a",
+        "steps": [
+          "spawn.grid/colormap{\"6\":2,\"7\":7}"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 12,
+        "after": 13,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 12 -> 13 with no regression",
+        "ms": 20.52178699999058
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/colormap{\"7\":4}"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 4,
+        "after": 4,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (4 -> 4)",
+        "ms": 15.590080000009038
+      }
+    },
+    {
+      "round": 13,
+      "real": {
+        "target": "training/c8f0f002",
+        "steps": [
+          "spawn.grid/colormap{\"1\":1,\"7\":5,\"8\":8}"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 13,
+        "after": 14,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 13 -> 14 with no regression",
+        "ms": 19.88736899998912
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/colormap{\"2\":3}"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 4,
+        "after": 4,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (4 -> 4)",
+        "ms": 12.885769000000437
+      }
+    },
+    {
+      "round": 14,
+      "real": {
+        "target": "training/d511f180",
+        "steps": [
+          "spawn.grid/colormap{\"1\":1,\"2\":2,\"3\":3,\"4\":4,\"5\":8,\"6\":6,\"7\":7,\"8\":5,\"9\":9}"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 14,
+        "after": 15,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 14 -> 15 with no regression",
+        "ms": 18.07120200000645
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/colormap{\"0\":9,\"1\":0,\"9\":3}"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 4,
+        "after": 4,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (4 -> 4)",
+        "ms": 12.060831000009784
+      }
+    },
+    {
+      "round": 15,
+      "real": {
+        "target": "training/ed36ccf7",
+        "steps": [
+          "spawn.grid/rotate3"
+        ],
+        "spawned": 2,
+        "edges": 1,
+        "before": 15,
+        "after": 16,
+        "moved": true,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": true,
+        "why": "the bench moved 15 -> 16 with no regression",
+        "ms": 18.921962000022177
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/rotate3"
+        ],
+        "spawned": 0,
+        "edges": 0,
+        "before": 4,
+        "after": null,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": null,
+        "kept": false,
+        "why": "the brain already holds every cell of this circuit",
+        "ms": 1.7557010000018636
+      }
+    },
+    {
+      "round": 16,
+      "real": {
+        "target": null,
+        "steps": [],
+        "spawned": 0,
+        "edges": 0,
+        "before": 16,
+        "after": null,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": null,
+        "kept": false,
+        "why": "no development item left that the held cells miss and the spawn operator expresses as a grid primitive",
+        "ms": 0.030140000002575107
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/flipH",
+          "spawn.grid/flipH/tile1x2",
+          "spawn.grid/flipH/tile1x2/rotate2"
+        ],
+        "spawned": 4,
+        "edges": 3,
+        "before": 4,
+        "after": 4,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (4 -> 4)",
+        "ms": 13.965134999991278
+      }
+    },
+    {
+      "round": 17,
+      "real": {
+        "target": null,
+        "steps": [],
+        "spawned": 0,
+        "edges": 0,
+        "before": 16,
+        "after": null,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": null,
+        "kept": false,
+        "why": "no development item left that the held cells miss and the spawn operator expresses as a grid primitive",
+        "ms": 0.012993000011192635
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/rotate3",
+          "spawn.grid/rotate3/tile1x2",
+          "spawn.grid/rotate3/tile1x2/tile2x1"
+        ],
+        "spawned": 3,
+        "edges": 3,
+        "before": 4,
+        "after": 4,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (4 -> 4)",
+        "ms": 13.87502300000051
+      }
+    },
+    {
+      "round": 18,
+      "real": {
+        "target": null,
+        "steps": [],
+        "spawned": 0,
+        "edges": 0,
+        "before": 16,
+        "after": null,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": null,
+        "kept": false,
+        "why": "no development item left that the held cells miss and the spawn operator expresses as a grid primitive",
+        "ms": 0.010317999986000359
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/rotate3",
+          "spawn.grid/rotate3/rotate2"
+        ],
+        "spawned": 2,
+        "edges": 2,
+        "before": 4,
+        "after": 4,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (4 -> 4)",
+        "ms": 18.769595999998273
+      }
+    },
+    {
+      "round": 19,
+      "real": {
+        "target": null,
+        "steps": [],
+        "spawned": 0,
+        "edges": 0,
+        "before": 16,
+        "after": null,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": null,
+        "kept": false,
+        "why": "no development item left that the held cells miss and the spawn operator expresses as a grid primitive",
+        "ms": 0.008222000004025176
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/tile1x2",
+          "spawn.grid/tile1x2/rotate1",
+          "spawn.grid/tile1x2/rotate1/transpose"
+        ],
+        "spawned": 4,
+        "edges": 3,
+        "before": 4,
+        "after": 4,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": 30,
+        "kept": false,
+        "why": "the bench did not move (4 -> 4)",
+        "ms": 13.282802000001539
+      }
+    },
+    {
+      "round": 20,
+      "real": {
+        "target": null,
+        "steps": [],
+        "spawned": 0,
+        "edges": 0,
+        "before": 16,
+        "after": null,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": null,
+        "kept": false,
+        "why": "no development item left that the held cells miss and the spawn operator expresses as a grid primitive",
+        "ms": 0.009560999998939224
+      },
+      "placebo": {
+        "target": null,
+        "steps": [
+          "spawn.grid/rotate3"
+        ],
+        "spawned": 0,
+        "edges": 0,
+        "before": 4,
+        "after": null,
+        "moved": false,
+        "lost": 0,
+        "controlBefore": 30,
+        "controlAfter": null,
+        "kept": false,
+        "why": "the brain already holds every cell of this circuit",
+        "ms": 1.8608519999979762
+      }
+    }
+  ]
+}

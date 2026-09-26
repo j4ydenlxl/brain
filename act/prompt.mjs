@@ -51,11 +51,13 @@
 // MODEL's answer and a child's stdout, because a model that was shown a key can echo it back
 // and a program can print one; the scrub is by shape, on text, and never by comparing
 // against a value read out of process.env.
-import { createHash } from 'node:crypto';
+import cryptoModule, { createHash } from 'node:crypto';
+const hashOnce = cryptoModule.hash; // crypto.hash (Node 21.7 and later), absent on an older Node: promptHash falls back (board 20 builder)
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { bundle, hvFromSeed } from '../core/signal.mjs';
+import { Brain } from '../core/brain.mjs'; // Brain.prototype.log: the ledger write's one-copy path knows the core log (board 20 builder)
 // The knowledge tier (Board 9). Importing the module opens nothing: it is classes and pure
 // functions, and the store itself is opened by knowledgeStore() below on the first question
 // that needs it, and only when the ingest has finished.
@@ -111,6 +113,9 @@ const ctxOf = (brain) => ({ brain, t: brain && brain.clock ? brain.clock.t : 0, 
 // ---------------------------------------------------------------- the prompt as data
 /** A stable short digest of a prompt. The ledger carries this instead of the words. */
 export function promptHash(s) {
+  // the one-shot digest (crypto.hash, Node 21.7 and later): the same sha256 hex without a Hash object, about half
+  // the cost measured by bench/speed.mjs; ASK_FAST off keeps the Hash object for the control arm (board 20 builder)
+  if (ASK_FAST.on && typeof hashOnce === 'function') return hashOnce('sha256', String(s ?? ''), 'hex').slice(0, 16);
   return createHash('sha256').update(String(s ?? ''), 'utf8').digest('hex').slice(0, 16);
 }
 
@@ -523,6 +528,28 @@ export function isMathSubject(s) {
   return (t.match(/[a-z]+/g) || []).every((w) => MATH_WORDS.has(w));
 }
 
+// THE ASK'S CONSTANT TERMS (board 20 builder, queue item 3 "the whole ask in microseconds", bench/speed.mjs).
+// bench/speed.mjs breaks one ask() into its terms with process.hrtime.bigint and names the largest one that is
+// not the answer itself: on a host with the knowledge store ABSENT it is the knowledge lookup a factual question
+// pays on every ask, because an absent store is (on purpose) never remembered as absent. These parts of it, and
+// the hash every route pays, were pure overhead and are cut here, with nothing about what ask() returns or
+// records changed (the ledger write, the fourth, is at logAsk below):
+//   the probe    knowledgeReady() read meta.json and caught the ENOENT: a thrown uv error with its stack,
+//                on every factual question. fs.existsSync answers the same question without a throw, and
+//                the object returned is the one the catch returns. A store that appears later is still
+//                picked up by the next question.
+//   the solve    the knowledge block ran solve(text) again on a prompt the early exact path had just run
+//                solve() on and got nothing from (the same string, and solve() is a pure function of it).
+//                The early path's null is reused.
+//   the hash     promptHash() made a Hash object per prompt (createHash, update, digest); crypto.hash gives the
+//                same sha256 hex in one call. Every route pays it once (the answer's promptHash and the ledger's).
+// ASK_FAST.on is the switch: true by default; askFast(false) turns these and the ledger write's one copy off for the control arm
+// (bench/speed.mjs runs the same measurement with it off and on, in separate processes). It is a plain
+// module flag, never read from the environment: this file reads no environment variable (its header).
+export const ASK_FAST = { on: true };
+/** Turn the ask's fast path (ASK_FAST) on or off, or read it with no argument (board 20 builder). @param {boolean} [on] @returns {boolean} the previous state */
+export function askFast(on) { const was = ASK_FAST.on; if (on !== undefined) ASK_FAST.on = !!on; return was; }
+
 /**
  * Whether dir holds a finished ingest: meta.json of the store format this build reads, and every
  * file it lists present at the size it lists. Reads one small JSON file and stats a dozen.
@@ -530,8 +557,11 @@ export function isMathSubject(s) {
  * @returns {{ok: boolean, reason: string|null}}
  */
 export function knowledgeReady(dir = KNOWLEDGE_DIR) {
+  const metaFile = path.join(dir, 'meta.json');
+  // The absent store without the throw (board 20 builder, see ASK_FAST): the same object the catch returns.
+  if (ASK_FAST.on && !fs.existsSync(metaFile)) return { ok: false, reason: 'no finished ingest at ' + dir + ' (no readable meta.json)' };
   let meta;
-  try { meta = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8')); } catch { return { ok: false, reason: 'no finished ingest at ' + dir + ' (no readable meta.json)' }; }
+  try { meta = JSON.parse(fs.readFileSync(metaFile, 'utf8')); } catch { return { ok: false, reason: 'no finished ingest at ' + dir + ' (no readable meta.json)' }; }
   if (meta.format !== KNOWLEDGE_FORMAT) return { ok: false, reason: 'store format ' + meta.format + ', this build reads ' + KNOWLEDGE_FORMAT };
   for (const [f, bytes] of Object.entries(meta.files || {})) {
     let size = -1;
@@ -711,8 +741,8 @@ function answerFromDirect(brain, text, d, started) {
     ticks: 0,
     hops: [],
   };
-  answer.seq = logEvent(brain, {
-    type: ASK_EVENT, by: SURFACE, route: 'lookup', promptHash: hash, promptChars: text.length, from: answer.from,
+  answer.seq = logAsk(brain, {
+    t: clockT(brain), gen: clockGen(brain), type: ASK_EVENT, by: SURFACE, route: 'lookup', promptHash: hash, promptChars: text.length, from: answer.from,
     provenance: 'direct', source: e.source, tier: 'direct', lookupNs: d.lookupNs, method: answer.provenance.method, modelAgreed: null,
     memoryHits: 0, webPages: 0, redacted: 0, provider: null, model: null, llmMs: 0, llmOk: false, ms: answer.ms,
   });
@@ -749,8 +779,8 @@ function answerFromExact(brain, text, s, ns, started) {
     ticks: 0,
     hops: [],
   };
-  answer.seq = logEvent(brain, {
-    type: ASK_EVENT, by: SURFACE, route: 'direct', promptHash: hash, promptChars: text.length, from: 'exact',
+  answer.seq = logAsk(brain, {
+    t: clockT(brain), gen: clockGen(brain), type: ASK_EVENT, by: SURFACE, route: 'direct', promptHash: hash, promptChars: text.length, from: 'exact',
     provenance: 'exact', tier: 'exact', exactNs: ns, method: s.method, modelAgreed: null,
     memoryHits: 0, webPages: 0, redacted: 0, provider: null, model: null, llmMs: 0, llmOk: false, ms: answer.ms,
   });
@@ -789,8 +819,8 @@ function answerFromSolved(brain, text, m, ns, started) {
     ticks: 0,
     hops: [],
   };
-  answer.seq = logEvent(brain, {
-    type: ASK_EVENT, by: SURFACE, route: 'solved', promptHash: hash, promptChars: text.length, from: 'solved',
+  answer.seq = logAsk(brain, {
+    t: clockT(brain), gen: clockGen(brain), type: ASK_EVENT, by: SURFACE, route: 'solved', promptHash: hash, promptChars: text.length, from: 'solved',
     provenance: 'solved', tier: 'solved', solvedNs: ns, via: m.via, run: m.run, template: t.id, method: null, modelAgreed: null,
     memoryHits: 0, webPages: 0, redacted: 0, provider: null, model: null, llmMs: 0, llmOk: false, ms: answer.ms,
   });
@@ -907,8 +937,8 @@ function answerFromKnowledge(brain, text, k, opts, started) {
     hops: [],
   };
   // The ledger line carries the hash and the confidence, never the title: a title is the words.
-  answer.seq = logEvent(brain, {
-    type: ASK_EVENT, by: SURFACE, route: 'knowledge', promptHash: hash, promptChars: text.length, from: 'memory',
+  answer.seq = logAsk(brain, {
+    t: clockT(brain), gen: clockGen(brain), type: ASK_EVENT, by: SURFACE, route: 'knowledge', promptHash: hash, promptChars: text.length, from: 'memory',
     provenance: 'memory', tier: 'knowledge', confidence: k.confidence, floor: k.floor, method: null, modelAgreed: null,
     memoryHits: r.memoryHits, webPages: r.webPages, redacted: 0,
     provider: null, model: null, llmMs: 0, llmOk: false, ms: answer.ms,
@@ -1296,6 +1326,7 @@ export async function ask(brain, prompt, opts = {}) {
   // With opts.prose the model is still asked and the late path keeps its record of agreement. It sits AFTER
   // the spawn route on purpose: a question that can grow the cells that answer it (his P7) grows them first;
   // the calculator answers what no circuit carried.
+  let earlyMiss = false; // the early exact path ran solve(text0) and it computed nothing (board 20 builder)
   if (opts.prose !== true && opts.exact !== false) {
     const t0 = process.hrtime.bigint();
     const early = solve(text0);
@@ -1304,6 +1335,7 @@ export async function ask(brain, prompt, opts = {}) {
       learnDirect(opts, text0, { exact: early });
       return answerFromExact(brain, text0, early, ns, started0);
     }
+    earlyMiss = true;
   }
   const route = routeFor(brain, opts);
   const started = Date.now();
@@ -1313,7 +1345,8 @@ export async function ask(brain, prompt, opts = {}) {
   let solved, known = null;
   const fq = opts.knowledge !== false ? factQuestion(text) : null;
   if (fq) {
-    solved = solve(text);
+    // the early path's null is reused when it ran on this same text (ASK_FAST, board 20 builder)
+    solved = earlyMiss && ASK_FAST.on ? null : solve(text);
     if (!solved) known = knowledgeAnswer(text, opts);
     if (known && known.above && opts.prose !== true) {
       learnDirect(opts, text, { known, fq });
@@ -1389,8 +1422,8 @@ export async function ask(brain, prompt, opts = {}) {
   // The tier was asked and fell below its floor (or prose asked for the model): the attempt is
   // part of the record, so a reader sees what memory offered before the model was asked.
   if (known) answer.provenance.knowledge = known;
-  answer.seq = logEvent(brain, {
-    type: ASK_EVENT, by: SURFACE, route: 'direct', promptHash: hash, promptChars: text.length, from: answer.from,
+  answer.seq = logAsk(brain, {
+    t: clockT(brain), gen: clockGen(brain), type: ASK_EVENT, by: SURFACE, route: 'direct', promptHash: hash, promptChars: text.length, from: answer.from,
     provenance, method: answer.provenance.method, modelAgreed: agreed,
     memoryHits: r.memoryHits, webPages: r.webPages, redacted: scrubbed.redacted,
     provider: llm.provider, model: llm.model, llmMs: llm.ms, llmOk: llm.ok, ms: answer.ms,
@@ -1402,6 +1435,28 @@ export async function ask(brain, prompt, opts = {}) {
 function logEvent(brain, ev) {
   if (!brain || typeof brain.log !== 'function') return -1;
   return brain.log(ev);
+}
+
+// THE LEDGER WRITE IN ONE COPY (board 20 builder, queue item 3, bench/speed.mjs, ASK_FAST). An ask's event was
+// copied twice on its way to the ring: brain.log spread it under { t, gen } and Ledger.append spread that under
+// { seq }, about half the write each (measured by bench/speed.mjs). The ask routes now build the literal with t and
+// gen already first, so on a core Brain (its own log, a clock, a ledger) the fast path hands it straight to
+// ledger.append: the ring, the counts, the file line and the listeners get the same object, key for key and in the
+// same order ({ seq, t, gen, type, ... }), and the one copy left is the ledger's. ledgerLevel 'off' writes nothing,
+// as brain.log does. ASK_FAST off (the control) sends the same literal through brain.log, whose { t, gen } are the
+// same values in the same places. A brain of any other shape (a test's stub, a subclass with its own log) is handed
+// the event it always got, without t and gen.
+const CORE_LOG = Brain.prototype.log;
+const clockT = (b) => (b && b.clock ? b.clock.t : 0);
+const clockGen = (b) => (b && b.clock ? b.clock.gen : 0);
+function logAsk(brain, ev) {
+  if (!brain || typeof brain.log !== 'function') return -1;
+  if (brain.log === CORE_LOG && brain.clock && brain.ledger) {
+    if (!ASK_FAST.on) return brain.log(ev);
+    return brain.ledgerLevel === 'off' ? -1 : brain.ledger.append(ev);
+  }
+  const { t, gen, ...rest } = ev;
+  return brain.log(rest);
 }
 
 // ---------------------------------------------------------------- plan
@@ -1553,3 +1608,9 @@ async function applySpawn(brain, p, opts) {
     stdout: out.text.slice(0, cap), redacted: out.redacted, kind: PROPOSAL_KIND,
   };
 }
+
+// THE ASK PATH'S TERMS (board 20 builder, queue item 3, bench/speed.mjs). The answer builders ask() calls on
+// its three sub-token routes and its ledger write, exported only so the bench can time each one with the same
+// clock ask() is timed with (a brain whose log() does nothing gives a builder alone; logAsk with the route's own
+// event gives the ledger write alone). Nothing in the tree calls them through here.
+export const ASK_TERMS = Object.freeze({ answerFromDirect, answerFromExact, answerFromSolved, logAsk });

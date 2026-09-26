@@ -1,7 +1,4 @@
 {
-  "at": "2026-09-17T12:20:33.710Z",
-  "node": "v24.15.0",
-  "threads": 32,
   "organism": "organism/gen-0",
   "ticks": 50,
   "warm": 5,
@@ -5723,5 +5720,1765 @@
       "identical": true,
       "firstDiff": null
     }
-  ]
+  ],
+  "at": "2026-09-26T21:57:47.681Z",
+  "command": "node bench/speed.mjs",
+  "node": "v24.9.0",
+  "threads": 4,
+  "platform": "linux/x64",
+  "author": "board 20 builder (the ask section, its rule and the verdict writer)",
+  "isTheBar": true,
+  "barMet": true,
+  "rule": "barMet is true when every MEASURED route of the four (direct, solved, exact, knowledge) has a whole ask() median under 1000 us in EVERY timed pass of the default arm (act/prompt.mjs ASK_FAST on, the shipped default: 2 processes x 2 passes x 1000 asks), model off, on this host, and the direct and exact routes are both measured. A route not measured is printed as not measured and is not counted. The tick arms state no bar and are not part of this rule. Never widened to pass.",
+  "split": {
+    "development": "the four prompts and the fill: \"what is 17 times 23\" (direct after one learn, and exact), \"What is photosynthesis?\" (knowledge), the solved question of the first template the fill kept from the journals; the terms and the intervention were written looking at these prompts timed on this host",
+    "heldOut": "none: a timing bench; no answer is graded, each planted ask is checked to land on its route (its provenance) and its answer is printed",
+    "contaminated": false,
+    "why": "the intervention holds nothing prompt specific (a hash function, one object copy less, a probe without a throw, a solve() result reused on the same string), so it cannot have been fitted to these prompts"
+  },
+  "statement": "On this host (linux, 4 threads, node v24.9.0), model off (provider null; the ask arms opened 0 sockets), the whole act/prompt.mjs ask() on a brain built in memory the way act/ask-http.mjs builds it measured: ask median us: direct 4.87, solved 4.01, exact 7.05, knowledge not measured: store absent on this host (the median of 4 pass medians of the default arm, ASK_FAST on, 2 processes x 2 passes x 1000 asks; load 1.54 to 1.61, free RAM 14567 to 14728 MB at the passes). The largest constant term before the intervention (the control arm, ASK_FAST off) was the knowledge probe (knowledgeReady() returning false: the store absent) on the fall-through (a factual question with the knowledge store absent) ask at 9.003 us (5.5% of that ask, 162.852 us); with ASK_FAST on the same term measured 1.858 us, a gap of 7.145 us against a noise band of 3.264 us (moved). After it the largest constant term is the solve (the early exact path, a miss) on the fall-through (a factual question with the knowledge store absent) ask at 5.049 us (4% of that ask). The ledger write went direct 0.861 to 0.48 us, solved 0.934 to 0.481 us, exact 0.891 to 0.508 us; the promptHash direct 0.745 to 0.318 us, solved 1.059 to 0.502 us, exact 0.731 to 0.327 us. The whole ask, control minus default: direct 1.387 us (noise 1.749, not moved), solved 2.577 us (noise 3.185, not moved), exact 1.607 us (noise 7.276, not moved). The terms, timed in the order ask() runs them, sum to direct 96%, solved 96.6%, exact 99% of the whole ask. The rule: barMet is true when every MEASURED route of the four (direct, solved, exact, knowledge) has a whole ask() median under 1000 us in EVERY timed pass of the default arm (act/prompt.mjs ASK_FAST on, the shipped default: 2 processes x 2 passes x 1000 asks), model off, on this host, and the direct and exact routes are both measured. A route not measured is printed as not measured and is not counted. The tick arms state no bar and are not part of this rule. Never widened to pass. Worst default pass per measured route: direct 5.183 us, solved 4.756 us, exact 7.502 us; barMet true. The tick arms were not measured: organism/gen-0 absent on this host (gitignored; genome/emit.mjs emits it); the table's fields are carried from the verdict at 2026-09-17T12:20:33.710Z (node v24.15.0, 32 threads), not re-measured.",
+  "askLine": "ask median us: direct 4.87, solved 4.01, exact 7.05, knowledge not measured: store absent on this host",
+  "largestConstantTerm": {
+    "before": {
+      "name": "knowledge probe (knowledgeReady() returning false: the store absent)",
+      "route": "factMiss",
+      "us": 9.003,
+      "noiseUs": 3.264,
+      "share": 0.055,
+      "wholeUs": 162.852
+    },
+    "sameTermAfter": {
+      "us": 1.858,
+      "noiseUs": 0.384,
+      "share": 0.015
+    },
+    "gap": {
+      "us": 7.145,
+      "noiseUs": 3.264,
+      "moved": true
+    },
+    "after": {
+      "name": "solve (the early exact path, a miss)",
+      "route": "factMiss",
+      "us": 5.049,
+      "noiseUs": 0.893,
+      "share": 0.04,
+      "wholeUs": 127.082
+    }
+  },
+  "ask": {
+    "bar": {
+      "repeats": 1000,
+      "passes": 2,
+      "processes": 2,
+      "warm": 500,
+      "limitUs": 1000,
+      "fill": 4,
+      "fillRows": 40
+    },
+    "prompts": {
+      "direct": "what is 17 times 23",
+      "exact": "what is 17 times 23",
+      "knowledge": "What is photosynthesis?"
+    },
+    "routes": {
+      "direct": {
+        "context": false,
+        "label": null,
+        "meta": {
+          "measured": true,
+          "context": false,
+          "label": null,
+          "text": "what is 17 times 23",
+          "chars": 19,
+          "provenance": "direct",
+          "answer": "391",
+          "template": null,
+          "learned": 1
+        },
+        "control": {
+          "measured": true,
+          "whole": {
+            "passMediansUs": [
+              6.974,
+              5.529,
+              7.276,
+              5.527
+            ],
+            "medianUs": 6.252,
+            "noiseUs": 1.749,
+            "maxUs": 7.276,
+            "passes": 4
+          },
+          "terms": [
+            {
+              "name": "direct lookup (the key and the probe)",
+              "kind": "answer",
+              "within": null,
+              "passMediansUs": [
+                4.425,
+                3.504,
+                4.445,
+                3.515
+              ],
+              "medianUs": 3.97,
+              "noiseUs": 0.941,
+              "maxUs": 4.445,
+              "passes": 4,
+              "shareOfWhole": 0.635
+            },
+            {
+              "name": "answer object",
+              "kind": "answer",
+              "within": null,
+              "passMediansUs": [
+                1.377,
+                0.911,
+                1.385,
+                0.924
+              ],
+              "medianUs": 1.151,
+              "noiseUs": 0.474,
+              "maxUs": 1.385,
+              "passes": 4,
+              "shareOfWhole": 0.184
+            },
+            {
+              "name": "promptHash",
+              "kind": "constant",
+              "within": "answer object",
+              "passMediansUs": [
+                0.932,
+                0.557,
+                0.959,
+                0.537
+              ],
+              "medianUs": 0.745,
+              "noiseUs": 0.422,
+              "maxUs": 0.959,
+              "passes": 4,
+              "shareOfWhole": 0.119
+            },
+            {
+              "name": "ledger write",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.948,
+                0.76,
+                0.976,
+                0.775
+              ],
+              "medianUs": 0.861,
+              "noiseUs": 0.216,
+              "maxUs": 0.976,
+              "passes": 4,
+              "shareOfWhole": 0.138
+            },
+            {
+              "name": "ask frame (the async call and its await)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.164,
+                0.146,
+                0.169,
+                0.143
+              ],
+              "medianUs": 0.155,
+              "noiseUs": 0.026,
+              "maxUs": 0.169,
+              "passes": 4,
+              "shareOfWhole": 0.025
+            }
+          ],
+          "sumOfTermsUs": 6.137,
+          "extraBracketsUs": 0.155,
+          "netSumUs": 5.982,
+          "coverage": 0.957,
+          "unattributedUs": 0.27
+        },
+        "default": {
+          "measured": true,
+          "whole": {
+            "passMediansUs": [
+              4.878,
+              4.852,
+              5.183,
+              4.782
+            ],
+            "medianUs": 4.865,
+            "noiseUs": 0.401,
+            "maxUs": 5.183,
+            "passes": 4
+          },
+          "terms": [
+            {
+              "name": "direct lookup (the key and the probe)",
+              "kind": "answer",
+              "within": null,
+              "passMediansUs": [
+                3.531,
+                3.414,
+                3.7,
+                3.577
+              ],
+              "medianUs": 3.554,
+              "noiseUs": 0.286,
+              "maxUs": 3.7,
+              "passes": 4,
+              "shareOfWhole": 0.731
+            },
+            {
+              "name": "answer object",
+              "kind": "answer",
+              "within": null,
+              "passMediansUs": [
+                0.635,
+                0.589,
+                0.668,
+                0.638
+              ],
+              "medianUs": 0.637,
+              "noiseUs": 0.079,
+              "maxUs": 0.668,
+              "passes": 4,
+              "shareOfWhole": 0.131
+            },
+            {
+              "name": "promptHash",
+              "kind": "constant",
+              "within": "answer object",
+              "passMediansUs": [
+                0.321,
+                0.292,
+                0.345,
+                0.315
+              ],
+              "medianUs": 0.318,
+              "noiseUs": 0.053,
+              "maxUs": 0.345,
+              "passes": 4,
+              "shareOfWhole": 0.065
+            },
+            {
+              "name": "ledger write",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.47,
+                0.459,
+                0.49,
+                0.493
+              ],
+              "medianUs": 0.48,
+              "noiseUs": 0.034,
+              "maxUs": 0.493,
+              "passes": 4,
+              "shareOfWhole": 0.099
+            },
+            {
+              "name": "ask frame (the async call and its await)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.143,
+                0.131,
+                0.133,
+                0.134
+              ],
+              "medianUs": 0.134,
+              "noiseUs": 0.012,
+              "maxUs": 0.143,
+              "passes": 4,
+              "shareOfWhole": 0.027
+            }
+          ],
+          "sumOfTermsUs": 4.805,
+          "extraBracketsUs": 0.135,
+          "netSumUs": 4.67,
+          "coverage": 0.96,
+          "unattributedUs": 0.195
+        },
+        "gap": {
+          "us": 1.387,
+          "noiseUs": 1.749,
+          "moved": false,
+          "faster": false
+        }
+      },
+      "solved": {
+        "context": false,
+        "label": null,
+        "meta": {
+          "measured": true,
+          "context": false,
+          "label": null,
+          "text": "A merchant wants to make a choice of purchase between 2 purchase plans: jewel...",
+          "chars": 428,
+          "provenance": "solved",
+          "answer": "125",
+          "template": {
+            "id": "25c8d31be6e6",
+            "record": "gsm8k.15",
+            "fast": true
+          },
+          "learned": null
+        },
+        "control": {
+          "measured": true,
+          "whole": {
+            "passMediansUs": [
+              8.1,
+              4.964,
+              8.149,
+              5.082
+            ],
+            "medianUs": 6.591,
+            "noiseUs": 3.185,
+            "maxUs": 8.149,
+            "passes": 4
+          },
+          "terms": [
+            {
+              "name": "direct step, a miss",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.837,
+                0.681,
+                0.896,
+                0.703
+              ],
+              "medianUs": 0.77,
+              "noiseUs": 0.215,
+              "maxUs": 0.896,
+              "passes": 4,
+              "shareOfWhole": 0.117
+            },
+            {
+              "name": "solved check (solvedFor)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.108,
+                0.07,
+                0.064,
+                0.05
+              ],
+              "medianUs": 0.067,
+              "noiseUs": 0.058,
+              "maxUs": 0.108,
+              "passes": 4,
+              "shareOfWhole": 0.01
+            },
+            {
+              "name": "solved match (with its clock)",
+              "kind": "answer",
+              "within": null,
+              "passMediansUs": [
+                2.499,
+                2.05,
+                2.564,
+                2.017
+              ],
+              "medianUs": 2.274,
+              "noiseUs": 0.547,
+              "maxUs": 2.564,
+              "passes": 4,
+              "shareOfWhole": 0.345
+            },
+            {
+              "name": "answer object",
+              "kind": "answer",
+              "within": null,
+              "passMediansUs": [
+                1.67,
+                1.39,
+                1.763,
+                1.391
+              ],
+              "medianUs": 1.531,
+              "noiseUs": 0.373,
+              "maxUs": 1.763,
+              "passes": 4,
+              "shareOfWhole": 0.232
+            },
+            {
+              "name": "promptHash",
+              "kind": "constant",
+              "within": "answer object",
+              "passMediansUs": [
+                1.156,
+                0.962,
+                1.172,
+                0.924
+              ],
+              "medianUs": 1.059,
+              "noiseUs": 0.248,
+              "maxUs": 1.172,
+              "passes": 4,
+              "shareOfWhole": 0.161
+            },
+            {
+              "name": "ledger write",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                1.013,
+                0.832,
+                1.065,
+                0.854
+              ],
+              "medianUs": 0.934,
+              "noiseUs": 0.233,
+              "maxUs": 1.065,
+              "passes": 4,
+              "shareOfWhole": 0.142
+            },
+            {
+              "name": "ask frame (the async call and its await)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.152,
+                0.118,
+                0.158,
+                0.099
+              ],
+              "medianUs": 0.135,
+              "noiseUs": 0.059,
+              "maxUs": 0.158,
+              "passes": 4,
+              "shareOfWhole": 0.02
+            }
+          ],
+          "sumOfTermsUs": 5.711,
+          "extraBracketsUs": 0.258,
+          "netSumUs": 5.453,
+          "coverage": 0.827,
+          "unattributedUs": 1.138
+        },
+        "default": {
+          "measured": true,
+          "whole": {
+            "passMediansUs": [
+              4.039,
+              3.983,
+              4.756,
+              3.989
+            ],
+            "medianUs": 4.014,
+            "noiseUs": 0.773,
+            "maxUs": 4.756,
+            "passes": 4
+          },
+          "terms": [
+            {
+              "name": "direct step, a miss",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.667,
+                0.682,
+                0.706,
+                0.656
+              ],
+              "medianUs": 0.675,
+              "noiseUs": 0.05,
+              "maxUs": 0.706,
+              "passes": 4,
+              "shareOfWhole": 0.168
+            },
+            {
+              "name": "solved check (solvedFor)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.058,
+                0.048,
+                0.05,
+                0.059
+              ],
+              "medianUs": 0.054,
+              "noiseUs": 0.011,
+              "maxUs": 0.059,
+              "passes": 4,
+              "shareOfWhole": 0.013
+            },
+            {
+              "name": "solved match (with its clock)",
+              "kind": "answer",
+              "within": null,
+              "passMediansUs": [
+                2.017,
+                1.976,
+                2.059,
+                1.95
+              ],
+              "medianUs": 1.997,
+              "noiseUs": 0.109,
+              "maxUs": 2.059,
+              "passes": 4,
+              "shareOfWhole": 0.497
+            },
+            {
+              "name": "answer object",
+              "kind": "answer",
+              "within": null,
+              "passMediansUs": [
+                0.795,
+                0.735,
+                0.809,
+                0.771
+              ],
+              "medianUs": 0.783,
+              "noiseUs": 0.074,
+              "maxUs": 0.809,
+              "passes": 4,
+              "shareOfWhole": 0.195
+            },
+            {
+              "name": "promptHash",
+              "kind": "constant",
+              "within": "answer object",
+              "passMediansUs": [
+                0.499,
+                0.506,
+                0.519,
+                0.497
+              ],
+              "medianUs": 0.502,
+              "noiseUs": 0.022,
+              "maxUs": 0.519,
+              "passes": 4,
+              "shareOfWhole": 0.125
+            },
+            {
+              "name": "ledger write",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.498,
+                0.451,
+                0.507,
+                0.464
+              ],
+              "medianUs": 0.481,
+              "noiseUs": 0.056,
+              "maxUs": 0.507,
+              "passes": 4,
+              "shareOfWhole": 0.12
+            },
+            {
+              "name": "ask frame (the async call and its await)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.131,
+                0.099,
+                0.125,
+                0.094
+              ],
+              "medianUs": 0.112,
+              "noiseUs": 0.037,
+              "maxUs": 0.131,
+              "passes": 4,
+              "shareOfWhole": 0.028
+            }
+          ],
+          "sumOfTermsUs": 4.102,
+          "extraBracketsUs": 0.225,
+          "netSumUs": 3.877,
+          "coverage": 0.966,
+          "unattributedUs": 0.137
+        },
+        "gap": {
+          "us": 2.577,
+          "noiseUs": 3.185,
+          "moved": false,
+          "faster": false
+        }
+      },
+      "exact": {
+        "context": false,
+        "label": null,
+        "meta": {
+          "measured": true,
+          "context": false,
+          "label": null,
+          "text": "what is 17 times 23",
+          "chars": 19,
+          "provenance": "exact",
+          "answer": "391",
+          "template": null,
+          "learned": null
+        },
+        "control": {
+          "measured": true,
+          "whole": {
+            "passMediansUs": [
+              9.846,
+              7.469,
+              14.729,
+              7.453
+            ],
+            "medianUs": 8.658,
+            "noiseUs": 7.276,
+            "maxUs": 14.729,
+            "passes": 4
+          },
+          "terms": [
+            {
+              "name": "direct step, a miss",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.596,
+                0.445,
+                0.637,
+                0.432
+              ],
+              "medianUs": 0.521,
+              "noiseUs": 0.205,
+              "maxUs": 0.637,
+              "passes": 4,
+              "shareOfWhole": 0.06
+            },
+            {
+              "name": "solved check (solvedFor)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.385,
+                0.348,
+                0.413,
+                0.308
+              ],
+              "medianUs": 0.367,
+              "noiseUs": 0.105,
+              "maxUs": 0.413,
+              "passes": 4,
+              "shareOfWhole": 0.042
+            },
+            {
+              "name": "spawn check (askBySpawn)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.097,
+                0.08,
+                0.112,
+                0.087
+              ],
+              "medianUs": 0.092,
+              "noiseUs": 0.032,
+              "maxUs": 0.112,
+              "passes": 4,
+              "shareOfWhole": 0.011
+            },
+            {
+              "name": "solve (the exact path computes, with its clock)",
+              "kind": "answer",
+              "within": null,
+              "passMediansUs": [
+                5.767,
+                4.292,
+                6.134,
+                4.367
+              ],
+              "medianUs": 5.067,
+              "noiseUs": 1.842,
+              "maxUs": 6.134,
+              "passes": 4,
+              "shareOfWhole": 0.585
+            },
+            {
+              "name": "answer object",
+              "kind": "answer",
+              "within": null,
+              "passMediansUs": [
+                1.718,
+                1.192,
+                1.84,
+                1.219
+              ],
+              "medianUs": 1.469,
+              "noiseUs": 0.648,
+              "maxUs": 1.84,
+              "passes": 4,
+              "shareOfWhole": 0.17
+            },
+            {
+              "name": "promptHash",
+              "kind": "constant",
+              "within": "answer object",
+              "passMediansUs": [
+                0.916,
+                0.546,
+                0.941,
+                0.541
+              ],
+              "medianUs": 0.731,
+              "noiseUs": 0.4,
+              "maxUs": 0.941,
+              "passes": 4,
+              "shareOfWhole": 0.084
+            },
+            {
+              "name": "ledger write",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.986,
+                0.757,
+                1.071,
+                0.795
+              ],
+              "medianUs": 0.891,
+              "noiseUs": 0.314,
+              "maxUs": 1.071,
+              "passes": 4,
+              "shareOfWhole": 0.103
+            },
+            {
+              "name": "ask frame (the async call and its await)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.158,
+                0.152,
+                0.183,
+                0.116
+              ],
+              "medianUs": 0.155,
+              "noiseUs": 0.067,
+              "maxUs": 0.183,
+              "passes": 4,
+              "shareOfWhole": 0.018
+            }
+          ],
+          "sumOfTermsUs": 8.562,
+          "extraBracketsUs": 0.309,
+          "netSumUs": 8.253,
+          "coverage": 0.953,
+          "unattributedUs": 0.405
+        },
+        "default": {
+          "measured": true,
+          "whole": {
+            "passMediansUs": [
+              7.265,
+              6.754,
+              7.502,
+              6.836
+            ],
+            "medianUs": 7.051,
+            "noiseUs": 0.748,
+            "maxUs": 7.502,
+            "passes": 4
+          },
+          "terms": [
+            {
+              "name": "direct step, a miss",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.487,
+                0.447,
+                0.529,
+                0.475
+              ],
+              "medianUs": 0.481,
+              "noiseUs": 0.082,
+              "maxUs": 0.529,
+              "passes": 4,
+              "shareOfWhole": 0.068
+            },
+            {
+              "name": "solved check (solvedFor)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.339,
+                0.305,
+                0.334,
+                0.305
+              ],
+              "medianUs": 0.32,
+              "noiseUs": 0.034,
+              "maxUs": 0.339,
+              "passes": 4,
+              "shareOfWhole": 0.045
+            },
+            {
+              "name": "spawn check (askBySpawn)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.079,
+                0.079,
+                0.08,
+                0.081
+              ],
+              "medianUs": 0.08,
+              "noiseUs": 0.002,
+              "maxUs": 0.081,
+              "passes": 4,
+              "shareOfWhole": 0.011
+            },
+            {
+              "name": "solve (the exact path computes, with its clock)",
+              "kind": "answer",
+              "within": null,
+              "passMediansUs": [
+                6.038,
+                4.354,
+                5.213,
+                4.351
+              ],
+              "medianUs": 4.784,
+              "noiseUs": 1.687,
+              "maxUs": 6.038,
+              "passes": 4,
+              "shareOfWhole": 0.678
+            },
+            {
+              "name": "answer object",
+              "kind": "answer",
+              "within": null,
+              "passMediansUs": [
+                1.058,
+                0.899,
+                0.97,
+                0.879
+              ],
+              "medianUs": 0.935,
+              "noiseUs": 0.179,
+              "maxUs": 1.058,
+              "passes": 4,
+              "shareOfWhole": 0.133
+            },
+            {
+              "name": "promptHash",
+              "kind": "constant",
+              "within": "answer object",
+              "passMediansUs": [
+                0.337,
+                0.315,
+                0.359,
+                0.316
+              ],
+              "medianUs": 0.327,
+              "noiseUs": 0.044,
+              "maxUs": 0.359,
+              "passes": 4,
+              "shareOfWhole": 0.046
+            },
+            {
+              "name": "ledger write",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.523,
+                0.493,
+                0.547,
+                0.487
+              ],
+              "medianUs": 0.508,
+              "noiseUs": 0.06,
+              "maxUs": 0.547,
+              "passes": 4,
+              "shareOfWhole": 0.072
+            },
+            {
+              "name": "ask frame (the async call and its await)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.142,
+                0.142,
+                0.118,
+                0.138
+              ],
+              "medianUs": 0.14,
+              "noiseUs": 0.024,
+              "maxUs": 0.142,
+              "passes": 4,
+              "shareOfWhole": 0.02
+            }
+          ],
+          "sumOfTermsUs": 7.248,
+          "extraBracketsUs": 0.27,
+          "netSumUs": 6.978,
+          "coverage": 0.99,
+          "unattributedUs": 0.073
+        },
+        "gap": {
+          "us": 1.607,
+          "noiseUs": 7.276,
+          "moved": false,
+          "faster": false
+        }
+      },
+      "knowledge": {
+        "context": false,
+        "label": null,
+        "meta": {
+          "measured": false,
+          "why": "not measured: store absent on this host"
+        },
+        "control": {
+          "measured": false,
+          "why": "not measured: store absent on this host"
+        },
+        "default": {
+          "measured": false,
+          "why": "not measured: store absent on this host"
+        },
+        "gap": null
+      },
+      "factMiss": {
+        "context": true,
+        "label": "knowledge, store absent: the factual question falls through to recall and the null model cell (context, not a bar route)",
+        "meta": {
+          "measured": true,
+          "context": true,
+          "label": "knowledge, store absent: the factual question falls through to recall and the null model cell (context, not a bar route)",
+          "text": "What is photosynthesis?",
+          "chars": 23,
+          "provenance": "memory",
+          "answer": null,
+          "template": null,
+          "learned": null
+        },
+        "control": {
+          "measured": true,
+          "whole": {
+            "passMediansUs": [
+              152.875,
+              172.829,
+              181.862,
+              141.688
+            ],
+            "medianUs": 162.852,
+            "noiseUs": 40.174,
+            "maxUs": 181.862,
+            "passes": 4
+          },
+          "terms": [
+            {
+              "name": "direct step, a miss",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.618,
+                0.788,
+                0.677,
+                0.556
+              ],
+              "medianUs": 0.648,
+              "noiseUs": 0.232,
+              "maxUs": 0.788,
+              "passes": 4,
+              "shareOfWhole": 0.004
+            },
+            {
+              "name": "solved check (solvedFor)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.571,
+                0.785,
+                0.594,
+                0.555
+              ],
+              "medianUs": 0.583,
+              "noiseUs": 0.23,
+              "maxUs": 0.785,
+              "passes": 4,
+              "shareOfWhole": 0.004
+            },
+            {
+              "name": "spawn check (askBySpawn)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.09,
+                0.128,
+                0.112,
+                0.112
+              ],
+              "medianUs": 0.112,
+              "noiseUs": 0.038,
+              "maxUs": 0.128,
+              "passes": 4,
+              "shareOfWhole": 0.001
+            },
+            {
+              "name": "solve (the early exact path, a miss)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                5.13,
+                6.562,
+                5.969,
+                5.189
+              ],
+              "medianUs": 5.579,
+              "noiseUs": 1.432,
+              "maxUs": 6.562,
+              "passes": 4,
+              "shareOfWhole": 0.034
+            },
+            {
+              "name": "solve again (the knowledge block)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                4.077,
+                5.194,
+                4.272,
+                4.106
+              ],
+              "medianUs": 4.189,
+              "noiseUs": 1.117,
+              "maxUs": 5.194,
+              "passes": 4,
+              "shareOfWhole": 0.026
+            },
+            {
+              "name": "knowledge probe (knowledgeReady() returning false: the store absent)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                8.543,
+                11.807,
+                9.368,
+                8.638
+              ],
+              "medianUs": 9.003,
+              "noiseUs": 3.264,
+              "maxUs": 11.807,
+              "passes": 4,
+              "shareOfWhole": 0.055
+            },
+            {
+              "name": "recall",
+              "kind": "answer",
+              "within": null,
+              "passMediansUs": [
+                109.119,
+                138.785,
+                113.819,
+                109.907
+              ],
+              "medianUs": 111.863,
+              "noiseUs": 29.666,
+              "maxUs": 138.785,
+              "passes": 4,
+              "shareOfWhole": 0.687
+            },
+            {
+              "name": "promptHash",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                1.208,
+                1.694,
+                1.429,
+                1.228
+              ],
+              "medianUs": 1.329,
+              "noiseUs": 0.486,
+              "maxUs": 1.694,
+              "passes": 4,
+              "shareOfWhole": 0.008
+            },
+            {
+              "name": "ledger write",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                1.056,
+                1.349,
+                1.133,
+                1.051
+              ],
+              "medianUs": 1.095,
+              "noiseUs": 0.298,
+              "maxUs": 1.349,
+              "passes": 4,
+              "shareOfWhole": 0.007
+            },
+            {
+              "name": "ask frame (the async call and its await)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.317,
+                0.33,
+                0.308,
+                0.221
+              ],
+              "medianUs": 0.313,
+              "noiseUs": 0.109,
+              "maxUs": 0.33,
+              "passes": 4,
+              "shareOfWhole": 0.002
+            }
+          ],
+          "sumOfTermsUs": 134.714,
+          "extraBracketsUs": 0.463,
+          "netSumUs": 134.251,
+          "coverage": 0.824,
+          "unattributedUs": 28.601
+        },
+        "default": {
+          "measured": true,
+          "whole": {
+            "passMediansUs": [
+              126.766,
+              138.995,
+              127.397,
+              122.289
+            ],
+            "medianUs": 127.082,
+            "noiseUs": 16.706,
+            "maxUs": 138.995,
+            "passes": 4
+          },
+          "terms": [
+            {
+              "name": "direct step, a miss",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.523,
+                0.566,
+                0.508,
+                0.429
+              ],
+              "medianUs": 0.516,
+              "noiseUs": 0.137,
+              "maxUs": 0.566,
+              "passes": 4,
+              "shareOfWhole": 0.004
+            },
+            {
+              "name": "solved check (solvedFor)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.459,
+                0.521,
+                0.419,
+                0.402
+              ],
+              "medianUs": 0.439,
+              "noiseUs": 0.119,
+              "maxUs": 0.521,
+              "passes": 4,
+              "shareOfWhole": 0.003
+            },
+            {
+              "name": "spawn check (askBySpawn)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.081,
+                0.091,
+                0.086,
+                0.081
+              ],
+              "medianUs": 0.083,
+              "noiseUs": 0.01,
+              "maxUs": 0.091,
+              "passes": 4,
+              "shareOfWhole": 0.001
+            },
+            {
+              "name": "solve (the early exact path, a miss)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                5.067,
+                5.787,
+                5.031,
+                4.894
+              ],
+              "medianUs": 5.049,
+              "noiseUs": 0.893,
+              "maxUs": 5.787,
+              "passes": 4,
+              "shareOfWhole": 0.04
+            },
+            {
+              "name": "knowledge probe (knowledgeReady() returning false: the store absent)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                1.904,
+                2.056,
+                1.811,
+                1.672
+              ],
+              "medianUs": 1.858,
+              "noiseUs": 0.384,
+              "maxUs": 2.056,
+              "passes": 4,
+              "shareOfWhole": 0.015
+            },
+            {
+              "name": "recall",
+              "kind": "answer",
+              "within": null,
+              "passMediansUs": [
+                108.901,
+                123.32,
+                108.874,
+                106.394
+              ],
+              "medianUs": 108.887,
+              "noiseUs": 16.926,
+              "maxUs": 123.32,
+              "passes": 4,
+              "shareOfWhole": 0.857
+            },
+            {
+              "name": "promptHash",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.649,
+                0.731,
+                0.621,
+                0.576
+              ],
+              "medianUs": 0.635,
+              "noiseUs": 0.155,
+              "maxUs": 0.731,
+              "passes": 4,
+              "shareOfWhole": 0.005
+            },
+            {
+              "name": "ledger write",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.595,
+                0.617,
+                0.556,
+                0.519
+              ],
+              "medianUs": 0.576,
+              "noiseUs": 0.098,
+              "maxUs": 0.617,
+              "passes": 4,
+              "shareOfWhole": 0.005
+            },
+            {
+              "name": "ask frame (the async call and its await)",
+              "kind": "constant",
+              "within": null,
+              "passMediansUs": [
+                0.258,
+                0.213,
+                0.211,
+                0.157
+              ],
+              "medianUs": 0.212,
+              "noiseUs": 0.101,
+              "maxUs": 0.258,
+              "passes": 4,
+              "shareOfWhole": 0.002
+            }
+          ],
+          "sumOfTermsUs": 118.255,
+          "extraBracketsUs": 0.36,
+          "netSumUs": 117.895,
+          "coverage": 0.928,
+          "unattributedUs": 9.187
+        },
+        "gap": {
+          "us": 35.77,
+          "noiseUs": 40.174,
+          "moved": false,
+          "faster": false
+        }
+      }
+    },
+    "constants": [
+      {
+        "route": "direct",
+        "name": "promptHash",
+        "beforeUs": 0.745,
+        "afterUs": 0.318,
+        "notPaidAfter": false,
+        "gapUs": 0.427,
+        "noiseUs": 0.422,
+        "moved": true
+      },
+      {
+        "route": "direct",
+        "name": "ledger write",
+        "beforeUs": 0.861,
+        "afterUs": 0.48,
+        "notPaidAfter": false,
+        "gapUs": 0.381,
+        "noiseUs": 0.216,
+        "moved": true
+      },
+      {
+        "route": "direct",
+        "name": "ask frame (the async call and its await)",
+        "beforeUs": 0.155,
+        "afterUs": 0.134,
+        "notPaidAfter": false,
+        "gapUs": 0.021,
+        "noiseUs": 0.026,
+        "moved": false
+      },
+      {
+        "route": "solved",
+        "name": "direct step, a miss",
+        "beforeUs": 0.77,
+        "afterUs": 0.675,
+        "notPaidAfter": false,
+        "gapUs": 0.095,
+        "noiseUs": 0.215,
+        "moved": false
+      },
+      {
+        "route": "solved",
+        "name": "solved check (solvedFor)",
+        "beforeUs": 0.067,
+        "afterUs": 0.054,
+        "notPaidAfter": false,
+        "gapUs": 0.013,
+        "noiseUs": 0.058,
+        "moved": false
+      },
+      {
+        "route": "solved",
+        "name": "promptHash",
+        "beforeUs": 1.059,
+        "afterUs": 0.502,
+        "notPaidAfter": false,
+        "gapUs": 0.557,
+        "noiseUs": 0.248,
+        "moved": true
+      },
+      {
+        "route": "solved",
+        "name": "ledger write",
+        "beforeUs": 0.934,
+        "afterUs": 0.481,
+        "notPaidAfter": false,
+        "gapUs": 0.453,
+        "noiseUs": 0.233,
+        "moved": true
+      },
+      {
+        "route": "solved",
+        "name": "ask frame (the async call and its await)",
+        "beforeUs": 0.135,
+        "afterUs": 0.112,
+        "notPaidAfter": false,
+        "gapUs": 0.023,
+        "noiseUs": 0.059,
+        "moved": false
+      },
+      {
+        "route": "exact",
+        "name": "direct step, a miss",
+        "beforeUs": 0.521,
+        "afterUs": 0.481,
+        "notPaidAfter": false,
+        "gapUs": 0.04,
+        "noiseUs": 0.205,
+        "moved": false
+      },
+      {
+        "route": "exact",
+        "name": "solved check (solvedFor)",
+        "beforeUs": 0.367,
+        "afterUs": 0.32,
+        "notPaidAfter": false,
+        "gapUs": 0.047,
+        "noiseUs": 0.105,
+        "moved": false
+      },
+      {
+        "route": "exact",
+        "name": "spawn check (askBySpawn)",
+        "beforeUs": 0.092,
+        "afterUs": 0.08,
+        "notPaidAfter": false,
+        "gapUs": 0.012,
+        "noiseUs": 0.032,
+        "moved": false
+      },
+      {
+        "route": "exact",
+        "name": "promptHash",
+        "beforeUs": 0.731,
+        "afterUs": 0.327,
+        "notPaidAfter": false,
+        "gapUs": 0.404,
+        "noiseUs": 0.4,
+        "moved": true
+      },
+      {
+        "route": "exact",
+        "name": "ledger write",
+        "beforeUs": 0.891,
+        "afterUs": 0.508,
+        "notPaidAfter": false,
+        "gapUs": 0.383,
+        "noiseUs": 0.314,
+        "moved": true
+      },
+      {
+        "route": "exact",
+        "name": "ask frame (the async call and its await)",
+        "beforeUs": 0.155,
+        "afterUs": 0.14,
+        "notPaidAfter": false,
+        "gapUs": 0.015,
+        "noiseUs": 0.067,
+        "moved": false
+      },
+      {
+        "route": "factMiss",
+        "name": "direct step, a miss",
+        "beforeUs": 0.648,
+        "afterUs": 0.516,
+        "notPaidAfter": false,
+        "gapUs": 0.132,
+        "noiseUs": 0.232,
+        "moved": false
+      },
+      {
+        "route": "factMiss",
+        "name": "solved check (solvedFor)",
+        "beforeUs": 0.583,
+        "afterUs": 0.439,
+        "notPaidAfter": false,
+        "gapUs": 0.144,
+        "noiseUs": 0.23,
+        "moved": false
+      },
+      {
+        "route": "factMiss",
+        "name": "spawn check (askBySpawn)",
+        "beforeUs": 0.112,
+        "afterUs": 0.083,
+        "notPaidAfter": false,
+        "gapUs": 0.029,
+        "noiseUs": 0.038,
+        "moved": false
+      },
+      {
+        "route": "factMiss",
+        "name": "solve (the early exact path, a miss)",
+        "beforeUs": 5.579,
+        "afterUs": 5.049,
+        "notPaidAfter": false,
+        "gapUs": 0.53,
+        "noiseUs": 1.432,
+        "moved": false
+      },
+      {
+        "route": "factMiss",
+        "name": "solve again (the knowledge block)",
+        "beforeUs": 4.189,
+        "afterUs": 0,
+        "notPaidAfter": true,
+        "gapUs": 4.189,
+        "noiseUs": 1.117,
+        "moved": true
+      },
+      {
+        "route": "factMiss",
+        "name": "knowledge probe (knowledgeReady() returning false: the store absent)",
+        "beforeUs": 9.003,
+        "afterUs": 1.858,
+        "notPaidAfter": false,
+        "gapUs": 7.145,
+        "noiseUs": 3.264,
+        "moved": true
+      },
+      {
+        "route": "factMiss",
+        "name": "promptHash",
+        "beforeUs": 1.329,
+        "afterUs": 0.635,
+        "notPaidAfter": false,
+        "gapUs": 0.694,
+        "noiseUs": 0.486,
+        "moved": true
+      },
+      {
+        "route": "factMiss",
+        "name": "ledger write",
+        "beforeUs": 1.095,
+        "afterUs": 0.576,
+        "notPaidAfter": false,
+        "gapUs": 0.519,
+        "noiseUs": 0.298,
+        "moved": true
+      },
+      {
+        "route": "factMiss",
+        "name": "ask frame (the async call and its await)",
+        "beforeUs": 0.313,
+        "afterUs": 0.212,
+        "notPaidAfter": false,
+        "gapUs": 0.101,
+        "noiseUs": 0.109,
+        "moved": false
+      }
+    ],
+    "conditions": [
+      {
+        "fast": false,
+        "pid": 26921,
+        "passes": [
+          {
+            "at": "2026-09-26T21:57:50.280Z",
+            "load1": 1.54,
+            "freeMB": 14728,
+            "emptyBracketNs": 63
+          },
+          {
+            "at": "2026-09-26T21:57:50.686Z",
+            "load1": 1.54,
+            "freeMB": 14680,
+            "emptyBracketNs": 40
+          }
+        ]
+      },
+      {
+        "fast": true,
+        "pid": 27034,
+        "passes": [
+          {
+            "at": "2026-09-26T21:57:53.717Z",
+            "load1": 1.58,
+            "freeMB": 14622,
+            "emptyBracketNs": 50
+          },
+          {
+            "at": "2026-09-26T21:57:54.037Z",
+            "load1": 1.58,
+            "freeMB": 14613,
+            "emptyBracketNs": 39
+          }
+        ]
+      },
+      {
+        "fast": false,
+        "pid": 27117,
+        "passes": [
+          {
+            "at": "2026-09-26T21:57:56.982Z",
+            "load1": 1.61,
+            "freeMB": 14641,
+            "emptyBracketNs": 64
+          },
+          {
+            "at": "2026-09-26T21:57:57.435Z",
+            "load1": 1.61,
+            "freeMB": 14626,
+            "emptyBracketNs": 39
+          }
+        ]
+      },
+      {
+        "fast": true,
+        "pid": 27202,
+        "passes": [
+          {
+            "at": "2026-09-26T21:58:00.335Z",
+            "load1": 1.61,
+            "freeMB": 14614,
+            "emptyBracketNs": 52
+          },
+          {
+            "at": "2026-09-26T21:58:00.662Z",
+            "load1": 1.61,
+            "freeMB": 14567,
+            "emptyBracketNs": 40
+          }
+        ]
+      }
+    ],
+    "sockets": 0,
+    "worstPassUs": {
+      "direct": 5.183,
+      "solved": 4.756,
+      "exact": 7.502
+    },
+    "fill": {
+      "kept": 13,
+      "rows": 40,
+      "journals": [
+        "bench/verdicts/math-journal-test-1.jsonl"
+      ],
+      "template": {
+        "id": "25c8d31be6e6",
+        "record": "gsm8k.15",
+        "fast": true
+      },
+      "why": null
+    },
+    "arms": [
+      {
+        "fast": false,
+        "pid": 26921,
+        "node": "v24.9.0",
+        "reps": 1000,
+        "sockets": 0
+      },
+      {
+        "fast": true,
+        "pid": 27034,
+        "node": "v24.9.0",
+        "reps": 1000,
+        "sockets": 0
+      },
+      {
+        "fast": false,
+        "pid": 27117,
+        "node": "v24.9.0",
+        "reps": 1000,
+        "sockets": 0
+      },
+      {
+        "fast": true,
+        "pid": 27202,
+        "node": "v24.9.0",
+        "reps": 1000,
+        "sockets": 0
+      }
+    ],
+    "printed": [
+      "THE WHOLE ASK, model off (provider null), microseconds: the median of the pass medians, and the noise band (largest minus smallest pass median)",
+      "  conditions control (ASK_FAST off) pid 26921 pass 1: load 1.54, free RAM 14728 MB, empty bracket median 63 ns, at 2026-09-26T21:57:50.280Z",
+      "  conditions control (ASK_FAST off) pid 26921 pass 2: load 1.54, free RAM 14680 MB, empty bracket median 40 ns, at 2026-09-26T21:57:50.686Z",
+      "  conditions default (ASK_FAST on)  pid 27034 pass 1: load 1.58, free RAM 14622 MB, empty bracket median 50 ns, at 2026-09-26T21:57:53.717Z",
+      "  conditions default (ASK_FAST on)  pid 27034 pass 2: load 1.58, free RAM 14613 MB, empty bracket median 39 ns, at 2026-09-26T21:57:54.037Z",
+      "  conditions control (ASK_FAST off) pid 27117 pass 1: load 1.61, free RAM 14641 MB, empty bracket median 64 ns, at 2026-09-26T21:57:56.982Z",
+      "  conditions control (ASK_FAST off) pid 27117 pass 2: load 1.61, free RAM 14626 MB, empty bracket median 39 ns, at 2026-09-26T21:57:57.435Z",
+      "  conditions default (ASK_FAST on)  pid 27202 pass 1: load 1.61, free RAM 14614 MB, empty bracket median 52 ns, at 2026-09-26T21:58:00.335Z",
+      "  conditions default (ASK_FAST on)  pid 27202 pass 2: load 1.61, free RAM 14567 MB, empty bracket median 40 ns, at 2026-09-26T21:58:00.662Z",
+      "direct: \"what is 17 times 23\" (19 chars) lands on direct, answer 391",
+      "  control  whole ask 6.252 us (passes 6.974 / 5.529 / 7.276 / 5.527, noise 1.749); the terms sum to 6.137 us, less 0.155 us of extra empty brackets = 5.982 us = 95.7% of it",
+      "    direct lookup (the key and the probe)                                      3.97 us  noise   0.941  answer  63.5% of the ask",
+      "    answer object                                                             1.151 us  noise   0.474  answer  18.4% of the ask",
+      "      of which promptHash                                                      0.745 us  noise   0.422  constant  11.9% of the ask",
+      "    ledger write                                                              0.861 us  noise   0.216  constant  13.8% of the ask",
+      "    ask frame (the async call and its await)                                  0.155 us  noise   0.026  constant  2.5% of the ask",
+      "  default  whole ask 4.865 us (passes 4.878 / 4.852 / 5.183 / 4.782, noise 0.401); the terms sum to 4.805 us, less 0.135 us of extra empty brackets = 4.67 us = 96% of it",
+      "    direct lookup (the key and the probe)                                     3.554 us  noise   0.286  answer  73.1% of the ask",
+      "    answer object                                                             0.637 us  noise   0.079  answer  13.1% of the ask",
+      "      of which promptHash                                                      0.318 us  noise   0.053  constant  6.5% of the ask",
+      "    ledger write                                                               0.48 us  noise   0.034  constant  9.9% of the ask",
+      "    ask frame (the async call and its await)                                  0.134 us  noise   0.012  constant  2.7% of the ask",
+      "  gap control minus default 1.387 us against a noise band of 1.749 us: not moved",
+      "solved: \"A merchant wants to make a choice of purchase between 2 purchase plans: jewel...\" (428 chars) lands on solved, answer 125, template 25c8d31be6e6 of gsm8k.15",
+      "  control  whole ask 6.591 us (passes 8.1 / 4.964 / 8.149 / 5.082, noise 3.185); the terms sum to 5.711 us, less 0.258 us of extra empty brackets = 5.453 us = 82.7% of it",
+      "    direct step, a miss                                                        0.77 us  noise   0.215  constant  11.7% of the ask",
+      "    solved check (solvedFor)                                                  0.067 us  noise   0.058  constant  1% of the ask",
+      "    solved match (with its clock)                                             2.274 us  noise   0.547  answer  34.5% of the ask",
+      "    answer object                                                             1.531 us  noise   0.373  answer  23.2% of the ask",
+      "      of which promptHash                                                      1.059 us  noise   0.248  constant  16.1% of the ask",
+      "    ledger write                                                              0.934 us  noise   0.233  constant  14.2% of the ask",
+      "    ask frame (the async call and its await)                                  0.135 us  noise   0.059  constant  2% of the ask",
+      "  default  whole ask 4.014 us (passes 4.039 / 3.983 / 4.756 / 3.989, noise 0.773); the terms sum to 4.102 us, less 0.225 us of extra empty brackets = 3.877 us = 96.6% of it",
+      "    direct step, a miss                                                       0.675 us  noise    0.05  constant  16.8% of the ask",
+      "    solved check (solvedFor)                                                  0.054 us  noise   0.011  constant  1.3% of the ask",
+      "    solved match (with its clock)                                             1.997 us  noise   0.109  answer  49.7% of the ask",
+      "    answer object                                                             0.783 us  noise   0.074  answer  19.5% of the ask",
+      "      of which promptHash                                                      0.502 us  noise   0.022  constant  12.5% of the ask",
+      "    ledger write                                                              0.481 us  noise   0.056  constant  12% of the ask",
+      "    ask frame (the async call and its await)                                  0.112 us  noise   0.037  constant  2.8% of the ask",
+      "  gap control minus default 2.577 us against a noise band of 3.185 us: not moved",
+      "exact: \"what is 17 times 23\" (19 chars) lands on exact, answer 391",
+      "  control  whole ask 8.658 us (passes 9.846 / 7.469 / 14.729 / 7.453, noise 7.276); the terms sum to 8.562 us, less 0.309 us of extra empty brackets = 8.253 us = 95.3% of it",
+      "    direct step, a miss                                                       0.521 us  noise   0.205  constant  6% of the ask",
+      "    solved check (solvedFor)                                                  0.367 us  noise   0.105  constant  4.2% of the ask",
+      "    spawn check (askBySpawn)                                                  0.092 us  noise   0.032  constant  1.1% of the ask",
+      "    solve (the exact path computes, with its clock)                           5.067 us  noise   1.842  answer  58.5% of the ask",
+      "    answer object                                                             1.469 us  noise   0.648  answer  17% of the ask",
+      "      of which promptHash                                                      0.731 us  noise     0.4  constant  8.4% of the ask",
+      "    ledger write                                                              0.891 us  noise   0.314  constant  10.3% of the ask",
+      "    ask frame (the async call and its await)                                  0.155 us  noise   0.067  constant  1.8% of the ask",
+      "  default  whole ask 7.051 us (passes 7.265 / 6.754 / 7.502 / 6.836, noise 0.748); the terms sum to 7.248 us, less 0.27 us of extra empty brackets = 6.978 us = 99% of it",
+      "    direct step, a miss                                                       0.481 us  noise   0.082  constant  6.8% of the ask",
+      "    solved check (solvedFor)                                                   0.32 us  noise   0.034  constant  4.5% of the ask",
+      "    spawn check (askBySpawn)                                                   0.08 us  noise   0.002  constant  1.1% of the ask",
+      "    solve (the exact path computes, with its clock)                           4.784 us  noise   1.687  answer  67.8% of the ask",
+      "    answer object                                                             0.935 us  noise   0.179  answer  13.3% of the ask",
+      "      of which promptHash                                                      0.327 us  noise   0.044  constant  4.6% of the ask",
+      "    ledger write                                                              0.508 us  noise    0.06  constant  7.2% of the ask",
+      "    ask frame (the async call and its await)                                   0.14 us  noise   0.024  constant  2% of the ask",
+      "  gap control minus default 1.607 us against a noise band of 7.276 us: not moved",
+      "knowledge: not measured: store absent on this host",
+      "factMiss (knowledge, store absent: the factual question falls through to recall and the null model cell (context, not a bar route)): \"What is photosynthesis?\" (23 chars) lands on memory",
+      "  control  whole ask 162.852 us (passes 152.875 / 172.829 / 181.862 / 141.688, noise 40.174)",
+      "    direct step, a miss                                                       0.648 us  noise   0.232  constant  0.4% of the ask",
+      "    solved check (solvedFor)                                                  0.583 us  noise    0.23  constant  0.4% of the ask",
+      "    spawn check (askBySpawn)                                                  0.112 us  noise   0.038  constant  0.1% of the ask",
+      "    solve (the early exact path, a miss)                                      5.579 us  noise   1.432  constant  3.4% of the ask",
+      "    solve again (the knowledge block)                                         4.189 us  noise   1.117  constant  2.6% of the ask",
+      "    knowledge probe (knowledgeReady() returning false: the store absent)      9.003 us  noise   3.264  constant  5.5% of the ask",
+      "    recall                                                                  111.863 us  noise  29.666  answer  68.7% of the ask",
+      "    promptHash                                                                1.329 us  noise   0.486  constant  0.8% of the ask",
+      "    ledger write                                                              1.095 us  noise   0.298  constant  0.7% of the ask",
+      "    ask frame (the async call and its await)                                  0.313 us  noise   0.109  constant  0.2% of the ask",
+      "  default  whole ask 127.082 us (passes 126.766 / 138.995 / 127.397 / 122.289, noise 16.706)",
+      "    direct step, a miss                                                       0.516 us  noise   0.137  constant  0.4% of the ask",
+      "    solved check (solvedFor)                                                  0.439 us  noise   0.119  constant  0.3% of the ask",
+      "    spawn check (askBySpawn)                                                  0.083 us  noise    0.01  constant  0.1% of the ask",
+      "    solve (the early exact path, a miss)                                      5.049 us  noise   0.893  constant  4% of the ask",
+      "    knowledge probe (knowledgeReady() returning false: the store absent)      1.858 us  noise   0.384  constant  1.5% of the ask",
+      "    recall                                                                  108.887 us  noise  16.926  answer  85.7% of the ask",
+      "    promptHash                                                                0.635 us  noise   0.155  constant  0.5% of the ask",
+      "    ledger write                                                              0.576 us  noise   0.098  constant  0.5% of the ask",
+      "    ask frame (the async call and its await)                                  0.212 us  noise   0.101  constant  0.2% of the ask",
+      "  gap control minus default 35.77 us against a noise band of 40.174 us: not moved",
+      "largest constant term BEFORE (control): knowledge probe (knowledgeReady() returning false: the store absent) on factMiss, 9.003 us (noise 3.264), 5.5% of that ask (162.852 us)",
+      "  the same term AFTER (default): 1.858 us (noise 0.384), 1.5% of that ask; gap 7.145 us against a noise band of 3.264 us: MOVED",
+      "largest constant term AFTER (default): solve (the early exact path, a miss) on factMiss, 5.049 us (noise 0.893), 4% of that ask (127.082 us)",
+      "  on direct: largest constant term before ledger write 0.861 us, after ledger write 0.48 us",
+      "  on solved: largest constant term before promptHash 1.059 us, after direct step, a miss 0.675 us",
+      "  on exact: largest constant term before ledger write 0.891 us, after ledger write 0.508 us",
+      "  on factMiss: largest constant term before knowledge probe (knowledgeReady() returning false: the store absent) 9.003 us, after solve (the early exact path, a miss) 5.049 us",
+      "  constant term moved: direct / promptHash 0.745 us to 0.318 us (gap 0.427, noise 0.422)",
+      "  constant term moved: direct / ledger write 0.861 us to 0.48 us (gap 0.381, noise 0.216)",
+      "  constant term moved: solved / promptHash 1.059 us to 0.502 us (gap 0.557, noise 0.248)",
+      "  constant term moved: solved / ledger write 0.934 us to 0.481 us (gap 0.453, noise 0.233)",
+      "  constant term moved: exact / promptHash 0.731 us to 0.327 us (gap 0.404, noise 0.4)",
+      "  constant term moved: exact / ledger write 0.891 us to 0.508 us (gap 0.383, noise 0.314)",
+      "  constant term moved: factMiss / solve again (the knowledge block) 4.189 us to not paid (gap 4.189, noise 1.117)",
+      "  constant term moved: factMiss / knowledge probe (knowledgeReady() returning false: the store absent) 9.003 us to 1.858 us (gap 7.145, noise 3.264)",
+      "  constant term moved: factMiss / promptHash 1.329 us to 0.635 us (gap 0.694, noise 0.486)",
+      "  constant term moved: factMiss / ledger write 1.095 us to 0.576 us (gap 0.519, noise 0.298)",
+      "sockets opened by the ask arms: 0 (model off)",
+      "ask median us: direct 4.87, solved 4.01, exact 7.05, knowledge not measured: store absent on this host",
+      "bar (barMet is true when every MEASURED route of the four (direct, solved, exact, knowledge) has a whole ask() median under 1000 us in EVERY timed pass of the default arm (act/prompt.mjs ASK_FAST on, the shipped default: 2 processes x 2 passes x 1000 asks), model off, on this host, and the direct and exact routes are both measured. A route not measured is printed as not measured and is not counted. The tick arms state no bar and are not part of this rule. Never widened to pass.): worst default pass per measured route direct 5.183 us, solved 4.756 us, exact 7.502 us against 1000 us: barMet true"
+    ]
+  },
+  "tickArms": {
+    "measured": false,
+    "reason": "not measured: organism/gen-0 absent on this host (gitignored; genome/emit.mjs emits it)",
+    "carriedFrom": {
+      "at": "2026-09-17T12:20:33.710Z",
+      "node": "v24.15.0",
+      "threads": 32,
+      "organism": "organism/gen-0"
+    }
+  }
 }

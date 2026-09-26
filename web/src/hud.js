@@ -70,6 +70,7 @@ export class Hud {
       + row('per tick', f(s.usPerTick, 1) + ' &micro;s')
       + row('signals sent', grp(s.signals))
       + row('signals landed', grp(s.delivered))
+      + (this.census === undefined ? (this.census = censusRows(readCensusData())) : this.census)
       + '<div class="rule"></div>'
       + row('view', scene.targetMorph > 0.5 ? 'pipeline' : 'anatomy')
       + (this.daemon || daemonRows(null, 'not asked yet'));
@@ -136,6 +137,28 @@ function hdur(s) {
 }
 
 /** The rows for the state panel: the health numbers when the daemon runs, else "daemon not running". */
+/** The census block web/build.mjs placed in the page (web/spawn-census.mjs), or null. board 20 builder */
+export function readCensusData() {
+  if (typeof document === 'undefined') return null;
+  const e = document.getElementById('census-data');
+  if (!e) return null;
+  try { return JSON.parse(e.textContent); } catch (err) { return null; }
+}
+
+/**
+ * The census rows of the status block: the organism's own census from bench/spawn.mjs --census,
+ * each number a field of the verdict, with its at and file name beside them. Nothing is computed.
+ */
+export function censusRows(c) {
+  let out = '<div class="rule"></div>';
+  if (!c || typeof c !== 'object' || typeof c.cells !== 'number') return out + row('census', '<span class="off">not measured</span>');
+  const ph = (v) => (typeof v === 'number' ? v.toFixed(2) : 'null');
+  out += row('census cells', grp(c.cells) + ' <span class="dim">' + grp(c.edges) + ' edges, ' + c.kinds + ' kinds</span>');
+  out += row('kept / hour', ph(c.keptPerHour) + ' <span class="dim">' + c.kept + ' kept in ' + c.rounds + ' rounds</span>');
+  out += row('placebo', ph(c.placeboKeptPerHour) + ' <span class="dim">' + c.placeboKept + ' kept, a random cell of the same kind</span>');
+  return out + '<div class="note">' + (c.isTheBar ? (c.barMet ? 'bar met' : 'bar not met') : 'partial run') + ', ' + hesc(String(c.file)) + ' at ' + hesc(String(c.at)) + '</div>';
+}
+
 export function daemonRows(h, why) {
   let out = '<div class="rule"></div>';
   if (!h || typeof h !== 'object' || h.ok !== true) {

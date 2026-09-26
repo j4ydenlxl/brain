@@ -7,11 +7,14 @@
 //      random inputs, including the tie lanes.
 //   3. runtime/fast.mjs and runtime/cluster.mjs end a run where one unoptimised process
 //      ends it: same stats, same run and fire count for every single cell.
+// Claims 4 to 6 (board 20 builder, queue item 3, the whole ask in microseconds) are the ask section of
+// bench/speed.mjs and act/prompt.mjs ASK_FAST: see the block at the end of this file.
 //
 // Run from the brain directory: node --test test/speed.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import * as S from '../core/signal.mjs';
 import { RNG } from '../core/rng.mjs';
@@ -300,4 +303,190 @@ test('the cluster with kernels installed in its shards is still the same brain',
   assert.equal(st.runs, ref.stats.runs);
   assert.equal(st.cloned, 0, 'a payload fell back to the structured clone path: ' + st.cloned);
   assert.equal(firstDifference(refCounts, got, ref.cells), null);
+});
+
+// ================================================================ THE WHOLE ASK (board 20 builder, queue item 3)
+// bench/speed.mjs times act/prompt.mjs ask() with the model off on the direct, solved, exact and knowledge routes,
+// breaks it into its terms, and runs act/prompt.mjs ASK_FAST (the ledger write in one copy, the one-shot promptHash,
+// the knowledge probe without a throw, the early solve() reused) against its control. Three claims:
+//   4. the verdict writer's rows, its one line, its largest constant term and its bar come from the timing table
+//      it is handed (a planted one here), and the table's fields of a previous verdict are carried, never re-dated;
+//   5. on a planted brain the terms, timed in the order ask() runs them, sum to within 10 percent of the whole ask;
+//   6. the intervention changes no answer and no ledger record: the same asks with ASK_FAST off and on give deep
+//      equal answers and deep equal events, key for key in the same order, minus the fields that are clock readings.
+const SPEED = await import(pathToFileURL(path.join(ROOT, 'bench/speed.mjs')).href);
+const PR = await import(pathToFileURL(path.join(ROOT, 'act/prompt.mjs')).href);
+
+const dist1 = (median) => ({ n: 1000, median, p90: median, p99: median, min: median, max: median, mean: median });
+const term = (name, kind, median, within = null) => ({ name, kind, within, ...dist1(median) });
+const PROBE = 'knowledge probe (knowledgeReady() returning false: the store absent)';
+const EARLY = 'solve (the early exact path, a miss)';
+// one planted pass: every number in ns; k scales the route wholes (a second process reads a little slower)
+function plantedPass(fast, k, over = {}) {
+  const f = fast;
+  const routes = {
+    direct: { measured: true, whole: dist1((f ? 6000 : 7000) + k * (f ? 200 : 400)), terms: [
+      term('direct lookup (the key and the probe)', 'answer', 4000), term('answer object', 'answer', f ? 1300 : 1500),
+      term('promptHash', 'constant', f ? 400 : 700, 'answer object'), term('ledger write', 'constant', f ? 550 : 950), term('ask frame (the async call and its await)', 'constant', 150)] },
+    solved: { measured: true, whole: dist1(f ? 5000 : 6400), terms: [term('solved match (with its clock)', 'answer', 2500), term('ledger write', 'constant', f ? 600 : 1000)] },
+    exact: { measured: true, whole: dist1(f ? 8700 : 9500), terms: [term('solve (the exact path computes, with its clock)', 'answer', 5800), term('ledger write', 'constant', f ? 560 : 1000)] },
+    knowledge: { measured: false, why: SPEED.STORE_ABSENT },
+    factMiss: { measured: true, whole: dist1(f ? 158000 : 185000), terms: [
+      term(EARLY, 'constant', 6400 - k * 100), ...(f ? [] : [term('solve again (the knowledge block)', 'constant', 5200)]),
+      term(PROBE, 'constant', f ? 2400 - k * 100 : 11600 - k * 600), term('recall', 'answer', 136000), term('ledger write', 'constant', f ? 730 : 1350)] },
+    ...over,
+  };
+  return { at: '2026-09-26T00:00:00.000Z', load1: 0.5, freeMB: 15000, empty: dist1(50), routes };
+}
+const META = {
+  direct: { measured: true, text: 'what is 17 times 23', chars: 19, provenance: 'direct', answer: '391' },
+  solved: { measured: true, text: 'a planted question', chars: 18, provenance: 'solved', answer: '7' },
+  exact: { measured: true, text: 'what is 17 times 23', chars: 19, provenance: 'exact', answer: '391' },
+  knowledge: { measured: false, why: SPEED.STORE_ABSENT },
+  factMiss: { measured: true, context: true, label: 'fall-through', text: 'What is photosynthesis?', chars: 23, provenance: 'memory' },
+};
+const plantedArms = (over = {}) => [false, true, false, true].map((fast, i) => ({
+  arm: 'ask', fast, pid: 100 + i, reps: 1000, sockets: 0, routes: META, passes: [plantedPass(fast, i >> 1, over), plantedPass(fast, i >> 1, over)],
+}));
+
+test('4. the ask verdict writer: rows, line, largest constant term and bar come from the planted timing table', () => {
+  const sum = SPEED.summarizeAsk(plantedArms());
+  // the median of the four pass medians: default direct 6000, 6000, 6200, 6200 ns
+  assert.equal(sum.routes.direct.default.whole.medianUs, 6.1);
+  assert.equal(sum.routes.direct.default.whole.noiseUs, 0.2);
+  assert.equal(sum.routes.direct.control.whole.medianUs, 7.2);
+  assert.deepEqual(sum.routes.direct.gap, { us: 1.1, noiseUs: 0.4, moved: true, faster: true });
+  assert.equal(sum.line, 'ask median us: direct 6.1, solved 5, exact 8.7, knowledge ' + SPEED.STORE_ABSENT);
+  // the terms of the direct row: 4000 + 1300 + 550 + 150 = 6000 ns, less 3 extra empty brackets of 50 ns
+  assert.equal(sum.routes.direct.default.sumOfTermsUs, 6);
+  assert.equal(sum.routes.direct.default.netSumUs, 5.85);
+  assert.equal(sum.routes.direct.default.coverage, 0.959);
+  // before: the knowledge probe (11600 and 11000 ns in the control's processes), after: the early solve() miss
+  assert.equal(sum.largest.before.name, PROBE);
+  assert.equal(sum.largest.before.route, 'factMiss');
+  assert.equal(sum.largest.before.us, 11.3);
+  assert.equal(sum.largest.beforeMeasuredAfter.us, 2.35);
+  assert.deepEqual(sum.largest.gap, { us: 8.95, noiseUs: 0.6, moved: true });
+  assert.equal(sum.largest.after.name, EARLY);
+  assert.equal(sum.largest.after.us, 6.35);
+  assert.equal(sum.largest.byRoute.direct.before.name, 'ledger write');
+  const again = sum.constants.find((c) => c.route === 'factMiss' && c.name === 'solve again (the knowledge block)');
+  assert.equal(again.notPaidAfter, true);
+  assert.equal(sum.barMet, true);
+  assert.deepEqual(sum.worstPassUs, { direct: 6.2, solved: 5, exact: 8.7 });
+  // one default pass of one route at 1200 us fails the rule; a run without the direct route fails it too
+  const slow = SPEED.summarizeAsk(plantedArms({ exact: { measured: true, whole: dist1(1_200_000), terms: [term('ledger write', 'constant', 600)] } }));
+  assert.equal(slow.barMet, false);
+  const noDirect = SPEED.summarizeAsk(plantedArms({ direct: { measured: false, why: 'not measured: planted' } }));
+  assert.equal(noDirect.barMet, false);
+  assert.match(noDirect.line, /^ask median us: direct not measured: planted, solved 5,/);
+  // a measured knowledge route prints its number
+  const kn = SPEED.summarizeAsk(plantedArms({ knowledge: { measured: true, whole: dist1(12500), terms: [term('ledger write', 'constant', 600)] } }).map((a) => ({ ...a, routes: { ...META, knowledge: { measured: true, text: 'q', chars: 1, provenance: 'knowledge' } } })));
+  assert.match(kn.line, /, knowledge 12\.5$/);
+  // the verdict's own fields, and the table carried from a previous verdict with its own at
+  const prev = { at: '2026-09-17T12:20:33.710Z', node: 'v24.15.0', threads: 32, organism: 'organism/gen-0', statement: 'old', arms: [{ cells: 40000 }], accounting: { usPerRun: { best: 2.158 } } };
+  const c1 = SPEED.carryTick(prev);
+  assert.deepEqual(Object.keys(c1.fields).sort(), ['accounting', 'arms', 'organism']);
+  assert.deepEqual(c1.carriedFrom, { at: prev.at, node: 'v24.15.0', threads: 32, organism: 'organism/gen-0' });
+  const lines = SPEED.askLines(sum);
+  assert.ok(lines.includes(sum.line));
+  const own = SPEED.askVerdictFields({ started: '2026-09-26T21:00:00.000Z', command: 'node bench/speed.mjs', sum, arms: plantedArms(), lines, narrow: false, tickReason: 'not measured: planted', carriedFrom: c1.carriedFrom, threads: 4 });
+  assert.equal(own.isTheBar, true);
+  assert.equal(own.barMet, true);
+  assert.equal(own.askLine, sum.line);
+  assert.equal(own.split.contaminated, false);
+  assert.ok(own.statement.includes(sum.line) && own.statement.includes('carried from the verdict at ' + prev.at), own.statement);
+  assert.ok(!/\u2014/.test(own.statement));
+  // a verdict that itself carried the table hands on the ORIGINAL at, never its own
+  const c2 = SPEED.carryTick({ ...c1.fields, ...own, tickArms: { measured: false, reason: 'x', carriedFrom: c1.carriedFrom } });
+  assert.equal(c2.carriedFrom.at, prev.at);
+  assert.deepEqual(Object.keys(c2.fields).sort(), ['accounting', 'arms', 'organism']);
+  assert.equal(SPEED.askVerdictFields({ started: 's', command: 'c', sum, arms: plantedArms(), lines, narrow: true, tickReason: null }).isTheBar, false);
+});
+
+test('5. on a planted brain the terms of the direct and exact asks sum to within 10 percent of the whole', async () => {
+  const was = PR.askFast();
+  // a timing test on a shared host: up to three attempts, each judged whole (both routes in the same attempt)
+  const tries = [];
+  try {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const ctx = await SPEED.askContext({ fast: true, solved: false, warm: 300 });
+      assert.equal(ctx.meta.direct.provenance, 'direct');
+      assert.equal(ctx.meta.exact.provenance, 'exact');
+      assert.equal(ctx.meta.direct.answer, '391');
+      const passes = [await SPEED.askPass(ctx, 1000), await SPEED.askPass(ctx, 1000)];
+      const sum = SPEED.summarizeAsk([{ fast: true, pid: process.pid, reps: 1000, passes, routes: ctx.meta, sockets: 0 }]);
+      const cov = { direct: sum.routes.direct.default.coverage, exact: sum.routes.exact.default.coverage };
+      tries.push(cov);
+      if (Object.values(cov).every((c) => c >= 0.9 && c <= 1.1)) break;
+    }
+  } finally { PR.askFast(was); }
+  const last = tries[tries.length - 1];
+  assert.ok(Object.values(last).every((c) => c >= 0.9 && c <= 1.1), 'coverage per attempt ' + JSON.stringify(tries));
+});
+
+// the fields of an answer or an event that are clock readings, and the ns a text prints
+const CLOCK_KEYS = new Set(['ms', 'ns', 'us', 'keyNs', 'lookupNs', 'exactNs', 'solvedNs', 'llmMs']);
+function untimed(x) {
+  if (typeof x === 'string') return x.replace(/\b\d+(\.\d+)? ns\b/g, '# ns');
+  if (Array.isArray(x)) return x.map(untimed);
+  if (x && typeof x === 'object') { const o = {}; for (const [k, v] of Object.entries(x)) if (!CLOCK_KEYS.has(k)) o[k] = untimed(v); return o; }
+  return x;
+}
+const KSTORE = Object.freeze({ answer() {
+  const fact = 'Photosynthesis is the process by which plants make food from light.';
+  return { answers: [{ np: 'the process by which plants make food from light', title: 'Photosynthesis', item: 7, head: 'process', words: ['process'], fact, kind: 'definition', score: 1 }], recall: { facts: [{ title: 'Photosynthesis', kind: 'definition', sim: 0.9, item: 7, text: fact }], titles: [{ title: 'Photosynthesis' }], candidates: 1 } };
+} });
+const SOLVED_Q = 'Tom has 3 apples and buys 4 more apples. How many apples does Tom have now?';
+
+async function askEveryRoute(fast, mem) {
+  const { seedBasic } = await import(pathToFileURL(path.join(ROOT, 'seeds/basic.mjs')).href);
+  const { DirectTable } = await import(pathToFileURL(path.join(ROOT, 'memory/direct.mjs')).href);
+  PR.askFast(fast);
+  const brain = seedBasic({ name: 'same', ledger: 'full', ledgerRing: 4096 });
+  const base = { provider: 'null', k: 5, events: [] };
+  const table = new DirectTable({ learn: true });
+  const answers = [];
+  answers.push(await PR.ask(brain, 'what is 17 times 23', { ...base, direct: table, learnDirect: true }));
+  answers.push(await PR.ask(brain, 'what is 17 times 23', { ...base, direct: table }));
+  answers.push(await PR.ask(brain, 'what is 17 times 23', base));
+  answers.push(await PR.ask(brain, SOLVED_Q, { ...base, solved: mem }));
+  answers.push(await PR.ask(brain, 'What is photosynthesis?', { ...base, knowledge: KSTORE }));
+  answers.push(await PR.ask(brain, 'What is photosynthesis?', { ...base, knowledge: path.join(tmpdir(), 'brain-speed-no-store-' + process.pid) }));
+  answers.push(await PR.ask(brain, 'write a poem about the sea', base));
+  const events = [];
+  for (let s = 0; s < brain.ledger.seq; s++) events.push(brain.ledger.ring[s % brain.ledger.ringSize]);
+  // a brain of another shape (a stub with its own log) and a brain with its ledger off
+  const got = [];
+  const stub = { log(ev) { got.push(ev); return got.length - 1; } };
+  const s1 = await PR.ask(stub, 'what is 17 times 23', base);
+  const off = seedBasic({ name: 'off', ledger: 'off' });
+  const o1 = await PR.ask(off, 'what is 17 times 23', base);
+  return {
+    answers: untimed(answers), kinds: answers.map((a) => a.provenance.answer + '/' + (a.provenance.tier || a.route)),
+    events: untimed(events), eventKeys: events.map((e) => Object.keys(e).join(',')),
+    stub: untimed(got), stubKeys: got.map((e) => Object.keys(e).join(',')), stubSeq: s1.seq, offSeq: o1.seq,
+    hash: ['', 'what is 17 times 23', 'héllo \u{1F30D}', null].map((s) => PR.promptHash(s)),
+    ready: PR.knowledgeReady(path.join(tmpdir(), 'brain-speed-no-store-' + process.pid)),
+  };
+}
+
+test('6. ASK_FAST changes no answer and no ledger record: every route, off and on, deep equal minus the clock', async () => {
+  const { SolvedMemory, makeTemplate } = await import(pathToFileURL(path.join(ROOT, 'reason/solved.mjs')).href);
+  const made = await makeTemplate({ question: SOLVED_Q, program: 'function solve() { return 3 + 4; }', answer: 7, source: { test: 'test/speed.test.mjs' } });
+  assert.equal(made.ok, true, made.reason);
+  const mem = new SolvedMemory();
+  mem.add(made.template);
+  const was = PR.askFast();
+  let off, on;
+  try { off = await askEveryRoute(false, mem); on = await askEveryRoute(true, mem); } finally { PR.askFast(was); }
+  // the routes this test means to cover were all taken
+  assert.deepEqual(on.kinds.slice(0, 5), ['exact/exact', 'direct/direct', 'exact/exact', 'solved/solved', 'memory/knowledge']);
+  assert.equal(on.kinds[5], 'memory/direct');
+  assert.deepEqual(on, off);
+  // the event is { seq, t, gen, type, ... } on a core brain, and the stub gets the event it always got (no t, no gen)
+  assert.ok(on.eventKeys.every((k) => k.startsWith('seq,t,gen,type,')), on.eventKeys.join(' | '));
+  assert.ok(on.stubKeys.every((k) => k.startsWith('type,') && !/(^|,)(t|gen)(,|$)/.test(k)), on.stubKeys.join(' | '));
+  assert.equal(on.offSeq, -1);
+  assert.equal(on.stubSeq, 0);
 });

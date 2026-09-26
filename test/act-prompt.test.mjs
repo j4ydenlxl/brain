@@ -546,3 +546,30 @@ test('the do command arms itself: a fresh brain through the CLI holds its propos
   assert.ok(listed.pending.length >= 1, JSON.stringify(listed).slice(0, 300));
   await wait(0);
 });
+
+// board 20 builder (queue item 3, bench/speed.mjs): act/prompt.mjs ASK_FAST makes three constant terms of an ask cheaper
+// (the promptHash in one call, the absent knowledge store probed without a throw, the ledger write in one copy) and
+// none of them may change a value: the same digest, the same refusal, the same ledger record on a core Brain, and the
+// event a brain of another shape was always handed.
+test('ASK_FAST: the same promptHash, the same knowledgeReady refusal, the same ledger record, off and on', async () => {
+  const P = await import('../act/prompt.mjs');
+  const was = P.askFast();
+  const absent = path.join(tmpdir(), 'brain-no-store-' + process.pid);
+  const run = async (fast) => {
+    P.askFast(fast);
+    const brain = new Brain({ name: 'fast-' + fast, ledger: 'full', pruneEvery: 0 });
+    const a = await P.ask(brain, 'what is 17 times 23', { provider: 'null', direct: false, spawn: false });
+    const got = [];
+    await P.ask({ log(ev) { got.push(ev); return 0; } }, 'what is 17 times 23', { provider: 'null', direct: false, spawn: false });
+    const { ms, exactNs, ...ev } = brain.ledger.ring[a.seq];
+    const { ms: m2, exactNs: n2, ...stub } = got[0];
+    return { hashes: ['', 'what is 17 times 23', 'héllo \u{1F30D}', undefined].map((s) => P.promptHash(s)), ready: P.knowledgeReady(absent), ev, keys: Object.keys(brain.ledger.ring[a.seq]), stub, stubKeys: Object.keys(got[0]), seq: a.seq };
+  };
+  let off, on;
+  try { off = await run(false); on = await run(true); } finally { P.askFast(was); }
+  assert.deepEqual(on, off);
+  assert.equal(on.hashes[1], 'c2fc4240bc023880');
+  assert.equal(on.ready.ok, false);
+  assert.deepEqual(on.keys.slice(0, 4), ['seq', 't', 'gen', 'type']);
+  assert.ok(!on.stubKeys.includes('t') && !on.stubKeys.includes('gen'), on.stubKeys.join(','));
+});

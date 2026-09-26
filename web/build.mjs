@@ -36,6 +36,11 @@ import { generateHandoff } from './handoff.mjs';
 // The prompt box (queue item 12): /ask and the organism modules the landing page and /ask import,
 // copied byte for byte from act/ and tasks/ with a sha256 manifest (web/ask.mjs throws on a mismatch).
 import { generateAsk } from './ask.mjs';
+// The census block (board 20 builder): cells, kinds and kept per hour read from bench/verdicts/spawn-census.json.
+import { injectCensus, readCensusBlock } from './spawn-census.mjs';
+// The kept-per-hour block (queue item 7): the loop's yield read from its verdicts, put on the findings page
+// after it is written (web/yield.mjs; board 20 builder). BRAIN_YIELD_BLOCK=off builds without it.
+import { injectYield } from './yield.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SRC = join(HERE, 'src');
@@ -169,7 +174,7 @@ export function bundle(opts = {}) {
     + '// this tab from a seed: there is no snapshot to download.\n';
   let js = head + '(function () {\n"use strict";\n' + body + '\n})();\n';
   if (opts.minify !== false) js = head + minify(js);
-  const html = readFileSync(join(SRC, 'index.html'), 'utf8');
+  const html = injectCensus(readFileSync(join(SRC, 'index.html'), 'utf8'), readCensusBlock());
   return { js, html, files };
 }
 
@@ -179,6 +184,7 @@ export function write(opts = {}) {
   writeFileSync(join(DIST, 'app.js'), js);
   writeFileSync(join(DIST, 'index.html'), html);
   const findings = generateFindings();
+  const yieldBlock = injectYield();
   const portfolio = generatePortfolio();
   const ladder = generateLadder();
   const handoff = generateHandoff();
@@ -187,7 +193,7 @@ export function write(opts = {}) {
     js: Buffer.byteLength(js), html: Buffer.byteLength(html),
     total: Buffer.byteLength(js) + Buffer.byteLength(html),
     jsPath: join(DIST, 'app.js'), htmlPath: join(DIST, 'index.html'),
-    findings, portfolio, ladder, handoff, ask,
+    findings, yieldBlock, portfolio, ladder, handoff, ask,
   };
 }
 
@@ -201,6 +207,8 @@ if (process.argv[1] && process.argv[1].endsWith('build.mjs')) {
   console.log('dist TOTAL        ' + String(r.total).padStart(7) + ' bytes   target 163840, cap 225280');
   console.log('dist findings/index.html ' + String(r.findings.bytes).padStart(7) + ' bytes   '
     + r.findings.verdicts + ' verdicts, ' + r.findings.values + ' values, ' + r.findings.nulls + ' null or negative');
+  console.log('dist findings yield block ' + (r.yieldBlock.skipped ? 'skipped (' + r.yieldBlock.reason + ')' : r.yieldBlock.message ? r.yieldBlock.message
+    : r.yieldBlock.rows + ' verdict rows, ' + r.yieldBlock.ledgerRuns + ' ledger runs; newest ' + r.yieldBlock.newest + ' at ' + r.yieldBlock.newestAt + ' kept per hour ' + r.yieldBlock.newestKeptPerHour));
   console.log('dist portfolio/index.html ' + String(r.portfolio.bytes).padStart(6) + ' bytes   '
     + r.portfolio.paragraphs + ' paragraphs from docs/PORTFOLIO.md (' + r.portfolio.mdBytes + ' bytes, served as portfolio/PORTFOLIO.md); gate '
     + (r.portfolio.gateVerdict || 'none') + ' at ' + (r.portfolio.gateAt || 'none'));
