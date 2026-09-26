@@ -506,6 +506,7 @@ function promptOpts(ctx) {
   const str = (k) => (ctx.opts[k] === true || ctx.opts[k] === undefined ? undefined : String(ctx.opts[k]));
   return {
     provider: str('provider'), model: str('model'), base: str('base'),
+    spawn: ctx.opts.spawn === true ? true : undefined,
     k: intOpt(ctx.opts.k, 5),
     maxTokens: ctx.opts['max-tokens'] === undefined ? undefined : intOpt(ctx.opts['max-tokens'], undefined),
   };
@@ -517,7 +518,7 @@ function ingestEvents(name) {
   try { return readLedgerFile(name, { max: 20000 }).filter((e) => e && e.type === 'act.web.ingest'); } catch { return []; }
 }
 
-describe('ask', 'ask <name> <prompt...> [--provider null|ollama|env] [--model M] [--k N]',
+describe('ask', 'ask <name> <prompt...> [--provider null|ollama|env] [--model M] [--k N] [--spawn]',
   'Ask the organism. It answers from what it holds: its memory, the pages its world senses read, and the llm cell. It reaches nothing and proposes nothing. One ledger event per ask, carrying a hash of the prompt and never the prompt.', async (ctx) => {
     const name = need(ctx, 0, 'name');
     const prompt = ctx.pos.slice(1).join(' ').trim();
@@ -525,7 +526,11 @@ describe('ask', 'ask <name> <prompt...> [--provider null|ollama|env] [--model M]
     const mod = await lazy('../act/prompt.mjs', 'the prompt surface');
     const brain = await loadBrain(name, { ledger: 'full' });
     const a = await mod.ask(brain, prompt, { ...promptOpts(ctx), events: ingestEvents(name) });
-    brain.ledger.flush();
+    // --spawn (his P7, 2026-09-26 10:51: "it needs to adapat and generate cells"): a question grows the
+    // cells that answer it (act/spawn.mjs, through the gate), prunes what did not carry and keeps what
+    // did. What it kept is saved, so the next `brain status <name>` counts the cells this question grew
+    // and the same kind of question next time runs on them and grows nothing.
+    if (a.route === 'spawn') saveBrain(brain, name); else brain.ledger.flush();
     emit(ctx, 'ask', { name, ...a }, () => [
       ST.bold('ask ') + ST.magenta(name) + ST.grey('  ' + a.promptHash + '  ' + a.promptChars + ' chars'),
       hr(72, ST),

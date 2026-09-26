@@ -1286,13 +1286,16 @@ export async function ask(brain, prompt, opts = {}) {
     if (m.pending) m = await mem.resolve(m);
     if (m.hit) return answerFromSolved(brain, text0, m, Number(process.hrtime.bigint() - t0), started0);
   }
+  const viaSpawn = askBySpawn(brain, prompt, opts); if (viaSpawn) return viaSpawn;
   // THE EXACT PATH, EARLY (2026-09-26, his order of 10:05: "less than a token ... in microseconds").
   // act/solve.mjs answers arithmetic, spoken or symbolic, linear equations, sequences and grids
   // with BigInt and no model; until today ask() reached it only after spawn, the knowledge tier,
   // the regions and recall, at milliseconds. Now it is tried here, at the nanoseconds the parse
   // and the arithmetic take, and the answer object is the one the late path built (from 'exact',
   // provenance.answer 'exact', route 'direct'), so every reader of that shape reads this one.
-  // With opts.prose the model is still asked and the late path keeps its record of agreement.
+  // With opts.prose the model is still asked and the late path keeps its record of agreement. It sits AFTER
+  // the spawn route on purpose: a question that can grow the cells that answer it (his P7) grows them first;
+  // the calculator answers what no circuit carried.
   if (opts.prose !== true && opts.exact !== false) {
     const t0 = process.hrtime.bigint();
     const early = solve(text0);
@@ -1302,7 +1305,6 @@ export async function ask(brain, prompt, opts = {}) {
       return answerFromExact(brain, text0, early, ns, started0);
     }
   }
-  const viaSpawn = askBySpawn(brain, prompt, opts); if (viaSpawn) return viaSpawn;
   const route = routeFor(brain, opts);
   const started = Date.now();
   const text = String(prompt ?? '');
