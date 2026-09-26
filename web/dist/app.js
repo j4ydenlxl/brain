@@ -1305,6 +1305,7 @@ this.state.innerHTML =
 + row('per tick', f(s.usPerTick, 1) + ' &micro;s')
 + row('signals sent', grp(s.signals))
 + row('signals landed', grp(s.delivered))
++ (this.census === undefined ? (this.census = censusRows(readCensusData())) : this.census)
 + '<div class="rule"></div>'
 + row('view', scene.targetMorph > 0.5 ? 'pipeline' : 'anatomy')
 + (this.daemon || daemonRows(null, 'not asked yet'));
@@ -1358,6 +1359,21 @@ if (typeof s !== 'number' || !Number.isFinite(s)) return '<span class="dim">not 
 if (s < 120) return s.toFixed(1) + ' s';
 if (s < 7200) return (s / 60).toFixed(1) + ' min';
 return (s / 3600).toFixed(1) + ' h';
+}
+function readCensusData() {
+if (typeof document === 'undefined') return null;
+const e = document.getElementById('census-data');
+if (!e) return null;
+try { return JSON.parse(e.textContent); } catch (err) { return null; }
+}
+function censusRows(c) {
+let out = '<div class="rule"></div>';
+if (!c || typeof c !== 'object' || typeof c.cells !== 'number') return out + row('census', '<span class="off">not measured</span>');
+const ph = (v) => (typeof v === 'number' ? v.toFixed(2) : 'null');
+out += row('census cells', grp(c.cells) + ' <span class="dim">' + grp(c.edges) + ' edges, ' + c.kinds + ' kinds</span>');
+out += row('kept / hour', ph(c.keptPerHour) + ' <span class="dim">' + c.kept + ' kept in ' + c.rounds + ' rounds</span>');
+out += row('placebo', ph(c.placeboKeptPerHour) + ' <span class="dim">' + c.placeboKept + ' kept, a random cell of the same kind</span>');
+return out + '<div class="note">' + (c.isTheBar ? (c.barMet ? 'bar met' : 'bar not met') : 'partial run') + ', ' + hesc(String(c.file)) + ' at ' + hesc(String(c.at)) + '</div>';
 }
 function daemonRows(h, why) {
 let out = '<div class="rule"></div>';
