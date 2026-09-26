@@ -507,6 +507,9 @@ function promptOpts(ctx) {
   return {
     provider: str('provider'), model: str('model'), base: str('base'),
     spawn: ctx.opts.spawn === true ? true : undefined,
+    // --provider env (act/llm.mjs): a remote OpenAI-compatible provider whose base url and key live in environment
+    // variables the USER NAMES here; the values are read at request time and never printed, logged or stored.
+    envBase: str('env-base'), envKey: str('env-key'), envPath: str('env-path'), envHeader: str('env-header'),
     k: intOpt(ctx.opts.k, 5),
     maxTokens: ctx.opts['max-tokens'] === undefined ? undefined : intOpt(ctx.opts['max-tokens'], undefined),
   };
@@ -518,7 +521,7 @@ function ingestEvents(name) {
   try { return readLedgerFile(name, { max: 20000 }).filter((e) => e && e.type === 'act.web.ingest'); } catch { return []; }
 }
 
-describe('ask', 'ask <name> <prompt...> [--provider null|ollama|env] [--model M] [--k N] [--spawn]',
+describe('ask', 'ask <name> <prompt...> [--provider null|ollama|env] [--model M] [--k N] [--spawn] [--env-base VAR --env-key VAR]',
   'Ask the organism. It answers from what it holds: its memory, the pages its world senses read, and the llm cell. It reaches nothing and proposes nothing. One ledger event per ask, carrying a hash of the prompt and never the prompt.', async (ctx) => {
     const name = need(ctx, 0, 'name');
     const prompt = ctx.pos.slice(1).join(' ').trim();
