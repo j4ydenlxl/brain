@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASK / DILATION</title>
+<meta name="description" content="Ask the organism. It answers in your tab, exactly, in nanoseconds, with no model, no server and no token.">
+<style>
+:root { color-scheme: dark; --ink: #e8eefc; --dim: #7f8ba6; --line: rgba(150,180,255,0.14); --glass: rgba(10,14,26,0.62); --ok: #7fffb0; --warn: #ffb27f; --acc: #7fb0ff; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #02030a; color: var(--ink); font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+main { max-width: 920px; margin: 0 auto; padding: 28px 16px 60px; }
+a { color: var(--acc); }
+h1 { font-size: 13px; letter-spacing: 0.24em; text-transform: uppercase; font-weight: 600; margin: 0 0 6px; }
+.dim { color: var(--dim); }
+.ok { color: var(--ok); }
+.warn { color: var(--warn); }
+.acc { color: var(--acc); }
+.port { display: inline-block; border: 1px solid var(--line); border-radius: 5px; padding: 0 6px; margin: 2px 2px 0 0; font-size: 11px; color: var(--dim); }
+#term { margin-top: 18px; background: var(--glass); border: 1px solid var(--line); border-radius: 10px; min-height: 340px; padding: 14px 16px; overflow-wrap: anywhere; }
+.entry { margin-bottom: 14px; }
+.entry pre { margin: 4px 0; white-space: pre-wrap; font: inherit; }
+.ans { font-size: 22px; color: var(--ok); letter-spacing: 0.02em; }
+.foot { color: var(--dim); font-size: 12px; }
+form { display: flex; gap: 8px; margin-top: 12px; align-items: center; }
+#q { flex: 1; min-width: 0; background: #060913; color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 11px 12px; font: inherit; font-size: 14px; }
+#q:focus { outline: none; border-color: var(--acc); box-shadow: 0 0 0 3px rgba(127,176,255,0.12); }
+button { font: inherit; cursor: pointer; }
+#go { background: #0d1630; color: var(--ink); border: 1px solid var(--acc); border-radius: 8px; padding: 10px 16px; letter-spacing: 0.12em; text-transform: uppercase; font-size: 11px; }
+.chips { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: transparent; color: var(--dim); border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; font-size: 11px; }
+.chip:hover { color: var(--ink); border-color: var(--acc); }
+.rule { height: 1px; background: var(--line); margin: 18px 0; }
+nav { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 18px; }
+code { color: var(--ink); }
+</style>
+</head>
+<body>
+<main>
+<nav><a href="../">organism</a><a href="../ladder/">ladder</a><a href="../findings/">findings</a><a href="../portfolio/">portfolio</a></nav>
+<h1>Ask the organism</h1>
+<div class="dim">It answers in this tab. The code below is the organism's own exact reader, the same file <code>node bin/brain.mjs ask</code> runs, copied byte for byte: no model, no server, no token. A question it does not carry is refused with its route printed, never guessed.</div>
+<div style="margin-top:8px"><span class="port">act/exact-read.mjs c66443d035b7</span> <span class="port">tasks/exact.mjs ede0ce88f1ad</span></div>
+<div id="term" aria-live="polite"><div class="entry dim" id="hello">ready. type a question, or pick one below.</div></div>
+<form id="f" autocomplete="off"><span class="acc">brain ask dilation &gt;</span><input id="q" name="q" placeholder="what is 17 times 23" spellcheck="false"><button id="go" type="submit">ask</button></form>
+<div class="chips"><button class="chip" data-q="what is 17 times 23">what is 17 times 23</button><button class="chip" data-q="2 to the power of 100">2 to the power of 100</button><button class="chip" data-q="15 percent of 200">15 percent of 200</button><button class="chip" data-q="the square root of 144">the square root of 144</button><button class="chip" data-q="subtract 3 from 10">subtract 3 from 10</button><button class="chip" data-q="write a poem about the sea">write a poem about the sea</button></div>
+<div class="rule"></div>
+<div class="foot">Every answer prints how it was reached: <b>route</b> (which path answered), <b>provenance</b> (exact: computed with BigInt rationals, never rounded), <b>model</b> (none: no language model was called), and the nanoseconds per ask measured on YOUR device (median of 7 timed batches of the same ask). The same question on the command line: <code>node bin/brain.mjs ask dilation "what is 17 times 23" --provider null</code>. The distance to the frontier is on the <a href="../ladder/">ladder</a>, from the verdict files.</div>
+</main>
+<script type="module">
+import { readExact, spokenExpression, spokenLeftover } from '../organism/act/exact-read.mjs';
+const readWord = null, wordRefusal = null;
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const opts = readWord ? { word: readWord } : {};
+const answer = (t) => readExact(t, opts);
+// nanoseconds per ask on this device: warm, then grow a batch until it takes 2 ms, then 7 batches
+function clock(t) {
+  for (let i = 0; i < 20; i++) answer(t);
+  let n = 8;
+  for (;;) { const a = performance.now(); for (let i = 0; i < n; i++) answer(t); if (performance.now() - a >= 2 || n >= 1 << 20) break; n *= 2; }
+  const b = [];
+  for (let k = 0; k < 7; k++) { const a = performance.now(); for (let i = 0; i < n; i++) answer(t); b.push((performance.now() - a) * 1e6 / n); }
+  b.sort((x, y) => x - y);
+  return { ns: Math.round(b[3]), asks: n * 7 };
+}
+function ask(q) {
+  q = String(q || '').trim(); if (!q) return;
+  const hello = $('#hello'); if (hello) hello.remove();
+  const e = document.createElement('div'); e.className = 'entry';
+  const r = answer(q);
+  let html = '<div><span class="acc">&gt;</span> ' + esc(q) + '</div>';
+  if (r) {
+    const c = clock(q);
+    html += '<pre class="dim">answered exactly by ' + esc(r.method) + ', with no model and no network.\n' + r.steps.map((s) => '- ' + esc(s)).join('\n') + '</pre>';
+    html += '<div class="ans" data-answer="' + esc(r.answer) + '">' + esc(r.answer) + '</div>';
+    html += '<div class="foot" data-route="exact" data-provenance="exact">route <span class="ok">exact</span>  provenance <span class="ok">exact</span>  method ' + esc(r.method) + '  model none  tokens 0  network 0  <span class="ok" data-ns="' + c.ns + '">' + c.ns.toLocaleString('en-US') + ' ns per ask on this device</span> (median of 7 batches, ' + c.asks.toLocaleString('en-US') + ' asks)</div>';
+  } else {
+    const unknown = spokenLeftover(q).slice(0, 8);
+    const why = wordRefusal ? wordRefusal(q) : null;
+    html += '<pre class="warn">no cell in this tab carries this question, so it is refused, not guessed.</pre>';
+    html += '<div class="foot" data-route="refused" data-provenance="none">route <span class="warn">refused</span>  provenance none  model none (the model cell is not in the browser)  tokens 0  network 0' + (unknown.length ? '  words the spoken reader could not read: ' + unknown.map(esc).join(', ') : '') + '</div>'
+      + (why ? '<div class="foot">the word problem reader stopped at: ' + esc(why) + '</div>' : '');
+    html += '<div class="foot">on the command line the organism routes it on: knowledge tier, regions, then the model cell: <code>node bin/brain.mjs ask dilation "' + esc(q.slice(0, 80)) + '" --provider ollama</code></div>';
+  }
+  e.innerHTML = html;
+  $('#term').appendChild(e);
+  e.scrollIntoView({ block: 'nearest' });
+}
+$('#f').addEventListener('submit', (ev) => { ev.preventDefault(); ask($('#q').value); $('#q').value = ''; });
+for (const b of document.querySelectorAll('.chip')) b.addEventListener('click', () => ask(b.dataset.q));
+const pre = new URLSearchParams(location.search).get('q'); if (pre) ask(pre);
+window.__brainAsk = { ready: true, spoken: spokenExpression };
+$('#q').focus();
+</script>
+</body>
+</html>

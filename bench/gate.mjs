@@ -1016,13 +1016,17 @@ async function main() {
   const startedAt = new Date().toISOString();
   const files = walk(ROOT);
   const rel = (p) => relTo(ROOT, p);
-  console.log('gate: free RAM ' + Math.round(os.freemem() / MB) + ' MB at start; each test file waits for ' + GATE_CAPS.waitFreeRamMb + ' MB free before it starts');
+  // --wait-free-ram-mb N: a machine with less RAM than the 16384 MB the wait rule assumes (a 16 GB cloud
+  // session host) waits for N MB instead; every other cap is unchanged and the value used is printed.
+  const waitAt = process.argv.indexOf('--wait-free-ram-mb');
+  const caps = waitAt > 0 && Number(process.argv[waitAt + 1]) > 0 ? { ...GATE_CAPS, waitFreeRamMb: Number(process.argv[waitAt + 1]) } : GATE_CAPS;
+  console.log('gate: free RAM ' + Math.round(os.freemem() / MB) + ' MB at start; each test file waits for ' + caps.waitFreeRamMb + ' MB free before it starts');
 
   // 1. tests, one process per file so a crash in one cannot hide another, each under the budget
   const testFiles = files.filter(f => /[\\/]test[\\/].*\.test\.mjs$/.test(f)).sort();
   const tests = [];
   for (const f of testFiles) {
-    const { row: res, out } = await runTestFile(f);
+    const { row: res, out } = await runTestFile(f, { caps });
     if (res.exit !== 0 && !args.has('--quiet')) console.log(out.split('\n').filter(l => /✖|Error|assert|expected|actual|BUDGET/.test(l)).slice(0, 40).join('\n'));
     tests.push(res);
     const b = res.budget;
