@@ -21,6 +21,8 @@
 //   node bench/daemon.mjs            the bar: writes bench/verdicts/daemon.json once
 //   node bench/daemon.mjs --quick    60 s + 20 s: writes daemon-partial.json (isTheBar false)
 //   flags: --wall S --full-wall S --units N --tasks N (per suite; 1000 is every item) --seed S --quick --nowrite
+//   --wait-free-gb N  the free-RAM wait before the run (default 16; a 16 GB host never has 16 GB
+//                     free, so the cloud host passes 4; board 19 builder); not a narrowing flag
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
@@ -41,6 +43,16 @@ if (!process.execArgv.some((a) => a.startsWith('--max-old-space-size'))) {
   await main();
 }
 
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the daemon bar developed on and what it graded: pure, from the run's suite options. */
+export function splitFor(opts = {}) {
+  return {
+    development: { what: 'the internal suites daemon/run.mjs makeSuiteRuler draws from bench/answer.mjs (algebra, sequence, grid); the loop spawn step asks the suite questions the last ruler found no held cell for', suites: Array.isArray(opts.suites) ? opts.suites.slice() : [], tasksPerSuite: opts.tasks ?? null, seed: opts.seed ?? null },
+    heldOut: { what: 'none: the start and end suite scores are read on the same suites the loop grows its cells on; the ledger, checkpoint and rotation parts of the bar are measurements of the run, not a graded set', n: 0 },
+    contaminated: 'no held-out set: the improvement is scored on the suites the loop spawns cells for',
+  };
+}
+
 async function main() {
   const BAR = Object.freeze({ wall: 360, fullWall: 120, units: 10_000, tasks: 1000, seed: 'whole', majors: 12, checkpointEvery: 1000, fullBudgetMb: 50 });
   const QUICK = { wall: 60, fullWall: 20 };
@@ -55,6 +67,7 @@ async function main() {
     else if (a === '--full-wall') { o.fullWall = Number(v); i++; }
     else if (a === '--units') { o.units = Number(v); i++; }
     else if (a === '--tasks') { o.tasks = Number(v); i++; }
+    else if (a === '--wait-free-gb') { o.waitFreeGb = Number(v); i++; }
     else throw new Error('daemon bench: unknown flag ' + a);
   }
   const narrow = ['wall', 'fullWall', 'units', 'tasks', 'seed'].some((k) => o[k] !== BAR[k]);
@@ -67,8 +80,9 @@ async function main() {
   // free memory first: eight builders share the machine, so under 16 GB free this waits
   for (;;) {
     const free = os.freemem();
-    if (free >= 16 * GB) { say('[ram] free ' + (free / GB).toFixed(2) + ' GB of ' + (os.totalmem() / GB).toFixed(2) + ' GB, heap cap ' + HEAP_MB + ' MB'); break; }
-    say('[ram] free ' + (free / GB).toFixed(2) + ' GB is under 16 GB: waiting 30 s');
+    const waitGb = o.waitFreeGb ?? 16;
+    if (free >= waitGb * GB) { say('[ram] free ' + (free / GB).toFixed(2) + ' GB of ' + (os.totalmem() / GB).toFixed(2) + ' GB, heap cap ' + HEAP_MB + ' MB'); break; }
+    say('[ram] free ' + (free / GB).toFixed(2) + ' GB is under ' + waitGb + ' GB: waiting 30 s');
     await new Promise((r) => setTimeout(r, 30_000));
   }
 
@@ -194,6 +208,7 @@ async function main() {
     verdict = {
       name: 'daemon', at: new Date().toISOString(), command: ['node', 'bench/daemon.mjs', ...argv].join(' '), execArgv: process.execArgv, node: process.version,
       isTheBar, barMet, met, statement,
+      split: splitFor({ tasks: o.tasks, seed: o.seed, suites: Object.keys(last.scores || {}) }),
       bar: { ...BAR, ledgerPer1000TicksBytes: MB }, run: { ...o },
       phaseA: A, phaseB: B, peakRssMb: maxRssMb, peakRssSampledMb: peakSampledMb,
       machine: { platform: process.platform, cpus: os.cpus().length, totalMemMB: Math.round(os.totalmem() / MB), freeMemMB: Math.round(os.freemem() / MB) },

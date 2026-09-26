@@ -65,6 +65,16 @@ import { firstPrompt, extractCode, entryName } from '../act/code.mjs';
 import { complete, probeOllama, OLLAMA_BASE } from '../act/llm.mjs';
 import { loadHumanEval, humanEvalTask, cutAtStopTokens, wilson } from './public.mjs';
 
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the synth bar developed on and what it graded: pure; the words match this bench's own development field. */
+export function splitFor() {
+  return {
+    development: { what: 'MultiPL-E JavaScript HumanEval records 0 to 39 by index (the extractor was written reading these prompts) and the 40 task internal suite bench/fixtures/code-tasks.json', humaneval: '0..39 by index', code: 'bench/fixtures/code-tasks.json' },
+    heldOut: { what: 'HumanEval records 40 to 160 by index are held out and NOT graded by this bar (only their prompts were read, for extraction coverage); the code suite grades on each task\'s hidden cases', humanevalNotGraded: '40..160 by index' },
+    contaminated: 'the graded HumanEval records 0 to 39 are the ones the extractor was written reading, so this bar is a development measurement',
+  };
+}
+
 export { wilson };
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..');
@@ -505,6 +515,7 @@ export async function run(opts = {}) {
       && !stages.humaneval.partial && !stages.code.partial && (!stages.big.partial || stages.big.cutByClock);
     const v = {
       at: new Date().toISOString(), node: process.version, command: cfg.command, isTheBar: !!full,
+      split: splitFor(),
       notTheBarBecause: full ? null : (final ? 'a narrower run: stages ' + Object.keys(stages).join(', ') + (cfg.limit ? ', limit ' + cfg.limit : '') : 'a snapshot while the run is still going'),
       startedAt: st.started, model: cfg.model, bigModel: cfg.big, k: cfg.k, repairK: cfg.k, maxTokens: cfg.maxTokens,
       sandboxMsPerCandidate: cfg.timeoutMs, hiddenGradeMs: cfg.testMs, bigMinutes: cfg.bigMinutes, codeHash: st.codeHash,

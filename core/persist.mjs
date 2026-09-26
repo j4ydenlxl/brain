@@ -7,8 +7,8 @@
 // typed values; with `intern` it is the same document with a blob table, checkpoint format 3 or
 // format 4, both described below. The reader restores versions 1, 2, 3 and 4.
 import { openSync, writeSync, closeSync, renameSync, unlinkSync, existsSync, readSync, fstatSync } from 'node:fs';
-import { deflateRawSync, inflateRawSync } from 'node:zlib';
-import { crc32, packBipolarBits, packTernaryBits, bipolarBytes, ternaryBytes, xorRiceEncode, xorRiceDecode, XOR_RICE_WINDOW } from './pack.mjs';
+import { deflateRawSync, inflateRawSync, createDeflateRaw, constants as zlibConstants } from 'node:zlib';
+import { crc32, packBipolarBits, packTernaryBits, bipolarBytes, ternaryBytes, xorRiceEncode, xorRiceDecode, XOR_RICE_WINDOW, XorRiceStream } from './pack.mjs';
 // Delta checkpoints (Board 12, item delta). The import is circular on purpose and safe: neither
 // module touches the other's bindings while it is being evaluated, only inside functions.
 import { deltaPolicyFor, writeChain, isChainHead, readChainHeaderBuffer, readChainBuffer } from './checkpoint-delta.mjs';
@@ -768,6 +768,375 @@ function assembleCheckpoint(file, doc, table, skeleton, { ruler = null, hv = 'xo
   }
   renameSync(tmp, file);
   return { file, bytes: total, header: JSON.parse(text) };
+}
+
+// ---------------------------------------------------------------- the streamed checkpoint (board 19 builder)
+// Board 19, queue item 9 (B1, the fit): his P13, the organism lives 24/7 in a 512m container
+// under a 448 MB rss budget. writeCheckpoint above builds every section in memory before it
+// writes one byte: the slot records, the skeleton text as a list of small strings joined into
+// one, the edge and payload bytes, each vector group's store, then a concatenated copy of each,
+// the xor-rice coder's own copy of every store and its output, all at once, on top of the
+// snapshot document. The Board 13 fit run counted 6 budget kills at the cap, each right after a
+// checkpoint of 6.5 to 7.9 MB (notes/cloud-fit.md).
+//
+// writeCheckpointStreamed writes THE SAME BYTES (the same container 2 file, header included;
+// test/cloud-fit-stream.test.mjs compares them) without holding any section whole:
+//   - one walk of the document, as today, feeding each section as it goes: the slot records
+//     into an incremental raw deflate, the skeleton text through a fixed staging block into
+//     its own incremental deflate (a new one every SKEL_CHUNK characters, as today), payload
+//     bytes into a deflate that restarts every BYTES_CHUNK bytes (as deflateChunks cuts them),
+//     edge columns raw, and every packed vector once into its group's plain stream and its
+//     group's XorRiceStream coder (core/pack.mjs), which keeps only its reference window;
+//   - every section's output lands in a block of `blockBytes` (64 KiB by default) that is
+//     appended to a spill file (<file>.spill) when full, so each section is a list of blocks
+//     on disk plus one partial block in memory;
+//   - the header needs every section's length and CRC and comes first in the file, so it is
+//     computed when the walk ends; then the temp file gets the prefix, the header and each
+//     section copied block by block from the spill, and is renamed over the target (atomic, as
+//     today); the spill is deleted either way, and a throw leaves neither file behind.
+// Dedup stays exact: a payload string is found again by the Map of strings the table has always
+// kept (with the lazy document of core/brain.mjs those strings are the only payload text held),
+// and a vector by a 53 bit key of two CRCs whose every hit is confirmed against the vector's own
+// bytes read back from its plain stream, where the old table held each vector as a 1 KiB string.
+// The deflates run on zlib's own handle, synchronously, so the checkpoint still happens inside one
+// tick and the daemon's invariant (the file is the organism at exactly t) holds; a runtime whose
+// zlib stream has no such handle deflates each section from a growing buffer instead (the same
+// bytes, bounded by that section's raw size), and `stats.zlib` says which ran.
+export const STREAM_BLOCK = 64 << 10;
+const EMPTY = Buffer.alloc(0);
+const ZEROS = Buffer.alloc(8);
+const ZHANDLE = (() => {
+  try {
+    const z = createDeflateRaw({ level: 6 });
+    const ok = !!(z._handle && typeof z._handle.writeSync === 'function' && z._writeState && z._writeState.length >= 2);
+    z.close();
+    return ok;
+  } catch { return false; }
+})();
+
+class Spill {
+  constructor(file) { this.file = file; this.fd = openSync(file, 'w+'); this.size = 0; this.held = 0; this.peakHeld = 0; this.maxWrite = 0; this.maxLeaf = 0; }
+  hold(n) { this.held += n; if (this.held > this.peakHeld) this.peakHeld = this.held; }
+  append(buf, len) {
+    let w = 0;
+    while (w < len) w += writeSync(this.fd, buf, w, len - w, this.size + w);
+    const at = this.size; this.size += len;
+    return at;
+  }
+  read(into, off, len, at) {
+    let r = 0;
+    while (r < len) { const n = readSync(this.fd, into, off + r, len - r, at + r); if (n <= 0) throw new Error('writeCheckpointStreamed: the spill ended at ' + (at + r)); r += n; }
+  }
+  close() { try { closeSync(this.fd); } catch {} try { if (existsSync(this.file)) unlinkSync(this.file); } catch {} }
+}
+// One section's bytes: full blocks on disk (spill offsets), the last partial block in memory.
+class SpillStream {
+  constructor(spill, block) { this.spill = spill; this.block = block; this.buf = null; this.pos = 0; this.blocks = []; this.size = 0; this.crc = 0; }
+  write(b) {
+    if (!b.length) return;
+    this.crc = crc32(b, this.crc); this.size += b.length;
+    if (!this.buf) { this.buf = Buffer.allocUnsafe(this.block); this.spill.hold(this.block); }
+    let off = 0;
+    while (off < b.length) {
+      const n = Math.min(b.length - off, this.block - this.pos);
+      this.buf.set(n === b.length && off === 0 ? b : b.subarray(off, off + n), this.pos);
+      this.pos += n; off += n;
+      if (this.pos === this.block) { this.blocks.push(this.spill.append(this.buf, this.pos)); this.pos = 0; }
+    }
+  }
+  readAt(at, into) {
+    let done = 0;
+    while (done < into.length) {
+      const p = at + done, bi = Math.floor(p / this.block), inner = p % this.block, n = Math.min(into.length - done, this.block - inner);
+      if (bi < this.blocks.length) this.spill.read(into, done, n, this.blocks[bi] + inner);
+      else into.set(this.buf.subarray(inner, inner + n), done);
+      done += n;
+    }
+    return into;
+  }
+  copyTo(put, tmp) {
+    for (const at of this.blocks) { this.spill.read(tmp, 0, this.block, at); put(tmp, this.block); }
+    if (this.pos) put(this.buf, this.pos);
+  }
+  release() { if (this.buf) { this.spill.held -= this.block; this.buf = null; } }
+}
+// Raw deflate at level 6, fed piece by piece, synchronously; the output is deflateRawSync's for
+// the whole input (zlib's output does not depend on how the input is cut when nothing is flushed).
+class SyncDeflate {
+  constructor(sink, out, spill) {
+    this.sink = sink; this.out = out; this.spill = spill; this.raw = 0; this.stored = 0;
+    if (ZHANDLE) { this.z = createDeflateRaw({ level: 6 }); this.z.on('error', (e) => { this.err = e; }); this.parts = null; } else { this.z = null; this.parts = []; }
+    this.err = null;
+  }
+  write(b) {
+    if (!b.length) return;
+    this.raw += b.length;
+    if (this.z) this.run(b, zlibConstants.Z_NO_FLUSH);
+    else { this.parts.push(Buffer.from(b)); this.spill.hold(b.length); }
+  }
+  run(chunk, flush) {
+    const h = this.z._handle, ws = this.z._writeState, out = this.out;
+    let inOff = 0, availIn = chunk.length;
+    for (;;) {
+      h.writeSync(flush, chunk, inOff, availIn, out, 0, out.length);
+      if (this.err) throw this.err; // zlib reports through the stream's error event, caught above
+      const availOut = ws[0], left = ws[1], got = out.length - availOut;
+      if (got) { this.sink.write(out.subarray(0, got)); this.stored += got; }
+      inOff += availIn - left; availIn = left;
+      if (availOut !== 0) break;
+    }
+  }
+  /** @returns {[number, number]} [stored bytes, raw bytes], a chunk row as the header lists it */
+  end() {
+    if (this.z) { this.run(EMPTY, zlibConstants.Z_FINISH); this.z.close(); this.z = null; }
+    else if (this.parts) {
+      const d = deflateRawSync(this.parts.length === 1 ? this.parts[0] : Buffer.concat(this.parts), { level: 6 });
+      this.spill.held -= this.raw; this.parts = null;
+      this.sink.write(d); this.stored = d.length;
+    }
+    return [this.stored, this.raw];
+  }
+}
+const vectorKey = (bits) => crc32(bits) * 2097152 + (crc32(bits, 0x2545F491) >>> 11); // 32 + 21 bits, exact in a double
+
+// The streamed twin of SlotTable: the same add/column interface walkInterned and registerColumns
+// call, the same slot numbers, records, census and group order.
+class StreamTable {
+  constructor(spill, block, out, hv) {
+    this.spill = spill; this.block = block; this.out = out; this.hv = hv;
+    this.map = new Map(); this.count = 0;
+    this.slots = new SpillStream(spill, block); this.recs = new SyncDeflate(this.slots, out, spill);
+    this.bytes = new SpillStream(spill, block); this.bytesDef = null; this.bytesRaw = 0; this.bytesChunks = [];
+    this.edges = new SpillStream(spill, block); this.columns = [];
+    this.groups = []; this.groupBy = new Map();
+    this.census = { raw: 0, b64: 0, bipolar: 0, packed: 0, ternary: 0, typed: 0, vectorRefs: 0, vectorsHeld: 0 };
+  }
+  add(v) {
+    let i = this.map.get(v);
+    if (i === undefined) { i = this.count++; this.map.set(v, i); this.recs.write(this.encode(v)); }
+    return i;
+  }
+  column(v, name, dtype) {
+    if (typeof v !== 'string' || v.length < BLOB_MIN || !PAYLOAD_RE.test(v) || this.map.has(v)) return;
+    const bytes = canonicalBytes(v);
+    if (!bytes || bytes.length % DTYPE_BYTES[dtype]) return;
+    const r = this.edges.size % 8;
+    if (r) this.edges.write(ZEROS.subarray(0, 8 - r));
+    const at = this.edges.size;
+    this.edges.write(bytes);
+    const i = this.count++;
+    this.map.set(v, i);
+    this.recs.write(recordOf([S_B64, SEC_EDGES, at, bytes.length]));
+    this.columns.push({ name, dtype, offset: at, bytes: bytes.length, n: bytes.length / DTYPE_BYTES[dtype], slot: i });
+    this.census.typed++;
+  }
+  // the bytes section: raw offsets as SlotTable's Parts gave them, deflated in BYTES_CHUNK pieces
+  pushBytes(b) {
+    const at = this.bytesRaw;
+    let off = 0;
+    while (off < b.length) {
+      if (!this.bytesDef) this.bytesDef = new SyncDeflate(this.bytes, this.out, this.spill);
+      const n = Math.min(BYTES_CHUNK - this.bytesDef.raw, b.length - off);
+      this.bytesDef.write(off === 0 && n === b.length ? b : b.subarray(off, off + n));
+      off += n;
+      if (this.bytesDef.raw === BYTES_CHUNK) { this.bytesChunks.push(this.bytesDef.end()); this.bytesDef = null; }
+    }
+    this.bytesRaw += b.length;
+    return at;
+  }
+  group(kind, lanes) {
+    const key = kind + lanes;
+    let g = this.groupBy.get(key);
+    if (!g) {
+      const per = kind === 'bipolar' ? bipolarBytes(lanes) : ternaryBytes(lanes);
+      g = { id: 2 + this.groups.length, kind, lanes, per, plain: new SpillStream(this.spill, this.block), coded: null, coder: null, index: new Map(), count: 0, cmp: Buffer.allocUnsafe(per) };
+      this.spill.hold(per);
+      if (kind === 'bipolar' && this.hv === 'xor-rice') {
+        g.coded = new SpillStream(this.spill, this.block);
+        g.coder = new XorRiceStream(per, (b) => g.coded.write(b), { window: XOR_RICE_WINDOW, block: Math.min(this.block, 1 << 16) });
+        this.spill.hold(g.coder.held);
+      }
+      this.groups.push(g); this.groupBy.set(key, g);
+    }
+    return g;
+  }
+  vector(g, bits) {
+    this.census.vectorRefs++;
+    const key = vectorKey(bits);
+    const hit = g.index.get(key);
+    if (hit !== undefined) {
+      for (const idx of typeof hit === 'number' ? [hit] : hit) if (g.plain.readAt(idx * g.per, g.cmp).equals(bits)) return idx;
+    }
+    const i = g.count++;
+    if (hit === undefined) g.index.set(key, i); else if (typeof hit === 'number') g.index.set(key, [hit, i]); else hit.push(i);
+    g.plain.write(bits);
+    if (g.coder) g.coder.push(bits);
+    this.census.vectorsHeld++;
+    return i;
+  }
+  encode(s) {
+    const colon = s.indexOf(':');
+    if (colon > 0) {
+      if (PACKED_PREFIX_RE.test(s.slice(0, colon + 1))) {
+        const lanes = Number(s.slice(1, colon));
+        const bytes = Number.isSafeInteger(lanes) ? canonicalBytes(s.slice(colon + 1)) : null;
+        if (bytes && bytes.length === bipolarBytes(lanes)) {
+          this.census.packed++;
+          const g = this.group('bipolar', lanes);
+          return recordOf([S_PACKED, g.id, this.vector(g, bytes)]);
+        }
+      }
+    } else if (colon < 0) {
+      const bytes = canonicalBytes(s);
+      if (bytes) {
+        if (allBipolar(bytes)) {
+          this.census.bipolar++;
+          const g = this.group('bipolar', bytes.length);
+          return recordOf([S_BIPOLAR, g.id, this.vector(g, packBipolarBits(bytes, Buffer.alloc(bipolarBytes(bytes.length))))]);
+        }
+        if (allTernaryBytes(bytes)) {
+          this.census.ternary++;
+          const g = this.group('ternary', bytes.length);
+          return recordOf([S_TERNARY, g.id, this.vector(g, packTernaryBits(bytes, Buffer.alloc(ternaryBytes(bytes.length))))]);
+        }
+        this.census.b64++;
+        return recordOf([S_B64, SEC_BYTES, this.pushBytes(bytes), bytes.length]);
+      }
+    }
+    this.census.raw++;
+    const raw = Buffer.from(s, 'latin1'); // exact: PAYLOAD_RE admits ASCII only
+    return recordOf([S_RAW, SEC_BYTES, this.pushBytes(raw), raw.length]);
+  }
+}
+
+/**
+ * writeCheckpoint's file, streamed (see above). Same arguments, same return, plus `stream`: the
+ * block size, the spill's bytes, the peak bytes of blocks and coder windows held at once, the
+ * largest single write to the file, and which deflate ran. A delta policy on the directory
+ * writes the chain as writeCheckpoint does (the chain diffs whole skeletons, so it is not
+ * streamed).
+ * @param {string} file
+ * @param {object} doc
+ * @param {object} [opts] { ruler, hv, blockBytes, probe }: probe({ phase, at, bytes }) is called
+ *   after each piece written to the temp file (a test's instrument; a throw there is a failed write)
+ */
+export function writeCheckpointStreamed(file, doc, { ruler = null, hv = 'xor-rice', chain = true, blockBytes = STREAM_BLOCK, probe = null } = {}) {
+  if (doc === null || typeof doc !== 'object' || Array.isArray(doc)) throw new TypeError('writeCheckpointStreamed: the document must be a plain object');
+  if (!HV_ENCODINGS.includes(hv)) throw new RangeError('writeCheckpointStreamed: hv must be one of ' + HV_ENCODINGS.join(', ') + ', got ' + hv);
+  if (!(Number.isInteger(blockBytes) && blockBytes >= 1024 && blockBytes <= (64 << 20))) throw new RangeError('writeCheckpointStreamed: blockBytes must be an integer from 1024 to 64 MiB, got ' + blockBytes);
+  if (chain) { const policy = deltaPolicyFor(file); if (policy) return writeChain(file, doc, { ruler, hv, policy }); }
+  const block = blockBytes;
+  const tmp = file + '.tmp';
+  const spill = new Spill(file + '.spill');
+  let fd = null;
+  try {
+    const out = Buffer.allocUnsafe(block); spill.hold(block);        // one deflate output block, shared
+    const table = new StreamTable(spill, block, out, hv);
+    registerColumns(doc, table);
+    // the skeleton: UTF-8 through one staging block, a new deflate every SKEL_CHUNK characters
+    const skel = new SpillStream(spill, block), skelChunks = [];
+    const stage = Buffer.allocUnsafe(block); spill.hold(block);
+    let spos = 0, chars = 0, def = null;
+    const drain = () => { if (spos) { def.write(stage.subarray(0, spos)); spos = 0; } };
+    walkInterned(doc, (s) => {
+      if (!def) def = new SyncDeflate(skel, out, spill);
+      if (s.length * 3 <= block - spos) spos += stage.write(s, spos, 'utf8');
+      else {
+        const n = Buffer.byteLength(s, 'utf8');
+        if (n > block - spos) drain();
+        if (n <= block) spos += stage.write(s, spos, 'utf8');
+        else { const big = Buffer.from(s, 'utf8'); if (big.length > spill.maxLeaf) spill.maxLeaf = big.length; def.write(big); } // one leaf longer than a block: its own text, once
+      }
+      chars += s.length;
+      if (chars >= SKEL_CHUNK) { drain(); skelChunks.push(def.end()); def = null; chars = 0; }
+    }, table, null);
+    if (def) { drain(); skelChunks.push(def.end()); def = null; }
+    const slotsRow = table.recs.end();
+    if (table.bytesDef) { table.bytesChunks.push(table.bytesDef.end()); table.bytesDef = null; }
+    for (const g of table.groups) if (g.coder) g.coder.finish();
+
+    const sections = [];
+    sections.push({ name: 'slots', enc: 'deflate-raw', stream: table.slots, raw: slotsRow[1], count: table.count });
+    sections.push({ name: 'skeleton', enc: 'deflate-raw-chunks', stream: skel, raw: skelChunks.reduce((a, c) => a + c[1], 0), chunks: skelChunks });
+    sections.push({ name: 'edges', id: SEC_EDGES, enc: 'typed', stream: table.edges, columns: table.columns });
+    sections.push({ name: 'bytes', id: SEC_BYTES, enc: 'deflate-raw-chunks', stream: table.bytes, raw: table.bytesRaw, chunks: table.bytesChunks });
+    for (const g of table.groups) {
+      const base = { name: 'hv.' + g.kind + '.' + g.lanes, id: g.id, kind: g.kind, lanes: g.lanes, per: g.per, count: g.count };
+      if (g.kind === 'bipolar' && hv === 'xor-rice' && g.count > 1 && g.coded.size < g.plain.size) { sections.push({ ...base, enc: 'xor-rice', window: XOR_RICE_WINDOW, raw: g.plain.size, rawCrc32: g.plain.crc, stream: g.coded }); continue; }
+      sections.push({ ...base, enc: g.kind === 'bipolar' ? 'bits' : 'ternary-bits', stream: g.plain });
+    }
+    let off = 0;
+    for (const s of sections) { s.offset = off; s.bytes = s.stream.size; s.crc32 = s.stream.crc; off += s.bytes; off += (8 - (off % 8)) % 8; }
+    const bodyLen = off;
+
+    const head = {
+      format: 'brain.checkpoint', version: CKPT_CONTAINER, doc: doc.version ?? null, name: doc.name ?? null,
+      t: doc.clock && Number.isFinite(doc.clock.t) ? doc.clock.t : null,
+      cells: Array.isArray(doc.cells) ? doc.cells.length : null,
+      edges: doc.connectome && Number.isFinite(doc.connectome.n) ? doc.connectome.n : null,
+      bytes: 0, ruler: null, slots: table.count, census: table.census,
+      sections: sections.map(({ stream, ...rest }) => rest),
+    };
+    const PLACE = 999999999999999.9;
+    const fill = (total) => {
+      head.bytes = total;
+      if (ruler) {
+        const score = Number(ruler.score);
+        head.ruler = { ...ruler, cells: ruler.cells ?? head.cells, bytes: total, bytesPerScorePoint: total === PLACE ? PLACE : (score > 0 ? r3(total / score) : null) };
+      }
+      return JSON.stringify(head);
+    };
+    const placeLen = Buffer.byteLength(fill(PLACE), 'utf8');
+    const H = placeLen + ((8 - ((CKPT_PRE + placeLen) % 8)) % 8);
+    const total = CKPT_PRE + H + bodyLen;
+    const text = fill(total);
+    const hb = Buffer.alloc(H, 0x20);
+    const n = hb.write(text, 0, 'utf8');
+    if (n !== Buffer.byteLength(text, 'utf8')) throw new Error('writeCheckpointStreamed: the header outgrew its placeholder (' + Buffer.byteLength(text, 'utf8') + ' > ' + H + ')');
+    const pre = Buffer.alloc(CKPT_PRE);
+    pre.write(CKPT_MAGIC, 0, 'latin1');
+    pre.writeUInt32LE(H, 8);
+    pre.writeUInt32LE(crc32(hb), 12);
+
+    fd = openSync(tmp, 'w');
+    let at = 0;
+    // every write to the temp file is at most one block (the header too, cut into blocks)
+    const put = (buf, len, phase = 'section') => {
+      for (let o = 0; o < len;) {
+        const n = Math.min(block, len - o);
+        let w = 0;
+        while (w < n) w += writeSync(fd, buf, o + w, n - w, null);
+        o += n; at += n;
+        if (n > spill.maxWrite) spill.maxWrite = n;
+        if (probe) probe({ phase, at, bytes: n });
+      }
+    };
+    put(pre, pre.length, 'prefix'); put(hb, hb.length, 'header');
+    const tmpBlock = stage; // the staging block is free now: the copy buffer
+    let body = 0;
+    for (const s of sections) {
+      if (s.offset > body) { put(ZEROS, s.offset - body, 'pad'); body = s.offset; }
+      s.stream.copyTo((b, len) => put(b, len), tmpBlock);
+      body += s.stream.size;
+      s.stream.release();
+    }
+    if (bodyLen > body) put(ZEROS, bodyLen - body, 'pad');
+    closeSync(fd); fd = null;
+    renameSync(tmp, file);
+    // the bound: the shared deflate block, the staging block, one block per section stream, each
+    // coder's window, ring and output, and one vector per group for the dedup check; the
+    // document's own size does not enter it (a leaf longer than a block is counted apart)
+    const streams = 4 + table.groups.reduce((a, g) => a + (g.coded ? 2 : 1), 0);
+    const boundBytes = block * (2 + streams) + table.groups.reduce((a, g) => a + g.per + (g.coder ? g.coder.held : 0), 0);
+    const stats = { blockBytes: block, spillBytes: spill.size, peakHeldBytes: spill.peakHeld, boundBytes, maxWriteBytes: spill.maxWrite, maxLeafBytes: spill.maxLeaf, streams, zlib: ZHANDLE ? 'incremental (zlib handle)' : 'per-section buffer (no zlib handle)' };
+    spill.close();
+    return { file, bytes: total, header: JSON.parse(text), stream: stats };
+  } catch (err) {
+    if (fd !== null) { try { closeSync(fd); } catch {} }
+    try { if (existsSync(tmp)) unlinkSync(tmp); } catch {}
+    spill.close();
+    throw err;
+  }
 }
 
 function headerOf(buf, file) {

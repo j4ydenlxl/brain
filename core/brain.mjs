@@ -11,7 +11,7 @@ import { Clock } from './clock.mjs';
 import { Ledger } from './ledger.mjs';
 import { Gate, makePolicy } from './gate.mjs';
 import { Scheduler } from './scheduler.mjs';
-import { writeJSONStreamed, readJSONStreamed, writeCheckpoint } from './persist.mjs';
+import { writeJSONStreamed, readJSONStreamed, writeCheckpoint, writeCheckpointStreamed } from './persist.mjs';
 
 export class Brain {
   constructor({ name = 'brain', seed = name, dir = null, ledger = 'full', policy = null, hebbian = { eta: 1e-2, alpha: 1e-4 }, pruneEvery = 1000, growth = {}, gate = {}, ledgerRing = 100_000, connectomeCapacity = 1024, outboxRing = 4096 } = {}) {
@@ -260,7 +260,13 @@ export class Brain {
   // measures format 2 against format 3 keeps measuring exactly that; a caller that names
   // neither gets this brain's `checkpointContainer` (seeds/whole.mjs sets 2 on every whole
   // organism) or 1. `ruler` (else this.ruler) is written into the container 2 header as it is.
-  snapshot(dir = this.dir, { version, container, ruler } = {}) {
+  // `stream: true` (container 2 only; board 19 builder, the fit item) writes the SAME bytes through
+  // core/persist.mjs writeCheckpointStreamed: the document's big lists (cells, mailboxes,
+  // inflight, outbox) are lazy, one element serialized at a time as the walk reaches it, and the
+  // sections go to disk in bounded blocks, so the checkpoint never holds the snapshot twice.
+  // The daemon asks for it (daemon/run.mjs, BRAIN_CHECKPOINT_STREAM); every other caller gets
+  // exactly the path it had.
+  snapshot(dir = this.dir, { version, container, ruler, stream = false } = {}) {
     if (!dir) throw new Error('snapshot: no dir');
     const box = container !== undefined ? container : (version !== undefined ? 1 : (this.checkpointContainer || 1));
     if (box !== 1 && box !== 2) throw new Error('snapshot: container must be 1 or 2, got ' + box);
@@ -269,8 +275,31 @@ export class Brain {
     if (box === 2 && version !== 3) throw new Error('snapshot: container 2 holds a version 3 document, got version ' + version);
     mkdirSync(dir, { recursive: true });
     this.ledger.flush();
-    const inflight = [];
-    for (const [at, l] of this.inflight) for (const it of l) inflight.push({ at, sig: signalToJSON(it.sig), w: it.w, e: it.e, from: it.from, dst: it.dst, dstPort: it.dstPort });
+    const streamed = box === 2 && stream === true;
+    const j = this.snapshotDoc(version, { lazy: streamed });
+    const file = path.join(dir, 'snapshot.json');
+    if (box === 2) this.lastCheckpoint = (streamed ? writeCheckpointStreamed : writeCheckpoint)(file, j, { ruler: ruler || this.ruler || null }).header; // atomic, like the JSON writer
+    else writeJSONStreamed(file, j, { intern: version >= 3 }); // streamed and atomic: no single string, and a failed write keeps the last good checkpoint
+    this.log(box === 2 ? { type: 'snapshot', dir, version, container: box } : { type: 'snapshot', dir, version });
+    return path.join(dir, 'snapshot.json');
+  }
+  // The snapshot document (board 19 builder: moved out of snapshot() unchanged, so the streamed
+  // writer and the test can build it). `lazy` makes cells, mailboxes, inflight and outbox lazy
+  // lists (lazyList below): the same length, the same element at each index, built only when the
+  // walk reads it, so no second copy of the organism is ever held. Serialization here reads
+  // state and changes none, so building an element later in the same synchronous call gives the
+  // element the eager list would have held (test/cloud-fit-stream.test.mjs compares the bytes).
+  snapshotDoc(version = 3, { lazy = false } = {}) {
+    let inflight;
+    if (lazy) {
+      const flat = [];
+      for (const [at, l] of this.inflight) for (const it of l) flat.push([at, it]);
+      inflight = lazyList(flat, ([at, it]) => ({ at, sig: signalToJSON(it.sig), w: it.w, e: it.e, from: it.from, dst: it.dst, dstPort: it.dstPort }));
+    } else {
+      inflight = [];
+      for (const [at, l] of this.inflight) for (const it of l) inflight.push({ at, sig: signalToJSON(it.sig), w: it.w, e: it.e, from: it.from, dst: it.dst, dstPort: it.dstPort });
+    }
+    const each = lazy ? lazyList : (arr, fn) => arr.map((x) => fn(x));
     const j = {
       // version 2 adds `coact` (the co-activation counters) and `ledger` (the seq this brain's
       // ledger had reached), both optional: a version 1 file restores exactly as it always did.
@@ -281,7 +310,7 @@ export class Brain {
       version, name: this.name, clock: this.clock.serialize(), rng: this.rng.serialize(),
       regions: [...this.regions.values()].map(r => ({ name: r.name, budget: Number.isFinite(r.budget) ? r.budget : null, doc: r.doc })),
       circuits: [...this.circuits.values()].map(c => ({ name: c.name, region: c.region, period: c.period, doc: c.doc, working: c.working })),
-      cells: this.cells.map(serializeCell),
+      cells: each(this.cells, serializeCell),
       connectome: this.connectome.serialize(),
       // The counters that drive structural growth travel with the connectome they will change,
       // and the ledger seq travels with them, so a restored brain's ledger is continuous with
@@ -297,18 +326,14 @@ export class Brain {
       // without it restores with the defaults, and a caller that names an option still wins.
       runtime: { pruneEvery: this.pruneEvery, hebbian: this.hebbian, outboxRing: this.outboxRing, growth: { enabled: this.coact.enabled, window: this.coact.window, threshold: this.coact.threshold, maxPairs: this.coact.maxPairs, sampleBudget: this.coact.sampleBudget } },
       gate: this.gate.serialize(), stats: this.stats, inflight,
-      outbox: this.outbox.map(signalToJSON),
+      outbox: each(this.outbox, signalToJSON),
       // a capped port serializes its last mailCap items only, so a snapshot can never be
       // larger than the mail the organism is allowed to hold
-      mailboxes: this.cells.map(c => c.mailbox.map(m => capMail(m, c.policy.mailCap).map(it => ({ sig: signalToJSON(it.sig), w: it.w, e: it.e, from: it.from })))),
+      mailboxes: each(this.cells, c => c.mailbox.map(m => capMail(m, c.policy.mailCap).map(it => ({ sig: signalToJSON(it.sig), w: it.w, e: it.e, from: it.from })))),
       extras: {},
     };
     for (const h of this.hooks.snapshot) Object.assign(j.extras, h(this) || {});
-    const file = path.join(dir, 'snapshot.json');
-    if (box === 2) this.lastCheckpoint = writeCheckpoint(file, j, { ruler: ruler || this.ruler || null }).header; // atomic, like the JSON writer
-    else writeJSONStreamed(file, j, { intern: version >= 3 }); // streamed and atomic: no single string, and a failed write keeps the last good checkpoint
-    this.log(box === 2 ? { type: 'snapshot', dir, version, container: box } : { type: 'snapshot', dir, version });
-    return path.join(dir, 'snapshot.json');
+    return j;
   }
   // The argument order is part of the contract: `dir` first, `opts` spread after it, so a
   // caller can pass { dir: null } and get a brain that reads the snapshot in `dir` and writes
@@ -368,3 +393,14 @@ export class Brain {
 function hashSignalSafe(kind, data) { try { return hashSignal({ kind, data }); } catch { return '?'; } }
 // The last cap items of a port queue, or the queue itself when the cell sets no cap.
 function capMail(m, cap) { return typeof cap === 'number' && m.length > cap ? m.slice(m.length - cap) : m; }
+// A list that builds element i from src[i] when it is read (board 19 builder, the streamed
+// checkpoint). Array.isArray holds and length is the source's, so core/persist.mjs walks it as
+// the array it stands for; nothing is kept, a second read builds the element again.
+function lazyList(src, fn) {
+  return new Proxy(src, {
+    get(t, k) {
+      if (typeof k === 'string') { const i = k.length && k.length < 16 ? Number(k) : NaN; if (Number.isInteger(i) && i >= 0 && String(i) === k) return i < t.length ? fn(t[i]) : undefined; }
+      return k === 'length' ? t.length : Reflect.get(t, k);
+    },
+  });
+}

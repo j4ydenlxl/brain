@@ -335,6 +335,95 @@ export function xorRiceDecode(buf, per, count) {
   return out;
 }
 
+// ---------------------------------------------------------------- the streamed coder (board 19 builder)
+// Board 19, queue item 9 (B1, the fit). xorRiceEncode above holds the whole store, a copy of it
+// and an output buffer of half its size or more: three times a group's vectors at once, on the
+// daemon's checkpoint path. core/persist.mjs writeCheckpointStreamed feeds this coder one vector
+// at a time instead. It keeps only the vectors a reference may name (window + 1 slots of per
+// bytes) and hands its output to sink(bytes) in pieces of at most `block` bytes (sink copies;
+// the view is reused). The bits are exactly xorRiceEncode's for the same vectors in the same
+// order: the same reference search (nearest by Hamming distance, the closest one back on a
+// tie), the same Rice parameter, the same bit writer, so a checkpoint's bytes do not change
+// (test/cloud-fit-stream.test.mjs holds the two equal on random and clustered stores).
+export class XorRiceStream {
+  constructor(per, sink, { window = XOR_RICE_WINDOW, block = 1 << 16 } = {}) {
+    if (!(Number.isInteger(per) && per > 0)) throw new RangeError('XorRiceStream: per must be a positive integer, got ' + per);
+    if (!(Number.isInteger(window) && window >= 0 && window < (1 << XR_REF_BITS))) throw new RangeError('XorRiceStream: window must be 0..' + ((1 << XR_REF_BITS) - 1) + ', got ' + window);
+    if (typeof sink !== 'function') throw new TypeError('XorRiceStream: sink must be a function');
+    const nbits = per * 8;
+    this.NB = 32 - Math.clz32(nbits);
+    if (this.NB > 24) throw new RangeError('XorRiceStream: a vector of ' + nbits + ' lanes is past this coder');
+    this.per = per; this.nbits = nbits; this.window = window; this.sink = sink;
+    this.slots = window + 1; // the candidates i-window .. i-1 and the vector being coded
+    this.ring = new Uint8Array(this.slots * per);
+    this.W = per >>> 2;
+    this.words = LITTLE && per % 4 === 0 ? new Uint32Array(this.ring.buffer, 0, (this.slots * per) >>> 2) : null;
+    this.gaps = new Int32Array(nbits);
+    this.out = new Uint8Array(Math.max(64, block | 0)); this.pos = 0; this.acc = 0; this.n = 0;
+    this.count = 0; this.bytes = 0; this.done = false;
+  }
+  /** bytes held by this coder: the window ring, the gap list and the output block */
+  get held() { return this.ring.byteLength + this.gaps.byteLength + this.out.byteLength; }
+  _drain() { if (this.pos) { this.sink(this.out.subarray(0, this.pos)); this.bytes += this.pos; this.pos = 0; } }
+  _write(v, bits) {
+    if (this.pos + 4 > this.out.length) this._drain();
+    this.acc |= (v & ((1 << bits) - 1)) << this.n;
+    this.n += bits;
+    while (this.n >= 8) { this.out[this.pos++] = this.acc & 0xff; this.acc >>>= 8; this.n -= 8; }
+  }
+  _ones(q) { while (q >= 24) { this._write(0xffffff, 24); q -= 24; } if (q > 0) this._write((1 << q) - 1, q); }
+  /** code one vector of `per` bytes */
+  push(vec) {
+    if (this.done) throw new Error('XorRiceStream: push after finish');
+    if (!vec || vec.length !== this.per) throw new RangeError('XorRiceStream: a vector of ' + (vec ? vec.length : 0) + ' bytes, want ' + this.per);
+    const { per, nbits, NB, window, slots, ring, words, W, gaps } = this;
+    const i = this.count++;
+    const si = i % slots, at = si * per;
+    ring.set(vec, at);
+    const ham = words
+      ? (sj) => { let c = 0; const x0 = si * W, y0 = sj * W; for (let q = 0; q < W; q++) { let x = words[x0 + q] ^ words[y0 + q]; x = x - ((x >>> 1) & 0x55555555); x = (x & 0x33333333) + ((x >>> 2) & 0x33333333); c += (((x + (x >>> 4)) & 0x0F0F0F0F) * 0x01010101) >>> 24; } return c; }
+      : (sj) => { let c = 0; const x0 = si * per, y0 = sj * per; for (let q = 0; q < per; q++) c += POP8[ring[x0 + q] ^ ring[y0 + q]]; return c; };
+    let r = -1, best = nbits + 1;
+    for (let j = i - 1, lo = Math.max(0, i - window); j >= lo; j--) { const h = ham(j % slots); if (h < best) { best = h; r = j; } }
+    let ng = 0, k = 0, cost = Infinity;
+    if (r >= 0) {
+      const sr = r % slots;
+      let last = -1;
+      if (words) {
+        const x0 = si * W, y0 = sr * W;
+        for (let q = 0; q < W; q++) { let v = words[x0 + q] ^ words[y0 + q]; while (v !== 0) { const low = v & -v; const pos = (q << 5) + (31 - Math.clz32(low)); gaps[ng++] = pos - last - 1; last = pos; v ^= low; } }
+      } else {
+        const x0 = si * per, y0 = sr * per;
+        for (let q = 0; q < per; q++) { let v = ring[x0 + q] ^ ring[y0 + q]; while (v !== 0) { const low = v & -v; const pos = (q << 3) + (31 - Math.clz32(low)); gaps[ng++] = pos - last - 1; last = pos; v ^= low; } }
+      }
+      const mean = ng > 0 ? (nbits - ng) / ng : 0;
+      const k0 = Math.max(0, Math.min(23, Math.floor(Math.log2(Math.max(1, mean * Math.LN2)))));
+      for (let kk = Math.max(0, k0 - 1); kk <= Math.min(23, k0 + 1); kk++) {
+        let c = ng * (kk + 1);
+        for (let t = 0; t < ng; t++) c += gaps[t] >>> kk;
+        if (c < cost) { cost = c; k = kk; }
+      }
+      cost += NB + XR_K_BITS;
+    }
+    if (r < 0 || cost >= nbits) {
+      this._write(0, XR_REF_BITS);
+      for (let b = 0; b < per; b++) this._write(ring[at + b], 8);
+    } else {
+      this._write(i - r, XR_REF_BITS); this._write(ng, NB); this._write(k, XR_K_BITS);
+      const mask = (1 << k) - 1;
+      for (let t = 0; t < ng; t++) { this._ones(gaps[t] >>> k); this._write(0, 1); if (k > 0) this._write(gaps[t] & mask, k); }
+    }
+  }
+  /** the last partial byte, then everything left to the sink; returns the stream's length in bytes */
+  finish() {
+    if (this.done) return this.bytes;
+    if (this.n > 0) { if (this.pos + 1 > this.out.length) this._drain(); this.out[this.pos++] = this.acc & 0xff; this.acc = 0; this.n = 0; }
+    this._drain();
+    this.done = true;
+    return this.bytes;
+  }
+}
+
 // ---------------------------------------------------------------- a resident store of packed vectors
 // Board 12, item delta (his P5, "self compressing"). A memory tier that stores its keys as 8192
 // Int8 lanes spends 8192 bytes on a vector that carries 1024 bytes of content, and the tiers that

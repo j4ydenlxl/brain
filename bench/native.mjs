@@ -48,6 +48,16 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { isMainThread } from 'node:worker_threads';
 
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the native bar developed on and what it graded: pure; the words match this bench's own rulers field. */
+export function splitFor(opts = {}) {
+  return {
+    development: { what: 'the confidence floor 0.2 chosen by bench/recall.mjs --tune on the held-out records outside the draw; the where and when locator, the factual shapes and the direct keys developed on titles of articles that are not held out' },
+    heldOut: { what: 'the held-out records bench/knowledge.mjs draws by seed, whose first sentences were never ingested (the same records bench/recall.mjs graded); plus the bench/answer.mjs suite questions, which are a no-regression check, not a held-out set', wiki: opts.wiki ?? null, seed: opts.seed ?? null },
+    contaminated: false,
+  };
+}
+
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..');
 const VERDICTS = path.join(HERE, 'verdicts');
@@ -470,6 +480,7 @@ async function bar(command) {
   const file = path.join(VERDICTS, narrow ? 'native-partial.json' : 'native.json');
   const verdict = {
     at, command, node: process.version, isTheBar: !narrow, barMet, met, statement,
+    split: splitFor({ wiki: BAR.wiki, seed: DRAW_SEED }),
     rulers: {
       bar: `the ${BAR.wiki} held-out records bench/knowledge.mjs draws by seed ${DRAW_SEED} (their first sentences never ingested), and the ${suiteOff.n} suite questions of bench/answer.mjs buildQuestions`,
       development: 'the confidence floor 0.2 was chosen by bench/recall.mjs --tune on the 428 held-out records outside the draw; the where and when locator, the factual shapes and the direct keys were developed on titles that are not held out and on the suite; the draw was read only by bench/native.mjs --before and by this run',

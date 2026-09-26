@@ -1,9 +1,44 @@
 {
-  "at": "2026-09-24T02:05:31.141Z",
+  "at": "2026-09-26T18:10:58.861Z",
   "command": "node --max-old-space-size=4000 bench/velocity.mjs --draws 4",
-  "node": "v24.15.0",
+  "node": "v22.22.2",
   "isTheBar": true,
-  "statement": "The objective was made the mean over K draws of the grid suite (160 tasks per draw, draw seeds grid/velocity, grid/velocity:draw1, grid/velocity:draw2, grid/velocity:draw3, draw 0 being the run seed so that K = 1 is the Board 8 objective), and the same finite list of 32 planes under the same plateau rule (patience 200) was searched at K = 1 and at K = 4. At K = 1 the best library (50 slots) solved 158/160 of the suite it was searched on and 109/160 of the fresh draw grid/velocity:heldout; at K = 4 the best library (96 slots) solved a mean of 149.5/160 over its 4 draws (153/160 on grid/velocity) and 137/160 of the same fresh draw, 28 more than K = 1 (union bound 159). On 4 further fresh draws the means were 100.5 at K = 1 and 132.0 at K = 4; searched on each other draw alone, K = 1 scored 114, 116, 118 on grid/velocity:heldout. Generations to plateau: the final best was first held at cumulative generation 3649 of 8319 at K = 1 and 10786 of 15494 at K = 4; plane 0 from scratch landed at generation 259 and 389. The matrix path scored 4,995,567 evals/s at K = 1 and 1,189,428 evals/s at K = 4 on the same 40 genomes. Exactness on the 640 stacked tasks: 0 mismatches between the matrix and real grid cells across 40 genomes, 0 between the stack and its draws scored one at a time, and the real cells agreed with the matrix on the fresh draw for both best libraries. The fresh-draw bar (K = 4 above K = 1) was met. Wall numbers were taken on a machine shared with other processes.",
+  "statement": "The objective was made the mean over K draws of the grid suite (160 tasks per draw, draw seeds grid/velocity, grid/velocity:draw1, grid/velocity:draw2, grid/velocity:draw3, draw 0 being the run seed so that K = 1 is the Board 8 objective), and the same finite list of 32 planes under the same plateau rule (patience 200) was searched at K = 1 and at K = 4. At K = 1 the best library (50 slots) solved 158/160 of the suite it was searched on and 109/160 of the fresh draw grid/velocity:heldout; at K = 4 the best library (96 slots) solved a mean of 149.5/160 over its 4 draws (153/160 on grid/velocity) and 137/160 of the same fresh draw, 28 more than K = 1 (union bound 159). On 4 further fresh draws the means were 100.5 at K = 1 and 132.0 at K = 4; searched on each other draw alone, K = 1 scored 114, 116, 118 on grid/velocity:heldout. Generations to plateau: the final best was first held at cumulative generation 3649 of 8319 at K = 1 and 10786 of 15494 at K = 4; plane 0 from scratch landed at generation 259 and 389. The matrix path scored 2,519,354 evals/s at K = 1 and 673,816 evals/s at K = 4 on the same 40 genomes. Exactness on the 640 stacked tasks: 0 mismatches between the matrix and real grid cells across 40 genomes, 0 between the stack and its draws scored one at a time, and the real cells agreed with the matrix on the fresh draw for both best libraries. The fresh-draw bar (K = 4 above K = 1) was met. Wall numbers were taken on a machine shared with other processes.",
+  "split": {
+    "development": {
+      "what": "the K searched draws of tasks/grid.mjs: every plane searches them and the best library is picked on them",
+      "seeds": [
+        "grid/velocity",
+        "grid/velocity:draw1",
+        "grid/velocity:draw2",
+        "grid/velocity:draw3"
+      ]
+    },
+    "heldOut": {
+      "what": "the fresh draws, excluded from the searched draws when they are built and never searched: the bar compares the fresh-draw score at K against K = 1",
+      "seed": "grid/velocity:heldout",
+      "seenInSearched": 0,
+      "fresh": [
+        {
+          "seed": "grid/velocity:fresh1",
+          "seenInSearched": 0
+        },
+        {
+          "seed": "grid/velocity:fresh2",
+          "seenInSearched": 0
+        },
+        {
+          "seed": "grid/velocity:fresh3",
+          "seenInSearched": 0
+        },
+        {
+          "seed": "grid/velocity:fresh4",
+          "seenInSearched": 0
+        }
+      ]
+    },
+    "contaminated": false
+  },
   "bar": {
     "draws": 4,
     "freshSeed": "grid/velocity:heldout",
@@ -42,7 +77,7 @@
       160,
       157
     ],
-    "precomputeMs": 5643.829199999999,
+    "precomputeMs": 8656.1276,
     "heldout": {
       "seed": "grid/velocity:heldout",
       "tasks": 160,
@@ -87,8 +122,8 @@
         "planesRun": 32,
         "planesFired": 32,
         "evals": 1056575,
-        "wallMs": 697.6572,
-        "evalsPerSecond": 1514461.5435775623,
+        "wallMs": 1094.707696,
+        "evalsPerSecond": 965166.3214396549,
         "firstPlaneLanded": 259,
         "firstPlaneFired": 459,
         "bestHeldAtGeneration": 3649,
@@ -184,13 +219,13 @@
         "k": 1,
         "words": 5,
         "tasks": 160,
-        "evals": 9991160,
-        "ms": 2000.0051,
-        "evalsPerSecond": 4995567.2613034835,
-        "passes": 249779,
-        "checksum": 828516943,
+        "evals": 5038760,
+        "ms": 2000.02071,
+        "evalsPerSecond": 2519353.9120902405,
+        "passes": 125969,
+        "checksum": 417839173,
         "checksumOk": true,
-        "searchLoopEvalsPerSecond": 1514461.5435775623
+        "searchLoopEvalsPerSecond": 965166.3214396549
       },
       "planes": [
         {
@@ -628,8 +663,8 @@
         "planesRun": 32,
         "planesFired": 32,
         "evals": 2000671,
-        "wallMs": 3072.0663,
-        "evalsPerSecond": 651246.0359335344,
+        "wallMs": 4528.318683,
+        "evalsPerSecond": 441813.2070763536,
         "firstPlaneLanded": 389,
         "firstPlaneFired": 589,
         "bestHeldAtGeneration": 10786,
@@ -774,13 +809,13 @@
         "k": 4,
         "words": 20,
         "tasks": 640,
-        "evals": 2378880,
-        "ms": 2000.0198,
-        "evalsPerSecond": 1189428.2246605759,
-        "passes": 59472,
-        "checksum": 718362288,
+        "evals": 1347640,
+        "ms": 2000.012074,
+        "evalsPerSecond": 673815.9321732175,
+        "passes": 33691,
+        "checksum": 406953589,
         "checksumOk": true,
-        "searchLoopEvalsPerSecond": 651246.0359335344
+        "searchLoopEvalsPerSecond": 441813.2070763536
       },
       "planes": [
         {
@@ -1268,7 +1303,7 @@
     "fitnessMismatches": 0,
     "wordVsReference": 0,
     "first": null,
-    "tickMs": 12159.914599999998,
+    "tickMs": 20115.496200999998,
     "stackCountMismatches": 0,
     "stackSolvedMismatches": 0,
     "maxObjectiveGap": 1.1102230246251565e-16,
@@ -1290,34 +1325,34 @@
       "k": 1,
       "words": 5,
       "tasks": 160,
-      "evals": 9991160,
-      "ms": 2000.0051,
-      "evalsPerSecond": 4995567.2613034835,
-      "passes": 249779,
-      "checksum": 828516943,
+      "evals": 5038760,
+      "ms": 2000.02071,
+      "evalsPerSecond": 2519353.9120902405,
+      "passes": 125969,
+      "checksum": 417839173,
       "checksumOk": true,
-      "searchLoopEvalsPerSecond": 1514461.5435775623
+      "searchLoopEvalsPerSecond": 965166.3214396549
     },
     {
       "k": 4,
       "words": 20,
       "tasks": 640,
-      "evals": 2378880,
-      "ms": 2000.0198,
-      "evalsPerSecond": 1189428.2246605759,
-      "passes": 59472,
-      "checksum": 718362288,
+      "evals": 1347640,
+      "ms": 2000.012074,
+      "evalsPerSecond": 673815.9321732175,
+      "passes": 33691,
+      "checksum": 406953589,
       "checksumOk": true,
-      "searchLoopEvalsPerSecond": 651246.0359335344
+      "searchLoopEvalsPerSecond": 441813.2070763536
     }
   ],
   "machine": {
-    "platform": "win32",
+    "platform": "linux",
     "arch": "x64",
-    "cpus": 32,
-    "totalMemMB": 65370,
-    "freeMemMB": 46999,
+    "cpus": 4,
+    "totalMemMB": 16096,
+    "freeMemMB": 14600,
     "shared": "other builders of the same board were running on this machine during the run; every wall number is a contended number"
   },
-  "wallMs": 36081.0252
+  "wallMs": 54518.788918
 }

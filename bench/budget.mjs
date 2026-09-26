@@ -24,6 +24,9 @@
 //   node bench/budget.mjs                  the bar: writes bench/verdicts/budget.json once
 //   node bench/budget.mjs --only ram,pass  a narrow run: writes budget-partial.json, isTheBar false
 //   node bench/budget.mjs --interval-ms N  any period but 2000 is also partial
+//   node bench/budget.mjs --wait-free-gb N the free-RAM wait before the runs (default 16; a 16 GB
+//                                         host never has 16 GB free, so the cloud host passes 4;
+//                                         board 19 builder). The caps and the bar do not change.
 //
 // Planted children (used by this bench and by test/budget.test.mjs; each ends itself after
 // --life-s seconds, so a wrapper that failed to kill cannot leave one running for long):
@@ -204,7 +207,8 @@ async function main() {
   const command = 'node ' + ['bench/budget.mjs', ...args].join(' ');
   const freeGb = os.freemem() / 1073741824;
   console.log('budget bench: ' + names.join(', ') + ' under ram ' + RAM_CAP_MB + ' MB and disk ' + DISK_CAP_MB + ' MB, sampled every ' + intervalMs + ' ms; free RAM ' + freeGb.toFixed(1) + ' GB of ' + (os.totalmem() / 1073741824).toFixed(1));
-  if (!(await waitForFreeRam(16))) { console.log('free RAM stayed under 16 GB for 30 minutes: not running'); process.exitCode = 1; return; }
+  const waitGb = Number(opt('wait-free-gb', 16));
+  if (!(await waitForFreeRam(waitGb))) { console.log('free RAM stayed under ' + waitGb + ' GB for 30 minutes: not running'); process.exitCode = 1; return; }
 
   const tmp = mkdtempSync(path.join(os.tmpdir(), 'brain-budget-bench-'));
   const cases = [];
@@ -295,6 +299,7 @@ async function main() {
     isTheBar: !narrow,
     barMet,
     statement,
+    split: splitFor({ cases: names }),
     config: { ramCapMb: RAM_CAP_MB, diskCapMb: DISK_CAP_MB, intervalMs, killBarMs: KILL_BAR_MS, cases: names, freeRamGbAtStart: Number(freeGb.toFixed(1)), platform: process.platform, cpus: os.cpus().length },
     rows,
     orphans: orphanCheck,
@@ -306,6 +311,18 @@ async function main() {
   writeFileSync(out, JSON.stringify(verdict, null, 2) + '\n');
   console.log('\nBUDGET BAR ' + (barMet ? 'MET' : 'MISSED') + ' (isTheBar ' + verdict.isTheBar + '), wrote ' + path.relative(ROOT, out).replace(/\\/g, '/'));
   process.exitCode = barMet ? 0 : 1;
+}
+
+
+// board 19 builder: the split this bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the budget bar developed on and what it graded: pure, from the case names alone. */
+export function splitFor(opts = {}) {
+  const cases = Array.isArray(opts.cases) && opts.cases.length ? opts.cases.slice() : ['ram', 'disk', 'pass'];
+  return {
+    development: { what: 'the planted children this bench and test/budget.test.mjs define (ram, disk, pass, tree, sleeper, cpu, exit); tools/budget.mjs was written and tuned against them', cases },
+    heldOut: { what: 'none: the bar re-runs the same planted children, no input the wrapper was not developed against', n: 0 },
+    contaminated: 'no held-out set: the bar grades tools/budget.mjs on the planted children it was developed against',
+  };
 }
 
 if (isMain) {

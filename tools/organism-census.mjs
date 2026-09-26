@@ -1103,11 +1103,27 @@ export function statementOf(r, ticks) {
   return s;
 }
 
+// board 19 builder: the split each census verdict was measured on (the gate's CONTAMINATION row needs an object).
+/** What a census developed on and what it graded: pure, from the mode, the seed and the ticks. */
+export function splitFor(opts = {}) {
+  const stat = opts.mode === 'static';
+  return {
+    development: stat
+      ? { what: 'the seed it describes: every emitted line is walked and nothing is loaded', seed: opts.seed ?? null }
+      : { what: 'the seed it describes, driven for its ticks with nothing injected, then the hosted algebra and sequence problems (tasks/host.mjs) at the counts generations/organism-genome.mjs scores a genome on', seed: opts.seed ?? null, ticks: opts.ticks ?? null },
+    heldOut: { what: 'none: a census is a measurement of one seed, and the liveness it writes (the prune input) comes from the same drive and tasks it reports', n: 0 },
+    contaminated: stat
+      ? 'no held-out set: the static census describes the same lines it walks'
+      : 'no held-out set: the tasks the census reports are the ones its liveness, and so any prune made from it, was taken on',
+  };
+}
+
 export function verdictOf(r, { ticks, command, isTheBar, knockoutSeed }) {
   const f = r.full;
   return {
     bench: 'census', at: new Date().toISOString(), command, node: process.version, isTheBar,
     statement: statementOf(r, ticks),
+    split: splitFor({ mode: 'run', seed: rel(r.seed.dir), ticks }),
     seed: rel(r.seed.dir), ticks, knockoutSeed,
     drive: 'one brain.tick(1) per event loop turn, nothing injected (bench/speed.mjs), runtime/kernels.mjs installed; then the hosted algebra and sequence problems (tasks/host.mjs) at the generations/organism-genome.mjs counts',
     files: r.files, lines: r.lines,
@@ -1162,6 +1178,7 @@ export function shardedVerdictOf(r, { ticks, command, isTheBar }) {
   return {
     bench: 'census', mode: 'sharded ' + r.mode, at: new Date().toISOString(), command, node: process.version, isTheBar,
     statement: shardedStatement(r, ticks),
+    split: splitFor({ mode: 'sharded', seed: r.seed && r.seed.dir ? rel(r.seed.dir) : null, ticks }),
     seed: rel(r.seed.dir), ticks, shardFiles: r.shardFiles, exact: r.exact,
     horizon: { driveTicks: ticks, taskTicks: r.taskTicks, lastTick: r.L },
     drive: 'one brain.tick(1) per event loop turn per shard, nothing injected, runtime/kernels.mjs installed; then the hosted algebra and sequence problems into the cells the whole organism picks (tasks/host.mjs nameCells), on every shard, with the whole schedule',
@@ -1504,6 +1521,7 @@ export function staticVerdictOf(r, { command, isTheBar }) {
   return {
     bench: 'census', mode: 'static', at: new Date().toISOString(), command, node: process.version, isTheBar,
     statement: staticStatement(r),
+    split: splitFor({ mode: 'static', seed: rel(r.seed.dir) }),
     seed: rel(r.seed.dir),
     rule: 'a cell is live when a path of edges reaches it from a periodic cell (due at tick 0 whatever its input)' + (r.sources.tasks ? ' or from a cell the hosted algebra and sequence problems inject into' : '') + '; an edge is live when its source is live (then both ends are); a region or circuit is live when it holds a live cell. Nothing is run: this is an upper bound on what runs.',
     whole: r.whole, files: r.files, hash: r.hash, legality: r.legality,

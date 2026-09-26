@@ -2,7 +2,7 @@
 // literally a sandboxed ARTIFICIAL SUPERINTELLIGENCE"; his P15: "multiplying, duplicating, all
 // within cloud with zero data on my part").
 //
-//   node bench/cloud.mjs [--seconds 300] [--out file.json] [--native] [--episodes-max N]
+//   node bench/cloud.mjs [--seconds 300] [--out file.json] [--native] [--episodes-max N] [--free-gb 16]
 //
 // One timeline, two drivers. With docker on this machine it builds the image and runs the
 // container under compose.yaml's caps; without docker it runs bin/serve.mjs natively with the
@@ -471,11 +471,16 @@ async function main() {
   const command = 'node bench/cloud.mjs' + (process.argv.length > 2 ? ' ' + process.argv.slice(2).join(' ') : '');
   const t0 = now();
 
+  // --free-gb N (board 19 builder, a defect that blocked the fit bar): the wait below was fixed at
+  // 16 GB of free RAM, which a 16 GB host (the cloud session's, about 14 GB free) never reaches, so
+  // the bench waited 30 minutes and exited 3. The floor is now a flag; 16 stays the default (the
+  // owner machine's BUDGETS rule), and the command line in the verdict names any other value.
+  const freeFloorGb = a['free-gb'] !== undefined && a['free-gb'] !== true && Number(a['free-gb']) > 0 ? Number(a['free-gb']) : 16;
   for (let i = 0; ; i++) {
     const r = freeRamGb();
     log('free RAM ' + r.gb + ' GB (' + r.via + ')');
-    if (r.gb >= 16) break;
-    if (i >= 60) { log('free RAM stayed under 16 GB for 30 minutes: not running'); process.exitCode = 3; return; }
+    if (r.gb >= freeFloorGb) break;
+    if (i >= 60) { log('free RAM stayed under ' + freeFloorGb + ' GB for 30 minutes: not running'); process.exitCode = 3; return; }
     await sleep(30_000);
   }
 

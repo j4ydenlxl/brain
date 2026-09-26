@@ -142,6 +142,7 @@ export async function run({ tasks = BAR_TASKS, write = true, quiet = false } = {
     verdict: barMet ? 'GREEN' : 'RED',
     barMet,
     statement,
+    split: splitFor({ suites: SUITES, tasks }),
     bar: { onNotBelowOff: 'per suite, on1 >= off and on2 >= off', reuse: 'cells spawned in run 2 < cells spawned in run 1' },
     suites, runs, reuse, onNotBelowOff, gate, regionCells: region, brainCells: { off: brainOff.cells.length, on: brainOn.cells.length }, cellsAtStart,
     completed, error,
@@ -156,6 +157,16 @@ export async function run({ tasks = BAR_TASKS, write = true, quiet = false } = {
     verdict.file = path.relative(path.join(HERE, '..'), file).replace(/\\/g, '/');
   }
   return verdict;
+}
+
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the spawn bar developed on and what it graded: pure, from the suite names and the draw size. */
+export function splitFor(opts = {}) {
+  return {
+    development: { what: 'the suites bench/answer.mjs draws (buildQuestions), asked on brains built as bench/answer.mjs builds its own; on1 grows cells on these questions', suites: Array.isArray(opts.suites) ? opts.suites.slice() : [], tasksPerSuite: opts.tasks ?? null },
+    heldOut: { what: 'none: off, on1 and on2 are asked the same questions, and on2 re-asks the on1 questions on purpose to measure reuse', n: 0 },
+    contaminated: 'no held-out set: the reuse arm re-asks the questions the first arm grew its cells on, by design',
+  };
 }
 
 function args(argv) {

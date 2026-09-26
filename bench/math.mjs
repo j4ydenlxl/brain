@@ -48,6 +48,16 @@ import { complete as llmComplete, probeOllama, OLLAMA_BASE } from '../act/llm.mj
 import { sampleIds, wilson, finalAnswer, sameInteger, lastNumber, ALONE_PROMPT } from './public.mjs';
 import { solveMath, prosePrompt, SEED_OFFSETS, DEFAULTS } from '../reason/math.mjs';
 
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the math bar developed on and what it graded: pure, from the record source the bench chose. */
+export function splitFor(opts = {}) {
+  return {
+    development: { what: opts.fallback ? 'a seeded slice of the GSM8K TEST split (no train file on disk): every graded record is a development record for this item' : 'the GSM8K TRAIN split: every graded record is a development record for this item', split: opts.split ?? null, file: opts.file ?? null, n: opts.n ?? null, seed: opts.seed ?? null },
+    heldOut: { what: 'none: this bench grades development records; held-out GSM8K numbers are bench/public.mjs\'s, and its seed 1 samples of up to this size are inside this one (the sampler is nested)', n: 0, overlapWithPublicStage: opts.overlapWithPublicStage ?? null },
+    contaminated: opts.fallback ? 'the graded records are GSM8K TEST records this item was developed on, so a held-out claim from them would be contaminated' : 'the graded records are the development records of this item',
+  };
+}
+
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..');
 const PUBLIC = path.join(HERE, 'fixtures', 'public');
@@ -482,6 +492,7 @@ export async function run(opts = {}) {
   const verdict = {
     at: new Date().toISOString(), command: cfg.command, node: process.version, isTheBar, met: bar.met, whyNotTheBar: whyNot,
     statement,
+    split: splitFor({ split: data.split, file: data.file, fallback: data.fallback, n: planned, seed: cfg.seed, overlapWithPublicStage: pubOverlap }),
     item: 'math: reason/math.mjs program of thought with an exact executor (P4 toward the 405B GSM8K row)',
     records: {
       split: data.split, file: data.file, fallbackToTest: data.fallback, of: data.records.length, n: planned, seed: cfg.seed,

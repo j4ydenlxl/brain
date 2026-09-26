@@ -23,6 +23,16 @@ import { hash32 } from '../core/rng.mjs';
 import { ingest, DUMP_PATH, STORE_DIR } from '../tools/ingest-wiki.mjs';
 import { KnowledgeStore, HELDOUT_DEFAULTS, normText, titleWords, answerMatches, keyVector, SIG_BITS } from '../memory/knowledge.mjs';
 
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the knowledge bar developed on and what it graded: pure, from the draw size and seed. */
+export function splitFor(opts = {}) {
+  return {
+    development: { what: 'the ingested dump: every article tools/ingest-wiki.mjs streamed into the knowledge tier, with the marked first sentences left out' },
+    heldOut: { what: 'the first sentences a seeded title mark hid from the ingest (notes/knowledge.md held-out rule), drawn by seed and never ingested', n: opts.n ?? null, seed: opts.seed ?? null },
+    contaminated: false,
+  };
+}
+
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const VERDICTS = path.join(HERE, 'verdicts');
 export const DRAW_SEED = 'knowledge-draw-2026-09-23';
@@ -211,6 +221,7 @@ async function main() {
   const statement = `The knowledge tier ingested ${full ? 'the whole' : 'the first ' + c.articles + ' articles of the'} Simple English Wikipedia dump (${c.articles} articles${full ? '' : ', ' + fullArithmetic}) at ${(c.articles / r.seconds).toFixed(1)} articles/s with a bz2 reader written for it, holding ${c.held} articles (breadth ${(c.held / c.articles).toFixed(4)}) as ${r.facts} facts at ${r.disk.bytesPerArticle.toFixed(0)} disk and ${r.memory.bytesPerArticle.toFixed(0)} memory bytes per article. On ${g.n} held-out first sentences drawn by seed, asked "What is <title>?", its first answer held the hidden key noun's head ${pct(g.recall1)} of the time and one of its first five ${pct(g.recall5)}, against ${pct(g.null1)} and ${pct(g.null5)} for the title alone, at a mean ${g.meanMs.toFixed(2)} ms per query over ${ks.A} articles. ${tp ? 'Of the organism\'s memory kinds asked to hold the same title keys, ' + (holds.length ? holds.join(' and ') + ' held at this scale' : 'none held') + '; semantic and assoc stop at their 4096 capacity and episodic at 65536.' : ''} The bar ${barMet ? 'is met' : 'is not met'}.`;
   const verdict = {
     at, command, node: process.version, isTheBar: full, statement,
+    split: splitFor({ n: g.n, seed: DRAW_SEED }),
     bar: { ...BAR, checks, met: barMet },
     machine: { platform: process.platform, cpus: os.cpus().length, totalMemMB: Math.round(os.totalmem() / 1048576) },
     dump: { file: path.basename(dump), bytes: fs.statSync(dump).size, source: 'https://dumps.wikimedia.org/simplewiki/latest/' + path.basename(dump), licence: 'CC BY-SA 4.0' },

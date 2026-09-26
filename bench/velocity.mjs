@@ -63,6 +63,28 @@ import {
 import { planeCoordinate } from '../generations/planes.mjs';
 import { G } from '../cells/grid.mjs';
 
+// board 19 builder: the split each bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What velocity.json (mode 'bar') and velocity-heldout.json (mode 'draws') developed on and graded on: pure. */
+export function splitFor(opts = {}) {
+  if (opts.mode === 'draws') {
+    const searched = Array.isArray(opts.searched) ? opts.searched.slice() : [];
+    const ho = opts.heldout || { seed: null, seen: null };
+    const fresh = Array.isArray(opts.fresh) ? opts.fresh.map((f) => ({ seed: f.seed, seenInSearched: f.seen })) : [];
+    const seen = [ho.seen].concat(fresh.map((f) => f.seenInSearched));
+    const clean = seen.every((n) => n === 0);
+    return {
+      development: { what: 'the K searched draws of tasks/grid.mjs: every plane searches them and the best library is picked on them', seeds: searched },
+      heldOut: { what: 'the fresh draws, excluded from the searched draws when they are built and never searched: the bar compares the fresh-draw score at K against K = 1', seed: ho.seed, seenInSearched: ho.seen, fresh },
+      contaminated: clean ? false : 'fresh tasks also appear verbatim in a searched draw (seenInSearched ' + seen.join(', ') + ')',
+    };
+  }
+  return {
+    development: { what: 'the grid suite of tasks/grid.mjs at the run seed: the matrix, the genomes, the exactness check, the audit and the infinite planes all use it', seed: opts.seed ?? null },
+    heldOut: { what: 'the fresh draw of the same families at <seed>:heldout, never searched: the best library is scored on it and printed; it is not part of the bar', seed: opts.seed == null ? null : opts.seed + ':heldout' },
+    contaminated: 'the rate, exactness and audit parts of the bar are measured on the searched suite itself; only the printed fresh-draw score is held out',
+  };
+}
+
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
 const argv = process.argv.slice(2);
@@ -311,6 +333,7 @@ const verdict = {
   node: process.version,
   isTheBar,
   statement,
+  split: splitFor({ mode: 'bar', seed: cfg.seed }),
   bar,
   config: cfg,
   matrix: { suite: 'tasks/grid.mjs', seed: cfg.seed, tasks: M.T, components: M.C, words: M.W, maxDepth: cfg.depth, ops: OPS.length, precomputeMs: built.precomputeMs, opsApplied: M.meta.opsApplied, unionBound: union, counts: M.meta.counts },
@@ -499,6 +522,7 @@ async function heldoutDraws() {
     node: process.version,
     isTheBar: isBar,
     statement,
+    split: splitFor({ mode: 'draws', searched: full.seeds, heldout: { seed: heldSeed, seen: hoSeen }, fresh: freshSeeds.map((sd, i) => ({ seed: sd, seen: freshSeen[i] })) }),
     bar: { draws: K, freshSeed: heldSeed, freshK1: a1.fresh, freshK: aK.fresh, margin, searchedK1: a1.best.count, searchedKMean: aK.best.meanCount, exactMismatches, stackMismatches: stackCount + stackSolved, exactOk, met },
     config: { seed: cfg.seed, depth: cfg.depth, draws: K, planes, fresh: freshN, exactGenomes: exactN, patience: cfg.barPatience, epsilon: 1e-9 },
     suites: { seeds: full.seeds, tasksPerDraw: Td, components: full.matrix.C, unionBoundPerDraw: partUnion, precomputeMs: full.precomputeMs, heldout: { seed: heldSeed, tasks: ho.matrix.T, unionBound: hoUnion, seenInSearched: hoSeen }, fresh: freshSeeds.map((s, i) => ({ seed: s, unionBound: freshUnion[i], seenInSearched: freshSeen[i] })) },

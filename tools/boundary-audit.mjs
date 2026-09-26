@@ -1054,7 +1054,7 @@ async function bar(say) {
     + '. On the wire (strings included; reported, not the cap measure) ' + sum.overCapWire + ' boundaries reached the cap' + (sum.largestWire ? ', the largest ' + sum.largestWire.bytes + ' bytes at ' + sum.largestWire.file + ':' + sum.largestWire.line + ' via driver ' + sum.largestWire.driver : '') + ', and the wire estimate read ' + cal.wireRatio + ' of v8.serialize on a sample'
     + '. The allowlist lists ' + ALLOWLIST.length + ' boundaries (unlisted ' + allow.unlisted.length + ', stale ' + allow.stale.length + '). Touched tests: ' + tests.map((t) => t.test + ' ' + t.pass + '/' + t.tests).join(', ')
     + '. calibrate: the clone delivered ' + cal.received + ' bytes for an ' + cal.viewBytes + ' byte view, the walker said ' + cal.predicted + '.';
-  const verdict = { at, command: BAR_COMMAND, node: process.version, isTheBar, barMet, statement, cap: CAP_BYTES, calibrate: cal, summary: { static: statics.length, ...sum, fixed: fixedRows.length, before: beforeSum }, allowlist: { listed: ALLOWLIST.length, unlisted: allow.unlisted.map((b) => b.key), stale: allow.stale.map((a) => a.key), overCap: allow.overCap.map((a) => a.key) }, touched: TOUCHED, tests, drivers: res.drivers, jailLeaks: leaks, incomplete: incomplete.map((d) => d.name), probeErrors: res.probe.errors, orphans: res.orphans, table };
+  const verdict = { at, command: BAR_COMMAND, node: process.version, isTheBar, barMet, statement, split: splitFor({ boundaries: statics.length, drivers: res.drivers.length }), cap: CAP_BYTES, calibrate: cal, summary: { static: statics.length, ...sum, fixed: fixedRows.length, before: beforeSum }, allowlist: { listed: ALLOWLIST.length, unlisted: allow.unlisted.map((b) => b.key), stale: allow.stale.map((a) => a.key), overCap: allow.overCap.map((a) => a.key) }, touched: TOUCHED, tests, drivers: res.drivers, jailLeaks: leaks, incomplete: incomplete.map((d) => d.name), probeErrors: res.probe.errors, orphans: res.orphans, table };
   const out = path.join(ROOT, 'bench', 'verdicts', isTheBar ? 'boundary.json' : 'boundary-partial.json');
   fs.writeFileSync(out, JSON.stringify(verdict, null, 1) + '\n');
   say('barMet ' + barMet + ' (isTheBar ' + isTheBar + '); verdict ' + toPosix(path.relative(ROOT, out)));
@@ -1099,6 +1099,16 @@ async function main(argv) {
 }
 
 // ---------------------------------------------------------------- the record
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the boundary bar developed on and what it graded: pure, from two counts. */
+export function splitFor(opts = {}) {
+  return {
+    development: { what: 'the whole source tree this tool scans, its DRIVERS and its ALLOWLIST, written against the same boundaries the bar measures', boundaries: opts.boundaries ?? null, drivers: opts.drivers ?? null },
+    heldOut: { what: 'none: an audit of every boundary in the tree has no set it was not written against', n: 0 },
+    contaminated: 'no held-out set: the bar audits the same tree and drivers the allowlist was measured on',
+  };
+}
+
 export const BAR_COMMAND = 'node tools/budget.mjs --ram-mb 6000 --disk-mb 2000 --dir state/boundary --record state/boundary/budget-bar.json --wait-free-ram-mb 16384 -- node --max-old-space-size=6000 tools/boundary-audit.mjs --bar';
 /** The files this item changed at their crossing lines; their tests are re-run by --bar. */
 export const TOUCHED = [];

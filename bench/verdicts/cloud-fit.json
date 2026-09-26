@@ -1,20 +1,20 @@
 {
-  "at": "2026-09-26T07:54:49.668Z",
-  "command": "node bench/cloud.mjs --native --seconds 1800 --keep --out bench/verdicts/cloud-fit.json",
-  "node": "v24.15.0",
+  "at": "2026-09-26T19:30:21.667Z",
+  "command": "node bench/cloud.mjs --native --seconds 1800 --keep --free-gb 4 --out bench/verdicts/cloud-fit.json",
+  "node": "v22.22.2",
   "isTheBar": true,
   "barMet": false,
   "bar": {
-    "restartCount1NoBudgetKill": false,
+    "restartCount1NoBudgetKill": true,
     "resumedFromCheckpoint": true,
     "duplicate200Then409SecondFromCopy": true,
     "egressModelEndpointAllowed": true,
     "egressExampleRefused": true,
     "healthOkAfter": true,
-    "daemonPeakRssUnderCap": false,
+    "daemonPeakRssUnderCap": true,
     "checkpointAgeUnder60s": true
   },
-  "barRowsMet": false,
+  "barRowsMet": true,
   "rssCapMb": 448,
   "episodesMax": {
     "run": "2048",
@@ -23,7 +23,7 @@
     "keyMbAtBound": 16
   },
   "modelEndpoint": {
-    "url": "http://127.0.0.1:53367",
+    "url": "http://127.0.0.1:46419",
     "stub": true,
     "requests": {
       "GET /api/tags": 1
@@ -31,7 +31,7 @@
     "why": "model off (Board 16 fit item): BRAIN_MODEL_URL and PROBE_MODEL_URL name this stub; the guard routes 127.0.0.1:11434 to it"
   },
   "benchFlag": {
-    "file": "state\\bench-flags\\17828.json",
+    "file": "state/bench-flags/27498.json",
     "lowered": true,
     "why": "natively the daemons run this tree; with the flag up they refuse the self-code step (self/autopilot.mjs in a worker), which in a container runs on the image copy"
   },
@@ -75,53 +75,40 @@
     "enforcedHere": "native: daemon heap BRAIN_HEAP_MB and the supervisor rss cap BRAIN_RSS_CAP_MB; no cpu cap, no read-only root"
   },
   "context": {
-    "files": 1873,
-    "bytes": 911732377,
+    "files": 1743,
+    "bytes": 111218143,
     "skipped": [
       ".claude/",
       ".git/",
-      ".vercel/",
-      "organism/scale-52000/",
-      "organism/scale-52000-pruned/",
-      "site/.env.local",
-      "site/.vercel/",
-      "state/",
-      "web/dist/.env.local",
-      "web/dist/.vercel/"
+      "state/"
     ],
     "secretHits": 0,
     "planted": 9,
-    "textFilesScanned": 1854,
-    "textBytesScanned": 131703805,
-    "binaryNotScanned": 19,
+    "textFilesScanned": 1737,
+    "textBytesScanned": 102217774,
+    "binaryNotScanned": 6,
     "control": {
       "patternsDropped": 14,
-      "extraFiles": 8,
-      "hitsInThem": 4,
-      "kinds": [
-        "jwt",
-        "env secret assignment"
-      ],
-      "files": [
-        "site/.env.local",
-        "web/dist/.env.local"
-      ]
+      "extraFiles": 0,
+      "hitsInThem": 0,
+      "kinds": [],
+      "files": []
     }
   },
-  "restartCount": 7,
+  "restartCount": 1,
   "instancesAlive": 2,
-  "checkpointAgeS": 2.9,
+  "checkpointAgeS": 12.8,
   "rssPeakMb": {
-    "daemonA": 575,
-    "serveA": 71,
-    "daemonB": 531,
-    "serveB": 72,
-    "instanceA": 646,
-    "instanceB": 603
+    "daemonA": 404,
+    "serveA": 84,
+    "daemonB": 402,
+    "serveB": 78,
+    "instanceA": 488,
+    "instanceB": 480
   },
-  "fitsContainerCap": false,
+  "fitsContainerCap": true,
   "pass": {
-    "restartCountIs1": false,
+    "restartCountIs1": true,
     "resumedFromCheckpoint": true,
     "duplicateCopied": true,
     "secondFromCopy": true,
@@ -130,7 +117,7 @@
     "allowedHostReachedOrDocumented": true,
     "healthOkBeforeAndAfter": true,
     "noSecretInContext": true,
-    "secretControlSees": true,
+    "secretControlSees": false,
     "noOrphans": true
   },
   "allPass": false,
@@ -138,58 +125,58 @@
     "mode": "native",
     "healthBefore": {
       "ok": true,
-      "at": "2026-09-26T07:30:43.767Z",
+      "at": "2026-09-26T19:06:14.044Z",
       "instance": "bench-a",
       "name": "cloud",
-      "uptimeS": 360,
-      "statusAgeS": 0.7,
+      "uptimeS": 359.9,
+      "statusAgeS": 0.9,
       "restarts": 0,
       "budgetKills": 0,
-      "tick": 83885,
-      "ticksPerSec": 234,
+      "tick": 34016,
+      "ticksPerSec": 96,
       "resumedAt": 0,
-      "daemonPid": 38360,
-      "rssMb": 396,
+      "daemonPid": 27526,
+      "rssMb": 385,
       "memory": {
-        "heapUsedMb": 65,
-        "arrayBuffersMb": 81,
+        "heapUsedMb": 62,
+        "arrayBuffersMb": 48,
         "episodic": [
           {
             "name": "cloud",
-            "n": 1810,
+            "n": 1847,
             "cap": 2048,
             "max": 2048,
             "d": 8192,
             "keyMb": 16,
             "boundMb": 16,
-            "evicted": 112128
+            "evicted": 32256
           }
         ]
       },
       "peak": {
-        "daemonRssMb": 476,
-        "serveRssMb": 65
+        "daemonRssMb": 392,
+        "serveRssMb": 77
       },
       "lastExit": null,
       "checkpoint": {
-        "tick": 83105,
-        "savedAt": "2026-09-26T07:30:39.077Z",
-        "ageS": 4.7,
-        "bytes": 3880984
+        "tick": 33097,
+        "savedAt": "2026-09-26T19:06:04.235Z",
+        "ageS": 9.8,
+        "bytes": 2758576
       },
       "ladder": {
-        "date": "2026-09-24",
+        "date": "2026-09-26",
         "tier": 1,
-        "composite": 0.749283,
+        "composite": 0.795377,
         "columns": {
           "answer": 1,
-          "code": 0.166667,
+          "code": 0.333333,
           "capability": 1,
-          "health": 0.830464
+          "health": 0.848175
         },
         "delta": null,
-        "file": "bench/verdicts/ladder/2026-09-24.json",
-        "at": "2026-09-24T08:01:49.825Z"
+        "file": "bench/verdicts/ladder/2026-09-26.json",
+        "at": "2026-09-26T08:01:57.206Z"
       },
       "nativeShare": null,
       "nativeReason": "ladder.json has no native share yet",
@@ -206,35 +193,35 @@
         "policy": "core/ledger.mjs setLedgerPolicy mode summary budget 64 MB"
       },
       "egressAllow": [
-        "127.0.0.1:53367"
+        "127.0.0.1:46419"
       ],
       "gaps": {
-        "open": 222,
-        "withTrial": 77,
-        "attempted": 41,
-        "kept": 1,
+        "open": 0,
+        "withTrial": 0,
+        "attempted": 56,
+        "kept": 0,
         "closed": 0
       }
     },
     "kill": {
-      "pid": 38360,
-      "how": "process.kill(38360, SIGKILL) from the bench (Windows: TerminateProcess)",
-      "checkpointTickAtKill": 98105,
-      "tickAtKill": 98696,
+      "pid": 27526,
+      "how": "process.kill(27526, SIGKILL) from the bench (Windows: TerminateProcess)",
+      "checkpointTickAtKill": 43097,
+      "tickAtKill": 43073,
       "restartsBefore": 0,
       "restartsAfter": 1,
       "budgetKillsBefore": 0,
       "budgetKillsAfter": 0,
-      "newPid": 33648,
-      "resumedAt": 98105,
+      "newPid": 29211,
+      "resumedAt": 43097,
       "resumedFromCheckpoint": true,
-      "msToRestart": 2893,
+      "msToRestart": 4453,
       "lastExit": {
-        "at": "2026-09-26T07:32:13.795Z",
-        "code": 1,
-        "signal": null,
-        "afterS": 450,
-        "lastT": 98696,
+        "at": "2026-09-26T19:07:44.082Z",
+        "code": null,
+        "signal": "SIGKILL",
+        "afterS": 449.9,
+        "lastT": 43097,
         "reason": "exit",
         "planned": false
       },
@@ -245,11 +232,11 @@
       "ok": true,
       "seed": 1,
       "name": "dup-1",
-      "dir": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\deda19c8-a876-4012-a921-4723af645dfc\\scratchpad\\fit\\run-1800\\tmp\\brain-cloud-bench-9QRQbs\\dup-1",
-      "from": "C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\deda19c8-a876-4012-a921-4723af645dfc\\scratchpad\\fit\\run-1800\\tmp\\brain-cloud-bench-9QRQbs\\cloud\\snapshot.json",
-      "bytes": 4816280,
-      "sha256": "5d7d128b1955c7a67ee9b967e1bee637dbae9a984635436faf2e7f1368f09e5f",
-      "fromTick": 166337,
+      "dir": "/tmp/claude-0/-home-user-brain/e545381d-756f-5a6b-831b-e623f171c5fb/scratchpad/fit/b-bar/brain-cloud-bench-jFSCNq/dup-1",
+      "from": "/tmp/claude-0/-home-user-brain/e545381d-756f-5a6b-831b-e623f171c5fb/scratchpad/fit/b-bar/brain-cloud-bench-jFSCNq/cloud/snapshot.json",
+      "bytes": 3611160,
+      "sha256": "79df481d57747ceccc0737501e142fa0c28c3bb89c33a9ca90263cde1e1db72b",
+      "fromTick": 79097,
       "start": "BRAIN_NAME=dup-1 on the same /state volume resumes from this copy"
     },
     "duplicateAgain": {
@@ -258,10 +245,10 @@
     },
     "second": {
       "name": "dup-1",
-      "resumedAt": 166337,
-      "fromTick": 166337,
+      "resumedAt": 79097,
+      "fromTick": 79097,
       "resumedFromCopy": true,
-      "msToUp": 2558,
+      "msToUp": 4215,
       "instancesAliveSeenByA": 2,
       "instancesSeenByA": [
         "bench-a",
@@ -273,7 +260,7 @@
     "egress": {
       "guarded": {
         "allowed": {
-          "url": "http://127.0.0.1:53367/api/tags",
+          "url": "http://127.0.0.1:46419/api/tags",
           "ok": true,
           "status": 200,
           "models": 0
@@ -282,7 +269,7 @@
           "url": "https://example.com/",
           "refused": true,
           "code": "EGRESS_REFUSED",
-          "error": "egress refused: example.com:443 is not on the egress allowlist (127.0.0.1:53367, 127.0.0.1:55685)"
+          "error": "egress refused: example.com:443 is not on the egress allowlist (127.0.0.1:46419, 127.0.0.1:37443)"
         },
         "exampleHttp": {
           "refused": true,
@@ -298,66 +285,66 @@
     },
     "healthAfter": {
       "ok": true,
-      "at": "2026-09-26T07:54:43.785Z",
+      "at": "2026-09-26T19:30:14.081Z",
       "instance": "bench-a",
       "name": "cloud",
       "uptimeS": 1800,
-      "statusAgeS": 0.3,
-      "restarts": 7,
-      "budgetKills": 6,
-      "tick": 383570,
-      "ticksPerSec": 219,
-      "resumedAt": 378953,
-      "daemonPid": 38572,
-      "rssMb": 416,
+      "statusAgeS": 0.1,
+      "restarts": 1,
+      "budgetKills": 0,
+      "tick": 141083,
+      "ticksPerSec": 73,
+      "resumedAt": 43097,
+      "daemonPid": 29211,
+      "rssMb": 390,
       "memory": {
-        "heapUsedMb": 113,
-        "arrayBuffersMb": 85,
+        "heapUsedMb": 60,
+        "arrayBuffersMb": 50,
         "episodic": [
           {
             "name": "cloud",
-            "n": 1805,
+            "n": 1575,
             "cap": 2048,
             "max": 2048,
             "d": 8192,
             "keyMb": 16,
             "boundMb": 16,
-            "evicted": 499200
+            "evicted": 144896
           }
         ]
       },
       "peak": {
-        "daemonRssMb": 575,
-        "serveRssMb": 71
+        "daemonRssMb": 404,
+        "serveRssMb": 84
       },
       "lastExit": {
-        "at": "2026-09-26T07:54:18.263Z",
+        "at": "2026-09-26T19:07:44.082Z",
         "code": null,
         "signal": "SIGKILL",
-        "afterS": 10.4,
-        "lastT": 379900,
-        "reason": "BUDGET KILLED rss 451 MB over cap 448 MB",
+        "afterS": 449.9,
+        "lastT": 43097,
+        "reason": "exit",
         "planned": false
       },
       "checkpoint": {
-        "tick": 382985,
-        "savedAt": "2026-09-26T07:54:40.860Z",
-        "ageS": 2.9,
-        "bytes": 7935008
+        "tick": 140097,
+        "savedAt": "2026-09-26T19:30:01.274Z",
+        "ageS": 12.8,
+        "bytes": 3387688
       },
       "ladder": {
-        "date": "2026-09-24",
+        "date": "2026-09-26",
         "tier": 1,
-        "composite": 0.749283,
+        "composite": 0.795377,
         "columns": {
           "answer": 1,
-          "code": 0.166667,
+          "code": 0.333333,
           "capability": 1,
-          "health": 0.830464
+          "health": 0.848175
         },
         "delta": null,
-        "file": "bench/verdicts/ladder/2026-09-24.json",
-        "at": "2026-09-24T08:01:49.825Z"
+        "file": "bench/verdicts/ladder/2026-09-26.json",
+        "at": "2026-09-26T08:01:57.206Z"
       },
       "nativeShare": null,
       "nativeReason": "ladder.json has no native share yet",
@@ -375,70 +362,70 @@
         "policy": "core/ledger.mjs setLedgerPolicy mode summary budget 64 MB"
       },
       "egressAllow": [
-        "127.0.0.1:53367"
+        "127.0.0.1:46419"
       ],
       "gaps": {
-        "open": 222,
-        "withTrial": 77,
-        "attempted": 41,
-        "kept": 1,
+        "open": 0,
+        "withTrial": 0,
+        "attempted": 56,
+        "kept": 0,
         "closed": 0
       }
     },
     "healthAfterB": {
       "ok": true,
-      "at": "2026-09-26T07:54:43.789Z",
+      "at": "2026-09-26T19:30:14.101Z",
       "instance": "bench-b",
       "name": "dup-1",
-      "uptimeS": 990,
-      "statusAgeS": 0.3,
+      "uptimeS": 989.9,
+      "statusAgeS": 0.2,
       "restarts": 0,
       "budgetKills": 0,
-      "tick": 390251,
-      "ticksPerSec": 225,
-      "resumedAt": 166337,
-      "daemonPid": 38372,
-      "rssMb": 426,
+      "tick": 140822,
+      "ticksPerSec": 63,
+      "resumedAt": 79097,
+      "daemonPid": 30999,
+      "rssMb": 386,
       "memory": {
-        "heapUsedMb": 82,
-        "arrayBuffersMb": 68,
+        "heapUsedMb": 62,
+        "arrayBuffersMb": 50,
         "episodic": [
           {
             "name": "cloud",
-            "n": 1550,
+            "n": 1616,
             "cap": 2048,
             "max": 2048,
             "d": 8192,
             "keyMb": 16,
             "boundMb": 16,
-            "evicted": 515072
+            "evicted": 143872
           }
         ]
       },
       "peak": {
-        "daemonRssMb": 531,
-        "serveRssMb": 72
+        "daemonRssMb": 402,
+        "serveRssMb": 78
       },
       "lastExit": null,
       "checkpoint": {
-        "tick": 389969,
-        "savedAt": "2026-09-26T07:54:41.850Z",
-        "ageS": 1.9,
-        "bytes": 5410968
+        "tick": 140097,
+        "savedAt": "2026-09-26T19:30:04.434Z",
+        "ageS": 9.7,
+        "bytes": 3554664
       },
       "ladder": {
-        "date": "2026-09-24",
+        "date": "2026-09-26",
         "tier": 1,
-        "composite": 0.749283,
+        "composite": 0.795377,
         "columns": {
           "answer": 1,
-          "code": 0.166667,
+          "code": 0.333333,
           "capability": 1,
-          "health": 0.830464
+          "health": 0.848175
         },
         "delta": null,
-        "file": "bench/verdicts/ladder/2026-09-24.json",
-        "at": "2026-09-24T08:01:49.825Z"
+        "file": "bench/verdicts/ladder/2026-09-26.json",
+        "at": "2026-09-26T08:01:57.206Z"
       },
       "nativeShare": null,
       "nativeReason": "ladder.json has no native share yet",
@@ -456,35 +443,35 @@
         "policy": "core/ledger.mjs setLedgerPolicy mode summary budget 64 MB"
       },
       "egressAllow": [
-        "127.0.0.1:53367"
+        "127.0.0.1:46419"
       ],
       "gaps": {
-        "open": 222,
-        "withTrial": 77,
-        "attempted": 41,
-        "kept": 1,
+        "open": 0,
+        "withTrial": 0,
+        "attempted": 56,
+        "kept": 0,
         "closed": 0
       }
     },
     "restartsBreakdown": {
-      "total": 7,
-      "budgetKills": 6,
+      "total": 1,
+      "budgetKills": 0,
       "fromTheBenchKill": 1,
       "other": 0
     },
     "checkpoint": {
-      "ageS": 2.9,
-      "bytes": 7935008,
-      "tick": 382985,
-      "bytesAtBefore": 3880984,
-      "tickAtBefore": 83105
+      "ageS": 12.8,
+      "bytes": 3387688,
+      "tick": 140097,
+      "bytesAtBefore": 2758576,
+      "tickAtBefore": 33097
     },
     "ledger": {
-      "diskBytes": 876242,
+      "diskBytes": 330320,
       "policy": "core/ledger.mjs setLedgerPolicy mode summary budget 64 MB",
       "backstopRotations": 0
     },
-    "egressLogLines": 9,
+    "egressLogLines": 3,
     "stop": {
       "a": {
         "code": 0,
@@ -496,337 +483,342 @@
       }
     },
     "rssPeakMb": {
-      "daemonA": 575,
-      "serveA": 71,
-      "daemonB": 531,
-      "serveB": 72,
-      "instanceA": 646,
-      "instanceB": 603
+      "daemonA": 404,
+      "serveA": 84,
+      "daemonB": 402,
+      "serveB": 78,
+      "instanceA": 488,
+      "instanceB": 480
     },
     "orphans": [],
-    "stateBytesAtEnd": 600676770,
+    "stateBytesAtEnd": 186070923,
     "finalTicks": {
-      "a": 383846,
-      "b": 390977
+      "a": 141097,
+      "b": 141097
     },
     "fit": {
       "samples": 360,
       "everyMs": 5000,
       "instances": {
         "a": {
-          "daemonsWithCensus": 8,
+          "daemonsWithCensus": 2,
           "pids": [
-            11928,
-            18632,
-            29760,
-            31240,
-            33648,
-            34908,
-            38360,
-            38572
+            27526,
+            29211
           ],
           "floorMb": 380,
           "holdBudgetMs": 1000,
-          "selfRounds": 5,
-          "holdMaxMs": 709.209,
-          "holdsOverBudget": 0,
-          "suiteMsMax": 122203.394,
-          "planDefers": 0,
+          "selfRounds": 3,
+          "holdMaxMs": 1220.99,
+          "holdsOverBudget": 3,
+          "suiteMsMax": 1597.526,
+          "planDefers": 1,
           "guard": {
-            "run": 7,
+            "run": 4,
             "prune": 0,
-            "defer": 220,
+            "defer": 40,
             "releasedBytes": 0
           },
           "lastHold": {
             "round": 3,
-            "t": 80041,
-            "holdMs": 709.209,
-            "predictMs": 669,
-            "msPerTick": 2.688,
-            "window": 48,
-            "suiteMs": 120910.459,
-            "asked": 2,
-            "trials": 2,
-            "decision": "run"
-          },
-          "lastPlan": {
-            "t": 60001,
-            "msPerTick": 2.688,
-            "ticks": 40,
-            "decision": "run",
-            "candidates": 2,
-            "window": 48,
-            "predictMs": 669,
-            "why": "a tick costs 2.7 ms and an arm 1.7 x 48 ticks of it (223 ms): 2 candidates and the control fit 1000 ms"
-          },
-          "lastGuard": {
-            "t": 383007,
-            "round": 6,
-            "decision": "defer",
-            "rssMb": 465,
-            "floorMb": 380,
-            "releasableMb": 0.094,
-            "releasedBytes": 0,
-            "why": "rss 465 MB is over the floor 380 MB and a prune releases only 0.1 MB (465 MB would remain)"
-          },
-          "selfCode": {
-            "starts": 1,
-            "refusals": 14,
-            "kills": 1,
-            "needMb": 127.824,
-            "lastStart": {
-              "t": 20096,
-              "rssMb": 323,
-              "needMb": 0,
-              "capMb": 57,
-              "dry": true,
-              "why": "rss 323 MB + need 0 MB (not measured yet; the start is bounded by its cap) = 323 MB, under the floor 380 MB"
-            },
-            "lastRefusal": {
-              "t": 80041,
-              "rssMb": 390,
-              "needMb": 127.824,
-              "needFrom": "measured at t=20096 (killed)",
-              "floorMb": 380,
-              "why": "rss 390 MB + need 128 MB (measured at t=20096 (killed)) = 518 MB, over the floor 380 MB"
-            },
-            "lastRecord": {
-              "t": 20096,
-              "outcome": "killed",
-              "exitCode": 137,
-              "peakRssMb": 127.824,
-              "treePeakMb": 127.824,
-              "childMaxRssMb": null,
-              "capMb": 57,
-              "wallS": 0.325,
-              "samples": 1,
-              "maxProcs": 3
-            }
-          },
-          "checkpointAge": {
-            "ageS": 11.3,
-            "reads": 360,
-            "t": 379537,
-            "checkpointTick": 378953,
-            "atS": 1783,
-            "restarts": 7
-          },
-          "knowledge": {
-            "pid": 38572,
-            "rows": []
-          },
-          "logs": {
-            "roundsRun": 5,
-            "roundsDeferred": 220,
-            "selfCodeStarts": 1,
-            "selfCodeRefused": 14
-          }
-        },
-        "b": {
-          "daemonsWithCensus": 1,
-          "pids": [
-            38372
-          ],
-          "floorMb": 380,
-          "holdBudgetMs": 1000,
-          "selfRounds": 1,
-          "holdMaxMs": 519.571,
-          "holdsOverBudget": 0,
-          "suiteMsMax": 120595.947,
-          "planDefers": 0,
-          "guard": {
-            "run": 1,
-            "prune": 0,
-            "defer": 191,
-            "releasedBytes": 0
-          },
-          "lastHold": {
-            "round": 1,
-            "t": 198907,
-            "holdMs": 519.571,
-            "predictMs": 582,
-            "msPerTick": 3.033,
-            "window": 48,
-            "suiteMs": 120595.947,
+            "t": 80061,
+            "holdMs": 1185.553,
+            "predictMs": 892,
+            "msPerTick": 8.393,
+            "window": 23,
+            "suiteMs": 1597.526,
             "asked": 1,
             "trials": 1,
             "decision": "run"
           },
           "lastPlan": {
-            "t": 180001,
-            "msPerTick": 3.033,
-            "ticks": 42,
-            "decision": "run",
-            "candidates": 1,
+            "t": 100001,
+            "msPerTick": 44.503,
+            "ticks": 4,
+            "decision": "defer",
+            "candidates": 0,
             "window": 48,
-            "predictMs": 582,
-            "why": "a tick costs 3 ms and an arm 2 x 48 ticks of it (291 ms): 1 candidate and the control fit 1000 ms"
+            "predictMs": 3280,
+            "why": "a tick costs 44.5 ms and an arm 3.1 x 48 ticks of it (6560 ms): one candidate at the shortest window, 12 ticks, would hold 3280 ms, over 1000 ms"
           },
           "lastGuard": {
-            "t": 390014,
-            "round": 2,
+            "t": 141002,
+            "round": 4,
             "decision": "defer",
-            "rssMb": 421,
+            "rssMb": 388,
             "floorMb": 380,
-            "releasableMb": 1.734,
+            "releasableMb": 0,
             "releasedBytes": 0,
-            "why": "rss 421 MB is over the floor 380 MB and a prune releases only 1.7 MB (419 MB would remain)"
+            "why": "rss 388 MB is over the floor 380 MB and a prune releases only 0 MB (388 MB would remain)"
           },
           "selfCode": {
-            "starts": 0,
-            "refusals": 10,
-            "kills": 0,
-            "needMb": 0,
-            "lastStart": null,
-            "lastRefusal": {
-              "t": 380005,
-              "rssMb": 424,
+            "starts": 1,
+            "refusals": 5,
+            "kills": 1,
+            "needMb": 44.938,
+            "lastStart": {
+              "t": 63201,
+              "rssMb": 350,
               "needMb": 0,
-              "needFrom": "not measured yet; the start is bounded by its cap",
-              "floorMb": 380,
-              "why": "rss 424 MB + need 0 MB (not measured yet; the start is bounded by its cap) = 424 MB, over the floor 380 MB"
+              "capMb": 30,
+              "dry": true,
+              "why": "rss 350 MB + need 0 MB (not measured yet; the start is bounded by its cap) = 350 MB, under the floor 380 MB"
             },
-            "lastRecord": null
+            "lastRefusal": {
+              "t": 125201,
+              "rssMb": 391,
+              "needMb": 44.938,
+              "needFrom": "measured at t=63201 (killed)",
+              "floorMb": 380,
+              "why": "rss 391 MB + need 45 MB (measured at t=63201 (killed)) = 436 MB, over the floor 380 MB"
+            },
+            "lastRecord": {
+              "t": 63201,
+              "outcome": "killed",
+              "exitCode": 137,
+              "peakRssMb": 44.938,
+              "treePeakMb": 44.938,
+              "childMaxRssMb": null,
+              "capMb": 30,
+              "wallS": 0.082,
+              "samples": 1,
+              "maxProcs": 1
+            }
           },
           "checkpointAge": {
-            "ageS": 7.9,
+            "ageS": 27.8,
+            "reads": 360,
+            "t": 105065,
+            "checkpointTick": 104097,
+            "atS": 1201,
+            "restarts": 1
+          },
+          "knowledge": null,
+          "logs": {
+            "roundsRun": 3,
+            "roundsDeferred": 41,
+            "selfCodeStarts": 1,
+            "selfCodeRefused": 5
+          }
+        },
+        "b": {
+          "daemonsWithCensus": 1,
+          "pids": [
+            30999
+          ],
+          "floorMb": 380,
+          "holdBudgetMs": 1000,
+          "selfRounds": 3,
+          "holdMaxMs": 1643.415,
+          "holdsOverBudget": 3,
+          "suiteMsMax": 122993.998,
+          "planDefers": 0,
+          "guard": {
+            "run": 3,
+            "prune": 0,
+            "defer": 2,
+            "releasedBytes": 0
+          },
+          "lastHold": {
+            "round": 3,
+            "t": 124225,
+            "holdMs": 1643.415,
+            "predictMs": 899,
+            "msPerTick": 6.065,
+            "window": 22,
+            "suiteMs": 122993.998,
+            "asked": 1,
+            "trials": 1,
+            "decision": "run"
+          },
+          "lastPlan": {
+            "t": 120001,
+            "msPerTick": 6.065,
+            "ticks": 9,
+            "decision": "run",
+            "candidates": 1,
+            "window": 22,
+            "predictMs": 899,
+            "why": "a tick costs 6.1 ms and an arm 3.4 x 48 ticks of it (980 ms): one candidate fits 1000 ms only at a window of 22 ticks (at least 12)"
+          },
+          "lastGuard": {
+            "t": 141002,
+            "round": 4,
+            "decision": "defer",
+            "rssMb": 390,
+            "floorMb": 380,
+            "releasableMb": 0,
+            "releasedBytes": 0,
+            "why": "rss 390 MB is over the floor 380 MB and a prune releases only 0 MB (390 MB would remain)"
+          },
+          "selfCode": {
+            "starts": 1,
+            "refusals": 2,
+            "kills": 1,
+            "needMb": 78.32,
+            "lastStart": {
+              "t": 99201,
+              "rssMb": 346,
+              "needMb": 0,
+              "capMb": 33,
+              "dry": true,
+              "why": "rss 346 MB + need 0 MB (not measured yet; the start is bounded by its cap) = 346 MB, under the floor 380 MB"
+            },
+            "lastRefusal": {
+              "t": 139201,
+              "rssMb": 386,
+              "needMb": 78.32,
+              "needFrom": "measured at t=99201 (killed)",
+              "floorMb": 380,
+              "why": "rss 386 MB + need 78 MB (measured at t=99201 (killed)) = 464 MB, over the floor 380 MB"
+            },
+            "lastRecord": {
+              "t": 99201,
+              "outcome": "killed",
+              "exitCode": 137,
+              "peakRssMb": 78.32,
+              "treePeakMb": 78.32,
+              "childMaxRssMb": null,
+              "capMb": 33,
+              "wallS": 0.54,
+              "samples": 2,
+              "maxProcs": 1
+            }
+          },
+          "checkpointAge": {
+            "ageS": 28.7,
             "reads": 199,
-            "t": 166955,
-            "checkpointTick": 166337,
-            "atS": 6,
+            "t": 123030,
+            "checkpointTick": 122097,
+            "atS": 697,
             "restarts": 0
           },
-          "knowledge": {
-            "pid": 38372,
-            "rows": []
-          },
+          "knowledge": null,
           "logs": {
-            "roundsRun": 1,
-            "roundsDeferred": 191,
-            "selfCodeStarts": 0,
-            "selfCodeRefused": 10
+            "roundsRun": 3,
+            "roundsDeferred": 2,
+            "selfCodeStarts": 1,
+            "selfCodeRefused": 2
           }
         }
       },
       "total": {
         "selfRounds": 6,
-        "holdMaxMs": 709.209,
-        "holdsOverBudget": 0,
-        "planDefers": 0,
-        "guardDefers": 411,
+        "holdMaxMs": 1643.415,
+        "holdsOverBudget": 6,
+        "planDefers": 1,
+        "guardDefers": 42,
         "guardPrunes": 0,
-        "selfCodeStarts": 1,
-        "selfCodeRefusals": 24,
-        "selfCodeKills": 1,
-        "checkpointAgeMaxS": 11.3,
+        "selfCodeStarts": 2,
+        "selfCodeRefusals": 7,
+        "selfCodeKills": 2,
+        "checkpointAgeMaxS": 28.7,
         "logRoundsRun": 6,
-        "logSelfCodeStarts": 1
+        "logSelfCodeStarts": 2
       }
     },
-    "wallMs": 1805918
+    "wallMs": 1807623
   },
-  "wallMs": 1806887,
+  "wallMs": 1808300,
   "memoryAtEnd": {
-    "heapUsedMb": 113,
-    "arrayBuffersMb": 85,
+    "heapUsedMb": 60,
+    "arrayBuffersMb": 50,
     "episodic": [
       {
         "name": "cloud",
-        "n": 1805,
+        "n": 1575,
         "cap": 2048,
         "max": 2048,
         "d": 8192,
         "keyMb": 16,
         "boundMb": 16,
-        "evicted": 499200
+        "evicted": 144896
       }
     ]
   },
   "restartsBreakdown": {
-    "total": 7,
-    "budgetKills": 6,
+    "total": 1,
+    "budgetKills": 0,
     "fromTheBenchKill": 1,
     "other": 0
   },
-  "statement": "FIT (Board 13): 1800 s native at the 448 MB rss cap, model off (a local stub). Peak daemon rss A 575 MB, B 531 MB. Budget kills A 6, B 0; restarts A 7 (1 from the bench kill), B 0. Self rounds 6 (A 5, B 1; the logs print 6 round lines), the longest hold 709 ms of a 1000 ms budget with 0 over it, 0 plan defers, 411 guard defers and 0 prunes at the 380 MB floor. Self-code starts 1 (log lines 1), refusals 24, kills at the child cap 1; the last child ended killed at a peak of 127.824 MB under a 57 MB cap; the last refusal: rss 390 MB + need 128 MB (measured at t=20096 (killed)) = 518 MB, over the floor 380 MB. Checkpoint age max A 11.3 s, B 7.9 s over 360 samples. Knowledge store census: none (a daemon without the resident cap, or no store opened). Control (bench/verdicts/cloud-fit-control.json, 1800 s): restarts beyond the bench kill 21 (A restarts 14, budget kills 13; B restarts 8, budget kills 8), peak rss {\"daemonA\":600,\"serveA\":66,\"daemonB\":585,\"serveB\":71,\"instanceA\":666,\"instanceB\":656}. Fit rows: fitBudgetKills0 false, fitSelfRounds3 true, fitSelfCodeStart1 true, fitCheckpointAgeMax60 true, fitHoldUnder1s true; the 8 rows met false; the 8 rows run on fractions of --seconds, so at 1800 s the bench kill is at 450 s, the duplicate at 810 s, the egress probe at 1080 s and the after reading at 1800 s; no row needed scaling, checkpointAgeUnder60s reads the age once at the end and fitCheckpointAgeMax60 every 5000 ms. isTheBar true, barMet false (fit row fitBudgetKills0 false; row restartCount1NoBudgetKill of the 8 false; row daemonPeakRssUnderCap of the 8 false).",
+  "statement": "FIT (Board 13): 1800 s native at the 448 MB rss cap, model off (a local stub). Peak daemon rss A 404 MB, B 402 MB. Budget kills A 0, B 0; restarts A 1 (1 from the bench kill), B 0. Self rounds 6 (A 3, B 3; the logs print 6 round lines), the longest hold 1643 ms of a 1000 ms budget with 6 over it, 1 plan defers, 42 guard defers and 0 prunes at the 380 MB floor. Self-code starts 2 (log lines 2), refusals 7, kills at the child cap 2; the last child ended killed at a peak of 44.938 MB under a 30 MB cap; the last refusal: rss 391 MB + need 45 MB (measured at t=63201 (killed)) = 436 MB, over the floor 380 MB. Checkpoint age max A 27.8 s, B 28.7 s over 360 samples. Knowledge store census: none (a daemon without the resident cap, or no store opened). Control (bench/verdicts/cloud-fit-control.json, 1800 s): restarts beyond the bench kill 0 (A restarts 1, budget kills 0; B restarts 0, budget kills 0), peak rss {\"daemonA\":439,\"serveA\":82,\"daemonB\":454,\"serveB\":77,\"instanceA\":521,\"instanceB\":531}. Fit rows: fitBudgetKills0 true, fitSelfRounds3 true, fitSelfCodeStart1 true, fitCheckpointAgeMax60 true, fitHoldUnder1s false; the 8 rows met true; the 8 rows run on fractions of --seconds, so at 1800 s the bench kill is at 450 s, the duplicate at 810 s, the egress probe at 1080 s and the after reading at 1800 s; no row needed scaling, checkpointAgeUnder60s reads the age once at the end and fitCheckpointAgeMax60 every 5000 ms. isTheBar true, barMet false (the control (the tree at HEAD, the same 1800 s) restarted 0 times beyond the bench kill (A restarts 1, budget kills 0; B restarts 0, budget kills 0), so this run cannot show the fit is what kept the organism alive; fit row fitHoldUnder1s false).",
   "board16": {
     "isTheBar": true,
-    "barMet": false,
+    "barMet": true,
     "bar": {
-      "restartCount1NoBudgetKill": false,
+      "restartCount1NoBudgetKill": true,
       "resumedFromCheckpoint": true,
       "duplicate200Then409SecondFromCopy": true,
       "egressModelEndpointAllowed": true,
       "egressExampleRefused": true,
       "healthOkAfter": true,
-      "daemonPeakRssUnderCap": false,
+      "daemonPeakRssUnderCap": true,
       "checkpointAgeUnder60s": true
     },
-    "barRowsMet": false
+    "barRowsMet": true
   },
   "fitTree": null,
   "fit": {
     "rows": {
-      "fitBudgetKills0": false,
+      "fitBudgetKills0": true,
       "fitSelfRounds3": true,
       "fitSelfCodeStart1": true,
       "fitCheckpointAgeMax60": true,
-      "fitHoldUnder1s": true
+      "fitHoldUnder1s": false
     },
     "rowsMet": false,
-    "rows8Met": false,
+    "rows8Met": true,
     "secondsForTheBar": 1800,
     "rssCapMb": 448,
     "peakDaemonRssMb": {
-      "a": 575,
-      "b": 531
+      "a": 404,
+      "b": 402
     },
     "budgetKills": {
-      "a": 6,
+      "a": 0,
       "b": 0
     },
     "control": {
       "file": "bench/verdicts/cloud-fit-control.json",
-      "at": "2026-09-26T07:08:43.218Z",
-      "command": "node bench/cloud.mjs --native --seconds 1800 --keep --out C:\\Users\\ybmic\\Downloads\\claudeskillsvideo-to-website\\brain\\bench\\verdicts\\cloud-fit-control.json",
-      "tree": "at HEAD 3add994c7e75626b75a43d669521b2b84b6c7a59 (a copy in the scratch dir; the daemon, supervisor and knowledge store code at HEAD, the harness is this bench/cloud.mjs)",
+      "at": "2026-09-26T19:00:13.184Z",
+      "command": "node bench/cloud.mjs --native --seconds 1800 --keep --free-gb 4 --out bench/verdicts/cloud-fit-control.json",
+      "tree": "this tree with BRAIN_CHECKPOINT_STREAM=0 (the streamed checkpoint writer off: core/persist.mjs writeCheckpoint on the whole snapshot document, as at HEAD)",
       "seconds": 1800,
       "error": null,
-      "restartsA": 14,
-      "budgetKillsA": 13,
-      "restartsB": 8,
-      "budgetKillsB": 8,
-      "restartsBeyondTheBenchKill": 21,
+      "restartsA": 1,
+      "budgetKillsA": 0,
+      "restartsB": 0,
+      "budgetKillsB": 0,
+      "restartsBeyondTheBenchKill": 0,
       "peakRssMb": {
-        "daemonA": 600,
-        "serveA": 66,
-        "daemonB": 585,
-        "serveB": 71,
-        "instanceA": 666,
-        "instanceB": 656
+        "daemonA": 439,
+        "serveA": 82,
+        "daemonB": 454,
+        "serveB": 77,
+        "instanceA": 521,
+        "instanceB": 531
       },
       "census": {
-        "selfRounds": null,
-        "holdMaxMs": null,
-        "holdsOverBudget": null,
-        "planDefers": null,
-        "guardDefers": null,
-        "guardPrunes": null,
-        "selfCodeStarts": null,
-        "selfCodeRefusals": null,
-        "selfCodeKills": null,
-        "checkpointAgeMaxS": 225.3,
-        "logRoundsRun": 11,
-        "logSelfCodeStarts": 0
+        "selfRounds": 3,
+        "holdMaxMs": 1559.523,
+        "holdsOverBudget": 2,
+        "planDefers": 1,
+        "guardDefers": 121,
+        "guardPrunes": 0,
+        "selfCodeStarts": 1,
+        "selfCodeRefusals": 4,
+        "selfCodeKills": 1,
+        "checkpointAgeMaxS": 17.7,
+        "logRoundsRun": 3,
+        "logSelfCodeStarts": 1
       },
       "completed": true,
-      "restartedAtLeastOnce": true
+      "restartedAtLeastOnce": false
     },
     "why": [
-      "fit row fitBudgetKills0 false",
-      "row restartCount1NoBudgetKill of the 8 false",
-      "row daemonPeakRssUnderCap of the 8 false"
+      "the control (the tree at HEAD, the same 1800 s) restarted 0 times beyond the bench kill (A restarts 1, budget kills 0; B restarts 0, budget kills 0), so this run cannot show the fit is what kept the organism alive",
+      "fit row fitHoldUnder1s false"
     ],
     "rows8Scaling": "the 8 rows run on fractions of --seconds, so at 1800 s the bench kill is at 450 s, the duplicate at 810 s, the egress probe at 1080 s and the after reading at 1800 s; no row needed scaling, checkpointAgeUnder60s reads the age once at the end and fitCheckpointAgeMax60 every 5000 ms",
     "census": {
@@ -834,218 +826,224 @@
       "everyMs": 5000,
       "instances": {
         "a": {
-          "daemonsWithCensus": 8,
+          "daemonsWithCensus": 2,
           "pids": [
-            11928,
-            18632,
-            29760,
-            31240,
-            33648,
-            34908,
-            38360,
-            38572
+            27526,
+            29211
           ],
           "floorMb": 380,
           "holdBudgetMs": 1000,
-          "selfRounds": 5,
-          "holdMaxMs": 709.209,
-          "holdsOverBudget": 0,
-          "suiteMsMax": 122203.394,
-          "planDefers": 0,
+          "selfRounds": 3,
+          "holdMaxMs": 1220.99,
+          "holdsOverBudget": 3,
+          "suiteMsMax": 1597.526,
+          "planDefers": 1,
           "guard": {
-            "run": 7,
+            "run": 4,
             "prune": 0,
-            "defer": 220,
+            "defer": 40,
             "releasedBytes": 0
           },
           "lastHold": {
             "round": 3,
-            "t": 80041,
-            "holdMs": 709.209,
-            "predictMs": 669,
-            "msPerTick": 2.688,
-            "window": 48,
-            "suiteMs": 120910.459,
-            "asked": 2,
-            "trials": 2,
-            "decision": "run"
-          },
-          "lastPlan": {
-            "t": 60001,
-            "msPerTick": 2.688,
-            "ticks": 40,
-            "decision": "run",
-            "candidates": 2,
-            "window": 48,
-            "predictMs": 669,
-            "why": "a tick costs 2.7 ms and an arm 1.7 x 48 ticks of it (223 ms): 2 candidates and the control fit 1000 ms"
-          },
-          "lastGuard": {
-            "t": 383007,
-            "round": 6,
-            "decision": "defer",
-            "rssMb": 465,
-            "floorMb": 380,
-            "releasableMb": 0.094,
-            "releasedBytes": 0,
-            "why": "rss 465 MB is over the floor 380 MB and a prune releases only 0.1 MB (465 MB would remain)"
-          },
-          "selfCode": {
-            "starts": 1,
-            "refusals": 14,
-            "kills": 1,
-            "needMb": 127.824,
-            "lastStart": {
-              "t": 20096,
-              "rssMb": 323,
-              "needMb": 0,
-              "capMb": 57,
-              "dry": true,
-              "why": "rss 323 MB + need 0 MB (not measured yet; the start is bounded by its cap) = 323 MB, under the floor 380 MB"
-            },
-            "lastRefusal": {
-              "t": 80041,
-              "rssMb": 390,
-              "needMb": 127.824,
-              "needFrom": "measured at t=20096 (killed)",
-              "floorMb": 380,
-              "why": "rss 390 MB + need 128 MB (measured at t=20096 (killed)) = 518 MB, over the floor 380 MB"
-            },
-            "lastRecord": {
-              "t": 20096,
-              "outcome": "killed",
-              "exitCode": 137,
-              "peakRssMb": 127.824,
-              "treePeakMb": 127.824,
-              "childMaxRssMb": null,
-              "capMb": 57,
-              "wallS": 0.325,
-              "samples": 1,
-              "maxProcs": 3
-            }
-          },
-          "checkpointAge": {
-            "ageS": 11.3,
-            "reads": 360,
-            "t": 379537,
-            "checkpointTick": 378953,
-            "atS": 1783,
-            "restarts": 7
-          },
-          "knowledge": {
-            "pid": 38572,
-            "rows": []
-          },
-          "logs": {
-            "roundsRun": 5,
-            "roundsDeferred": 220,
-            "selfCodeStarts": 1,
-            "selfCodeRefused": 14
-          }
-        },
-        "b": {
-          "daemonsWithCensus": 1,
-          "pids": [
-            38372
-          ],
-          "floorMb": 380,
-          "holdBudgetMs": 1000,
-          "selfRounds": 1,
-          "holdMaxMs": 519.571,
-          "holdsOverBudget": 0,
-          "suiteMsMax": 120595.947,
-          "planDefers": 0,
-          "guard": {
-            "run": 1,
-            "prune": 0,
-            "defer": 191,
-            "releasedBytes": 0
-          },
-          "lastHold": {
-            "round": 1,
-            "t": 198907,
-            "holdMs": 519.571,
-            "predictMs": 582,
-            "msPerTick": 3.033,
-            "window": 48,
-            "suiteMs": 120595.947,
+            "t": 80061,
+            "holdMs": 1185.553,
+            "predictMs": 892,
+            "msPerTick": 8.393,
+            "window": 23,
+            "suiteMs": 1597.526,
             "asked": 1,
             "trials": 1,
             "decision": "run"
           },
           "lastPlan": {
-            "t": 180001,
-            "msPerTick": 3.033,
-            "ticks": 42,
-            "decision": "run",
-            "candidates": 1,
+            "t": 100001,
+            "msPerTick": 44.503,
+            "ticks": 4,
+            "decision": "defer",
+            "candidates": 0,
             "window": 48,
-            "predictMs": 582,
-            "why": "a tick costs 3 ms and an arm 2 x 48 ticks of it (291 ms): 1 candidate and the control fit 1000 ms"
+            "predictMs": 3280,
+            "why": "a tick costs 44.5 ms and an arm 3.1 x 48 ticks of it (6560 ms): one candidate at the shortest window, 12 ticks, would hold 3280 ms, over 1000 ms"
           },
           "lastGuard": {
-            "t": 390014,
-            "round": 2,
+            "t": 141002,
+            "round": 4,
             "decision": "defer",
-            "rssMb": 421,
+            "rssMb": 388,
             "floorMb": 380,
-            "releasableMb": 1.734,
+            "releasableMb": 0,
             "releasedBytes": 0,
-            "why": "rss 421 MB is over the floor 380 MB and a prune releases only 1.7 MB (419 MB would remain)"
+            "why": "rss 388 MB is over the floor 380 MB and a prune releases only 0 MB (388 MB would remain)"
           },
           "selfCode": {
-            "starts": 0,
-            "refusals": 10,
-            "kills": 0,
-            "needMb": 0,
-            "lastStart": null,
-            "lastRefusal": {
-              "t": 380005,
-              "rssMb": 424,
+            "starts": 1,
+            "refusals": 5,
+            "kills": 1,
+            "needMb": 44.938,
+            "lastStart": {
+              "t": 63201,
+              "rssMb": 350,
               "needMb": 0,
-              "needFrom": "not measured yet; the start is bounded by its cap",
-              "floorMb": 380,
-              "why": "rss 424 MB + need 0 MB (not measured yet; the start is bounded by its cap) = 424 MB, over the floor 380 MB"
+              "capMb": 30,
+              "dry": true,
+              "why": "rss 350 MB + need 0 MB (not measured yet; the start is bounded by its cap) = 350 MB, under the floor 380 MB"
             },
-            "lastRecord": null
+            "lastRefusal": {
+              "t": 125201,
+              "rssMb": 391,
+              "needMb": 44.938,
+              "needFrom": "measured at t=63201 (killed)",
+              "floorMb": 380,
+              "why": "rss 391 MB + need 45 MB (measured at t=63201 (killed)) = 436 MB, over the floor 380 MB"
+            },
+            "lastRecord": {
+              "t": 63201,
+              "outcome": "killed",
+              "exitCode": 137,
+              "peakRssMb": 44.938,
+              "treePeakMb": 44.938,
+              "childMaxRssMb": null,
+              "capMb": 30,
+              "wallS": 0.082,
+              "samples": 1,
+              "maxProcs": 1
+            }
           },
           "checkpointAge": {
-            "ageS": 7.9,
+            "ageS": 27.8,
+            "reads": 360,
+            "t": 105065,
+            "checkpointTick": 104097,
+            "atS": 1201,
+            "restarts": 1
+          },
+          "knowledge": null,
+          "logs": {
+            "roundsRun": 3,
+            "roundsDeferred": 41,
+            "selfCodeStarts": 1,
+            "selfCodeRefused": 5
+          }
+        },
+        "b": {
+          "daemonsWithCensus": 1,
+          "pids": [
+            30999
+          ],
+          "floorMb": 380,
+          "holdBudgetMs": 1000,
+          "selfRounds": 3,
+          "holdMaxMs": 1643.415,
+          "holdsOverBudget": 3,
+          "suiteMsMax": 122993.998,
+          "planDefers": 0,
+          "guard": {
+            "run": 3,
+            "prune": 0,
+            "defer": 2,
+            "releasedBytes": 0
+          },
+          "lastHold": {
+            "round": 3,
+            "t": 124225,
+            "holdMs": 1643.415,
+            "predictMs": 899,
+            "msPerTick": 6.065,
+            "window": 22,
+            "suiteMs": 122993.998,
+            "asked": 1,
+            "trials": 1,
+            "decision": "run"
+          },
+          "lastPlan": {
+            "t": 120001,
+            "msPerTick": 6.065,
+            "ticks": 9,
+            "decision": "run",
+            "candidates": 1,
+            "window": 22,
+            "predictMs": 899,
+            "why": "a tick costs 6.1 ms and an arm 3.4 x 48 ticks of it (980 ms): one candidate fits 1000 ms only at a window of 22 ticks (at least 12)"
+          },
+          "lastGuard": {
+            "t": 141002,
+            "round": 4,
+            "decision": "defer",
+            "rssMb": 390,
+            "floorMb": 380,
+            "releasableMb": 0,
+            "releasedBytes": 0,
+            "why": "rss 390 MB is over the floor 380 MB and a prune releases only 0 MB (390 MB would remain)"
+          },
+          "selfCode": {
+            "starts": 1,
+            "refusals": 2,
+            "kills": 1,
+            "needMb": 78.32,
+            "lastStart": {
+              "t": 99201,
+              "rssMb": 346,
+              "needMb": 0,
+              "capMb": 33,
+              "dry": true,
+              "why": "rss 346 MB + need 0 MB (not measured yet; the start is bounded by its cap) = 346 MB, under the floor 380 MB"
+            },
+            "lastRefusal": {
+              "t": 139201,
+              "rssMb": 386,
+              "needMb": 78.32,
+              "needFrom": "measured at t=99201 (killed)",
+              "floorMb": 380,
+              "why": "rss 386 MB + need 78 MB (measured at t=99201 (killed)) = 464 MB, over the floor 380 MB"
+            },
+            "lastRecord": {
+              "t": 99201,
+              "outcome": "killed",
+              "exitCode": 137,
+              "peakRssMb": 78.32,
+              "treePeakMb": 78.32,
+              "childMaxRssMb": null,
+              "capMb": 33,
+              "wallS": 0.54,
+              "samples": 2,
+              "maxProcs": 1
+            }
+          },
+          "checkpointAge": {
+            "ageS": 28.7,
             "reads": 199,
-            "t": 166955,
-            "checkpointTick": 166337,
-            "atS": 6,
+            "t": 123030,
+            "checkpointTick": 122097,
+            "atS": 697,
             "restarts": 0
           },
-          "knowledge": {
-            "pid": 38372,
-            "rows": []
-          },
+          "knowledge": null,
           "logs": {
-            "roundsRun": 1,
-            "roundsDeferred": 191,
-            "selfCodeStarts": 0,
-            "selfCodeRefused": 10
+            "roundsRun": 3,
+            "roundsDeferred": 2,
+            "selfCodeStarts": 1,
+            "selfCodeRefused": 2
           }
         }
       },
       "total": {
         "selfRounds": 6,
-        "holdMaxMs": 709.209,
-        "holdsOverBudget": 0,
-        "planDefers": 0,
-        "guardDefers": 411,
+        "holdMaxMs": 1643.415,
+        "holdsOverBudget": 6,
+        "planDefers": 1,
+        "guardDefers": 42,
         "guardPrunes": 0,
-        "selfCodeStarts": 1,
-        "selfCodeRefusals": 24,
-        "selfCodeKills": 1,
-        "checkpointAgeMaxS": 11.3,
+        "selfCodeStarts": 2,
+        "selfCodeRefusals": 7,
+        "selfCodeKills": 2,
+        "checkpointAgeMaxS": 28.7,
         "logRoundsRun": 6,
-        "logSelfCodeStarts": 1
+        "logSelfCodeStarts": 2
       }
     }
   },
   "contaminated": false,
   "contaminatedWhy": "no constant of daemon/run.mjs, memory/knowledge.mjs or bin/serve.mjs was changed after this run started",
-  "statement16": "Docker is absent on this machine (--native asked for), so no image was built and the verdict is partial: bin/serve.mjs ran natively for 1800 s with the environment compose.yaml declares. The daemon (pid 38360) was killed with SIGKILL at t=98696 with its checkpoint at t=98105; the supervisor restarted it in 2893 ms, resumed at t=98105, and /health reported restarts 7 at the end. GET /duplicate?seed=1 copied 4816280 bytes (checkpoint t=166337) to dup-1; a second instance resumed from it at t=166337 and instances alive read 2. Egress: example.com was refused by the guard (EGRESS_REFUSED), the model endpoint answered 200 with 0 models. At the end the checkpoint was 2.9 s old and 7935008 bytes at t=382985 (it was 3880984 bytes at t=83105). Restart count at the end: 7 (1 from the bench kill, 6 budget kills when the daemon passed the 448 MB rss cap, 0 other). Peak RSS: {\"daemonA\":575,\"serveA\":71,\"daemonB\":531,\"serveB\":72,\"instanceA\":646,\"instanceB\":603} MB against the 512 MB container cap (fits: false). The episodic record at the end: n=1805 episodes in a capacity of 2048 (16 MB of keys), bounded at 2048 keys of 8192 lanes = 16 MB, evicted 499200. Bar rows (mode native, the documented fallback, isTheBar true): restartCount1NoBudgetKill false, resumedFromCheckpoint true, duplicate200Then409SecondFromCopy true, egressModelEndpointAllowed true, egressExampleRefused true, healthOkAfter true, daemonPeakRssUnderCap false, checkpointAgeUnder60s true; barMet false. The model endpoint was a local stub ({\"GET /api/tags\":1} requests), never Ollama. The build context is 1873 files and 911732377 bytes with 0 secret hits; the control scan without the secret lines of .dockerignore found 4 hits in 2 files."
+  "statement16": "Docker is absent on this machine (--native asked for), so no image was built and the verdict is partial: bin/serve.mjs ran natively for 1800 s with the environment compose.yaml declares. The daemon (pid 27526) was killed with SIGKILL at t=43073 with its checkpoint at t=43097; the supervisor restarted it in 4453 ms, resumed at t=43097, and /health reported restarts 1 at the end. GET /duplicate?seed=1 copied 3611160 bytes (checkpoint t=79097) to dup-1; a second instance resumed from it at t=79097 and instances alive read 2. Egress: example.com was refused by the guard (EGRESS_REFUSED), the model endpoint answered 200 with 0 models. At the end the checkpoint was 12.8 s old and 3387688 bytes at t=140097 (it was 2758576 bytes at t=33097). Restart count at the end: 1 (1 from the bench kill, 0 budget kills when the daemon passed the 448 MB rss cap, 0 other). Peak RSS: {\"daemonA\":404,\"serveA\":84,\"daemonB\":402,\"serveB\":78,\"instanceA\":488,\"instanceB\":480} MB against the 512 MB container cap (fits: true). The episodic record at the end: n=1575 episodes in a capacity of 2048 (16 MB of keys), bounded at 2048 keys of 8192 lanes = 16 MB, evicted 144896. Bar rows (mode native, the documented fallback, isTheBar true): restartCount1NoBudgetKill true, resumedFromCheckpoint true, duplicate200Then409SecondFromCopy true, egressModelEndpointAllowed true, egressExampleRefused true, healthOkAfter true, daemonPeakRssUnderCap true, checkpointAgeUnder60s true; barMet true. The model endpoint was a local stub ({\"GET /api/tags\":1} requests), never Ollama. The build context is 1743 files and 111218143 bytes with 0 secret hits; the control scan without the secret lines of .dockerignore found 0 hits in 0 files."
 }

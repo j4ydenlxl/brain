@@ -44,6 +44,20 @@ import { propose, keep, objectiveSpace } from '../mind/imagine.mjs';
 import { Gate } from '../core/gate.mjs';
 import { Ledger } from '../core/ledger.mjs';
 
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object;
+// the ARC split's own name moved to arcSplit beside it).
+/** What the imagine bar developed on and what it graded: pure, from the ARC split and the grid verdict it read. */
+export function splitFor(opts = {}) {
+  const evaluation = opts.arcSplit === 'evaluation';
+  return {
+    development: { what: 'the ARC-AGI-1 training split: the fixed vocabulary and these combinators were written against it; the invented words come from the solved programs of ' + (opts.from || 'bench/verdicts/grid.json') + ' and the partials mined from the graded tasks themselves', arcSplit: 'training' },
+    heldOut: evaluation
+      ? { what: 'the ARC-AGI-1 evaluation split tasks the fixed vocabulary timed out on; nothing here was written against it', arcSplit: 'evaluation' }
+      : { what: 'per task only: a word is never offered to the task it was mined or collapsed from, and the test outputs are never read before grading; the tasks themselves are training tasks', arcSplit: 'training' },
+    contaminated: evaluation ? false : 'the graded tasks are training-split tasks the vocabulary and the combinators were written against; only the words mined from a task are held out from it',
+  };
+}
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const FIXTURES = path.join(ROOT, 'bench', 'fixtures', 'public', 'arc-agi-1');
 const VERDICTS = path.join(ROOT, 'bench', 'verdicts');
@@ -639,7 +653,8 @@ export async function runImagineBench(cfg) {
     node: process.version,
     isTheBar: isBar,
     variant: variant || null,
-    split: cfg.split,
+    split: splitFor({ arcSplit: cfg.split, from: 'bench/verdicts/' + srcName }),
+    arcSplit: cfg.split,
     from: 'bench/verdicts/' + srcName,
     n: list.length, of: timeouts.length,
     budgetMs: cfg.budgetMs, workers: cfg.workers, admit: cfg.admit, admitFrac: cfg.admitFrac, mineMs: cfg.mineMs, imagineBudget: cfg.imagineBudget, seed: cfg.seed, doubt: cfg.doubt,

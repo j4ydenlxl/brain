@@ -131,6 +131,7 @@ async function main() {
     isTheBar, barMet: isTheBar,
     bar: { rule: 'web/build.mjs runs to completion and prints the pages built; test/web-ladder.test.mjs renders the page from the current verdicts and from a fixture directory with one verdict missing and one -partial, asserts "not measured" and "partial", and walks every number in the page text back to a verdict field; no em dashes in the page', checks, missed },
     statement,
+    split: splitFor(),
     build: { exit: build.status, signal: build.signal, error: build.error, pagesLine, pagesBuilt, ladderLine },
     page,
     tests: { ladder: ladderTest, daemon: daemonTest },
@@ -148,4 +149,14 @@ async function main() {
   writeFileSync(file, JSON.stringify(verdict, null, 1) + '\n');
   say('[verdict] ' + path.relative(ROOT, file).split(path.sep).join('/') + ' written (isTheBar ' + isTheBar + ', barMet ' + verdict.barMet + '); runner peak rss ' + peakRssMb + ' MB, wall ' + (verdict.wallMs / 1000).toFixed(1) + ' s');
   process.exitCode = met ? 0 : 1;
+}
+
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the ladder page bar developed on and what it graded: pure. */
+export function splitFor() {
+  return {
+    development: { what: 'the verdicts under bench/verdicts the page is generated from, and the fixture of test/web-ladder.test.mjs (one set missing, one -partial)' },
+    heldOut: { what: 'none: the walker (web/ladder-walk.mjs) shares no code with the generator, which makes it an independent check of the same page, not a held-out set', n: 0 },
+    contaminated: 'no held-out set: the page is checked against the same verdicts it was built from',
+  };
 }

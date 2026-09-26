@@ -217,6 +217,7 @@ async function main() {
     rows: rows.map(({ features, ...r }) => ({ ...r, features: features.map(slimFeatures) })),
     actuation, handles, crashed,
     statement: statementOf(rows, actuation, samples, met, wallMs, crashed),
+    split: splitFor({ senses: rows.map((r) => r.sense), hardware: rows.filter((r) => r.present).map((r) => r.sense) }),
   };
   if (!complete || crashed) verdict.partialBecause = crashed ? 'the run crashed' : (only.length !== RECEPTOR_NAMES.length ? '--only ' + only.join(',') : '--source ' + sourceArg);
   mkdirSync(VERDICTS, { recursive: true });
@@ -225,6 +226,18 @@ async function main() {
   console.log((!complete ? 'PARTIAL RUN' : met ? 'BAR MET' : 'BAR NOT MET') + ': ' + fired + ' of ' + RECEPTOR_NAMES.length + ' senses fired a perception cell that named its own modality on every sample; wall ' + wallMs + ' ms');
   console.log('wrote ' + relp(out) + (verdict.isTheBar ? ' (isTheBar true)' : ' (partial, isTheBar false)'));
   process.exitCode = met || !complete ? 0 : 1;
+}
+
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the senses bar developed on and what it graded: pure, from the sense names and the ones with hardware. */
+export function splitFor(opts = {}) {
+  const senses = Array.isArray(opts.senses) ? opts.senses.slice() : [];
+  const hardware = Array.isArray(opts.hardware) ? opts.hardware.slice() : [];
+  return {
+    development: { what: 'the five receptors, their encoders and the fixtures and descriptor tables this bench writes (--write-fixtures); the perception cells were written to name these modalities', senses },
+    heldOut: { what: 'none: a sense with hardware reads a fresh live sample, but the bar grades whether its perception cell names its own modality, the thing the encoders were written for; a sense without hardware reads its development fixture', liveHardware: hardware, n: 0 },
+    contaminated: 'no held-out set: every graded percept comes from a receptor and fixture this bench was developed on',
+  };
 }
 
 function slimFeatures(f) {

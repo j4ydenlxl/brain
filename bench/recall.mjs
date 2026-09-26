@@ -47,6 +47,16 @@ import { ask, KNOWLEDGE, KNOWLEDGE_DIR, KNOWLEDGE_TIER, knowledgeAnswer, knowled
 import { buildQuestions, extractAnswer, gradeAnswer } from './answer.mjs';
 import { DRAW_SEED, drawHeldout } from './knowledge.mjs';
 
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the recall bar developed on and what it graded: pure, from the two set sizes. */
+export function splitFor(opts = {}) {
+  return {
+    development: { what: 'the confidence floor chosen by --tune on the held-out records OUTSIDE the bar\'s draw; the bench/answer.mjs algebra and sequence suites' },
+    heldOut: { what: 'the wiki questions: bench/knowledge.mjs drawHeldout (its DRAW_SEED), first sentences hidden from the ingest; the suite questions are a no-regression check with no held-out set', wiki: opts.n ?? null, suitePerSuite: opts.perSuite ?? null },
+    contaminated: 'the wiki draw is the same 200 questions the knowledge bar graded before this tier was built, so their results were on disk while it was developed',
+  };
+}
+
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const VERDICTS = path.join(HERE, 'verdicts');
 export const BAR = Object.freeze({ wiki: 200, perSuite: 100 });
@@ -209,6 +219,7 @@ async function bar(cfg) {
   const statement = `On ${wiki.length} held-out Simple English Wikipedia questions (the knowledge bar's own draw, first sentences hidden from the ingest) and ${suite.length} algebra and sequence questions, the ask path of act/prompt.mjs was run on one bare brain with the knowledge tier on and off, interleaved per question, the model cell on provider ${cfg.provider}. With the tier on, ${w.on.native} of ${w.on.n} wiki questions (${pct(w.on.nativeShare)}) were answered natively, without reaching a model cell, against ${w.off.native} (${pct(w.off.nativeShare)}) with it off; wiki accuracy was ${pct(w.on.accuracy)} on and ${pct(w.off.accuracy)} off, the native answers took a mean ${w.on.nativeMeanUs === null ? 'n/a' : w.on.nativeMeanUs} microseconds, and the model cell was called ${w.on.modelCalls} times on and ${w.off.modelCalls} off. On the suite the tier changed nothing it could: accuracy ${pct(s.on.accuracy)} on and ${pct(s.off.accuracy)} off, ${s.on.native} and ${s.off.native} native, ${s.on.modelCalls} and ${s.off.modelCalls} model calls. The confidence floor was ${cfg.floor ?? KNOWLEDGE.floor}, chosen on the ${pool - wiki.length} held-out records outside this draw. ${leaks} hidden sentences were found in the store. The bar ${barMet ? 'is met' : 'is not met'}.`;
   const verdict = {
     at, command: cfg.command, node: process.version, isTheBar: full, barMet, statement,
+    split: splitFor({ n: cfg.n, perSuite: cfg.perSuite }),
     bar: 'the native share on the wiki questions rises with the tier on, and the suite accuracy does not fall',
     checks,
     config: { n: cfg.n, perSuite: cfg.perSuite, store: path.relative(path.join(HERE, '..'), cfg.store), floor: cfg.floor ?? KNOWLEDGE.floor, floorShipped: KNOWLEDGE.floor, pool: KNOWLEDGE.pool, provider: cfg.provider, model: cfg.provider === 'ollama' ? cfg.model : null, drawSeed: DRAW_SEED, route: 'direct', interleaved: 'even questions tier on first, odd questions tier off first' },

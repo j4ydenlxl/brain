@@ -39,6 +39,19 @@ import { populationAlive } from '../daemon/health.mjs';
 import { raiseBenchFlag, benchFlag } from '../daemon/run.mjs';
 import { budget, makeSampler, ProcessTree } from '../tools/budget.mjs';
 
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the multiply bar searched on and what it scored on: pure, from the suite descriptor. */
+export function splitFor(opts = {}) {
+  const suite = opts.suite || {};
+  const fresh = suite.fresh || 'grid/velocity:heldout';
+  const more = Number.isFinite(suite.freshMore) ? suite.freshMore : 4;
+  return {
+    development: { what: 'the searched suite: both arms search the same ' + (suite.draws ?? 4) + ' grid draws of seed ' + (suite.seed || 'grid/velocity') + ' (the seeds of bench/velocity.mjs --draws 4); the population pick is by this searched objective', seed: suite.seed || 'grid/velocity', draws: suite.draws ?? 4 },
+    heldOut: { what: 'the fresh draws, never searched and never used to pick: the bar scores both picks on ' + fresh + ' (and prints :fresh1..' + more + ' beside it)', draws: [fresh].concat(Array.from({ length: more }, (_, i) => (suite.seed || 'grid/velocity') + ':fresh' + (i + 1))) },
+    contaminated: false,
+  };
+}
+
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
 const MB = 1048576;
@@ -316,6 +329,7 @@ try {
   });
   writeJsonAtomic(VERDICT, {
     at: new Date().toISOString(), command: COMMAND, node: process.version, isTheBar, statement,
+    split: splitFor({ suite: SUITE }),
     bar: { met: barMet, rule: 'population pick by the searched objective at or above the single instance on grid/velocity:heldout, AND the killed instance came back from its checkpoint', singleFresh: sBest ? sBest.fresh : null, populationFresh: pBest ? pBest.fresh : null, freshT: sBest ? sBest.freshT : null, atOrAbove, cameBack, populationBestFreshOverInstances: maxFresh, i0FreshAtWall: i0Best ? i0Best.fresh : null },
     config: { ...cfg, out: path.relative(ROOT, cfg.out), suite: SUITE, organism: { majors: MD.majors, units: MD.units, checkpointEvery: MD.checkpointEvery, chunk: MD.chunk, ledger: 'summary', ledgerBudgetMb: MD.ledgerBudgetMb }, instanceCaps: { ramMb: MD.instanceRamMb, diskMb: MD.instanceDiskMb, heapMb: MD.instanceHeapMb, planeHeapMb: MD.planeHeapMb }, spawnPlan: 'i0 duplicates into i1 after its 2nd exchange and into i2 after its 3rd' },
     prebuild: { exitCode: pre.exitCode, peakRssMb: pre.peakRssMb, wallS: pre.wallS ?? null },

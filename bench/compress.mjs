@@ -697,6 +697,16 @@ function previousRecord() {
   return best;
 }
 
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the compress bar developed on and what it graded: pure, from the run's parameters. */
+export function splitFor(opts = {}) {
+  return {
+    development: { what: 'the organisms this bench builds (the daemon bar organism and the ' + (opts.seed || 'compress-12') + ' organism) and the ruler draw of the three answer suites at their own seeds; the checkpoint formats were written against these organisms', seed: opts.seed ?? null, tasksPerSuite: opts.tasks ?? null },
+    heldOut: { what: 'none for the byte, identity and ruler parts; the tier part reads the held-out draw bench/knowledge.mjs grades (drawHeldout, DRAW_SEED) and compares packed recall with Int8 recall on the same keys, which is a comparison, not a held-out score', tierN: opts.tierN ?? null, tierKeys: opts.tierKeys ?? null },
+    contaminated: 'no held-out set: the bar measures bytes and identity on the organisms the checkpoint code was written against',
+  };
+}
+
 // Where the verdict goes. The bar file is written once per item: Board 10's compress.json is
 // replaced only when its copy (compress-board10.json, the same "at") sits beside it; this item's
 // own bar file is never overwritten (a later run at the bar's parameters writes
@@ -781,6 +791,7 @@ export async function run(opts = {}) {
     const statement = daemonText + orgText + tierText + 'Bar ' + (met.bar ? 'MET' : 'NOT MET') + ': a ' + BAR_RATIO + 'x fall in checkpoint bytes per tick with identity intact and tier recall unchanged.';
     const verdict = {
       name: 'compress', item: ITEM, board: 12, at: new Date().toISOString(), command: cmd, node: process.version, isTheBar: target.isTheBar, statement,
+      split: splitFor({ seed: o.seed, tasks: o.tasks, tierN: o.tierN, tierKeys: o.tierKeys }),
       bar: { ratio: BAR_RATIO, measured: daemon ? daemon.ratio : null, met: met.bar },
       params: o, freeRamGbAtStart: freeGb,
       daemon,

@@ -24,6 +24,7 @@
 //
 //   node bench/years.mjs [--budgets 10,60,300] [--planes grid,synthetic] [--control-s 300]
 //                        [--no-control] [--seed grid/velocity]
+//   --wait-free-gb N (board 19 builder) sets the free-RAM wait; it is not a narrowing flag
 //
 // With no flags this is the bar and writes bench/verdicts/years.json once, with isTheBar true.
 // Any flag makes a narrower or different run, which writes bench/verdicts/years-partial.json with
@@ -53,7 +54,7 @@ const D = await import('../daemon/run.mjs');
 const argv = process.argv.slice(2);
 const opt = (k, d) => { const i = argv.indexOf('--' + k); return i >= 0 && argv[i + 1] !== undefined && !argv[i + 1].startsWith('--') ? argv[i + 1] : d; };
 const has = (k) => argv.includes('--' + k);
-const flags = argv.filter((a) => a.startsWith('--')).map((a) => a.slice(2));
+const flags = argv.filter((a) => a.startsWith('--')).map((a) => a.slice(2)).filter((f) => f !== 'wait-free-gb');
 const isTheBar = flags.length === 0;
 const OUT = path.join(ROOT, 'bench', 'verdicts', isTheBar ? 'years.json' : 'years-partial.json');
 
@@ -75,12 +76,15 @@ const secs = (ms) => f3(ms / 1000);
 
 // ---------------------------------------------------------------- budgets
 const freeGb = () => os.freemem() / 1024 ** 3;
+// board 19 builder: --wait-free-gb N sets the free-RAM wait (default 16; a 16 GB host never has 16 GB free,
+// so the cloud host passes 4); it is not a narrowing flag and changes nothing measured
+const WAIT_GB = Number(opt('wait-free-gb', 16));
 const freeAtStart = freeGb();
-if (freeAtStart < 16) {
-  say(`[budget] ${f1(freeAtStart)} GB free, under 16 GB: waiting (up to 30 min)`);
+if (freeAtStart < WAIT_GB) {
+  say(`[budget] ${f1(freeAtStart)} GB free, under ${WAIT_GB} GB: waiting (up to 30 min)`);
   const until = Date.now() + 30 * 60_000;
-  while (freeGb() < 16 && Date.now() < until) await new Promise((r) => setTimeout(r, 30_000));
-  if (freeGb() < 16) { say(`[budget] still ${f1(freeGb())} GB free after 30 min: not running`); process.exit(2); }
+  while (freeGb() < WAIT_GB && Date.now() < until) await new Promise((r) => setTimeout(r, 30_000));
+  if (freeGb() < WAIT_GB) { say(`[budget] still ${f1(freeGb())} GB free after 30 min: not running`); process.exit(2); }
 }
 say(`[budget] ${f1(freeGb())} GB free; heap cap ${process.execArgv.find((a) => a.startsWith('--max-old-space-size'))}; one plane at a time; at most one worker thread (the grid prefetch); no model calls`);
 // the daemon's own reader sweeps flags whose process is gone (a killed bench never lowers its own)
@@ -94,6 +98,16 @@ const since = () => Number(process.hrtime.bigint() - T0) / 1e6;
 let peakRss = 0;
 const rssTimer = setInterval(() => { peakRss = Math.max(peakRss, process.memoryUsage().rss); }, 500);
 rssTimer.unref();
+
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the years bar searched on, what it scored on, and whether the scored seeds were seen: pure. */
+export function splitFor(opts = {}) {
+  return {
+    development: { what: 'the dev seeds the plateau window and the draws per stack were chosen on, and the draws each plane searches (grid draw 0 = the run seed, draw k = <seed>:draw<k>; the synthetic searched slices)', devSeeds: Array.isArray(opts.devSeeds) ? opts.devSeeds.slice() : [], searchedSeed: opts.seed ?? null, synthSeed: opts.synthSeed ?? null },
+    heldOut: { what: 'the fresh draws the loop never searches and never reads: the grid fresh seeds and the synthetic fresh slices', gridFresh: Array.isArray(opts.gridFresh) ? opts.gridFresh.slice() : [], synthetic: 'the fresh slices of ' + (opts.synthSeed || 'years/synthetic') },
+    contaminated: opts.barSeedsSeen === false ? false : 'the bar fresh seeds were printed during development (development.barSeedExposures) before the 250 ms plateau window was chosen, so the choice is not blind to them',
+  };
+}
 
 // ---------------------------------------------------------------- the planes
 const GRID_FRESH = [cfg.seed + ':heldout', cfg.seed + ':years1', cfg.seed + ':years2'];
@@ -223,6 +237,7 @@ const statement = (g300 && s300)
 const verdict = {
   name: 'years', at: new Date().toISOString(), command: ['node', 'bench/years.mjs', ...argv].join(' '), execArgv: process.execArgv, node: process.version,
   isTheBar, barMet: isTheBar ? barMet : false,
+  split: splitFor({ seed: cfg.seed, gridFresh: GRID_FRESH, synthSeed: DEFAULTS.synthSeed, devSeeds: ['years/dev', 'years/dev2', 'years/synthetic-dev'], barSeedsSeen: true }),
   bar: { rule: 'the 300 s run prints score gained per million organism-years above zero on both planes with the plateau second named, and the projection carries its arithmetic', perPlane },
   statement,
   declaration: { ...Y.YEAR, popSize: g300 ? g300.options.popSize : null, evaluationsPerGeneration: g300 ? g300.options.popSize : null, note: 'carried elites re-scored at an arm start are evaluations, not years; velocity.mjs declaredYears (ticks x seconds per tick) is a different declaration and is not used here' },

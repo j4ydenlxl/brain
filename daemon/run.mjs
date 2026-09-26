@@ -113,12 +113,21 @@ const fmt = (n) => Number(n).toLocaleString('en-US');
 
 function shape(brain) { return { t: brain.clock.t, cells: brain.cells.length, edges: brain.connectome.size(), liveEdges: brain.connectome.live() }; }
 
+// THE STREAMED CHECKPOINT (board 19 builder, queue item 9, B1 the fit): the checkpoint is written
+// by core/persist.mjs writeCheckpointStreamed from a lazy snapshot document (core/brain.mjs
+// snapshotDoc), the same bytes in bounded blocks, synchronously inside the tick as before. The
+// memory probe of notes/cloud-fit.md measured today's write at a peak of 30.6 to 49.7 MB over the
+// rss before it on a 2.0 to 2.9 MB checkpoint, and the Board 13 fit run's budget kills each came
+// right after one of 6.5 to 7.9 MB. BRAIN_CHECKPOINT_STREAM=0 is the control: today's writer.
+export function checkpointStream(env = process.env) { return String(env.BRAIN_CHECKPOINT_STREAM ?? '').trim() !== '0'; }
+
 /**
  * Snapshot, flush and write meta. `ruler` (a ruler row) rides in the container 2 header.
+ * `stream` (default: checkpointStream()) picks the streamed writer for a container 2 checkpoint.
  * @returns {object} the brain's shape, plus `bytes`, the checkpoint file's size
  */
-export function checkpoint(brain, L, name, extra = {}, { ruler = null } = {}) {
-  brain.snapshot(L.dir, ruler ? { ruler } : {});
+export function checkpoint(brain, L, name, extra = {}, { ruler = null, stream = checkpointStream() } = {}) {
+  brain.snapshot(L.dir, ruler ? { ruler, stream } : { stream });
   if (brain.ledger && typeof brain.ledger.flush === 'function') brain.ledger.flush();
   const header = brain.lastCheckpoint || null;
   const bytes = header && Number.isFinite(header.bytes) ? header.bytes : sizeOf(L.snapshot);
@@ -735,6 +744,7 @@ export async function live(opts = {}) {
   else if (rulerOn) { try { const row = measureRow('start'); ledger.flush(); finishRow(row, null); } catch (e) { ruler.errors.push('start: ' + firstLine(e)); } }
   say(printable(report));
   say('[live] ' + (built ? 'built' : 'resumed') + ' ' + name + ' in ' + loadMs + ' ms at t=' + start.t + ', cells ' + start.cells + ', edges ' + start.edges + ', checkpoint every ' + checkpointEvery + ' ticks, self every ' + (selfEvery || 'off') + ', generations every ' + (loopOn ? loopEvery + ' (loop)' : (genEvery || 'off')) + ', ticks ' + (bounded ? ticks : 'unbounded') + (wallMs ? ', wall ' + wallMs + ' ms' : '') + ', loop ' + (loopEvery || 'off') + ', ledger ' + led.mode + ' budget ' + led.budgetMb + ' MB');
+  say('[live] checkpoint write ' + (checkpointStream() ? 'streamed (core/persist.mjs writeCheckpointStreamed)' : 'whole (BRAIN_CHECKPOINT_STREAM=0, the control)'));
   if (led.downgraded) say('[live] ' + led.downgraded);
 
   // the runner: ticks in chunks, checkpoints at exact multiples of checkpointEvery. With a

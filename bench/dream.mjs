@@ -28,6 +28,16 @@ import { attachDream, SUITE_SOURCES, GENERATORS } from '../mind/dream.mjs';
 import { buildQuestions, gradeAnswer, wilson } from './answer.mjs';
 import { ask } from '../act/prompt.mjs';
 
+// board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+/** What the dream bar developed on and what it graded: pure, from the seed and the task count. */
+export function splitFor(opts = {}) {
+  return {
+    development: { what: 'the organism seed all three arms are built from and the algebra, sequence and grid items bench/answer.mjs draws; mind/dream.mjs was written against these organisms', seed: opts.seed ?? null, tasksPerSuite: opts.tasks ?? null },
+    heldOut: { what: 'none: the task effect asks the bench/answer.mjs suite items of the dreaming arm and the no-dream arm alike, and the grounding control is a matched replay of the same run, not a held-out set', n: 0 },
+    contaminated: 'no held-out set: the task effect is read on the bench/answer.mjs suites, not on items set aside from development',
+  };
+}
+
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const VERDICTS = path.join(HERE, 'verdicts');
 export const BAR = Object.freeze({ ticks: 1200, every: 32, majors: 12, units: 256, tasks: 0, seed: 'dream-bench' });
@@ -216,6 +226,7 @@ export async function run(opts = {}) {
   const verdict = {
     at: new Date().toISOString(), command: 'node bench/dream.mjs' + (opts.argv && opts.argv.length ? ' ' + opts.argv.join(' ') : ''), node: process.version,
     isTheBar: !narrow, barMet, statement,
+    split: splitFor({ seed: o.seed, tasks: o.tasks }),
     config: { ticks: o.ticks, every: o.every, majors: o.majors, substrateUnits: o.units, tasks: o.tasks, seed: o.seed, arms: { A: 'dreams', B: 'no dream', C: 'no dream, twin of B for the timing band' } },
     dreams, timing, task, taskItems: items.length, askMs: r3(askMs), afterAsks: after, trace,
     build: arms.map((a) => ({ arm: a.k, ms: r3(a.buildMs), hvPlan: a.hvPlan })), wallMs: r3(performance.now() - t0), rssMB: Math.round(process.memoryUsage().rss / 1e6),

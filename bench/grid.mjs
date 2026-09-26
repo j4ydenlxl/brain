@@ -31,6 +31,36 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const FIXTURES = path.join(ROOT, 'bench', 'fixtures', 'public', 'arc-agi-1');
 const VERDICTS = path.join(ROOT, 'bench', 'verdicts');
 
+// board 19 builder: the split each grid verdict was measured on (the gate's CONTAMINATION row needs an
+// object; the ARC split's own name moved to arcSplit beside it).
+/** What a grid run developed on and what it graded: pure, from the ARC split, the library flag, the fold and the corpus. */
+export function splitFor(opts = {}) {
+  const arc = opts.arcSplit === 'evaluation' ? 'evaluation' : 'training';
+  if (opts.library && opts.devFold) {
+    const graded = opts.devFold === 'even' ? 'odd' : 'even';
+    return {
+      development: { what: 'the ARC-AGI-1 training tasks of the ' + opts.devFold + ' index (sorted ids): the library is learned from them', arcSplit: 'training', fold: opts.devFold },
+      heldOut: { what: 'the training tasks of the ' + graded + ' index, which the library did not learn from; the vocabulary itself was written against the whole training split', arcSplit: 'training', fold: graded },
+      contaminated: 'the graded fold is training data the vocabulary (capability/grid-dsl.mjs) was written against',
+    };
+  }
+  const development = opts.library
+    ? { what: 'the ARC-AGI-1 training split: the vocabulary was written against it and the library is learned from the programs that solved it (the corpus verdicts)', arcSplit: 'training', corpus: Array.isArray(opts.corpus) ? opts.corpus.slice() : [] }
+    : { what: 'the ARC-AGI-1 training split: the vocabulary of capability/grid-dsl.mjs was written against it', arcSplit: 'training' };
+  if (arc === 'evaluation') {
+    return {
+      development,
+      heldOut: { what: 'the ARC-AGI-1 evaluation split; nothing in capability/grid-dsl.mjs was tuned on it (this bench header), and a library refuses any corpus that is not a training verdict', arcSplit: 'evaluation' },
+      contaminated: false,
+    };
+  }
+  return {
+    development,
+    heldOut: { what: 'none: this run grades the training split itself', n: 0 },
+    contaminated: 'the training split is the one the vocabulary was written against, so this run is in sample',
+  };
+}
+
 export function parseArgs(argv) {
   const a = { split: 'training', budgetMs: 3000, workers: Math.max(1, Math.min(2, Math.floor(os.availableParallelism() / 4))), /* at most 2: the machine budget */ limit: null, ids: null, maxDepth: 4, quiet: false, graceMs: 4000 };
   for (let i = 0; i < argv.length; i++) {
@@ -199,7 +229,8 @@ export async function runGridBench(cfg) {
     command: command.trim(),
     node: process.version,
     isTheBar: complete,
-    split: cfg.split,
+    split: splitFor({ arcSplit: cfg.split }),
+    arcSplit: cfg.split,
     heldOut: cfg.split === 'evaluation',
     n: rows.length, of, solved, pct,
     meanMs, meanSolvedMs, wallSeconds: r2(wallMs / 1000),
@@ -303,7 +334,7 @@ export async function runLibraryBar(cfg) {
     // a HARVEST: only the tasks a verdict of the same split left unsolved (for example a longer
     // clock on the training timeouts, so deeper training programs can join the corpus)
     const v = JSON.parse(readFileSync(path.resolve(ROOT, cfg.onlyUnsolved), 'utf8'));
-    if (v.split !== cfg.split) throw new Error('bench/grid.mjs: --only-unsolved needs a verdict of the ' + cfg.split + ' split');
+    if ((v.arcSplit ?? v.split) !== cfg.split) throw new Error('bench/grid.mjs: --only-unsolved needs a verdict of the ' + cfg.split + ' split');
     const done = new Set((v.rows || []).filter((r) => r.solved || (r.arms && Object.values(r.arms).some((a) => a.solved))).map((r) => r.id));
     taskList = (taskList || loadSplit(cfg.split)).filter((t) => !done.has(t.id));
     console.log('only the ' + taskList.length + ' tasks ' + cfg.onlyUnsolved + ' left unsolved');
@@ -388,7 +419,8 @@ export async function runLibraryBar(cfg) {
     node: process.version,
     isTheBar,
     barMet: isTheBar && !!(cmp && cmp.met),
-    split: cfg.split, heldOut: cfg.split === 'evaluation', devFold: cfg.devFold || null,
+    split: splitFor({ arcSplit: cfg.split, library: true, devFold: cfg.devFold || null, corpus: corpusFiles }),
+    arcSplit: cfg.split, heldOut: cfg.split === 'evaluation', devFold: cfg.devFold || null,
     developmentRecords: cfg.devFold ? 'training tasks of the ' + (cfg.devFold === 'even' ? 'odd' : 'even') + ' index (sorted ids) graded, library from the ' + cfg.devFold + ' index' : cfg.split === 'training' ? 'the whole training split (in sample)' : 'none: the evaluation split is held out; the library was learned from training programs only',
     n: results[0] ? results[0].n : 0,
     budgetMs: cfg.budgetMs, workers, maxDepth: cfg.maxDepth, attemptsPerTask: attempts, attemptsAllowedByArc: 2, model: null,
