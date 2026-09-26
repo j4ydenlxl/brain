@@ -232,6 +232,9 @@ test('discipline: no node imports in web/src, and no em dashes anywhere in web/'
     for (const f of readdirSync(dir)) {
       const p = join(dir, f);
       if (f === 'dist') continue;
+      // web/tools is the Code Universe factory copied verbatim from universe/factory (his product, served as /tools);
+      // its four em dashes are his, not brain prose, and the copy is not edited here.
+      if (dir.endsWith('web') && f === 'tools') continue;
       if (statSync(p).isDirectory()) { walk(p); continue; }
       // Only text. web/screenshots holds megabytes of PNG, and decoding that as utf8 to
       // hunt for an em dash is both pointless and a way to fail on a random byte pair.

@@ -1116,6 +1116,7 @@ export const ALLOWLIST = [
   { key: "act/run.mjs|postMessage|worker-source:{passed:true,error:null,stage:\"tests\",ms:performance.now()-started}", bytes: 0, wire: 59, how: "probe" },
   { key: "act/run.mjs|postMessage|worker-source:{passed:false,error:describe(e),stage,ms:performance.now()-started}", bytes: 0, wire: 175, how: "probe" },
   { key: "bench/cloud.mjs|send|{op:'stop'}", bytes: 0, wire: 13, how: "literal" },
+  { key: "bench/cloud-host.mjs|send|{op:'stop'}", bytes: 0, wire: 13, how: "literal" },
   { key: "bench/grid.mjs|postMessage|{id,task}", bytes: 0, wire: 20622, how: "probe" },
   { key: "bench/grid.mjs|workerData|{searchUrl:pathToFileURL(path.join(ROOT,'capability','grid-search.mjs')).href,budgetMs:cfg.budgetMs,~420d5966c479", bytes: 0, wire: 11519, how: "probe" },
   { key: "bench/grid.mjs|postMessage|worker-source:{type:\"ready\",macros:library?library.macros.length:0}", bytes: 0, wire: 39, how: "probe" },

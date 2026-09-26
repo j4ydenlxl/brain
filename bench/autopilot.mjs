@@ -46,6 +46,23 @@
 //            MAGNITUDE line sets the organism rate beside orchestratorRate() (exported here, read
 //            from docs/BOARDS.json and docs/LOG.md).
 //
+// Board 15 added (the first 26 checks are those of Boards 8, 10 and 14, unchanged):
+//
+//   stage 7  THE SOAK GRADES ITSELF (his 2026-09-25 order, "self improving. Without your build"):
+//            the stage 6 soak left bench/verdicts/soak-partial.json (isTheBar false) and its record
+//            holds its end lines, MAGNITUDE and exit; on the same planted tree, with the bar's
+//            minutes lowered (allowed on a planted tree only) and a planted 1-minute author-off
+//            proof soak, a soak with three gap attempts writes bench/verdicts/soak.json with
+//            barMet true; the control, the proof's .exit file saying 1, writes barMet false and
+//            archives the file it replaced to soak-history.jsonl; and the real 60-minute record
+//            regrades (written nowhere) to barMet true from its record and its copied transcript.
+//
+// Flags: `--model off` skips the one model call of stage 4b (when another item holds the Ollama
+// queue); the run then writes autopilot-partial.json (isTheBar false), never the bar.
+// `--grade-soak <runId|latest>` grades one finished soak from state/self/soak-<runId>.json and its
+// copied transcript (bench/verdicts/autopilot/*<runId>.out, .err, .exit) and writes
+// bench/verdicts/soak.json (or soak-partial.json), archiving the file it replaces; it runs no bench.
+//
 // Importing this file runs nothing (self/autopilot.mjs imports orchestratorRate for the soak);
 // `node bench/autopilot.mjs` runs the bench.
 //
@@ -60,7 +77,7 @@ import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { runAutopilot, renderRun, hashBytes, SOURCE_ORDER, AUTHORED_REL, makeModelAuthor, runSoak, runFromCli } from '../self/autopilot.mjs';
+import { runAutopilot, renderRun, hashBytes, SOURCE_ORDER, AUTHORED_REL, makeModelAuthor, runSoak, runFromCli, regradeSoak, SOAK_HISTORY_REL } from '../self/autopilot.mjs';
 import { computeShare, readBoards, fmtShare } from '../tools/authorship.mjs';
 import { plantWet, plantModel, plantGateRows, SEED_EDGES } from '../test/autopilot-plant.mjs';
 import { plantInto, plantGaps } from '../test/operators-plant.mjs';
@@ -103,6 +120,11 @@ const PATCH_C = [
 
 const checks = [];
 const check = (name, pass, detail) => { checks.push({ name, pass: !!pass, detail }); console.log((pass ? 'PASS ' : 'FAIL ') + name + (detail ? '  ' + detail : '')); return !!pass; };
+// a check that did not run (--model off): never a pass, and a run holding one is not the bar
+const skip = (name, why) => { checks.push({ name, pass: false, skipped: true, detail: why }); console.log('SKIP ' + name + '  ' + why); return false; };
+const ARGS = process.argv.slice(2);
+const argOf = (flag) => { const i = ARGS.indexOf(flag); return i >= 0 && i + 1 < ARGS.length && !ARGS[i + 1].startsWith('--') ? ARGS[i + 1] : i >= 0 ? true : null; };
+const MODEL_OFF = argOf('--model') === 'off' || ARGS.includes('--no-model');
 const readLedger = (root) => {
   const dir = path.join(root, 'bench', 'verdicts', 'autopilot');
   if (!existsSync(dir)) return [];
@@ -219,7 +241,7 @@ TREE = path.join(TMP, 'tree');
 let prior = null;
 try {
   const p = JSON.parse(readFileSync(VERDICT, 'utf8'));
-  prior = p.board === 14 && p.overwrote ? p.overwrote : { board: p.board ?? 8, at: p.at, passed: p.passed, total: p.total, verdict: p.verdict, command: p.command, copy: p.board === 10 ? 'bench/verdicts/autopilot-board10.json' : null };
+  prior = p.board === 15 && p.overwrote ? p.overwrote : { board: p.board ?? 8, at: p.at, passed: p.passed, total: p.total, verdict: p.verdict, command: p.command, copy: p.board === 10 ? 'bench/verdicts/autopilot-board10.json' : null };
 } catch { prior = null; }
 
 // a daemon (daemon/run.mjs) refuses its self-code step while a live pid holds a flag in state/bench-flags/:
@@ -312,10 +334,11 @@ try {
   if (rs.census) console.log('  census: ' + (rs.census.read ? rs.census.deadEdges + ' dead edges of ' + rs.census.edges + ' in ' + rs.census.seed + ', ' + rs.census.deadCells + ' dead cells; ' + (rs.census.pinned || 'not pinned') : rs.census.reason));
   if (rs.mutants) console.log('  mutants.json: ' + rs.mutants.mutants + ' mutants, ' + rs.mutants.survived + ' survived');
   console.log('decisions: ' + JSON.stringify(walls(real)));
-  const perSource = Object.fromEntries(SOURCE_ORDER.map((s) => [s, real?.bySource?.[s]?.candidates ?? 0]));
+  // every source the run reports, SOURCE_ORDER first: a source another item adds (Board 15: boards) is counted, never dropped from the sum
+  const perSource = Object.fromEntries([...SOURCE_ORDER, ...Object.keys(real?.bySource || {}).filter((x) => !SOURCE_ORDER.includes(x))].map((s) => [s, real?.bySource?.[s]?.candidates ?? 0]));
   check('stage 3 the CLI dry run on the real tree completed and printed a candidate count', cli.status === 0 && real?.dry === true && Number.isInteger(rc.candidates), 'exit ' + cli.status + ', candidates ' + rc.candidates + (cli.status !== 0 ? ', stderr ' + cli.stderr.slice(0, 200) : ''));
   const wroteNothing = check('stage 3 the dry run wrote nothing (no snapshot, no ledger, no authored line, gate.json untouched)', before.lists.every((l, i) => l === after.lists[i]) && before.gate === after.gate, 'state/self-code, bench/verdicts/autopilot and state/self unchanged, gate.json mtime unchanged');
-  check('stage 3 candidates per source on the real tree, total above 0', rc.candidates > 0 && Object.values(perSource).reduce((a, b) => a + b, 0) === rc.candidates, SOURCE_ORDER.map((s) => s + ' ' + perSource[s]).join(', ') + ' = ' + rc.candidates);
+  check('stage 3 candidates per source on the real tree, total above 0', rc.candidates > 0 && Object.values(perSource).reduce((a, b) => a + b, 0) === rc.candidates, Object.keys(perSource).map((s) => s + ' ' + perSource[s]).join(', ') + ' = ' + rc.candidates);
 
   // ---------------------------------------------------------------- stage 4a: one wet pass, non-mutant sources
   const WET = path.join(TMP, 'wet');
@@ -351,7 +374,8 @@ try {
   const closed = makeModelAuthor({ model: 'claude-opus' })({ key: 'k', test: 'test/mean.test.mjs' }, { root: MOD });
   const probe = makeModelAuthor({});
   console.log('\nstage 4b: the model cell ' + probe.config.model + ' at ' + probe.config.base + ' on a planted failing mean with an OPEN: line, at most one model call');
-  const mod = cliJson(['--auto', '--json', '--root', MOD, '--author', 'on', '--author-max', '1', '--sources', 'notes'], 1_200_000);
+  // --model off: the one model call is not made (the Ollama socket is never opened); its check is SKIPPED, never passed
+  const mod = MODEL_OFF ? { status: null, j: null, ms: 0, stderr: 'not run: --model off' } : cliJson(['--auto', '--json', '--root', MOD, '--author', 'on', '--author-max', '1', '--sources', 'notes'], 1_200_000);
   const m = mod.j || {};
   console.log(m.decisions ? renderRun(m) : 'no JSON: exit ' + mod.status + ' ' + mod.stderr);
   console.log('per source:');
@@ -360,7 +384,8 @@ try {
   const mt = m.bySource?.notes || {};
   if (md.answer) console.log('model answer (first 400 characters): ' + JSON.stringify(String(md.answer).slice(0, 400)));
   check('stage 4b the author refuses a Claude or Anthropic model before any socket opens', closed.ok === false && closed.ms === 0 && /open weights only/.test(closed.reason || ''), closed.reason);
-  check('stage 4b the model cell on open weights was asked once and answered; proposed, kept and ms per patch printed', mod.status === 0 && mt.modelCalls === 1 && md.model?.answered === true && Number.isFinite(md.model?.ms) && m.author?.on === true && !/claude|anthropic/i.test(m.author?.model + m.author?.base),
+  if (MODEL_OFF) skip('stage 4b the model cell on open weights was asked once and answered; proposed, kept and ms per patch printed', '--model off: no model call made, so this run is not the bar');
+  else check('stage 4b the model cell on open weights was asked once and answered; proposed, kept and ms per patch printed', mod.status === 0 && mt.modelCalls === 1 && md.model?.answered === true && Number.isFinite(md.model?.ms) && m.author?.on === true && !/claude|anthropic/i.test(m.author?.model + m.author?.base),
     'model ' + m.author?.model + ', calls ' + mt.modelCalls + ', answered ' + md.model?.answered + ', ' + md.model?.ms + ' ms, proposed ' + mt.modelProposed + ', kept ' + mt.modelKept + ', decision ' + md.decision + (md.wall ? ' at ' + md.wall : '') + (md.decision !== 'kept' && md.reason ? ': ' + String(md.reason).slice(0, 160) : ''));
 
   // ---------------------------------------------------------------- stage 5: the share over the wet copy
@@ -422,23 +447,89 @@ try {
     && /^MAGNITUDE organism: 1 kept/.test(r6.magnitude?.line || '') && /orchestrator: \d+ boards landed/.test(r6.magnitude?.line || ''),
   orch.boards + ' boards and ' + orch.barsMet + ' bars met over ' + orch.windowDays + ' days; organism ' + r6.magnitude?.organism?.keptPerHour + ' kept/hour');
 
+  // ---------------------------------------------------------------- stage 7 (Board 15): THE SOAK GRADES ITSELF
+  console.log('\nstage 7: THE SOAK GRADES ITSELF (Board 15): the stage 6 soak\'s own verdict, then a bar-grade soak on a planted tree, its control, and a read-only regrade of the real bar-length soak');
+  const readJ = (f) => { try { return JSON.parse(readFileSync(f, 'utf8')); } catch { return null; } };
+  // 7a the stage 6 soak (0.5 min, author off) wrote its own verdict at its end: soak-partial.json, not the bar
+  const part6 = readJ(path.join(SOAKT, 'bench', 'verdicts', 'soak-partial.json'));
+  const rec6 = readJ(path.join(SOAKT, ...String(r6.soakFile || 'none').split('/')));
+  check('stage 7a the soak wrote its own verdict at its end: 0.5 min with the author off is soak-partial.json (isTheBar false), and its record keeps its end lines, MAGNITUDE and exit',
+    r6.verdict?.file === 'bench/verdicts/soak-partial.json' && part6?.isTheBar === false && part6?.barMet === false && part6?.soak?.runId === r6.runId && /under the bar's 60/.test(part6?.notTheBarBecause || '')
+    && !existsSync(path.join(SOAKT, 'bench', 'verdicts', 'soak.json')) && rec6?.exit?.code === 0 && Array.isArray(rec6?.endLines) && rec6.endLines.join('\n') === (r6.lines || []).join('\n') && /^MAGNITUDE organism:/.test(rec6?.magnitude?.line || ''),
+    'file ' + r6.verdict?.file + ', isTheBar ' + part6?.isTheBar + ' (' + part6?.notTheBarBecause + '), record exit ' + rec6?.exit?.code + ', end lines ' + (rec6?.endLines || []).length);
+  // 7b a planted tree, three fast gaps, a refusing improve (no model: the author is on in the config, the
+  // operators are mocked, authorFn throws), the fixture gate after; first a short proof soak with the
+  // author off, then a bar-grade soak with the bar's minutes lowered (allowed on a planted tree only)
+  const S7 = path.join(TMP, 'soak7');
+  const S7_TMP = path.join(TMP, 'soak7-tmp');
+  mkdirSync(S7_TMP, { recursive: true });
+  plantInto(S7, { gate: 'fake' });
+  const fast = (g) => ({ ...g, trial: { ...g.trial, minutes: 0.01 } });
+  writeGaps(S7, [fast(plantGaps().tune), fast(plantGaps().strategy), fast(plantGaps().edge)]);
+  let improveCalls7 = 0;
+  const refuse7 = async () => { improveCalls7++; return { kept: false, reason: 'a planted refusal (stage 7)', trials: [{ kind: 'trial', seconds: 0.01 }] }; };
+  const noModel = async () => { throw new Error('no model call in stage 7'); };
+  const noTask = async () => ({ registered: null, line: 'not queried: a planted tree (stage 7)' });
+  const soak7 = { root: S7, sources: 'gaps', 'gate-minutes': 0, 'idle-step-ms': 200, tmpBase: S7_TMP, improveFn: refuse7, authorFn: noModel, rateFn: () => ({ ok: false, reason: 'not read in stage 7' }), queryTask: noTask, log: (l) => console.log('  | ' + l) };
+  const s7t = Date.now();
+  const proof7 = await runSoak({ ...soak7, soak: 0.05, author: 'off' });
+  const bar7 = await runSoak({ ...soak7, soak: 0.1, author: 'on', 'gate-after': 'on', barMinutes: 0.1 });
+  const s7ms = Date.now() - s7t;
+  const v7 = readJ(path.join(S7, 'bench', 'verdicts', 'soak.json'));
+  check('stage 7b a bar-grade soak on a planted tree wrote bench/verdicts/soak.json ITSELF at its end with barMet true: full wall, 3 or more gap attempts, the gate GREEN after, the proof soak exit 0',
+    proof7.exitCode === 0 && proof7.verdict?.file === 'bench/verdicts/soak-partial.json' && bar7.exitCode === 0 && bar7.verdict?.file === 'bench/verdicts/soak.json'
+    && v7?.isTheBar === true && v7?.barMet === true && v7?.soak?.runId === bar7.runId && Object.values(v7?.checks || {}).length === 4 && Object.values(v7.checks).every((c) => c.pass === true)
+    && v7.checks.gapsAttempts.attempts >= 3 && /^GATE GREEN: fixture gate/.test(v7.checks.gateGreenAfter.summary || '') && v7.checks.proofSoakExit0.runId === proof7.runId && (bar7.modelCalls?.n ?? 0) === 0
+    && !existsSync(path.join(S7, ...SOAK_HISTORY_REL.split('/'))),
+    'proof ' + proof7.runId + ' exit ' + proof7.exitCode + '; soak ' + bar7.runId + ' ' + (bar7.lines || [])[0] + '; gap attempts ' + v7?.checks?.gapsAttempts?.attempts + ', gate after "' + v7?.checks?.gateGreenAfter?.summary + '", proof ' + v7?.checks?.proofSoakExit0?.runId + ' exit ' + v7?.checks?.proofSoakExit0?.exit + ', model calls ' + (bar7.modelCalls?.n ?? 0) + ', ' + s7ms + ' ms');
+  // 7c the control: the proof's process exit says 1 (a copied .exit file wins over the record), so the regrade MISSES,
+  // and the bar file it replaces is appended whole to soak-history.jsonl
+  mkdirSync(path.join(S7, 'bench', 'verdicts', 'autopilot'), { recursive: true });
+  writeFileSync(path.join(S7, 'bench', 'verdicts', 'autopilot', 'soak1-' + proof7.runId + '.exit'), 'exit 1\n' + new Date().toISOString() + '\n');
+  const re7 = await regradeSoak({ root: S7, runId: bar7.runId, barMinutes: 0.1, write: true, queryTask: noTask });
+  const hist7 = (() => { try { return readFileSync(path.join(S7, ...SOAK_HISTORY_REL.split('/')), 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)); } catch { return []; } })();
+  check('stage 7c control: the proof soak\'s .exit file says 1, so the regrade of the same soak has barMet false, and the file it replaced went whole to soak-history.jsonl',
+    re7.ok === true && re7.verdict.isTheBar === true && re7.verdict.barMet === false && re7.verdict.checks.proofSoakExit0.pass === false && re7.verdict.checks.proofSoakExit0.exit === 1 && /\.exit \(the process exit\)$/.test(re7.verdict.checks.proofSoakExit0.exitFrom || '')
+    && re7.wrote?.archived === true && hist7.length === 1 && hist7[0].previous?.barMet === true && hist7[0].previous?.soak?.runId === bar7.runId && readJ(path.join(S7, 'bench', 'verdicts', 'soak.json'))?.barMet === false,
+    'barMet ' + re7.verdict?.barMet + ', proof exit ' + re7.verdict?.checks?.proofSoakExit0?.exit + ' from ' + re7.verdict?.checks?.proofSoakExit0?.exitFrom + ', history lines ' + hist7.length + ' (previous barMet ' + hist7[0]?.previous?.barMet + ')');
+  // 7d the real tree, READ ONLY: the newest bar-length soak on record regrades from its record and copied transcript
+  const realBar = (() => {
+    const dir = path.join(ROOT, 'state', 'self');
+    let names = [];
+    try { names = readdirSync(dir).filter((n) => /^soak-.+\.json$/.test(n)); } catch { names = []; }
+    return names.map((n) => readJ(path.join(dir, n))).filter((x) => x && x.cfg && Number(x.cfg.soakMinutes) >= 60 && x.cfg.authorOn === true && !x.cfg.dry && x.status === 'done')
+      .sort((a, b) => String(b.startedAt).localeCompare(String(a.startedAt)))[0] || null;
+  })();
+  const onDisk = readJ(path.join(ROOT, 'bench', 'verdicts', 'soak.json'));
+  const re7d = realBar ? await regradeSoak({ root: ROOT, runId: realBar.runId, write: false }) : { ok: false, reason: 'no bar-length soak record under state/self/' };
+  const v7d = re7d.verdict || {};
+  const sameAsDisk = onDisk?.soak?.runId === v7d.soak?.runId ? Object.entries(v7d.checks || {}).every(([k, c]) => onDisk.checks?.[k]?.pass === c.pass) && onDisk.barMet === v7d.barMet : null;
+  check('stage 7d the real bar-length soak regrades READ ONLY from its record and copied transcript to barMet true, and agrees with bench/verdicts/soak.json when that file holds the same soak',
+    re7d.ok === true && re7d.wrote === null && v7d.isTheBar === true && v7d.barMet === true && v7d.reproduced?.fromRecord >= v7d.reproduced?.lines - 1 && sameAsDisk !== false,
+    re7d.ok ? v7d.soak.runId + ': ' + v7d.printed?.doneLine + '; ' + v7d.printed?.totalLine + '; exit ' + v7d.soak?.exit + ' from ' + v7d.soak?.exitFrom + '; record reproduces ' + v7d.reproduced?.fromRecord + ' of ' + v7d.reproduced?.lines + ' lines; soak.json on disk ' + (sameAsDisk === null ? 'holds another soak (' + onDisk?.soak?.runId + ')' : sameAsDisk ? 'agrees' : 'DISAGREES') : re7d.reason);
+
   const passed = checks.filter((x) => x.pass).length;
   const met = passed === checks.length;
   const nm = (n, one, many) => n + ' ' + (n === 1 ? one : many);
   const statement = 'This verdict OVERWRITES the Board ' + (prior?.board ?? 10) + ' bar of the same name' + (prior?.copy ? ', kept byte for byte as ' + prior.copy : '') + (prior ? ' (written ' + prior.at + ', ' + prior.passed + ' of ' + prior.total + ' checks, ' + prior.verdict + ')' : '')
     + '; the 21 checks of Boards 8 and 10 run here first, unchanged. In a copied tree holding the real gate program (bench/gate.mjs ' + gateHash.slice(0, 12) + ') a planted fix was KEPT with the gate going from exit ' + r1.baseline?.exit + ' to exit ' + k.gate?.exit
     + ', a planted patch that turned ' + (rv.gate?.regressions || []).join(', ') + ' red was ' + String(rv.decision).toUpperCase() + ' byte for byte on a CRLF file, and a patch aimed at a test file was refused at the ceiling. '
-    + 'On the real tree, brain self-code --auto --dry --json read ' + rc.candidates + ' candidates by source (' + SOURCE_ORDER.map((s) => s + ' ' + perSource[s]).join(', ') + '), would apply ' + rc.wouldApply + ', and wrote nothing. '
+    + 'On the real tree, brain self-code --auto --dry --json read ' + rc.candidates + ' candidates by source (' + Object.keys(perSource).map((s) => s + ' ' + perSource[s]).join(', ') + '), would apply ' + rc.wouldApply + ', and wrote nothing. '
     + 'One wet CLI pass on a planted repository copy with the model author off kept ' + nm(keptNonMutant.length, 'candidate', 'candidates') + ' from non-mutant sources (' + keptNonMutant.map((d) => d.source).join(' and ') + ') with the gate GREEN'
     + ' and appended ' + nm(authoredWet.length, 'line', 'lines') + ' to state/self/authored.jsonl with the gate hash before and after. '
-    + 'The model cell ' + m.author?.model + ' through Ollama was asked ' + nm(mt.modelCalls ?? 0, 'time', 'times') + ' for a planted OPEN: line, ' + (md.model?.answered ? 'answered in ' : 'did not answer (') + md.model?.ms + ' ms' + (md.model?.answered ? '' : ')') + ', and its patch was ' + String(md.decision || 'not reached').toUpperCase() + (md.wall ? ' at the ' + md.wall + ' wall' : '') + (md.decision === 'kept' ? ' with the gate ' + md.gate?.verdict : '')
+    + (MODEL_OFF ? 'The model cell was not asked (--model off; a Claude-named model was still refused before any socket: ' + closed.reason + ')' : 'The model cell ' + m.author?.model + ' through Ollama was asked ' + nm(mt.modelCalls ?? 0, 'time', 'times') + ' for a planted OPEN: line, ' + (md.model?.answered ? 'answered in ' : 'did not answer (') + md.model?.ms + ' ms' + (md.model?.answered ? '' : ')') + ', and its patch was ' + String(md.decision || 'not reached').toUpperCase() + (md.wall ? ' at the ' + md.wall + ' wall' : '') + (md.decision === 'kept' ? ' with the gate ' + md.gate?.verdict : ''))
     + '. Over the wet copy and the real docs/BOARDS.json the share is ' + share.numerator + '/' + share.denominator + '. '
     + 'Board 14: on a planted tree state/self/STOP refused the soak with exit ' + stopCli.exitCode + ' and nothing written; one soak of 0.5 minutes took the planted gap from the gaps source through knob-tune on a copy and kept it (before ' + kd.before + ', after ' + kd.after + ', noise ' + kd.noise + ') with the gate ' + kd.gate?.verdict
     + ', appended the authorship line "' + a6.author + '", rebuilt the ledger and printed the gap ' + (closed6.closed ? 'CLOSED' : 'still open') + ', with ' + r6.copies?.leftOnDisk + ' copies left on disk; the orchestrator rate read ' + orch.boards + ' boards landed and ' + orch.barsMet + ' bars met (a floor: ' + (orch.barsMetUnparsed || []).length + ' landed lines name no count) over ' + orch.windowDays + ' days. '
+    + 'Board 15: the stage 6 soak wrote its own ' + r6.verdict?.file + ' at its end; on a planted tree a bar-grade soak (the bar lowered to 0.1 min, allowed on a planted tree only) wrote bench/verdicts/soak.json ITSELF with barMet ' + v7?.barMet
+    + ' (gap attempts ' + v7?.checks?.gapsAttempts?.attempts + ', gate after "' + v7?.checks?.gateGreenAfter?.summary + '", proof soak ' + v7?.checks?.proofSoakExit0?.runId + ' exit ' + v7?.checks?.proofSoakExit0?.exit + ')'
+    + '; its control (the proof\'s .exit file saying 1) regraded to barMet ' + re7.verdict?.barMet + ' and archived the replaced file (' + hist7.length + ' history line); the real bar-length soak ' + (v7d.soak?.runId || 'none') + ' regraded read only to barMet ' + v7d.barMet + '. '
+    + (MODEL_OFF ? 'Run with --model off: the stage 4b model call was not made, so this run is not the bar. ' : '')
     + passed + ' of ' + checks.length + ' checks passed.';
   verdict = {
-    at: new Date().toISOString(), command: COMMAND, node: process.version, isTheBar: true, barMet: met, board: 14,
-    split: { board8and10: checks.slice(0, 21).filter((x) => x.pass).length + '/' + Math.min(21, checks.length), board14: checks.slice(21).filter((x) => x.pass).length + '/' + checks.slice(21).length },
+    at: new Date().toISOString(), command: COMMAND + (MODEL_OFF ? ' --model off' : ''), node: process.version, isTheBar: !MODEL_OFF, barMet: met && !MODEL_OFF, board: 15,
+    split: { board8and10: checks.slice(0, 21).filter((x) => x.pass).length + '/' + Math.min(21, checks.length), board14: checks.slice(21, 26).filter((x) => x.pass).length + '/' + checks.slice(21, 26).length, board15: checks.slice(26).filter((x) => x.pass).length + '/' + checks.slice(26).length },
+    notTheBarBecause: MODEL_OFF ? '--model off: stage 4b made no model call (' + checks.filter((x) => x.skipped).map((x) => x.name.split(' ').slice(0, 2).join(' ')).join(', ') + ' skipped)' : null,
     statement,
     overwrote: prior,
     fixture: { gateProgram: 'bench/gate.mjs', gateHash, files: ['lib/sum.mjs', 'lib/scale.mjs', 'test/sum.test.mjs', 'test/area.test.mjs', 'test/scale.test.mjs'], gateRows },
@@ -468,19 +559,30 @@ try {
       authored: a6, refresh: closed6, attempts: r6.attempts, copies: r6.copies, trials: r6.trials, magnitude: r6.magnitude ?? null, lines: r6.lines ?? [], ms: s6ms,
     },
     orchestrator: orch,
-    checks, passed, total: checks.length, verdict: met ? 'MET' : 'MISSED', ms: Date.now() - t0,
+    selfGrade: {
+      stage6: { file: r6.verdict?.file ?? null, isTheBar: part6?.isTheBar ?? null, notTheBarBecause: part6?.notTheBarBecause ?? null, recordExit: rec6?.exit ?? null, endLines: (rec6?.endLines || []).length },
+      proof: { runId: proof7.runId, exitCode: proof7.exitCode, verdict: proof7.verdict ?? null },
+      bar: { runId: bar7.runId, exitCode: bar7.exitCode, verdict: bar7.verdict ?? null, lines: bar7.lines ?? [], improveCalls: improveCalls7, checks: v7?.checks ?? null, statement: v7?.statement ?? null, ms: s7ms },
+      control: { barMet: re7.verdict?.barMet ?? null, proof: re7.verdict?.checks?.proofSoakExit0 ?? null, archived: re7.wrote?.archived ?? null, historyLines: hist7.length },
+      realTree: re7d.ok ? { runId: v7d.soak?.runId, isTheBar: v7d.isTheBar, barMet: v7d.barMet, checks: Object.fromEntries(Object.entries(v7d.checks || {}).map(([k, c]) => [k, c.pass])), exit: v7d.soak?.exit, exitFrom: v7d.soak?.exitFrom, reproduced: v7d.reproduced, printed: v7d.printed, soakJsonOnDisk: sameAsDisk === null ? 'another soak or none' : sameAsDisk ? 'agrees' : 'disagrees' } : { ok: false, reason: re7d.reason },
+    },
+    checks, passed, total: checks.length, verdict: MODEL_OFF ? 'PARTIAL' : met ? 'MET' : 'MISSED', ms: Date.now() - t0,
   };
   mkdirSync(path.join(HERE, 'verdicts'), { recursive: true });
-  writeFileSync(VERDICT, JSON.stringify(verdict, null, 2));
-  console.log('\nAUTOPILOT ' + verdict.verdict + ': ' + passed + '/' + checks.length + ' checks. real tree candidates ' + rc.candidates + ' (' + SOURCE_ORDER.map((s) => s + ' ' + perSource[s]).join(', ') + ')'
+  const OUT = MODEL_OFF ? path.join(HERE, 'verdicts', 'autopilot-partial.json') : VERDICT;
+  writeFileSync(OUT, JSON.stringify(verdict, null, 2));
+  const skipped = checks.filter((x) => x.skipped).length;
+  console.log('\nAUTOPILOT ' + verdict.verdict + ': ' + passed + '/' + checks.length + ' checks' + (skipped ? ' (' + skipped + ' skipped: --model off)' : '') + '. real tree candidates ' + rc.candidates + ' (' + Object.keys(perSource).map((s) => s + ' ' + perSource[s]).join(', ') + ')'
     + '; wet pass kept ' + keptNonMutant.length + ' non-mutant (' + keptNonMutant.map((d) => d.source).join(', ') + ') gate GREEN, authored.jsonl +' + authoredWet.length
-    + '; model ' + m.author?.model + ' calls ' + mt.modelCalls + ' ' + md.model?.ms + ' ms, proposed ' + mt.modelProposed + ' kept ' + mt.modelKept
+    + (MODEL_OFF ? '; model off (stage 4b skipped)' : '; model ' + m.author?.model + ' calls ' + mt.modelCalls + ' ' + md.model?.ms + ' ms, proposed ' + mt.modelProposed + ' kept ' + mt.modelKept)
     + '; soak kept ' + (r6.kept || []).length + ' (' + kd.before + ' -> ' + kd.after + ') gap ' + (closed6.closed ? 'CLOSED' : 'open') + ', copies left ' + r6.copies?.leftOnDisk
     + '; orchestrator ' + orch.boards + ' boards, ' + orch.barsMet + ' bars met over ' + orch.windowDays + ' days'
-    + '; ' + (Date.now() - t0) + ' ms. wrote bench/verdicts/autopilot.json (overwrites the Board ' + (prior?.board ?? 10) + ' bar)');
-  process.exitCode = met ? 0 : 1;
+    + '; self-grade: stage 6 wrote ' + r6.verdict?.file + ', the planted bar-grade soak wrote soak.json barMet ' + v7?.barMet + ', its control barMet ' + re7.verdict?.barMet + ', the real soak ' + (v7d.soak?.runId || 'none') + ' regrades barMet ' + v7d.barMet
+    + '; ' + (Date.now() - t0) + ' ms. wrote ' + path.relative(path.join(HERE, '..'), OUT).split(path.sep).join('/') + (MODEL_OFF ? ' (isTheBar false: --model off; autopilot.json, the bar, was not touched)' : ' (overwrites the Board ' + (prior?.board ?? 10) + ' bar)'));
+  // a --model off run is PARTIAL, never the bar: it exits 0 when every check that ran passed
+  process.exitCode = (MODEL_OFF ? checks.every((x) => x.pass || x.skipped) : met) ? 0 : 1;
 } catch (e) {
-  const partial = { at: new Date().toISOString(), command: COMMAND, node: process.version, isTheBar: false, barMet: false, board: 14, statement: 'The run threw before every stage completed: ' + String(e && e.message).split('\n')[0] + '. Checks that ran are listed. The Board 10 bar in autopilot.json was not overwritten.', error: String(e && e.stack || e), checks };
+  const partial = { at: new Date().toISOString(), command: COMMAND, node: process.version, isTheBar: false, barMet: false, board: 14, statement: 'The run threw before every stage completed: ' + String(e && e.message).split('\n')[0] + '. Checks that ran are listed. The bar in autopilot.json was not overwritten.', error: String(e && e.stack || e), checks };
   mkdirSync(path.join(HERE, 'verdicts'), { recursive: true });
   writeFileSync(path.join(HERE, 'verdicts', 'autopilot-partial.json'), JSON.stringify(partial, null, 2));
   console.log('AUTOPILOT PARTIAL: ' + partial.statement + ' wrote bench/verdicts/autopilot-partial.json');
@@ -491,4 +593,72 @@ try {
 }
 }
 
-if (isMain) await main();
+// ---------------------------------------------------------------- --grade-soak <runId|latest>
+// Grades one finished soak from state/self/soak-<runId>.json and its copied transcript, with the same
+// grader the soak runs on itself at its end (self/autopilot.mjs gradeSoak), and writes
+// bench/verdicts/soak.json (or soak-partial.json). A bar file it replaces goes whole to
+// bench/verdicts/soak-history.jsonl first; every number and printed line of the replaced file is
+// then looked up in the new one and the count is printed. No bench runs and no soak starts.
+
+/** Every leaf of a JSON value as [path, value]. */
+function leaves(v, at = '', out = []) {
+  if (v === null || typeof v !== 'object') { out.push([at, v]); return out; }
+  for (const [k, x] of Object.entries(v)) leaves(x, at ? at + '.' + k : k, out);
+  return out;
+}
+
+/** The numbers and lines of an older grade that a new grade of the same soak does not hold anywhere. */
+export function baselineKept(previous, next, { skip = /^(at|writtenBy|board|statement|bar|split\..*|command)$/ } = {}) {
+  const have = new Set(leaves(next).map(([, x]) => (typeof x === 'number' ? 'n:' + x : typeof x === 'string' ? 's:' + x.trim() : 'o:' + String(x))));
+  const want = leaves(previous).filter(([p, x]) => !skip.test(p) && (typeof x === 'number' || (typeof x === 'string' && x.length > 0)));
+  const strs = leaves(next).map(([, x]) => x).filter((x) => typeof x === 'string');
+  // a shortened path (the orchestrator wrote '.err' for the proof's second file) counts when a full one ends with it
+  const missing = want.filter(([, x]) => !have.has(typeof x === 'number' ? 'n:' + x : 's:' + x.trim()) && !(typeof x === 'string' && strs.some((y) => y.endsWith(x.trim()))));
+  return { total: want.length, kept: want.length - missing.length, missing: missing.map(([p, x]) => p + ' = ' + JSON.stringify(x)) };
+}
+
+function newestSoakId(root) {
+  const dir = path.join(root, 'state', 'self');
+  let names = [];
+  try { names = readdirSync(dir).filter((n) => /^soak-.+\.json$/.test(n)); } catch { names = []; }
+  const recs = names.map((n) => { try { return JSON.parse(readFileSync(path.join(dir, n), 'utf8')); } catch { return null; } }).filter((x) => x && x.runId && x.status && x.status !== 'running');
+  recs.sort((a, b) => String(b.startedAt).localeCompare(String(a.startedAt)));
+  return recs[0] ? recs[0].runId : null;
+}
+
+async function gradeMain(arg) {
+  const t = Date.now();
+  const runId = arg === true || arg === 'latest' ? newestSoakId(ROOT) : String(arg);
+  if (!runId) { console.log('GRADE-SOAK: no finished soak record under state/self/'); process.exitCode = 2; return; }
+  const barFile = path.join(ROOT, 'bench', 'verdicts', 'soak.json');
+  let previous = null;
+  try { previous = JSON.parse(readFileSync(barFile, 'utf8')); } catch { previous = null; }
+  const r = await regradeSoak({ root: ROOT, runId, write: true, writtenBy: 'node bench/autopilot.mjs --grade-soak ' + runId + ' (self/autopilot.mjs gradeSoak, the grader every soak now runs on itself at its end; from the record and the copied transcript)' });
+  if (!r.ok) { console.log('GRADE-SOAK ' + runId + ': ' + r.reason); process.exitCode = 2; return; }
+  const v = r.verdict;
+  const p = v.printed;
+  for (const l of [p.doneLine, p.totalLine, p.gapsLine, p.modelLine, p.peakLine, p.copiesLine, p.gateLine, p.magLine, p.budgetDoneLine]) if (l) console.log(l);
+  console.log('exit ' + v.soak.exit + ' from ' + v.soak.exitFrom);
+  const pr = v.checks.proofSoakExit0;
+  console.log('proof soak (--soak 1 --author off): ' + (pr.ran ? pr.runId + ' exit ' + pr.exit + ' from ' + pr.exitFrom + '; ' + pr.doneLine + (pr.budgetDoneLine ? '; ' + pr.budgetDoneLine : '') : pr.reason));
+  const a = v.autonomy || {};
+  console.log('AUTONOMY task ' + (a.task?.name || 'BrainAutopilot') + ' registered ' + a.task?.registered + (a.task?.status ? ', status ' + a.task.status : '') + (a.task?.nextRun ? ', next run ' + a.task.nextRun : '')
+    + '; STOP ' + (a.stop?.present ? 'PRESENT' : 'absent') + ' (' + a.stop?.path + ')'
+    + '; newest decision file ' + (a.decisions?.file || 'none') + (a.decisions?.file ? ' (' + a.decisions.lines + ' lines, modified ' + a.decisions.mtime + ', age ' + a.decisions.ageHours + ' h)' : ''));
+  console.log('AUTONOMY gate: ' + (a.gate?.line || 'none') + (a.gate?.at ? ' (' + a.gate.file + ' at ' + a.gate.at + ')' : ''));
+  if (a.gate?.logLine) console.log('AUTONOMY gate line in docs/LOG.md: ' + a.gate.logLine);
+  console.log('reproduced from the record: ' + v.reproduced.fromRecord + ' of ' + v.reproduced.lines + ' printed end lines' + (v.reproduced.notInRecord.length ? ' (not in it: ' + v.reproduced.notInRecord.join(' | ') + ')' : ''));
+  if (previous && r.wrote?.archived) {
+    const k = baselineKept(previous, v);
+    console.log('baseline kept: ' + k.kept + ' of ' + k.total + ' numbers and lines of the replaced ' + 'bench/verdicts/soak.json (' + (previous.writtenBy || 'unknown writer') + ') are in the new file; the old file is whole in ' + SOAK_HISTORY_REL + (k.missing.length ? '; not found: ' + k.missing.join('; ') : ''));
+  }
+  console.log('checks: ' + Object.entries(v.checks).map(([n, c]) => n + ' ' + (c.pass ? 'pass' : 'FAIL')).join(', '));
+  console.log('GRADE-SOAK ' + v.soak.runId + ': isTheBar ' + v.isTheBar + ', barMet ' + v.barMet + '; wrote ' + r.wrote.rel + (r.wrote.archived ? ', the file it replaced appended to ' + SOAK_HISTORY_REL : '') + '; ' + (Date.now() - t) + ' ms');
+  process.exitCode = v.isTheBar && !v.barMet ? 1 : 0;
+}
+
+if (isMain) {
+  const g = argOf('--grade-soak');
+  if (g !== null) await gradeMain(g);
+  else await main();
+}

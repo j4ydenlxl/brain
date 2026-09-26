@@ -662,7 +662,15 @@ async function main() {
   // files under manual/ are his text verbatim and are never edited, so they are exempt.
   const emDash = [];
   const hisText = (f) => /MANUAL\.md$/.test(f) || /[\\/]manual[\\/]/.test(f);
-  for (const f of files) if (/\.(mjs|js|md|html)$/.test(f) && !hisText(f) && readFileSync(f, 'utf8').includes(String.fromCharCode(0x2014))) emDash.push(rel(f));
+  // web/tools (and its served copy web/dist/tools) is the Code Universe factory copied verbatim from
+  // universe/factory on 2026-09-25 (his order: "dilation.dev/tools used to exist. WHere is it now?").
+  // Its separators are UI glyphs in a copy nothing here authors or edits; they are skipped and COUNTED,
+  // never hidden: the verdict carries emDashCopiedSkipped and the line below prints it.
+  const copied = (f) => /[\\/]web[\\/](dist[\\/])?tools[\\/]/.test(f);
+  let emDashCopiedSkipped = 0;
+  for (const f of files) if (/\.(mjs|js|md|html)$/.test(f) && !hisText(f) && readFileSync(f, 'utf8').includes(String.fromCharCode(0x2014))) {
+    if (copied(f)) emDashCopiedSkipped++; else emDash.push(rel(f));
+  }
 
   // 4. dependency check: no bare-specifier imports except node: builtins
   const badImports = [];
@@ -705,7 +713,7 @@ async function main() {
     tests, testsPassed: tests.filter(t => t.exit === 0).length, testsTotal: tests.length,
     assertionsPassed: tests.reduce((a, t) => a + (t.pass || 0), 0), assertionsFailed: tests.reduce((a, t) => a + (t.fail || 0), 0),
     lines: { code: codeLines, prose: proseLines, codeFiles, generated: generatedLines, generatedFiles, byArea: counts },
-    emDash, badImports, notes,
+    emDash, emDashCopiedSkipped, badImports, notes,
     rows: { budget: rows.budget, compress: rows.compress, hisData: rows.hisData, loadBearing: rows.loadBearing, boundary: rows.boundary },
     verdict: allPass ? 'GREEN' : 'RED',
   };
@@ -720,6 +728,7 @@ async function main() {
   const gr = (r) => (r.ok ? 'GREEN' : 'RED');
   console.log(`\nGATE ${verdict.verdict}: test files ${verdict.testsPassed}/${verdict.testsTotal}, assertions ${verdict.assertionsPassed} pass / ${verdict.assertionsFailed} fail, authored code lines ${codeLines} in ${codeFiles} files, prose lines ${proseLines}, generated organism lines ${generatedLines} in ${generatedFiles} files, em-dash files ${emDash.length}, bad imports ${badImports.length}, budget ${gr(rows.budget)}, compress ${gr(rows.compress)}, his data ${gr(rows.hisData)}, load-bearing ${gr(rows.loadBearing)}, boundary ${gr(rows.boundary)}`);
   if (emDash.length) console.log('em-dashes in: ' + emDash.join(', '));
+  if (emDashCopiedSkipped) console.log('em-dashes in copied files skipped: ' + emDashCopiedSkipped + ' (web/tools and web/dist/tools, the Code Universe factory copy)');
   if (badImports.length) console.log('bad imports: ' + badImports.join(', '));
   // gate.json is written above, synchronously, before this line can end the process
   process.exit(allPass ? 0 : 1);

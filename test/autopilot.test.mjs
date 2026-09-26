@@ -36,6 +36,16 @@
 //  23. --resume continues the soak file and never repeats a decided round
 //  24. the soak ends at its minute with every copy deleted and the temp root removed
 //
+// Board 15 (the soak grades itself):
+//  25. a soak under the bar writes bench/verdicts/soak-partial.json at its end; its record keeps
+//      its end lines, MAGNITUDE and exit
+//  26. with the bar lowered on a planted tree a soak writes bench/verdicts/soak.json barMet true;
+//      the control (the proof's .exit says 1) misses and the replaced file goes to soak-history.jsonl
+//  27. on the real root the bar is never under 60 minutes; each check fails on its own fault
+//  28. the copied transcript (.out, .err, .exit) and the proof soak are read as the grader needs
+//  29. the daemon's self-code step options (daemon/run.mjs) and the gaps counters (daemon/health.mjs)
+//  30. --grade-soak keeps every number and line of the file it replaces
+//
 // No test here asks a real model: the author is a function, and a fake one stands in for the
 // model cell. bench/autopilot.mjs asks the real one.
 //
@@ -57,6 +67,7 @@ import {
 import { computeShare, isoWeek, main as authorshipMain } from '../tools/authorship.mjs';
 import * as P from './autopilot-plant.mjs';
 import { runSoak, runFromCli, soakConfig, soakFile, STOP_REL } from '../self/autopilot.mjs';
+import { gradeSoak, regradeSoak, parseExitFile, soakLogs, readSoakTranscript, findProofSoak } from '../self/autopilot.mjs';
 import { plantInto, plantGaps } from './operators-plant.mjs';
 
 const TMP = mkdtempSync(path.join(tmpdir(), 'brain-autopilot-test-'));
@@ -713,4 +724,155 @@ test('the soak ends at its minute with every copy deleted, a leaked one swept, t
   assert.equal(r.gateAfter.ran, 'not run', 'a soak under 10 minutes with no write runs no gate after');
   assert.equal(existsSync(path.join(root, 'state', 'self-code', LOCK_NAME)), false, 'the lock was released');
   assert.ok(r.lines.some((l) => /^ {2}copies: made 3, deleted and verified 2, found left between rounds 1, left on disk 0 /.test(l)));
+});
+
+// ------------------------------------------------------------------ Board 15: THE SOAK GRADES ITSELF
+// His order: "self improving. Without your build." A soak nobody watches writes its own verdict at its
+// end: bench/verdicts/soak.json when it is the bar (60 min or more, author on, not dry), else
+// soak-partial.json. Every soak here runs on a planted tree; no model is asked (authorFn throws).
+const noTask = async () => ({ registered: null, line: 'not queried: a test' });
+const readJ = (f) => JSON.parse(readFileSync(f, 'utf8'));
+
+test('the soak grades itself: a soak under the bar writes bench/verdicts/soak-partial.json (isTheBar false) at its end, and its record keeps its end lines, MAGNITUDE and exit', { timeout: 120_000 }, async () => {
+  const { r, root } = await keptSoak();
+  assert.equal(r.verdict.file, 'bench/verdicts/soak-partial.json');
+  assert.equal(r.verdict.isTheBar, false);
+  assert.equal(existsSync(path.join(root, 'bench', 'verdicts', 'soak.json')), false, 'a short soak never writes the bar file');
+  const v = readJ(path.join(root, 'bench', 'verdicts', 'soak-partial.json'));
+  for (const k of ['at', 'command', 'node', 'isTheBar', 'barMet', 'split', 'statement']) assert.ok(k in v, 'the verdict has ' + k);
+  assert.equal(v.isTheBar, false);
+  assert.equal(v.barMet, false);
+  assert.match(v.notTheBarBecause, /^a soak of 0\.2 min is under the bar's 60$/);
+  assert.equal(v.soak.runId, r.runId);
+  assert.equal(v.totals.gapsOnly.attempts, 1);
+  assert.equal(v.kept.length, 1);
+  assert.equal(v.printed.doneLine, r.lines[0].trim());
+  const rec = readJ(path.join(root, ...r.soakFile.split('/')));
+  assert.deepEqual(rec.endLines, r.lines, 'the record keeps the lines it printed');
+  assert.equal(rec.exit.code, 0);
+  assert.match(rec.magnitude.line, /^MAGNITUDE organism: 1 kept/);
+  assert.equal(v.reproduced.fromRecord, v.reproduced.lines, 'every printed end line is reproduced from the record');
+});
+
+test('the soak grades itself: with the bar lowered on a planted tree, a soak with the author on writes bench/verdicts/soak.json barMet true; the control (the proof .exit says 1) misses and the replaced file goes whole to soak-history.jsonl', { timeout: 120_000 }, async () => {
+  const { root, tmpBase } = soakTree([fastGap(plantGaps().tune), fastGap(plantGaps().strategy), fastGap(plantGaps().edge)]);
+  let calls = 0;
+  const refuse = async () => { calls++; return { kept: false, reason: 'a planted refusal', trials: [{ kind: 'trial', seconds: 0.01 }] }; };
+  const noModel = async () => { throw new Error('no model call in a test'); };
+  const o = { ...SOAK_OPTS, root, tmpBase, improveFn: refuse, authorFn: noModel, queryTask: noTask, log: () => {} };
+  const proof = await runSoak({ ...o, soak: 0.05, author: 'off' });
+  assert.equal(proof.exitCode, 0, String(proof.reason));
+  assert.equal(proof.verdict.file, 'bench/verdicts/soak-partial.json');
+  const bar = await runSoak({ ...o, soak: 0.1, author: 'on', 'gate-after': 'on', barMinutes: 0.1 });
+  assert.equal(bar.exitCode, 0, String(bar.reason));
+  assert.equal(bar.verdict.file, 'bench/verdicts/soak.json');
+  assert.deepEqual(bar.verdict.checks, { ranFullWall: true, gapsAttempts: true, gateGreenAfter: true, proofSoakExit0: true });
+  assert.equal(bar.modelCalls.n, 0, 'no model was asked');
+  const v = readJ(path.join(root, 'bench', 'verdicts', 'soak.json'));
+  assert.equal(v.isTheBar, true);
+  assert.equal(v.barMet, true);
+  assert.ok(v.checks.gapsAttempts.attempts >= 3, 'three or more gap attempts: ' + v.checks.gapsAttempts.attempts);
+  assert.match(v.checks.gateGreenAfter.summary, /^GATE GREEN: fixture gate/);
+  assert.equal(v.checks.proofSoakExit0.runId, proof.runId);
+  assert.equal(v.checks.proofSoakExit0.exit, 0);
+  assert.match(v.checks.proofSoakExit0.exitFrom, /exit \(the code the soak returned to its CLI\)$/);
+  assert.match(v.bar, /^a 0\.1-minute unattended soak/);
+  assert.match(v.statement, /Bar MET: ranFullWall pass, gapsAttempts pass, gateGreenAfter pass, proofSoakExit0 pass\./);
+  assert.equal(existsSync(path.join(root, 'bench', 'verdicts', 'soak-history.jsonl')), false, 'nothing replaced yet');
+  // the control: a copied .exit file is the process's own code and wins over the record
+  mkdirSync(path.join(root, 'bench', 'verdicts', 'autopilot'), { recursive: true });
+  writeFileSync(path.join(root, 'bench', 'verdicts', 'autopilot', 'soak1-' + proof.runId + '.exit'), 'exit 1\n2026-09-25T00:00:00Z\n');
+  const re = await regradeSoak({ root, runId: bar.runId, barMinutes: 0.1, write: true, queryTask: noTask });
+  assert.equal(re.ok, true);
+  assert.equal(re.verdict.barMet, false);
+  assert.equal(re.verdict.checks.proofSoakExit0.pass, false);
+  assert.equal(re.verdict.checks.proofSoakExit0.exit, 1);
+  assert.match(re.verdict.checks.proofSoakExit0.exitFrom, /soak1-.+\.exit \(the process exit\)$/);
+  assert.equal(re.wrote.archived, true);
+  const hist = readFileSync(path.join(root, 'bench', 'verdicts', 'soak-history.jsonl'), 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l));
+  assert.equal(hist.length, 1);
+  assert.equal(hist[0].previous.barMet, true, 'the replaced grade is kept whole');
+  assert.equal(hist[0].previous.soak.runId, bar.runId);
+  assert.equal(readJ(path.join(root, 'bench', 'verdicts', 'soak.json')).barMet, false);
+  // the same writer grading the same soak again replaces its own file without a second history line
+  const again = await regradeSoak({ root, runId: bar.runId, barMinutes: 0.1, write: true, queryTask: noTask });
+  assert.equal(again.wrote.archived, false);
+  assert.equal(readFileSync(path.join(root, 'bench', 'verdicts', 'soak-history.jsonl'), 'utf8').split('\n').filter(Boolean).length, 1);
+});
+
+test('the grader: on the real root the bar is never under 60 minutes, and each check fails on its own record fault (pure, nothing written)', { timeout: 120_000 }, async () => {
+  const { r, root } = await keptSoak();
+  const st = readJ(path.join(root, ...r.soakFile.split('/')));
+  const on = { ...st, cfg: { ...st.cfg, authorOn: true } };
+  const real = gradeSoak({ root: ROOT, st: on, barMinutes: 0.1, proof: { ran: true, exit: 0 } });
+  assert.equal(real.isTheBar, false, 'a lowered bar is refused on the real tree');
+  assert.match(real.bar, /^a 60-minute unattended soak/);
+  assert.match(real.notTheBarBecause, /under the bar's 60$/);
+  const planted = (s, proof = { ran: true, exit: 0 }) => gradeSoak({ root, st: s, barMinutes: 0.1, proof });
+  const green = { ...on, gateAfter: { exit: 0, summary: 'GATE GREEN: fixture gate', ran: 'at the end of the soak' } };
+  const three = { ...green, decisions: [...green.decisions, { ...green.decisions[0], key: 'k2' }, { ...green.decisions[0], key: 'k3' }] };
+  assert.equal(planted(three).barMet, true, 'the good record meets the lowered bar');
+  assert.equal(planted(green).checks.gapsAttempts.pass, false, 'one gap attempt is under 3');
+  assert.equal(planted({ ...three, status: 'failed', failed: 'the soak threw: x' }).checks.ranFullWall.pass, false);
+  assert.equal(planted({ ...three, elapsedMs: 1000 }).checks.ranFullWall.pass, false, 'a short wall');
+  assert.equal(planted({ ...three, gateAfter: { exit: 1, summary: 'GATE RED: fixture gate' } }).checks.gateGreenAfter.pass, false);
+  assert.equal(planted(three, { ran: false, exit: null, reason: 'none' }).checks.proofSoakExit0.pass, false, 'no proof soak');
+  assert.equal(planted({ ...three, cfg: { ...three.cfg, authorOn: false } }).isTheBar, false, 'the author off is never the bar');
+  assert.equal(planted({ ...three, cfg: { ...three.cfg, dry: true } }).isTheBar, false, 'a dry soak is never the bar');
+});
+
+test('the grader reads a copied transcript: the .out JSON, the budget lines of .err, and the .exit file ("0" or "exit N" with a stamp)', () => {
+  assert.equal(parseExitFile('0\n'), 0);
+  assert.equal(parseExitFile('exit 0\n2026-09-24T21:58:28Z\n'), 0);
+  assert.equal(parseExitFile('exit 3\r\n'), 3);
+  assert.equal(parseExitFile(''), null);
+  assert.equal(parseExitFile('the soak crashed'), null);
+  assert.equal(parseExitFile(null), null);
+  const root = mkdtempSync(path.join(TMP, 'transcript-'));
+  const d = path.join(root, 'bench', 'verdicts', 'autopilot');
+  mkdirSync(d, { recursive: true });
+  const id = '20260101T000000000Z';
+  writeFileSync(path.join(d, 'soak60-' + id + '.out'), JSON.stringify({ lines: ['SOAK ' + id + ' DONE: 60 of 60 min', 'MAGNITUDE organism: 0 kept'], magnitude: { line: 'MAGNITUDE organism: 0 kept' }, exitCode: 0 }) + '\n');
+  writeFileSync(path.join(d, 'soak60-' + id + '.err'), 'BUDGET status 60 s: ram 1MB\r\nSOAK ' + id + ' DONE: 60 of 60 min\r\nBUDGET done exit 0: wall 3600 s, peak ram 9MB\r\n');
+  writeFileSync(path.join(d, 'soak60-' + id + '.exit'), 'exit 0\n2026-01-01T01:00:00Z\n');
+  const logs = soakLogs(root, id);
+  assert.deepEqual(logs, { out: 'bench/verdicts/autopilot/soak60-' + id + '.out', err: 'bench/verdicts/autopilot/soak60-' + id + '.err', exit: 'bench/verdicts/autopilot/soak60-' + id + '.exit' });
+  const t = readSoakTranscript(root, logs);
+  assert.deepEqual(t.lines, ['SOAK ' + id + ' DONE: 60 of 60 min', 'MAGNITUDE organism: 0 kept']);
+  assert.equal(t.returned, 0);
+  assert.equal(t.processExit, 0);
+  assert.equal(t.budgetDone, 'BUDGET done exit 0: wall 3600 s, peak ram 9MB');
+  assert.equal(t.budgetStatus, 'BUDGET status 60 s: ram 1MB');
+  assert.deepEqual(soakLogs(root, 'no-such-soak'), { out: null, err: null, exit: null });
+  // a record that is not a proof soak (5 minutes, or the author on) is never taken for one
+  mkdirSync(path.join(root, 'state', 'self'), { recursive: true });
+  writeFileSync(path.join(root, 'state', 'self', 'soak-a.json'), JSON.stringify({ runId: 'a', startedAt: '2026-01-02', status: 'done', cfg: { soakMinutes: 5, authorOn: false }, exit: { code: 0 } }));
+  writeFileSync(path.join(root, 'state', 'self', 'soak-b.json'), JSON.stringify({ runId: 'b', startedAt: '2026-01-03', status: 'done', cfg: { soakMinutes: 1, authorOn: true }, exit: { code: 0 } }));
+  assert.equal(findProofSoak(root).ran, false);
+  writeFileSync(path.join(root, 'state', 'self', 'soak-c.json'), JSON.stringify({ runId: 'c', startedAt: '2026-01-04', status: 'done', cfg: { soakMinutes: 1, authorOn: false }, exit: { code: 0 }, endLines: ['SOAK c DONE: 1 of 1 min'] }));
+  const p = findProofSoak(root);
+  assert.deepEqual([p.ran, p.runId, p.exit, p.doneLine], [true, 'c', 0, 'SOAK c DONE: 1 of 1 min']);
+  assert.equal(findProofSoak(root, { exclude: 'c' }).ran, false, 'a soak is never its own proof');
+});
+
+test('the daemon hands the self-code step a self-grading soak (author on when wet), and /health counts the gaps from disk', { timeout: 120_000 }, async () => {
+  const { selfCodeCliOpts } = await import('../daemon/run.mjs');
+  assert.deepEqual(selfCodeCliOpts({ selfCodeSoak: 90 }, { dry: false }), { dry: false, max: 5, rerun: false, author: 'on', soak: 90 });
+  assert.deepEqual(selfCodeCliOpts({}, { dry: true }), { dry: true, max: 5, rerun: false }, 'a dry step: no author, no soak by default');
+  assert.equal(selfCodeCliOpts({ selfCodeAuthor: 'off', selfCodeSoak: 1 }, { dry: false }).author, 'off', 'an explicit author wins');
+  assert.equal(selfCodeCliOpts({ selfCodeSources: ['gaps', 'notes'] }).sources, 'gaps,notes');
+  const { gapCounters } = await import('../daemon/health.mjs');
+  const { root } = await keptSoak();
+  assert.deepEqual(gapCounters({ root }), { open: 0, withTrial: 0, attempted: 1, kept: 1, closed: 1 });
+  const empty = mkdtempSync(path.join(TMP, 'health-'));
+  assert.deepEqual(gapCounters({ root: empty }), { open: 0, withTrial: 0, attempted: 0, kept: 0, closed: 0 });
+});
+
+test('bench/autopilot.mjs --grade-soak keeps every number and line of the file it replaces (a shortened path counts when a full one ends with it)', async () => {
+  const { baselineKept } = await import('../bench/autopilot.mjs');
+  const prev = { at: 'x', writtenBy: 'y', totals: { attempts: 43 }, printed: { doneLine: 'SOAK a DONE: 1 of 1 min' }, files: ['bench/a.out', '.err'] };
+  const next = { at: 'z', totals: { attempts: 150, gapsOnly: { attempts: 43 } }, lines: ['SOAK a DONE: 1 of 1 min'], files: ['bench/a.out', 'bench/a.err'] };
+  assert.deepEqual(baselineKept(prev, next), { total: 4, kept: 4, missing: [] });
+  const lost = baselineKept(prev, { ...next, totals: { attempts: 150 } });
+  assert.deepEqual(lost, { total: 4, kept: 3, missing: ['totals.attempts = 43'] });
 });

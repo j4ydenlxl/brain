@@ -224,7 +224,7 @@ test('5. the plain run prints a stale entry (launched false while the LOG says L
 });
 
 test('6. the real tree, read only: the share over launched boards 8 to 12, per board, per week, days since the last board', () => {
-  const r = main(['--no-write'], NOW);
+  const r = main(['--no-write'], new Date()) // the real tree needs the real clock: a fixed NOW older than the newest board printed a negative day count;
   assert.equal(r.out, null);
   const launched = r.verdict.boards.filter((b) => b.launched !== false).map((b) => b.board);
   for (const n of [8, 9, 10, 11, 12]) {

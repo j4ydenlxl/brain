@@ -104,6 +104,7 @@ import {
   ROOT, verifyPatch, isSealed, safePath, applyUnifiedPatch, DEFAULT_TIMEOUT_MS, COPY_SKIP,
   runTest, mutantCandidates, gateCandidates, sha256,
 } from './code.mjs';
+import { boardItemLines, BOARD_ITEM_KIND } from './boards.mjs';
 
 export const AUTO_KIND = 'self.code.auto';
 export const DEFAULT_GATE_CMD = 'node bench/gate.mjs --quiet';
@@ -599,7 +600,7 @@ export function collectCandidates({
   sources = null, imagineTimeoutMs = 60_000,
 } = {}) {
   const v = verdicts || path.join(root, 'bench', 'verdicts');
-  const want = new Set(Array.isArray(sources) && sources.length ? sources : SOURCE_ORDER);
+  const want = new Set(Array.isArray(sources) && sources.length ? sources : [...SOURCE_ORDER, BOARDS_SOURCE]);
   const detail = {}, lists = {};
   if (want.has('gate')) {
     const g = gateCandidates({ verdicts: v, root, run, max, timeoutMs });
@@ -616,7 +617,169 @@ export function collectCandidates({
     detail.mutants = { read: m.read, mutants: m.mutants, survived: m.survived, candidates: m.candidates.length };
     lists.mutants = m.candidates.map((c) => ({ ...c, source: 'mutants', where: m.file, evidence: 'fix', evidenceData: c.evidence ?? null }));
   }
-  return { sources: detail, candidates: SOURCE_ORDER.filter((s) => want.has(s)).flatMap((s) => lists[s] || []) };
+  if (want.has(BOARDS_SOURCE)) { const n = boardsCandidates({ root }); const { candidates, ...rest } = n; detail.boards = { ...rest, candidates: candidates.length }; lists.boards = candidates; }
+  return { sources: detail, candidates: [...SOURCE_ORDER, BOARDS_SOURCE].filter((s) => want.has(s)).flatMap((s) => lists[s] || []) };
+}
+
+// ================================================================ THE BOARDS SOURCE (Board 15)
+// Author: board 15 builder. His 2026-09-24 14:29: "it should be able to finish undone work". Every
+// undone item of every board (self/boards.mjs reads docs/boards without running a script; the
+// ledger writer of self/gaps.mjs appends them to state/self/gaps.jsonl as kind "board item") is a
+// candidate of source "boards" with evidence mode "brief", smallest owned set first. The brief
+// operator is self/brief.mjs (the Board 15 brief item), imported by name in a child process: when
+// that file or its operator export is absent the candidate is REFUSED with "brief operator not
+// landed", in a dry run too. A dry run never runs a brief ("would-brief"). A live run runs at most
+// BRIEFS_PER_RUN, with the author's remaining model calls (0 when the author is off: the organism's
+// own regions only). A kept brief that returns a unified diff goes through applyToTree (the ceiling,
+// the gap's files, a snapshot, the real gate, a byte-for-byte revert on red); a kept whole-file
+// patch set is saved under state/self/boards-kept/ and refused at the apply wall, because writing
+// new files is not a wall this file has. The source is registered OUTSIDE SOURCE_ORDER: a Board 14
+// soak's Board 10 pass reads SOURCE_ORDER only, so a 60-minute brief never runs inside a soak.
+export const BOARDS_SOURCE = 'boards';
+export const BRIEF_EVIDENCE = 'brief';
+export const BRIEF_REL = 'self/brief.mjs';
+export const BRIEF_OPERATORS = Object.freeze(['runBrief', 'brief', 'executeBrief', 'attemptBrief', 'default']);
+export const BRIEF_NOT_LANDED = 'brief operator not landed';
+export const BRIEFS_PER_RUN = 1;
+export const BRIEF_WALL_MINUTES = 60;
+export const BOARDS_KEPT_REL = 'state/self/boards-kept';
+const BRIEF_MARK = '@@BRIEF-RESULT@@';
+
+/** Candidates from the board-item lines of the ledger; with none there, a read-only scan of docs/boards. */
+export function boardsCandidates({ root = ROOT } = {}) {
+  const ledgerRel = 'state/self/gaps.jsonl';
+  const ledgerAbs = path.join(root, ...ledgerRel.split('/'));
+  let lines = [], from = 'ledger', reason = null, scanErrors = [];
+  if (existsSync(ledgerAbs)) {
+    try {
+      for (const l of readFileSync(ledgerAbs, 'utf8').split(/\r?\n/)) {
+        if (!l.trim()) continue;
+        try { const g = JSON.parse(l); if (g && g.kind === BOARD_ITEM_KIND) lines.push(g); } catch { /* an unreadable line is the ledger's to count */ }
+      }
+    } catch (e) { reason = 'the ledger is unreadable: ' + String((e && e.message) || e).split('\n')[0]; }
+  }
+  if (!lines.length) {
+    from = 'scan';
+    try { const b = boardItemLines({ root }); lines = b.lines; scanErrors = b.scan.errors; } catch (e) { reason = 'self/boards.mjs threw: ' + String((e && e.message) || e).split('\n')[0]; lines = []; }
+  }
+  const nFiles = (g) => (Array.isArray(g.files) ? g.files.length : 0);
+  lines.sort((a, b) => nFiles(a) - nFiles(b) || (Number(a.board) || 0) - (Number(b.board) || 0) || String(a.key).localeCompare(String(b.key)));
+  const brief = probeBrief({ root });
+  const candidates = lines.map((g) => ({
+    key: 'boards:' + g.id, id: g.id, source: BOARDS_SOURCE, where: from === 'ledger' ? ledgerRel : 'docs/boards (scanned, the ledger has no board-item line)',
+    kind: BOARD_ITEM_KIND, evidence: BRIEF_EVIDENCE, file: null, test: null, gap: g, files: Array.isArray(g.files) ? g.files : [],
+    why: 'board ' + g.board + ' item ' + g.key + ' is undone (' + (g.state || 'undone') + '): ' + String(g.reason || '').slice(0, 200),
+  }));
+  return {
+    read: true, from, where: from === 'ledger' ? ledgerRel : 'docs/boards', items: lines.length, reason, scanErrors: scanErrors.length,
+    withTrial: lines.filter((g) => g.trial).length, needsModel: lines.filter((g) => g.needsModel).length,
+    brief: { landed: brief.landed, operator: brief.operator, reason: brief.reason }, candidates,
+  };
+}
+
+const briefProbes = new Map();
+export const BRIEF_PROBE_RETRY_MS = 60_000;
+/** Is self/brief.mjs landed under this root, and which operator does it export? Probed once per root, in a child. */
+export function probeBrief({ root = ROOT, fresh = false } = {}) {
+  const abs = path.join(root, ...BRIEF_REL.split('/'));
+  if (!existsSync(abs)) return { landed: false, operator: null, exports: [], reason: BRIEF_NOT_LANDED + ': ' + BRIEF_REL + ' is absent' };
+  const key = abs + '|' + statSync(abs).mtimeMs;
+  const hit = briefProbes.get(key);
+  // a landed probe holds until the file changes; a failed one for BRIEF_PROBE_RETRY_MS (a dependency mid-write heals)
+  if (!fresh && hit && (hit.out.landed || Date.now() - hit.at < BRIEF_PROBE_RETRY_MS)) return hit.out;
+  const script = 'const m = await import(process.argv[1]); console.log(' + JSON.stringify(BRIEF_MARK) + ' + JSON.stringify(Object.keys(m).map((k) => [k, typeof m[k]])));';
+  const r = spawnSync(process.execPath, ['--max-old-space-size=' + CHILD_HEAP_MB, '--input-type=module', '-e', script, pathToFileURL(abs).href], { cwd: root, encoding: 'utf8', timeout: 60_000, windowsHide: true });
+  let exps = null;
+  const at = String(r.stdout || '').lastIndexOf(BRIEF_MARK);
+  if (at >= 0) { try { exps = JSON.parse(String(r.stdout).slice(at + BRIEF_MARK.length).split(/\r?\n/)[0]); } catch { exps = null; } }
+  let out;
+  // the error line of the child's stderr, not its last line (Node ends a stack with "Node.js vX")
+  const errLines = String(r.stderr || '').split(/\r?\n/).map((l) => l.trim()).filter((l) => l && !/^at\s/.test(l) && !/^Node\.js v/.test(l));
+  const errLine = errLines.find((l) => /\b(?:\w*Error|error)\b[:\s]/.test(l)) || errLines.pop() || (r.error ? r.error.code : 'exit ' + r.status);
+  if (!Array.isArray(exps)) out = { landed: false, operator: null, exports: [], reason: BRIEF_NOT_LANDED + ': ' + BRIEF_REL + ' does not import (' + errLine.slice(0, 300) + ')' };
+  else {
+    const fns = exps.filter(([, t]) => t === 'function').map(([k]) => k);
+    const op = BRIEF_OPERATORS.find((n) => fns.includes(n)) || null;
+    out = op ? { landed: true, operator: op, exports: exps.map(([k]) => k), reason: null } : { landed: false, operator: null, exports: exps.map(([k]) => k), reason: BRIEF_NOT_LANDED + ': ' + BRIEF_REL + ' exports none of ' + BRIEF_OPERATORS.join(', ') };
+  }
+  briefProbes.set(key, { out, at: Date.now() });
+  return out;
+}
+
+/** Run the brief operator on one gap in a child (async inside, synchronous here), bounded by its wall. */
+export function runBriefChild({ root = ROOT, operator, gap, modelCalls = 0, wallMinutes = BRIEF_WALL_MINUTES } = {}) {
+  const abs = path.join(root, ...BRIEF_REL.split('/'));
+  const script = [
+    'const chunks = []; for await (const c of process.stdin) chunks.push(c);',
+    'const input = JSON.parse(Buffer.concat(chunks).toString("utf8"));',
+    'const m = await import(process.argv[1]);',
+    'const fn = input.operator === "default" ? m.default : m[input.operator];',
+    'let r; try { r = await fn(input.gap, input.opts); } catch (e) { r = { kept: false, wall: "brief", reason: "the brief operator threw: " + String((e && e.message) || e).split("\\n")[0] }; }',
+    'console.log(' + JSON.stringify(BRIEF_MARK) + ' + JSON.stringify({ r: r ?? null }));',
+  ].join('\n');
+  const opts = { root, modelCalls, wallMinutes, author: 'organism (brief)', from: BOARDS_SOURCE };
+  const t0 = Date.now();
+  const res = spawnSync(process.execPath, ['--max-old-space-size=' + GATE_HEAP_MB, '--input-type=module', '-e', script, pathToFileURL(abs).href], {
+    cwd: root, input: JSON.stringify({ operator, gap, opts }), encoding: 'utf8', timeout: (wallMinutes + 5) * 60_000, windowsHide: true, maxBuffer: 256 * 1024 * 1024,
+  });
+  const ms = Date.now() - t0;
+  const at = String(res.stdout || '').lastIndexOf(BRIEF_MARK);
+  if (at < 0) return { ok: false, ms, reason: res.error && res.error.code === 'ETIMEDOUT' ? 'the brief ran past its wall of ' + wallMinutes + ' minutes and was killed' : 'the brief child printed no result (exit ' + res.status + '): ' + (String(res.stderr || '').trim().split(/\r?\n/).pop() || '') };
+  try { return { ok: true, ms, ...JSON.parse(String(res.stdout).slice(at + BRIEF_MARK.length).split(/\r?\n/)[0]) }; } catch (e) { return { ok: false, ms, reason: 'the brief child result does not parse: ' + String(e.message) }; }
+}
+
+/** A unified diff split per file, the grammar of self/improve.mjs splitSections (not imported: improve imports this file). */
+export function diffSections(patch) {
+  const out = [];
+  let cur = null, from = null;
+  for (const l of String(patch || '').split(/\r?\n/)) {
+    if (l.startsWith('--- ')) { from = l.slice(4).split('\t')[0].trim().replace(/^[ab]\//, ''); continue; }
+    if (l.startsWith('+++ ')) {
+      let to = l.slice(4).split('\t')[0].trim(); to = to === '/dev/null' ? from : to.replace(/^[ab]\//, '');
+      cur = { file: to, lines: ['--- a/' + to, '+++ b/' + to] }; out.push(cur); continue;
+    }
+    if (cur) cur.lines.push(l);
+  }
+  return out.map((s) => ({ file: s.file, patch: s.lines.join('\n') + '\n' }));
+}
+
+/**
+ * One boards candidate through the brief evidence mode. Returns the decision fields to record.
+ * ctx: {root, dry, modelCallsLeft, budget: {left}, gates: {baseline}, gateCmd, gateTimeoutMs, runId, recordAuthored}
+ */
+export function briefRound(c, ctx = {}) {
+  const { root = ROOT, dry = false, modelCallsLeft = 0, budget = { left: BRIEFS_PER_RUN }, gates = {}, gateCmd = null, gateTimeoutMs = GATE_TIMEOUT_MS, runId = null, recordAuthored = true, runChild = runBriefChild, gateFn = runGate } = ctx;
+  const g = c.gap || {};
+  const info = { gap: g.id ?? null, board: g.board ?? null, verdictFile: g.verdictFile ?? null, trial: g.trial ?? null, needsModel: g.needsModel ?? null, files: Array.isArray(g.files) ? g.files.length : 0 };
+  const probe = probeBrief({ root });
+  if (!probe.landed) return { ...info, decision: 'refused', wall: 'brief', reason: probe.reason };
+  if (dry) return { ...info, decision: 'would-brief', operator: probe.operator, reason: 'a live run would hand this board item to ' + BRIEF_REL + ' ' + probe.operator + '() on a copy, with ' + modelCallsLeft + ' model call' + (modelCallsLeft === 1 ? '' : 's') + ' and a ' + BRIEF_WALL_MINUTES + '-minute wall' };
+  if (budget.left <= 0) return { ...info, decision: 'refused', wall: 'budget', reason: 'the brief budget of ' + BRIEFS_PER_RUN + ' per run is spent' };
+  budget.left--;
+  const out = runChild({ root, operator: probe.operator, gap: g, modelCalls: modelCallsLeft, wallMinutes: Math.min(BRIEF_WALL_MINUTES, Number(g.minutes) || BRIEF_WALL_MINUTES) });
+  const r = (out && out.r) || {};
+  const calls = Number.isFinite(Number(r.modelCalls)) ? Number(r.modelCalls) : null;
+  const brief = { operator: probe.operator, ms: out.ms ?? null, modelCalls: calls, kept: r.kept === true || r.decision === 'kept', wall: r.wall ?? null, steps: Array.isArray(r.steps) ? r.steps.length : null };
+  if (!out.ok) return { ...info, decision: 'refused', wall: 'brief', reason: out.reason, brief };
+  if (!brief.kept) return { ...info, decision: 'refused', wall: r.wall || 'brief', reason: r.reason || 'the brief kept nothing', brief };
+  // self/brief.mjs runBrief returns patchSet {files: [{file, isNew, content}], patch}: whole-file diffs, "--- /dev/null" for a new file.
+  const ps = r.patchSet && typeof r.patchSet === 'object' && !Array.isArray(r.patchSet) ? r.patchSet : null;
+  const patch = typeof r.patch === 'string' ? r.patch : typeof r.patchSet === 'string' ? r.patchSet : ps && typeof ps.patch === 'string' ? ps.patch : null;
+  const sections = patch ? diffSections(patch) : [];
+  const fresh = [...new Set([...(ps && Array.isArray(ps.files) ? ps.files.filter((f) => f && f.isNew).map((f) => String(f.file)) : []), ...sections.filter((s) => !existsSync(path.join(root, ...s.file.split('/')))).map((s) => s.file)])];
+  if (!patch || !sections.length || fresh.length) {
+    const dir = path.join(root, ...BOARDS_KEPT_REL.split('/'));
+    mkdirSync(dir, { recursive: true });
+    const saved = path.join(dir, stamp(new Date()) + '-' + String(g.id).replace(/[^\w.-]+/g, '_') + '.json');
+    writeFileSync(saved, JSON.stringify({ at: new Date().toISOString(), gap: g.id, author: 'organism (brief)', result: r }, null, 2));
+    return { ...info, decision: 'refused', wall: 'apply', reason: 'the brief kept a patch set that ' + (fresh.length ? 'creates ' + fresh.length + ' new file(s) (' + fresh.slice(0, 5).join(', ') + ')' : 'is not a unified diff of existing files') + '; this file has no wall that writes new files, so it was saved at ' + relOf(root, saved) + ' for the record wall', brief };
+  }
+  const a = applyToTree({ root, patch, files: Array.isArray(g.files) ? g.files : [], pre: {}, key: c.key, runId, author: 'organism (brief)', gateCmd, gateTimeoutMs, gates, splitSections: () => sections, gateFn, meta: { gap: g.id, operator: 'brief', source: BOARDS_SOURCE } });
+  const fields = { ...info, decision: a.decision, wall: a.wall ?? null, reason: a.reason, author: 'organism (brief)', brief, ...(a.fields || {}) };
+  if (a.decision === 'kept' && recordAuthored) {
+    appendAuthored(root, { at: new Date().toISOString(), runId, key: c.key, source: BOARDS_SOURCE, from: 'boards:' + g.id, kind: BOARD_ITEM_KIND, files: a.files.map((f) => f.file), author: 'organism (brief)', organism: true, gate: a.gate ? a.gate.gate : null, modelCalls: calls });
+  }
+  return fields;
 }
 
 // ================================================================ the author (Board 10)
@@ -838,8 +1001,8 @@ function verificationSummary(v) {
   };
 }
 const gateSummary = (g) => (g ? { cmd: g.cmd, exit: g.exit, timedOut: g.timedOut, summary: g.summary, red: g.red, ms: g.ms, hash: gateHash(g) } : null);
-const sourceClass = (s) => (SOURCE_ORDER.includes(s) ? s : 'given');
-const evidenceMode = (c) => (c.evidence === 'preserve' || c.evidence === 'faster' ? c.evidence : 'fix');
+const sourceClass = (s) => (SOURCE_ORDER.includes(s) || s === BOARDS_SOURCE ? s : 'given');
+const evidenceMode = (c) => (c.evidence === 'preserve' || c.evidence === 'faster' || c.evidence === BRIEF_EVIDENCE ? c.evidence : 'fix');
 
 /**
  * THE AUTOPILOT. Synchronous: every step is a child process or a file operation and each one
@@ -929,6 +1092,7 @@ export function runAutopilot({
 
     let baseline = null;
     let modelCalls = 0;
+    const briefBudget = { left: BRIEFS_PER_RUN }; // the boards source: briefs this run may start
     // one run of a test per tree state: several OPEN lines naming one test run it once, and a write
     // to the tree empties the memo, so a test is never judged on bytes it did not run against
     const nowRuns = new Map();
@@ -940,6 +1104,16 @@ export function runAutopilot({
         candidate: true, key: c.key ?? null, source: c.source ?? null, where: c.where ?? null, kind: c.kind ?? null, evidence: mode,
         origin: c.origin || 'self', file: c.file ?? null, test: c.test ?? null, why: c.why ? String(c.why).slice(0, 300) : null,
       };
+      // the boards source (Board 15): a board item goes to the brief operator, never to the walls below
+      if (mode === BRIEF_EVIDENCE) {
+        const gates = { baseline };
+        const f = briefRound(c, { root, dry, modelCallsLeft: typeof author === 'function' ? Math.max(0, authorMax - modelCalls) : 0, budget: briefBudget, gates, gateCmd, gateTimeoutMs, runId, recordAuthored });
+        if (f.brief && Number.isFinite(f.brief.modelCalls)) modelCalls += f.brief.modelCalls;
+        if (gates.baseline && gates.baseline !== baseline) { baseline = gates.baseline; if (!result.baseline) result.baseline = gateSummary(baseline); }
+        if (f.decision === 'kept') { nowRuns.clear(); if (recordAuthored) { result.authoredLines++; result.authoredFile = AUTHORED_REL; } }
+        record({ ...base, ...f });
+        continue;
+      }
       // 1. the ceiling on a target the candidate already names, before any author is asked
       if (c.file) {
         const pre = allowTarget(c.file, c.test || null, { root });
@@ -1121,7 +1295,8 @@ export function renderRun(r, st = plain) {
   if (s.imagine) lines.push(st.grey('  imagine: ' + (s.imagine.present ? (s.imagine.read ? s.imagine.proposed + ' proposed, ' + s.imagine.patches + ' as patches, by ' + s.imagine.how : 'unread: ' + s.imagine.reason) : 'mind/imagine.mjs absent')));
   if (s.census) lines.push(st.grey('  census: ' + (s.census.read ? (s.census.deadEdges ?? 0) + ' dead edges of ' + (s.census.edges ?? '?') + ' in ' + (s.census.seed || '?') + (s.census.deadCells != null ? ', ' + s.census.deadCells + ' dead cells (many-file, not proposed)' : '') + (s.census.pinned ? ', pinned' : '') + (s.census.reason ? ' (' + s.census.reason + ')' : '') : s.census.reason)));
   const by = r.bySource || {};
-  for (const name of [...SOURCE_ORDER, 'given']) {
+  if (s.boards) lines.push(st.grey('  boards: ' + s.boards.items + ' undone board items from ' + s.boards.where + ' (' + s.boards.withTrial + ' with a trial, ' + s.boards.needsModel + ' need the model); brief operator ' + (s.boards.brief && s.boards.brief.landed ? s.boards.brief.operator + '() landed' : 'NOT landed: ' + ((s.boards.brief && s.boards.brief.reason) || BRIEF_NOT_LANDED)) + (s.boards.reason ? ' (' + s.boards.reason + ')' : '')));
+  for (const name of [...SOURCE_ORDER, BOARDS_SOURCE, 'given']) {
     const t = by[name];
     if (!t) continue;
     const per = t.modelMs.length ? t.modelMs.join(', ') + ' ms' : '-';
@@ -1272,7 +1447,8 @@ export function planGap(g, { root = ROOT, ops = null, trialMinutes = SOAK_TRIAL_
 
 /** Every gap with a trial, largest distance over trial minutes first (ties by id), each planned. */
 export function gapQueue(lines, opts = {}) {
-  const scored = (Array.isArray(lines) ? lines : []).filter((g) => g && g.trial).map((g) => ({ g, ...gapScore(g) }));
+  // a board item (Board 15) belongs to the boards source and its brief, never to a bounded gap trial
+  const scored = (Array.isArray(lines) ? lines : []).filter((g) => g && g.trial && g.kind !== BOARD_ITEM_KIND).map((g) => ({ g, ...gapScore(g) }));
   scored.sort((a, b) => b.score - a.score || (String(a.g.id) < String(b.g.id) ? -1 : String(a.g.id) > String(b.g.id) ? 1 : 0));
   return scored.map(({ g, rel, score }) => {
     if (rel === 0) return { id: String(g.id), gap: g, refused: { key: 'gaps:' + g.id + ':none', wall: 'bar', reason: 'the ledger reads ' + g.measured + ' against the bar ' + g.bar + ': at the bar, nothing to move' }, rounds: [], rel, score };
@@ -1787,7 +1963,25 @@ export async function runSoak(o = {}) {
   summary.magnitude = await soakMagnitude(st, { rateFn: o.rateFn });
   const lines = renderSoak(summary);
   for (const l of lines) say(l);
-  return { ...out, ok: !failed, exitCode: failed ? 1 : 0, reason: failed, soakFile: relOf(root, sfile), stopped, ...summary, lines };
+  const exitCode = failed ? 1 : 0;
+  // Board 15: the record keeps its own end lines, MAGNITUDE and exit, and the soak grades itself,
+  // so a soak nobody watches (BrainAutopilot at 05:00) leaves its verdict on disk when it ends
+  st.magnitude = summary.magnitude;
+  st.endLines = lines;
+  st.exit = { code: exitCode, by: 'runSoak (the code it returns to its CLI)' };
+  try { writeFileSync(sfile + '.tmp', JSON.stringify(st, null, 1)); renameSync(sfile + '.tmp', sfile); } catch (e) { say('the record did not take its end lines: ' + firstLine(e)); }
+  let verdict = null;
+  if (o.grade !== false) {
+    try {
+      const proof = findProofSoak(root, { exclude: st.runId });
+      const autonomy = await autonomyFacts(root, { queryTask: o.queryTask || null });
+      const v = gradeSoak({ root, st, record: relOf(root, sfile), proof, autonomy, returned: exitCode, command: typeof o.command === 'string' ? o.command : null, barMinutes: o.barMinutes ?? SOAK_BAR_MINUTES });
+      const w = writeSoakVerdict(root, v);
+      verdict = { file: w.rel, archived: w.archived, isTheBar: v.isTheBar, barMet: v.barMet, checks: Object.fromEntries(Object.entries(v.checks).map(([k, c]) => [k, c.pass])) };
+      say('VERDICT ' + w.rel + ': isTheBar ' + v.isTheBar + ', barMet ' + v.barMet + ' (' + Object.entries(v.checks).map(([k, c]) => k + ' ' + (c.pass ? 'pass' : 'FAIL')).join(', ') + ')' + (w.archived ? '; the bar file it replaced went to ' + SOAK_HISTORY_REL : ''));
+    } catch (e) { say('the soak verdict was not written: ' + firstLine(e)); verdict = { file: null, error: firstLine(e) }; }
+  }
+  return { ...out, ok: !failed, exitCode, reason: failed, soakFile: relOf(root, sfile), stopped, ...summary, lines, verdict };
 }
 
 /** Counts of a soak: per source and per operator, model calls, trials, peaks, copies. */
@@ -1864,6 +2058,266 @@ export function renderSoak(s) {
   return L;
 }
 
+// ================================================================ the soak grades itself (Board 15)
+// His 2026-09-25 order: "Needs to be fronteir level in microseconds. And self improving. Without
+// your build. THAT HAS TO BE ESTABLISHED NOW." A soak launched by BrainAutopilot at 05:00 has no
+// orchestrator to read its transcript, so at its end it writes its own verdict from its own record:
+// bench/verdicts/soak.json (isTheBar true) for a soak of at least SOAK_BAR_MINUTES with the author
+// on and not dry, bench/verdicts/soak-partial.json (isTheBar false) for any other. A bar file it
+// replaces is appended whole to bench/verdicts/soak-history.jsonl first, so no graded soak is lost.
+// The same grader regrades a finished soak from its record and its copied transcript
+// (node bench/autopilot.mjs --grade-soak <runId>), which is how the Board 14 soak was graded.
+export const SOAK_BAR_MINUTES = 60;
+export const SOAK_BAR_GAPS = 3;
+export const SOAK_VERDICT_REL = 'bench/verdicts/soak.json';
+export const SOAK_PARTIAL_REL = 'bench/verdicts/soak-partial.json';
+export const SOAK_HISTORY_REL = 'bench/verdicts/soak-history.jsonl';
+export const SOAK_LOGS_REL = 'bench/verdicts/autopilot';
+export const SOAK_PROOF_COMMAND = 'node tools/budget.mjs --ram-mb 6000 --disk-mb 2000 --dir state/self -- node --max-old-space-size=6000 bin/brain.mjs self-code --auto --soak 1 --author off --json';
+const readText = (f) => { try { return readFileSync(f, 'utf8'); } catch { return null; } };
+
+/** The command a soak of this config is launched with, under the budget wrapper the schedule uses. */
+export function soakCommand(cfg = {}) {
+  return 'node tools/budget.mjs --ram-mb 6000 --disk-mb 2000 --dir state/self -- node --max-old-space-size=6000 bin/brain.mjs self-code --auto --soak ' + cfg.soakMinutes
+    + ' --author ' + (cfg.authorOn ? 'on' : 'off') + (cfg.dry ? ' --dry' : '') + ' --json';
+}
+
+/** The bar a soak is graded against, in words. */
+export function soakBarText(barMinutes = SOAK_BAR_MINUTES) {
+  return 'a ' + barMinutes + '-minute unattended soak on the real tree with the author on ran its full wall with no crash, made at least ' + SOAK_BAR_GAPS
+    + ' attempts on gaps-source candidates, the gate is GREEN after it, and the registered command with --soak 1 --author off exits 0';
+}
+
+/** The transcript files of one soak: bench/verdicts/autopilot/<anything><runId>.{out,err,exit}, or nulls. */
+export function soakLogs(root, runId) {
+  let names = [];
+  try { names = readdirSync(path.join(root, ...SOAK_LOGS_REL.split('/'))).filter((n) => n.includes(String(runId)) && /\.(out|err|exit)$/.test(n)).sort(); } catch { names = []; }
+  const pick = (ext) => { const n = names.find((x) => x.endsWith('.' + ext)); return n ? SOAK_LOGS_REL + '/' + n : null; };
+  return { out: pick('out'), err: pick('err'), exit: pick('exit') };
+}
+
+/** A process exit code from an .exit file: "0", or "exit 0" with a stamp line after it. */
+export function parseExitFile(text) {
+  if (text === null || text === undefined) return null;
+  const m = /^(?:exit\s+)?(-?\d+)\s*$/im.exec(String(text).trim().split('\n')[0]);
+  return m ? Number(m[1]) : null;
+}
+
+/**
+ * What a soak's copied transcript says: the end lines and MAGNITUDE (the JSON result on .out),
+ * the code the soak returned, the process exit (.exit) and the budget wrapper's last line (.err).
+ */
+export function readSoakTranscript(root, logs) {
+  const t = { lines: null, magnitude: null, returned: null, processExit: null, budgetDone: null, budgetStatus: null };
+  const out = logs.out ? readText(path.join(root, logs.out)) : null;
+  if (out) {
+    let j = null;
+    try { j = JSON.parse(out); } catch { j = lastJsonLine(out); }
+    if (j) { t.lines = Array.isArray(j.lines) ? j.lines : null; t.magnitude = j.magnitude || null; t.returned = Number.isInteger(j.exitCode) ? j.exitCode : null; }
+  }
+  const err = logs.err ? readText(path.join(root, logs.err)) : null;
+  if (err) {
+    const done = err.split('\n').map((l) => l.replace(/\r$/, '')).filter((l) => /^BUDGET done exit -?\d+:/.test(l));
+    t.budgetDone = done.length ? done[done.length - 1] : null;
+    const status = err.split('\n').map((l) => l.replace(/\r$/, '')).filter((l) => /^BUDGET status \d+ s:/.test(l));
+    t.budgetStatus = status.length ? status[0] : null;
+    if (!t.lines) {
+      const all = err.split('\n').map((l) => l.replace(/\r$/, ''));
+      const i = all.findIndex((l) => /^SOAK \S+ (DONE|STOPPED|FAILED|RUNNING)\b/.test(l));
+      if (i >= 0) { const j = all.findIndex((l, k) => k > i && l.startsWith('MAGNITUDE ')); t.lines = all.slice(i, j > i ? j + 1 : undefined).filter((l) => !/^BUDGET /.test(l)); }
+    }
+  }
+  const ex = logs.exit ? readText(path.join(root, logs.exit)) : null;
+  t.processExit = parseExitFile(ex);
+  return t;
+}
+
+/**
+ * The newest 1-minute author-off soak on record (the proof that the registered command starts and
+ * exits), other than `exclude`. Its exit is the copied .exit file when there is one (the process's
+ * own code), else the code the soak recorded.
+ */
+export function findProofSoak(root, { exclude = null } = {}) {
+  const dir = path.join(root, 'state', 'self');
+  let names = [];
+  try { names = readdirSync(dir).filter((n) => /^soak-.+\.json$/.test(n)); } catch { names = []; }
+  const found = [];
+  for (const n of names) {
+    let st;
+    try { st = JSON.parse(readFileSync(path.join(dir, n), 'utf8')); } catch { continue; }
+    if (!st || !st.cfg || !st.runId || st.runId === exclude) continue;
+    const c = st.cfg;
+    if (!(Number(c.soakMinutes) > 0 && Number(c.soakMinutes) <= 1) || c.authorOn !== false || c.dry) continue;
+    const logs = soakLogs(root, st.runId);
+    const tr = readSoakTranscript(root, logs);
+    const recorded = st.exit && Number.isInteger(st.exit.code) ? st.exit.code : null;
+    const exit = tr.processExit !== null ? tr.processExit : recorded;
+    let doneLine = (tr.lines && tr.lines[0]) || (Array.isArray(st.endLines) && st.endLines[0]) || null;
+    if (!doneLine) { try { doneLine = renderSoak(summarizeSoak(st))[0]; } catch { doneLine = null; } }
+    found.push({
+      ran: true, runId: st.runId, startedAt: st.startedAt || null, status: st.status || null, exit,
+      exitFrom: tr.processExit !== null ? logs.exit + ' (the process exit)' : recorded !== null ? 'state/self/' + n + ' exit (the code the soak returned to its CLI)' : 'nowhere: no .exit file and no exit in the record',
+      doneLine: doneLine ? String(doneLine).trim() : null, budgetLine: tr.budgetStatus, budgetDoneLine: tr.budgetDone,
+      record: 'state/self/' + n, files: [logs.out, logs.err, logs.exit].filter(Boolean), command: SOAK_PROOF_COMMAND,
+    });
+  }
+  found.sort((a, b) => String(b.startedAt).localeCompare(String(a.startedAt)));
+  return found.find((f) => f.exit !== null) || found[0] || { ran: false, exit: null, reason: 'no 1-minute author-off soak record under state/self/' };
+}
+
+/**
+ * The facts a reader of the autonomy row needs, read now: the BrainAutopilot task (queried on the
+ * real tree only; a planted tree says so), the STOP switch, the newest decision file and its age,
+ * and the last gate (bench/verdicts/gate.json and the last GATE line of docs/LOG.md).
+ */
+export async function autonomyFacts(root, { queryTask = null, now = Date.now() } = {}) {
+  let task;
+  if (typeof queryTask === 'function') { try { task = await queryTask(); } catch (e) { task = { registered: null, line: 'the query threw: ' + firstLine(e) }; } }
+  else if (path.resolve(root) === path.resolve(ROOT)) {
+    try {
+      const m = await import(new URL('../tools/schedule-autopilot.mjs', import.meta.url).href);
+      const q = m.queryTask({});
+      task = { name: m.TASK_NAME, registered: q.registered, status: q.status, nextRun: q.nextRun, line: q.line };
+    } catch (e) { task = { registered: null, line: 'tools/schedule-autopilot.mjs not landed yet: ' + firstLine(e) }; }
+  } else task = { registered: null, line: 'not queried: a planted tree (' + root + ')' };
+  if (task && task.raw) delete task.raw;
+  const dir = path.join(root, ...SOAK_LOGS_REL.split('/'));
+  let newest = null;
+  try {
+    for (const n of readdirSync(dir)) {
+      if (!/^\d{4}-\d{2}-\d{2}\.jsonl$/.test(n)) continue;
+      const s = statSync(path.join(dir, n));
+      if (!newest || s.mtimeMs > newest.mtimeMs) newest = { n, mtimeMs: s.mtimeMs };
+    }
+  } catch { newest = null; }
+  const decisions = newest ? {
+    file: SOAK_LOGS_REL + '/' + newest.n, mtime: new Date(newest.mtimeMs).toISOString(), ageHours: rnd((now - newest.mtimeMs) / 3_600_000, 4),
+    lines: (readText(path.join(dir, newest.n)) || '').split('\n').filter((l) => l.trim()).length,
+  } : { file: null, line: 'no decision file under ' + SOAK_LOGS_REL };
+  const gj = readJsonFile(path.join(root, 'bench', 'verdicts', 'gate.json'));
+  const g = gj.ok ? gj.j : null;
+  const gate = g ? {
+    file: 'bench/verdicts/gate.json', at: g.at ?? null, verdict: g.verdict ?? null,
+    line: 'GATE ' + g.verdict + ': test files ' + g.testsPassed + '/' + g.testsTotal + ', assertions ' + g.assertionsPassed + ' pass / ' + g.assertionsFailed + ' fail',
+  } : { file: null, line: 'no bench/verdicts/gate.json' };
+  const log = readText(path.join(root, 'docs', 'LOG.md'));
+  const gl = log ? (log.match(/GATE (?:GREEN|RED): test files [^\n]*?boundary (?:GREEN|RED)/g) || []) : [];
+  gate.logLine = gl.length ? gl[gl.length - 1] : null;
+  return { at: new Date(now).toISOString(), task, stop: { path: STOP_REL, present: existsSync(stopPath(root)) }, decisions, gate };
+}
+
+/**
+ * THE GRADE of one soak, from its record (and, for a soak graded after the fact, its copied
+ * transcript). Pure: it reads what it is given and returns the verdict; writeSoakVerdict writes it.
+ */
+export function gradeSoak({
+  root = ROOT, st, record = null, transcript = null, logs = null, proof = null, autonomy = null, barMinutes = SOAK_BAR_MINUTES,
+  writtenBy = 'self/autopilot.mjs runSoak at the end of the soak', command = null, at = new Date().toISOString(), returned = null,
+} = {}) {
+  const summary = summarizeSoak(st);
+  const tr = transcript || {};
+  const lines = (tr.lines && tr.lines.length ? tr.lines : Array.isArray(st.endLines) && st.endLines.length ? st.endLines : renderSoak(summary)).map((l) => String(l));
+  const magLine = (st.magnitude && st.magnitude.line) || (tr.magnitude && tr.magnitude.line) || lines.find((l) => l.startsWith('MAGNITUDE ')) || null;
+  const find = (re) => { const l = lines.find((x) => re.test(x.trim())); return l ? l.trim() : null; };
+  const cfg = st.cfg || {};
+  const minutes = Number(cfg.soakMinutes);
+  // the bar's minutes may be lowered only on a planted tree (a test); on the real tree it is at least SOAK_BAR_MINUTES
+  if (path.resolve(root) === path.resolve(ROOT) || !(Number(barMinutes) > 0)) barMinutes = Math.max(SOAK_BAR_MINUTES, Number(barMinutes) || 0);
+  const bar = Number.isFinite(minutes) && minutes >= barMinutes && cfg.authorOn === true && !cfg.dry;
+  const exitCode = tr.processExit !== null && tr.processExit !== undefined ? tr.processExit : Number.isInteger(returned) ? returned : st.exit && Number.isInteger(st.exit.code) ? st.exit.code : null;
+  const exitFrom = tr.processExit !== null && tr.processExit !== undefined ? (logs && logs.exit) + ' (the process exit)' : Number.isInteger(returned) ? 'the code runSoak returns to its CLI (bin/brain.mjs exits with it; under the tick, the day log ends "autopilot tick end: exit N")' : st.exit && Number.isInteger(st.exit.code) ? 'the record (' + (st.exit.by || 'the soak') + ')' : 'unknown';
+  const g = st.gateAfter || {};
+  const gaps = summary.bySource.gaps || { attempts: 0, kept: 0, reverted: 0, refused: 0 };
+  const trialRecords = (st.trials || []).length;
+  const trialSecs = (st.trials || []).reduce((s, t) => s + Number(t.seconds || 0), 0);
+  const recordsByKind = {};
+  for (const t of st.trials || []) recordsByKind[t.kind || 'trial'] = (recordsByKind[t.kind || 'trial'] || 0) + 1;
+  const pr = proof || { ran: false, exit: null, reason: 'not looked for' };
+  const checks = {
+    ranFullWall: { pass: st.status === 'done' && !st.failed && Number(st.elapsedMs) >= minutes * 60_000 && (exitCode === null || exitCode === 0), elapsedMin: summary.wallMinutes, soakMinutes: minutes, status: st.status ?? null, exit: exitCode, failed: st.failed || null },
+    gapsAttempts: { pass: gaps.attempts >= SOAK_BAR_GAPS, attempts: gaps.attempts, bar: SOAK_BAR_GAPS },
+    gateGreenAfter: { pass: g.exit === 0 && /^GATE GREEN\b/.test(String(g.summary || '')), summary: g.summary || null, ran: g.ran || null },
+    proofSoakExit0: { pass: pr.ran === true && pr.exit === 0, ...pr },
+  };
+  const barMet = bar && Object.values(checks).every((c) => c.pass === true);
+  const printed = {
+    doneLine: find(/^SOAK \S+ [A-Z]+:/), totalLine: find(/^total:/), gapsLine: find(/^source gaps\b/), modelLine: find(/^model calls:/), trialsLine: find(/^trials:/),
+    peakLine: find(/^peak RSS:/), copiesLine: find(/^copies: made/), gateLine: find(/^gate after:/), magLine, budgetDoneLine: tr.budgetDone || null,
+    sourceLines: lines.filter((l) => /^ {2}source /.test(l)).map((l) => l.trim()), operatorLines: lines.filter((l) => /^ {2}operator /.test(l)).map((l) => l.trim()),
+    keptLines: lines.filter((l) => /^ {2}kept /.test(l)).map((l) => l.trim()), ledgerLines: lines.filter((l) => /^ {2}ledger /.test(l)).map((l) => l.trim()),
+  };
+  // the record renders its own end lines again; a record that kept its MAGNITUDE (Board 15 on) renders that line too
+  const reproduced = (() => { const re = renderSoak(st.magnitude && st.magnitude.line ? { ...summary, magnitude: st.magnitude } : summary); const n = lines.filter((l) => re.includes(l)).length; return { lines: lines.length, fromRecord: n, notInRecord: lines.filter((l) => !re.includes(l)).map((l) => l.slice(0, 80)) }; })();
+  const rec = record || 'state/self/soak-' + st.runId + '.json';
+  const why = bar ? null : !(minutes >= barMinutes) ? 'a soak of ' + minutes + ' min is under the bar\'s ' + barMinutes : cfg.authorOn !== true ? 'the author was off' : 'a dry soak';
+  const passes = Object.entries(checks).map(([k, c]) => k + ' ' + (c.pass ? 'pass' : 'FAIL')).join(', ');
+  const statement = 'SOAK ' + st.runId + ' (' + rec + (logs && (logs.out || logs.err) ? ', transcript ' + [logs.out, logs.err, logs.exit].filter(Boolean).join(', ') : '') + '): ' + printed.doneLine + '. ' + printed.totalLine + '. '
+    + (printed.gapsLine || 'source gaps attempts ' + gaps.attempts) + '. ' + (printed.modelLine || 'no model line') + '. ' + (printed.gateLine || 'no gate line') + '. ' + (magLine || 'no MAGNITUDE line') + '. '
+    + 'Exit ' + exitCode + ' from ' + exitFrom + (tr.budgetDone ? '; ' + tr.budgetDone : '') + '. '
+    + 'Proof soak of the registered command (--soak 1 --author off): ' + (pr.ran ? pr.runId + ' exit ' + pr.exit + ' from ' + pr.exitFrom + ', ' + pr.doneLine : pr.reason) + '. '
+    + (bar ? 'Bar ' + (barMet ? 'MET' : 'MISSED') + ': ' + passes + '.' : 'Not the bar (' + why + '), so this file has isTheBar false: ' + passes + '.')
+    + ' The record reproduces ' + reproduced.fromRecord + ' of ' + reproduced.lines + ' printed end lines' + (reproduced.notInRecord.length ? ' (not in it: ' + reproduced.notInRecord.map((l) => l.split(' ')[0]).join(', ') + ')' : '') + '.';
+  return {
+    at, command: command || soakCommand(cfg), node: process.version, item: 'loop', board: 'BOARD 15 (the soak grades itself; the loop of Board 14)', isTheBar: bar, barMet,
+    bar: soakBarText(barMinutes), notTheBarBecause: why,
+    split: {
+      development: 'test/autopilot.test.mjs on planted trees (operators and author mocked through test/operators-plant.mjs and test/autopilot-plant.mjs, no Ollama)',
+      heldOut: (path.resolve(root) === path.resolve(ROOT) ? 'the real tree' : 'the tree ' + root) + ': SOAK ' + st.runId + ' with the author ' + (cfg.authorOn ? 'on' : 'off') + ', and the newest 1-minute author-off proof soak on record',
+    },
+    soak: {
+      runId: st.runId, record: rec, logs: logs ? [logs.out, logs.err, logs.exit].filter(Boolean) : [], startedAt: st.startedAt ?? null, updatedAt: st.updatedAt ?? null, loopEndedAt: st.loopEndedAt ?? null,
+      elapsedMs: st.elapsedMs ?? null, idleMs: st.idleMs ?? null, overrunMs: st.overrunMs ?? null, resumes: (st.resumes || []).length, status: st.status ?? null, failed: st.failed || null, cfg,
+      exit: exitCode, exitFrom, returned: tr.returned ?? (Number.isInteger(returned) ? returned : null),
+    },
+    totals: { ...summary.attempts, perSource: summary.bySource, perOperator: summary.byOperator, gapsOnly: { attempts: gaps.attempts, kept: gaps.kept, reverted: gaps.reverted, refused: gaps.refused }, roundsRun: summary.roundsRun },
+    kept: st.kept || [],
+    modelCalls: { made: summary.modelCalls.n, answered: summary.modelCalls.ok, cap: summary.modelCalls.max, meanSeconds: summary.modelCalls.meanS, seconds: summary.modelCalls.seconds, model: [...new Set((st.modelCalls || []).map((c) => c.model).filter(Boolean))] },
+    trials: { runs: summary.trials.n, meanSeconds: summary.trials.meanS, byKind: summary.trials.byKind, records: trialRecords, meanSecondsPerRecord: trialRecords ? rnd(trialSecs / trialRecords, 4) : null, recordsByKind },
+    peaks: { soakProcessMb: summary.peakRssMb.soak, trialMb: summary.peakRssMb.trial, gateCopyMb: summary.peakRssMb.gateOnCopy },
+    copies: summary.copies, gateAfter: st.gateAfter || null, refreshes: st.refreshes || [], deferred: (st.deferred || []).length,
+    magnitude: magLine, printed, reproduced, checks, autonomy: autonomy || null, authored: AUTHORED_REL, writtenBy, statement,
+  };
+}
+
+/**
+ * Write a graded soak: the bar file when it is the bar, else soak-partial.json. A bar file that
+ * holds another soak (or another writer's grade of this one) is appended whole to
+ * soak-history.jsonl before it is replaced. Returns the path written, relative to root.
+ */
+export function writeSoakVerdict(root, verdict) {
+  const rel = verdict.isTheBar ? SOAK_VERDICT_REL : SOAK_PARTIAL_REL;
+  const f = path.join(root, ...rel.split('/'));
+  mkdirSync(path.dirname(f), { recursive: true });
+  let archived = false;
+  if (verdict.isTheBar && existsSync(f)) {
+    const prev = readText(f);
+    let p = null;
+    try { p = JSON.parse(prev); } catch { p = null; }
+    const same = p && p.soak && p.soak.runId === verdict.soak.runId && p.writtenBy === verdict.writtenBy;
+    if (!same && prev && prev.trim()) {
+      appendFileSync(path.join(root, ...SOAK_HISTORY_REL.split('/')), JSON.stringify({ replacedAt: verdict.at, replacedBy: verdict.soak.runId, previous: p || { text: prev } }) + '\n');
+      archived = true;
+    }
+  }
+  writeFileSync(f + '.tmp', JSON.stringify(verdict, null, 2) + '\n');
+  renameSync(f + '.tmp', f);
+  return { rel, archived };
+}
+
+/** Grade a finished soak after the fact from its record and copied transcript, and write it. */
+export async function regradeSoak({ root = ROOT, runId, write = true, queryTask = null, writtenBy = null, command = null, barMinutes = SOAK_BAR_MINUTES } = {}) {
+  const f = findSoak(root, String(runId));
+  if (!f.ok) return { ok: false, reason: f.reason };
+  const st = f.state;
+  const logs = soakLogs(root, st.runId);
+  const transcript = readSoakTranscript(root, logs);
+  const proof = findProofSoak(root, { exclude: st.runId });
+  const autonomy = await autonomyFacts(root, { queryTask });
+  const verdict = gradeSoak({ root, st, record: 'state/self/soak-' + st.runId + '.json', transcript, logs, proof, autonomy, barMinutes, command, writtenBy: writtenBy || 'bench/autopilot.mjs --grade-soak ' + st.runId + ' (self/autopilot.mjs gradeSoak, from the record and the copied transcript)' });
+  const w = write ? writeSoakVerdict(root, verdict) : null;
+  return { ok: true, verdict, wrote: w };
+}
+
 /** runFromCli with --soak or --resume: the soak runs in a child process; its lines go to stderr as they happen. */
 function runSoakFromCli(opts) {
   const root = typeof opts.root === 'string' ? path.resolve(opts.root) : ROOT;
@@ -1872,12 +2326,25 @@ function runSoakFromCli(opts) {
     return { kind: AUTO_KIND, soak: true, root, ok: true, stopped: true, reason: 'stopped by ' + STOP_REL, exitCode: 0 };
   }
   const heap = Number(opts['soak-heap-mb']) > 0 ? Number(opts['soak-heap-mb']) : SOAK_HEAP_MB;
+  // the command this soak was launched with, for its verdict (the budget wrapper, when there is one, is outside this process)
+  const argv = process.argv.slice(1).map((a, i) => (i === 0 && path.isAbsolute(a) ? relOf(root, a) : a));
+  const command = typeof opts.command === 'string' ? opts.command : 'node ' + argv.map((a) => (/[\s&]/.test(a) ? '"' + a + '"' : a)).join(' ');
   const r = spawnSync(process.execPath, ['--max-old-space-size=' + heap, SELF_FILE, '--child', 'soak'], {
-    input: JSON.stringify({ ...opts, root }), stdio: ['pipe', 'pipe', 'inherit'], encoding: 'utf8', env: cleanEnv(), windowsHide: true, maxBuffer: 256 * 1024 * 1024,
+    input: JSON.stringify({ ...opts, root, command }), stdio: ['pipe', 'pipe', 'inherit'], encoding: 'utf8', env: cleanEnv(), windowsHide: true, maxBuffer: 256 * 1024 * 1024,
   });
   const ans = lastJsonLine(r.stdout);
   if (!ans) return { kind: AUTO_KIND, soak: true, root, ok: false, exitCode: 1, reason: 'the soak child printed no result (exit ' + r.status + (r.signal ? ', signal ' + r.signal : '') + (r.error ? ', ' + r.error.message : '') + ')' };
-  return { ...ans, exitCode: Number.isInteger(ans.exitCode) ? ans.exitCode : (ans.ok ? 0 : 1) };
+  const exitCode = Number.isInteger(ans.exitCode) ? ans.exitCode : (ans.ok ? 0 : 1);
+  // Board 15: the record learns the code this CLI exits with, after the child answered (a proof soak is graded by it)
+  if (ans.runId && typeof ans.soakFile === 'string') {
+    const f = path.join(root, ...ans.soakFile.split('/'));
+    const rj = readJsonFile(f);
+    if (rj.ok && rj.j && rj.j.runId === ans.runId) {
+      rj.j.exit = { code: exitCode, by: 'runSoakFromCli (the code bin/brain.mjs exits with)', childStatus: r.status, at: new Date().toISOString() };
+      try { writeFileSync(f + '.tmp', JSON.stringify(rj.j, null, 1)); renameSync(f + '.tmp', f); } catch { /* the record keeps the child's own exit */ }
+    }
+  }
+  return { ...ans, exitCode };
 }
 
 // ================================================================ child processes

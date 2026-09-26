@@ -371,19 +371,59 @@ export function filesNamedIn(text) {
   return filesOfDiff(s.split(/\r?\n/).filter((l) => l.startsWith('--- ') || l.startsWith('+++ ')).join('\n'));
 }
 
+// Board 15 (item brief): the author asks the organism FIRST. ask() (act/prompt.mjs) looks the request
+// up in the author's direct table (budget.table, a memory/direct.mjs DirectTable; else the table
+// self/brief.mjs learns into, state/self/brief/direct.bin, read-only; false turns it off): a hit is
+// an answer the organism already verified, one lookup, provenance "direct", no model call and no
+// budget charge. The model cell runs LAST, provenance "model". Both are recorded: m.asks holds every
+// ask with its provenance and its ns or us, m.calls every model call, the candidate its provenance.
+// An answer that improved the metric is learned into budget.table when budget.learn is true.
+const AUTHOR_TABLE_FILE = path.join(ROOT, 'state', 'self', 'brief', 'direct.bin');
+let authorTableCache;
+async function authorTable(budget) {
+  if (budget.table === false) return null;
+  if (budget.table && typeof budget.table.lookup === 'function') return budget.table;
+  if (authorTableCache !== undefined) return authorTableCache;
+  authorTableCache = null;
+  if (existsSync(AUTHOR_TABLE_FILE)) { try { authorTableCache = (await import('../memory/direct.mjs')).DirectTable.load(AUTHOR_TABLE_FILE); } catch { authorTableCache = null; } }
+  return authorTableCache;
+}
+async function askOrganism(prompt, table) {
+  if (!table) return null;
+  const { ask } = await import('../act/prompt.mjs');
+  const t0 = process.hrtime.bigint();
+  const a = await ask(null, prompt, { provider: 'null', direct: table, knowledge: false, regions: false, spawn: false });
+  const askUs = Math.round(Number(process.hrtime.bigint() - t0) / 10) / 100;
+  if (!a || !a.provenance || a.provenance.answer !== 'direct') return { hit: false, askUs, lookupNs: a && a.direct ? a.direct.lookupNs : null };
+  const t = String(a.text);
+  return { hit: true, text: t.slice(t.indexOf('\n') + 1), askUs, lookupNs: a.provenance.lookupNs ?? null, method: a.provenance.method ?? null };
+}
+
 export async function* author(gap, root, budget = makeBudget()) {
   const m = budget.model || (budget.model = { max: MODEL_CALLS_PER_RUN, used: 0, calls: [] });
+  if (!Array.isArray(m.asks)) m.asks = [];
   const req = buildGapRequest(gap, root);
   if (!req.files.length) { yield { refused: true, operator: 'author', reason: 'the gap names no file the author may write (ceiling or empty files list)' }; return { best: null, reason: 'no allowed file' }; }
+  // 1. the organism first: one direct lookup through ask()
+  const table = await authorTable(budget);
+  const org = await askOrganism(req.prompt, table);
+  m.asks.push({ gap: gap.id || null, provenance: org && org.hit ? 'direct' : null, lookupNs: org ? org.lookupNs : null, askUs: org ? org.askUs : null, method: org && org.hit ? org.method : null, table: !!table });
+  let a, call;
+  if (org && org.hit) {
+    a = { ok: true, text: org.text, ms: 0, model: null };
+    call = { gap: gap.id || null, provenance: 'direct', lookupNs: org.lookupNs, askUs: org.askUs, ms: 0, seconds: 0, ok: true, model: null, reason: null, promptChars: req.prompt.length };
+  } else {
+  // 2. the model cell, last
   if (m.used >= m.max) { yield { refused: true, operator: 'author', reason: 'the budget of ' + m.max + ' model call(s) for this run is spent' }; return { best: null, reason: 'budget spent' }; }
   const ask = typeof budget.author === 'function' ? budget.author : (r) => askModel({ ...r, model: budget.modelName, base: budget.base, wallMs: budget.callWallMs || CALL_WALL_MS });
   // the closed-provider guard runs before the budget is charged and before any socket opens
   const cfg = authorConfig({ model: budget.modelName, base: budget.base });
   if (!cfg.ok && typeof budget.author !== 'function') { yield { refused: true, operator: 'author', reason: cfg.reason }; return { best: null, reason: cfg.reason }; }
   m.used++;
-  const a = await ask({ system: req.system, prompt: req.prompt, gap });
-  const call = { gap: gap.id || null, ms: a.ms ?? null, seconds: a.ms != null ? Math.round(a.ms / 10) / 100 : null, ok: !!a.ok, model: a.model || cfg.model, reason: a.reason || null, promptChars: req.prompt.length };
+  a = await ask({ system: req.system, prompt: req.prompt, gap });
+  call = { gap: gap.id || null, provenance: 'model', ms: a.ms ?? null, seconds: a.ms != null ? Math.round(a.ms / 10) / 100 : null, ok: !!a.ok, model: a.model || cfg.model, reason: a.reason || null, promptChars: req.prompt.length };
   m.calls.push(call);
+  }
   if (!a.ok) { yield { refused: true, operator: 'author', model: call, reason: 'the model cell did not answer: ' + (a.reason || 'no reason') }; return { best: null, reason: 'no answer' }; }
   const named = filesNamedIn(a.text);
   const list = (gap.files || []).map((f) => String(f).replaceAll('\\', '/'));
@@ -393,12 +433,24 @@ export async function* author(gap, root, budget = makeBudget()) {
   if (!d.patch) { yield { refused: true, operator: 'author', model: call, answer: String(a.text).slice(0, 600), reason: 'no usable diff: ' + d.reason }; return { best: null, reason: d.reason }; }
   const vet = vetDiff(d.patch, gap, root);
   if (!vet.ok) { yield { refused: true, operator: 'author', model: call, patch: d.patch, reason: vet.reason }; return { best: null, reason: vet.reason }; }
-  const cand = { refused: false, operator: 'author', name: call.model, file: d.file, patch: d.patch, model: call, ref: null };
+  const cand = { refused: false, operator: 'author', name: call.model || 'organism (direct)', provenance: call.provenance, file: d.file, patch: d.patch, model: call, ref: null };
   const v = yield cand;
-  if (v && v.after !== null && v.after !== undefined && sgn(v.towardRef ?? v.toward, v.noise) > 0) return { best: { ...cand, after: v.after }, reason: null };
+  if (v && v.after !== null && v.after !== undefined && sgn(v.towardRef ?? v.toward, v.noise) > 0) {
+    if (budget.learn === true && table && typeof table.set === 'function' && call.provenance === 'model') {
+      try { const { textKey } = await import('../memory/direct.mjs'); table.set(textKey(req.prompt), { source: 'exact', answer: String(a.text), note: 'verified:author', title: gap.id || null, confidence: 1, item: -1 }); } catch { /* a table that refuses the entry keeps the run */ }
+    }
+    return { best: { ...cand, after: v.after }, reason: null };
+  }
   return { best: null, reason: v && v.reason ? v.reason : 'the model\'s patch did not move the metric toward the bar by more than the noise band' };
 }
 
-export const OPERATORS = Object.freeze({ 'knob-tune': knobTune, 'strategy-swap': strategySwap, recombine, author });
+// Board 15 (item brief): the operator that finishes a board item on a copy, self/brief.mjs. Imported
+// when it runs, not at load (self/brief.mjs imports self/improve.mjs, which imports this file).
+export async function* brief(gap, root, budget = makeBudget()) {
+  const mod = await import('./brief.mjs');
+  return yield* mod.brief(gap, root, budget);
+}
+
+export const OPERATORS = Object.freeze({ 'knob-tune': knobTune, 'strategy-swap': strategySwap, recombine, author, brief });
 export const OPERATOR_NAMES = Object.freeze(Object.keys(OPERATORS));
 export { AUTHOR_MODEL, AUTHOR_BASE };

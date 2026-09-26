@@ -1,15 +1,16 @@
 {
-  "at": "2026-09-25T20:43:31.895Z",
+  "at": "2026-09-25T21:10:14.424Z",
   "command": "node tools/budget.mjs --ram-mb 6000 --disk-mb 2000 --dir state/self -- node --max-old-space-size=6000 bin/brain.mjs self-code --auto --soak 60 --author on --json",
   "node": "v24.15.0",
   "item": "loop",
-  "board": "BOARD 14 AUTONOMY (graded 2026-09-25 by the orchestrator from the record; the builder died on the usage limit)",
+  "board": "BOARD 15 (the soak grades itself; the loop of Board 14)",
   "isTheBar": true,
   "barMet": true,
   "bar": "a 60-minute unattended soak on the real tree with the author on ran its full wall with no crash, made at least 3 attempts on gaps-source candidates, the gate is GREEN after it, and the registered command with --soak 1 --author off exits 0",
+  "notTheBarBecause": null,
   "split": {
-    "development": "test/autopilot.test.mjs on the plant fixture (operators and author mocked, no Ollama)",
-    "heldOut": "the real tree: SOAK 20260924T205054238Z with qwen3:30b-a3b as the author, and the 1-minute proof soak of the registered command"
+    "development": "test/autopilot.test.mjs on planted trees (operators and author mocked through test/operators-plant.mjs and test/autopilot-plant.mjs, no Ollama)",
+    "heldOut": "the real tree: SOAK 20260924T205054238Z with the author on, and the newest 1-minute author-off proof soak on record"
   },
   "soak": {
     "runId": "20260924T205054238Z",
@@ -21,10 +22,13 @@
     ],
     "startedAt": "2026-09-24T20:50:54.238Z",
     "updatedAt": "2026-09-24T21:58:28.658Z",
+    "loopEndedAt": "2026-09-24T21:50:54.251Z",
     "elapsedMs": 4054420,
     "idleMs": 774568,
     "overrunMs": 13,
     "resumes": 0,
+    "status": "done",
+    "failed": null,
     "cfg": {
       "soakMinutes": 60,
       "dry": false,
@@ -44,19 +48,51 @@
       "board10MinMs": 600000,
       "idleStepMs": 30000
     },
-    "exit": 0
+    "exit": 0,
+    "exitFrom": "bench/verdicts/autopilot/soak60-20260924T205054238Z.exit (the process exit)",
+    "returned": 0
   },
   "totals": {
-    "attempts": 43,
+    "attempts": 150,
     "kept": 1,
     "reverted": 0,
-    "refused": 42,
+    "refused": 149,
+    "wouldApply": 0,
     "perSource": {
       "gaps": {
         "attempts": 43,
         "kept": 1,
         "reverted": 0,
-        "refused": 42
+        "refused": 42,
+        "wouldApply": 0
+      },
+      "notes": {
+        "attempts": 80,
+        "kept": 0,
+        "reverted": 0,
+        "refused": 80,
+        "wouldApply": 0
+      },
+      "imagine": {
+        "attempts": 1,
+        "kept": 0,
+        "reverted": 0,
+        "refused": 1,
+        "wouldApply": 0
+      },
+      "census": {
+        "attempts": 23,
+        "kept": 0,
+        "reverted": 0,
+        "refused": 23,
+        "wouldApply": 0
+      },
+      "slow": {
+        "attempts": 3,
+        "kept": 0,
+        "reverted": 0,
+        "refused": 3,
+        "wouldApply": 0
       }
     },
     "perOperator": {
@@ -64,33 +100,45 @@
         "attempts": 12,
         "kept": 0,
         "reverted": 0,
-        "refused": 12
+        "refused": 12,
+        "wouldApply": 0
       },
       "knob-tune": {
         "attempts": 1,
         "kept": 1,
         "reverted": 0,
-        "refused": 0
+        "refused": 0,
+        "wouldApply": 0
       },
       "author": {
         "attempts": 7,
         "kept": 0,
         "reverted": 0,
-        "refused": 7
+        "refused": 7,
+        "wouldApply": 0
       },
       "prune": {
         "attempts": 21,
         "kept": 0,
         "reverted": 0,
-        "refused": 21
+        "refused": 21,
+        "wouldApply": 0
       },
       "recombine": {
         "attempts": 2,
         "kept": 0,
         "reverted": 0,
-        "refused": 2
+        "refused": 2,
+        "wouldApply": 0
       }
-    }
+    },
+    "gapsOnly": {
+      "attempts": 43,
+      "kept": 1,
+      "reverted": 0,
+      "refused": 42
+    },
+    "roundsRun": 10
   },
   "kept": [
     {
@@ -112,14 +160,40 @@
     "answered": 7,
     "cap": 12,
     "meanSeconds": 93.72,
+    "seconds": [
+      99.04,
+      93.57,
+      76.71,
+      85.55,
+      83.59,
+      88.89,
+      86.11,
+      136.3
+    ],
     "model": [
       "qwen3:30b-a3b"
     ]
   },
   "trials": {
-    "run": 14,
-    "meanSeconds": 36.56,
+    "runs": 21,
+    "meanSeconds": 24.37,
     "byKind": {
+      "baseline": {
+        "n": 14,
+        "meanS": 21.65
+      },
+      "trial": {
+        "n": 6,
+        "meanS": 29.86
+      },
+      "confirm": {
+        "n": 1,
+        "meanS": 29.56
+      }
+    },
+    "records": 14,
+    "meanSecondsPerRecord": 36.56,
+    "recordsByKind": {
       "baseline": 7,
       "trial": 6,
       "confirm": 1
@@ -150,20 +224,68 @@
     "hash": "bd48fe0dbf69816844c12db3637a0c919da7329e237892979427112ca0df3df1",
     "ran": "at the end of the soak"
   },
+  "refreshes": [
+    {
+      "at": "2026-09-24T21:18:55.339Z",
+      "why": "kept",
+      "candidate": false,
+      "event": "ledger-refresh",
+      "source": "gaps",
+      "gap": "gate-slow:test/multiply.test.mjs",
+      "closed": false,
+      "measuredBefore": 29111,
+      "measuredAfter": 28924,
+      "bar": 15000,
+      "lines": 153,
+      "ms": 195
+    }
+  ],
+  "deferred": 3,
   "magnitude": "MAGNITUDE organism: 1 kept (1 from gaps, 0 from the Board 10 sources), 1 gap(s) moved, 0.034 bar units toward the bars in 1.126 wall hours = 0.8879 kept/hour, 0.8879 gaps moved/hour, 0.03019 bar units/hour (21.31 kept/day)  |  orchestrator: 11 boards landed and 12 bars met over 8.5139 days = 1.292 boards/day, 1.4095 bars met/day (0.0538 boards/hour), from docs/LOG.md, docs/BOARDS.json, bench/verdicts/*.json",
   "printed": {
     "doneLine": "SOAK 20260924T205054238Z DONE: 67.57 of 60 min (idle 12.9 min, overrun 0.013 s, resumed 0 time(s))",
     "totalLine": "total: attempts 150, kept 1, reverted 0, refused 149; gap rounds that ran a trial or a prune: 10",
+    "gapsLine": "source gaps     attempts 43, kept 1, reverted 0, refused 42",
     "modelLine": "model calls: 8 of at most 12 (7 answered), mean 93.72 s [99.04, 93.57, 76.71, 85.55, 83.59, 88.89, 86.11, 136.3 s]",
+    "trialsLine": "trials: 21 run, mean 24.37 s (baseline 14 at 21.65 s, trial 6 at 29.86 s, confirm 1 at 29.56 s)",
     "peakLine": "peak RSS: soak process 132 MB, largest trial tree 1164.227 MB, largest gate on a copy 1727.789 MB",
     "copiesLine": "copies: made 10, deleted and verified 10, found left between rounds 0, left on disk 0 (temp root 0 MB at the end, removed yes)",
     "gateLine": "gate after: GATE GREEN: test files 89/89, assertions 1141 pass / 0 fail, authored code lines 139127 in 408 files, prose lines 1028756, generated organism lines 10990921 in 321 files, em-dash files 0, bad imports 0, budget GREEN, compress GREEN, his data GREEN, load-bearing GREEN, boundary GREEN (at the end of the soak, exit 0)",
-    "magLine": "MAGNITUDE organism: 1 kept (1 from gaps, 0 from the Board 10 sources), 1 gap(s) moved, 0.034 bar units toward the bars in 1.126 wall hours = 0.8879 kept/hour, 0.8879 gaps moved/hour, 0.03019 bar units/hour (21.31 kept/day)  |  orchestrator: 11 boards landed and 12 bars met over 8.5139 days = 1.292 boards/day, 1.4095 bars met/day (0.0538 boards/hour), from docs/LOG.md, docs/BOARDS.json, bench/verdicts/*.json"
+    "magLine": "MAGNITUDE organism: 1 kept (1 from gaps, 0 from the Board 10 sources), 1 gap(s) moved, 0.034 bar units toward the bars in 1.126 wall hours = 0.8879 kept/hour, 0.8879 gaps moved/hour, 0.03019 bar units/hour (21.31 kept/day)  |  orchestrator: 11 boards landed and 12 bars met over 8.5139 days = 1.292 boards/day, 1.4095 bars met/day (0.0538 boards/hour), from docs/LOG.md, docs/BOARDS.json, bench/verdicts/*.json",
+    "budgetDoneLine": "BUDGET done exit 0: wall 4054.69 s, peak ram 2093.0MB, peak dir 0.5MB, cpu 3093.97 s, 2028 samples, record state/budget/last.json",
+    "sourceLines": [
+      "source gaps     attempts 43, kept 1, reverted 0, refused 42",
+      "source notes    attempts 80, kept 0, reverted 0, refused 80",
+      "source imagine  attempts 1, kept 0, reverted 0, refused 1",
+      "source census   attempts 23, kept 0, reverted 0, refused 23",
+      "source slow     attempts 3, kept 0, reverted 0, refused 3"
+    ],
+    "operatorLines": [
+      "operator none          attempts 12, kept 0, reverted 0, refused 12",
+      "operator knob-tune     attempts 1, kept 1, reverted 0, refused 0",
+      "operator author        attempts 7, kept 0, reverted 0, refused 7",
+      "operator prune         attempts 21, kept 0, reverted 0, refused 21",
+      "operator recombine     attempts 2, kept 0, reverted 0, refused 2"
+    ],
+    "keptLines": [
+      "kept gaps:gate-slow:test/multiply.test.mjs:knob-tune by organism (knob-tune): before 30440 after 29930 ms (bar 15000, noise 160), authored in state/self/authored.jsonl"
+    ],
+    "ledgerLines": [
+      "ledger rebuilt after the keep of gate-slow:test/multiply.test.mjs: still open at 28924"
+    ]
+  },
+  "reproduced": {
+    "lines": 66,
+    "fromRecord": 65,
+    "notInRecord": [
+      "MAGNITUDE organism: 1 kept (1 from gaps, 0 from the Board 10 sources), 1 gap(s) "
+    ]
   },
   "checks": {
     "ranFullWall": {
       "pass": true,
       "elapsedMin": 67.57,
+      "soakMinutes": 60,
       "status": "done",
       "exit": 0,
       "failed": null
@@ -175,25 +297,57 @@
     },
     "gateGreenAfter": {
       "pass": true,
-      "summary": "GATE GREEN: test files 89/89, assertions 1141 pass / 0 fail, authored code lines 139127 in 408 files, prose lines 1028756, generated organism lines 10990921 in 321 files, em-dash files 0, bad imports 0, budget GREEN, compress GREEN, his data GREEN, load-bearing GREEN, boundary GREEN"
+      "summary": "GATE GREEN: test files 89/89, assertions 1141 pass / 0 fail, authored code lines 139127 in 408 files, prose lines 1028756, generated organism lines 10990921 in 321 files, em-dash files 0, bad imports 0, budget GREEN, compress GREEN, his data GREEN, load-bearing GREEN, boundary GREEN",
+      "ran": "at the end of the soak"
     },
     "proofSoakExit0": {
       "pass": true,
       "ran": true,
       "runId": "20260925T203706836Z",
+      "startedAt": "2026-09-25T20:37:06.836Z",
+      "status": "done",
       "exit": 0,
+      "exitFrom": "bench/verdicts/autopilot/soak1-20260925T203706836Z.exit (the process exit)",
       "doneLine": "SOAK 20260925T203706836Z DONE: 1 of 1 min (idle 0.985 min, overrun 0.02 s, resumed 0 time(s))",
       "budgetLine": "BUDGET status 60 s: ram 94.3MB (peak 104.6MB, cap 6000MB), dir 0.6MB (peak 0.6MB, cap 2000MB), cpu 0.73s (cap none), procs 2",
+      "budgetDoneLine": "BUDGET done exit 0: wall 61.76 s, peak ram 104.6MB, peak dir 0.6MB, cpu 0.73 s, 31 samples, record state/budget/last.json",
       "record": "state/self/soak-20260925T203706836Z.json",
       "files": [
         "bench/verdicts/autopilot/soak1-20260925T203706836Z.out",
-        ".err",
-        ".exit"
+        "bench/verdicts/autopilot/soak1-20260925T203706836Z.err",
+        "bench/verdicts/autopilot/soak1-20260925T203706836Z.exit"
       ],
       "command": "node tools/budget.mjs --ram-mb 6000 --disk-mb 2000 --dir state/self -- node --max-old-space-size=6000 bin/brain.mjs self-code --auto --soak 1 --author off --json"
     }
   },
+  "autonomy": {
+    "at": "2026-09-25T21:10:14.397Z",
+    "task": {
+      "name": "BrainAutopilot",
+      "registered": true,
+      "status": "Ready",
+      "nextRun": "9/26/2026 5:00:00 AM",
+      "line": "registered: status Ready, next run 9/26/2026 5:00:00 AM"
+    },
+    "stop": {
+      "path": "state/self/STOP",
+      "present": false
+    },
+    "decisions": {
+      "file": "bench/verdicts/autopilot/2026-09-25.jsonl",
+      "mtime": "2026-09-25T20:37:07.685Z",
+      "ageHours": 0.5519,
+      "lines": 38
+    },
+    "gate": {
+      "file": "bench/verdicts/gate.json",
+      "at": "2026-09-24T23:33:19.370Z",
+      "verdict": "GREEN",
+      "line": "GATE GREEN: test files 89/89, assertions 1141 pass / 0 fail",
+      "logLine": "GATE GREEN: test files 89/89, assertions 1141 pass / 0 fail, authored code lines 139140 in 408 files, prose lines 1028846, generated organism lines 10990921 in 321 files, em-dash files 0, bad imports 0, budget GREEN, compress GREEN, his data GREEN, load-bearing GREEN, boundary GREEN"
+    }
+  },
   "authored": "state/self/authored.jsonl",
-  "writtenBy": "scratchpad/write-soak.mjs (the orchestrator, 2026-09-25); Board 15 item loop makes the soak write this file itself at its end",
-  "statement": "SOAK 20260924T205054238Z: SOAK 20260924T205054238Z DONE: 67.57 of 60 min (idle 12.9 min, overrun 0.013 s, resumed 0 time(s)). total: attempts 150, kept 1, reverted 0, refused 149; gap rounds that ran a trial or a prune: 10. model calls: 8 of at most 12 (7 answered), mean 93.72 s [99.04, 93.57, 76.71, 85.55, 83.59, 88.89, 86.11, 136.3 s]. peak RSS: soak process 132 MB, largest trial tree 1164.227 MB, largest gate on a copy 1727.789 MB. copies: made 10, deleted and verified 10, found left between rounds 0, left on disk 0 (temp root 0 MB at the end, removed yes). gate after: GATE GREEN: test files 89/89, assertions 1141 pass / 0 fail, authored code lines 139127 in 408 files, prose lines 1028756, generated organism lines 10990921 in 321 files, em-dash files 0, bad imports 0, budget GREEN, compress GREEN, his data GREEN, load-bearing GREEN, boundary GREEN (at the end of the soak, exit 0) (exit 0). MAGNITUDE organism: 1 kept (1 from gaps, 0 from the Board 10 sources), 1 gap(s) moved, 0.034 bar units toward the bars in 1.126 wall hours = 0.8879 kept/hour, 0.8879 gaps moved/hour, 0.03019 bar units/hour (21.31 kept/day)  |  orchestrator: 11 boards landed and 12 bars met over 8.5139 days = 1.292 boards/day, 1.4095 bars met/day (0.0538 boards/hour), from docs/LOG.md, docs/BOARDS.json, bench/verdicts/*.json. Proof soak of the registered command (--soak 1 --author off): exit 0, SOAK 20260925T203706836Z DONE: 1 of 1 min (idle 0.985 min, overrun 0.02 s, resumed 0 time(s)), BUDGET status 60 s: ram 94.3MB (peak 104.6MB, cap 6000MB), dir 0.6MB (peak 0.6MB, cap 2000MB), cpu 0.73s (cap none), procs 2. Bar MET: ranFullWall pass, gapsAttempts pass, gateGreenAfter pass, proofSoakExit0 pass."
+  "writtenBy": "node bench/autopilot.mjs --grade-soak 20260924T205054238Z (self/autopilot.mjs gradeSoak, the grader every soak now runs on itself at its end; from the record and the copied transcript)",
+  "statement": "SOAK 20260924T205054238Z (state/self/soak-20260924T205054238Z.json, transcript bench/verdicts/autopilot/soak60-20260924T205054238Z.out, bench/verdicts/autopilot/soak60-20260924T205054238Z.err, bench/verdicts/autopilot/soak60-20260924T205054238Z.exit): SOAK 20260924T205054238Z DONE: 67.57 of 60 min (idle 12.9 min, overrun 0.013 s, resumed 0 time(s)). total: attempts 150, kept 1, reverted 0, refused 149; gap rounds that ran a trial or a prune: 10. source gaps     attempts 43, kept 1, reverted 0, refused 42. model calls: 8 of at most 12 (7 answered), mean 93.72 s [99.04, 93.57, 76.71, 85.55, 83.59, 88.89, 86.11, 136.3 s]. gate after: GATE GREEN: test files 89/89, assertions 1141 pass / 0 fail, authored code lines 139127 in 408 files, prose lines 1028756, generated organism lines 10990921 in 321 files, em-dash files 0, bad imports 0, budget GREEN, compress GREEN, his data GREEN, load-bearing GREEN, boundary GREEN (at the end of the soak, exit 0). MAGNITUDE organism: 1 kept (1 from gaps, 0 from the Board 10 sources), 1 gap(s) moved, 0.034 bar units toward the bars in 1.126 wall hours = 0.8879 kept/hour, 0.8879 gaps moved/hour, 0.03019 bar units/hour (21.31 kept/day)  |  orchestrator: 11 boards landed and 12 bars met over 8.5139 days = 1.292 boards/day, 1.4095 bars met/day (0.0538 boards/hour), from docs/LOG.md, docs/BOARDS.json, bench/verdicts/*.json. Exit 0 from bench/verdicts/autopilot/soak60-20260924T205054238Z.exit (the process exit); BUDGET done exit 0: wall 4054.69 s, peak ram 2093.0MB, peak dir 0.5MB, cpu 3093.97 s, 2028 samples, record state/budget/last.json. Proof soak of the registered command (--soak 1 --author off): 20260925T203706836Z exit 0 from bench/verdicts/autopilot/soak1-20260925T203706836Z.exit (the process exit), SOAK 20260925T203706836Z DONE: 1 of 1 min (idle 0.985 min, overrun 0.02 s, resumed 0 time(s)). Bar MET: ranFullWall pass, gapsAttempts pass, gateGreenAfter pass, proofSoakExit0 pass. The record reproduces 65 of 66 printed end lines (not in it: MAGNITUDE)."
 }

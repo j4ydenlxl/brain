@@ -77,6 +77,7 @@ import { askBySpawn } from './spawn.mjs'; // a question grows the cells that ans
 // The two reasoning regions (Board 11, item public). Importing them opens nothing: solveMath and
 // synthesize are functions, and a model call or a sandbox worker exists only inside a call.
 import { solveMath } from '../reason/math.mjs';
+import { solvedFor } from '../reason/solved.mjs'; // Board 15 item ns (board 15 builder): the solved region, right after direct
 import { synthesize, entryOf as codeEntryOf, docLines as codeDocLines } from '../reason/synth.mjs';
 
 /** The ledger event one ask writes. It carries a HASH of the prompt and never the prompt. */
@@ -718,6 +719,56 @@ function answerFromDirect(brain, text, d, started) {
   return answer;
 }
 
+const NOT_ASKED_SOLVED = 'not asked: a solved template answered';
+
+// The answer object of a solved hit (Board 15, item ns; author: board 15 builder), in the shape
+// answerFromDirect returns: one line that says which template answered, how it matched (the same
+// question, or the same question with other numbers), which runner ran it and how long the match
+// took, then the answer on the last line. No recall, no model, no network.
+function answerFromSolved(brain, text, m, ns, started) {
+  const t = m.template;
+  const hash = promptHash(text);
+  const how = m.via === 'text' ? 'the same question' : 'the same question with other numbers';
+  const head = 'answered by a solved template (' + how + '; ' + m.run + ' program ' + t.id + ', ' + ns + ' ns), with no model and no network.';
+  const solved = { id: t.id, via: m.via, run: m.run, templates: m.templates, source: t.source ?? null, ns };
+  const answer = {
+    ok: true,
+    promptHash: hash,
+    promptChars: text.length,
+    from: 'solved',
+    text: head + '\n' + m.answer,
+    memory: null,
+    exact: null,
+    solved: { ...solved, values: m.values },
+    cites: [],
+    redacted: 0,
+    redactedShapes: [],
+    provenance: {
+      answer: 'solved', tier: 'solved', method: null, modelAgreed: null, memoryHits: 0, webPages: 0, solved,
+      llm: { provider: null, model: null, ms: 0, tokens: 0, ok: false, reason: NOT_ASKED_SOLVED, fellBack: null, probed: null },
+    },
+    words: [],
+    ms: Date.now() - started,
+    route: 'solved',
+    ticks: 0,
+    hops: [],
+  };
+  answer.seq = logEvent(brain, {
+    type: ASK_EVENT, by: SURFACE, route: 'solved', promptHash: hash, promptChars: text.length, from: 'solved',
+    provenance: 'solved', tier: 'solved', solvedNs: ns, via: m.via, run: m.run, template: t.id, method: null, modelAgreed: null,
+    memoryHits: 0, webPages: 0, redacted: 0, provider: null, model: null, llmMs: 0, llmOk: false, ms: answer.ms,
+  });
+  return answer;
+}
+
+// A math region answer the solved memory may keep as a template: only when the memory learns
+// (opts.learnSolved, or a memory made with learn: true), and never at the cost of the answer.
+async function learnSolved(mem, text, viaRegion, opts) {
+  if (!mem || !(opts.learnSolved === true || mem.learn === true) || typeof mem.learnFrom !== 'function') return;
+  if (!viaRegion.region || !viaRegion.region.reached) return;
+  try { await mem.learnFrom(text, viaRegion.region, { model: opts.model ?? null }); } catch { /* the answer stands */ }
+}
+
 const r4 = (x) => Math.round(x * 1e4) / 1e4;
 
 /**
@@ -1094,13 +1145,14 @@ async function askModel(prompt, system, opts) {
 export const PROVENANCE = Object.freeze(['exact', 'memory', 'model']);
 /**
  * Every provenance.answer ask() writes since Board 11 (item native), in the order it tries them:
- * a direct hit, the exact path, memory, a region's answer the organism's own run decided (item
- * public: a vote over programs it executed, or a candidate that passed the prompt's examples), the
- * model shown memory's facts below the floor, the model.
+ * a direct hit, a solved template (Board 15, item ns: a verified program of the math region bound
+ * to the question's numbers), the exact path, memory, a region's answer the organism's own run
+ * decided (item public: a vote over programs it executed, or a candidate that passed the prompt's
+ * examples), the model shown memory's facts below the floor, the model.
  * PROVENANCE above is left as it was because bench/ladder.mjs and its test read it as the board's
  * statement of what the organism recorded before this item.
  */
-export const ANSWER_PROVENANCE = Object.freeze(['direct', 'exact', 'memory', 'model+exact', 'model+memory', 'model']);
+export const ANSWER_PROVENANCE = Object.freeze(['direct', 'solved', 'exact', 'memory', 'model+exact', 'model+memory', 'model']);
 
 // The running count of times a model was asked BESIDE an exact answer and landed somewhere
 // else. It is a counter and not a veto: the exact answer is the answer either way, and this
@@ -1178,6 +1230,9 @@ async function askViaRegion(brain, prompt, opts) {
  *              (a replacement region, a test's), or options over REGIONS (math: k, verify, seed,
  *              programMs, verifyMaxTokens; code: k, repair, repairK, candidateMs, seed, budgetMs)
  *   cell       a model cell function both regions call instead of act/llm.mjs (a test's mock)
+ *   solved     the solved region (reason/solved.mjs): a SolvedMemory, true for the default one
+ *              (state/self/ns-templates.jsonl), false or absent for none (BRAIN_SOLVED=1: default)
+ *   learnSolved  true: a math region answer the memory verifies becomes a template
  * @returns {Promise<object>} the answer, with provenance
  */
 export async function ask(brain, prompt, opts = {}) {
@@ -1186,6 +1241,15 @@ export async function ask(brain, prompt, opts = {}) {
   const text0 = String(prompt ?? '');
   const hit = opts.direct === false ? null : directAnswer(text0, opts);
   if (hit) return answerFromDirect(brain, text0, hit, started0);
+  // The solved region (Board 15, item ns; board 15 builder), right after direct: a verified program
+  // bound to this question's numbers, no model. Off unless opts.solved or BRAIN_SOLVED=1 (solvedFor).
+  const mem = solvedFor(opts);
+  if (mem) {
+    const t0 = process.hrtime.bigint();
+    let m = mem.match(text0);
+    if (m.pending) m = await mem.resolve(m);
+    if (m.hit) return answerFromSolved(brain, text0, m, Number(process.hrtime.bigint() - t0), started0);
+  }
   const viaSpawn = askBySpawn(brain, prompt, opts); if (viaSpawn) return viaSpawn;
   const route = routeFor(brain, opts);
   const started = Date.now();
@@ -1209,7 +1273,10 @@ export async function ask(brain, prompt, opts = {}) {
     if (solved === undefined) solved = solve(text);
     if (!solved) {
       const viaRegion = await askByRegion(brain, text, region, opts, started);
-      if (viaRegion) return viaRegion;
+      if (viaRegion) {
+        if (region === 'math') await learnSolved(mem, text, viaRegion, opts);
+        return viaRegion;
+      }
     }
   }
   if (route === 'region') {

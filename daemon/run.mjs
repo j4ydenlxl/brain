@@ -85,6 +85,22 @@ export const DEFAULTS = Object.freeze({
   selfCodeSoak: 0,
 });
 
+/**
+ * The options the self-code step hands runFromCli (pure, so a test reads them without a daemon).
+ * Board 14: the author is on when the step is wet (the model may author, never grade), and a soak of
+ * selfCodeSoak minutes runs when it is above 0. Board 15: that soak grades itself at its end
+ * (bench/verdicts/soak.json at 60 min or more with the author on, soak-partial.json otherwise).
+ */
+export function selfCodeCliOpts(opts = {}, { dry = false } = {}) {
+  const cliOpts = { dry, max: opts.selfCodeMax ?? DEFAULTS.selfCodeMax, rerun: opts.selfCodeRerun === true };
+  if (opts.selfCodeSources) cliOpts.sources = [].concat(opts.selfCodeSources).join(',');
+  if (opts.selfCodeAuthor !== undefined) cliOpts.author = opts.selfCodeAuthor;
+  else if (!dry) cliOpts.author = 'on';
+  const soakMin = Number(opts.selfCodeSoak ?? DEFAULTS.selfCodeSoak);
+  if (Number.isFinite(soakMin) && soakMin > 0) cliOpts.soak = soakMin;
+  return cliOpts;
+}
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const jsonSafe = (v) => JSON.parse(JSON.stringify(v, (k, x) => (typeof x === 'bigint' ? String(x) : x instanceof Map ? Object.fromEntries(x) : x instanceof Set ? [...x] : ArrayBuffer.isView(x) ? Array.from(x) : x)));
 const askCountOf = (brain) => { const c = brain.ledger && brain.ledger.counts; return c && typeof c.get === 'function' ? (c.get('act.ask') || 0) : 0; };
@@ -736,13 +752,7 @@ export async function live(opts = {}) {
     if (selfCodeBusy) { loop.busy['self-code']++; return; }
     selfCodeBusy = true;
     const c0 = performance.now(), at = brain.clock.t;
-    const cliOpts = { dry: sc.dry, max: opts.selfCodeMax ?? DEFAULTS.selfCodeMax, rerun: opts.selfCodeRerun === true };
-    if (opts.selfCodeSources) cliOpts.sources = [].concat(opts.selfCodeSources).join(',');
-    // Board 14: the author is on by default when the step is wet (the model may author, never grade)
-    if (opts.selfCodeAuthor !== undefined) cliOpts.author = opts.selfCodeAuthor;
-    else if (!sc.dry) cliOpts.author = 'on';
-    const soakMin = Number(opts.selfCodeSoak ?? DEFAULTS.selfCodeSoak);
-    if (Number.isFinite(soakMin) && soakMin > 0) cliOpts.soak = soakMin;
+    const cliOpts = selfCodeCliOpts(opts, { dry: sc.dry });
     let settled = false;
     const w = new Worker(SELF_CODE_WORKER, { eval: true, workerData: { url: pathToFileURL(path.join(BRAIN_ROOT, 'self', 'autopilot.mjs')).href, opts: cliOpts }, resourceLimits: { maxOldGenerationSizeMb: opts.selfCodeHeapMb ?? DEFAULTS.selfCodeHeapMb } });
     selfCodeWorker = w;
@@ -752,9 +762,10 @@ export async function live(opts = {}) {
       const res = m && m.ok ? m.result : null;
       sc.last = { t: at, ok: !!res, result: res, error: m && !m.ok ? firstLine(m.error) : null };
       if (!res) sc.errors.push(sc.last.error);
-      const soakOf = res && res.soak ? { runId: res.runId || null, status: res.status || null, attempts: res.attempts || null, stopped: !!res.stopped } : null;
+      // Board 15: the soak's own verdict (the file it wrote at its end) rides in the step record
+      const soakOf = res && res.soak ? { runId: res.runId || null, status: res.status || null, attempts: res.attempts || null, stopped: !!res.stopped, verdict: res.verdict ? { file: res.verdict.file ?? null, isTheBar: res.verdict.isTheBar ?? null, barMet: res.verdict.barMet ?? null } : null } : null;
       stepDone('self-code', performance.now() - c0, { from: at, dry: sc.dry, ok: res ? res.ok : false, reason: res ? res.reason : sc.last.error, candidates: res ? res.candidates ?? null : null, counts: res ? res.counts ?? null : null, soak: soakOf });
-      say('[self-code] ' + (res ? (sc.dry ? 'dry ' : '') + (soakOf ? 'soak from t=' + at + ': ' + (soakOf.stopped ? 'stopped by state/self/STOP' : soakOf.status + ', ' + JSON.stringify(soakOf.attempts)) : 'run from t=' + at + ': ' + res.candidates + ' candidates, ' + JSON.stringify(res.counts)) : 'failed from t=' + at + ': ' + sc.last.error));
+      say('[self-code] ' + (res ? (sc.dry ? 'dry ' : '') + (soakOf ? 'soak from t=' + at + ': ' + (soakOf.stopped ? 'stopped by state/self/STOP' : soakOf.status + ', ' + JSON.stringify(soakOf.attempts) + (soakOf.verdict && soakOf.verdict.file ? ', verdict ' + soakOf.verdict.file + ' barMet ' + soakOf.verdict.barMet : '')) : 'run from t=' + at + ': ' + res.candidates + ' candidates, ' + JSON.stringify(res.counts)) : 'failed from t=' + at + ': ' + sc.last.error));
     };
     w.on('message', (m) => { done(m); w.terminate().catch(() => {}); });
     w.on('error', (e) => done({ ok: false, error: String(e && e.message || e) }));

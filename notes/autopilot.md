@@ -69,6 +69,42 @@ Every child the bench starts declares a heap: 2048 MB for the CLI runs, 1024 MB 
 
 One such step ran on the real tree at 2026-09-24T02:24:16Z (run 20260924T022416440Z). It wrote 22 decisions to bench/verdicts/autopilot/2026-09-24.jsonl: 20 refused at the evidence wall (notes/act.md lines that name no test) and 2 refused as stale (notes/autopilot.md lines whose test/autopilot.test.mjs passed, 21 of 21 then), about 15 s apart, one test run each. It asked no model and wrote no source file. The worker was ended before it finished and left state/self-code/autopilot.lock holding pid 5904, which is dead, so the next run takes the lock over. The test memo came from that ledger: both stale lines ran the same test.
 
+## Boards 14 and 15: the soak grades itself
+
+His order (2026-09-25): "Needs to be fronteir level in microseconds. And self improving. Without your build. THAT HAS TO BE ESTABLISHED NOW." The Board 14 soak (SOAK 20260924T205054238Z) was graded by the orchestrator from its transcript, because its builder died on the usage limit. From Board 15 on, a soak writes its own verdict when it ends, so the 05:00 BrainAutopilot run leaves a graded file with nobody reading it.
+
+The Board 14 loop spec (docs/boards/board-14.js, key loop), part by part, checked on 2026-09-25 against the code and the tests:
+
+- (a) the gaps source. Already landed: every line of state/self/gaps.jsonl with a trial, ordered by distance to the bar over trial minutes; the ledger is rebuilt at the start when older than 24 h; a dead-share gap goes to self/prune.mjs (refused at the ceiling on the real tree, because the prune writes under organism/, unless --allow-organism). Tested by "a gap candidate flows from the ledger to the decision line". Fixed: nothing. Added: nothing.
+- (b) the walls. Already landed: ceiling, patch (an operator of self/operators.mjs), evidence (self/improve.mjs on a copy), gate (the real gate on the tree, RED reverts byte for byte), record (operator, before, after, noise on the decision line; a keep appends "organism (<operator>)" from "gaps:<id>" to state/self/authored.jsonl). Tested by the flow and the authorship tests. Fixed: nothing. Added: nothing.
+- (c) the budgets. Already landed: --soak, --model-calls (12 per hour of soak), --trial-minutes (10), at most 2 copies alive (SOAK_MAX_COPIES), each deleted and the deletion verified; state/self/STOP refuses with exit 0; a live bench flag refuses; --resume. Tested by the STOP, --resume and ends-at-its-minute tests. Fixed: nothing. Added: nothing.
+- (d) the daemon and /health. Already landed: the self-code step of daemon/run.mjs passes selfCodeSoak, turns the author on when wet and refuses while STOP exists; daemon/health.mjs gapCounters prints gaps {open, withTrial, attempted, kept, closed} (`node daemon/health.mjs --gaps`). Neither had a test. Added: selfCodeCliOpts, a pure export the step now calls, and the step's record carries the soak's verdict (file, isTheBar, barMet); one test reads both, and gapCounters over a planted soak gives 0 open, 1 attempted, 1 kept, 1 closed.
+- (e) the ledger rebuilt after every keep, a gap that left it printed CLOSED. Already landed and tested. Fixed: nothing. Added: nothing.
+- The bar. Graded by the orchestrator (scratchpad/write-soak.mjs). Added in Board 15: the grader below, and that file rewritten from the same record by it.
+
+What Board 15 added:
+
+- At its end runSoak writes its end lines, its MAGNITUDE and its exit code into its record (state/self/soak-<runId>.json), then grades itself (gradeSoak) and writes bench/verdicts/soak.json when the soak is the bar (60 min or more, the author on, not dry), else bench/verdicts/soak-partial.json (isTheBar false). It prints `VERDICT <file>: isTheBar X, barMet Y (...)`. runSoakFromCli then writes the code bin/brain.mjs exits with into the record.
+- The four checks: ranFullWall (status done, no crash, elapsed at least the soak's minutes, exit 0), gapsAttempts (3 or more), gateGreenAfter (exit 0 and a GATE GREEN line), proofSoakExit0 (the newest 1-minute author-off soak on record; a copied .exit file, the process's own code, wins over the record).
+- On the real tree the bar is never under 60 minutes; a lower bar is taken only on a planted tree (the tests and bench stage 7).
+- A bar file that holds another soak, or another writer's grade of the same soak, is appended whole to bench/verdicts/soak-history.jsonl before it is replaced.
+- Every verdict carries the autonomy facts read at its end: the BrainAutopilot task (schtasks, on the real tree only), STOP, the newest decision file and its age, the last gate (gate.json and the last GATE line of docs/LOG.md).
+- `node bench/autopilot.mjs --grade-soak <runId|latest>` grades a finished soak from its record and its copied transcript (bench/verdicts/autopilot/*<runId>.out, .err, .exit). No bench runs and no soak starts.
+- `node bench/autopilot.mjs --model off` skips the one model call of stage 4b and writes bench/verdicts/autopilot-partial.json (isTheBar false); stage 7, four checks on the grader, runs either way.
+
+Printed on 2026-09-25:
+
+- `node bench/autopilot.mjs --grade-soak 20260924T205054238Z` (through the budget wrapper): "GRADE-SOAK 20260924T205054238Z: isTheBar true, barMet true; wrote bench/verdicts/soak.json, the file it replaced appended to bench/verdicts/soak-history.jsonl", "checks: ranFullWall pass, gapsAttempts pass, gateGreenAfter pass, proofSoakExit0 pass", "baseline kept: 112 of 112 numbers and lines of the replaced bench/verdicts/soak.json", "reproduced from the record: 65 of 66 printed end lines" (the one not in the record is MAGNITUDE: that soak predates the record keeping it).
+- AUTONOMY from the same run: task BrainAutopilot registered true, status Ready, next run 9/26/2026 5:00:00 AM; STOP absent; newest decision file bench/verdicts/autopilot/2026-09-25.jsonl (38 lines, age 0.3256 h); gate.json GATE GREEN: test files 89/89, assertions 1141 pass / 0 fail (at 2026-09-24T23:33:19.370Z).
+- `node --test test/autopilot.test.mjs`: tests 34, pass 34, fail 0, duration_ms 43608.3903 (the 28 before plus 6 for Board 15). `node --test test/daemon.test.mjs`: 6 of 6.
+- `node bench/autopilot.mjs --model off`: "AUTOPILOT PARTIAL: 29/30 checks (1 skipped: --model off)", 49686 ms, exit 0; stage 7: the planted bar-grade soak wrote soak.json barMet true (gap attempts 6, "GATE GREEN: fixture gate", proof exit 0, model calls 0), its control barMet false with 1 history line, the real soak regrades barMet true and agrees with soak.json.
+
+The next bar-length soak, one command; it writes bench/verdicts/soak.json itself:
+
+`node tools/budget.mjs --ram-mb 6000 --disk-mb 2000 --dir state/self -- node --max-old-space-size=6000 bin/brain.mjs self-code --auto --soak 60 --author on --json`
+
+The registered 05:00 tick runs `--soak 90 --author on`, which is bar length, so its soak grades itself into the same file.
+
 ## Schedule
 
 `tools/schedule-autopilot.mjs` makes the loop daily, the way tools/schedule-ladder.mjs made the ladder. With no flag it prints the schtasks line and registers nothing:
@@ -105,9 +141,9 @@ Tests: `node --test test/schedule-autopilot.test.mjs test/authorship.test.mjs` 1
 ## Open
 
 - The real tree's census is pinned: every prune there is refused at the patch wall, because the seed is re-emitted whole by genome/emit.mjs --prune and the autopilot does not author that call. A census source that runs the emitter on a copy, then gates the re-emitted seed, is the next wall.
-- No live run on the real tree has finished with the model author on. The one daemon step that started was ended after 22 decisions and asked no model. The notes and slow candidates there are refused in `--dry` only because the author is off; each one live costs a model call (26778 ms and 52661 ms on the planted file) and a verification copy of about 1.1G.
-- The 2 imagine patches on the real tree are stale: test/grid.test.mjs already passes, so they are refused before any copy.
-- bin/brain.mjs does not list no-author among its boolean flags, so `--no-author` can swallow the next word; use `--author off`.
-- docs/BOARDS.json lists boards 8 and 9 only, so Board 10's files are not yet in the share's denominator.
+- The model author on the real tree: the 60-minute soak asked qwen3:30b-a3b 8 times (7 answered, mean 93.72 s) and none of its patches was kept; the one keep of that soak was knob-tune on test/multiply.test.mjs (30440 to 29930 ms against a bar of 15000).
+- The imagine patches on the real tree were stale when last read (test/grid.test.mjs already passes), so they are refused before any copy; stage 3 on 2026-09-25 read imagine 1.
 - A weakened source (not test) change that keeps every test green is kept. The gate is only as strong as the suite; the mutant bench is what measures that.
-- Not scheduled. Registering it after the 04:00 BrainLadder task is the step that makes it daily.
+- The proof check reads the newest 1-minute author-off soak on record (20260925T203706836Z on 2026-09-25). Nothing re-runs it daily, so that proof ages while each day's soak cites it.
+- A soak's own verdict is written before its process exits, from the code runSoak returns (the verdict names that source). The 05:00 tick logs to bench/verdicts/autopilot/<date>.log, not to <anything><runId>.exit, so a regrade of a tick soak also has no process exit file to read.
+- A --model off run of the bench is never the bar. The last bench run with the model asked is the Board 14 one in bench/verdicts/autopilot.json (26 of 26, 2026-09-24T20:40:41.877Z).

@@ -36,6 +36,15 @@
 // THE FILE: state/self/gaps.jsonl is rewritten whole by every run. The file it replaces is kept as
 // gaps-<its date>.jsonl, and at most 7 dated files are kept (the newest by date).
 //
+// BOARD ITEMS (board 15 builder): (g) every undone item of every docs/boards/board-N.js and
+// docs/boards/proposed/*.md, read by self/boards.mjs without running the script, is one line of
+// kind "board item" {id: board-N:key, board, key, owns, brief (the whole task text), verdictFile,
+// bar (the BAR sentence), trial (the bar command string, or null), needsModel, minutes: 60, files}.
+// They are merged by the WRITER, never by buildLedger: writeLedger drops the board-item lines it is
+// handed and appends a fresh scan, so every writer of the ledger carries them, while buildLedger's
+// lines (the ones bench/gaps.mjs runs as bounded trials) never do: a board item's trial is a whole
+// bar run, sized for the brief operator, not a 10-minute trial.
+//
 //   node self/gaps.mjs           build and write the ledger, print the counts
 //   node self/gaps.mjs --dry     build it, write nothing, print the counts as one JSON line
 //   node self/gaps.mjs --json    build and write it, and print every line
@@ -43,6 +52,7 @@ import { readdirSync, readFileSync, statSync, existsSync, writeFileSync, renameS
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { boardItemLines, BOARD_ITEM_KIND } from './boards.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(HERE, '..');
@@ -52,7 +62,7 @@ export const KEEP_DATED = 7;
 export const DATED_RE = /^gaps-(\d{4}-\d{2}-\d{2})\.jsonl$/;
 /** The gate's slow line: a test file at this many ms or more is a gap (self/autopilot.mjs SLOW_MS). */
 export const GATE_SLOW_MS = 15_000;
-export const KINDS = Object.freeze(['missed', 'unreadable bar', 'bar never completed', 'ladder', 'gate red', 'gate slow', 'open', 'dead share']);
+export const KINDS = Object.freeze(['missed', 'unreadable bar', 'bar never completed', 'ladder', 'gate red', 'gate slow', 'open', 'dead share', BOARD_ITEM_KIND]);
 /** The kinds whose every gap must carry a trial for bench/gaps.mjs to meet its bar. */
 export const REQUIRED_KINDS = Object.freeze(['missed', 'ladder', 'gate red', 'gate slow']);
 export const HEAP = '--max-old-space-size=6000';
@@ -674,7 +684,16 @@ const dateOf = (ms) => new Date(ms).toISOString().slice(0, 10);
  * Rewrite state/self/gaps.jsonl whole. The file it replaces becomes gaps-<its date>.jsonl (a
  * second run on one day replaces that day's file); dated files past the newest `keep` are removed.
  */
-export function writeLedger(lines, { root = ROOT, keep = KEEP_DATED } = {}) {
+export function writeLedger(lines, { root = ROOT, keep = KEEP_DATED, boards = true } = {}) {
+  // The board-item kind (board 15 builder): the board-item lines handed in are replaced by a fresh
+  // scan of docs/boards under this root; a scan that throws keeps the handed-in ones and says why.
+  let boardItems = null;
+  if (boards) {
+    const b = boardItemGaps({ root });
+    const handed = lines.filter((l) => l && l.kind === BOARD_ITEM_KIND);
+    boardItems = b.error ? { lines: handed.length, error: b.error, kept: true } : { lines: b.lines.length, error: null, kept: false, boards: b.report.boards, parseErrors: b.report.errors };
+    lines = [...lines.filter((l) => !(l && l.kind === BOARD_ITEM_KIND)), ...(b.error ? handed : b.lines)];
+  }
   const file = path.join(root, LEDGER_REL);
   const dir = path.dirname(file);
   mkdirSync(dir, { recursive: true });
@@ -689,7 +708,26 @@ export function writeLedger(lines, { root = ROOT, keep = KEEP_DATED } = {}) {
   const dated = readdirSync(dir).filter((n) => DATED_RE.test(n)).sort().reverse();
   const removed = [];
   for (const n of dated.slice(keep)) { rmSync(path.join(dir, n), { force: true }); removed.push(n); }
-  return { file: relOf(root, file), lines: lines.length, previous, kept: dated.slice(0, keep).sort(), removed };
+  return { file: relOf(root, file), lines: lines.length, previous, kept: dated.slice(0, keep).sort(), removed, boardItems };
+}
+
+/**
+ * The board-item lines of this root (self/boards.mjs): one per undone item of every board, smallest
+ * owned set first. Never throws: a failure comes back as error with no lines.
+ */
+export function boardItemGaps({ root = ROOT } = {}) {
+  try {
+    const { lines, scan } = boardItemLines({ root });
+    return { lines, error: null, report: { boards: scan.totals.boards, items: scan.totals.items, done: scan.totals.done, undone: scan.totals.undone, errors: scan.errors } };
+  } catch (e) {
+    return { lines: [], error: 'self/boards.mjs threw: ' + String((e && e.message) || e).split('\n')[0], report: null };
+  }
+}
+
+/** Rewrite the ledger with the board items refreshed and every other line kept as it is on disk. */
+export function writeBoardItems({ root = ROOT, keep = KEEP_DATED } = {}) {
+  const { lines, bad } = readLedger(root);
+  return { ...writeLedger(lines, { root, keep }), unreadableLinesDropped: bad };
 }
 
 /** The ledger on disk, one object per line (an unreadable line is skipped and counted). */
@@ -714,5 +752,6 @@ if (isMain) {
     process.stdout.write('gaps ' + s.total + ': ' + KINDS.map((k) => k + ' ' + s.byKind[k]).join(', ') + '\n');
     process.stdout.write('with a trial ' + s.withTrial + ', without ' + s.withoutTrial + '; required kinds without a trial: ' + (s.requiredWithoutTrial.join(', ') || 'none') + '\n');
     process.stdout.write('wrote ' + w.file + (w.previous ? ' (the previous file kept as ' + w.previous + ')' : '') + (w.removed.length ? '; removed ' + w.removed.join(', ') : '') + '\n');
+    if (w.boardItems) process.stdout.write('board items ' + w.boardItems.lines + ' appended by the writer (self/boards.mjs)' + (w.boardItems.error ? ': the scan failed, the previous board-item lines kept: ' + w.boardItems.error : '') + '\n');
   }
 }

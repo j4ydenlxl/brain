@@ -99,6 +99,7 @@ export const SECRET_PATTERNS = Object.freeze([
 // test/act-*.test.mjs). Allowed by EXACT value only, and counted.
 export const PLANTED = Object.freeze([
   P('s', 'k-live-', 'A'.repeat(16)),
+  P('s', 'k_live_', 'ABCDEF1234567890'), // test/handoff.test.mjs: the redaction fixture (Board 15 handoff)
   P('s', 'k-fixture-', '0123456789-never-leaves'),
   P('s', 'k-test-', 'value-that-must-never-be-logged'),
 ]);

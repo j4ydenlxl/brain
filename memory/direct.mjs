@@ -438,3 +438,141 @@ export function tableFromColumns(cols, o = {}) {
   }
   return t;
 }
+
+// ------------------------------------------------------------------ the solved-template table
+// THE SOLVED TABLE (Board 15, item ns; author: board 15 builder). Beside the direct table, which
+// answers a question it has seen with a stored answer, this table indexes the templates of the
+// solved-program memory (reason/solved.mjs): a question with its numbers abstracted to slots, the
+// program the math region wrote for it with the same slots, and the verification it passed. A
+// question reaches a template by one of two keys:
+//   text  the normalised question, numbers as they were: the same question again
+//   form  the slot form, every number a slot: the same question with other numbers
+// A key is three 32 bit hashes (96 bits) that reason/solved.mjs keyHash computes in ONE pass over
+// the question as it arrives (whitespace collapsed, lower cased and the ALONE_PROMPT instruction
+// dropped on the fly, no string built), seeded by the kind, so a text key and a form key never
+// share a slot by construction. Two hashes place the key and the third verifies it, so a hit is
+// three integer compares; a false hit needs two different questions to agree on all 96 bits.
+// One key may hold several templates (two programs for one form); they are chained in the order
+// they were added, and reason/solved.mjs runs every one. The lookup allocates nothing.
+/** What a key of the solved table names. */
+export const SOLVED_KEYS = Object.freeze(['text', 'form']);
+
+export class SolvedTable {
+  /** @param {object} [opts] { capacity: keys expected } */
+  constructor(opts = {}) {
+    const want = Math.max(8, Math.floor(Number(opts.capacity) || 256));
+    this._alloc(pow2AtLeast(Math.ceil(want / MAX_LOAD)));
+    this.nk = 0;
+    this.keys = [];
+    this.kind = new Uint8Array(want);
+    this.khead = new Int32Array(want).fill(-1);
+    this.ktail = new Int32Array(want).fill(-1);
+    this.n = 0;
+    this.tpl = new Int32Array(want);
+    this.next = new Int32Array(want).fill(-1);
+    this.stats = { keys: 0, entries: 0, duplicates: 0, placeCollisions: 0, grows: 0 };
+  }
+
+  _alloc(cap) {
+    this.cap = cap;
+    this.mask = cap - 1;
+    this.kh = new Uint32Array(cap);
+    this.kl = new Uint32Array(cap);
+    this.kv = new Uint32Array(cap);
+    this.ref = new Int32Array(cap).fill(-1);
+  }
+
+  /** The home slot of a key's two placing hashes (the direct table's own mix). */
+  home(hi, lo) { return (lo ^ Math.imul(hi, 0x9e3779b1)) & this.mask; }
+
+  /**
+   * THE lookup: the key id of (hi, lo, v), or -1. Three integer compares per probe, no allocation.
+   * @param {number} hi @param {number} lo @param {number} v
+   * @returns {number}
+   */
+  lookup(hi, lo, v) {
+    const kh = this.kh, kl = this.kl, kv = this.kv, ref = this.ref, mask = this.mask;
+    let slot = (lo ^ Math.imul(hi, 0x9e3779b1)) & mask;
+    for (;;) {
+      const r = ref[slot];
+      if (r < 0) return -1;
+      if (kl[slot] === lo && kh[slot] === hi && kv[slot] === v) return r;
+      slot = (slot + 1) & mask;
+    }
+  }
+
+  /** The first entry of a key id (or -1); entry e names template tpl[e], the next is next[e]. */
+  first(keyId) { return keyId < 0 ? -1 : this.khead[keyId]; }
+
+  /** The template indices under a key, in the order they were added. */
+  templatesOf(hi, lo, v) {
+    const out = [];
+    for (let e = this.first(this.lookup(hi, lo, v)); e >= 0; e = this.next[e]) out.push(this.tpl[e]);
+    return out;
+  }
+
+  _grow() {
+    const old = { kh: this.kh, kl: this.kl, kv: this.kv, ref: this.ref, cap: this.cap };
+    this._alloc(this.cap * 2);
+    for (let slot = 0; slot < old.cap; slot++) {
+      const r = old.ref[slot];
+      if (r < 0) continue;
+      let t = this.home(old.kh[slot], old.kl[slot]);
+      while (this.ref[t] >= 0) t = (t + 1) & this.mask;
+      this.kh[t] = old.kh[slot]; this.kl[t] = old.kl[slot]; this.kv[t] = old.kv[slot]; this.ref[t] = r;
+    }
+    this.stats.grows++;
+  }
+
+  _ensure(nk, n) {
+    if (nk > this.khead.length) {
+      const m = Math.max(nk, this.khead.length * 2);
+      const h = new Int32Array(m).fill(-1); h.set(this.khead); this.khead = h;
+      const t = new Int32Array(m).fill(-1); t.set(this.ktail); this.ktail = t;
+      const k = new Uint8Array(m); k.set(this.kind); this.kind = k;
+    }
+    if (n > this.tpl.length) {
+      const m = Math.max(n, this.tpl.length * 2);
+      const a = new Int32Array(m); a.set(this.tpl); this.tpl = a;
+      const b = new Int32Array(m).fill(-1); b.set(this.next); this.next = b;
+    }
+  }
+
+  /**
+   * Add template index t under the key (hi, lo, v) of this kind; s is the key's text, kept for a
+   * reader. A template already under the key is not added twice.
+   * @returns {{keyId: number, entry: number, added: boolean}}
+   */
+  add(hi, lo, v, kind, s, t) {
+    const k = SOLVED_KEYS.indexOf(kind);
+    if (k < 0) throw new Error('solved: a key is ' + SOLVED_KEYS.join(' or ') + ', got ' + kind);
+    hi >>>= 0; lo >>>= 0; v >>>= 0;
+    let keyId = this.lookup(hi, lo, v);
+    if (keyId < 0) {
+      if (this.nk + 1 > this.cap * MAX_LOAD) this._grow();
+      let slot = this.home(hi, lo), first = true;
+      while (this.ref[slot] >= 0) { if (first) this.stats.placeCollisions++; first = false; slot = (slot + 1) & this.mask; }
+      keyId = this.nk++;
+      this._ensure(this.nk, this.n);
+      this.keys[keyId] = s == null ? null : String(s);
+      this.kind[keyId] = k;
+      this.kh[slot] = hi; this.kl[slot] = lo; this.kv[slot] = v; this.ref[slot] = keyId;
+      this.stats.keys++;
+    }
+    for (let e = this.khead[keyId]; e >= 0; e = this.next[e]) if (this.tpl[e] === t) { this.stats.duplicates++; return { keyId, entry: e, added: false }; }
+    const e = this.n++;
+    this._ensure(this.nk, this.n);
+    this.tpl[e] = t; this.next[e] = -1;
+    if (this.khead[keyId] < 0) this.khead[keyId] = e; else this.next[this.ktail[keyId]] = e;
+    this.ktail[keyId] = e;
+    this.stats.entries++;
+    return { keyId, entry: e, added: true };
+  }
+
+  /** Keys by kind, and entries. */
+  counts() {
+    let text = 0, form = 0;
+    for (let i = 0; i < this.nk; i++) { if (this.kind[i] === 0) text++; else form++; }
+    return { keys: this.nk, text, form, entries: this.n };
+  }
+}

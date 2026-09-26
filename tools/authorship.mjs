@@ -427,7 +427,9 @@ export function zonedToUtc(y, mo, d, h, mi, zone = LOG_ZONE) {
   return new Date(t).toISOString().replace('.000Z', 'Z');
 }
 
-const LANDED_LINE = /^- (\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}) BOARD (\d+)((?: [A-Z][A-Z0-9-]*)*) LANDED\b/;
+// Since 2026-09-25 the LOG line carries its zone after the clock ("18:06 EDT BOARD 16 CLOUD LANDED");
+// the zone token is LOG_ZONE spelled out, so it is accepted and the time is still read in LOG_ZONE.
+const LANDED_LINE = /^- (\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})(?: [A-Z]{2,4})? BOARD (\d+)((?: [A-Z][A-Z0-9-]*)*) LANDED\b/;
 
 /**
  * The docs/LOG.md line that says board N LANDED ("- 2026-09-24 04:12 BOARD 10 LANDED (wf_...",

@@ -471,9 +471,12 @@ export function trace(html, sources) {
     const i = src.indexOf(':');
     const owner = src.slice(0, i), p = src.slice(i + 1);
     let value;
-    if (owner === 'soak') value = sources.soak[p];
+    // 'soak' names two things: the state/soak directory (keys in soakSources) and, since Board 15,
+    // the verdict bench/verdicts/soak.json. The state source answers only for keys it holds.
+    if (owner === 'soak' && Object.hasOwn(sources.soak, p)) value = sources.soak[p];
     else if (owner === 'gen') value = sources.gen[p];
     else if (sources.verdicts.has(owner)) value = at(sources.verdicts.get(owner), p);
+    else if (owner === 'soak') value = undefined;
     else { problems.push('no source named ' + owner); return ' '; }
     if (value === undefined) problems.push('nothing at ' + src);
     else if (fmt(value) !== text) problems.push(src + ' reads ' + text + ' on the page but ' + fmt(value) + ' at its source');
