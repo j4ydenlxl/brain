@@ -279,7 +279,7 @@ async function askArm(arm, brain, prompt, cfg) {
   }
   const t0 = performance.now();
   const a = await ask(brain, prompt, {
-    provider: 'ollama', model: cfg.model, base: cfg.base, probeMs: cfg.probeMs,
+    provider: cfg.provider === 'null' ? 'null' : 'ollama', model: cfg.model, base: cfg.base, probeMs: cfg.probeMs,
     timeoutMs: cfg.timeoutMs, maxTokens: cfg.maxTokens, route: cfg.route,
     regions: regionsOf(cfg), ...(cfg.cell ? { cell: cfg.cell } : {}),
   });
@@ -875,13 +875,14 @@ export const VERDICT_NAME = (set, bar, tag = null, name = null) => 'public-' + s
  * declared with --bar), finished, with every bar arm graded on every task.
  * @returns {{isTheBar: boolean, why: string[]}}
  */
-export function barStatus({ set, limit, bar, arms, complete, absentRecords, of }) {
+export function barStatus({ set, limit, bar, arms, complete, absentRecords, of, modelOff = false }) {
   const why = [];
   if (!complete) why.push('the run had not finished');
   if (limit > 0 && limit < of && !bar) why.push('a sample of ' + limit + ' of ' + of + ', not the whole set (--limit 0, or --bar to declare a sample the bar)');
   const missing = BAR_ARMS[set].filter((a) => !arms.includes(a));
   if (missing.length) why.push('the bar arm' + (missing.length > 1 ? 's ' : ' ') + missing.join(',') + ' did not run');
-  if (absentRecords > 0) why.push(absentRecords + ' arm result' + (absentRecords > 1 ? 's were' : ' was') + ' absent (the model was not reached; --resume retries them)');
+  if (modelOff) why.push('the model cell was null (--provider null, board 18 builder): the accuracy row needs the model chain' + (absentRecords > 0 ? ', and ' + absentRecords + ' record' + (absentRecords > 1 ? 's' : '') + ' with no native answer ' + (absentRecords > 1 ? 'are' : 'is') + ' absent' : ''));
+  else if (absentRecords > 0) why.push(absentRecords + ' arm result' + (absentRecords > 1 ? 's were' : ' was') + ' absent (the model was not reached; --resume retries them)');
   return { isTheBar: why.length === 0, why };
 }
 
@@ -1005,6 +1006,13 @@ function splitLine(name, sp) {
   return name + ': ' + one('heldOut', 'held out') + ', ' + one('development', 'development');
 }
 
+/** The native share of a model-off run (board 18 builder): native answers over every record asked, absent ones included. */
+function nativeShareModelOff(o, asked) {
+  const native = o && !o.absent ? o.native ? o.native.n : o.n : 0;
+  const correct = o && !o.absent ? o.native ? o.native.correct : o.correct : 0;
+  return { native, of: asked, share: asked ? r6(native / asked) : null, correct, absent: asked - native, how: 'native answers (' + NATIVE.join(', ') + ') over every record the run asked; a record with no native answer is absent, since the model cell is null' };
+}
+
 function nativeLine(s) {
   if (!s || s.absent || !s.native) return '';
   const nat = s.native, dir = s.direct;
@@ -1055,7 +1063,7 @@ function buildVerdict(st, { final }) {
   for (const a of armNames) arms[a] = summarizeArm(cfg.set, a, rows, cfg);
   const absentRecords = cfg.arms.reduce((t, a) => t + (arms[a].absentRecords || 0), 0);
   const complete = final && rows.length === chosen.length;
-  const bar = barStatus({ set: cfg.set, limit: cfg.limit, bar: cfg.bar, arms: cfg.arms, complete, absentRecords, of: st.of });
+  const bar = barStatus({ set: cfg.set, limit: cfg.limit, bar: cfg.bar, arms: cfg.arms, complete, absentRecords, of: st.of, modelOff: cfg.provider === 'null' && cfg.set !== 'arc' });
   const o = arms.organism, al = arms.alone;
   const gap = !o.absent && !al.absent ? r6(o.accuracy - al.accuracy) : null;
   const need = gap === null ? null : nFor95(o.accuracy, al.accuracy);
@@ -1064,8 +1072,15 @@ function buildVerdict(st, { final }) {
   const msPerTask = timed.length ? r2(mean(timed)) : null;
   const rate = { tasksPerMinute: msPerTask ? r2(60000 / msPerTask) : null, msPerTask, tasksTimed: timed.length, arms: cfg.arms, how: 'wall ms per task over the tasks at least one arm ran IN THIS PROCESS; a task read whole from the journal is not timed' };
   const row = (r) => r.system + ' ' + r.score;
+  // --provider null (board 18 builder): the model cell is null, so no model is named, the graded rows are the records
+  // answered natively (a selection, not a GSM8K accuracy: no published row is set beside it), and the native share is
+  // stated over EVERY record the run asked
+  const modelOff = cfg.provider === 'null' && cfg.set !== 'arc';
+  const offShare = modelOff ? nativeShareModelOff(o, rows.length) : null;
   const organismHow = cfg.set === 'arc'
     ? 'the grid search, no model'
+    : modelOff
+      ? 'act/prompt.mjs ask() with the model cell null, no socket and no model: the direct table, act/solve.mjs (the exact reader, the word reader exact.word), then memory; a record it does not answer natively is absent, not graded'
     : cfg.regions
       ? 'act/prompt.mjs ask(): the direct table, act/solve.mjs, then the ' + (cfg.set === 'gsm8k' ? 'math region (reason/math.mjs solveMath, k=' + cfg.k + (cfg.check ? ', verify' : '') + ')' : 'code region (reason/synth.mjs synthesize, k=' + cfg.k + (cfg.check ? ', repair' : '') + ')') + ' on the model cell ' + cfg.model
       : 'act/prompt.mjs ask(): act/solve.mjs, then recall, then the model cell ' + cfg.model;
@@ -1074,26 +1089,28 @@ function buildVerdict(st, { final }) {
   const ladder = ladderRows(cfg.set, published);
   const statement = (bar.isTheBar ? '' : 'PARTIAL, isTheBar false (' + bar.why.join('; ') + '): ')
     + 'on ' + rows.length + ' of ' + st.of + ' ' + meta.noun + ' at seed ' + cfg.seed + ', ' + meta.metric + ': the organism (' + organismHow + ') '
-    + (o.absent ? 'was absent (' + o.reason + ')' : 'scored ' + o.correct + ' of ' + o.n + ' = ' + pct(o.accuracy) + ', 95 percent interval ' + pct(o.interval.lo) + ' to ' + pct(o.interval.hi) + ', mean ' + o.meanMs + ' ms per task')
+    + (modelOff ? 'answered natively ' + offShare.native + ' of the ' + offShare.of + ' records asked (' + pct(offShare.share) + '), ' + offShare.correct + ' of those right' + (o.absent ? '' : ', mean ' + o.meanMs + ' ms per graded task') + '; the other ' + offShare.absent + ' records were not answered with no model and are absent'
+      : o.absent ? 'was absent (' + o.reason + ')' : 'scored ' + o.correct + ' of ' + o.n + ' = ' + pct(o.accuracy) + ', 95 percent interval ' + pct(o.interval.lo) + ' to ' + pct(o.interval.hi) + ', mean ' + o.meanMs + ' ms per task')
     + '; ' + armLine('the model alone', al) + '; ' + armLine('null', arms.null)
     + (cfg.arms.filter((a) => !ARMS.includes(a)).map((a) => '; opt in arm ' + armLine(a, arms[a])).join(''))
     + '. ' + (gap === null ? 'No organism minus alone gap is measurable on this run.' : 'Organism minus alone = ' + (gap * 100).toFixed(2) + ' points, '
       + (need === null ? 'no gap at all, so no n separates it.' : 'which at these rates needs ' + need + ' tasks per arm to separate from zero.'))
     + cappedSentence(cfg, arms)
-    + (o.absent || !published.length ? '' : ' Against the published rows the organism point estimate is above ' + (cmp.beats.length ? cmp.beats.map(row).join(', ') : 'none of them')
+    + (modelOff ? ' No published row is set beside this run: only the records the organism answered natively were graded, a selection, so their accuracy is not a GSM8K accuracy.' : '')
+    + (o.absent || !published.length || modelOff ? '' : ' Against the published rows the organism point estimate is above ' + (cmp.beats.length ? cmp.beats.map(row).join(', ') : 'none of them')
       + ' and not above ' + (cmp.doesNotBeat.length ? cmp.doesNotBeat.map(row).join(', ') : 'none of them')
       + '; its 95 percent interval lies wholly below ' + cmp.decidedBelow.length + ' of ' + published.length + ' rows and wholly above ' + cmp.decidedAbove.length + '.')
     + (rate.tasksPerMinute === null ? '' : ' Rate: ' + rate.tasksPerMinute + ' tasks per minute in this process (' + r2(msPerTask / 1000) + ' s per task, arms ' + cfg.arms.join(',') + ').')
     + (o.absent || !o.native ? '' : ' Organism ' + nativeLine(o) + '.')
     + (o.absent || !o.splits ? '' : ' TWO RULERS, organism ' + splitLine('by split', o.splits) + (al.absent ? '' : '; alone ' + splitLine('by split', al.splits)) + '.')
-    + (cfg.set === 'arc' ? '' : ' Every latency here was measured on ONE shared Ollama queue that other builders were using at the same time.');
+    + (cfg.set === 'arc' || modelOff ? '' : ' Every latency here was measured on ONE shared Ollama queue that other builders were using at the same time.');
   return {
     at: new Date().toISOString(), node: process.version, command: cfg.command,
     isTheBar: bar.isTheBar, notTheBarBecause: bar.why, complete, progress: { done: rows.length, of: chosen.length },
     ms: Date.now() - st.t0,
     set: cfg.set, source: meta.source, license: meta.license, file: meta.file,
     n: rows.length, of: st.of, seed: cfg.seed, limit: cfg.limit, budgetMs: cfg.set === 'arc' ? cfg.budgetMs : null,
-    model: cfg.set === 'arc' ? null : cfg.model, route: cfg.route, maxTokens: cfg.set === 'arc' ? null : cfg.maxTokens,
+    model: cfg.set === 'arc' || modelOff ? null : cfg.model, provider: cfg.provider || 'ollama', nativeShareModelOff: offShare, route: cfg.route, maxTokens: cfg.set === 'arc' ? null : cfg.maxTokens,
     ollamaUp: st.up, armsRun: cfg.arms,
     attemptsPerTask: cfg.set === 'arc' ? 1 : null, attemptsAllowedByArc: cfg.set === 'arc' ? 2 : null,
     organismPath: cfg.set === 'arc'
@@ -1103,14 +1120,14 @@ function buildVerdict(st, { final }) {
         : 'act/prompt.mjs ask() exactly as bench/answer.mjs asks it: act/solve.mjs first, then recall from memory, then the model cell with that recall as its system block; the brain holds nothing from this set',
     regions: cfg.set === 'arc' ? null : { on: !!cfg.regions, k: cfg.regions ? cfg.k : null, check: cfg.regions ? !!cfg.check : null, sent: regionsOf(cfg) },
     twoRulers: SPLIT_SOURCE[cfg.set](),
-    sharedQueue: cfg.set === 'arc' ? null : 'every millisecond and microsecond here was measured on ONE Ollama queue at ' + cfg.base + ' that other builders on this machine were using at the same time: a model latency is this run wait plus its compute, not the model own speed',
+    sharedQueue: cfg.set === 'arc' || modelOff ? null : 'every millisecond and microsecond here was measured on ONE Ollama queue at ' + cfg.base + ' that other builders on this machine were using at the same time: a model latency is this run wait plus its compute, not the model own speed',
     ladder,
     etaWhole: whole,
     memoryEpisodes: st.brain && st.brain.memory && st.brain.memory.episodic ? st.brain.memory.episodic.size() : null,
     // What the run's brain wrote to its ledger, by type. ask() writes act.ask and nothing else;
     // a proposal or an action here would mean public data reached a surface that acts.
     ledgerEvents: st.brain ? ledgerCounts(st.brain) : null,
-    arms, gap, nFor95: need, published, publishedComparison: cmp, statement, rate,
+    arms, gap, nFor95: need, published, publishedComparison: modelOff ? null : cmp, statement, rate,
     journal: journal.file ? { file: rel(journal.file), resumed: journal.resumed, armResultsReadBack: st.readBack, tasksWholeFromJournal: st.tasksFromJournal, tornLines: journal.torn, movedAside: journal.movedAside ? rel(journal.movedAside) : null } : null,
     ruler: cfg.set === 'arc'
       ? 'a task counts when EVERY test pair matches exactly, on ONE attempt where ARC allows two'
@@ -1137,10 +1154,16 @@ export function makeCfg(opts = {}) {
     arms = [...ARMS, ...EXTRA_ARMS[set]].filter((a) => want.includes(a));
     if (!arms.length) throw new Error('--arms selected no arm');
   }
+  // --provider null (board 18 builder): the organism arm with the model cell 'null', for the native share model-off
+  const provider = opts.provider === undefined || opts.provider === null || opts.provider === true ? 'ollama' : String(opts.provider);
+  if (provider !== 'ollama' && provider !== 'null') throw new Error('--provider takes ollama or null; got ' + provider);
+  if (provider === 'null' && (opts.arms === undefined || opts.arms === null || opts.arms === true)) arms = ['organism'];
+  if (provider === 'null' && arms.some((a) => a !== 'organism' && a !== 'null')) throw new Error('--provider null runs the organism and null arms only; got ' + arms.join(','));
+  if (provider === 'null' && !opts.tag) throw new Error('--provider null needs --tag, so its journal is its own and no model journal is moved aside');
   const route = opts.route === undefined || opts.route === null || opts.route === true ? null : String(opts.route);
   if (route !== null && !ROUTES.includes(route)) throw new Error('--route takes ' + ROUTES.join(' or ') + '; got ' + route);
   return {
-    set, arms, route,
+    set, arms, route, provider,
     limit: Number.isFinite(opts.limit) ? opts.limit : 0,
     seed: opts.seed === undefined || opts.seed === null ? DEFAULT_SEED : String(opts.seed),
     bar: !!opts.bar,
@@ -1185,7 +1208,7 @@ export async function run(opts = {}) {
   const byId = new Map(S.items.map((x) => [x.id, x]));
   const chosen = sampleIds(S.items.map((x) => x.id), cfg.limit, cfg.seed).map((id) => byId.get(id));
   const plan = planArms(chosen.length, cfg.arms);
-  const needsModel = cfg.set !== 'arc' && cfg.arms.some((a) => MODEL_ARMS.has(a));
+  const needsModel = cfg.set !== 'arc' && cfg.arms.some((a) => MODEL_ARMS.has(a)) && cfg.provider !== 'null';
   const up = needsModel ? (cfg.cell ? true : await probeOllama(cfg.base, cfg.probeMs)) : null;
   const downReason = 'no ollama at ' + cfg.base + ': /api/tags did not answer within ' + cfg.probeMs + ' ms';
   const journal = openJournal({ dir: journalDir, cfg, resume: !!opts.resume, write });
@@ -1213,9 +1236,11 @@ export async function run(opts = {}) {
     if (cfg.set === 'arc') console.log('organism: searchProgram to depth 3 with inferColorMap, then induceAll where its shape applies; budget ' + cfg.budgetMs + ' ms per task; ONE attempt where ARC allows two');
     else {
       console.log(cfg.regions
-        ? 'organism: act/prompt.mjs ask() with the reasoning regions: the direct table, act/solve.mjs, then the ' + (cfg.set === 'gsm8k' ? 'math region (solveMath k=' + cfg.k + (cfg.check ? ', verify' : '') + ')' : 'code region (synthesize k=' + cfg.k + (cfg.check ? ', repair' : '') + ') on the record\'s own prompt') + '; alone: the Board 8 prompt to the same model with no organism; null: ask() with no model'
+        ? cfg.provider === 'null' ? 'organism: act/prompt.mjs ask() with the model cell null (--provider null, board 18 builder): the direct table, act/solve.mjs, then memory; no model, no socket; a record with no native answer is absent'
+        : 'organism: act/prompt.mjs ask() with the reasoning regions: the direct table, act/solve.mjs, then the ' + (cfg.set === 'gsm8k' ? 'math region (solveMath k=' + cfg.k + (cfg.check ? ', verify' : '') + ')' : 'code region (synthesize k=' + cfg.k + (cfg.check ? ', repair' : '') + ') on the record\'s own prompt') + '; alone: the Board 8 prompt to the same model with no organism; null: ask() with no model'
         : 'organism: act/prompt.mjs ask(), the path bench/answer.mjs measures: act/solve.mjs, then recall, then the model cell; alone: the same prompt to the same model with no organism; null: ask() with no model');
-      console.log('model ' + (cfg.cell ? 'a MOCK cell handed in by the caller' : cfg.model + ' at ' + cfg.base) + ', maxTokens ' + cfg.maxTokens + ', route ' + (cfg.route || 'whatever ask() picks') + ', ollama ' + (cfg.cell ? 'not asked' : up ? 'up' : (needsModel ? 'DOWN, so the model arms are absent' : 'not wanted')));
+      if (cfg.provider === 'null') console.log('model none: the model cell is null (--provider null), no socket is opened');
+      else console.log('model ' + (cfg.cell ? 'a MOCK cell handed in by the caller' : cfg.model + ' at ' + cfg.base) + ', maxTokens ' + cfg.maxTokens + ', route ' + (cfg.route || 'whatever ask() picks') + ', ollama ' + (cfg.cell ? 'not asked' : up ? 'up' : (needsModel ? 'DOWN, so the model arms are absent' : 'not wanted')));
     }
     console.log(write
       ? 'journal ' + rel(journal.file) + (journal.resumed ? ', RESUMED: ' + journal.records.size + ' arm results held, ' + journal.torn + ' torn line(s) skipped' : ', fresh') + (journal.movedAside ? '; the previous journal was moved aside to ' + rel(journal.movedAside) : '')
@@ -1246,7 +1271,7 @@ export async function run(opts = {}) {
           fromJournal++; st.readBack++;
           continue;
         }
-        if (MODEL_ARMS.has(arm) && cfg.set !== 'arc' && !up) { row.arms[arm] = { absent: true, reason: downReason }; continue; }
+        if (MODEL_ARMS.has(arm) && cfg.set !== 'arc' && !up && cfg.provider !== 'null') { row.arms[arm] = { absent: true, reason: downReason }; continue; }
         const r = await S.arm(arm, item, ctx);
         ranHere++;
         row.arms[arm] = r;
@@ -1308,6 +1333,7 @@ function printSummary(v) {
   for (const [a, s] of Object.entries(v.arms)) {
     if (s.absent) continue;
     if (s.native) console.log('NATIVE ' + a + ': ' + nativeLine(s));
+    if (a === 'organism' && v.nativeShareModelOff) console.log('NATIVE SHARE model off: ' + v.nativeShareModelOff.native + ' of ' + v.nativeShareModelOff.of + ' records = ' + pct(v.nativeShareModelOff.share) + ', ' + v.nativeShareModelOff.correct + ' correct among the native answers, ' + v.nativeShareModelOff.absent + ' absent (no native answer, no model)');
     if (s.regions) for (const [g, e] of Object.entries(s.regions)) console.log('REGION ' + a + ' ' + g + ': ' + e.n + ' records, ' + e.correct + ' correct, by provenance ' + Object.entries(e.byProvenance).map(([k, b]) => k + ' ' + b.correct + '/' + b.n).join(', ') + ', mean ' + e.meanCalls + ' model calls and ' + r2(e.meanModelMs / 1000) + ' s of model per record');
     if (s.splits) console.log('SPLIT ' + a + ': ' + splitLine('by split', s.splits));
   }
@@ -1325,7 +1351,7 @@ export const FLAGS = Object.freeze({
   set: 'string', seed: 'string', arms: 'string', model: 'string', base: 'string', route: 'string',
   journalDir: 'string', verdictDir: 'string',
   limit: 'number', budgetMs: 'number', rounds: 'number', maxTokens: 'number', regions: 'number', k: 'number', check: 'number',
-  tag: 'string', name: 'string', 'wall-minutes': 'number',
+  tag: 'string', name: 'string', 'wall-minutes': 'number', provider: 'string',
   limitMs: 'number', testMs: 'number', timeoutMs: 'number', memoryMB: 'number', probeMs: 'number',
   resume: 'bool', bar: 'bool', quiet: 'bool', json: 'bool', nowrite: 'bool', help: 'bool',
 });
@@ -1334,7 +1360,8 @@ export const USAGE = [
   'node bench/public.mjs --set arc|humaneval|gsm8k [--limit N] [--seed public/1] [--resume] [--bar]',
   '                      [--arms organism,alone,null(,plan|repair)] [--model qwen3:1.7b] [--route region|direct]',
   '                      [--budgetMs 3000] [--rounds 3] [--maxTokens n] [--testMs ms] [--quiet] [--json] [--nowrite]',
-  '                      [--regions 1] [--k 5] [--check 1] [--tag t] [--name n] [--wall-minutes M]',
+  '                      [--regions 1] [--k 5] [--check 1] [--tag t] [--name n] [--wall-minutes M] [--provider null --tag t]',
+  '--provider null (board 18 builder): the organism arm asks with the model cell null, no socket; a native answer is graded, any other is absent. It needs its own --tag (its own journal).',
   '',
   '--regions 1 (the default) sends the organism through the reasoning regions ask() carries: a GSM8K',
   'record reaches reason/math.mjs solveMath (k programs, verify when --check 1), a HumanEval record\'s',

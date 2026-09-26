@@ -105,7 +105,7 @@ td { padding: 1px 0; }
 <a id="portfolio" href="portfolio/">portfolio</a>
 <a id="findings" href="findings/">findings</a>
 <a id="handoff" href="handoff/" style="position: fixed; bottom: 226px; right: 16px; pointer-events: auto; background: var(--glass); border: 1px solid var(--line); border-radius: 10px; padding: 7px 13px; color: var(--ink); text-decoration: none; letter-spacing: 0.16em; text-transform: uppercase; font-size: 11px; backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);">handoff</a>
-<div id="ask"><form id="askf" autocomplete="off"><span class="lbl">ask</span><input id="askq" placeholder="what is 17 times 23" spellcheck="false" aria-label="ask the organism"><a id="askterm" href="ask/">terminal</a></form><div id="askout" aria-live="polite"></div></div>
+<div id="ask"><form id="askf" autocomplete="off"><span class="lbl">ask</span><input id="askq" placeholder="what is 17 times 23" spellcheck="false" aria-label="ask the organism"><a id="askterm" href="/ask">terminal</a></form><div id="askout" aria-live="polite"></div></div>
 <script type="module">
 import { readExact } from './organism/act/exact-read.mjs';
 let word = null;
@@ -124,11 +124,11 @@ const out = document.getElementById('askout');
 document.getElementById('askf').addEventListener('submit', (ev) => {
   ev.preventDefault();
   const q = document.getElementById('askq').value.trim(); if (!q) return;
-  document.getElementById('askterm').href = 'ask/?q=' + encodeURIComponent(q);
+  document.getElementById('askterm').href = '/ask?q=' + encodeURIComponent(q);
   const r = answer(q);
   out.innerHTML = r
     ? '<span class="v">' + esc(r.answer) + '</span> <span class="dim">exact (' + esc(r.method) + '), no model, 0 tokens, ' + nsPerAsk(q).toLocaleString('en-US') + ' ns per ask on this device</span>'
-    : '<span class="w">refused, not guessed:</span> <span class="dim">no cell in this tab carries it (0 tokens). The terminal prints its route.</span>';
+    : '<span class="w">refused, not guessed:</span> <span class="dim">no cell in this tab carries it (0 tokens).</span> <a href="/ask?q=' + encodeURIComponent(q) + '">ask the organism on the server</a> <span class="dim">(the terminal posts it to /api/ask and prints its route)</span>';
 });
 </script>
 <div id="boot">growing</div>

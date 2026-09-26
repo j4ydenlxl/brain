@@ -1,0 +1,308 @@
+{
+  "at": "2026-09-26T17:54:47.629Z",
+  "command": "node bench/site-ask.mjs --static",
+  "node": "v22.22.2",
+  "isTheBar": false,
+  "barMet": false,
+  "met": {
+    "exact391": true,
+    "novelRoutePrinted": false,
+    "parity": true,
+    "tabNoRequest": true,
+    "refusedOnePost": true,
+    "noPageErrors": true,
+    "serverExact391": false,
+    "serverNovelRoute": false,
+    "serverCap413": false,
+    "server429": false,
+    "serverGetUsage": false,
+    "optionsNoStar": false,
+    "noSecretInResponses": true
+  },
+  "url": "http://127.0.0.1:37019/ask",
+  "origin": "http://127.0.0.1:37019",
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36",
+  "control": true,
+  "modelCalls": 0,
+  "split": {
+    "what": "no learning happens here: the tab prompts are the page examples (web/ask.mjs EXAMPLES), graded against act/solve.mjs in node; the server prompts are the two the brief names plus a 2001 character cap probe and 30 rapid repeats of the first; none is a held-out set",
+    "development": [
+      "what is 17 times 23",
+      "2 to the power of 100",
+      "15 percent of 200",
+      "the square root of 144",
+      "subtract 3 from 10",
+      "Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?",
+      "write a poem about the sea",
+      "what is 17 times 23",
+      "write a poem about the sea",
+      "2001 x characters (the 413 probe)"
+    ],
+    "heldOut": [],
+    "contaminated": false
+  },
+  "statement": "The prompt box on http://127.0.0.1:37019/ask answered in the browser tab with the organism exact reader (act/exact-read.mjs sha256 d6de6809288e, tasks/exact.mjs sha256 ede0ce88f1ad, act/word.mjs sha256 6c1e9386ef15), 6 of 7 examples with no request; 7 of 7 page results equal act/solve.mjs solve() on the same prompt; the 1 prompt(s) the tab refused made 1 POST(s) to http://127.0.0.1:37019/api/ask and the page printed the server route (null, provenance null, model null). On the server, \"what is 17 times 23\" answered none with provenance none in undefined us on host undefined; \"write a poem about the sea\" answered with route undefined and llm none; a 2001 character prompt got 404; 30 rapid POSTs got {\"404\":30}. The knowledge store on the server host: unknown, so the knowledge tier answered nothing there. Cold start 24.047 ms and warm 0.31 ms were measured in a fresh node v22.22.2 child process on the bench host (linux), not the Vercel instance. Rules missed: novelRoutePrinted, serverExact391, serverNovelRoute, serverCap413, server429, serverGetUsage, optionsNoStar.",
+  "coldStartMs": 24.047,
+  "warmMs": 0.31,
+  "coldStart": {
+    "line": "importMs 160.420 coldStartMs 24.047 warmMs 0.310 status 200 200 serverUs 440 159",
+    "importMs": 160.42,
+    "coldStartMs": 24.047,
+    "warmMs": 0.31,
+    "where": "a fresh node v22.22.2 child process on the bench host (linux), not the Vercel instance"
+  },
+  "requestsAfterLoad": 1,
+  "pageErrors": [],
+  "organism": [
+    {
+      "file": "act/exact-read.mjs",
+      "bytes": 18784,
+      "sha256": "d6de6809288ecb374a5a41808b89dab4aaf9e8665227293c095152ddfd3b9491"
+    },
+    {
+      "file": "tasks/exact.mjs",
+      "bytes": 5686,
+      "sha256": "ede0ce88f1ad49dc0aba9a66caff52483caab9be1c40045e54ba3cf2c395836e"
+    },
+    {
+      "file": "act/word.mjs",
+      "bytes": 101827,
+      "sha256": "6c1e9386ef1599bcb2c6aaa1e313806a423a4f8ee69c199370f89bee9c530ada"
+    }
+  ],
+  "rows": [
+    {
+      "prompt": "what is 17 times 23",
+      "answer": "391",
+      "route": "exact",
+      "provenance": "exact",
+      "nsPerAsk": 6250,
+      "cli": "391",
+      "cliMethod": "exact.arith",
+      "parity": true,
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> what is 17 times 23",
+        "answered exactly by exact.arith, with no model and no network.",
+        "- read \"what is 17 times 23\" as 17 * 23",
+        "- expression 17 * 23",
+        "- exact rational arithmetic on BigInt, no rounding at any step",
+        "391",
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 6,250 ns per ask on this device (median of 7 batches, 1,792 asks)"
+      ]
+    },
+    {
+      "prompt": "2 to the power of 100",
+      "answer": "1267650600228229401496703205376",
+      "route": "exact",
+      "provenance": "exact",
+      "nsPerAsk": 7031,
+      "cli": "1267650600228229401496703205376",
+      "cliMethod": "exact.arith",
+      "parity": true,
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> 2 to the power of 100",
+        "answered exactly by exact.arith, with no model and no network.",
+        "- read \"2 to the power of 100\" as 2 ^ 100",
+        "- expression 2 ^ 100",
+        "- exact rational arithmetic on BigInt, no rounding at any step",
+        "1267650600228229401496703205376",
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 7,031 ns per ask on this device (median of 7 batches, 1,792 asks)"
+      ]
+    },
+    {
+      "prompt": "15 percent of 200",
+      "answer": "30",
+      "route": "exact",
+      "provenance": "exact",
+      "nsPerAsk": 5859,
+      "cli": "30",
+      "cliMethod": "exact.arith",
+      "parity": true,
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> 15 percent of 200",
+        "answered exactly by exact.arith, with no model and no network.",
+        "- read \"15 percent of 200\" as 15% of 200",
+        "- expression 15% of 200",
+        "- exact rational arithmetic on BigInt, no rounding at any step",
+        "30",
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 5,859 ns per ask on this device (median of 7 batches, 1,792 asks)"
+      ]
+    },
+    {
+      "prompt": "the square root of 144",
+      "answer": "12",
+      "route": "exact",
+      "provenance": "exact",
+      "nsPerAsk": 5469,
+      "cli": "12",
+      "cliMethod": "exact.arith",
+      "parity": true,
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> the square root of 144",
+        "answered exactly by exact.arith, with no model and no network.",
+        "- read \"the square root of 144\" as sqrt(144)",
+        "- expression sqrt(144)",
+        "- exact rational arithmetic on BigInt, no rounding at any step",
+        "12",
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 5,469 ns per ask on this device (median of 7 batches, 1,792 asks)"
+      ]
+    },
+    {
+      "prompt": "subtract 3 from 10",
+      "answer": "7",
+      "route": "exact",
+      "provenance": "exact",
+      "nsPerAsk": 5859,
+      "cli": "7",
+      "cliMethod": "exact.arith",
+      "parity": true,
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> subtract 3 from 10",
+        "answered exactly by exact.arith, with no model and no network.",
+        "- read \"subtract 3 from 10\" as (10) - (3)",
+        "- expression (10) - (3)",
+        "- exact rational arithmetic on BigInt, no rounding at any step",
+        "7",
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 5,859 ns per ask on this device (median of 7 batches, 3,584 asks)"
+      ]
+    },
+    {
+      "prompt": "Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?",
+      "answer": "72",
+      "route": "exact",
+      "provenance": "exact",
+      "nsPerAsk": 112500,
+      "cli": "72",
+      "cliMethod": "exact.word",
+      "parity": true,
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?",
+        "answered exactly by exact.word, with no model and no network.",
+        "- read as a word problem: 2 equations over the quantities the sentences bound; every word consumed by a rule, a bound name or a unit",
+        "- expression 48 + 48 / 2",
+        "- exact rational arithmetic on BigInt, no rounding at any step",
+        "72",
+        "route exact provenance exact method exact.word model none tokens 0 network 0 112,500 ns per ask on this device (median of 7 batches, 112 asks)"
+      ]
+    },
+    {
+      "prompt": "write a poem about the sea",
+      "answer": null,
+      "route": "refused",
+      "provenance": "none",
+      "nsPerAsk": null,
+      "cli": null,
+      "cliMethod": null,
+      "parity": true,
+      "requests": [
+        {
+          "method": "POST",
+          "url": "http://127.0.0.1:37019/api/ask"
+        }
+      ],
+      "server": {
+        "status": 404,
+        "route": null,
+        "provenance": null,
+        "provider": null,
+        "serverUs": null,
+        "rttMs": 8,
+        "text": "server the server answered 404: the server half is off (--static) round trip 8 ms in this tab"
+      },
+      "lines": [
+        "> write a poem about the sea",
+        "no cell in this tab carries this question, so the tab refuses it, not guesses; the organism on the server answers it.",
+        "tab: route refused provenance none model none (the model cell is not in the browser) tokens 0 words the spoken reader could not read: write, a, poem, about, the, sea",
+        "the word problem reader stopped at: \"one sentence\" in: write a poem about the sea",
+        "server the server answered 404: the server half is off (--static) round trip 8 ms in this tab"
+      ]
+    }
+  ],
+  "serverRows": {
+    "exact": {
+      "status": 404,
+      "rttMs": 36.1,
+      "waitedFor429": false,
+      "json": {
+        "ok": false,
+        "error": "the server half is off (--static)"
+      }
+    },
+    "novel": {
+      "status": 404,
+      "rttMs": 4.8,
+      "waitedFor429": false,
+      "json": {
+        "ok": false,
+        "error": "the server half is off (--static)"
+      }
+    },
+    "cap413": {
+      "status": 404,
+      "json": {
+        "ok": false,
+        "error": "the server half is off (--static)"
+      }
+    },
+    "get": {
+      "status": 404,
+      "json": {
+        "ok": false,
+        "error": "the server half is off (--static)"
+      }
+    },
+    "options": {
+      "status": 404,
+      "accessControlAllowOrigin": null
+    },
+    "rapid": {
+      "n": 30,
+      "statuses": {
+        "404": 30
+      },
+      "first429": null,
+      "retryAfter": null,
+      "serverUs": {
+        "min": null,
+        "median": null,
+        "max": null,
+        "n": 0
+      },
+      "rttMs": {
+        "min": null,
+        "median": null,
+        "max": null
+      }
+    },
+    "secrets": [
+      {
+        "s": "sk-",
+        "n": 0
+      },
+      {
+        "s": "sk_",
+        "n": 0
+      },
+      {
+        "s": "Bearer ",
+        "n": 0
+      },
+      {
+        "s": "BRAIN_LLM_KEY=",
+        "n": 0
+      }
+    ]
+  }
+}

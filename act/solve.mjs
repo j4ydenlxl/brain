@@ -35,6 +35,7 @@
 // wrong, so this file ends its text with the value and nothing after it.
 import * as E from '../tasks/exact.mjs';
 import { CAPS, tokenize, parseWhole, parseEquation, hasUnknown, evalExact, spokenExpression, arithFrom } from './exact-read.mjs';
+import { readWord } from './word.mjs';
 export { CAPS, tokenize, parseWhole, evalExact, spokenExpression };
 import * as S from '../core/signal.mjs';
 import { solveAlgebra } from '../tasks/algebra.mjs';
@@ -47,7 +48,15 @@ import { fromRows as fromDslRows, toRows as toDslRows } from '../capability/grid
 const L = S.S;
 
 /** The methods solve() can return, so a caller can enumerate them without parsing prose. */
-export const METHODS = Object.freeze(['exact.arith', 'exact.compare', 'exact.linear', 'exact.sequence', 'exact.grid']);
+export const METHODS = Object.freeze(['exact.arith', 'exact.compare', 'exact.linear', 'exact.sequence', 'exact.grid', 'exact.word']);
+
+// THE WORD PROBLEM READER (act/word.mjs; board 18 builder, queue item 1, his 10:05 EDT order "Every request
+// should be less than a token and it should be done in microseconds"). solve() tries it after the spoken
+// reading. The switch below is the bench's control (bench/ns.mjs unplugs the reader to print the share
+// without it, in the same process); nothing else turns it off, and it reads no environment variable.
+const WORD_READER = { on: true };
+/** Plug (true) or unplug (false) the word problem reader; returns what it was. */
+export function wordReader(on) { const was = WORD_READER.on; if (typeof on === 'boolean') WORD_READER.on = on; return was; }
 
 // The tokenizer, parser, exact evaluator and the spoken front end live in act/exact-read.mjs (moved
 // unchanged on 2026-09-26 so the browser organism on dilation.dev runs the same code); imported above.
@@ -248,6 +257,8 @@ export function solve(prompt) {
     const r = solveExpression(spoken);
     if (r) { r.steps.unshift('read "' + text.trim() + '" as ' + spoken); return r; }
   }
+  // a word problem read whole into one exact expression (method exact.word), or null
+  if (WORD_READER.on) { const w = readWord(text); if (w) return w; }
   return null;
 }
 

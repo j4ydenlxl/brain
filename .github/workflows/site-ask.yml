@@ -1,0 +1,84 @@
+# .github/workflows/site-ask.yml: THE LIVE BAR OF THE PROMPT BOX, from a GitHub runner (queue item 12).
+# Author: board 18 builder.
+#
+# His words, 2026-09-26 11:32 EDT: "it should be cli in dilation.dev someday so i can prompt like any
+# ai". The bar is measured from a browser ON dilation.dev, and the cloud sandbox that built the server
+# half cannot reach dilation.dev (its proxy refuses the CONNECT), so the live bar runs here: a runner
+# opens the page in Chromium, types every example, then posts the server rows to /api/ask on the same
+# origin (bench/site-ask.mjs), and writes bench/verdicts/site-ask.json (isTheBar true only when the url
+# is on dilation.dev or ask.dilation.dev).
+#
+# PLAYWRIGHT is installed on the runner only, globally, never in the tree: bench/site-ask.mjs resolves
+# it from the tree, then from PLAYWRIGHT_PATH, then from `npm root -g`. This is the ONE place a package
+# is installed. No secret is read: the page and the endpoint are public, and the commit uses the job's
+# own token.
+#
+# Dispatch (the file must be on the default branch for workflow_dispatch):
+#   gh workflow run site-ask.yml --ref master -f url=https://dilation.dev/ask
+# The same bench runs locally with no install step against bin/ask-serve.mjs:
+#   node bin/ask-serve.mjs --port 0            (prints ask-serve http://127.0.0.1:PORT)
+#   node bench/site-ask.mjs --url http://127.0.0.1:PORT/ask
+
+name: site ask
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "the page to ask from (the verdict is the bar only on dilation.dev or ask.dilation.dev)"
+        required: false
+        default: "https://dilation.dev/ask"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: site-ask
+  cancel-in-progress: false
+
+jobs:
+  bar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: playwright and chromium, on the runner only
+        run: |
+          npm install -g playwright
+          # the browser build must match the package the bench imports: npx runs that same version
+          PW_VERSION=$(node -p "require('$(npm root -g)/playwright/package.json').version")
+          npx -y "playwright@${PW_VERSION}" install --with-deps chromium
+
+      - name: the bar
+        env:
+          ASK_URL: ${{ inputs.url }}
+        run: node bench/site-ask.mjs --url "$ASK_URL"
+
+      - name: upload the verdict
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-ask-verdict
+          path: |
+            bench/verdicts/site-ask.json
+            bench/verdicts/site-ask-local.json
+          if-no-files-found: warn
+
+      - name: commit the verdict to the same branch if it changed
+        if: always()
+        run: |
+          git config user.name "brain cloud runner"
+          git config user.email "brain-cloud-runner@users.noreply.github.com"
+          if [ ! -f bench/verdicts/site-ask.json ]; then echo "no bench/verdicts/site-ask.json (the url was not on dilation.dev, or the bench did not finish)"; exit 0; fi
+          git add bench/verdicts/site-ask.json
+          if git diff --cached --quiet; then echo "the verdict did not change"; exit 0; fi
+          git commit -m "site-ask: the live bar from a GitHub runner"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-26T16:14:01.654Z",
+  "at": "2026-09-26T17:54:20.468Z",
   "command": "node bench/site-ask.mjs",
   "node": "v22.22.2",
   "isTheBar": false,
@@ -8,15 +8,24 @@
     "exact391": true,
     "novelRoutePrinted": true,
     "parity": true,
-    "noRequestAfterLoad": true,
-    "noPageErrors": true
+    "tabNoRequest": true,
+    "refusedOnePost": true,
+    "noPageErrors": true,
+    "serverExact391": true,
+    "serverNovelRoute": true,
+    "serverCap413": true,
+    "server429": true,
+    "serverGetUsage": true,
+    "optionsNoStar": true,
+    "noSecretInResponses": true
   },
-  "url": "http://127.0.0.1:41103/ask",
+  "url": "http://127.0.0.1:34013/ask",
+  "origin": "http://127.0.0.1:34013",
   "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/141.0.7390.37 Safari/537.36",
+  "control": false,
   "modelCalls": 0,
-  "tokens": 0,
   "split": {
-    "what": "no learning happens here: the prompts are the page examples (web/ask.mjs EXAMPLES), graded against act/solve.mjs in node, not against a held-out set",
+    "what": "no learning happens here: the tab prompts are the page examples (web/ask.mjs EXAMPLES), graded against act/solve.mjs in node; the server prompts are the two the brief names plus a 2001 character cap probe and 30 rapid repeats of the first; none is a held-out set",
     "development": [
       "what is 17 times 23",
       "2 to the power of 100",
@@ -24,24 +33,41 @@
       "the square root of 144",
       "subtract 3 from 10",
       "Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?",
-      "write a poem about the sea"
+      "write a poem about the sea",
+      "what is 17 times 23",
+      "write a poem about the sea",
+      "2001 x characters (the 413 probe)"
     ],
     "heldOut": [],
     "contaminated": false
   },
-  "statement": "The prompt box on http://127.0.0.1:41103/ask answered in the browser tab with the organism exact reader (act/exact-read.mjs sha256 c66443d035b7, tasks/exact.mjs sha256 ede0ce88f1ad), no model and no request after load; every answer equals act/solve.mjs solve() on the same prompt.",
-  "requestsAfterLoad": 0,
+  "statement": "The prompt box on http://127.0.0.1:34013/ask answered in the browser tab with the organism exact reader (act/exact-read.mjs sha256 d6de6809288e, tasks/exact.mjs sha256 ede0ce88f1ad, act/word.mjs sha256 6c1e9386ef15), 6 of 7 examples with no request; 7 of 7 page results equal act/solve.mjs solve() on the same prompt; the 1 prompt(s) the tab refused made 1 POST(s) to http://127.0.0.1:34013/api/ask and the page printed the server route (direct, provenance memory, model null). On the server, \"what is 17 times 23\" answered 391 with provenance exact in 884 us on host local; \"write a poem about the sea\" answered with route direct and llm null (the model cell is not configured on this host: the environment does not hold both BRAIN_LLM_BASE and BRAIN_LLM_KEY, so the null provider (offline, no model, no socket) stood in); a 2001 character prompt got 413; 30 rapid POSTs got {\"200\":16,\"429\":14}. The knowledge store on the server host: absent (no finished ingest at bench/fixtures/wiki/store (no readable meta.json)), so the knowledge tier answered nothing there. Cold start 27.594 ms and warm 0.404 ms were measured in a fresh node v22.22.2 child process on the bench host (linux), not the Vercel instance. Every rule met.",
+  "coldStartMs": 27.594,
+  "warmMs": 0.404,
+  "coldStart": {
+    "line": "importMs 174.716 coldStartMs 27.594 warmMs 0.404 status 200 200 serverUs 568 222",
+    "importMs": 174.716,
+    "coldStartMs": 27.594,
+    "warmMs": 0.404,
+    "where": "a fresh node v22.22.2 child process on the bench host (linux), not the Vercel instance"
+  },
+  "requestsAfterLoad": 1,
   "pageErrors": [],
   "organism": [
     {
       "file": "act/exact-read.mjs",
-      "bytes": 18515,
-      "sha256": "c66443d035b7fc873b349b6a07acc95783040c49fd39d0300686cff47429ceba"
+      "bytes": 18784,
+      "sha256": "d6de6809288ecb374a5a41808b89dab4aaf9e8665227293c095152ddfd3b9491"
     },
     {
       "file": "tasks/exact.mjs",
       "bytes": 5686,
       "sha256": "ede0ce88f1ad49dc0aba9a66caff52483caab9be1c40045e54ba3cf2c395836e"
+    },
+    {
+      "file": "act/word.mjs",
+      "bytes": 101827,
+      "sha256": "6c1e9386ef1599bcb2c6aaa1e313806a423a4f8ee69c199370f89bee9c530ada"
     }
   ],
   "rows": [
@@ -50,10 +76,12 @@
       "answer": "391",
       "route": "exact",
       "provenance": "exact",
-      "nsPerAsk": 14063,
+      "nsPerAsk": 7813,
       "cli": "391",
       "cliMethod": "exact.arith",
       "parity": true,
+      "requests": [],
+      "server": null,
       "lines": [
         "> what is 17 times 23",
         "answered exactly by exact.arith, with no model and no network.",
@@ -61,7 +89,7 @@
         "- expression 17 * 23",
         "- exact rational arithmetic on BigInt, no rounding at any step",
         "391",
-        "route exact provenance exact method exact.arith model none tokens 0 network 0 14,063 ns per ask on this device (median of 7 batches, 448 asks)"
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 7,813 ns per ask on this device (median of 7 batches, 1,792 asks)"
       ]
     },
     {
@@ -69,10 +97,12 @@
       "answer": "1267650600228229401496703205376",
       "route": "exact",
       "provenance": "exact",
-      "nsPerAsk": 8984,
+      "nsPerAsk": 6055,
       "cli": "1267650600228229401496703205376",
       "cliMethod": "exact.arith",
       "parity": true,
+      "requests": [],
+      "server": null,
       "lines": [
         "> 2 to the power of 100",
         "answered exactly by exact.arith, with no model and no network.",
@@ -80,7 +110,7 @@
         "- expression 2 ^ 100",
         "- exact rational arithmetic on BigInt, no rounding at any step",
         "1267650600228229401496703205376",
-        "route exact provenance exact method exact.arith model none tokens 0 network 0 8,984 ns per ask on this device (median of 7 batches, 1,792 asks)"
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 6,055 ns per ask on this device (median of 7 batches, 3,584 asks)"
       ]
     },
     {
@@ -88,10 +118,12 @@
       "answer": "30",
       "route": "exact",
       "provenance": "exact",
-      "nsPerAsk": 8203,
+      "nsPerAsk": 7031,
       "cli": "30",
       "cliMethod": "exact.arith",
       "parity": true,
+      "requests": [],
+      "server": null,
       "lines": [
         "> 15 percent of 200",
         "answered exactly by exact.arith, with no model and no network.",
@@ -99,7 +131,7 @@
         "- expression 15% of 200",
         "- exact rational arithmetic on BigInt, no rounding at any step",
         "30",
-        "route exact provenance exact method exact.arith model none tokens 0 network 0 8,203 ns per ask on this device (median of 7 batches, 1,792 asks)"
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 7,031 ns per ask on this device (median of 7 batches, 1,792 asks)"
       ]
     },
     {
@@ -111,6 +143,8 @@
       "cli": "12",
       "cliMethod": "exact.arith",
       "parity": true,
+      "requests": [],
+      "server": null,
       "lines": [
         "> the square root of 144",
         "answered exactly by exact.arith, with no model and no network.",
@@ -126,10 +160,12 @@
       "answer": "7",
       "route": "exact",
       "provenance": "exact",
-      "nsPerAsk": 6055,
+      "nsPerAsk": 4297,
       "cli": "7",
       "cliMethod": "exact.arith",
       "parity": true,
+      "requests": [],
+      "server": null,
       "lines": [
         "> subtract 3 from 10",
         "answered exactly by exact.arith, with no model and no network.",
@@ -137,23 +173,28 @@
         "- expression (10) - (3)",
         "- exact rational arithmetic on BigInt, no rounding at any step",
         "7",
-        "route exact provenance exact method exact.arith model none tokens 0 network 0 6,055 ns per ask on this device (median of 7 batches, 3,584 asks)"
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 4,297 ns per ask on this device (median of 7 batches, 3,584 asks)"
       ]
     },
     {
       "prompt": "Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?",
-      "answer": null,
-      "route": "refused",
-      "provenance": "none",
-      "nsPerAsk": null,
-      "cli": null,
-      "cliMethod": null,
+      "answer": "72",
+      "route": "exact",
+      "provenance": "exact",
+      "nsPerAsk": 112500,
+      "cli": "72",
+      "cliMethod": "exact.word",
       "parity": true,
+      "requests": [],
+      "server": null,
       "lines": [
         "> Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?",
-        "no cell in this tab carries this question, so it is refused, not guessed.",
-        "route refused provenance none model none (the model cell is not in the browser) tokens 0 network 0 words the spoken reader could not read: natalia, sold, clips, to, her, friends, in, april",
-        "on the command line the organism routes it on: knowledge tier, regions, then the model cell: node bin/brain.mjs ask dilation \"Natalia sold clips to 48 of her friends in April, and then she sold half as many\" --provider ollama"
+        "answered exactly by exact.word, with no model and no network.",
+        "- read as a word problem: 2 equations over the quantities the sentences bound; every word consumed by a rule, a bound name or a unit",
+        "- expression 48 + 48 / 2",
+        "- exact rational arithmetic on BigInt, no rounding at any step",
+        "72",
+        "route exact provenance exact method exact.word model none tokens 0 network 0 112,500 ns per ask on this device (median of 7 batches, 112 asks)"
       ]
     },
     {
@@ -165,12 +206,215 @@
       "cli": null,
       "cliMethod": null,
       "parity": true,
+      "requests": [
+        {
+          "method": "POST",
+          "url": "http://127.0.0.1:34013/api/ask"
+        }
+      ],
+      "server": {
+        "status": 200,
+        "route": "direct",
+        "provenance": "memory",
+        "provider": "null",
+        "serverUs": 927,
+        "rttMs": 45,
+        "text": "nothing in memory matches write, poem, about, sea.\nserver: route direct provenance memory model none: the model cell is not configured on this host: the environment does not hold both BRAIN_LLM_BASE and BRAIN_LLM_KEY, so the null provider (offline, no model, no socket) stood in memory hits 0 web pages 0 927 us on the server (local) round trip 45 ms in this tab\nknowledge store on the server: absent (no finished ingest at bench/fixtures/wiki/store (no readable meta.json)), so the knowledge tier answers nothing there."
+      },
       "lines": [
         "> write a poem about the sea",
-        "no cell in this tab carries this question, so it is refused, not guessed.",
-        "route refused provenance none model none (the model cell is not in the browser) tokens 0 network 0 words the spoken reader could not read: write, a, poem, about, the, sea",
-        "on the command line the organism routes it on: knowledge tier, regions, then the model cell: node bin/brain.mjs ask dilation \"write a poem about the sea\" --provider ollama"
+        "no cell in this tab carries this question, so the tab refuses it, not guesses; the organism on the server answers it.",
+        "tab: route refused provenance none model none (the model cell is not in the browser) tokens 0 words the spoken reader could not read: write, a, poem, about, the, sea",
+        "the word problem reader stopped at: \"one sentence\" in: write a poem about the sea",
+        "nothing in memory matches write, poem, about, sea.",
+        "server: route direct provenance memory model none: the model cell is not configured on this host: the environment does not hold both BRAIN_LLM_BASE and BRAIN_LLM_KEY, so the null provider (offline, no model, no socket) stood in memory hits 0 web pages 0 927 us on the server (local) round trip 45 ms in this tab",
+        "knowledge store on the server: absent (no finished ingest at bench/fixtures/wiki/store (no readable meta.json)), so the knowledge tier answers nothing there."
       ]
     }
-  ]
+  ],
+  "serverRows": {
+    "exact": {
+      "status": 200,
+      "rttMs": 37.1,
+      "waitedFor429": false,
+      "json": {
+        "ok": true,
+        "text": "answered exactly by exact.arith, with no model and no network.\n- read \"what is 17 times 23\" as 17 * 23\n- expression 17 * 23\n- exact rational arithmetic on BigInt, no rounding at any step\n391",
+        "from": "exact",
+        "route": "direct",
+        "provenance": {
+          "answer": "exact",
+          "method": "exact.arith",
+          "memoryHits": 0,
+          "webPages": 0,
+          "modelAgreed": null
+        },
+        "exact": {
+          "answer": "391",
+          "method": "exact.arith",
+          "ns": 367208
+        },
+        "llm": {
+          "provider": null,
+          "model": null,
+          "ms": 0,
+          "tokens": 0,
+          "ok": false,
+          "reason": "not asked: the exact path computed it",
+          "fellBack": null
+        },
+        "promptHash": "c2fc4240bc023880",
+        "promptChars": 19,
+        "redacted": 0,
+        "cites": [],
+        "serverUs": 884,
+        "host": "local",
+        "knowledge": {
+          "ready": false,
+          "why": "no finished ingest at bench/fixtures/wiki/store (no readable meta.json)"
+        },
+        "model": {
+          "configured": false,
+          "provider": "null",
+          "names": [
+            "BRAIN_LLM_BASE",
+            "BRAIN_LLM_KEY",
+            "BRAIN_LLM_MODEL"
+          ]
+        }
+      }
+    },
+    "novel": {
+      "status": 200,
+      "rttMs": 5.9,
+      "waitedFor429": false,
+      "json": {
+        "ok": true,
+        "text": "nothing in memory matches write, poem, about, sea.",
+        "from": "memory",
+        "route": "direct",
+        "provenance": {
+          "answer": "memory",
+          "method": null,
+          "memoryHits": 0,
+          "webPages": 0,
+          "modelAgreed": null
+        },
+        "exact": null,
+        "llm": {
+          "provider": "null",
+          "model": "null",
+          "ms": 0,
+          "tokens": 13,
+          "ok": true,
+          "reason": "the model cell is not configured on this host: the environment does not hold both BRAIN_LLM_BASE and BRAIN_LLM_KEY, so the null provider (offline, no model, no socket) stood in",
+          "fellBack": null
+        },
+        "promptHash": "59072a9a027dfcb6",
+        "promptChars": 26,
+        "redacted": 0,
+        "cites": [],
+        "serverUs": 1136,
+        "host": "local",
+        "knowledge": {
+          "ready": false,
+          "why": "no finished ingest at bench/fixtures/wiki/store (no readable meta.json)"
+        },
+        "model": {
+          "configured": false,
+          "provider": "null",
+          "names": [
+            "BRAIN_LLM_BASE",
+            "BRAIN_LLM_KEY",
+            "BRAIN_LLM_MODEL"
+          ]
+        }
+      }
+    },
+    "cap413": {
+      "status": 413,
+      "json": {
+        "ok": false,
+        "error": "the prompt is 2001 chars; at most 2000",
+        "promptChars": 2001
+      }
+    },
+    "get": {
+      "status": 200,
+      "json": {
+        "ok": true,
+        "usage": "POST application/json {\"prompt\": \"...\"} to this path; the organism answers with act/prompt.mjs ask(), as `node bin/brain.mjs ask dilation \"...\"` does, and returns the CLI footer fields. At most 2000 chars, 20 asks a minute per client.",
+        "footer": [
+          "text",
+          "from",
+          "route",
+          "provenance",
+          "exact",
+          "llm",
+          "promptHash",
+          "promptChars",
+          "redacted",
+          "serverUs",
+          "host",
+          "knowledge"
+        ],
+        "host": "local",
+        "knowledge": {
+          "ready": false,
+          "why": "no finished ingest at bench/fixtures/wiki/store (no readable meta.json)"
+        },
+        "model": {
+          "configured": false,
+          "provider": "null",
+          "names": [
+            "BRAIN_LLM_BASE",
+            "BRAIN_LLM_KEY",
+            "BRAIN_LLM_MODEL"
+          ]
+        }
+      }
+    },
+    "options": {
+      "status": 204,
+      "accessControlAllowOrigin": null
+    },
+    "rapid": {
+      "n": 30,
+      "statuses": {
+        "200": 16,
+        "429": 14
+      },
+      "first429": 17,
+      "retryAfter": "3",
+      "serverUs": {
+        "min": 121,
+        "median": 167,
+        "max": 278,
+        "n": 16
+      },
+      "rttMs": {
+        "min": 1.5,
+        "median": 2,
+        "max": 3.3
+      }
+    },
+    "secrets": [
+      {
+        "s": "sk-",
+        "n": 0
+      },
+      {
+        "s": "sk_",
+        "n": 0
+      },
+      {
+        "s": "Bearer ",
+        "n": 0
+      },
+      {
+        "s": "BRAIN_LLM_KEY=",
+        "n": 0
+      }
+    ]
+  }
 }

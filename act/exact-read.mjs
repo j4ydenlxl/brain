@@ -422,6 +422,8 @@ export function readExact(text, opts = {}) {
     const r = arithOf(spoken);
     if (r) { r.steps.unshift('read "' + s.trim() + '" as ' + spoken); return r; }
   }
-  if (typeof opts.word === 'function') { const w = opts.word(s); if (w) return w; }
+  // the word problem reader (act/word.mjs readWord, board 18 builder): its answer is passed through only with its own
+  // method name, exact.word, so the page and the CLI print the same route for the same sentence
+  if (typeof opts.word === 'function') { const w = opts.word(s); if (w && w.method === 'exact.word' && typeof w.answer === 'string') return w; }
   return null;
 }

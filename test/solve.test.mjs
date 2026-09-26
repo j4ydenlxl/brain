@@ -311,3 +311,38 @@ test('ask with provider null answers spoken arithmetic on the early exact path, 
     assert.equal(prose.exact.ns, undefined, 'the late path has no early clock');
   } finally { globalThis.fetch = real; }
 });
+
+// ---------------------------------------------------------------- the word problem (board 18 builder, queue item 1)
+// act/word.mjs readWord is tried by solve() after the spoken reading; the answer carries method exact.word.
+const NATALIA = 'Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?';
+
+test('solve() reads the Natalia word problem whole: 72, method exact.word, and METHODS lists it', () => {
+  const r = solve(NATALIA);
+  assert.ok(r, 'solve answered the word problem');
+  assert.equal(r.method, 'exact.word');
+  assert.ok(METHODS.includes('exact.word'));
+  assert.equal(r.answer, str(add(int(48n), mul(int(48n), frac(1n, 2n)))));
+  assert.equal(renderSolved(r).split('\n').pop(), '72');
+  // one word no rule reads, and the whole record is null
+  assert.equal(solve(NATALIA.replace('sold half', 'zorbled half')), null);
+});
+
+test('the CLI shape of a word problem: route direct, provenance exact, method exact.word, exact.ns measured, no socket', async () => {
+  const brain = new Brain({ name: 'solve-word', ledger: 'full' });
+  attachMemory(brain, { name: 'solve-word:' + Math.random().toString(36).slice(2) });
+  const real = globalThis.fetch;
+  let fetches = 0;
+  globalThis.fetch = (...args) => { fetches++; return real(...args); };
+  try {
+    const a = await ask(brain, NATALIA, { provider: 'null' });
+    assert.equal(a.route, 'direct');
+    assert.equal(a.provenance.answer, 'exact');
+    assert.equal(a.provenance.method, 'exact.word');
+    assert.equal(a.exact.answer, '72');
+    assert.equal(a.text.split('\n').pop(), '72');
+    assert.equal(typeof a.exact.ns, 'number');
+    assert.ok(a.exact.ns > 0 && a.exact.ns < 5e9, 'the nanoseconds were measured: ' + a.exact.ns);
+    assert.equal(a.provenance.llm.provider, null);
+    assert.equal(fetches, 0);
+  } finally { globalThis.fetch = real; }
+});
