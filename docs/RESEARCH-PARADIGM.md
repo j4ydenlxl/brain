@@ -87,3 +87,51 @@ The paradigm shift is one sentence: from matching text to inducing and executing
 Order for the two weeks, each rung a board with its bar: A's parse and search (one board, CPU); D on top of A (one board, needs the model cell: LOCAL or the env provider); F on top of A (one board, CPU); E on the ladder (one board, the env provider, tokens); B when the pairs from D exist (LOCAL, his machine's CPU for an hour). The first number that would show the shift is heldOut.share above 0 with provenance program, and the first board writes it or writes its miss.
 
 What stays true under every route: a number a command did not print is not quoted; a held-out record is never read while a rule, a program or a training pair is written; the model is never the answer on the sub-token paths.
+
+## Part 2. The invention loop: ideas new to this tree (his 2026-09-26 19:5x EDT words: "before newton, calculus didnt exist... find a way. To make new things. Create new ideas. The Brain is supposed to be a genius")
+
+Part 1 surveyed roads others have walked. This part is what the organism would need in order to walk a road nobody wrote down: to make its own problems, its own concepts, its own readers, and to score itself without a human key. Each idea is stated as a mechanism the tree can build, with the first experiment and the bar. None is landed.
+
+### Idea 1. Residual mining: new primitives from what the DSL cannot say (the fluxion move)
+
+Newton named the thing the old algebra could not express: the rate inside the motion. The organism's equivalent: for every development record that NO program at depth 4 reproduces, brute-force the smallest arithmetic expression over the record's quantities that yields the answer, then look across all such residual expressions for a recurring sub-expression shape (for example "a minus b times c" appearing in 30 records with different bindings), and NAME that shape as a new primitive of the DSL, with the records that gave it as its birth certificate. The DSL is no longer authored; it grows from residuals. The primitive that turns the most unsolved records into solved ones is kept; the rest are dropped by the same rule the census round uses.
+
+First experiment: after Route A's search, the unsolved development records through the residual miner; print the residual shapes found, their counts, the primitives named, and the development records solved before and after. Bar: held-out answered rises after a named primitive with no held-out record read (the split object records it).
+
+### Idea 2. Self-play problems: the organism writes the problems it then learns to read
+
+The development set is 386 records; a genius does not wait for more. The DSL has a renderer: every primitive has a handful of sentence shapes ("half as many", "twice", "each", "left"), so any program can be rendered as a word problem whose answer is known by construction. The organism composes programs, renders them with paraphrase variation and distractor sentences, and learns the INVERSE (text to program) on millions of its own pairs, never reading GSM8K. The held-out 200 then test whether the self-taught reader transfers to problems humans wrote. The clock dilation line (65,297,897 organism-years per wall hour printed by bench/verdicts/spread.json on the synthetic plane) is what makes millions of pairs cheap: the plane is the organism's own time.
+
+First experiment: 100,000 rendered pairs from the Route A DSL, a reader fit on them (a feature model or Route B's small model), the held-out 200 asked; print pairs, fit wall seconds, held-out right. Bar: held-out right above the reader trained on the development records alone, both numbers printed side by side.
+
+Risk, stated: rendered text is not human text; the gap between the two is the number the experiment prints.
+
+### Idea 3. Compression as the score: the organism improves without a bench
+
+A bench needs a human key. Description length needs nothing: keep the library of programs and readers that describes the record stream in the fewest bits (each record as program plus bindings plus the residual it cannot explain). Shorter is better; a new concept that shortens the corpus is kept, one that does not is dropped. This is the objective under which generalisation and invention are the same act (the tree already prints a compression ruler: COMPRESS GREEN, bytes per score point 59660.533 in the final gate). Under this score the organism can run in organism-time forever with no orchestrator and no key, and its curve is bits per held-out record over time.
+
+First experiment: bits per record of the development set under the template library against under the Route A program library; then bits per record of a held-out stream the organism never trains on. Bar: the held-out bits per record falling across two sessions, both numbers printed.
+
+### Idea 4. Invariants as a free oracle: grading without the answer key
+
+The organism cannot read held-out answers, but it can check what any answer must satisfy: a count is a non-negative integer; "half as many" is at most the whole; a total is at least each part; money keeps two decimals; a rate times a time has the unit of the quantity. Each invariant is a partial oracle written once. Two solvers that disagree on a held-out record, where one violates an invariant, give a labelled example for free, with no key read. The loop can then learn on the held-out STREAM honestly, because it learns from consistency, not from the answers.
+
+First experiment: the invariant set written from development records only; every held-out answer from every route checked; print how many held-out answers the invariants reject and how many of those were in fact wrong (checked once, by the bench, against the key, and the check never shown to a rule). Bar: rejections that are right above 80 percent of rejections, printed as the fraction.
+
+### Idea 5. The reader is grown, not written: parser cells under the census rule
+
+act/word.mjs is the orchestrator's reader. A grown reader is a program too: token patterns mapped to roles in a small grammar DSL. The census round (landed this session: kept 14 cells against the placebo's 4) selects parser cells by the same rule: the bench moves, no regression, placebo control. The parser stops being authored, and the spread operator (834 of 834 improvements reached all 3 instances) carries the winning parser to every instance.
+
+First experiment: the census round's kind "reader" on the development records; 20 rounds; print kept per hour against the placebo and development reproduced at open and at close. Bar: development reproduced rises with 0 held-out records read.
+
+### Idea 6. The population as the search: organism-years spent on program space
+
+Route A's search is one process enumerating. The organism is a population with a spread operator. Partition program space across instances (by primitive prefix or by depth), let each instance search its region in its own dilated time, and let spread carry kept programs to the others, so the search is the evolution and the "amount times scale" axes of the vision do the work. The bar is programs kept per organism-year, a number the ladder can print beside organism-years per wall hour.
+
+First experiment: Route A's search on 3 instances through daemon/multiply.mjs with the spread operator on; print programs kept, kept per organism-year, development reproduced, against the single-process run. Bar: more development reproduced per wall second than one process, with the noise band.
+
+## The reading of part 2
+
+Ideas 1, 2 and 3 together are a system that invents: it names new concepts from its residuals, writes its own problems to teach itself, and scores itself by how much it compresses, with no human key. Ideas 4, 5 and 6 are how it does so honestly and at scale: invariants as the oracle, the reader grown not written, the population as the search. Board 22 (Route A) is the substrate every one of them stands on; idea 1 is folded into board 22's item as its last rung, so the first board of the banked week already has an invention step. What is new here is not any one part. It is that the organism's own time (dilation), its own selection (census with a placebo), its own spread and its own compression ruler, all of which exist in the tree today, are pointed at the one thing that was missing: making the concepts it reads with.
+
+The rule of the manual holds over every sentence above: nothing here is reached until a verdict prints it.
