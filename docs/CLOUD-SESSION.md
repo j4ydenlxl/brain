@@ -34,6 +34,8 @@ His words of 10:05 EDT are in `MANUAL.md` section A: "it's a pro at everything, 
 
 The $250 buys nothing until extra usage is ON with its monthly limit set to 250 (claude.ai, Settings, Usage; at 05:25 EDT the card read extra usage OFF, limit 101.55 USD, spent 0.00). That is HIS click, the one step this plan cannot take.
 
+**Scope (his 2026-09-26 11:56 EDT words: "the $250 cloud session is what im sending it to, not the week. The week agent is after that, and that is going to be a banked reset use", and "AS EFFICIENT AS POSSIBLE"):** this plan is the $250 cloud session only. Dollars per landing is its measure: read section A and this file once, no re-reading, no fleets, subagents only where "The levers and the rules" prices them, Opus 5.5 builds, the cheapest model for mechanical stages, the price of every landing in its LOG line, stop at the $250 and write the handoff in this file for the week agent, which runs on the banked weekly reset with its own prompt.
+
 ### What he can test and use today (measured 10:55 EDT on this machine, model cell OFF)
 
 ```
