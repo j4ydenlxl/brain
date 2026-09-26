@@ -60,6 +60,8 @@ A session takes the first item that is red (`barMet` false or no verdict) and un
 10. **The contamination row (B2).** `node bench/gate.mjs --contamination` is RED on 29 bar verdicts: 25 with no split (autopilot-board10, boundary, budget, census-prune, census-scale-pruned, census-scale-static, census, code, compress-board10, compress, daemon, dream, knowledge, math, multiply, native, public-launch, recall, senses, spawn, synth, velocity-heldout, velocity, web-ladder, years) and 4 with a string split (grid-evaluation, grid-library, grid, imagine). Each bench writes a split object or a contaminated label, then its verdict is re-run by its own bar command, never edited by hand; the row is never widened. CLOUD, one file per session is fine.
 11. **Rows 1 to 7 of the table above, then Board 13's `plateau`, `clock`, `direct`, `live`, `exit`, then the organism's own board** `docs/boards/proposed/board-17.md` (8 items from the gap ledger, each naming its verdict file; when spent, `node self/boards.mjs` writes the next). `math` and `code` need Ollama: never in the cloud.
 
+12. **A prompt box on dilation.dev ("someday", his 2026-09-26 11:32 EDT words: "it should be cli in dilation.dev someday so i can prompt like any ai").** The organism must RUN somewhere reachable for this: a cloud host process serving the CLI ask over HTTP (bin/brain.mjs already has a control plane; the missing piece is an HTTP ask endpoint with the same footer fields, rate-limited, no key in the page), and web/ gains a terminal page that posts to it and prints the answer with its provenance line. Bar: from a browser on dilation.dev, "what is 17 times 23" answers 391 with provenance exact, and a novel question answers with its route printed; both recorded in bench/verdicts/site-ask.json. Order: after items 1 to 11; never before the endpoint has the boundary row GREEN (nothing reaches out).
+
 ### The levers and the rules (unchanged, measured on this machine)
 
 2. **Dispatches.** One subagent costs about 55k tokens before it does any work (memory `subagent-harness-overhead`). A cloud session is ONE builder with NO subagents.
@@ -74,6 +76,18 @@ A session takes the first item that is red (`barMet` false or no verdict) and un
 - Every landing is a PR against `master` merged by the local orchestrator or by him. A session never merges its own PR.
 
 What the local machine does with zero Claude tokens meanwhile: the organism's own loop. `bench/verdicts/soak.json` holds the command (`node tools/budget.mjs --ram-mb 6000 --disk-mb 2000 --dir state/self -- node --max-old-space-size=6000 bin/brain.mjs self-code --auto --soak <minutes> --author on --json`); the STOP switch is `state/self/STOP`, and the `--soak` minutes are the only knob. That loop is the vision's own engine; it costs the local GPU, not the pool.
+
+## The month, in his words (2026-09-26 11:32 EDT)
+
+His order verbatim: "usage hitting soon, so ill soon start the 250 ina new number. After the weekly reset, theres another week 's worth of tokens. and then after that there is a last week (which has to be a sprint) which shoulod be completed in sub 2 days. after everything, it should match EVERY part of the vision and be perfectly fine without your help and able to run by itself in the cloud (without my touch) and when i prompt it be an expert at everything and grow and improve in a sandbox,  so if its like gpt 4o level when ur done with the month, it should grow to be opus 5.5 level by itself and better and shit. Also it should be cli in dilation.dev someday so i can prompt like any ai"
+
+Read as three phases and five acceptance tests (ASSUMPTIONS marked in MANUAL.md section A at 2026-09-26 11:32 EDT):
+
+- **Phase 1, the $250**, in a NEW context window (this one is nearly spent), from his click until the weekly reset 2026-09-30 15:00Z. Work "The queue, in his order" above, top down, one landing per session, checkpoint protocol every time.
+- **Phase 2, the week after the reset**, 2026-09-30 to 2026-10-07 15:00Z. Same queue, and the frontier-bench chains to completion.
+- **Phase 3, the sprint**, the last week's tokens finished in under 2 days: cloud sessions in parallel on DISJOINT items, the gate as the referee, nothing shared but the repository.
+- **The end state, five tests, all measured:** (1) every section A vision item has a bar and a met verdict; (2) after the extra-usage switch it runs in the cloud with no click of his (the autonomy row and the cloud host census prove it); (3) prompted, it is an expert: the public bench ladder with the published rows beside its row; (4) it grows by ITSELF in a sandbox: the self-improvement loop on its own red benches with the placebo control, and its level is a position on the published rows: the published GPT-4o row is the month-end rung, the published Opus 5.5 row the rung it must climb to alone (add both rows to bench/public.mjs with their sources before claiming either); (5) item 12, the prompt box on dilation.dev.
+- **What this session could not do:** none of the five is met today. Printed: GSM8K 472 of 530 through qwen3:1.7b with native share 0, HumanEval 5 of 6 on a smoke run, ARC 1 of 400, the loop's soak kept 0 proposals in 13 model calls. The distance is the whole month.
 
 ## What is never done in a cloud session
 
