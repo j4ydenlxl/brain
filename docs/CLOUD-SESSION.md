@@ -141,7 +141,7 @@ Not started here, in his order: queue item 2 beyond the env provider wiring (LOC
 
 ### The paradigm research (his 19:41 EDT order)
 
-docs/RESEARCH-PARADIGM.md: six routes off the current way (program induction over a DSL, the organism's own small program-emitting model, structure-nearest cases, the model as teacher only, verified test-time compute for the ladder, the census growing programs), each with its first experiment and its bar. The reading: from matching text to inducing and executing programs, the model a teacher at build time and a verifier at the ladder, never the answer. The first number that shows the shift is heldOut.share above 0 with provenance program in bench/verdicts/ns.json. The two-week order puts Route A's board first.
+docs/RESEARCH-PARADIGM.md: six routes off the current way (program induction over a DSL, the organism's own small program-emitting model, structure-nearest cases, the model as teacher only, verified test-time compute for the ladder, the census growing programs), each with its first experiment and its bar. The reading: from matching text to inducing and executing programs, the model a teacher at build time and a verifier at the ladder, never the answer. The first number that shows the shift is heldOut.share above 0 with provenance program in bench/verdicts/ns.json. The two-week order puts Route A's board first: it is written as docs/boards/board-22.js, one item, launched with `Workflow({scriptPath: "docs/boards/board-22.js", args: {root: "<checkout>", marker: "<scratch>/board22.marker"}})` beside board 17's dead-share and ladder-arc.
 
 ### The launch order for the next session (his 17:32 EDT words withdrew the separate session; board 21 was launched here at 17:32 EDT and its result is in the table above)
 
