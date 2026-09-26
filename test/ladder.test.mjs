@@ -16,13 +16,20 @@
 //       Wilson 95 as the verdicts store it, instances under the health window, the P15 rows
 //       each from its file, and the board on the real verdicts held to their own fields.
 //   (o) and (p) the rows item verdict node bench/ladder.mjs --rows writes: met only when the
-//       board with its three Board 12 blocks, a GREEN gate with its five rows and the ladder and
-//       gate tests all hold; a gate that started before a file this item owns changed is STALE;
-//       rows.json is written once.
+//       board with its six blocks (Board 12's three and Board 15's GAPS, MAGNITUDE, UNDONE), a
+//       GREEN gate with its seven rows (AUTONOMY and HANDOFF graded, not N/A, and not red as a
+//       referee) and the ladder and gate tests all hold; a gate that started before a file this
+//       item owns changed is STALE; rows.json is written once, and an earlier board's is kept.
 //   (q) to (s) the Board 12 blocks on hand written verdicts: MULTIPLYING, AUTHORED (the share,
 //       patches per source per day, days since the last board) and KNOWLEDGE, each printing
 //       "not measured" for a missing verdict, PARTIAL for a -partial one, and n/a, never 0, for
 //       a number the verdict does not carry.
+//   (t) to (w) the Board 15 blocks on planted trees: GAPS (open, with a trial, attempted in the
+//       last 7 days, kept, closed with before, after and operator), MAGNITUDE (the organism per
+//       wall hour beside the orchestrator and the simulated clock), UNDONE (board items per board,
+//       attempts and the wall each refusal hit, partial bars resumed, proposed boards), and the
+//       AUTHORED SHARE line naming the boards its denominator counts; each prints "not measured"
+//       for a missing file and never a zero for a missing number.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, writeFileSync, statSync, readFileSync, mkdirSync } from 'node:fs';
@@ -36,6 +43,7 @@ import {
   boardOf, boardLines, runBoard, classOf, classesOf, wilson95, armsOf, recordsOf, isPartialVerdict, armSeparation,
   instancesOf, substrateOf, authoredOf, bytesPerPointOf, improvementOf, HIS_RATE,
   multiplyOf, multiplyingLines, authoredLines, lastBoardOf, perSourcePerDayOf, knowledgeOf, knowledgeLines, narrowReasons,
+  gapsOf, gapsLines, magnitudeOf, magnitudeLines, undoneOf, undoneLines,
 } from '../bench/ladder.mjs';
 import { ANSWER_PROVENANCE as PROVENANCE } from '../act/prompt.mjs';
 import { ALIVE_WINDOW_MS } from '../daemon/health.mjs';
@@ -555,6 +563,9 @@ function rowsInputs() {
         multiplying: { source: 'bench/verdicts/multiply.json' },
         authored: { source: null, reason: 'none', perSourcePerDay: { rows: [] }, lastBoard: { newest: null } },
         knowledge: { sources: [{ name: 'simplewiki', status: 'not measured' }] },
+        gaps: { at: '2026-09-24T01:00:00.000Z', windowDays: 7, sources: { ledger: 'state/self/gaps.jsonl', decisions: 'bench/verdicts/autopilot/*.jsonl', authored: 'state/self/authored.jsonl' }, ledger: { open: 12, unparsed: 0, withTrial: 9, byKind: { missed: 3, open: 9 } }, decisions: null, authored: null, closed: null },
+        magnitude: { organism: { measured: false, reason: 'no bench/verdicts/soak.json' }, orchestrator: { measured: false, reason: 'not loaded' }, simulated: { measured: false, reason: 'no bench/verdicts/spread.json' } },
+        undone: { at: '2026-09-24T01:00:00.000Z', windowDays: 7, sources: { ledger: 'l', brief: 'b', decisions: 'd', authored: 'a', resume: 'r', proposed: 'p/*.md' }, items: { total: 4, byBoard: { 13: 4 } }, attempts: null, plants: null, authoredOnItems: null, partial: null, proposed: null },
       },
     },
     gate: {
@@ -564,12 +575,15 @@ function rowsInputs() {
       rows: {
         budget: { ok: true, line: line('BUDGET', true) }, compress: { ok: true, line: line('COMPRESS', true) }, hisData: { ok: true, line: line('HIS DATA', true) },
         loadBearing: { ok: true, line: line('LOAD-BEARING', true) }, boundary: { ok: true, line: line('BOUNDARY', true) },
+        autonomy: { ok: true, graded: true, rules: true, line: line('AUTONOMY', true) }, handoff: { ok: true, graded: true, rules: true, line: line('HANDOFF', true) },
       },
+      line: 'GATE GREEN: test files 2/2, assertions 37 pass / 0 fail',
     },
     tests: [
       { file: 'test/ladder.test.mjs', pass: 17, fail: 0, total: 17, exit: 0, ms: 6421, budget: { outcome: 'exit', peakRssMb: 612.75 } },
       { file: 'test/gate.test.mjs', pass: 6, fail: 0, total: 6, exit: 0, ms: 4210, budget: { outcome: 'exit', peakRssMb: 140.5 } },
       { file: 'test/gate-rows.test.mjs', pass: 9, fail: 0, total: 9, exit: 0, ms: 1730, budget: { outcome: 'exit', peakRssMb: 96.25 } },
+      { file: 'test/gate-autonomy.test.mjs', pass: 11, fail: 0, total: 11, exit: 0, ms: 2210, budget: { outcome: 'exit', peakRssMb: 97.5 } },
     ],
     owned: [{ file: 'bench/ladder.mjs', mtimeMs: T('00:30:00') }, { file: 'bench/gate.mjs', mtimeMs: T('00:31:00') }, { file: 'notes/ladder.md', mtimeMs: T('00:59:00') }],
     at: '2026-09-24T03:00:00.000Z',
@@ -643,20 +657,44 @@ test('(o) the rows verdict: met only when board, GREEN gate and tests all hold, 
   const one = rowsInputs(); one.tests = one.tests[0];
   assert.equal(rowsVerdictOf(one).met, true, 'a single run row is still read');
   const mr = rowsInputs(); delete mr.gate.rows.compress;
-  assert.ok(rowsVerdictOf(mr).reasons.includes('the gate printed 4 of the 5 rows'));
+  assert.ok(rowsVerdictOf(mr).reasons.includes('the gate printed 6 of the 7 rows'));
   const nb = rowsInputs(); delete nb.gate.rows.loadBearing; delete nb.gate.rows.boundary;
   const nbv = rowsVerdictOf(nb);
-  assert.ok(nbv.reasons.includes('the gate printed 3 of the 5 rows'), nbv.reasons.join(' | '));
-  assert.deepEqual(nbv.doc.parts.gate.rowsPrinted, ['BUDGET', 'COMPRESS', 'HIS DATA']);
+  assert.ok(nbv.reasons.includes('the gate printed 5 of the 7 rows'), nbv.reasons.join(' | '));
+  assert.deepEqual(nbv.doc.parts.gate.rowsPrinted, ['BUDGET', 'COMPRESS', 'HIS DATA', 'AUTONOMY', 'HANDOFF']);
   const rb = rowsInputs(); rb.gate.verdict = 'RED'; rb.gate.rows.loadBearing = { ok: false, line: 'LOAD-BEARING RED: a row line' };
   assert.ok(rowsVerdictOf(rb).reasons.includes('the gate is RED: red rows LOAD-BEARING'));
   const mb = rowsInputs(); delete mb.ladder.board.knowledge; mb.ladder.board.authored = { share: 0.1 };
   const mbv = rowsVerdictOf(mb);
   assert.ok(mbv.reasons.includes('the board in ladder.json carries no AUTHORED, KNOWLEDGE block'), mbv.reasons.join(' | '));
-  assert.deepEqual(mbv.doc.parts.ladder.blocks, ['MULTIPLYING']);
-  assert.deepEqual(ok.doc.parts.ladder.blocks, ['MULTIPLYING', 'AUTHORED', 'KNOWLEDGE']);
-  assert.equal(ok.doc.parts.tests.length, 3);
-  assert.equal(ok.doc.board, 12);
+  assert.deepEqual(mbv.doc.parts.ladder.blocks, ['MULTIPLYING', 'GAPS', 'MAGNITUDE', 'UNDONE']);
+  assert.deepEqual(ok.doc.parts.ladder.blocks, ['MULTIPLYING', 'AUTHORED', 'KNOWLEDGE', 'GAPS', 'MAGNITUDE', 'UNDONE']);
+  assert.equal(ok.doc.parts.tests.length, 4);
+  assert.equal(ok.doc.board, 15);
+  // Board 15: the verdict carries barMet at the top, a split, the printed blocks and the gate line
+  assert.equal(ok.doc.barMet, true);
+  assert.equal(stale.doc.barMet, false);
+  assert.equal(typeof ok.doc.split.development, 'string');
+  assert.equal(typeof ok.doc.split.heldOut, 'string');
+  assert.ok(ok.doc.parts.printed.gaps[0].startsWith('GAPS ('), ok.doc.parts.printed.gaps[0]);
+  assert.ok(ok.doc.parts.printed.gaps.includes('  open: 12 (missed 3, open 9), with a trial 9'), ok.doc.parts.printed.gaps.join(' | '));
+  assert.ok(ok.doc.parts.printed.undone.includes('  board items undone: 4 (board 13 4)'), ok.doc.parts.printed.undone.join(' | '));
+  assert.equal(ok.doc.parts.printed.magnitude[0], 'MAGNITUDE: the organism per wall hour beside the orchestrator and the simulated clock');
+  assert.equal(ok.doc.parts.gate.gateLine, 'GATE GREEN: test files 2/2, assertions 37 pass / 0 fail');
+  assert.equal(ok.doc.parts.gate.lines.autonomy, 'AUTONOMY GREEN: a row line');
+  // a new row that printed N/A graded nothing: missed
+  const na = rowsInputs(); na.gate.rows.autonomy = { ok: true, graded: false, rules: false, line: 'AUTONOMY N/A: not the installation' };
+  const nav = rowsVerdictOf(na);
+  assert.equal(nav.met, false);
+  assert.ok(nav.reasons.includes('the AUTONOMY row(s) printed N/A, so the run graded no installation'), nav.reasons.join(' | '));
+  // a red row printed as a referee leaves the gate GREEN and still misses the bar
+  const rf = rowsInputs(); rf.gate.rows.handoff = { ok: false, graded: true, rules: false, line: 'HANDOFF RED (REFEREE, not ruling: a lock): x' };
+  const rfv = rowsVerdictOf(rf);
+  assert.equal(rfv.met, false);
+  assert.ok(rfv.reasons.includes('red rows printed as referees (a live autopilot held the lock): HANDOFF'), rfv.reasons.join(' | '));
+  // a ruling red row turns the gate red and is named
+  const rh = rowsInputs(); rh.gate.verdict = 'RED'; rh.gate.rows.autonomy = { ok: false, graded: true, rules: true, line: 'AUTONOMY RED: x' };
+  assert.ok(rowsVerdictOf(rh).reasons.includes('the gate is RED: red rows AUTONOMY'), rowsVerdictOf(rh).reasons.join(' | '));
   console.log('(o) met ' + ok.met + ', stale reasons ' + stale.reasons.length + ', red reasons ' + red.reasons.length);
 });
 
@@ -685,20 +723,27 @@ test('(p) runRows writes rows-partial.json when missed, rows.json once when met,
     const logs = [];
     const a = await runRows({ root, verdictsDir: vd, runTests, log: (l) => logs.push(l), at: inp.at });
     assert.deepEqual(ran, [...ROWS_TESTS]);
-    assert.deepEqual(ROWS_TESTS, ['test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs']);
+    assert.deepEqual(ROWS_TESTS, ['test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs', 'test/gate-autonomy.test.mjs']);
     assert.equal(a.met, false);
     const partial = JSON.parse(readFileSync(path.join(vd, 'rows-partial.json'), 'utf8'));
     assert.equal(partial.isTheBar, false);
+    assert.equal(partial.barMet, false);
     assert.ok(partial.reasons.includes('the gate is RED: red rows HIS DATA'), partial.reasons.join(' | '));
     assert.ok(logs.some((l) => l.startsWith('ROWS MISSED')), logs.join(' | '));
     assert.ok(logs.some((l) => l.startsWith('wrote ') && l.includes('rows-partial.json')), logs.join(' | '));
 
-    // GREEN: rows.json is written, then a second met run leaves it byte for byte
+    // GREEN: an earlier board's rows.json is copied aside first, then rows.json is written, and a
+    // second met run leaves it byte for byte
+    const board12 = JSON.stringify({ at: '2026-09-24T15:52:08.292Z', isTheBar: true, board: 12, met: true });
+    writeFileSync(path.join(vd, 'rows.json'), board12);
     writeFileSync(path.join(vd, 'gate.json'), JSON.stringify(inp.gate));
     const b = await runRows({ root, verdictsDir: vd, runTests, log: () => {}, at: inp.at });
     assert.equal(b.met, true, b.lines.join(' | '));
     const first = readFileSync(path.join(vd, 'rows.json'), 'utf8');
     assert.equal(JSON.parse(first).isTheBar, true);
+    assert.equal(JSON.parse(first).barMet, true);
+    assert.equal(JSON.parse(first).board, 15);
+    assert.equal(readFileSync(path.join(vd, 'rows-board12.json'), 'utf8'), board12, 'the earlier board\'s verdict is kept, byte for byte');
     const c = await runRows({ root, verdictsDir: vd, runTests, log: () => {}, at: '2026-09-24T04:00:00.000Z' });
     assert.equal(c.wrote, null, 'the bar file is written once');
     assert.equal(readFileSync(path.join(vd, 'rows.json'), 'utf8'), first);
@@ -707,7 +752,7 @@ test('(p) runRows writes rows-partial.json when missed, rows.json once when met,
     rmSync(path.join(root, 'test', 'gate-rows.test.mjs'));
     ran.length = 0;
     const d = await runRows({ root, verdictsDir: vd, runTests, log: () => {}, write: false, at: inp.at });
-    assert.deepEqual(ran, ['test/ladder.test.mjs', 'test/gate.test.mjs']);
+    assert.deepEqual(ran, ['test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-autonomy.test.mjs']);
     assert.equal(d.met, false);
     assert.ok(d.reasons.includes('test/gate-rows.test.mjs did not pass: not in the tree'), d.reasons.join(' | '));
     assert.equal(d.wrote, null);
@@ -861,5 +906,183 @@ test('(s) KNOWLEDGE: articles held per source, breadth and recall against null, 
     assert.ok(L.some((l) => l.startsWith('    also on disk: ') && l.includes('knowledge-partial.json (PARTIAL: the file is named -partial, isTheBar false')), L.join(' | '));
     assert.ok(L.some((l) => l.startsWith('  enwiki (') && l.includes('PARTIAL: the file is named -partial, isTheBar false') && l.includes('40000 articles held of n/a in the dump, breadth n/a; recall@1 n/a against null n/a, recall@5 n/a against null n/a, n n/a')), L.join(' | '));
     for (const l of L.slice(1)) assert.equal(NOT_ZERO.test(l), false, l);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+// ---------------------------------------------------------------- (t) to (w) the Board 15 blocks
+// A planted tree: a ledger, two decision files, an authored line, a soak and a spread verdict,
+// brief and resume logs and a proposed board. Every number the blocks print is counted here by
+// hand from what was planted.
+const NOW15 = Date.parse('2026-09-26T12:34:56.789Z');
+const H = 3_600_000;
+const iso = (ms) => new Date(ms).toISOString();
+function jsonl(file, rows) { mkdirSync(path.dirname(file), { recursive: true }); writeFileSync(file, rows.map((r) => JSON.stringify(r)).join('\n') + '\n'); }
+function plant15() {
+  const root = tmp();
+  const dir = path.join(root, 'bench', 'verdicts');
+  mkdirSync(dir, { recursive: true });
+  jsonl(path.join(root, 'state', 'self', 'gaps.jsonl'), [
+    { id: 'missed:a.json', kind: 'missed', trial: { command: 'node bench/a.mjs', bench: 'bench/a.mjs' } },
+    { id: 'open:notes/x.md#1', kind: 'open', trial: null },
+    { id: 'board-13:exit', kind: 'board item', board: 13, trial: 'node bench/exit.mjs --bar' },
+    { id: 'board-15:resume', kind: 'board item', board: 15, trial: null },
+    { id: 'never:p-partial.json', kind: 'bar never completed', verdictFile: 'bench/verdicts/p-partial.json' },
+    { id: 'never:q-partial.json', kind: 'bar never completed', verdictFile: 'bench/verdicts/q-partial.json' },
+  ]);
+  const soakStart = NOW15 - 30 * H;
+  jsonl(path.join(dir, 'autopilot', '2026-09-25.jsonl'), [
+    { kind: 'self.code.auto', at: iso(soakStart + 0.1 * H), gap: 'missed:a.json', decision: 'refused', wall: 'test' },
+    { kind: 'self.code.auto', at: iso(soakStart + 0.2 * H), gap: 'missed:a.json', decision: 'kept', operator: 'knob-tune', before: 3, after: 1, unit: 'ms', bar: 1, closed: true },
+    { kind: 'notes.open', at: iso(soakStart + 0.3 * H), decision: 'refused', wall: 'plan' },
+  ]);
+  jsonl(path.join(dir, 'autopilot', '2026-09-10.jsonl'), [
+    { kind: 'self.code.auto', at: iso(NOW15 - 10 * 24 * H), gap: 'open:notes/x.md#1', decision: 'refused', wall: 'test' },
+  ]);
+  jsonl(path.join(root, 'state', 'self', 'authored.jsonl'), [
+    { at: iso(soakStart + 0.2 * H), gap: 'missed:a.json', operator: 'knob-tune', organism: true, before: 3, after: 1, toward: 2, bar: 4 },
+  ]);
+  put(dir, 'soak.json', { at: iso(soakStart + H), soak: { runId: 'r1', startedAt: iso(soakStart), updatedAt: iso(soakStart + 0.5 * H), elapsedMs: 0.5 * H } });
+  put(dir, 'spread.json', { at: '2026-09-24T20:34:05.196Z', isTheBar: true, barMet: false, keptPerMillionOrganismYears: 12.5, improvementsKept: 25, organismYears: 2000000, generationsPerSecond: 4321.5, spreadGenerationsPerSecond: 8.25 });
+  jsonl(path.join(root, 'state', 'self', 'brief', '2026-09-26.jsonl'), [
+    { at: iso(NOW15 - 2 * H), kind: 'ask', gap: 'board-13:exit' },
+    { at: iso(NOW15 - 2 * H), kind: 'decision', gap: 'board-13:exit', decision: 'refused', wall: 'test' },
+    { at: iso(NOW15 - H), kind: 'decision', gap: 'board-13:exit', decision: 'refused', wall: 'budget' },
+    { at: iso(NOW15 - H), kind: 'refusal', gap: 'board-13:exit', wall: 'plan' },
+    { at: iso(NOW15 - H), kind: 'decision', gap: 'board-planted:clamp', decision: 'kept' },
+    { at: iso(NOW15 - 9 * 24 * H), kind: 'decision', gap: 'board-13:exit', decision: 'refused', wall: 'gate' },
+  ]);
+  jsonl(path.join(root, 'state', 'self', 'resume.jsonl'), [
+    { kind: 'resumed', at: iso(NOW15 - 3 * H), gaps: ['never:p-partial.json'], linesAdded: 9, recordsCompleted: 3, barLanded: false, notResumable: ['never:q-partial.json'] },
+    { kind: 'resumed', at: iso(NOW15 - 2 * H), gaps: ['never:p-partial.json'], linesAdded: 6, recordsCompleted: 2, barLanded: false, notResumable: ['never:q-partial.json'] },
+  ]);
+  mkdirSync(path.join(root, 'docs', 'boards', 'proposed'), { recursive: true });
+  writeFileSync(path.join(root, 'docs', 'boards', 'proposed', 'board-17.md'), '# BOARD 17\n\nat: 2026-09-26T02:26:03.947Z\n\nboard: 17\n\n## item a\n\ntext\n\n## item b\n\ntext\n');
+  return { root, dir };
+}
+const ORCH = { ok: true, sources: ['docs/LOG.md', 'docs/BOARDS.json'], boards: 3, boardList: [1, 2, 3], barsMet: 2, windowFrom: '2026-09-20T00:00:00.000Z', windowTo: '2026-09-22T00:00:00.000Z', windowDays: 2, boardsPerDay: 1.5, barsMetPerDay: 1, boardsPerHour: 0.0625, barsMetPerHour: 0.0417 };
+
+test('(t) GAPS: open, with a trial, attempted and kept in the last 7 days, closed with before, after and operator', () => {
+  const { root, dir } = plant15();
+  const empty = tmp();
+  try {
+    const g = gapsOf({ root, dir, now: NOW15 });
+    assert.equal(g.ledger.open, 6);
+    assert.equal(g.ledger.withTrial, 2, 'an object trial with a command and a board item trial string');
+    assert.equal(g.decisions.attempted, 1, 'the 10-day-old decision and the gapless one are not attempts in the window');
+    assert.equal(g.decisions.attempts, 2);
+    assert.equal(g.decisions.kept, 1);
+    assert.equal(g.decisions.files, 2);
+    assert.deepEqual(g.closed, [{ gap: 'missed:a.json', before: 3, after: 1, unit: 'ms', bar: 1, operator: 'knob-tune', at: iso(NOW15 - 30 * H + 0.2 * H), source: 'bench/verdicts/autopilot/2026-09-25.jsonl' }]);
+    const L = gapsLines(g);
+    assert.ok(L.includes('  open: 6 (missed 1, open 1, board item 2, bar never completed 2), with a trial 2'), L.join(' | '));
+    assert.ok(L.includes('  attempted in the last 7 days: 1 gaps in 2 decisions (refused 1, kept 1; 2 decision files, 4 lines)'), L.join(' | '));
+    assert.ok(L.some((l) => l.startsWith('  kept: 1 in the last 7 days (1 gaps), 1 in all the decision files; state/self/authored.jsonl holds 1 lines, 1 with an organism author')), L.join(' | '));
+    assert.ok(L.includes('    closed missed:a.json: before 3 after 1 ms (bar 1) by knob-tune, ' + iso(NOW15 - 30 * H + 0.2 * H) + ' (bench/verdicts/autopilot/2026-09-25.jsonl)'), L.join(' | '));
+    // nothing on disk: not measured, never a zero
+    const e = gapsLines(gapsOf({ root: empty, dir: path.join(empty, 'bench', 'verdicts'), now: NOW15 }));
+    assert.ok(e.includes('  open: not measured (no state/self/gaps.jsonl)'), e.join(' | '));
+    assert.ok(e.some((l) => l.startsWith('  attempted in the last 7 days: not measured')), e.join(' | '));
+    assert.ok(e.some((l) => l.startsWith('  closed: not measured')), e.join(' | '));
+    for (const l of e) assert.equal(NOT_ZERO.test(l), false, l);
+  } finally { rmSync(root, { recursive: true, force: true }); rmSync(empty, { recursive: true, force: true }); }
+});
+
+test('(u) MAGNITUDE: the organism per wall hour of its soak beside the orchestrator and the simulated clock', () => {
+  const { root, dir } = plant15();
+  const empty = tmp();
+  try {
+    const m = magnitudeOf({ root, dir, orchestrator: ORCH });
+    assert.equal(m.organism.wallHours, 0.5);
+    assert.equal(m.organism.kept, 1);
+    assert.equal(m.organism.keptDecisions, 1);
+    assert.equal(m.organism.gapsMoved, 1);
+    assert.equal(m.organism.distanceBarUnits, 0.5, 'toward 2 of a bar of 4');
+    assert.equal(m.organism.attempts, 3, 'every decision line inside the 0.5 h soak window, the gapless notes one included');
+    assert.equal(m.organism.attemptsPerHour, 6);
+    assert.equal(m.organism.keptPerHour, 2);
+    assert.equal(m.organism.distancePerHour, 1);
+    const L = magnitudeLines(m);
+    assert.ok(L.some((l) => l.startsWith('  organism: soak r1 (bench/verdicts/soak.json, ') && l.includes('0.5 wall hours): kept 1 (state/self/authored.jsonl, organism author) and 1 in bench/verdicts/autopilot/*.jsonl, gaps moved 1, distance moved 0.5 bar units')), L.join(' | '));
+    assert.ok(L.some((l) => l.startsWith('    per wall hour: kept 2, gaps moved 2, distance 1 bar units')), L.join(' | '));
+    assert.ok(L.includes('  orchestrator: 3 boards landed (1, 2, 3) and 2 bars met over 2 days (docs/LOG.md, docs/BOARDS.json, 2026-09-20T00:00:00.000Z to 2026-09-22T00:00:00.000Z): 1.5 boards per day, 1 bars met per day (0.0625 and 0.0417 per wall hour)'), L.join(' | '));
+    assert.ok(L.includes('  simulated clock: 12.5 improvements kept per million organism-years (25 kept over 2000000 organism-years), 4321.5 generations per second (spread arm 8.25) (bench/verdicts/spread.json, 2026-09-24T20:34:05.196Z, isTheBar true, barMet false)'), L.join(' | '));
+    // a kept line with no toward is not a zero distance
+    jsonl(path.join(root, 'state', 'self', 'authored.jsonl'), [{ at: iso(NOW15 - 30 * H + 0.2 * H), gap: 'missed:a.json', organism: true }]);
+    assert.equal(magnitudeOf({ root, dir, orchestrator: ORCH }).organism.distanceBarUnits, null);
+    // nothing on disk and no orchestrator: three not measured lines, no zero
+    const e = magnitudeLines(magnitudeOf({ root: empty, dir: path.join(empty, 'bench', 'verdicts'), orchestrator: null }));
+    assert.deepEqual(e.slice(1), [
+      '  organism: not measured (no bench/verdicts/soak.json)',
+      '  orchestrator: not measured (bench/autopilot.mjs orchestratorRate could not be loaded)',
+      '  simulated clock: not measured (no bench/verdicts/spread.json)',
+    ]);
+    assert.ok(magnitudeLines(magnitudeOf({ root: empty, dir, orchestrator: { ok: false, reason: 'no docs/LOG.md under x' } })).includes('  orchestrator: not measured (no docs/LOG.md under x)'));
+  } finally { rmSync(root, { recursive: true, force: true }); rmSync(empty, { recursive: true, force: true }); }
+});
+
+test('(v) UNDONE: board items per board, attempts with their walls, partial bars resumed, proposed boards', () => {
+  const { root, dir } = plant15();
+  const empty = tmp();
+  try {
+    const u = undoneOf({ root, dir, now: NOW15 });
+    assert.deepEqual(u.items, { total: 2, byBoard: { 13: 1, 15: 1 } });
+    assert.equal(u.attempts.gaps, 1);
+    assert.equal(u.attempts.attempts, 2, 'the 9-day-old decision is outside the window and the refusal line is not an attempt');
+    assert.equal(u.attempts.refused, 2);
+    assert.deepEqual(u.attempts.walls, { test: 1, budget: 1 });
+    assert.equal(u.plants.kept, 1);
+    const p = u.partial.bars.find((b) => b.gap === 'never:p-partial.json');
+    assert.equal(p.runs, 2);
+    assert.equal(p.linesResumed, 15);
+    assert.equal(p.recordsCompleted, 5);
+    assert.equal(u.partial.bars.find((b) => b.gap === 'never:q-partial.json').notResumable, true);
+    assert.deepEqual(u.proposed, [{ file: 'docs/boards/proposed/board-17.md', board: 17, items: 2, at: '2026-09-26T02:26:03.947Z' }]);
+    const L = undoneLines(u);
+    assert.ok(L.includes('  board items undone: 2 (board 13 1, board 15 1)'), L.join(' | '));
+    assert.ok(L.includes('  attempted by the organism in the last 7 days: 1 board items in 2 attempts, kept 0, refused 2 (walls hit: test 1, budget 1); authored lines on a board item 0'), L.join(' | '));
+    assert.ok(L.includes('    board-13:exit: attempts 2, kept 0, refused 2 at test 1, budget 1, last ' + iso(NOW15 - H)), L.join(' | '));
+    assert.ok(L.includes('  bench plants (not board items): 1 planted items in 1 attempts, kept 1, refused 0'), L.join(' | '));
+    assert.ok(L.some((l) => l.startsWith('  partial bars (kind bar never completed): 2; resume log 2 lines, 1 of them resumed by 2 distinct resume runs (lines resumed 15, records completed 5;')), L.join(' | '));
+    assert.ok(L.includes('    never:p-partial.json: 2 resume runs, lines resumed 15, records completed 5, last ' + iso(NOW15 - 2 * H) + ', bar landed no'), L.join(' | '));
+    assert.ok(L.includes('    never:q-partial.json: no resume run; the resume log names it not resumable'), L.join(' | '));
+    assert.ok(L.includes('    docs/boards/proposed/board-17.md: board 17, 2 items, at 2026-09-26T02:26:03.947Z'), L.join(' | '));
+    // nothing on disk: every part not measured, never a zero
+    const e = undoneLines(undoneOf({ root: empty, dir: path.join(empty, 'bench', 'verdicts'), now: NOW15 }));
+    assert.ok(e.includes('  board items undone: not measured (no state/self/gaps.jsonl)'), e.join(' | '));
+    assert.ok(e.some((l) => l.startsWith('  attempted by the organism in the last 7 days: not measured')), e.join(' | '));
+    assert.ok(e.includes('  partial bars: not measured (no state/self/gaps.jsonl)'), e.join(' | '));
+    assert.ok(e.includes('  proposed boards: not measured (no docs/boards/proposed/)'), e.join(' | '));
+    for (const l of e) assert.equal(NOT_ZERO.test(l), false, l);
+    // a ledger with partial bars but no resume log: lines resumed not measured, not zero
+    rmSync(path.join(root, 'state', 'self', 'resume.jsonl'));
+    const nr = undoneLines(undoneOf({ root, dir, now: NOW15 }));
+    assert.ok(nr.some((l) => l.includes('resume log not measured (no state/self/resume.jsonl)')), nr.join(' | '));
+    assert.ok(nr.includes('    never:p-partial.json: lines resumed not measured'), nr.join(' | '));
+  } finally { rmSync(root, { recursive: true, force: true }); rmSync(empty, { recursive: true, force: true }); }
+});
+
+test('(w) AUTHORED SHARE names the boards its denominator counts, and the board carries the three new blocks', async () => {
+  const dir = tmp();
+  try {
+    put(dir, 'authorship.json', {
+      at: '2026-09-26T01:38:52.685Z', command: 'node tools/authorship.mjs', isTheBar: true, numerator: 1, denominator: 94, share: 1 / 94, organism: 1, kept: 1, boardFiles: 93,
+      boards: [{ board: 8, files: 56, launched: true }, { board: 9, files: 37, launched: true }, { board: 13, files: 0, launched: false }],
+      missingBoards: [{ board: 15, source: 'docs/boards/board-15.js' }],
+    });
+    const L = authoredLines(authoredOf({ dir, boardsFile: path.join(dir, 'none.json'), states: [], now: NOW15 }));
+    assert.ok(L[1].endsWith('; the denominator counts the files of boards 8 (56), 9 (37), not launched 13, not in it 15 (docs/boards/board-15.js)'), L[1]);
+    put(dir, 'authorship.json', { at: 'a', isTheBar: true, numerator: 1, denominator: 4, share: 0.25 });
+    const M = authoredLines(authoredOf({ dir, boardsFile: path.join(dir, 'none.json'), states: [], now: NOW15 }));
+    assert.ok(M[1].endsWith('; the boards of the denominator: not measured (bench/verdicts/authorship.json carries no boards list)') || M[1].includes('the boards of the denominator: not measured'), M[1]);
+    // the whole board on a planted tree carries and prints the three blocks
+    const { root, dir: vd } = plant15();
+    try {
+      const b = await boardOf({ dir: vd, root, states: [], now: NOW15, orchestrator: ORCH, publishedFile: path.join(root, 'none.json'), logFile: path.join(root, 'none.md'), boardsFile: path.join(root, 'none.json') });
+      const P = boardLines(b);
+      for (const k of ['GAPS (', 'MAGNITUDE: ', 'UNDONE (']) assert.ok(P.some((l) => l.startsWith(k)), k + ' printed');
+      assert.equal(b.gaps.ledger.open, 6);
+      assert.equal(b.undone.items.total, 2);
+      assert.equal(b.magnitude.orchestrator.boards, 3);
+    } finally { rmSync(root, { recursive: true, force: true }); }
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });

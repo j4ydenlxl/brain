@@ -49,6 +49,7 @@ import { ask, codeShape } from '../act/prompt.mjs';
 import { DirectTable, textKey } from '../memory/direct.mjs';
 import { copyTree, addGateKit, deleteCopy, runCapped, trialArgv, today } from './improve.mjs';
 import { authorConfig } from './autopilot.mjs';
+import { verdictValues } from '../tools/findings.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(HERE, '..');
@@ -75,6 +76,25 @@ export const CODE_REGION = Object.freeze({ k: 2, repair: true, repairK: 2 });
 /** What the brief never writes, whatever an item owns (lower case; a trailing slash is a directory). */
 export const BRIEF_CEILING = Object.freeze(['manual.md', 'manual/', 'docs/', 'self/', 'bench/gate.mjs', 'bench/ladder.mjs', 'bench/verdicts/', 'state/', 'organism/', '.git/', 'site/', 'node_modules/', 'claude.md']);
 export const VERDICT_FIELDS = Object.freeze(['at', 'command', 'node', 'isTheBar', 'barMet', 'split', 'statement']);
+const ISO_STAMP = /\d{4}-\d{2}-\d{2}T[\d:.]+Z?/g;
+/**
+ * THE STATEMENT WALL, checked at the bar step before the gate spends its minutes: the findings page
+ * (tools/findings.mjs, test/findings.test.mjs on the gate) shows a verdict's statement on its card
+ * when the statement is plain text of at most 600 characters, and the card's note must quote one of
+ * the verdict's OWN measured values (verdictValues: a number field of 10 or more, or a non-integer).
+ * Measured 2026-09-26: a planted bench whose statement read "all tests passed" passed its tests and
+ * its bar, then turned test/findings.test.mjs red on the copy after 518 s of gate.
+ * @returns {{ok: boolean, shown: boolean, quoted: string[], values: string[]}}
+ */
+export function statementCheck(v) {
+  const t = v ? v.statement : null;
+  const shown = typeof t === 'string' && !!t.trim() && t.length <= 600 && JSON.stringify(t).slice(1, -1) === t;
+  if (!shown) return { ok: true, shown: false, quoted: [], values: [] };
+  const vals = verdictValues(v);
+  const toks = new Set(t.replace(ISO_STAMP, ' ').match(/\d[\d.,]*\d/g) || []);
+  const quoted = [...toks].filter((x) => vals.has(x) || vals.has(x.replace(/,/g, '')));
+  return { ok: quoted.length > 0, shown: true, quoted, values: [...vals] };
+}
 const SYSTEM = 'You write files for a program that finishes its own work on a copy of its source tree. Think briefly. Answer exactly in the form asked for, with nothing else.';
 const EM = String.fromCharCode(0x2014);
 
@@ -484,13 +504,13 @@ const RULES_COMMON = [
 ];
 /** The exact verdict boilerplate a bench ends with: the model copies it instead of reasoning it out. */
 function benchSkeleton(plan) {
-  return ['Keep the bench short (under 60 lines). Its imports and its verdict write are exactly these lines (fill in barMet, split and statement from what it measured):',
+  return ['Keep the bench short (under 60 lines). Its imports and its verdict write are exactly these lines (fill in measured, an object holding each measured count, and barMet, split and statement from what it measured):',
     "import { writeFileSync, mkdirSync } from 'node:fs';",
     "import path from 'node:path';",
     "import { fileURLToPath } from 'node:url';",
     "const file = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '" + plan.verdict + "');",
     'mkdirSync(path.dirname(file), { recursive: true });',
-    "writeFileSync(file, JSON.stringify({ at: new Date().toISOString(), command: '" + plan.bar + "', node: process.version, isTheBar: true, barMet, split, statement }, null, 2));",
+    "writeFileSync(file, JSON.stringify({ at: new Date().toISOString(), command: '" + plan.bar + "', node: process.version, isTheBar: true, barMet, ...measured, split, statement }, null, 2));",
   ].join('\n');
 }
 
@@ -502,6 +522,7 @@ function rulesFor(rel, plan) {
       'Import the module under test by its relative path from test/ (for example \'../planted/x.mjs\').');
   } else if (isBench(rel)) {
     r.push('A bench: print one line per measured thing, then write the verdict file ' + plan.verdict + ' (resolve it as path.resolve(path.dirname(fileURLToPath(import.meta.url)), \'..\', \'' + plan.verdict + '\'), mkdirSync its directory with recursive true) holding JSON with the fields ' + VERDICT_FIELDS.join(', ') + ': at (ISO time), command (the command line that ran it), node (process.version), isTheBar: true, barMet (a boolean), split and statement, written with JSON.stringify(v, null, 2). Never call process.exit before that write.',
+      'Every measured count is its own field of the verdict (for example checked: 1000, mismatches: 0), and statement is one plain sentence that quotes at least one of those numbers of 10 or more exactly as the field holds it (for example "checked 1000, mismatches 0"): the gate refuses a statement that quotes none of the numbers of its own verdict ("all tests passed" is refused).',
       benchSkeleton(plan));
   } else r.push('A source module: export what the task names, with the exact names and signatures it states.');
   return r;
@@ -1020,6 +1041,8 @@ export async function runBrief(gapIn, o = {}) {
       if (v && v.isTheBar !== true) vWhy = plan.verdict + ' says isTheBar ' + v.isTheBar;
       const missingFields = v ? VERDICT_FIELDS.filter((k) => !(k in v)) : [];
       if (v && !vWhy && missingFields.length) vWhy = plan.verdict + ' lacks ' + missingFields.join(', ');
+      const sc = v && !vWhy ? statementCheck(v) : null;
+      if (sc && !sc.ok) vWhy = plan.verdict + ': its statement "' + String(v.statement).slice(0, 160) + '" quotes none of the measured values of its own verdict (' + (sc.values.length ? 'it holds ' + sc.values.slice(0, 8).join(', ') : 'it holds no number field of 10 or more') + '); the gate (the findings page) refuses it: put each measured count in the verdict as a field and quote it in the statement';
       const bOk = br.exit === 0 && !vWhy;
       const printed = String(br.out || '').split(/\r?\n/).filter((l) => l.trim() && !/^BUDGET\b/.test(l)).slice(0, 3).map((l) => l.slice(0, 160));
       push({ kind: 'run', step: 'bar', command: plan.bar, ok: bOk, exit: br.exit, outcome: br.outcome, seconds: br.seconds, peakRssMb: br.peakRssMb, printed, verdict: v ? { isTheBar: v.isTheBar, barMet: v.barMet, statement: v.statement } : null, detail: 'exit ' + br.exit + (br.outcome !== 'exit' ? ' (' + br.outcome + ')' : '') + (v ? ', verdict isTheBar ' + v.isTheBar + ', barMet ' + v.barMet : '') + (vWhy ? ', ' + vWhy : '') + (printed.length ? '; printed: ' + printed.join(' | ') : '') });

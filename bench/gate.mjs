@@ -38,6 +38,21 @@
 //             can be loaded) finds one the allowlist does not list. The wire size, strings
 //             included, is printed beside it; the audit reports it and does not hold it to the cap.
 //
+// TWO MORE (Board 15, his 14:29 "it should be able to finish undone work"), printed last:
+//
+//   AUTONOMY  the loop that finishes undone work, read off the installation: state/self/gaps.jsonl
+//             under 48 h old, every gap of kinds missed, ladder, gate red and gate slow carrying a
+//             trial whose bench file exists, the BrainAutopilot task registered and Ready (schtasks
+//             /query, read only; not registered prints the register command), state/self/STOP
+//             absent (present prints "stopped by hand"), and the newest decision file under
+//             bench/verdicts/autopilot/ under 48 h old. Prints the counts and every cause.
+//   HANDOFF   docs/HANDOFF.md on disk, generated under 48 h ago by its own footer, every command it
+//             lists existing (a script file, an executable on PATH, a registered task), and its
+//             undone counts by kind equal to the ledger's. Prints every cause.
+//             Both rows are graded only on the installation (the tree BrainAutopilot runs in) and
+//             print N/A on any copy or plant; while a live autopilot holds its lock they are
+//             printed as referees and do not rule (see the block above autonomyRow).
+//
 //   node bench/gate.mjs [--quiet]
 import { readdirSync, readFileSync, statSync, writeFileSync, mkdirSync, existsSync, mkdtempSync, rmSync } from 'node:fs';
 import os from 'node:os';
@@ -620,6 +635,295 @@ export function boundaryRow(v, { live = null, file = 'bench/verdicts/boundary.js
   return { ok, measured: true, partial, at: v.at || null, cap, boundaries: table.length, how, unmeasured: unmeasured.map(at), overCap: over.map(at), allowOverCap: allowOver.map(keyOf), unlisted: recUnlisted === null ? null : recUnlisted.map(keyOf), liveUnlisted, live, overCapWire: wire.map((r) => ({ at: at(r), bytes: r.afterWire })), wasmViews: views.map(at), largest: largest ? { at: at(largest), bytes: largest.afterBytes } : null, line };
 }
 
+// ---------------------------------------------------------------- AUTONOMY and HANDOFF: the installation, read (Board 15)
+// Both rows read the machine this tree is installed on (a scheduled task, the gap ledger, the
+// decision files, docs/HANDOFF.md). They are GRADED only on the installation: the tree the
+// registered BrainAutopilot task runs in (its "Task To Run" names it: cmd /c cd /d <tree> && ...),
+// or, when no such task is registered, a tree that carries both .git and state/self. On any other
+// tree (a copy the improve, prune or brief operators gate, a planted fixture, a cloud checkout) they
+// print N/A and hold nothing. On the installation they are REFEREES, not rulers, while a live
+// autopilot holds state/self-code/autopilot.lock: that gate is the autopilot deciding whether to
+// keep a patch, no patch can move what these rows read, and a ruling red row there would revert
+// every patch. The row is still computed and printed in full, marked as not ruling.
+export const AUTONOMY_TASK = 'BrainAutopilot';
+export const AUTONOMY_KINDS = Object.freeze(['missed', 'ladder', 'gate red', 'gate slow']);
+/** The gap ids the ledger writes for these rows themselves: a red row must not be its own cause. */
+export const ROW_ECHO_GAPS = Object.freeze(['gate-red:row:autonomy', 'gate-red:row:handoff']);
+export const FRESH_HOURS = 48;
+export const LEDGER_REL = 'state/self/gaps.jsonl';
+export const DECISIONS_REL = 'bench/verdicts/autopilot';
+export const STOP_REL = 'state/self/STOP';
+export const LOCK_REL = 'state/self-code/autopilot.lock';
+export const HANDOFF_REL = 'docs/HANDOFF.md';
+export const REGISTER_CMD = 'node tools/schedule-autopilot.mjs --register';
+const hoursSince = (ms, now) => Math.round((now - ms) / 36e5 * 10) / 10;
+
+/** schtasks /query /tn name /fo LIST /v; {status, out, err}. Read only: nothing here writes a task. */
+export function queryTask(name) {
+  const r = spawnSync('schtasks', ['/query', '/tn', name, '/fo', 'LIST', '/v'], { encoding: 'utf8', windowsHide: true });
+  if (r.error) return { status: -1, out: '', err: String(r.error.message) };
+  return { status: r.status, out: String(r.stdout || ''), err: String(r.stderr || '').trim() };
+}
+/** The labelled fields of schtasks /FO LIST output (the first of each label). */
+export function parseTaskFields(out) {
+  const f = {};
+  for (const line of String(out || '').split(/\r?\n/)) {
+    const m = /^([A-Za-z][A-Za-z :/()]*?):\s+(.*)$/.exec(line);
+    if (m && !(m[1].trim() in f)) f[m[1].trim()] = m[2].trim();
+  }
+  return f;
+}
+/** One task, read: {name, registered, status, state, taskToRun, why}. */
+export function taskOf(name, taskQuery = queryTask) {
+  let r;
+  try { r = taskQuery(name); } catch (e) { r = { status: -1, out: '', err: String((e && e.message) || e) }; }
+  if (!r || r.status !== 0) return { name, registered: false, status: null, state: null, taskToRun: null, why: 'schtasks /query exited ' + (r ? r.status : 'null') + (r && r.err ? ': ' + String(r.err).split('\n')[0] : '') };
+  const f = parseTaskFields(r.out);
+  return { name, registered: true, status: f.Status || null, state: f['Scheduled Task State'] || null, taskToRun: f['Task To Run'] || null, why: null };
+}
+/** The tree a task's "Task To Run" changes into (cmd /c cd /d <tree> && ...), or null. */
+export function taskRootOf(taskToRun) {
+  const m = /\bcd\s+\/d\s+("?)([^"&]+?)\1\s*&&/i.exec(String(taskToRun || ''));
+  return m ? m[2].trim() : null;
+}
+const sameDir = (a, b) => path.resolve(a).replace(/[\\/]+$/, '').toLowerCase() === path.resolve(b).replace(/[\\/]+$/, '').toLowerCase();
+/** Is this tree the installation? {installed, how, taskRoot, why}. */
+export function installationOf({ root = ROOT, task = null } = {}) {
+  const taskRoot = task && task.registered ? taskRootOf(task.taskToRun) : null;
+  if (taskRoot) {
+    const installed = sameDir(root, taskRoot);
+    return { installed, how: 'task', taskRoot, why: installed ? 'the tree ' + AUTONOMY_TASK + ' runs in' : 'not the tree ' + AUTONOMY_TASK + ' runs in (' + taskRoot + ')' };
+  }
+  const git = existsSync(path.join(root, '.git')), state = existsSync(path.join(root, 'state', 'self'));
+  const installed = git && state;
+  return { installed, how: 'tree', taskRoot: null, why: (task && task.registered ? AUTONOMY_TASK + ' names no tree (Task To Run: ' + task.taskToRun + ')' : AUTONOMY_TASK + ' is not registered') + ', and this tree ' + (installed ? 'carries .git and state/self' : 'lacks ' + [git ? null : '.git', state ? null : 'state/self'].filter(Boolean).join(' and ')) };
+}
+export function pidAlive(pid) {
+  if (!Number.isInteger(pid) || pid <= 0) return false;
+  try { process.kill(pid, 0); return true; } catch (e) { return e.code === 'EPERM'; }
+}
+/** A live autopilot holding the lock makes these rows referees: {referee, holder, why}. */
+export function refereeOf(root = ROOT, { alive = pidAlive } = {}) {
+  let j = null;
+  try { j = JSON.parse(readFileSync(path.join(root, ...LOCK_REL.split('/')), 'utf8')); } catch { j = null; }
+  if (!j) return { referee: false, holder: null, why: 'no ' + LOCK_REL };
+  if (!alive(j.pid)) return { referee: false, holder: j, why: LOCK_REL + ' is stale (pid ' + j.pid + ' is not running)' };
+  return { referee: true, holder: j, why: 'autopilot pid ' + j.pid + ' holds ' + LOCK_REL + ' since ' + j.at };
+}
+function readLedger(root) {
+  const f = path.join(root, ...LEDGER_REL.split('/'));
+  let text, st;
+  try { st = statSync(f); text = readFileSync(f, 'utf8'); } catch { return null; }
+  const rows = []; let bad = 0;
+  for (const l of text.split('\n')) { if (!l.trim()) continue; try { rows.push(JSON.parse(l)); } catch { bad++; } }
+  return { rows, bad, mtimeMs: st.mtimeMs };
+}
+/** The file a gap's trial runs: trial.bench, else the first script in its argv or command. */
+export function trialBenchOf(g) {
+  const t = g && g.trial;
+  if (!t) return null;
+  if (typeof t === 'object' && typeof t.bench === 'string' && t.bench) return t.bench;
+  const toks = typeof t === 'string' ? t.split(/\s+/) : Array.isArray(t.argv) ? t.argv.map(String) : String(t.command || '').split(/\s+/);
+  const s = toks.find((x) => /\.(mjs|cjs|js)$/i.test(x) && !x.startsWith('<') && !/tools[\\/]budget\.mjs$/.test(x));
+  return s || null;
+}
+/** The newest decision file (*.jsonl) under bench/verdicts/autopilot/, by mtime, or null. */
+function newestDecision(root) {
+  const dir = path.join(root, ...DECISIONS_REL.split('/'));
+  let names; try { names = readdirSync(dir).filter((n) => n.endsWith('.jsonl')); } catch { return { files: null, newest: null }; }
+  let newest = null;
+  for (const n of names) { try { const m = statSync(path.join(dir, n)).mtimeMs; if (!newest || m > newest.mtimeMs) newest = { name: n, mtimeMs: m }; } catch { /* gone */ } }
+  return { files: names.length, newest };
+}
+const notGraded = (label, inst, extra = {}) => ({ ok: true, graded: false, rules: false, installation: inst, ...extra, line: label + ' N/A: ' + inst.why + '; the row grades only the installation (the tree ' + AUTONOMY_TASK + ' runs in), so this tree holds nothing' });
+const headOf = (label, ok, ref) => label + ' ' + (ok ? 'GREEN' : 'RED') + (ref && ref.referee ? ' (REFEREE, not ruling: ' + ref.why + ')' : '') + ': ';
+
+/**
+ * AUTONOMY: GREEN when the ledger is under 48 h old, every gap of kinds missed, ladder, gate red
+ * and gate slow has a trial whose bench file exists, BrainAutopilot is registered and Ready
+ * (Running is also taken as working, and printed), state/self/STOP is absent, and the newest
+ * decision file is under 48 h old. Every cause is printed. Injectable: task, now, alive.
+ */
+export function autonomyRow({ root = ROOT, now = Date.now(), task = null, taskQuery = queryTask, alive = pidAlive } = {}) {
+  const t = task || taskOf(AUTONOMY_TASK, taskQuery);
+  const inst = installationOf({ root, task: t });
+  if (!inst.installed) return notGraded('AUTONOMY', inst, { task: t });
+  const ref = refereeOf(root, { alive });
+  const causes = [];
+  const L = readLedger(root);
+  let ledgerAgeH = null;
+  const graded = [], withTrial = [], noTrial = [], noBench = [], echoes = [];
+  if (!L) causes.push(LEDGER_REL + ' is not on disk (node self/gaps.mjs writes it)');
+  else {
+    ledgerAgeH = hoursSince(L.mtimeMs, now);
+    if (ledgerAgeH >= FRESH_HOURS) causes.push(LEDGER_REL + ' is ' + ledgerAgeH + ' h old (the bar is under ' + FRESH_HOURS + ' h; node self/gaps.mjs rewrites it)');
+    if (L.bad) causes.push(L.bad + ' ledger line(s) do not parse');
+    for (const g of L.rows) {
+      if (!AUTONOMY_KINDS.includes(g.kind)) continue;
+      if (ROW_ECHO_GAPS.includes(g.id)) { echoes.push(g.id); continue; }
+      graded.push(g);
+      const b = trialBenchOf(g);
+      if (!b) noTrial.push(g.id);
+      else if (!existsSync(path.isAbsolute(b) ? b : path.join(root, ...b.split(/[\\/]/)))) noBench.push(g.id + ' (' + b + ')');
+      else withTrial.push(g.id);
+    }
+    if (noTrial.length) causes.push(noTrial.length + ' gap(s) with no trial: ' + noTrial.join(', '));
+    if (noBench.length) causes.push(noBench.length + ' gap(s) whose trial bench file is missing: ' + noBench.join(', '));
+  }
+  const working = t.registered && (t.status === 'Ready' || t.status === 'Running') && t.state !== 'Disabled';
+  if (!t.registered) causes.push(AUTONOMY_TASK + ' is not registered (' + t.why + '); ' + REGISTER_CMD + ' registers it');
+  else if (!working) causes.push(AUTONOMY_TASK + ' is registered but ' + (t.state === 'Disabled' ? 'Disabled' : 'its status is ' + (t.status || 'unreadable')) + ' (Ready is the bar)');
+  const stopped = existsSync(path.join(root, ...STOP_REL.split('/')));
+  if (stopped) causes.push('stopped by hand (' + STOP_REL + ' is present; delete it to let the loop run)');
+  const D = newestDecision(root);
+  const decAgeH = D.newest ? hoursSince(D.newest.mtimeMs, now) : null;
+  if (D.files === null) causes.push(DECISIONS_REL + '/ is not on disk: no decision was ever written');
+  else if (!D.newest) causes.push('no decision file (*.jsonl) under ' + DECISIONS_REL + '/');
+  else if (decAgeH >= FRESH_HOURS) causes.push('the newest decision file ' + D.newest.name + ' is ' + decAgeH + ' h old (the bar is under ' + FRESH_HOURS + ' h)');
+  const ok = causes.length === 0;
+  const byKind = {};
+  for (const g of graded) byKind[g.kind] = (byKind[g.kind] || 0) + 1;
+  const line = headOf('AUTONOMY', ok, ref)
+    + (L ? 'ledger ' + L.rows.length + ' gaps, ' + ledgerAgeH + ' h old; kinds missed, ladder, gate red, gate slow: ' + graded.length + ' (' + AUTONOMY_KINDS.map((k) => k + ' ' + (byKind[k] || 0)).join(', ') + '), ' + withTrial.length + ' with a trial whose bench file exists, ' + noTrial.length + ' with no trial, ' + noBench.length + ' with a missing bench' + (echoes.length ? '; excluded as echoes of this gate row itself: ' + echoes.join(', ') : '') : 'ledger not measured')
+    + '; ' + AUTONOMY_TASK + ' ' + (t.registered ? 'registered, status ' + (t.status || 'unreadable') + (t.state ? ', ' + t.state : '') : 'NOT REGISTERED')
+    + '; ' + STOP_REL + ' ' + (stopped ? 'PRESENT' : 'absent')
+    + '; newest decision file ' + (D.newest ? D.newest.name + ', ' + decAgeH + ' h old, of ' + D.files : 'none')
+    + '; installation: ' + inst.why
+    + (causes.length ? '; CAUSES (' + causes.length + '): ' + causes.join('; ') : '');
+  return { ok, graded: true, rules: !ref.referee, referee: ref, installation: inst, task: t, ledger: L ? { gaps: L.rows.length, ageHours: ledgerAgeH, unparsed: L.bad } : null, kinds: byKind, withTrial: withTrial.length, noTrial, noBench, echoes, stopped, newestDecision: D.newest ? { file: D.newest.name, ageHours: decAgeH, files: D.files } : null, causes, line };
+}
+
+// the command lines a markdown file lists: every non-empty line of a fenced block, and every inline
+// code span that starts with an executable
+const CMD_EXES = /^(node|npx|git|gh|schtasks|powershell|cmd|cmd\.exe)\b/i;
+export function commandsIn(md) {
+  const out = []; let fenced = false;
+  for (const l of String(md).split('\n')) {
+    if (l.trimStart().startsWith('```')) { fenced = !fenced; continue; }
+    if (fenced) { if (l.trim()) out.push(l.trim()); continue; }
+    for (const m of l.matchAll(/`([^`]+)`/g)) if (CMD_EXES.test(m[1].trim())) out.push(m[1].trim());
+  }
+  return [...new Set(out)];
+}
+// the same parse tools/handoff.mjs checksOf makes (script paths, executables, task names), kept
+// here because this file is copied alone into planted trees where tools/ is absent
+const SCRIPT_TOKEN = /\.(mjs|cjs|js|exe|cmd)$/i;
+const CHECK_EXES = new Set(['node', 'npx', 'git', 'gh', 'schtasks', 'powershell', 'cmd', 'cmd.exe']);
+export function checksOfLine(line) {
+  const checks = [], seen = new Set();
+  const add = (c) => { const k = c.kind + ':' + c.name; if (!seen.has(k)) { seen.add(k); checks.push(c); } };
+  const toks = String(line).split(/\s+/).map((x) => x.replace(/^[("']+|[)"';,]+$/g, '')).filter(Boolean);
+  toks.forEach((x, i) => {
+    const lx = x.toLowerCase();
+    if (i === 0 && CHECK_EXES.has(lx)) add({ kind: 'exe', name: lx.replace(/\.exe$/, '') });
+    else if (lx === 'node' || lx === 'git' || lx === 'gh' || lx === 'npx') add({ kind: 'exe', name: lx });
+    else if (SCRIPT_TOKEN.test(x) && !x.startsWith('<') && !x.startsWith('--')) add(/^cmd(\.exe)?$/i.test(x) ? { kind: 'exe', name: 'cmd' } : { kind: 'file', name: x });
+  });
+  const tn = toks.findIndex((x) => /^\/tn$/i.test(x));
+  if (/^schtasks$/i.test(toks[0] || '') && tn >= 0 && toks[tn + 1] && !toks.some((x) => /^\/create$/i.test(x))) add({ kind: 'task', name: toks[tn + 1] });
+  return checks;
+}
+export function whichExe(exe) {
+  const r = spawnSync(process.platform === 'win32' ? 'where.exe' : 'which', [exe], { encoding: 'utf8', windowsHide: true });
+  return r.status === 0 && String(r.stdout || '').trim() ? String(r.stdout).split(/\r?\n/)[0].trim() : null;
+}
+/** "### kind (n)" headings and their "- `" bullets under "## WHAT IS UNDONE". */
+export function undoneCountsIn(md) {
+  const lines = String(md).split('\n');
+  const start = lines.indexOf('## WHAT IS UNDONE');
+  const headings = {}, bullets = {};
+  if (start < 0) return { found: false, headings, bullets };
+  let kind = null;
+  for (let i = start + 1; i < lines.length; i++) {
+    const l = lines[i];
+    if (l.startsWith('## ')) break;
+    const h = /^### (.+) \((\d+)\)$/.exec(l);
+    if (h) { kind = h[1]; headings[kind] = Number(h[2]); bullets[kind] = 0; continue; }
+    if (kind && l.startsWith('- `')) bullets[kind]++;
+  }
+  return { found: true, headings, bullets };
+}
+/** The files the doc's COMMANDS CHECKED section names as still to be built by a board item. */
+export function toBuildIn(md) {
+  const lines = String(md).split('\n');
+  const start = lines.indexOf('## COMMANDS CHECKED');
+  const out = new Set();
+  if (start < 0) return out;
+  for (let i = start + 1; i < lines.length && !lines[i].startsWith('## '); i++) {
+    const m = /runs (\S+), to be built by its board item/.exec(lines[i]);
+    if (m) out.add(m[1].replace(/\\/g, '/'));
+  }
+  return out;
+}
+
+/**
+ * HANDOFF: GREEN when docs/HANDOFF.md exists, its own footer says it was generated under 48 h ago,
+ * every command it lists exists (each script as a file under the tree, each executable on PATH,
+ * each task name registered, by schtasks /query only; a script the doc itself names as still to be
+ * built is pending, not missing, when an undone board item in the ledger names it in its bar
+ * command), and its undone counts by kind equal the ledger's. Every cause is printed.
+ */
+export function handoffRow({ root = ROOT, now = Date.now(), task = null, taskQuery = queryTask, which = whichExe, alive = pidAlive, checksOf = checksOfLine } = {}) {
+  const t = task || taskOf(AUTONOMY_TASK, taskQuery);
+  const inst = installationOf({ root, task: t });
+  if (!inst.installed) return notGraded('HANDOFF', inst);
+  const ref = refereeOf(root, { alive });
+  const causes = [];
+  let md = null;
+  try { md = readFileSync(path.join(root, ...HANDOFF_REL.split('/')), 'utf8'); } catch { md = null; }
+  if (md === null) {
+    causes.push(HANDOFF_REL + ' is not on disk (node tools/handoff.mjs writes it)');
+    return { ok: false, graded: true, rules: !ref.referee, referee: ref, installation: inst, exists: false, causes, line: headOf('HANDOFF', false, ref) + 'CAUSES (1): ' + causes[0] };
+  }
+  // the footer: "Generated <ISO> under: GATE ..."; the last such line wins
+  const gens = [...md.matchAll(/^Generated (\S+) under:/gm)].map((m) => m[1]);
+  const genAt = gens.length ? gens[gens.length - 1] : null;
+  const genMs = genAt ? Date.parse(genAt) : NaN;
+  const ageH = Number.isFinite(genMs) ? hoursSince(genMs, now) : null;
+  if (ageH === null) causes.push('its footer carries no "Generated <time> under:" line, so its age is not measured');
+  else if (ageH >= FRESH_HOURS) causes.push('generated ' + genAt + ', ' + ageH + ' h ago (the bar is under ' + FRESH_HOURS + ' h; node tools/handoff.mjs rewrites it)');
+  // every command
+  const L = readLedger(root);
+  const building = toBuildIn(md);
+  const boardTrials = L ? L.rows.filter((g) => g.kind === 'board item').map((g) => String(typeof g.trial === 'string' ? g.trial : (g.trial && g.trial.command) || '').replace(/\\/g, '/')) : [];
+  const cmds = commandsIn(md);
+  const taskCache = new Map(), whichCache = new Map();
+  let checked = 0, placeholders = 0;
+  const missing = [], pending = [];
+  for (const c of cmds) for (const k of checksOf(c)) {
+    if (k.kind === 'task' && /^</.test(k.name)) { placeholders++; continue; }
+    checked++;
+    let ok;
+    if (k.kind === 'file') ok = existsSync(path.isAbsolute(k.name) || /^[A-Za-z]:[\\/]/.test(k.name) ? k.name : path.join(root, ...k.name.split(/[\\/]/)));
+    else if (k.kind === 'exe') { if (k.name === 'node') ok = true; else { if (!whichCache.has(k.name)) whichCache.set(k.name, !!which(k.name)); ok = whichCache.get(k.name); } }
+    else if (k.kind === 'task') { if (!taskCache.has(k.name)) taskCache.set(k.name, k.name === t.name ? t : taskOf(k.name, taskQuery)); ok = taskCache.get(k.name).registered; }
+    else ok = false;
+    if (ok) continue;
+    const n = k.name.replace(/\\/g, '/');
+    if (k.kind === 'file' && building.has(n) && boardTrials.some((s) => s.includes(n))) { if (!pending.includes(n)) pending.push(n); continue; }
+    const m = k.kind + ' ' + k.name;
+    if (!missing.includes(m)) missing.push(m);
+  }
+  if (missing.length) causes.push(missing.length + ' listed command(s) name something that does not exist: ' + missing.join(', '));
+  // the undone counts against the ledger
+  const U = undoneCountsIn(md);
+  const want = {};
+  if (L) for (const g of L.rows) { const k = String(g.kind || 'unknown'); want[k] = (want[k] || 0) + 1; }
+  const kinds = [...new Set([...Object.keys(want), ...Object.keys(U.headings)])];
+  const diffs = kinds.filter((k) => want[k] !== U.headings[k] || want[k] !== U.bullets[k]).map((k) => k + ' ledger ' + (want[k] ?? 0) + ' vs doc ' + (U.headings[k] ?? 'none') + (U.bullets[k] !== undefined && U.bullets[k] !== U.headings[k] ? ' (' + U.bullets[k] + ' listed)' : ''));
+  const docTotal = Object.values(U.headings).reduce((a, b) => a + b, 0);
+  if (!L) causes.push(LEDGER_REL + ' is not on disk, so the undone counts are not measured against it');
+  else if (!U.found) causes.push('no "## WHAT IS UNDONE" section, so its undone counts are not measured');
+  else if (diffs.length) causes.push('its undone counts differ from the ledger (doc ' + docTotal + ', ledger ' + L.rows.length + '): ' + diffs.join(', '));
+  const ok = causes.length === 0;
+  const line = headOf('HANDOFF', ok, ref)
+    + HANDOFF_REL + ' generated ' + (genAt || 'at an unread time') + (ageH !== null ? ', ' + ageH + ' h ago' : '')
+    + '; commands listed ' + cmds.length + ', ' + checked + ' checks (files under the tree, executables on PATH, tasks by schtasks /query), missing ' + missing.length + ', pending ' + pending.length + (pending.length ? ' (' + pending.join(', ') + ', named by an undone board item)' : '') + (placeholders ? ', placeholders skipped ' + placeholders : '')
+    + '; undone ' + (U.found ? docTotal + ' in the doc' : 'not in the doc') + ' vs ' + (L ? L.rows.length + ' in the ledger' : 'ledger not measured') + ', kinds differing ' + diffs.length
+    + (causes.length ? '; CAUSES (' + causes.length + '): ' + causes.join('; ') : '');
+  return { ok, graded: true, rules: !ref.referee, referee: ref, installation: inst, exists: true, generatedAt: genAt, ageHours: ageH, commands: cmds.length, checks: checked, missing, pending, placeholders, undone: { doc: U.found ? docTotal : null, ledger: L ? L.rows.length : null, diffs }, causes, line };
+}
+
 // ---------------------------------------------------------------- the gate
 async function main() {
   const args = new Set(process.argv.slice(2));
@@ -705,8 +1009,15 @@ async function main() {
       return boundaryRow(v, { live: await liveBoundaryScan(ROOT) });
     }),
   };
+  // AUTONOMY and HANDOFF (Board 15): one schtasks /query read serves both
+  const installTask = taskOf(AUTONOMY_TASK);
+  rows.autonomy = await guarded('AUTONOMY', async () => autonomyRow({ root: ROOT, task: installTask }));
+  rows.handoff = await guarded('HANDOFF', async () => handoffRow({ root: ROOT, task: installTask }));
+  // a referee row (a live autopilot holds the lock) is printed and recorded but does not rule
+  const rules = (r) => r.rules !== false;
 
-  const rowsPass = rows.budget.ok && rows.compress.ok && rows.hisData.ok && rows.loadBearing.ok && rows.boundary.ok;
+  const rowsPass = rows.budget.ok && rows.compress.ok && rows.hisData.ok && rows.loadBearing.ok && rows.boundary.ok
+    && (rows.autonomy.ok || !rules(rows.autonomy)) && (rows.handoff.ok || !rules(rows.handoff));
   const allPass = tests.every(t => t.exit === 0) && emDash.length === 0 && badImports.length === 0 && rowsPass;
   const verdict = {
     at: new Date().toISOString(), startedAt, node: process.version, command: 'node bench/gate.mjs' + (args.has('--quiet') ? ' --quiet' : ''),
@@ -714,9 +1025,14 @@ async function main() {
     assertionsPassed: tests.reduce((a, t) => a + (t.pass || 0), 0), assertionsFailed: tests.reduce((a, t) => a + (t.fail || 0), 0),
     lines: { code: codeLines, prose: proseLines, codeFiles, generated: generatedLines, generatedFiles, byArea: counts },
     emDash, emDashCopiedSkipped, badImports, notes,
-    rows: { budget: rows.budget, compress: rows.compress, hisData: rows.hisData, loadBearing: rows.loadBearing, boundary: rows.boundary },
+    rows: { budget: rows.budget, compress: rows.compress, hisData: rows.hisData, loadBearing: rows.loadBearing, boundary: rows.boundary, autonomy: rows.autonomy, handoff: rows.handoff },
     verdict: allPass ? 'GREEN' : 'RED',
   };
+  const gr = (r) => (r.ok ? 'GREEN' : 'RED');
+  const gr2 = (r) => (r.graded === false ? 'N/A' : gr(r) + (rules(r) ? '' : ' (referee)'));
+  // the summary line is kept in gate.json too, so a verdict that pastes it pastes what was printed
+  verdict.line = 'GATE ' + verdict.verdict + ': test files ' + verdict.testsPassed + '/' + verdict.testsTotal + ', assertions ' + verdict.assertionsPassed + ' pass / ' + verdict.assertionsFailed + ' fail, authored code lines ' + codeLines + ' in ' + codeFiles + ' files, prose lines ' + proseLines + ', generated organism lines ' + generatedLines + ' in ' + generatedFiles + ' files, em-dash files ' + emDash.length + ', bad imports ' + badImports.length
+    + ', budget ' + gr(rows.budget) + ', compress ' + gr(rows.compress) + ', his data ' + gr(rows.hisData) + ', load-bearing ' + gr(rows.loadBearing) + ', boundary ' + gr(rows.boundary) + ', autonomy ' + gr2(rows.autonomy) + ', handoff ' + gr2(rows.handoff);
   mkdirSync(path.join(HERE, 'verdicts'), { recursive: true });
   writeFileSync(path.join(HERE, 'verdicts', 'gate.json'), JSON.stringify(verdict, null, 2));
   console.log('');
@@ -725,8 +1041,9 @@ async function main() {
   console.log(rows.hisData.line);
   console.log(rows.loadBearing.line);
   console.log(rows.boundary.line);
-  const gr = (r) => (r.ok ? 'GREEN' : 'RED');
-  console.log(`\nGATE ${verdict.verdict}: test files ${verdict.testsPassed}/${verdict.testsTotal}, assertions ${verdict.assertionsPassed} pass / ${verdict.assertionsFailed} fail, authored code lines ${codeLines} in ${codeFiles} files, prose lines ${proseLines}, generated organism lines ${generatedLines} in ${generatedFiles} files, em-dash files ${emDash.length}, bad imports ${badImports.length}, budget ${gr(rows.budget)}, compress ${gr(rows.compress)}, his data ${gr(rows.hisData)}, load-bearing ${gr(rows.loadBearing)}, boundary ${gr(rows.boundary)}`);
+  console.log(rows.autonomy.line);
+  console.log(rows.handoff.line);
+  console.log('\n' + verdict.line);
   if (emDash.length) console.log('em-dashes in: ' + emDash.join(', '));
   if (emDashCopiedSkipped) console.log('em-dashes in copied files skipped: ' + emDashCopiedSkipped + ' (web/tools and web/dist/tools, the Code Universe factory copy)');
   if (badImports.length) console.log('bad imports: ' + badImports.join(', '));

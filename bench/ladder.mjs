@@ -1034,6 +1034,9 @@ export function authoredOf({ dir = VERDICTS_DIR, boardsFile = path.join(BOARD_RO
     numerator: v.numerator ?? null, denominator: v.denominator ?? null, share: v.share,
     kept: numOr(v.kept), given: numOr(v.given), organism: numOr(v.organism), boardFiles: numOr(v.boardFiles),
     weeks: Array.isArray(v.weeks) ? v.weeks.filter((w) => w && typeof w === 'object').map((w) => ({ week: w.week ?? null, organism: numOr(w.organism), kept: numOr(w.kept), boardFiles: numOr(w.boardFiles), share: numOr(w.share) })) : [],
+    // the denominator's boards (Board 14): which boards' files it counts, which were not launched, which it lacks
+    boards: Array.isArray(v.boards) ? v.boards.filter((b) => b && typeof b === 'object').map((b) => ({ board: b.board ?? null, files: numOr(b.files), launched: typeof b.launched === 'boolean' ? b.launched : null })) : null,
+    missingBoards: Array.isArray(v.missingBoards) ? v.missingBoards.map((b) => (b && typeof b === 'object' ? { board: b.board ?? null, source: b.source ?? null } : { board: b, source: null })) : null,
     perSourcePerDay, lastBoard,
   };
 }
@@ -1099,8 +1102,260 @@ export async function improvementOf({ dir = VERDICTS_DIR, states = stateDirs(BOA
   return { source: boardRel(f) + ' phaseA.perWallSecond', kind: 'daemon verdict', at: d.at || null, isTheBar: d.isTheBar === true, ...p, percentPerSecond: isNum(p.carried) ? bR6(p.carried * 100) : null };
 }
 
+// ---------------------------------------------------------------- GAPS, MAGNITUDE and UNDONE (Board 14 and Board 15)
+// Three blocks read off the self-improvement loop's own files. Like the rest of the board they
+// run nothing: every number is a count of lines on disk, a field of a verdict, or arithmetic on
+// those. A file that is not there prints "not measured", never a zero.
+const WEEK_MS = 7 * DAY_MS;
+function readJsonlSafe(file) {
+  let text; try { text = readFileSync(file, 'utf8'); } catch { return null; }
+  const rows = []; let bad = 0;
+  for (const l of text.split('\n')) { if (!l.trim()) continue; try { const x = JSON.parse(l); if (x && typeof x === 'object') rows.push(x); else bad++; } catch { bad++; } }
+  return { rows, bad };
+}
+/** Every *.jsonl in a directory, each line tagged with its file; null when the directory is absent. */
+function jsonlDir(dir) {
+  let names; try { names = readdirSync(dir).filter((n) => n.endsWith('.jsonl')).sort(); } catch { return null; }
+  const rows = []; let bad = 0;
+  for (const n of names) { const r = readJsonlSafe(path.join(dir, n)); if (!r) continue; bad += r.bad; for (const x of r.rows) rows.push({ ...x, fileOf: n }); }
+  return { files: names, rows, bad };
+}
+const relOf = (root, f) => path.relative(root, f).replaceAll('\\', '/');
+const hasTrial = (g) => (typeof g.trial === 'string' ? g.trial.trim().length > 0 : !!(g.trial && g.trial.command));
+const atOf = (x) => Date.parse(x && x.at);
+const inWindow = (x, from, to) => { const t = atOf(x); return Number.isFinite(t) && t >= from && t <= to; };
+const countBy = (rows, key) => { const o = {}; for (const r of rows) { const k = String(key(r)); o[k] = (o[k] || 0) + 1; } return o; };
+const byAt = (a, b) => (atOf(a) || 0) - (atOf(b) || 0);
+const kv = (o) => Object.entries(o).map(([k, n]) => k + ' ' + n).join(', ');
+/** bench/autopilot.mjs orchestratorRate, loaded when asked (importing that file runs nothing); null when it cannot be. */
+export async function orchestratorOf(root = BOARD_ROOT) {
+  try { const m = await import('./autopilot.mjs'); return typeof m.orchestratorRate === 'function' ? m.orchestratorRate({ root }) : null; } catch { return null; }
+}
+
+/**
+ * GAPS: the ledger (state/self/gaps.jsonl), the decision files (bench/verdicts/autopilot/*.jsonl)
+ * and state/self/authored.jsonl. Open gaps, those with a trial, those attempted in the last 7
+ * days, those kept, and every gap a decision or an authored line records as closed.
+ */
+export function gapsOf({ root = BOARD_ROOT, dir = VERDICTS_DIR, now = Date.now() } = {}) {
+  const ledgerFile = path.join(root, 'state', 'self', 'gaps.jsonl');
+  const decDir = path.join(dir, 'autopilot');
+  const authFile = path.join(root, 'state', 'self', 'authored.jsonl');
+  const L = readJsonlSafe(ledgerFile), D = jsonlDir(decDir), A = readJsonlSafe(authFile);
+  const from = now - WEEK_MS;
+  const out = { at: new Date(now).toISOString(), windowDays: 7, sources: { ledger: relOf(root, ledgerFile), decisions: relOf(root, decDir) + '/*.jsonl', authored: relOf(root, authFile) } };
+  out.ledger = L ? { open: L.rows.length, unparsed: L.bad, withTrial: L.rows.filter(hasTrial).length, byKind: countBy(L.rows, (g) => g.kind || 'unknown') } : null;
+  if (D) {
+    const recent = D.rows.filter((x) => x.gap && typeof x.decision === 'string' && inWindow(x, from, now));
+    const kept = recent.filter((x) => x.decision === 'kept');
+    out.decisions = {
+      files: D.files.length, lines: D.rows.length, unparsed: D.bad, attempts: recent.length, attempted: new Set(recent.map((x) => x.gap)).size,
+      kept: kept.length, keptGaps: new Set(kept.map((x) => x.gap)).size, keptOnRecord: D.rows.filter((x) => x.gap && x.decision === 'kept').length,
+      decisions: countBy(recent, (x) => x.decision),
+    };
+  } else out.decisions = null;
+  out.authored = A ? { lines: A.rows.length, organism: A.rows.filter((x) => x.organism === true).length, unparsed: A.bad } : null;
+  if (!D && !A) out.closed = null;
+  else {
+    const last = new Map();
+    const rows = [...(D ? D.rows.map((x) => ({ ...x, src: relOf(root, decDir) + '/' + x.fileOf })) : []), ...(A ? A.rows.map((x) => ({ ...x, src: relOf(root, authFile) })) : [])];
+    for (const x of rows.filter((r) => r.closed === true && r.gap).sort(byAt)) last.set(x.gap, x);
+    out.closed = [...last.values()].map((x) => ({ gap: x.gap, before: numOr(x.before), after: numOr(x.after), unit: x.unit ?? null, bar: numOr(x.bar), operator: x.operator ?? null, at: x.at ?? null, source: x.src }));
+  }
+  return out;
+}
+
+export function gapsLines(g) {
+  const L = [];
+  L.push('GAPS (' + g.sources.ledger + ', ' + g.sources.decisions + ', ' + g.sources.authored + '; the last ' + g.windowDays + ' days to ' + g.at + '):');
+  L.push('  open: ' + (g.ledger ? g.ledger.open + ' (' + kv(g.ledger.byKind) + '), with a trial ' + g.ledger.withTrial + (g.ledger.unparsed ? ', unparsed lines ' + g.ledger.unparsed : '') : 'not measured (no ' + g.sources.ledger + ')'));
+  const d = g.decisions;
+  L.push('  attempted in the last ' + g.windowDays + ' days: ' + (d ? d.attempted + ' gaps in ' + d.attempts + ' decisions (' + (kv(d.decisions) || 'none') + '; ' + d.files + ' decision files, ' + d.lines + ' lines)' : 'not measured (no ' + g.sources.decisions + ')'));
+  L.push('  kept: ' + (d ? d.kept + ' in the last ' + g.windowDays + ' days (' + d.keptGaps + ' gaps), ' + d.keptOnRecord + ' in all the decision files' : 'not measured (no ' + g.sources.decisions + ')')
+    + (g.authored ? '; ' + g.sources.authored + ' holds ' + g.authored.lines + ' lines, ' + g.authored.organism + ' with an organism author' : '; ' + g.sources.authored + ' not measured (absent)'));
+  if (g.closed === null) L.push('  closed: not measured (neither the decision files nor ' + g.sources.authored + ' are on disk)');
+  else {
+    L.push('  closed: ' + g.closed.length + (g.closed.length ? '' : ' (no decision or authored line records a gap closed)'));
+    for (const c of g.closed) L.push('    closed ' + c.gap + ': before ' + na(c.before) + ' after ' + na(c.after) + (c.unit ? ' ' + c.unit : '') + ' (bar ' + na(c.bar) + ') by ' + na(c.operator) + ', ' + na(c.at) + ' (' + c.source + ')');
+  }
+  return L;
+}
+
+/**
+ * MAGNITUDE: the organism's rate per wall hour (the soak in bench/verdicts/soak.json, its kept
+ * patches from state/self/authored.jsonl and the decision files inside that soak's window) beside
+ * the orchestrator's rate (boards landed and bars met per day, bench/autopilot.mjs
+ * orchestratorRate over docs/BOARDS.json and the dated lines of docs/LOG.md) and the simulated
+ * clock (bench/verdicts/spread.json: improvements kept per million organism-years, generations
+ * per second). orchestrator is that function's result, or null when it could not be loaded.
+ */
+export function magnitudeOf({ root = BOARD_ROOT, dir = VERDICTS_DIR, orchestrator = null } = {}) {
+  const soakFile = path.join(dir, 'soak.json'), spreadFile = path.join(dir, 'spread.json');
+  const authFile = path.join(root, 'state', 'self', 'authored.jsonl');
+  const soak = readJsonSafe(soakFile), spread = readJsonSafe(spreadFile);
+  const A = readJsonlSafe(authFile), D = jsonlDir(path.join(dir, 'autopilot'));
+  const s = soak && soak.soak && typeof soak.soak === 'object' ? soak.soak : null;
+  let organism;
+  if (!s || !isNum(s.elapsedMs) || !s.startedAt || !Number.isFinite(Date.parse(s.startedAt))) {
+    organism = { measured: false, reason: soak ? relOf(root, soakFile) + ' carries no soak.startedAt and soak.elapsedMs' : 'no ' + relOf(root, soakFile) };
+  } else {
+    const from = Date.parse(s.startedAt);
+    const endIso = s.updatedAt || s.loopEndedAt || new Date(from + s.elapsedMs).toISOString();
+    const to = Date.parse(endIso);
+    const hours = s.elapsedMs / 36e5;
+    const kept = A ? A.rows.filter((x) => x.organism === true && inWindow(x, from, to)) : null;
+    const decKept = D ? D.rows.filter((x) => x.decision === 'kept' && inWindow(x, from, to)).length : null;
+    const attempts = D ? D.rows.filter((x) => typeof x.decision === 'string' && inWindow(x, from, to)).length : null;
+    const moved = kept ? new Set(kept.map((x) => x.gap)).size : null;
+    const withDist = kept ? kept.filter((x) => isNum(x.toward) && isNum(x.bar) && x.bar !== 0) : null;
+    // a kept line that carries no toward or bar is not counted as a zero distance: the sum is then not measured
+    const dist = !kept || withDist.length < kept.length ? null : withDist.reduce((a, x) => a + Math.abs(x.toward) / Math.abs(x.bar), 0);
+    const per = (x) => (x === null || !(hours > 0) ? null : bR6(x / hours));
+    organism = {
+      measured: true, source: relOf(root, soakFile), runId: s.runId ?? null, startedAt: s.startedAt, endedAt: endIso, wallHours: bR6(hours),
+      kept: kept ? kept.length : null, keptDecisions: decKept, gapsMoved: moved, distanceBarUnits: dist === null ? null : bR6(dist), attempts,
+      keptPerHour: per(kept ? kept.length : null), gapsMovedPerHour: per(moved), distancePerHour: per(dist), attemptsPerHour: per(attempts),
+      authoredOnRecord: A ? A.rows.filter((x) => x.organism === true).length : null,
+      authoredSource: A ? relOf(root, authFile) : null, decisionsSource: D ? relOf(root, path.join(dir, 'autopilot')) + '/*.jsonl' : null,
+    };
+  }
+  const o = orchestrator;
+  const orch = !o ? { measured: false, reason: 'bench/autopilot.mjs orchestratorRate could not be loaded' }
+    : o.ok === false ? { measured: false, reason: o.reason || 'orchestratorRate returned no rate' }
+      : { measured: true, sources: o.sources || [], boards: numOr(o.boards), boardList: Array.isArray(o.boardList) ? o.boardList : [], barsMet: numOr(o.barsMet), windowFrom: o.windowFrom ?? null, windowTo: o.windowTo ?? null, windowDays: numOr(o.windowDays), boardsPerDay: numOr(o.boardsPerDay), barsMetPerDay: numOr(o.barsMetPerDay), boardsPerHour: numOr(o.boardsPerHour), barsMetPerHour: numOr(o.barsMetPerHour) };
+  const sim = !spread ? { measured: false, reason: 'no ' + relOf(root, spreadFile) }
+    : { measured: true, source: relOf(root, spreadFile), at: spread.at ?? null, isTheBar: spread.isTheBar === true, barMet: typeof spread.barMet === 'boolean' ? spread.barMet : null, keptPerMillionOrganismYears: numOr(spread.keptPerMillionOrganismYears), improvementsKept: numOr(spread.improvementsKept), organismYears: numOr(spread.organismYears), organismYearsOn: numOr(spread.organismYearsOn), generationsPerSecond: numOr(spread.generationsPerSecond), spreadGenerationsPerSecond: numOr(spread.spreadGenerationsPerSecond) };
+  return { organism, orchestrator: orch, simulated: sim };
+}
+
+export function magnitudeLines(m) {
+  const L = ['MAGNITUDE: the organism per wall hour beside the orchestrator and the simulated clock'];
+  const g = m.organism;
+  if (!g.measured) L.push('  organism: not measured (' + g.reason + ')');
+  else {
+    L.push('  organism: soak ' + na(g.runId) + ' (' + g.source + ', ' + g.startedAt + ' to ' + g.endedAt + ', ' + g.wallHours + ' wall hours): kept '
+      + (g.kept === null ? 'not measured (no state/self/authored.jsonl)' : g.kept + ' (' + g.authoredSource + ', organism author)') + ' and ' + (g.keptDecisions === null ? 'not measured in the decision files' : g.keptDecisions + ' in ' + g.decisionsSource)
+      + ', gaps moved ' + na(g.gapsMoved) + ', distance moved ' + na(g.distanceBarUnits) + ' bar units, decisions ' + na(g.attempts));
+    L.push('    per wall hour: kept ' + na(g.keptPerHour) + ', gaps moved ' + na(g.gapsMovedPerHour) + ', distance ' + na(g.distancePerHour) + ' bar units, decisions ' + na(g.attemptsPerHour)
+      + (g.authoredOnRecord === null ? '' : '; on record in all of ' + g.authoredSource + ': ' + g.authoredOnRecord + ' kept with an organism author'));
+  }
+  const o = m.orchestrator;
+  L.push('  orchestrator: ' + (!o.measured ? 'not measured (' + o.reason + ')'
+    : na(o.boards) + ' boards landed (' + o.boardList.join(', ') + ') and ' + na(o.barsMet) + ' bars met over ' + na(o.windowDays) + ' days (' + o.sources.join(', ') + ', ' + na(o.windowFrom) + ' to ' + na(o.windowTo) + '): '
+      + na(o.boardsPerDay) + ' boards per day, ' + na(o.barsMetPerDay) + ' bars met per day (' + na(o.boardsPerHour) + ' and ' + na(o.barsMetPerHour) + ' per wall hour)'));
+  const s = m.simulated;
+  L.push('  simulated clock: ' + (!s.measured ? 'not measured (' + s.reason + ')'
+    : na(s.keptPerMillionOrganismYears) + ' improvements kept per million organism-years (' + na(s.improvementsKept) + ' kept over ' + (s.organismYearsOn !== null && s.organismYearsOn !== undefined ? na(s.organismYearsOn) + ' organism-years in the spread arm, ' + na(s.organismYears) + ' in both arms), ' : na(s.organismYears) + ' organism-years), ')
+      + na(s.generationsPerSecond) + ' generations per second (spread arm ' + na(s.spreadGenerationsPerSecond) + ') (' + s.source + ', ' + na(s.at) + ', isTheBar ' + s.isTheBar + ', barMet ' + na(s.barMet) + ')'));
+  return L;
+}
+
+/**
+ * UNDONE: board items undone per board (the ledger's "board item" lines), the ones the organism
+ * attempted in the last 7 days and kept, with the wall each refused attempt hit (the brief
+ * operator's state/self/brief/*.jsonl and any decision file line on a board item), partial bars
+ * with the lines resumed and records completed (state/self/resume.jsonl and any resumed line in
+ * state/self/authored.jsonl), and the proposed boards on disk with their item counts.
+ */
+export function undoneOf({ root = BOARD_ROOT, dir = VERDICTS_DIR, now = Date.now() } = {}) {
+  const ledgerFile = path.join(root, 'state', 'self', 'gaps.jsonl');
+  const briefDir = path.join(root, 'state', 'self', 'brief');
+  const decDir = path.join(dir, 'autopilot');
+  const authFile = path.join(root, 'state', 'self', 'authored.jsonl');
+  const resumeFile = path.join(root, 'state', 'self', 'resume.jsonl');
+  const propDir = path.join(root, 'docs', 'boards', 'proposed');
+  const L = readJsonlSafe(ledgerFile), B = jsonlDir(briefDir), D = jsonlDir(decDir), A = readJsonlSafe(authFile), R = readJsonlSafe(resumeFile);
+  const from = now - WEEK_MS;
+  const out = { at: new Date(now).toISOString(), windowDays: 7, sources: { ledger: relOf(root, ledgerFile), brief: relOf(root, briefDir) + '/*.jsonl', decisions: relOf(root, decDir) + '/*.jsonl', authored: relOf(root, authFile), resume: relOf(root, resumeFile), proposed: relOf(root, propDir) + '/*.md' } };
+  if (L) {
+    const items = L.rows.filter((g) => g.kind === 'board item');
+    out.items = { total: items.length, byBoard: countBy(items, (g) => (g.board ?? 'unknown')) };
+  } else out.items = null;
+  // attempts: a decision line on a board item gap, from the brief logs and the decision files
+  const isItem = (id) => /^board-\d+:/.test(String(id || ''));
+  const isPlant = (id) => /^board-planted:/.test(String(id || ''));
+  const decisionRows = [
+    ...(B ? B.rows.filter((x) => x.kind === 'decision' && typeof x.decision === 'string').map((x) => ({ ...x, src: relOf(root, briefDir) + '/' + x.fileOf })) : []),
+    ...(D ? D.rows.filter((x) => typeof x.decision === 'string' && (isItem(x.gap) || isPlant(x.gap))).map((x) => ({ ...x, src: relOf(root, decDir) + '/' + x.fileOf })) : []),
+  ].filter((x) => inWindow(x, from, now));
+  const tally = (rows) => {
+    const per = new Map();
+    for (const x of rows.sort(byAt)) {
+      const p = per.get(x.gap) || { gap: x.gap, attempts: 0, kept: 0, refused: 0, walls: {}, last: null };
+      p.attempts++;
+      if (x.decision === 'kept') p.kept++;
+      if (x.decision === 'refused') { p.refused++; const w = x.wall || 'unrecorded'; p.walls[w] = (p.walls[w] || 0) + 1; }
+      p.last = x.at;
+      per.set(x.gap, p);
+    }
+    const list = [...per.values()];
+    const walls = {};
+    for (const p of list) for (const [w, n] of Object.entries(p.walls)) walls[w] = (walls[w] || 0) + n;
+    return { gaps: list.length, attempts: list.reduce((a, p) => a + p.attempts, 0), kept: list.reduce((a, p) => a + p.kept, 0), refused: list.reduce((a, p) => a + p.refused, 0), walls, per: list };
+  };
+  out.attempts = B || D ? tally(decisionRows.filter((x) => isItem(x.gap))) : null;
+  out.plants = B || D ? tally(decisionRows.filter((x) => isPlant(x.gap))) : null;
+  out.authoredOnItems = A ? A.rows.filter((x) => isItem(x.gap) || isItem(x.from)).length : null;
+  // partial bars and the resume log
+  const resumed = [...(R ? R.rows : []), ...(A ? A.rows.filter((x) => x.kind === 'resumed') : [])].filter((x) => Array.isArray(x.gaps));
+  if (L) {
+    const partial = L.rows.filter((g) => g.kind === 'bar never completed');
+    const lastNot = resumed.slice().sort(byAt).reverse().find((x) => Array.isArray(x.notResumable));
+    const touching = resumed.filter((x) => partial.some((g) => x.gaps.includes(g.id)));
+    const total = (k) => { const v = touching.filter((x) => isNum(x[k])); return v.length ? v.reduce((a, x) => a + x[k], 0) : null; };
+    out.partial = {
+      total: partial.length, resumeLog: R ? { lines: R.rows.length, unparsed: R.bad } : null,
+      distinct: { runs: touching.length, linesResumed: total('linesAdded'), recordsCompleted: total('recordsCompleted') },
+      bars: partial.map((g) => {
+        const runs = resumed.filter((x) => x.gaps.includes(g.id));
+        const sum = (k) => { const v = runs.filter((x) => isNum(x[k])); return v.length ? v.reduce((a, x) => a + x[k], 0) : null; };
+        return { gap: g.id, verdictFile: g.verdictFile ?? null, runs: runs.length, linesResumed: sum('linesAdded'), recordsCompleted: sum('recordsCompleted'), last: runs.length ? runs.sort(byAt)[runs.length - 1].at : null, barLanded: runs.some((x) => x.barLanded === true), notResumable: !!(lastNot && lastNot.notResumable.includes(g.id)) };
+      }),
+    };
+  } else out.partial = null;
+  // proposed boards
+  let names = null; try { names = readdirSync(propDir).filter((n) => n.endsWith('.md')).sort(); } catch { names = null; }
+  out.proposed = names === null ? null : names.map((n) => {
+    let text = ''; try { text = readFileSync(path.join(propDir, n), 'utf8'); } catch { text = ''; }
+    const board = (/^board:\s*(\d+)\s*$/m.exec(text) || [null, null])[1];
+    const at = (/^at:\s*(\S+)\s*$/m.exec(text) || [null, null])[1];
+    return { file: relOf(root, path.join(propDir, n)), board: board === null ? null : Number(board), items: (text.match(/^## item /gm) || []).length, at };
+  });
+  return out;
+}
+
+export function undoneLines(u) {
+  const L = [];
+  const s = u.sources;
+  L.push('UNDONE (' + [s.ledger, s.brief, s.decisions, s.authored, s.resume, s.proposed].join(', ') + '; the last ' + u.windowDays + ' days to ' + u.at + '):');
+  L.push('  board items undone: ' + (u.items ? u.items.total + ' (' + (Object.entries(u.items.byBoard).map(([b, n]) => 'board ' + b + ' ' + n).join(', ') || 'none') + ')' : 'not measured (no ' + s.ledger + ')'));
+  const a = u.attempts;
+  if (!a) L.push('  attempted by the organism in the last ' + u.windowDays + ' days: not measured (neither ' + s.brief + ' nor ' + s.decisions + ' is on disk)');
+  else {
+    L.push('  attempted by the organism in the last ' + u.windowDays + ' days: ' + a.gaps + ' board items in ' + a.attempts + ' attempts, kept ' + a.kept + ', refused ' + a.refused + (a.refused ? ' (walls hit: ' + kv(a.walls) + ')' : '')
+      + (u.authoredOnItems === null ? '' : '; authored lines on a board item ' + u.authoredOnItems));
+    for (const p of a.per) L.push('    ' + p.gap + ': attempts ' + p.attempts + ', kept ' + p.kept + ', refused ' + p.refused + (p.refused ? ' at ' + kv(p.walls) : '') + ', last ' + p.last);
+    const pl = u.plants;
+    if (pl && pl.attempts) L.push('  bench plants (not board items): ' + pl.gaps + ' planted items in ' + pl.attempts + ' attempts, kept ' + pl.kept + ', refused ' + pl.refused + (pl.refused ? ' (walls hit: ' + kv(pl.walls) + ')' : ''));
+  }
+  const p = u.partial;
+  if (!p) L.push('  partial bars: not measured (no ' + s.ledger + ')');
+  else {
+    const touched = p.bars.filter((b) => b.runs > 0).length;
+    L.push('  partial bars (kind bar never completed): ' + p.total + '; resume log ' + (p.resumeLog ? p.resumeLog.lines + ' lines' : 'not measured (no ' + s.resume + ')') + ', ' + touched + ' of them resumed'
+      + (p.distinct.runs ? ' by ' + p.distinct.runs + ' distinct resume runs (lines resumed ' + na(p.distinct.linesResumed) + ', records completed ' + na(p.distinct.recordsCompleted) + '; one run can resume several bars, so the per-bar lines below share them)' : ''));
+    for (const b of p.bars) L.push('    ' + b.gap + ': ' + (b.runs ? b.runs + ' resume runs, lines resumed ' + na(b.linesResumed) + ', records completed ' + na(b.recordsCompleted) + ', last ' + b.last + ', bar landed ' + (b.barLanded ? 'yes' : 'no') : p.resumeLog || b.notResumable ? 'no resume run' : 'lines resumed not measured') + (b.notResumable ? '; the resume log names it not resumable' : ''));
+  }
+  if (u.proposed === null) L.push('  proposed boards: not measured (no ' + s.proposed.replace('/*.md', '/') + ')');
+  else {
+    L.push('  proposed boards on disk: ' + u.proposed.length);
+    for (const b of u.proposed) L.push('    ' + b.file + ': board ' + na(b.board) + ', ' + b.items + ' items' + (b.at ? ', at ' + b.at : ''));
+  }
+  return L;
+}
+
 /** The whole board, read from disk. */
-export async function boardOf({ dir = VERDICTS_DIR, publishedFile = PUBLISHED_FILE, logFile = LOG_FILE, states = stateDirs(BOARD_ROOT), now = Date.now(), boardsFile = path.join(BOARD_ROOT, 'docs', 'BOARDS.json') } = {}) {
+export async function boardOf({ dir = VERDICTS_DIR, publishedFile = PUBLISHED_FILE, logFile = LOG_FILE, states = stateDirs(BOARD_ROOT), now = Date.now(), boardsFile = path.join(BOARD_ROOT, 'docs', 'BOARDS.json'), root = BOARD_ROOT, orchestrator = undefined } = {}) {
   const published = readJsonSafe(publishedFile);
   const sets = PUBLIC_SETS.map((s) => boardSet(s, { dir, published }));
   const direct = PROVENANCE.includes('direct');
@@ -1114,6 +1369,9 @@ export async function boardOf({ dir = VERDICTS_DIR, publishedFile = PUBLISHED_FI
     knowledge: knowledgeOf({ dir }),
     bytesPerPoint: bytesPerPointOf({ dir, states }),
     improvement: await improvementOf({ dir, states }),
+    gaps: gapsOf({ root, dir, now }),
+    magnitude: magnitudeOf({ root, dir, orchestrator: orchestrator === undefined ? await orchestratorOf(root) : orchestrator }),
+    undone: undoneOf({ root, dir, now }),
     hisRate: HIS_RATE,
     publishedFile: boardRel(publishedFile),
   };
@@ -1165,7 +1423,14 @@ export function multiplyingLines(m) {
 export function authoredLines(au) {
   const L = [];
   L.push('AUTHORED' + (au.source ? ' (' + au.source + ', ' + (au.partial ? 'PARTIAL' : 'whole, isTheBar true') + ', ' + au.at + '):' : ': not measured (' + au.reason + ')'));
-  if (au.source) L.push('  AUTHORED SHARE: ' + au.numerator + ' of ' + au.denominator + ' = ' + pctOf(au.share) + '% (kept patches with an organism author ' + na(au.organism) + ', kept patches of any author ' + na(au.kept) + ', files landed by boards ' + na(au.boardFiles) + ')');
+  if (au.source) {
+    const bs = Array.isArray(au.boards) ? au.boards : null;
+    const den = !bs ? '; the boards of the denominator: not measured (' + au.source + ' carries no boards list)'
+      : '; the denominator counts the files of boards ' + (bs.filter((b) => b.launched !== false).map((b) => na(b.board) + ' (' + na(b.files) + ')').join(', ') || 'none')
+        + (bs.some((b) => b.launched === false) ? ', not launched ' + bs.filter((b) => b.launched === false).map((b) => na(b.board)).join(', ') : '')
+        + (Array.isArray(au.missingBoards) ? ', not in it ' + (au.missingBoards.length ? au.missingBoards.map((b) => na(b.board) + (b.source ? ' (' + b.source + ')' : '')).join(', ') : 'none') : '');
+    L.push('  AUTHORED SHARE: ' + au.numerator + ' of ' + au.denominator + ' = ' + pctOf(au.share) + '% (kept patches with an organism author ' + na(au.organism) + ', kept patches of any author ' + na(au.kept) + ', files landed by boards ' + na(au.boardFiles) + ')' + den);
+  }
   const psd = au.perSourcePerDay || { rows: [], reason: 'not read' };
   if (!psd.rows.length) L.push('  patches proposed and kept per source per day: not measured (' + psd.reason + ')');
   else {
@@ -1255,6 +1520,9 @@ export function boardLines(b) {
     ? 'carried ' + im.carried + ' and exact ' + im.exact + ' of the suite per wall second = ' + im.percentPerSecond + ' percent per second (' + im.source + ', checkpoints ' + im.fromK + ' to ' + im.toK + ' over ' + im.seconds + ' s' + (im.at ? ', ' + im.at : '') + ')'
       + '; his words: ' + b.hisRate.words + ', so the measured rate is ' + (isNum(im.percentPerSecond) ? bR6(im.percentPerSecond / b.hisRate.percentPerSecond) : 'n/a') + ' of his'
     : 'not measured (' + im.reason + ')'));
+  if (b.gaps) L.push(...gapsLines(b.gaps));
+  if (b.magnitude) L.push(...magnitudeLines(b.magnitude));
+  if (b.undone) L.push(...undoneLines(b.undone));
   return L;
 }
 
@@ -1284,7 +1552,18 @@ export function boardStatement(b) {
     + (b.authored.lastBoard && b.authored.lastBoard.newest ? 'Days since the last board: ' + b.authored.lastBoard.days + ' (board ' + na(b.authored.lastBoard.newest.board) + ' ' + b.authored.lastBoard.newest.kind + '). ' : '')
     + (b.knowledge ? 'Knowledge: ' + b.knowledge.sources.map((s) => s.primary ? s.name + ' holds ' + na(s.primary.held) + ' articles' + (s.primary.partial ? ' (partial)' : '') + ', recall@1 ' + na(s.primary.recall1) + ' against null ' + na(s.primary.null1) : s.name + ' is not measured').join('; ') + '. ' : '')
     + (b.bytesPerPoint.bar ? 'Bytes per score point ' + b.bytesPerPoint.bar.bytesPerScorePoint + ' at the compress bar. ' : '')
-    + (im.source ? 'Improvement per wall second ' + im.percentPerSecond + ' percent of the suite against his ' + b.hisRate.percentPerSecond + '.' : 'Improvement per wall second is not measured.');
+    + (im.source ? 'Improvement per wall second ' + im.percentPerSecond + ' percent of the suite against his ' + b.hisRate.percentPerSecond + '.' : 'Improvement per wall second is not measured.')
+    + loopSentence(b);
+}
+
+/** The GAPS, MAGNITUDE and UNDONE blocks in one sentence each, from their own fields (Board 15). */
+function loopSentence(b) {
+  const g = b.gaps, m = b.magnitude, u = b.undone;
+  const out = [];
+  if (g) out.push(g.ledger ? 'Gaps open ' + g.ledger.open + ', ' + g.ledger.withTrial + ' with a trial' + (g.decisions ? ', ' + g.decisions.attempted + ' attempted and ' + g.decisions.kept + ' kept in the last ' + g.windowDays + ' days' : '') + (g.closed ? ', ' + g.closed.length + ' closed' : '') + '.' : 'The gap ledger is not measured.');
+  if (m && m.organism) out.push(m.organism.measured ? 'The organism kept ' + na(m.organism.keptPerHour) + ' patches per wall hour in its soak' + (m.orchestrator.measured ? ' against the orchestrator\'s ' + na(m.orchestrator.boardsPerHour) + ' boards per wall hour' : '') + '.' : 'The organism rate is not measured.');
+  if (u) out.push(u.items ? 'Board items undone ' + u.items.total + (u.attempts ? ', ' + u.attempts.gaps + ' attempted by the organism in the last ' + u.windowDays + ' days, ' + u.attempts.kept + ' kept' : '') + '.' : 'Undone board items are not measured.');
+  return out.length ? ' ' + out.join(' ') : '';
 }
 
 /** ladder.json: the daily series (days, deltas, line, which health and the site read) and the board beside it. */
@@ -1338,18 +1617,35 @@ export async function runBoard({ dir = VERDICTS_DIR, seriesFile = SERIES_FILE, l
 // blocks (MULTIPLYING, AUTHORED, KNOWLEDGE), the gate must print five rows (LOAD-BEARING and
 // BOUNDARY after the three), and the tests it runs itself are the ladder's and the gate's.
 
+// Board 15 widened it again: the board carries GAPS, MAGNITUDE and UNDONE, the gate prints seven
+// rows (AUTONOMY and HANDOFF last), and both new rows must have GRADED the installation: a row that
+// printed N/A graded nothing and cannot meet the bar, and a row printed RED as a referee (a live
+// autopilot held the lock, so it did not turn the gate red) misses the bar all the same. Met, the
+// verdict is bench/verdicts/rows.json (isTheBar true, barMet true); otherwise rows-partial.json
+// (isTheBar false, barMet false). A rows file an earlier board wrote is copied to
+// rows-board<N>.json (rows-partial-board<N>.json) before the first Board 15 write replaces it.
+export const ROWS_BOARD = 15;
+
 /** The files the rows item owns. A gate that started before one of them changed did not see it. */
-export const ROWS_OWNED = Object.freeze(['bench/ladder.mjs', 'bench/gate.mjs', 'test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs', 'notes/ladder.md']);
+export const ROWS_OWNED = Object.freeze(['bench/ladder.mjs', 'bench/gate.mjs', 'test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs', 'test/gate-autonomy.test.mjs', 'notes/ladder.md']);
 /** The test files node bench/ladder.mjs --rows runs itself, under the gate's budget caps. */
-export const ROWS_TESTS = Object.freeze(['test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs']);
-const ROW_KEYS = Object.freeze([['budget', 'BUDGET'], ['compress', 'COMPRESS'], ['hisData', 'HIS DATA'], ['loadBearing', 'LOAD-BEARING'], ['boundary', 'BOUNDARY']]);
+export const ROWS_TESTS = Object.freeze(['test/ladder.test.mjs', 'test/gate.test.mjs', 'test/gate-rows.test.mjs', 'test/gate-autonomy.test.mjs']);
+const ROW_KEYS = Object.freeze([['budget', 'BUDGET'], ['compress', 'COMPRESS'], ['hisData', 'HIS DATA'], ['loadBearing', 'LOAD-BEARING'], ['boundary', 'BOUNDARY'], ['autonomy', 'AUTONOMY'], ['handoff', 'HANDOFF']]);
+/** The rows that read the installation: they must have graded it, not printed N/A. */
+const INSTALL_ROWS = Object.freeze(['autonomy', 'handoff']);
 // a block is on the board when its object is there with the fields this bench writes for it,
 // "not measured" included: a block that says not measured was printed
 const BOARD_BLOCKS = Object.freeze([
   ['multiplying', 'MULTIPLYING', (x) => !!x && typeof x === 'object' && 'source' in x],
   ['authored', 'AUTHORED', (x) => !!x && typeof x === 'object' && 'lastBoard' in x && 'perSourcePerDay' in x],
   ['knowledge', 'KNOWLEDGE', (x) => !!x && typeof x === 'object' && Array.isArray(x.sources)],
+  ['gaps', 'GAPS', (x) => !!x && typeof x === 'object' && 'ledger' in x && 'decisions' in x && 'closed' in x],
+  ['magnitude', 'MAGNITUDE', (x) => !!x && typeof x === 'object' && !!x.organism && !!x.orchestrator && !!x.simulated],
+  ['undone', 'UNDONE', (x) => !!x && typeof x === 'object' && 'items' in x && 'attempts' in x && 'partial' in x && 'proposed' in x],
 ]);
+// the printed block of each, rebuilt from the board in ladder.json by the functions that printed it
+const PRINTERS = Object.freeze({ gaps: (b) => gapsLines(b.gaps), magnitude: (b) => magnitudeLines(b.magnitude), undone: (b) => undoneLines(b.undone), authoredShare: (b) => authoredLines(b.authored).filter((l) => l.startsWith('  AUTHORED SHARE')) });
+const printedOf = (board) => Object.fromEntries(Object.entries(PRINTERS).map(([k, p]) => { try { return [k, p(board)]; } catch (e) { return [k, ['not printable from ladder.json: ' + String((e && e.message) || e).split('\n')[0]]]; } }));
 const isoOf = (ms) => new Date(ms).toISOString();
 
 /**
@@ -1388,6 +1684,10 @@ export function rowsVerdictOf({ ladder, gate, tests, owned = [], at = new Date()
   const emDash = g ? (g.emDash || []) : [];
   const badImports = g ? (g.badImports || []) : [];
   if (g && printed.length < ROW_KEYS.length) reasons.push('the gate printed ' + printed.length + ' of the ' + ROW_KEYS.length + ' rows');
+  const ungraded = INSTALL_ROWS.filter((k) => rows[k] && rows[k].graded === false).map((k) => ROW_KEYS.find(([x]) => x === k)[1]);
+  if (ungraded.length) reasons.push('the ' + ungraded.join(' and ') + ' row(s) printed N/A, so the run graded no installation');
+  const refereeRed = ROW_KEYS.filter(([k]) => rows[k] && rows[k].ok === false && rows[k].rules === false).map(([, label]) => label);
+  if (g && g.verdict === 'GREEN' && refereeRed.length) reasons.push('red rows printed as referees (a live autopilot held the lock): ' + refereeRed.join(', '));
   if (g && g.verdict !== 'GREEN') {
     const why = [];
     if (failing.length) why.push(failing.length + ' failing test file(s)');
@@ -1408,7 +1708,7 @@ export function rowsVerdictOf({ ladder, gate, tests, owned = [], at = new Date()
   const kill = (f) => f.killed ? ', killed on ' + f.killed + ' at ' + f.peakRssMb + ' MB' : '';
   const testText = (t) => t.file + (t.missing ? ' is not in the tree' : (passed(t) ? ' passed ' : ' did not pass, ') + t.pass + ' of ' + t.total + ' (fail ' + t.fail + ', exit ' + t.exit + ') in ' + t.ms + ' ms, peak RSS ' + (t.budget ? t.budget.peakRssMb : null) + ' MB');
   const sentences = [
-    'Board 12 item rows (P15\'s four rulers on the ladder, P8 on the gate), composed by ' + command + ' from the verdicts on disk and one run of each of ' + runs.length + ' test files.',
+    'Board ' + ROWS_BOARD + ' item rows (the GAPS, MAGNITUDE and UNDONE blocks on the ladder, the AUTONOMY and HANDOFF rows on the gate), composed by ' + command + ' from the verdicts on disk and one run of each of ' + runs.length + ' test files.',
     lad ? 'The board: bench/verdicts/ladder.json was written at ' + lad.at + ' by ' + lad.command + ', isTheBar ' + lad.isTheBar + (boardOk ? ', with the board for ' + lad.board.sets.map((s) => s.name + ' (' + s.status + ')').join(', ') + ' and the blocks ' + (blocks.length ? blocks.join(', ') : 'none') + (missingBlocks.length ? ' (missing: ' + missingBlocks.join(', ') + ')' : '') + '.' : ', with no board.') : 'The board: bench/verdicts/ladder.json could not be read.',
     g ? 'The gate: ' + g.command + ' ran from ' + (g.startedAt || 'an unrecorded start') + ' to ' + g.at + ' and is ' + g.verdict + ': test files ' + g.testsPassed + ' of ' + g.testsTotal
       + (failing.length ? ' (failing: ' + failing.map((f) => f.file + kill(f)).join('; ') + ')' : '')
@@ -1420,10 +1720,15 @@ export function rowsVerdictOf({ ladder, gate, tests, owned = [], at = new Date()
     runs.length ? 'The tests, each run by this command under the gate budget: ' + runs.map(testText).join('; ') + '.' : 'No test file was run.',
     met ? 'The bar asks for all three and all three hold: MET.' : 'The bar asks for all three, so it is MISSED: ' + reasons.join('; ') + '.',
   ];
+  const printedBlocks = boardOk ? printedOf(lad.board) : null;
   const doc = {
-    at, command, node: process.version, isTheBar: met,
+    at, command, node: process.version, isTheBar: met, barMet: met,
     statement: sentences.join(' '),
-    item: 'rows', board: 12, principles: { ladder: 'P15', gate: 'P8' }, met, reasons,
+    item: 'rows', board: ROWS_BOARD, principles: { ladder: 'P15', gate: 'P8' }, met, reasons,
+    split: {
+      development: 'test/ladder.test.mjs, test/gate-rows.test.mjs and test/gate-autonomy.test.mjs plant ledgers, decision files, brief and resume logs, a HANDOFF.md and schtasks output under temp directories, with the task query and the lock holder injected; no real task is queried and no model is called',
+      heldOut: 'the real tree: the real state/self/gaps.jsonl, decision files, brief and resume logs, docs/HANDOFF.md, the real read-only schtasks /query of BrainAutopilot, and the gate run to completion on it',
+    },
     parts: {
       ladder: lad ? { file: 'bench/verdicts/ladder.json', at: lad.at, command: lad.command, isTheBar: lad.isTheBar, board: boardOk, sets: boardOk ? lad.board.sets.map((s) => ({ name: s.name, status: s.status })) : [], blocks, missingBlocks } : null,
       gate: g ? {
@@ -1431,7 +1736,9 @@ export function rowsVerdictOf({ ladder, gate, tests, owned = [], at = new Date()
         testsPassed: g.testsPassed, testsTotal: g.testsTotal, assertionsPassed: g.assertionsPassed, assertionsFailed: g.assertionsFailed,
         failing, emDashFiles: emDash.length, emDash, badImports, rowsExpected: ROW_KEYS.length, rowsPrintedCount: printed.length, rowsPrinted: printed, redRows,
         lines: Object.fromEntries(ROW_KEYS.map(([k]) => [k, rows[k] ? rows[k].line : null])),
+        gateLine: typeof g.line === 'string' ? g.line : null, ungraded, refereeRed,
       } : null,
+      printed: printedBlocks,
       tests: runs.map((t) => ({ file: t.file, command: 'node --max-old-space-size=6000 --test ' + t.file, tests: t.total ?? null, pass: t.pass ?? null, fail: t.fail ?? null, exit: t.exit ?? null, ms: t.ms ?? null, peakRssMb: t.budget ? t.budget.peakRssMb : null, budget: t.budget ? t.budget.outcome : null, missing: !!t.missing })),
       testFiles: runs.length,
     },
@@ -1468,7 +1775,12 @@ export async function runRows({ root = BOARD_ROOT, verdictsDir = VERDICTS_DIR, r
   let wrote = null;
   if (write) {
     const out = path.join(verdictsDir, v.file);
-    if (v.met && existsSync(out)) log('rows: ' + boardRel(out) + ' already holds the bar and is written once; this run is printed, not written');
+    let prior = null; try { prior = JSON.parse(readFileSync(out, 'utf8')); } catch { prior = null; }
+    if (prior && prior.board !== ROWS_BOARD) {
+      const aside = out.replace(/\.json$/, '-board' + (prior.board ?? 'unknown') + '.json');
+      if (!existsSync(aside)) { writeFileSync(aside, readFileSync(out)); log('rows: copied ' + boardRel(out) + ' (board ' + prior.board + ') to ' + boardRel(aside) + ' before this board writes it'); }
+    }
+    if (v.met && prior && prior.board === ROWS_BOARD && prior.barMet === true) log('rows: ' + boardRel(out) + ' already holds the bar and is written once; this run is printed, not written');
     else {
       const text = JSON.stringify(v.doc, null, 2);
       mkdirSync(verdictsDir, { recursive: true });

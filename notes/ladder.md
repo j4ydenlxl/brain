@@ -429,3 +429,112 @@ node tools/budget.mjs --ram-mb 6000 --disk-mb 512 --dir <scratchpad>/tests-out -
 ℹ duration_ms 10856.4041
 BUDGET done exit 0: wall 11.03 s, peak ram 651.4MB, peak dir 0.0MB, cpu 8.17 s, 6 samples, record ../../../AppData/Local/Temp/claude/C--Users-ybmic-Downloads-claudeskillsvideo-to-website/b20b8e7e-1cf2-4327-8295-4d76361d02e2/scratchpad/tests-budget.json
 ```
+
+## the loop on the board and the installation on the gate (Board 14 and Board 15, 2026-09-26)
+
+Board 14 asked the ladder for the self-improvement loop's own numbers and the gate for a row that
+says whether the loop is installed and running; Board 15 asked for what is still undone and for a
+row that says whether the handoff document is true. The ladder gains three blocks, GAPS,
+MAGNITUDE and UNDONE, printed after IMPROVEMENT, and the AUTHORED SHARE line names the boards its
+denominator counts. The gate gains two rows, AUTONOMY and HANDOFF, printed after BOUNDARY and
+counted in the GATE line. Like every other block the three new ones run nothing: each number is a
+count of lines on disk, a field of a verdict, or arithmetic on those, and a file that is not
+there prints "not measured", never a zero.
+
+What each block reads:
+
+- GAPS: state/self/gaps.jsonl (open gaps, those with a trial), the decision files
+  bench/verdicts/autopilot/*.jsonl (attempted and kept in the last 7 days), state/self/authored.jsonl
+  (kept with an organism author), and one line per gap a decision or authored line records as
+  closed, with before, after, unit, bar and the operator.
+- MAGNITUDE: three rates side by side. The organism per wall hour of its soak (bench/verdicts/soak.json
+  gives the window; kept patches and distance moved come from the authored lines inside it, and a
+  kept line with no toward or bar makes the distance not measured rather than zero). The
+  orchestrator's boards landed and bars met per day, from bench/autopilot.mjs orchestratorRate.
+  The simulated clock from bench/verdicts/spread.json.
+- UNDONE: the ledger's board items per board; the organism's attempts on them in the last 7 days
+  from state/self/brief/*.jsonl and the decision files, with the wall each refused attempt hit
+  (bench plants tallied apart, since they are not board items); partial bars with the lines
+  resumed and records completed from state/self/resume.jsonl (one resume run can resume several
+  bars, so the distinct total is printed beside the per-bar lines); the proposed boards under
+  docs/boards/proposed/ with their item counts.
+
+This is what `node bench/ladder.mjs` printed on this tree for the three blocks and the share line:
+
+```
+node tools/budget.mjs --ram-mb 6000 --disk-mb 512 --dir <scratchpad>/ladder-out -- node --max-old-space-size=6000 bench/ladder.mjs
+  AUTHORED SHARE: 1 of 328 = 0.30% (kept patches with an organism author 1, kept patches of any author 1, files landed by boards 327); the denominator counts the files of boards 8 (56), 9 (37), 10 (74), 11 (82), 12 (31), 14 (47), not launched 13, not in it 15 (docs/boards/board-15.js), 16 (docs/boards/board-16.js)
+GAPS (state/self/gaps.jsonl, bench/verdicts/autopilot/*.jsonl, state/self/authored.jsonl; the last 7 days to 2026-09-26T04:58:17.840Z):
+  open: 192 (missed 10, unreadable bar 10, bar never completed 8, ladder 7, gate slow 8, open 88, dead share 22, board item 39), with a trial 71
+  attempted in the last 7 days: 41 gaps in 118 decisions (refused 117, kept 1; 2 decision files, 332 lines)
+  kept: 1 in the last 7 days (1 gaps), 1 in all the decision files; state/self/authored.jsonl holds 1 lines, 1 with an organism author
+  closed: 0 (no decision or authored line records a gap closed)
+MAGNITUDE: the organism per wall hour beside the orchestrator and the simulated clock
+  organism: soak 20260924T205054238Z (bench/verdicts/soak.json, 2026-09-24T20:50:54.238Z to 2026-09-24T21:58:28.658Z, 1.126228 wall hours): kept 1 (state/self/authored.jsonl, organism author) and 1 in bench/verdicts/autopilot/*.jsonl, gaps moved 1, distance moved 0.034 bar units, decisions 150
+    per wall hour: kept 0.88792, gaps moved 0.88792, distance 0.030189 bar units, decisions 133.187978; on record in all of state/self/authored.jsonl: 1 kept with an organism author
+  orchestrator: 13 boards landed (1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 14, 16) and 12 bars met over 9.7542 days (docs/LOG.md, docs/BOARDS.json, bench/verdicts/*.json, 2026-09-16T04:00:00.000Z to 2026-09-25T22:06:00.000Z): 1.3328 boards per day, 1.2302 bars met per day (0.0555 and 0.0513 per wall hour)
+  simulated clock: 286.9142 improvements kept per million organism-years (1171 kept over 8243280 organism-years), 27448.7788 generations per second (spread arm 8.1315) (bench/verdicts/spread.json, 2026-09-24T20:34:05.196Z, isTheBar true, barMet false)
+UNDONE (state/self/gaps.jsonl, state/self/brief/*.jsonl, bench/verdicts/autopilot/*.jsonl, state/self/authored.jsonl, state/self/resume.jsonl, docs/boards/proposed/*.md; the last 7 days to 2026-09-26T04:58:17.840Z):
+  board items undone: 39 (board 10 5, board 11 3, board 12 5, board 13 9, board 14 4, board 15 3, board 16 2, board 17 8)
+  attempted by the organism in the last 7 days: 1 board items in 3 attempts, kept 0, refused 3 (walls hit: test 2, budget 1); authored lines on a board item 0
+    board-13:exit: attempts 3, kept 0, refused 3 at test 2, budget 1, last 2026-09-26T03:12:25.570Z
+  bench plants (not board items): 1 planted items in 17 attempts, kept 2, refused 15 (walls hit: test 3, gate 4, budget 8)
+  partial bars (kind bar never completed): 8; resume log 5 lines, 3 of them resumed by 5 distinct resume runs (lines resumed 168, records completed 56; one run can resume several bars, so the per-bar lines below share them)
+  proposed boards on disk: 1
+    docs/boards/proposed/board-17.md: board 17, 8 items, at 2026-09-26T02:26:03.947Z
+```
+
+The loop's own rate and the orchestrator's sit on one line on purpose: the organism kept one
+patch in its only soak, the orchestrator landed boards. Nothing here claims the loop is fast; it
+prints what the files say so the next board can see the gap between the two.
+
+The two gate rows read the machine the tree is installed on, so they are graded only on the
+installation: the tree the registered BrainAutopilot task changes into (its Task To Run is
+`cmd /c cd /d <tree> && node tools\schedule-autopilot.mjs --tick`), compared resolved and without
+case, or, when no task names a tree, a tree carrying both .git and state/self. On any other tree
+(an operator's copy, a planted fixture, a cloud checkout) both print N/A, graded false, and change
+nothing. The task is read only with `schtasks /query /tn BrainAutopilot /fo LIST /v`; nothing here
+creates, changes or runs a task.
+
+- AUTONOMY is GREEN when the ledger is under 48 hours old, every gap of kinds missed, ladder, gate
+  red and gate slow has a trial whose bench file exists, BrainAutopilot is registered and Ready
+  (Running is taken as working and printed), state/self/STOP is absent, and the newest decision
+  file is under 48 hours old. Not registered is RED and prints the register command; a present
+  STOP prints "stopped by hand". The gaps the ledger writes for these two rows themselves are
+  left out as echoes, since a red row must not be its own cause.
+- HANDOFF is GREEN when docs/HANDOFF.md exists, its own footer says it was generated under 48
+  hours ago, every command it lists exists (a script as a file under the tree, an executable on
+  PATH, a task by the same read-only query), and its undone counts by kind (the heading and its
+  bullets) equal the ledger's. A script the document itself lists as still to be built by its
+  board item, and that an undone board item in the ledger names in its bar command, is pending
+  rather than missing; a `<task>` placeholder is skipped.
+
+Both rows print their counts and every cause. While a live autopilot holds
+state/self-code/autopilot.lock they are referees: the row is computed and printed in full, marked
+"REFEREE, not ruling", and does not turn the gate red, because that gate is the autopilot deciding
+whether to keep a patch and no patch can move what these rows read. The rows verdict still misses
+the bar on a red referee row and on an N/A row, so a run that graded nothing cannot pass.
+
+The rows verdict is written by `node bench/ladder.mjs --rows` as it was for Board 12: met only
+when the board carries its six blocks, the gate is GREEN with all seven rows printed, and the
+ladder and gate test files pass in the same run. Met, it writes bench/verdicts/rows.json with
+isTheBar true and barMet true; missed, it writes bench/verdicts/rows-partial.json with both false.
+A rows file an earlier board wrote is copied beside it under its board number before the first
+write replaces it.
+
+The tests plant every input under temp directories and inject the task query and the lock
+holder, so no real task is queried and no model is called:
+
+```
+node tools/budget.mjs --ram-mb 6000 --disk-mb 512 --dir <scratchpad>/tests-out -- node --max-old-space-size=6000 --test --test-concurrency=1 test/ladder.test.mjs test/gate.test.mjs test/gate-rows.test.mjs test/gate-autonomy.test.mjs
+ℹ tests 45
+ℹ pass 45
+ℹ fail 0
+ℹ duration_ms 11117.5597
+BUDGET done exit 0: wall 11.32 s, peak ram 644.4MB, peak dir 0.0MB, cpu 7.80 s, 6 samples, record state/budget/last.json
+```
+
+What is not done: the HANDOFF count check compares against a ledger that self/gaps.mjs rewrites on
+every run, and nothing regenerates docs/HANDOFF.md when it does, so the row goes red whenever the
+two drift until tools/handoff.mjs is run again. The missed gaps whose verdict form self/gaps.mjs
+does not know carry no trial, and AUTONOMY stays red on them until that file learns the forms.

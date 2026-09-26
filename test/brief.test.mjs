@@ -11,13 +11,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   runBrief, briefCeiling, validatePlan, validateFile, parseBoardText, gapOf, grammarPlan, codeBlocks, ownedFiles,
-  provenanceShare, failureLines, repairTarget, BRIEF_AUTHOR, REPAIR_ROUNDS, WALLS, thinkBudgetCall, gateBaseline, gateDeltaOf,
+  provenanceShare, failureLines, repairTarget, BRIEF_AUTHOR, REPAIR_ROUNDS, WALLS, thinkBudgetCall, gateBaseline, gateDeltaOf, statementCheck,
 } from '../self/brief.mjs';
 import http from 'node:http';
 import { hashTree } from '../self/improve.mjs';
 import { OPERATORS, OPERATOR_NAMES, author, makeBudget } from '../self/operators.mjs';
 import { DirectTable } from '../memory/direct.mjs';
-import { PLANTED_BOARD, plantBriefTree, mockAuthor, CLAMP_TEST, FAKE_GATE_RED } from './brief-plant.mjs';
+import { PLANTED_BOARD, plantBriefTree, mockAuthor, CLAMP_TEST, CLAMP_BENCH, FAKE_GATE_RED } from './brief-plant.mjs';
 import { plantTree, plantGaps, mockAuthor as mockDiffAuthor, AUTHOR_DIFF_GOOD } from './operators-plant.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -151,6 +151,31 @@ test('a model call with no answer inside its wall is asked again, with a shorter
   const bench = r.steps.find((s) => s.step === 'write' && s.file === 'bench/planted-clamp.mjs');
   assert.deepEqual(bench.attempts.filter((a) => a.tier === 'model').map((a) => a.ok), [false, true]);
   assert.ok(mock.calls.some((c) => c.phase === 're-ask after no answer'));
+});
+
+test('the statement wall: a verdict whose statement quotes none of its own measured values is repaired at the bar step, before the gate', async () => {
+  // the rule of the findings page (tools/findings.mjs verdictValues): a number field of 10 or more, or a non-integer
+  const base = { at: '2026-09-26T02:30:00.000Z', command: 'node bench/x.mjs', node: 'v24', isTheBar: true, barMet: true, split: { cases: 1000, seed: 42 } };
+  assert.equal(statementCheck({ ...base, statement: 'all tests passed' }).ok, false, 'the statement the real model wrote on 2026-09-26');
+  assert.equal(statementCheck({ ...base, statement: 'checked 1000, mismatches 0' }).ok, true);
+  assert.deepEqual(statementCheck({ ...base, statement: 'checked 1000, mismatches 0' }).quoted, ['1000']);
+  assert.equal(statementCheck({ ...base, split: { seed: 4 }, statement: 'checked 9 cases at 2026-09-26T02:30:00.000Z' }).ok, false, 'a small integer and a clock stamp quote nothing');
+  assert.equal(statementCheck({ ...base, statement: 'x'.repeat(601) }).shown, false, 'a statement the page does not show is not checked');
+  // the run: the quiet bench exits 0 and is refused at the bar step, repaired, then kept (its control is
+  // the KEPT test above, the quoting bench from the start: one repair, the test file only)
+  const mock = mockAuthor({ quietStatement: true });
+  const r = await run(clampGap(), { root: tree(), stateRoot: tmp('brain-brief-state-'), cell: mock, direct: false });
+  assert.equal(r.kept, true, r.reason);
+  const bars = r.steps.filter((s) => s.step === 'bar');
+  assert.equal(bars.length, 2);
+  assert.equal(bars[0].ok, false);
+  assert.match(bars[0].detail, /quotes none of the measured values of its own verdict/);
+  assert.equal(bars[0].exit, 0, 'the bench ran clean: only the statement wall refused it');
+  const repairs = r.steps.filter((s) => s.step === 'repair');
+  assert.deepEqual(repairs.map((s) => s.file), ['test/planted-clamp.test.mjs', 'bench/planted-clamp.mjs']);
+  assert.equal(r.patchSet.files.find((f) => f.file === 'bench/planted-clamp.mjs').content, CLAMP_BENCH, 'the kept bench is the quoting one');
+  assert.equal(r.steps.filter((s) => s.step === 'gate').length, 1, 'the gate ran once, after the statement was fixed');
+  assert.equal(statementCheck(r.verdict).ok, true);
 });
 
 test('the ceiling: paths outside the tree, under the ceiling or outside the owned set are refused, and a plan with nothing left stops at the ceiling wall', async () => {

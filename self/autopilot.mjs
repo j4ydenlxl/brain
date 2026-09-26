@@ -91,6 +91,13 @@
 // deletion verified. state/self/STOP refuses the start ("stopped by state/self/STOP", exit 0)
 // and ends the loop between rounds; a live bench flag refuses the start. The soak checkpoints
 // to state/self/soak-<runId>.json after every decision, so --resume continues it after a kill.
+//
+// Board 15 (item resume) gave it an EIGHTH SOURCE, resume: when the loop is idle, a bar that never
+// completed and whose bench documents --resume and --wall-minutes (the public chain) is continued
+// by self/resume.mjs resumeOnce, once the Ollama queue is idle, cut cleanly between records, for at
+// most --resume-minutes per soak (default 45; 0 turns it off). One decision line kind "resumed"
+// per resume (lines before and after, records per minute, model calls, the ISO cut time) goes to
+// the decision file; a resume that wrote its bar file refreshes the ledger so the gap closes.
 import {
   readFileSync, writeFileSync, existsSync, mkdirSync, appendFileSync, rmSync, openSync,
   closeSync, writeSync, readdirSync, statSync, mkdtempSync, cpSync, renameSync,
@@ -1324,6 +1331,12 @@ export function renderRun(r, st = plain) {
 
 // ================================================================ THE SOAK (Board 14)
 export const GAPS_SOURCE = 'gaps';
+/** Board 15 (item resume): the source that continues a bar that never completed (self/resume.mjs). */
+export const RESUME_SOURCE = 'resume';
+export const RESUME_MINUTES_DEFAULT = 45;
+/** A resume shorter than this is not started; the soak keeps this much wall after it for the cut record. */
+export const RESUME_MIN_MS = 60_000;
+export const RESUME_MARGIN_MS = 2 * 60_000;
 export const ALL_SOURCES = Object.freeze([...SOURCE_ORDER, GAPS_SOURCE]);
 export const STOP_REL = 'state/self/STOP';
 export const BENCH_FLAGS_REL = 'state/bench-flags';
@@ -1584,6 +1597,8 @@ export function soakConfig(o = {}) {
     model: str(o.model), base: str(o['author-base']),
     board10MinMs: num(o['board10-min-ms'], BOARD10_MIN_MS),
     idleStepMs: num(o['idle-step-ms'], SOAK_IDLE_STEP_MS),
+    // Board 15 (resume): minutes of this soak the resume source may spend; 0 turns it off
+    resumeMinutes: (() => { const n = Number(o['resume-minutes']); return o['resume-minutes'] !== undefined && o['resume-minutes'] !== true && Number.isFinite(n) && n >= 0 ? n : RESUME_MINUTES_DEFAULT; })(),
   };
 }
 
@@ -1692,6 +1707,11 @@ export async function runSoak(o = {}) {
   const pointTemp = () => { process.env.TEMP = tmpRoot; process.env.TMP = tmpRoot; };
   const restoreTemp = () => { for (const k of ['TEMP', 'TMP']) { if (prevEnv[k] === undefined) delete process.env[k]; else process.env[k] = prevEnv[k]; } };
   let stopped = false, failed = null;
+  // Board 15 (resume): the resume source, on unless --sources leaves it out or --resume-minutes is 0
+  const resumeMinutes = Number.isFinite(cfg.resumeMinutes) ? cfg.resumeMinutes : RESUME_MINUTES_DEFAULT;
+  const wantResume = resumeMinutes > 0 && (!cfg.sources || cfg.sources.includes(RESUME_SOURCE));
+  if (!st.resume) st.resume = { usedMs: 0, runs: [], waits: 0, modelCalls: 0, done: null, lastWhy: null };
+  say('RESUME source ' + (wantResume ? 'on: at most ' + resumeMinutes + ' min of this soak, when the loop and the Ollama queue are idle' : 'off (' + (resumeMinutes > 0 ? '--sources leaves it out' : '--resume-minutes 0') + ')'));
   say('SOAK ' + st.runId + (resuming ? ' RESUMED at ' + Math.round(priorMs / 1000) + ' s of ' + Math.round(soakMs / 1000) + ' s' : ' started') + ': ' + cfg.soakMinutes + ' min on ' + root
     + (cfg.dry ? ' (DRY: nothing written to the tree)' : '') + '; author ' + (cfg.authorOn ? 'on' : 'off') + ', model calls at most ' + cfg.modelCalls + ', trial minutes at most ' + cfg.trialMinutes
     + ', sources ' + (cfg.sources ? cfg.sources.join(',') : ALL_SOURCES.join(',')) + (K.missing.length ? '; not landed yet: ' + K.missing.join('; ') : ''));
@@ -1882,6 +1902,41 @@ export async function runSoak(o = {}) {
       if (r.counts && r.counts.revertFailed) failed = 'the Board 10 pass: ' + (r.reason || 'a revert failed');
     };
 
+    // Board 15 (resume): one bounded resume of a bar that never completed, at idle. True when it ran.
+    const resumeMinMs = Number.isFinite(o.resumeMinMs) ? o.resumeMinMs : RESUME_MIN_MS;
+    const resumeMarginMs = Number.isFinite(o.resumeMarginMs) ? o.resumeMarginMs : RESUME_MARGIN_MS;
+    const resumeLeftMs = () => Math.max(0, resumeMinutes * 60_000 - st.resume.usedMs);
+    const resumeRound = async (remaining) => {
+      const note = (why) => { if (why !== st.resume.lastWhy) { say('resume: ' + why); st.resume.lastWhy = why; } };
+      const fl = liveBenchFlag({ root, selfPids: o.selfPids });
+      if (fl) { note('waiting: a bench is running (pid ' + fl.pid + ')'); return false; }
+      let fn = typeof o.resumeFn === 'function' ? o.resumeFn : null;
+      if (!fn) {
+        try { fn = (await import(new URL('./resume.mjs', import.meta.url).href)).resumeOnce; } catch (e) { st.resume.done = 'self/resume.mjs is not landed yet (' + firstLine(e) + ')'; note(st.resume.done); return false; }
+      }
+      const minutes = rnd(Math.min(resumeLeftMs(), remaining - resumeMarginMs) / 60_000, 4);
+      const t = Date.now();
+      let r;
+      try { r = await fn({ root, minutes, dry: cfg.dry, exclude: [SOAK_LOGS_REL], selfPids: o.selfPids, log: (l) => say('  [resume] ' + l) }); } catch (e) { r = { decision: 'failed', reason: 'self/resume.mjs threw: ' + firstLine(e) }; }
+      r = r || { decision: 'failed', reason: 'self/resume.mjs returned nothing' };
+      const ms = Date.now() - t;
+      if (r.decision === 'waiting') { st.resume.waits++; note('waiting: ' + r.reason); save(); return false; }
+      if (r.decision === 'nothing') { st.resume.done = r.reason; note('nothing to resume: ' + r.reason); save(); return false; }
+      const ran = r.decision === 'resumed' || (r.decision === 'failed' && Number.isFinite(r.linesBefore));
+      if (ran) st.resume.usedMs += ms;
+      st.resume.modelCalls += Number(r.modelCalls) || 0;
+      const { tail: _tail, ...rest } = r;
+      record({ ...rest, kind: ran ? 'resumed' : 'resume', source: RESUME_SOURCE, key: 'resume:' + ((r.step && r.step.stem) || 'none') + ':' + (st.resume.runs.length + 1), candidate: false, author: rest.author || 'organism (resume)', seconds: rnd(ms / 1000, 4) });
+      st.resume.runs.push({ at: new Date().toISOString(), decision: r.decision, stem: r.step ? r.step.stem : null, minutes, ms, linesBefore: r.linesBefore ?? null, linesAfter: r.linesAfter ?? null, recordsCompleted: r.recordsCompleted ?? null, recordsPerMinute: r.recordsPerMinute ?? null, modelCalls: r.modelCalls ?? null, cutAt: r.cutAt ?? null, barLanded: !!r.barLanded, reason: r.reason ? String(r.reason).slice(0, 300) : null });
+      say('RESUME ' + String(r.decision).toUpperCase() + (r.step ? ' ' + r.step.stem : '') + (ran ? ': lines ' + r.linesBefore + ' -> ' + r.linesAfter + ', ' + r.recordsCompleted + ' records at ' + r.recordsPerMinute + '/min, ' + r.modelCalls + ' model calls, cut ' + r.cutAt : '') + (r.reason ? ': ' + String(r.reason).slice(0, 200) : '') + '; ' + rnd(resumeLeftMs() / 60_000, 3) + ' resume min left');
+      if (!ran) st.resume.done = r.reason || r.decision;
+      if (r.barLanded && refreshLedger && !cfg.dry) {
+        try { const rr = await refreshLedger({ root }); st.refreshes.push({ at: new Date().toISOString(), why: 'a resumed bench wrote its bar file', lines: (rr.lines || []).length, ms: 0 }); say('the ledger was rebuilt: ' + r.step.barRel + ' closes its gap(s)'); } catch (e) { say('  the ledger rebuild failed: ' + firstLine(e)); }
+      }
+      save();
+      return ran;
+    };
+
     // 4. the loop
     let lastIdle = null;
     for (;;) {
@@ -1917,6 +1972,7 @@ export async function runSoak(o = {}) {
         continue;
       }
       if (b10Sources.length && !st.board10 && remaining >= cfg.board10MinMs) { await board10Pass(); continue; }
+      if (wantResume && !st.resume.done && resumeLeftMs() >= resumeMinMs && remaining >= resumeMinMs + resumeMarginMs && await resumeRound(remaining)) continue;
       st.deferred = deferred;
       const why = deferred.length ? deferred.length + ' round(s) do not fit the wall left' : 'every gap of this soak was attempted';
       if (why !== lastIdle) { say('idle: ' + why + (deferred.length ? ' (' + deferred[0].key + ': ' + deferred[0].why + ')' : '') + '; the ledger is re-read every ' + Math.round(cfg.idleStepMs / 1000) + ' s'); lastIdle = why; }

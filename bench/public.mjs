@@ -65,6 +65,14 @@
 // A bar file already on disk is never written over: a second pass with --resume (to retry absent
 // arm results) that finds the bar already written prints so and leaves it.
 //
+// A BOUNDED PASS (Board 15, item resume): --wall-minutes M ends the run CLEANLY. Once M minutes of
+// the task loop have passed, the run stops before the next record that still has an arm to run,
+// so the record it is on finishes every arm and journals it (each arm result is appended whole
+// with appendFileSync the moment it lands), and nothing is half written. The verdict is then a
+// partial with a cut field, a CUT line is printed, and --resume continues from the next record.
+// The wall is soft by at most the record in progress, and at least one record runs per pass. The
+// wall is not in the fingerprint: it changes when the run stops, never what a result is.
+//
 //   node bench/public.mjs --set arc|humaneval|gsm8k [--limit N] [--seed s] [--resume] [--bar]
 //                         [--arms a,b] [--model qwen3:1.7b] [--route region|direct]
 //                         [--regions 1] [--k 5] [--check 1] [--tag t] [--name n] ...
@@ -1161,6 +1169,8 @@ export function makeCfg(opts = {}) {
     // A test hands run() a model cell (library only, never a flag): the model arms are then 'mock'.
     cell: typeof opts.cell === 'function' ? opts.cell : null,
     quiet: !!opts.quiet,
+    // Board 15 (resume): minutes of task loop after which the run stops before the next record
+    wallMinutes: (() => { const w = Number(opts['wall-minutes'] ?? opts.wallMinutes); return Number.isFinite(w) && w > 0 ? w : null; })(),
     command: 'node bench/public.mjs ' + (opts.argv || ['--set', set]).join(' '),
   };
 }
@@ -1214,9 +1224,17 @@ export async function run(opts = {}) {
   }
 
   let lastSnap = Date.now();
+  // --wall-minutes: the cut happens BETWEEN records, never inside one (see A BOUNDED PASS above)
+  const loopT0 = performance.now();
+  const wallMs = cfg.wallMinutes ? cfg.wallMinutes * 60_000 : null;
+  let cut = null;
   try {
     for (let i = 0; i < chosen.length; i++) {
       const item = chosen[i];
+      if (wallMs !== null && st.taskMs.length > 0 && performance.now() - loopT0 >= wallMs && plan[i].some((arm) => !journal.records.has(item.id + '\u0000' + arm))) {
+        cut = { at: new Date().toISOString(), wallMinutes: cfg.wallMinutes, elapsedMinutes: r2((performance.now() - loopT0) / 60_000), recordsRunHere: st.taskMs.length, rowsDone: st.rows.length, nextId: item.id, nextIndex: i, of: chosen.length };
+        break;
+      }
       const row = { i, id: item.id, order: plan[i].join('>'), split: S.split(item), ...S.extras(item), arms: {} };
       const t0 = performance.now();
       let ranHere = 0, fromJournal = 0;
@@ -1245,7 +1263,12 @@ export async function run(opts = {}) {
   }
 
   const verdict = buildVerdict(st, { final: true });
+  if (cut) {
+    verdict.cut = cut;
+    verdict.statement = 'CUT by --wall-minutes ' + cut.wallMinutes + ' at ' + cut.at + ' after ' + cut.recordsRunHere + ' record(s) run in this pass; --resume continues from ' + cut.nextId + '. ' + verdict.statement;
+  }
   const written = save(verdict);
+  if (cut && !cfg.quiet) console.log('CUT ' + cfg.set + ' at ' + cut.at + ': --wall-minutes ' + cut.wallMinutes + ' reached after ' + cut.elapsedMinutes + ' min and ' + cut.recordsRunHere + ' record(s) run in this pass; ' + cut.rowsDone + ' of ' + cut.of + ' rows done; the next record is ' + cut.nextId + ' and --resume continues from it');
   if (!cfg.quiet) printSummary(verdict);
   if (barKept && !cfg.quiet) console.log('the bar file ' + rel(barKept) + ' was already written and is written ONCE: this pass left it as it was');
   return { ...verdict, writtenTo: written ? rel(written) : null, barKept: barKept ? rel(barKept) : null };
@@ -1302,7 +1325,7 @@ export const FLAGS = Object.freeze({
   set: 'string', seed: 'string', arms: 'string', model: 'string', base: 'string', route: 'string',
   journalDir: 'string', verdictDir: 'string',
   limit: 'number', budgetMs: 'number', rounds: 'number', maxTokens: 'number', regions: 'number', k: 'number', check: 'number',
-  tag: 'string', name: 'string',
+  tag: 'string', name: 'string', 'wall-minutes': 'number',
   limitMs: 'number', testMs: 'number', timeoutMs: 'number', memoryMB: 'number', probeMs: 'number',
   resume: 'bool', bar: 'bool', quiet: 'bool', json: 'bool', nowrite: 'bool', help: 'bool',
 });
@@ -1311,7 +1334,7 @@ export const USAGE = [
   'node bench/public.mjs --set arc|humaneval|gsm8k [--limit N] [--seed public/1] [--resume] [--bar]',
   '                      [--arms organism,alone,null(,plan|repair)] [--model qwen3:1.7b] [--route region|direct]',
   '                      [--budgetMs 3000] [--rounds 3] [--maxTokens n] [--testMs ms] [--quiet] [--json] [--nowrite]',
-  '                      [--regions 1] [--k 5] [--check 1] [--tag t] [--name n]',
+  '                      [--regions 1] [--k 5] [--check 1] [--tag t] [--name n] [--wall-minutes M]',
   '',
   '--regions 1 (the default) sends the organism through the reasoning regions ask() carries: a GSM8K',
   'record reaches reason/math.mjs solveMath (k programs, verify when --check 1), a HumanEval record\'s',
@@ -1322,7 +1345,9 @@ export const USAGE = [
   '',
   '--limit 0 is the whole set. The sample is seeded and runs in the set\'s own order.',
   'Every graded arm result is journaled to bench/verdicts/public/<set>-<seed>.jsonl as it lands;',
-  '--resume continues a killed run from that journal. The bar file bench/verdicts/public-<set>.json',
+  '--resume continues a killed run from that journal. --wall-minutes M stops the run cleanly',
+  'before the next record once M minutes of tasks have passed, so --resume continues from it.',
+  'The bar file bench/verdicts/public-<set>.json',
   'is written only when the whole set (or a sample declared with --bar) finished with every bar arm',
   'graded; every other write is bench/verdicts/public-<set>-partial.json with isTheBar false.',
   'ARC has one arm and no model: --model and --route do not apply to it.',

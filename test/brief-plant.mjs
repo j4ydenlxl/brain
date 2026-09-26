@@ -98,6 +98,9 @@ export const CLAMP_BENCH = [
   'writeFileSync(file, JSON.stringify(v, null, 2));',
   ''].join('\n');
 
+/** The bench as qwen3:30b-a3b first wrote it on 2026-09-26: tests and bar pass, the statement quotes no measured value. */
+export const CLAMP_BENCH_QUIET = CLAMP_BENCH.replace("statement: 'checked ' + checked + ', mismatches ' + mismatches", "statement: 'all tests passed'");
+
 const fence = (s) => BT.repeat(3) + 'javascript\n' + s.replace(/\n$/, '') + '\n' + BT.repeat(3);
 
 /**
@@ -106,9 +109,10 @@ const fence = (s) => BT.repeat(3) + 'javascript\n' + s.replace(/\n$/, '') + '\n'
  * repair with "FILE: test/planted-clamp.test.mjs" and the fixed file. Options change one behaviour
  * per test: repairFixes false keeps the test failing; malformedBench answers the bench once with no
  * fence; silentBench answers the bench once with no answer (a call wall); plan answers a PLAN ask
- * with that object. Every call is pushed to calls.
+ * with that object; quietStatement answers the bench first with CLAMP_BENCH_QUIET and a repair whose
+ * failure names the statement with the quoting bench. Every call is pushed to calls.
  */
-export function mockAuthor({ repairFixes = true, malformedBench = false, silentBench = false, plan = null } = {}) {
+export function mockAuthor({ repairFixes = true, malformedBench = false, silentBench = false, plan = null, quietStatement = false } = {}) {
   const calls = [];
   let benchAsked = 0;
   const fn = async (req) => {
@@ -121,8 +125,9 @@ export function mockAuthor({ repairFixes = true, malformedBench = false, silentB
       benchAsked++;
       if (malformedBench && benchAsked === 1) return ok('Here is the bench, it draws 1000 cases.');
       if (silentBench && benchAsked === 1) return { ok: false, reason: 'ollama request failed: This operation was aborted' };
-      return ok(fence(CLAMP_BENCH));
+      return ok(fence(quietStatement && benchAsked === 1 ? CLAMP_BENCH_QUIET : CLAMP_BENCH));
     }
+    if (req.step === 'repair' && quietStatement && /quotes none of the measured values/.test(String(req.prompt || ''))) return ok('FILE: bench/planted-clamp.mjs\n' + fence(CLAMP_BENCH));
     if (req.step === 'repair') return ok('FILE: test/planted-clamp.test.mjs\n' + fence(repairFixes ? CLAMP_TEST : CLAMP_TEST_FAILING));
     return { ok: false, reason: 'the mock does not answer ' + req.step };
   };

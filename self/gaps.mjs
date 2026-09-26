@@ -312,6 +312,31 @@ export const FORMS = Object.freeze({
     minutes: 1, needsModel: false, where: 'tree', writes: [], parser: 'schedule', diskMb: 100,
     doc: 'tools/schedule-autopilot.mjs --status reads the task and changes nothing',
   },
+  spread: {
+    bench: 'bench/spread.mjs', argv: [HEAP, 'bench/spread.mjs', '--seeds', '2', '--wall-s', '20', '--no-promote'],
+    minutes: 3, needsModel: false, where: 'copy', writes: ['bench/verdicts/spread-partial.json', 'bench/verdicts/spread-control-partial.json'], parser: 'spread', diskMb: 400,
+    doc: 'bench/spread.mjs: --seeds 2 --wall-s 20 --no-promote is its documented partial run; it writes spread-partial.json with isTheBar false',
+  },
+  operators: {
+    bench: 'bench/operators.mjs', argv: [HEAP, 'bench/operators.mjs', '--tmp', '{tmp}', '--no-model', '--planted-only'],
+    minutes: 8, needsModel: false, where: 'copy', writes: ['bench/verdicts/operators-partial.json'], parser: 'operators', diskMb: 4096,
+    doc: 'bench/operators.mjs: --no-model --planted-only is a documented PARTIAL run; it writes operators-partial.json with isTheBar false',
+  },
+  autopilot: {
+    bench: 'bench/autopilot.mjs', argv: [HEAP, 'bench/autopilot.mjs', '--model', 'off'],
+    minutes: 8, needsModel: false, where: 'copy', writes: ['bench/verdicts/autopilot-partial.json'], parser: 'autopilot', diskMb: 2048,
+    doc: 'bench/autopilot.mjs --model off skips the one model call of stage 4b and writes autopilot-partial.json with isTheBar false',
+  },
+  cloud: {
+    bench: 'bench/cloud.mjs', argv: [HEAP, 'bench/cloud.mjs', '--native', '--seconds', '60', '--episodes-max', '2048', '--out', 'bench/verdicts/cloud-partial.json'],
+    minutes: 4, needsModel: false, where: 'copy', fixtures: ['bench/fixtures/wiki/store'], writes: ['bench/verdicts/cloud-partial.json'], parser: 'cloud', diskMb: 2048,
+    doc: 'bench/cloud.mjs: an --episodes-max override (compose.yaml own 2048 here, so the organism runs as the bar runs it) always writes cloud-partial with isTheBar false; --seconds 60 bounds the wall',
+  },
+  'cloud-host': {
+    bench: 'bench/cloud-host.mjs', argv: [HEAP, 'bench/cloud-host.mjs', '--days', '1', '--out', '{tmp}/cloud-host-trial.json'],
+    minutes: 8, needsModel: false, where: 'tree', writes: [], parser: 'cloudHost', diskMb: 100,
+    doc: 'bench/cloud-host.mjs without --checkout-trial reads gh and the tree only; --out under the trial temp dir keeps its always-isTheBar verdict out of bench/verdicts',
+  },
   gaps: {
     bench: 'self/gaps.mjs', argv: ['self/gaps.mjs', '--dry'],
     minutes: 2, needsModel: false, where: 'tree', writes: [], parser: 'gapsDry', diskMb: 100,
@@ -342,7 +367,7 @@ export const FORMS = Object.freeze({
 });
 
 /** Which form measures a missed or unreadable verdict again, by stem. */
-export const VERDICT_FORMS = Object.freeze({ compress: 'compress', math: 'math', 'venue-full': 'venue', venue: 'venue', authorship: 'authorship', 'schedule-autopilot': 'schedule', gaps: 'gaps', 'grid-evaluation': 'grid', daemon: 'daemon' });
+export const VERDICT_FORMS = Object.freeze({ compress: 'compress', math: 'math', 'venue-full': 'venue', venue: 'venue', authorship: 'authorship', 'schedule-autopilot': 'schedule', gaps: 'gaps', 'grid-evaluation': 'grid', daemon: 'daemon', spread: 'spread', 'spread-control': 'spread', operators: 'operators', autopilot: 'autopilot', 'autopilot-board10': 'autopilot', 'autopilot-board14-first': 'autopilot', cloud: 'cloud', 'cloud-2': 'cloud', 'cloud-host': 'cloud-host' });
 /** Which form measures a ladder block again, by the block's id. */
 export const LADDER_FORMS = Object.freeze({ 'sets.gsm8k': 'public-gsm8k', 'sets.humaneval': 'public-humaneval', 'sets.arc': 'grid', improvement: 'daemon', target: 'ladder-daily' });
 /** Census ticks per seed where the bar's 200 does not fit: census-h20-partial.json ran gen-0 at 20 ticks with rssAfterFull 3600.6 MB. */
@@ -412,6 +437,11 @@ export const PARSERS = Object.freeze({
   authorship: { name: 'organism share', stdout: true, read: (out) => { try { return num(JSON.parse(out).share); } catch { return null; } } },
   schedule: { name: 'registered (1 or 0)', stdout: true, read: (out) => (/not registered/i.test(out) ? 0 : /\S/.test(out) ? 1 : null) },
   gapsDry: { name: 'required gaps without a trial', stdout: true, read: (out) => { const l = out.trim().split(/\r?\n/).pop(); try { return num(JSON.parse(l).requiredWithoutTrial); } catch { return null; } } },
+  spread: { name: 'improvements kept per million organism-years', file: () => 'bench/verdicts/spread-partial.json', read: (v) => num(v && v.keptPerMillionOrganismYears) },
+  operators: { name: 'planted defects kept', file: () => 'bench/verdicts/operators-partial.json', read: (v) => (v && Array.isArray(v.kept) ? v.kept.length : null) },
+  autopilot: { name: 'checks passed', file: () => 'bench/verdicts/autopilot-partial.json', read: (v) => num(v && v.passed) },
+  cloud: { name: 'restarts at the cap', file: () => 'bench/verdicts/cloud-partial.json', read: (v) => num(v && v.restartCount) },
+  cloudHost: { name: 'workflow checks passed', stdout: true, read: (out) => { const m = String(out).match(/(\d+) of (\d+) checks/); return m ? num(Number(m[1])) : null; } },
   test: { name: 'wall ms', row: true },
 });
 
