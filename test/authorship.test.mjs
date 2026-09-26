@@ -74,10 +74,16 @@ test('1. docs/BOARDS.json: boards 8 to 12 launched, 13 not, every file in the tr
 
   let checked = 0, fromTree = 0, fromCommit = 0;
   const unverifiable = [];
+  // bench/fixtures/ and state/ are never committed (docs/CLOUD-SESSION.md: "never state/, never bench/fixtures/"),
+  // so a fixture or a runtime file a board lists can only be checked on the machine that holds it; on a fresh
+  // clone it is counted here, not asserted. Found by the $250 cloud session's gate on 2026-09-26 (board 9 lists
+  // bench/fixtures/wiki/SOURCES.md, board 14 lists state/self/gaps.jsonl).
+  const neverCommitted = [];
   for (const b of boards) {
     for (const f of b.files) {
       checked++;
       if (existsSync(path.join(ROOT, ...f.split('/')))) { fromTree++; continue; }
+      if (f.startsWith('bench/fixtures/') || f.startsWith('state/')) { neverCommitted.push('board ' + b.board + ': ' + f); continue; }
       const sets = (b.commits || []).map(filesOf);
       if (sets.some((s) => s === null) || !HAS_GIT) { unverifiable.push('board ' + b.board + ': ' + f); continue; }
       const inCommit = sets.some((s) => s.has(f) || (f.endsWith('/') && [...s].some((x) => x.startsWith(f))));
@@ -85,7 +91,7 @@ test('1. docs/BOARDS.json: boards 8 to 12 launched, 13 not, every file in the tr
       fromCommit++;
     }
   }
-  t.diagnostic(checked + ' files: ' + fromTree + ' in the tree, ' + fromCommit + ' only in a named commit, ' + unverifiable.length + ' unverifiable here');
+  t.diagnostic(checked + ' files: ' + fromTree + ' in the tree, ' + fromCommit + ' only in a named commit, ' + neverCommitted.length + ' under bench/fixtures/ (never committed, not checked here), ' + unverifiable.length + ' unverifiable here');
   if (HAS_GIT) {
     // the commit path, whether or not any listed file needed it today: it finds what a commit
     // carries and misses what it does not
