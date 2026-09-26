@@ -540,7 +540,8 @@ describe('ask', 'ask <name> <prompt...> [--provider null|ollama|env] [--model M]
         + ST.grey('  memory hits ') + num(a.provenance.memoryHits)
         + ST.grey('  web pages ') + num(a.provenance.webPages)
         + ST.grey('  llm ') + a.provenance.llm.provider + '/' + (a.provenance.llm.model || '-') + ' ' + ms(a.provenance.llm.ms)
-        + (a.redacted ? ST.yellow('  redacted ' + a.redacted) : ''),
+        + (a.redacted ? ST.yellow('  redacted ' + a.redacted) : '')
+        + (a.exact && typeof a.exact.ns === 'number' ? ST.grey('  exact ') + ST.green(a.exact.ns + ' ns') : ''),
       // Guarded: the route is being added to ask() by another builder and the provenance is
       // only stamped on the paths that have one, so neither is assumed to be there.
       ...(a.route || (a.provenance && a.provenance.answer)

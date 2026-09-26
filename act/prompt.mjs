@@ -724,7 +724,7 @@ const NOT_ASKED_EXACT = 'not asked: the exact path computed it';
 
 // The answer object of the early exact path (act/solve.mjs, tried right after the solved region).
 // Same shape and same values as the late path's exact answer (from 'exact', provenance.answer
-// 'exact', route 'direct', llm.reason /not asked/), plus exact.ns: the nanoseconds the parse and
+// 'exact', route 'direct', llm.reason /not asked/, the same text), plus exact.ns: the nanoseconds the parse and
 // the BigInt arithmetic took, measured around solve() and nothing else. No recall, no model.
 function answerFromExact(brain, text, s, ns, started) {
   const hash = promptHash(text);
@@ -733,7 +733,7 @@ function answerFromExact(brain, text, s, ns, started) {
     promptHash: hash,
     promptChars: text.length,
     from: 'exact',
-    text: renderSolved(s).replace(/\n/, ' (' + ns + ' ns)\n'),
+    text: renderSolved(s),                              // the same text the late path renders: route region and route direct agree on it; the clock is exact.ns
     memory: null,
     exact: { answer: s.answer, method: s.method, steps: s.steps, ns },
     cites: [],

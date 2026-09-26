@@ -169,9 +169,13 @@ test('ask() routes a factual shape to memory and a math shape past it', async (t
   const m = await ask(brain, 'What is 17 * 23?', { ...o, direct: planted });
   console.log('route: math provenance=' + m.provenance.answer + ' tier asked +' + (KNOWLEDGE_TIER.asked - asked0) + ' model calls ' + ol.generate);
   assert.equal(KNOWLEDGE_TIER.asked, asked0, 'the tier was asked a math question');
-  assert.ok(m.provenance.answer === 'model' || m.provenance.answer === 'model+exact', 'a math wording is answered by the model or by the math region, never by memory: got ' + m.provenance.answer);
+  // 2026-09-26: the spoken front end of act/solve.mjs reads "What is 17 * 23?" as 17 * 23 and the early exact
+  // path answers it with provenance 'exact', before the model and before the region; what this assertion
+  // guards is unchanged: never memory, and the tier is never asked (the line above).
+  assert.ok(m.provenance.answer === 'exact' || m.provenance.answer === 'model' || m.provenance.answer === 'model+exact', 'a math wording is answered by the calculator, the model or the math region, never by memory: got ' + m.provenance.answer);
   assert.equal(m.provenance.knowledge ?? null, null);
-  assert.ok(ol.generate >= 1, 'the model was asked at least once; the math region makes several calls: ' + ol.generate);
+  if (m.provenance.answer === 'exact') assert.equal(ol.generate, 0, 'the calculator answered, so the model was never asked: ' + ol.generate);
+  else assert.ok(ol.generate >= 1, 'the model was asked at least once; the math region makes several calls: ' + ol.generate);
   const genAfterMath = ol.generate;
   const exact = await ask(brain, 'Compute this exactly. Answer with the value only, as an integer, a decimal or a fraction: 17 * 23', { ...o, direct: planted });
   console.log('route: exact provenance=' + exact.provenance.answer + ' last=' + last(exact));

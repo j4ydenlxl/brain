@@ -295,7 +295,6 @@ test('ask with provider null answers spoken arithmetic on the early exact path, 
     assert.equal(a.text.split('\n').pop(), '391');
     assert.equal(typeof a.exact.ns, 'number');
     assert.ok(a.exact.ns > 0 && a.exact.ns < 5e9, 'the nanoseconds were measured: ' + a.exact.ns);
-    assert.match(a.text.split('\n')[0], /\(\d+ ns\)$/, 'the first line carries the nanoseconds');
     assert.equal(a.provenance.llm.ok, false);
     assert.equal(a.provenance.llm.provider, null);
     assert.match(a.provenance.llm.reason, /not asked/);
