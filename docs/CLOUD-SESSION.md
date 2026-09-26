@@ -77,15 +77,16 @@ A session takes the first item that is red (`barMet` false or no verdict) and un
 
 What the local machine does with zero Claude tokens meanwhile: the organism's own loop. `bench/verdicts/soak.json` holds the command (`node tools/budget.mjs --ram-mb 6000 --disk-mb 2000 --dir state/self -- node --max-old-space-size=6000 bin/brain.mjs self-code --auto --soak <minutes> --author on --json`); the STOP switch is `state/self/STOP`, and the `--soak` minutes are the only knob. That loop is the vision's own engine; it costs the local GPU, not the pool.
 
-## The month, in his words (2026-09-26 11:32 EDT)
+## The week, in his words (2026-09-26 11:32 EDT, corrected 2026-09-26 11:40 EDT)
 
 His order verbatim: "usage hitting soon, so ill soon start the 250 ina new number. After the weekly reset, theres another week 's worth of tokens. and then after that there is a last week (which has to be a sprint) which shoulod be completed in sub 2 days. after everything, it should match EVERY part of the vision and be perfectly fine without your help and able to run by itself in the cloud (without my touch) and when i prompt it be an expert at everything and grow and improve in a sandbox,  so if its like gpt 4o level when ur done with the month, it should grow to be opus 5.5 level by itself and better and shit. Also it should be cli in dilation.dev someday so i can prompt like any ai"
 
-Read as three phases and five acceptance tests (ASSUMPTIONS marked in MANUAL.md section A at 2026-09-26 11:32 EDT):
+His correction verbatim (2026-09-26 11:40 EDT): "its actually less than a week of work its just technically 250 + 1 week banked reset + 2 days left in another week of tokens"
 
-- **Phase 1, the $250**, in a NEW context window (this one is nearly spent), from his click until the weekly reset 2026-09-30 15:00Z. Work "The queue, in his order" above, top down, one landing per session, checkpoint protocol every time.
-- **Phase 2, the week after the reset**, 2026-09-30 to 2026-10-07 15:00Z. Same queue, and the frontier-bench chains to completion.
-- **Phase 3, the sprint**, the last week's tokens finished in under 2 days: cloud sessions in parallel on DISJOINT items, the gate as the referee, nothing shared but the repository.
+Read as three token pools in one span of under a week, and five acceptance tests (ASSUMPTIONS marked in MANUAL.md section A at 2026-09-26 11:40 EDT):
+
+- **Three pools, one span.** Pool 1 the $250 of extra usage, in a NEW context window (this one is nearly spent). Pool 2 a full week of plan tokens, the banked reset. Pool 3 the 2 days left in another week. All spent in LESS THAN A WEEK of work from the moment the current pool runs out, so the span ends about 2026-10-03. Not three calendar weeks: the 11:32 reading of "the month" was wrong and is corrected here.
+- **How the span is worked.** "The queue, in his order" above, top down; parallel cloud sessions on DISJOINT items from the first day (the sprint constraint is the whole span, not a last phase); the gate is the referee; nothing shared but the repository; the checkpoint protocol at every landing.
 - **The end state, five tests, all measured:** (1) every section A vision item has a bar and a met verdict; (2) after the extra-usage switch it runs in the cloud with no click of his (the autonomy row and the cloud host census prove it); (3) prompted, it is an expert: the public bench ladder with the published rows beside its row; (4) it grows by ITSELF in a sandbox: the self-improvement loop on its own red benches with the placebo control, and its level is a position on the published rows: the published GPT-4o row is the month-end rung, the published Opus 5.5 row the rung it must climb to alone (add both rows to bench/public.mjs with their sources before claiming either); (5) item 12, the prompt box on dilation.dev.
 - **What this session could not do:** none of the five is met today. Printed: GSM8K 472 of 530 through qwen3:1.7b with native share 0, HumanEval 5 of 6 on a smoke run, ARC 1 of 400, the loop's soak kept 0 proposals in 13 model calls. The distance is the whole month.
 
