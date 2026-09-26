@@ -544,7 +544,9 @@ describe('ask', 'ask <name> <prompt...> [--provider null|ollama|env] [--model M]
         + ST.grey('  web pages ') + num(a.provenance.webPages)
         + ST.grey('  llm ') + a.provenance.llm.provider + '/' + (a.provenance.llm.model || '-') + ' ' + ms(a.provenance.llm.ms)
         + (a.redacted ? ST.yellow('  redacted ' + a.redacted) : '')
-        + (a.exact && typeof a.exact.ns === 'number' ? ST.grey('  exact ') + ST.green(a.exact.ns + ' ns') : ''),
+        + (a.exact && typeof a.exact.ns === 'number' ? ST.grey('  exact ') + ST.green(a.exact.ns + ' ns') : '')
+        // a provider that did not answer says so here, in the words act/llm.mjs recorded (never a key, never a value)
+        + (a.provenance.llm.fellBack ? ST.yellow('  fell back from ' + a.provenance.llm.fellBack + ': ' + (a.provenance.llm.reason || 'no reason recorded')) : ''),
       // Guarded: the route is being added to ask() by another builder and the provenance is
       // only stamped on the paths that have one, so neither is assumed to be there.
       ...(a.route || (a.provenance && a.provenance.answer)

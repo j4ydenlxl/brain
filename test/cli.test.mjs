@@ -486,6 +486,17 @@ test('rules and learn either drive the learning subsystem or explain that it is 
 });
 
 // ---------------------------------------------------------------- ladder
+test('ask --provider env takes variable NAMES, and a provider that did not answer prints its reason in the footer', () => {
+  // 2026-09-26: --env-base/--env-key name environment variables; the CLI never sees a value. With the named
+  // variable unset the model cell falls back to the null provider and the footer says so, instead of
+  // presenting the null text as an answer. No network, no Ollama: the fall-back happens before any request.
+  cliJSON(['init', 'envflags']);
+  const out = cliText(['ask', 'envflags', 'write a function that merges two sorted arrays without duplicates in zig',
+    '--provider', 'env', '--env-base', 'BRAIN_TEST_UNSET_BASE_VAR', '--env-key', 'BRAIN_TEST_UNSET_KEY_VAR', '--model', 'test-model']);
+  assert.match(out, /fell back from env: environment variable BRAIN_TEST_UNSET_BASE_VAR is not set/, 'the footer names the unset variable: ' + out.slice(-400));
+  assert.doesNotMatch(out, /BRAIN_TEST_UNSET_KEY_VAR=/, 'no value is ever printed');
+});
+
 test('ladder --quick prints the four columns, opens no socket and writes nothing', () => {
   const listed = cliJSON(['help']);
   assert.ok(listed.commands.some((c) => c.name === 'ladder'), 'ladder is a registered command');
