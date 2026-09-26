@@ -19,7 +19,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { contaminationRecords, contaminationRow, splitShapeOf } from '../bench/gate.mjs';
 
@@ -45,7 +45,11 @@ export function splitForSource(file) {
 
 /** The function alone, compiled as its own module: it must need nothing from the file around it. */
 async function loadSplitFor(file) {
-  const mod = await import('data:text/javascript,' + encodeURIComponent(splitForSource(file)));
+  const dir = mkdtempSync(path.join(tmpdir(), 'split-for-'));
+  const mf = path.join(dir, path.basename(file).replace(/\.mjs$/, '') + '.split.mjs');
+  writeFileSync(mf, splitForSource(file));
+  const mod = await import(pathToFileURL(mf).href);
+  rmSync(dir, { recursive: true, force: true });
   assert.equal(typeof mod.splitFor, 'function', file);
   return mod.splitFor;
 }

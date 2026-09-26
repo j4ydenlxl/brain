@@ -53,7 +53,7 @@ const SECRETS = ['sk-', 'sk_', 'Bearer ', 'BRAIN_LLM_KEY='];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function playwright() {
-  try { return await import('playwright'); } catch { /* not in the tree */ }
+  // no bare import: the tree has zero dependencies (the gate scans); playwright is resolved from its global install or PLAYWRIGHT_PATH below
   const roots = [];
   if (process.env.PLAYWRIGHT_PATH) roots.push(process.env.PLAYWRIGHT_PATH);
   try { roots.push(execSync('npm root -g', { encoding: 'utf8' }).trim()); } catch { /* no npm */ }
