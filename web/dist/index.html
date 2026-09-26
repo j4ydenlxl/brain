@@ -66,6 +66,30 @@ td { padding: 1px 0; }
 /* the daemon rows in the state panel */
 .on { color: #7fb0ff; }
 .off { color: #ffb27f; }
+/* the prompt box (queue item 12, his 11:32 and 11:55 EDT words): the organism's exact reader runs in this
+   tab (web/ask.mjs copies it into organism/), so a visitor asks and the answer comes back with its
+   provenance and the nanoseconds it took on their device. The full terminal is at /ask. */
+#ask { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); width: 520px; z-index: 3; pointer-events: auto;
+  background: var(--glass); border: 1px solid rgba(127,176,255,0.45); border-radius: 10px; padding: 9px 12px;
+  backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); box-shadow: 0 0 24px rgba(127,176,255,0.10); }
+#ask form { display: flex; gap: 8px; align-items: center; margin: 0; }
+#ask .lbl { letter-spacing: 0.16em; text-transform: uppercase; font-size: 11px; color: #7fb0ff; white-space: nowrap; }
+#askq { flex: 1; min-width: 0; background: #060913; color: var(--ink); border: 1px solid var(--line); border-radius: 7px; padding: 7px 9px; font: inherit; font-size: 13px; }
+#askq:focus { outline: none; border-color: #7fb0ff; }
+#ask a { color: var(--dim); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+#ask a:hover { color: var(--ink); }
+#askout { margin-top: 6px; max-height: 30vh; overflow: auto; overflow-wrap: anywhere; }
+#askout:empty { display: none; }
+#askout .v { font-size: 18px; color: #7fffb0; }
+#askout .w { color: #ffb27f; }
+@media (max-width: 1240px) {
+  #ask { left: 16px; right: 16px; width: auto; transform: none; }
+  .state, .conduits { top: 128px !important; }
+}
+@media (max-width: 820px) {
+  .state { top: 150px !important; }
+  #askout { max-height: 4.8em; }
+}
 @media (max-width: 820px) {
   .conduits { display: none; }
   .state, .cell { width: calc(100% - 32px); }
@@ -81,6 +105,32 @@ td { padding: 1px 0; }
 <a id="portfolio" href="portfolio/">portfolio</a>
 <a id="findings" href="findings/">findings</a>
 <a id="handoff" href="handoff/" style="position: fixed; bottom: 226px; right: 16px; pointer-events: auto; background: var(--glass); border: 1px solid var(--line); border-radius: 10px; padding: 7px 13px; color: var(--ink); text-decoration: none; letter-spacing: 0.16em; text-transform: uppercase; font-size: 11px; backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);">handoff</a>
+<div id="ask"><form id="askf" autocomplete="off"><span class="lbl">ask</span><input id="askq" placeholder="what is 17 times 23" spellcheck="false" aria-label="ask the organism"><a id="askterm" href="ask/">terminal</a></form><div id="askout" aria-live="polite"></div></div>
+<script type="module">
+import { readExact } from './organism/act/exact-read.mjs';
+let word = null;
+try { word = (await import('./organism/act/word.mjs')).readWord; } catch { word = null; }
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const answer = (t) => readExact(t, word ? { word } : {});
+function nsPerAsk(t) {
+  for (let i = 0; i < 20; i++) answer(t);
+  let n = 8;
+  for (;;) { const a = performance.now(); for (let i = 0; i < n; i++) answer(t); if (performance.now() - a >= 2 || n >= 1 << 20) break; n *= 2; }
+  const b = [];
+  for (let k = 0; k < 7; k++) { const a = performance.now(); for (let i = 0; i < n; i++) answer(t); b.push((performance.now() - a) * 1e6 / n); }
+  return Math.round(b.sort((x, y) => x - y)[3]);
+}
+const out = document.getElementById('askout');
+document.getElementById('askf').addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  const q = document.getElementById('askq').value.trim(); if (!q) return;
+  document.getElementById('askterm').href = 'ask/?q=' + encodeURIComponent(q);
+  const r = answer(q);
+  out.innerHTML = r
+    ? '<span class="v">' + esc(r.answer) + '</span> <span class="dim">exact (' + esc(r.method) + '), no model, 0 tokens, ' + nsPerAsk(q).toLocaleString('en-US') + ' ns per ask on this device</span>'
+    : '<span class="w">refused, not guessed:</span> <span class="dim">no cell in this tab carries it (0 tokens). The terminal prints its route.</span>';
+});
+</script>
 <div id="boot">growing</div>
 <script src="app.js"></script>
 </body>

@@ -33,6 +33,9 @@ import { generateLadder } from './ladder.mjs';
 // The handoff page is docs/HANDOFF.md (written by tools/handoff.mjs from the machine's own
 // measurements) rendered at /handoff at every build. It throws when a secret pattern is in the file.
 import { generateHandoff } from './handoff.mjs';
+// The prompt box (queue item 12): /ask and the organism modules the landing page and /ask import,
+// copied byte for byte from act/ and tasks/ with a sha256 manifest (web/ask.mjs throws on a mismatch).
+import { generateAsk } from './ask.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SRC = join(HERE, 'src');
@@ -179,11 +182,12 @@ export function write(opts = {}) {
   const portfolio = generatePortfolio();
   const ladder = generateLadder();
   const handoff = generateHandoff();
+  const ask = generateAsk();
   return {
     js: Buffer.byteLength(js), html: Buffer.byteLength(html),
     total: Buffer.byteLength(js) + Buffer.byteLength(html),
     jsPath: join(DIST, 'app.js'), htmlPath: join(DIST, 'index.html'),
-    findings, portfolio, ladder, handoff,
+    findings, portfolio, ladder, handoff, ask,
   };
 }
 
@@ -206,7 +210,8 @@ if (process.argv[1] && process.argv[1].endsWith('build.mjs')) {
   console.log('dist handoff/index.html ' + String(r.handoff.bytes).padStart(8) + ' bytes   '
     + (r.handoff.missing ? 'docs/HANDOFF.md absent: run node tools/handoff.mjs' : r.handoff.sections + ' sections, ' + r.handoff.blocks + ' blocks, '
       + r.handoff.commands + ' command lines from docs/HANDOFF.md (' + r.handoff.mdBytes + ' bytes, served as handoff/HANDOFF.md)'));
-  const pages = ['index.html', 'findings/index.html', 'portfolio/index.html', 'ladder/index.html', 'handoff/index.html'];
+  console.log('dist ask/index.html ' + String(r.ask.bytes).padStart(12) + ' bytes   organism modules ' + r.ask.modules + ' copied byte for byte: ' + r.ask.manifest.files.map((f) => f.file + ' sha256 ' + f.sha256.slice(0, 12)).join(', '));
+  const pages = ['index.html', 'findings/index.html', 'portfolio/index.html', 'ladder/index.html', 'handoff/index.html', 'ask/index.html'];
   console.log('pages built: ' + pages.length + ' (' + pages.join(', ') + ')');
 }
 
