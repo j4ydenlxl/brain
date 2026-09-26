@@ -28,13 +28,13 @@ The ruler is VERDICTS LANDED PER DOLLAR: a verdict is a `bench/verdicts/*.json` 
 
 Not for the cloud (they need Ollama or a frozen project): `recall`, `synth`, `authorship`, any autopilot run with `--author on`, `venue` (the trader is frozen).
 
-## The $250 spend plan (rewritten 2026-09-26 10:20 EDT on his order; the first plan of 22:40 the night before is in git)
+## The $250 spend plan (rewritten 2026-09-26 10:14 EDT on his order; the first plan of 22:40 the night before is in git)
 
 His words of 10:05 EDT are in `MANUAL.md` section A: "it's a pro at everything, its asi, self improving, clock dilation, and I SHOULD BE ABLE TO TEST AND USE IT. Every request should be less than a token and it should be done in microseconds ... optimized for efficiency and frontier level benches ... a god at percepting and memecoins ... able to create code. Dude we are SO FAR". The queue below is in HIS order, not the ledger's: every item is something he can TEST AND USE when it lands, and every item ends with the one command he runs.
 
 The $250 buys nothing until extra usage is ON with its monthly limit set to 250 (claude.ai, Settings, Usage; at 05:25 EDT the card read extra usage OFF, limit 101.55 USD, spent 0.00). That is HIS click, the one step this plan cannot take.
 
-### What he can test and use today (measured 10:12 EDT on this machine, model cell OFF)
+### What he can test and use today (measured between 10:09 and 10:14 EDT on this machine, model cell OFF)
 
 ```
 node bin/brain.mjs init dilation
