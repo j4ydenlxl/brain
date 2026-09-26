@@ -36,3 +36,41 @@ have no dry form, so they are unproved.
 - The compress ratio ranged 2.2034 to 2.8015 over five runs of one form; daemon ranged 1.3526
   to 1.3891.
 - The schedule trial reads registration only. Registering the task is his call.
+
+## Measured (board 17 builder (the organism's item))
+
+The gap: `missed:gaps.json`, "no registered field holds a number beside this bar". The fill:
+bench/gaps.mjs writes `bar.share` beside `bar.shareBar` (1) and decides barMet from that share
+alone; self/gaps.mjs MEASURES registers the pair. The number is the share of the gap lines the
+bar covers (every line of kinds missed, ladder, gate red, gate slow, and every line with a
+model-free trial) whose trial printed its metric before the trials' wall clock passed 600 s
+(a model trial only has to carry its command). Chosen over recall on a planted tree because
+the header's bar is about trials that run; the planted trees in test/gaps.test.mjs already
+hold recall exact.
+
+Also added: `node self/gaps.mjs --row hisData|autonomy|handoff` grades one gate row alone
+(bench/gate.mjs exported row functions), so those three red rows carry a trial;
+`--trial-ram-mb N` caps each trial under a smaller host budget.
+
+Bar run on the cloud host (4 CPUs, 16 GB; 4000 MB here, not his 6000; GH_TOKEN and
+GITHUB_TOKEN unset so no trial reached api.github.com):
+`node tools/budget.mjs --ram-mb 4000 --disk-mb 8000 --dir <tmp> -- node --max-old-space-size=4000 bench/gaps.mjs --wait-free-ram-mb 4000 --trial-ram-mb 3600 --tmp-root <tmp>`
+
+- share 0.090909 against a bar of 1: 5 of 55 covered lines meet it; 49 carry a trial
+  (trialShare 0.890909). Bar NOT MET. 36 model-free trials, 16 printed a metric, trial wall
+  2501.64 s against 600 s. Peak 1645.566 MB, model calls 0.
+- Control: the ledger read the old gaps.json as measured null, distance null; it reads the
+  new one as measured 0.090909, bar 1, distance 0.909091.
+- Noise: grid run twice, percent solved 40 then 40, wall 9.338 s then 9.28 s.
+- Trial: `self/gaps.mjs --dry` prints trialShare 0.890909 (barLines 55).
+
+## Open (board 17)
+
+- The 600 s ran out on trials that sat to their bound: autopilot 480.01 s, compress 360.01 s,
+  daemon 300.01 s, operators 480.01 s, test/operators.test.mjs 540.012 s. bench/daemon.mjs
+  waits for 16 GB free by default and bench/compress.mjs waits for its MIN_FREE_GB; a 16 GB
+  host never has that free. Next rung: those forms pass a host-sized wait (daemon has
+  `--wait-free-gb`), then the run again.
+- Still without a trial: missed grid-library, multiply, ns, soak; gate-red badImports and
+  row:budget (the scan and the BUDGET row live inside the whole gate run).
+- cloud and cloud-fit need bench/fixtures/wiki/store, absent here.

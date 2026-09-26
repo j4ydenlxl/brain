@@ -45,9 +45,17 @@
 // lines (the ones bench/gaps.mjs runs as bounded trials) never do: a board item's trial is a whole
 // bar run, sized for the brief operator, not a 10-minute trial.
 //
+// THE GAP BAR'S OWN NUMBER (board 17 builder (the organism's item)): bench/verdicts/gaps.json was a
+// missed bar with no number beside it, so its own ledger line read "not measured". Its bench now
+// writes bar.share (the share of the gap lines its bar covers that meet it: barLines below names
+// the covered lines, bench/gaps.mjs barShare decides which meet) beside bar.shareBar (1), MEASURES
+// registers the pair, and --dry prints trialShare, the half of that share a run without trials can
+// measure (covered lines that carry a trial), which the gaps trial's parser reads.
+//
 //   node self/gaps.mjs           build and write the ledger, print the counts
 //   node self/gaps.mjs --dry     build it, write nothing, print the counts as one JSON line
 //   node self/gaps.mjs --json    build and write it, and print every line
+//   node self/gaps.mjs --row R   grade the gate row R (hisData, autonomy, handoff) alone, write nothing (board 17 builder (the organism's item))
 import { readdirSync, readFileSync, statSync, existsSync, writeFileSync, renameSync, mkdirSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -147,6 +155,8 @@ export const MEASURES = Object.freeze({
   math: { measured: 'bar.pot5Lo', bar: 'bar.aloneHi', unit: 'share correct (the pot5 interval low end against the alone interval high end)', better: 'higher' },
   'venue-full': { measured: 'holdout.gapVsControl.lo', bar: 0, barFrom: 'its claim: the 95 percent interval of the paired gap must exclude zero, so its low end must pass 0', unit: 'SOL per unit size per instrument (evolved minus matched control)', better: 'higher' },
   authorship: { measured: 'share', bar: 1, barFrom: 'its barRule: an organism share of exactly 1', unit: 'share of landed changes the organism authored', better: 'higher' },
+  // board 17 builder (the organism's item): the gap bar's own number, written by bench/gaps.mjs barShare
+  gaps: { measured: 'bar.share', bar: 'bar.shareBar', unit: 'share of the gap lines the gap bar covers that meet it (a trial carried; a model-free trial printed its metric inside the run bound)', better: 'higher' },
 });
 
 /** Checks passed against checks present, from a checks array of {ok} or an object of booleans. */
@@ -186,7 +196,9 @@ export function measureOf(stem, v, measures = MEASURES) {
     return {
       measured, bar, unit: m.unit, better: m.better,
       distance: measured !== null && bar !== null ? r6(bar - measured) : null,
-      from: 'measured ' + m.measured + ', bar ' + (typeof m.bar === 'number' ? m.bar + ' (' + (m.barFrom || 'fixed') + ')' : m.bar),
+      from: 'measured ' + m.measured + ', bar ' + (typeof m.bar === 'number' ? m.bar + ' (' + (m.barFrom || 'fixed') + ')' : m.bar)
+        // board 17 builder (the organism's item): a registered pair this file does not carry says so
+        + (measured === null || bar === null ? ': this file holds no number there, so no registered field holds a number beside this bar' : ''),
     };
   }
   const c = checksOf(v);
@@ -372,7 +384,9 @@ export const FORMS = Object.freeze({
 });
 
 /** Which form measures a missed or unreadable verdict again, by stem. */
-export const VERDICT_FORMS = Object.freeze({ compress: 'compress', math: 'math', 'venue-full': 'venue', venue: 'venue', authorship: 'authorship', 'schedule-autopilot': 'schedule', gaps: 'gaps', 'grid-evaluation': 'grid', daemon: 'daemon', spread: 'spread', 'spread-control': 'spread', operators: 'operators', autopilot: 'autopilot', 'autopilot-board10': 'autopilot', 'autopilot-board14-first': 'autopilot', cloud: 'cloud', 'cloud-2': 'cloud', 'cloud-host': 'cloud-host', 'cloud-fit': 'cloud-fit', 'cloud-fit-300': 'cloud-fit', 'cloud-fit-control': 'cloud-fit' });
+export const VERDICT_FORMS = Object.freeze({ compress: 'compress', math: 'math', 'venue-full': 'venue', venue: 'venue', authorship: 'authorship', 'schedule-autopilot': 'schedule', gaps: 'gaps', 'grid-evaluation': 'grid', daemon: 'daemon', spread: 'spread', 'spread-control': 'spread', operators: 'operators', autopilot: 'autopilot', 'autopilot-board10': 'autopilot', 'autopilot-board14-first': 'autopilot', cloud: 'cloud', 'cloud-2': 'cloud', 'cloud-host': 'cloud-host', 'cloud-fit': 'cloud-fit', 'cloud-fit-300': 'cloud-fit', 'cloud-fit-control': 'cloud-fit', contamination: 'row:contamination' });
+// board 17 builder (the organism's item): contamination.json's rule is "node bench/gate.mjs --contamination has no
+// cause", which is the CONTAMINATION row's own trial, so its gap shares that trial (a "row:" key names a ROW_FORMS entry).
 /** Which form measures a ladder block again, by the block's id. */
 export const LADDER_FORMS = Object.freeze({ 'sets.gsm8k': 'public-gsm8k', 'sets.humaneval': 'public-humaneval', 'sets.arc': 'grid', improvement: 'daemon', target: 'ladder-daily' });
 /** Census ticks per seed where the bar's 200 does not fit: census-h20-partial.json ran gen-0 at 20 ticks with rssAfterFull 3600.6 MB. */
@@ -412,8 +426,24 @@ export const ROW_FORMS = Object.freeze({
     bench: 'tools/boundary-audit.mjs', argv: [HEAP, 'tools/boundary-audit.mjs', '--bar'], minutes: 8, needsModel: false, where: 'copy', writes: ['bench/verdicts/boundary.json'], parser: 'boundary', diskMb: 2048,
     doc: 'tools/boundary-audit.mjs --bar runs the static scan, the allowlist check, the probe and the touched tests on the copy and prints the allowlist line (unlisted, stale, over cap)',
   },
+  // board 17 builder (the organism's item): three rows bench/gate.mjs computes from exported functions
+  // over files on disk, not over the test run, graded alone by self/gaps.mjs --row (rowAlone below)
+  hisData: {
+    bench: 'self/gaps.mjs', argv: ['self/gaps.mjs', '--row', 'hisData'], minutes: 1, needsModel: false, where: 'tree', writes: [], parser: 'row', diskMb: 50,
+    doc: 'self/gaps.mjs --row hisData grades the HIS DATA row alone (bench/gate.mjs hisDataRow over fixtureCoverage of bench/fixtures, as the gate calls it); the metric is the uncovered data files; exit 1 only when it is red and rules; reads only',
+  },
+  autonomy: {
+    bench: 'self/gaps.mjs', argv: ['self/gaps.mjs', '--row', 'autonomy'], minutes: 1, needsModel: false, where: 'tree', writes: [], parser: 'row', diskMb: 50,
+    doc: 'self/gaps.mjs --row autonomy grades the AUTONOMY row alone (bench/gate.mjs autonomyRow, as the gate calls it); the metric is its causes; exit 1 only when it is red and rules; reads only',
+  },
+  handoff: {
+    bench: 'self/gaps.mjs', argv: ['self/gaps.mjs', '--row', 'handoff'], minutes: 1, needsModel: false, where: 'tree', writes: [], parser: 'row', diskMb: 50,
+    doc: 'self/gaps.mjs --row handoff grades the HANDOFF row alone (bench/gate.mjs handoffRow, as the gate calls it); the metric is its causes; exit 1 only when it is red and rules; reads only',
+  },
 });
 export function rowTrial(name) { return ROW_FORMS[name] ? trialOf('row:' + name, ROW_FORMS[name]) : null; }
+/** A FORMS key, or "row:<name>" for a ROW_FORMS entry (board 17 builder (the organism's item)). */
+export function formTrial(key) { return typeof key === 'string' && key.startsWith('row:') ? rowTrial(key.slice(4)) : trialOf(key); }
 
 export function testTrial(file, ms) {
   const minutes = Math.min(TRIAL_MAX_MINUTES - 1, Math.max(1, Math.ceil((3 * (num(ms) || 60_000)) / 60_000)));
@@ -454,7 +484,8 @@ export const PARSERS = Object.freeze({
   census: { name: 'dead share', file: (t) => 'bench/verdicts/' + censusPartialName(t.seed, 'gaps'), read: (v) => deadShareOf(v && v.lines) },
   authorship: { name: 'organism share', stdout: true, read: (out) => { try { return num(JSON.parse(out).share); } catch { return null; } } },
   schedule: { name: 'registered (1 or 0)', stdout: true, read: (out) => (/not registered/i.test(out) ? 0 : /\S/.test(out) ? 1 : null) },
-  gapsDry: { name: 'required gaps without a trial', stdout: true, read: (out) => { const l = out.trim().split(/\r?\n/).pop(); try { return num(JSON.parse(l).requiredWithoutTrial); } catch { return null; } } },
+  row: { name: 'the row alone: uncovered files (hisData) or causes (autonomy, handoff)', stdout: true, read: (out) => { for (const l of String(out).trim().split(/\r?\n/).reverse()) { if (!l.startsWith('{"row"')) continue; try { return num(JSON.parse(l).metric); } catch { return null; } } return null; } },
+  gapsDry: { name: 'share of the bar lines carrying a trial (trialShare)', stdout: true, read: (out) => { const l = out.trim().split(/\r?\n/).pop(); try { return num(JSON.parse(l).trialShare); } catch { return null; } } },
   spread: { name: 'improvements kept per million organism-years', file: () => 'bench/verdicts/spread-partial.json', read: (v) => num(v && v.keptPerMillionOrganismYears) },
   operators: { name: 'planted defects kept', file: () => 'bench/verdicts/operators-partial.json', read: (v) => (v && Array.isArray(v.kept) ? v.kept.length : null) },
   autopilot: { name: 'checks passed', file: () => 'bench/verdicts/autopilot-partial.json', read: (v) => num(v && v.passed) },
@@ -499,7 +530,7 @@ function verdictGaps({ root, verdictsDir, verdicts, entries, measures, forms }) 
     if (typeof x.v.barMet !== 'boolean') report.noTopLevelBarMet.push(x.file);
     const script = scriptOf(x.v.command);
     const formKey = forms[x.stem] || null;
-    const trial = formKey ? trialOf(formKey) : null;
+    const trial = formKey ? formTrial(formKey) : null;
     const place = placeOf(root, entries, [trial ? trial.bench : null, script, verdictFile]);
     if (c.state === 'met') { report.met.push(x.file); continue; }
     if (c.state === 'missed') {
@@ -633,7 +664,7 @@ export function gateGaps({ root = ROOT, gate, file = 'bench/verdicts/gate.json',
   const s13 = entries.find((e) => e.section === 13);
   for (const [name, row] of Object.entries(rows)) {
     if (!row || row.ok !== false) continue;
-    lines.push(lineOf({ ...common, id: 'gate-red:row:' + name, kind: 'gate red', subsystem: s13 ? s13.name : 'unmapped', trial: rowTrial(name), files: [], why: 'row ' + name + ' is not ok: ' + String(row.line || '').slice(0, 200) + '; the row is computed over the whole gate run, which has no bounded form' }));
+    lines.push(lineOf({ ...common, id: 'gate-red:row:' + name, kind: 'gate red', subsystem: s13 ? s13.name : 'unmapped', trial: rowTrial(name), files: [], why: 'row ' + name + ' is not ok: ' + String(row.line || '').slice(0, 200) + (ROW_FORMS[name] ? '; graded alone by ' + ROW_FORMS[name].argv.filter((a) => a !== HEAP).join(' ') : '; the row is computed over the whole gate run, which has no bounded form') }));
   }
   for (const [key, label] of [['badImports', 'an import that points nowhere'], ['emDash', 'an em dash']]) {
     const list = Array.isArray(gate[key]) ? gate[key] : [];
@@ -729,6 +760,21 @@ export function summarize(lines) {
   return { total: lines.length, byKind, withTrial, withoutTrial: lines.length - withTrial, requiredWithoutTrial };
 }
 
+/**
+ * The gap lines bench/gaps.mjs's bar covers (board 17 builder (the organism's item)): every line of
+ * a kind the bar requires (REQUIRED_KINDS: it must carry a trial) and every line carrying a
+ * model-free trial (its trial must print its metric in the bar's run).
+ */
+export function barLines(lines) {
+  return lines.filter((l) => REQUIRED_KINDS.includes(l.kind) || (l.trial && !l.trial.needsModel));
+}
+
+/** The share of barLines that carry a trial: the part of bench/gaps.mjs bar.share a run without trials measures. Null when none is covered. */
+export function trialShareOf(lines) {
+  const c = barLines(lines);
+  return c.length ? r6(c.filter((l) => l.trial).length / c.length) : null;
+}
+
 const dateOf = (ms) => new Date(ms).toISOString().slice(0, 10);
 
 /**
@@ -789,14 +835,37 @@ export function readLedger(root = ROOT) {
   return { lines, bad, found: true };
 }
 
+/**
+ * One gate row graded alone, the way bench/gate.mjs main() calls it (board 17 builder (the organism's
+ * item)): hisData, autonomy and handoff read files on disk, not the test run, so each has a bounded
+ * form. The gate module is imported only here, when a row is asked for. metric: the uncovered data
+ * files for hisData, the causes for autonomy and handoff (0 when green).
+ * @returns {Promise<{row: string, ok: boolean, rules: boolean, graded: boolean, metric: number|null, line: string}>}
+ */
+export const ROW_ALONE = Object.freeze(['hisData', 'autonomy', 'handoff']);
+export async function rowAlone(name, { root = ROOT, gate = null } = {}) {
+  if (!ROW_ALONE.includes(name)) throw new Error('self/gaps.mjs --row: no row graded alone is named ' + name + ' (' + ROW_ALONE.join(', ') + ')');
+  const g = gate || await import(pathToFileURL(path.join(HERE, '..', 'bench', 'gate.mjs')).href);
+  const r = name === 'hisData' ? g.hisDataRow(g.fixtureCoverage(path.join(root, 'bench', 'fixtures')))
+    : name === 'autonomy' ? g.autonomyRow({ root }) : g.handoffRow({ root });
+  const metric = name === 'hisData' ? (Array.isArray(r.uncovered) ? r.uncovered.length : null) : Array.isArray(r.causes) ? r.causes.length : r.ok ? 0 : null;
+  return { row: name, ok: r.ok === true, rules: r.rules !== false, graded: r.graded !== false, metric, line: String(r.line || '') };
+}
+
 // ------------------------------------------------------------------ CLI
 const isMain = Boolean(process.argv[1]) && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isMain) {
+const rowAt = process.argv.indexOf('--row');
+if (isMain && rowAt > 0) {
+  // node self/gaps.mjs --row <name>: one row alone; the JSON line is what PARSERS.row reads, the row line last
+  const r = await rowAlone(process.argv[rowAt + 1]);
+  process.stdout.write(JSON.stringify({ row: r.row, ok: r.ok, rules: r.rules, graded: r.graded, metric: r.metric }) + '\n' + r.line + '\n');
+  process.exitCode = r.ok || !r.rules ? 0 : 1;
+} else if (isMain) {
   const argv = process.argv.slice(2);
   const { lines, report } = await buildLedger();
   const s = summarize(lines);
   if (argv.includes('--dry')) {
-    process.stdout.write(JSON.stringify({ total: s.total, byKind: s.byKind, withTrial: s.withTrial, withoutTrial: s.withoutTrial, requiredWithoutTrial: s.requiredWithoutTrial.length, undecidable: report.verdicts.undecidable.length }) + '\n');
+    process.stdout.write(JSON.stringify({ total: s.total, byKind: s.byKind, withTrial: s.withTrial, withoutTrial: s.withoutTrial, requiredWithoutTrial: s.requiredWithoutTrial.length, undecidable: report.verdicts.undecidable.length, barLines: barLines(lines).length, trialShare: trialShareOf(lines) }) + '\n');
   } else {
     const w = writeLedger(lines);
     if (argv.includes('--json')) for (const l of lines) process.stdout.write(JSON.stringify(l) + '\n');

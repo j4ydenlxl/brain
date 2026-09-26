@@ -3,46 +3,92 @@
   "item": "gaps",
   "board": 14,
   "by": "board 14 builder",
-  "at": "2026-09-24T19:17:14.822Z",
-  "command": "node --max-old-space-size=6000 bench/gaps.mjs --only ladder-daily",
-  "node": "v24.15.0",
+  "at": "2026-09-26T21:22:48.931Z",
+  "command": "node --max-old-space-size=4000 bench/gaps.mjs --only row: --wait-free-ram-mb 4000 --trial-ram-mb 3600 --tmp-root /tmp/claude-0/-home-user-brain/e545381d-756f-5a6b-831b-e623f171c5fb/scratchpad/p1",
+  "node": "v24.9.0",
   "isTheBar": false,
   "barMet": false,
   "bar": {
     "rule": "every gap of kinds missed, ladder, gate red, gate slow has a trial command, and every model-free trial printed its metric in one run under 10 minutes",
-    "requiredWithoutTrial": [
-      "missed:prune.json"
+    "number": "share: of the gap lines the bar covers (self/gaps.mjs barLines: every line of the required kinds and every line carrying a model-free trial), the share that meet it (a trial carried; a model-free trial printed its metric in this run before the trials passed limitS of wall clock); barMet is share >= shareBar",
+    "share": 0.2,
+    "shareBar": 1,
+    "better": "higher",
+    "coveredLines": 5,
+    "meetingLines": 1,
+    "carryingTrial": 5,
+    "trialShare": 1,
+    "notMeeting": [
+      {
+        "id": "missed:contamination.json",
+        "why": "its trial row:contamination failed: exit 1: CONTAMINATION RED: bar files (isTheBar true) 57 of 195 verdict files, with a split object 38, contaminated and labelled 1 (brief.json), contaminated and unlabelled 0, with no split 18, split not an object 1; CAUSES (2): 18 bar file(s) with no split: autopilot-board10.json, boundary.json, census-prun"
+      },
+      {
+        "id": "gate-red:row:autonomy",
+        "why": "its trial row:autonomy failed: exit 1: AUTONOMY RED: ledger 268 gaps, 0 h old; kinds missed, ladder, gate red, gate slow: 53 (missed 18, ladder 6, gate red 16, gate slow 13), 47 with a trial whose bench file exists, 6 with no trial, 0 with a missing bench; excluded as echoes of this gate row itself: gate-red:row:autonomy, gate-red:row:ha"
+      },
+      {
+        "id": "gate-red:row:contamination",
+        "why": "its trial row:contamination failed: exit 1: CONTAMINATION RED: bar files (isTheBar true) 57 of 195 verdict files, with a split object 38, contaminated and labelled 1 (brief.json), contaminated and unlabelled 0, with no split 18, split not an object 1; CAUSES (2): 18 bar file(s) with no split: autopilot-board10.json, boundary.json, census-prun"
+      },
+      {
+        "id": "gate-red:row:handoff",
+        "why": "its trial row:handoff failed: exit 1: HANDOFF RED: docs/HANDOFF.md generated 2026-09-26T20:58:48.665Z, 0.4 h ago; commands listed 104, 239 checks (files under the tree, executables on PATH, tasks by schtasks /query), missing 6, pending 1 (bench/plateau.mjs, named by an undone board item), placeholders skipped 1; undone 245 in the doc vs"
+      }
     ],
-    "modelFreeTrials": 0,
-    "printedMetric": 0,
-    "trialWallS": 0,
+    "requiredWithoutTrial": [
+      "missed:grid-library.json",
+      "missed:multiply.json",
+      "missed:ns.json",
+      "missed:soak.json",
+      "gate-red:badImports",
+      "gate-red:row:budget"
+    ],
+    "modelFreeTrials": 4,
+    "printedMetric": 1,
+    "trialWallS": 0.53,
     "limitS": 600,
     "met": false
   },
   "split": {
-    "development": "test/gaps.test.mjs: five planted verdict files (met, missed, undecidable, partial only, bar object), a planted ladder with not measured fields, a trial past its minutes, nine dated ledgers, all under the OS temp dir",
+    "development": "test/gaps.test.mjs: five planted verdict files (met, missed, undecidable, partial only, bar object), a planted ladder with not measured fields, a trial past its minutes, nine dated ledgers, planted gaps.json files with and without bar.share, planted lines and runs for barShare, all under the OS temp dir",
+    "contaminated": false,
+    "contaminationNote": "the share is computed from this run's own trials over the live ledger; no line, trial or bound was chosen by looking at this run",
     "heldOut": "the live tree as it stood at this run: every file under bench/verdicts/, ladder.json, gate.json, notes/, the census records and docs/ARCHITECTURE.md; nothing in self/gaps.mjs was tuned to it"
   },
-  "statement": "The gap ledger (self/gaps.mjs) read 157 verdict files (36 bars: 19 met, 7 missed, 10 undecidable), ladder.json, gate.json, 47 notes and 24 emitted seeds, and wrote 138 gaps to state/self/gaps.jsonl: 7 missed, 10 unreadable bar, 9 bar never completed, 7 ladder, 0 gate red, 7 gate slow, 76 open, 22 dead share. 41 carry a bounded trial and 97 do not (76 of those are OPEN lines, judged by fix evidence); of the kinds the bar requires (missed, ladder, gate red, gate slow) 1 lack one. 0 distinct model-free trials ran once each, sequentially, each through tools/budget.mjs: 0 ran to completion, 0 printed their metric, 0 failed, in 0 s of wall clock against a bar of 600 s. 1 trials need a model and none was run: 1 proved by a socket-free dry form, 0 unproved (). Bar NOT MET (a narrow run is never the bar): every gap of kinds missed, ladder, gate red and gate slow has a trial command, and every model-free trial printed its metric in one run under 10 minutes.",
+  "statement": "The gap ledger (self/gaps.mjs) read 195 verdict files (57 bars: 29 met, 18 missed, 10 undecidable), ladder.json, gate.json, 62 notes and 1 emitted seeds, and wrote 193 gaps to state/self/gaps.jsonl: 18 missed, 10 unreadable bar, 7 bar never completed, 6 ladder, 18 gate red, 13 gate slow, 121 open, 0 dead share, 0 board item. 49 carry a bounded trial and 144 do not (121 of those are OPEN lines, judged by fix evidence); of the kinds the bar requires (missed, ladder, gate red, gate slow) 6 lack one. 4 distinct model-free trials ran once each, sequentially, each through tools/budget.mjs: 4 ran to completion, 1 printed their metric, 3 failed (row:contamination, row:autonomy, row:handoff), in 0.53 s of wall clock against a bar of 600 s. 0 trials need a model and none was run: 0 proved by a socket-free dry form, 0 unproved (). The number beside the bar: of the 5 gap lines the bar covers (every line of the required kinds and every line carrying a model-free trial), 1 meet it (a trial carried; a model-free trial printed its metric before the trials passed 600 s), a share of 0.2 against a bar of 1; 5 carry a trial (trialShare 1); short: missed:contamination.json, gate-red:row:autonomy, gate-red:row:contamination, gate-red:row:handoff. Bar NOT MET (a narrow run is never the bar): every gap of kinds missed, ladder, gate red and gate slow has a trial command, and every model-free trial printed its metric in one run under 10 minutes, so the share must be 1.",
   "ledger": {
     "file": "state/self/gaps.jsonl",
-    "lines": 138,
+    "lines": 193,
     "byKind": {
-      "missed": 7,
+      "missed": 18,
       "unreadable bar": 10,
-      "bar never completed": 9,
-      "ladder": 7,
-      "gate red": 0,
-      "gate slow": 7,
-      "open": 76,
-      "dead share": 22
+      "bar never completed": 7,
+      "ladder": 6,
+      "gate red": 18,
+      "gate slow": 13,
+      "open": 121,
+      "dead share": 0,
+      "board item": 0
     },
-    "withTrial": 41,
-    "withoutTrial": 97,
+    "withTrial": 49,
+    "withoutTrial": 144,
     "withoutTrialByName": [
       {
-        "id": "missed:prune.json",
-        "why": "decided by barMet; bar booleans: 4 of 5 true (false: gateGreen); no bounded form is registered for this bench (its own run took 846.6 s against the 10 minute bound, and no smaller form of bench/prune.mjs is registered)"
+        "id": "missed:grid-library.json",
+        "why": "decided by barMet; no registered field holds a number beside this bar; no bounded form is registered for this bench"
+      },
+      {
+        "id": "missed:multiply.json",
+        "why": "decided by bar.met; bar booleans: 1 of 2 true (false: atOrAbove); no bounded form is registered for this bench (its own run took 566.725 s against the 10 minute bound, and no smaller form of bench/multiply.mjs is registered)"
+      },
+      {
+        "id": "missed:ns.json",
+        "why": "decided by barMet; no registered field holds a number beside this bar; no bounded form is registered for this bench"
+      },
+      {
+        "id": "missed:soak.json",
+        "why": "decided by barMet; no registered field holds a number beside this bar; no bounded form is registered for this bench"
       },
       {
         "id": "unreadable:census-prune.json",
@@ -85,16 +131,12 @@
         "why": "no barMet, met, met.bar, bar.met or verdict word; its bar is prose; the fill is a top-level boolean barMet written by tools/budget.mjs"
       },
       {
-        "id": "never:cloud-partial.json",
-        "why": "no cloud.json and no bar file for any prefix of it; the fill is the whole bar run, which has no bounded form"
-      },
-      {
-        "id": "never:operators-partial.json",
-        "why": "no operators.json and no bar file for any prefix of it; the fill is the whole bar run, which has no bounded form"
-      },
-      {
         "id": "never:public-gsm8k-board7-partial.json",
         "why": "no public-gsm8k-board7.json and no bar file for any prefix of it; the fill is the whole bar run, which has no bounded form"
+      },
+      {
+        "id": "never:public-gsm8k-native-partial.json",
+        "why": "no public-gsm8k-native.json and no bar file for any prefix of it; the fill is the whole bar run, which has no bounded form"
       },
       {
         "id": "never:public-gsm8k-partial.json",
@@ -117,38 +159,48 @@
         "why": "no public-humaneval-smoke.json and no bar file for any prefix of it; the fill is the whole bar run, which has no bounded form"
       },
       {
-        "id": "never:rows-partial.json",
-        "why": "no rows.json and no bar file for any prefix of it; the fill is the whole bar run, which has no bounded form"
+        "id": "gate-red:badImports",
+        "why": "2 x an import that points nowhere; the scan runs inside the whole gate"
       },
       {
-        "id": "dead:organism/scale-52000",
-        "why": "census census-scale-static.json (static, 5126010 lines loaded, 5097787 load bearing); the gate caps it at 0.1 and MANUAL P8 asks for 0; no bounded form: the BUDGETS rule says never load organism/scale-52000 whole, and every census form that measures its dead share (--static, --sample over all batches) reads all of it"
+        "id": "gate-red:row:budget",
+        "why": "row budget is not ok: BUDGET RED: 104 of 104 test files ran under tools/budget.mjs (cap 6000 MB working set of the file's whole process tree, cap 2048 MB on the file's own TEMP dir, sampled every 1000 ms, --max-old-space-s; the row is computed over the whole gate run, which has no bounded form"
       }
     ],
     "builtTwiceIdsDiffer": 0,
-    "previous": "gaps-2026-09-24.jsonl",
+    "previous": "gaps-2026-09-26.jsonl",
     "dated": [
-      "gaps-2026-09-24.jsonl"
+      "gaps-2026-09-26.jsonl"
     ],
     "removed": []
   },
   "verdicts": {
-    "read": 157,
-    "barFiles": 36,
+    "read": 195,
+    "barFiles": 57,
     "met": [
+      "autopilot-board10.json",
       "autopilot.json",
+      "boards.json",
       "boundary.json",
+      "brief.json",
       "budget.json",
       "code.json",
       "daemon.json",
       "dream.json",
-      "grid-library.json",
+      "handoff.json",
       "knowledge.json",
-      "multiply.json",
       "native.json",
+      "nextboard.json",
+      "prune.json",
       "recall.json",
+      "resume.json",
+      "rows-board15.json",
+      "rows.json",
+      "schedule-autopilot.json",
       "senses.json",
+      "shell-linux.json",
       "spawn.json",
+      "spoken.json",
       "synth.json",
       "velocity-heldout.json",
       "velocity.json",
@@ -158,11 +210,22 @@
     ],
     "missed": [
       "authorship.json",
+      "autopilot-board14-first.json",
+      "cloud-2.json",
+      "cloud-fit.json",
+      "cloud-host.json",
+      "cloud.json",
       "compress.json",
+      "contamination.json",
       "gaps.json",
+      "grid-library.json",
       "math.json",
-      "prune.json",
-      "schedule-autopilot.json",
+      "multiply.json",
+      "ns.json",
+      "operators.json",
+      "soak.json",
+      "spread-control.json",
+      "spread.json",
       "venue-full.json"
     ],
     "undecidable": [
@@ -178,7 +241,7 @@
       "public-launch.json"
     ],
     "noTopLevelBarMet": [
-      "autopilot.json",
+      "autopilot-board10.json",
       "census-prune.json",
       "census-scale-pruned.json",
       "census-scale-static.json",
@@ -201,46 +264,65 @@
     ],
     "unparseable": [],
     "partialOnly": [
-      "cloud-partial.json",
-      "operators-partial.json",
       "public-gsm8k-board7-partial.json",
+      "public-gsm8k-native-partial.json",
       "public-gsm8k-partial.json",
       "public-gsm8k-smoke-partial.json",
       "public-humaneval-board7-partial.json",
       "public-humaneval-partial.json",
-      "public-humaneval-smoke-partial.json",
-      "rows-partial.json"
+      "public-humaneval-smoke-partial.json"
     ],
     "decidedBy": {
       "authorship": "barMet",
-      "autopilot": "verdict",
+      "autopilot-board10": "verdict",
+      "autopilot-board14-first": "barMet",
+      "autopilot": "barMet",
+      "boards": "barMet",
       "boundary": "barMet",
+      "brief": "barMet",
       "budget": "barMet",
       "census-prune": null,
       "census-scale-pruned": null,
       "census-scale-static": null,
       "census": null,
+      "cloud-2": "barMet",
+      "cloud-fit": "barMet",
+      "cloud-host": "barMet",
+      "cloud": "barMet",
       "code": "verdict",
       "compress-board10": null,
       "compress": "met.bar",
+      "contamination": "barMet",
       "daemon": "barMet",
       "dream": "barMet",
       "gaps": "barMet",
       "grid-evaluation": null,
       "grid-library": "barMet",
       "grid": null,
+      "handoff": "barMet",
       "imagine": null,
       "knowledge": "bar.met",
       "ladder": null,
       "math": "met",
       "multiply": "bar.met",
       "native": "barMet",
+      "nextboard": "barMet",
+      "ns": "barMet",
+      "operators": "barMet",
       "prune": "barMet",
       "public-launch": null,
       "recall": "barMet",
+      "resume": "barMet",
+      "rows-board15": "barMet",
+      "rows": "barMet",
       "schedule-autopilot": "barMet",
       "senses": "met",
+      "shell-linux": "barMet",
+      "soak": "barMet",
       "spawn": "barMet",
+      "spoken": "barMet",
+      "spread-control": "barMet",
+      "spread": "barMet",
       "synth": "barMet",
       "velocity-heldout": "bar.met",
       "velocity": "bar.met",
@@ -273,8 +355,8 @@
     },
     {
       "rung": "target",
-      "read": "lastDelta -0.6 against low 5",
-      "gap": true
+      "read": "met true",
+      "gap": false
     },
     {
       "rung": "multiplying",
@@ -298,7 +380,7 @@
     },
     {
       "rung": "authored",
-      "read": "share 0, no bar number in the block (authorship.json carries the bar)",
+      "read": "share 0.003048780487804878, no bar number in the block (authorship.json carries the bar)",
       "gap": false
     },
     {
@@ -328,172 +410,143 @@
     }
   ],
   "census": {
-    "seeds": 24,
+    "seeds": 1,
     "per": [
-      {
-        "seed": "organism/gen-0",
-        "share": 0.46487,
-        "file": "census.json"
-      },
-      {
-        "seed": "organism/gen-0-2-3-1-3",
-        "share": 0.625411,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-0-3-3-2-4",
-        "share": 0.485751,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-0-3-4-2-4",
-        "share": 0.543646,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-0-4-4-2-4",
-        "share": 0.524809,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-0-5-3-2-4",
-        "share": 0.538352,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-0-5-3-3-4",
-        "share": 0.397249,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-0-5-4-1-4",
-        "share": 0.566826,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-0-5-4-2-4",
-        "share": 0.627092,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-0-5-5-2-4",
-        "share": 0.583164,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-0-6-4-2-4",
-        "share": 0.648221,
-        "file": "census-all.json"
-      },
       {
         "seed": "organism/gen-0-pruned",
         "share": 0,
         "file": "census-prune.json"
-      },
-      {
-        "seed": "organism/gen-1-4-3-2-4",
-        "share": 0.41206,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-1-4-3-3-4",
-        "share": 0.394773,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-1-4-4-1-4",
-        "share": 0.71436,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-1-4-4-2-4",
-        "share": 0.61523,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-1-5-3-1-3",
-        "share": 0.610605,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-1-5-3-1-4",
-        "share": 0.508523,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-1-5-4-2-4",
-        "share": 0.555644,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-1-6-4-1-4",
-        "share": 0.579006,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-2-0-4-1-4",
-        "share": 0.503922,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/gen-2-4-3-3-4",
-        "share": 0.37945,
-        "file": "census-all.json"
-      },
-      {
-        "seed": "organism/scale-52000",
-        "share": 0.005506,
-        "file": "census-scale-static.json"
-      },
-      {
-        "seed": "organism/scale-52000-pruned",
-        "share": 0,
-        "file": "census-scale-pruned.json"
       }
     ],
     "cap": 0.1
   },
-  "trials": [],
-  "dry": [
+  "trials": [
     {
-      "key": "ladder-daily",
-      "dry": true,
-      "where": "copy",
+      "key": "row:contamination",
+      "dry": false,
+      "where": "tree",
+      "ran": true,
+      "completed": true,
+      "outcome": "exit",
+      "exitCode": 1,
+      "seconds": 0.202,
+      "waitedS": 0,
+      "metric": null,
+      "metricName": null,
+      "metricFrom": null,
+      "printedMetric": false,
+      "failed": true,
+      "firstLine": "exit 1: CONTAMINATION RED: bar files (isTheBar true) 57 of 195 verdict files, with a split object 38, contaminated and labelled 1 (brief.json), contaminated and unlabelled 0, with no split 18, split not an object 1; CAUSES (2): 18 bar file(s) with no split: autopilot-board10.json, boundary.json, census-prun",
+      "peakRssMb": 31.137,
+      "copy": null,
+      "copyGone": true,
+      "realWritesUnchanged": null,
+      "samples": 1,
+      "endS": 0.21,
+      "gaps": [
+        "missed:contamination.json",
+        "gate-red:row:contamination"
+      ],
+      "recorded": null,
+      "unit": null
+    },
+    {
+      "key": "row:autonomy",
+      "dry": false,
+      "where": "tree",
+      "ran": true,
+      "completed": true,
+      "outcome": "exit",
+      "exitCode": 1,
+      "seconds": 0.076,
+      "waitedS": 0,
+      "metric": null,
+      "metricName": null,
+      "metricFrom": null,
+      "printedMetric": false,
+      "failed": true,
+      "firstLine": "exit 1: AUTONOMY RED: ledger 268 gaps, 0 h old; kinds missed, ladder, gate red, gate slow: 53 (missed 18, ladder 6, gate red 16, gate slow 13), 47 with a trial whose bench file exists, 6 with no trial, 0 with a missing bench; excluded as echoes of this gate row itself: gate-red:row:autonomy, gate-red:row:ha",
+      "peakRssMb": 24.563,
+      "copy": null,
+      "copyGone": true,
+      "realWritesUnchanged": null,
+      "samples": 1,
+      "endS": 0.28,
+      "gaps": [
+        "gate-red:row:autonomy"
+      ],
+      "recorded": null,
+      "unit": null
+    },
+    {
+      "key": "row:handoff",
+      "dry": false,
+      "where": "tree",
+      "ran": true,
+      "completed": true,
+      "outcome": "exit",
+      "exitCode": 1,
+      "seconds": 0.094,
+      "waitedS": 0,
+      "metric": null,
+      "metricName": null,
+      "metricFrom": null,
+      "printedMetric": false,
+      "failed": true,
+      "firstLine": "exit 1: HANDOFF RED: docs/HANDOFF.md generated 2026-09-26T20:58:48.665Z, 0.4 h ago; commands listed 104, 239 checks (files under the tree, executables on PATH, tasks by schtasks /query), missing 6, pending 1 (bench/plateau.mjs, named by an undone board item), placeholders skipped 1; undone 245 in the doc vs",
+      "peakRssMb": 25.586,
+      "copy": null,
+      "copyGone": true,
+      "realWritesUnchanged": null,
+      "samples": 1,
+      "endS": 0.38,
+      "gaps": [
+        "gate-red:row:handoff"
+      ],
+      "recorded": null,
+      "unit": null
+    },
+    {
+      "key": "row:hisData",
+      "dry": false,
+      "where": "tree",
       "ran": true,
       "completed": true,
       "outcome": "exit",
       "exitCode": 0,
-      "seconds": 2.62,
+      "seconds": 0.147,
       "waitedS": 0,
-      "metric": 1,
-      "metricName": "exit 0 of --quick",
-      "metricFrom": "exit code",
+      "metric": 0,
+      "metricName": "the row alone: uncovered files (hisData) or causes (autonomy, handoff)",
+      "metricFrom": "stdout",
       "printedMetric": true,
       "failed": false,
       "firstLine": null,
-      "peakRssMb": 470.898,
-      "copy": {
-        "files": 731,
-        "mb": 80.02,
-        "ms": 318
-      },
+      "peakRssMb": 25.914,
+      "copy": null,
       "copyGone": true,
-      "realWritesUnchanged": true,
-      "samples": 3,
+      "realWritesUnchanged": null,
+      "samples": 1,
+      "endS": 0.53,
       "gaps": [
-        "ladder:target"
-      ]
+        "gate-red:row:hisData"
+      ],
+      "recorded": null,
+      "unit": null
     }
   ],
+  "dry": [],
   "unproved": [],
   "noise": null,
+  "waitFreeRamMb": 4000,
+  "trialRamMb": 3600,
   "disk": {
-    "freeMbBefore": 1040050,
-    "freeMbAfter": 1040050,
+    "freeMbBefore": 30024,
+    "freeMbAfter": 30023,
     "leftoverDirs": 0
   },
-  "peakRssMb": 470.898,
+  "peakRssMb": 223,
   "modelCalls": 0,
-  "wallS": 3.84,
+  "wallS": 1.03,
   "models": "none: no trial that needs a model ran, and each dry proof is a documented flag that opens no socket"
 }

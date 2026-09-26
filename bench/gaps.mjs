@@ -22,15 +22,34 @@
 // real tree's copy of every file a copy trial writes checked unchanged, and the fastest copy trial
 // run a second time for run-to-run noise (outside the bar's 10 minutes, said so).
 //
+// THE NUMBER BESIDE THE BAR (board 17 builder (the organism's item)): the bar above is one share.
+// Of the gap lines it covers (self/gaps.mjs barLines: every line of the four required kinds, and
+// every line carrying a model-free trial), the share that meet it: the line carries a trial, and a
+// model-free trial printed its metric in this run before the trials' wall clock passed 10
+// minutes (barShare). The rule is "every", so the bar is a share of exactly 1 (SHARE_BAR), and
+// barMet is bar.share >= bar.shareBar and nothing else: a trial that failed, a required gap with no
+// trial, or a metric printed past the bound each leaves one covered line short. Why this number
+// and not recall on a planted tree: this header's bar is about trials that run, and the planted
+// trees of test/gaps.test.mjs already hold recall exact. self/gaps.mjs MEASURES registers
+// bar.share beside bar.shareBar, so the ledger's own line for a missed gaps.json carries a number
+// and a distance. The control printed with every run: the ledger's reading of the gaps.json on
+// disk before the run beside its reading of the one this run wrote.
+//
 //   node --max-old-space-size=6000 bench/gaps.mjs              the bar: bench/verdicts/gaps.json
 //   node --max-old-space-size=6000 bench/gaps.mjs --only K     the trial keyed K (else every key holding K): gaps-partial.json
 //   node --max-old-space-size=6000 bench/gaps.mjs --no-trials  the ledger only: gaps-partial.json
+//   --wait-free-ram-mb N   each trial waits for N MB free instead of FREE_RAM_MB (16384), for a host
+//                          with less RAM than the rule assumes (bench/gate.mjs has the same flag);
+//                          the value is printed and written to the verdict (board 17 builder (the organism's item))
+//   --trial-ram-mb N       each trial's working-set cap instead of its ledger's (6000 MB), so on a host where this
+//                          whole run sits under one smaller budget a heavy trial is killed and recorded alone, not
+//                          the run; printed and written to the verdict (board 17 builder (the organism's item))
 import { readdirSync, readFileSync, statSync, existsSync, mkdirSync, mkdtempSync, rmSync, copyFileSync, writeFileSync, statfsSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { budget } from '../tools/budget.mjs';
-import { buildLedger, writeLedger, summarize, PARSERS, REQUIRED_KINDS, KINDS, AUTHOR, TRIAL_MAX_MINUTES } from '../self/gaps.mjs';
+import { buildLedger, writeLedger, summarize, PARSERS, REQUIRED_KINDS, KINDS, AUTHOR, TRIAL_MAX_MINUTES, barLines, measureOf, classifyBar, RAM_MB } from '../self/gaps.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(HERE, '..');
@@ -40,6 +59,7 @@ export const FREE_RAM_MB = 16384;
 const MB = 1024 * 1024;
 const r2 = (x) => Math.round(x * 100) / 100;
 const r3 = (x) => Math.round(x * 1000) / 1000;
+const r6 = (x) => Math.round(x * 1e6) / 1e6;
 const num = (x) => (typeof x === 'number' && Number.isFinite(x) ? x : null);
 
 function dirBytes(dir) {
@@ -141,7 +161,7 @@ export function readMetric(trial, { cwd, stdout, startMs }) {
  * Test-file trials go through bench/gate.mjs runTestFile, so they are measured as the gate measures them.
  * @returns {Promise<object>} ran, completed, seconds, metric, printedMetric, failed, firstLine, ...
  */
-export async function runTrial(trial, { root = ROOT, tmpRoot = os.tmpdir(), freeRamMb = FREE_RAM_MB, waitMaxS = 1800, dry = false, log = () => {} } = {}) {
+export async function runTrial(trial, { root = ROOT, tmpRoot = os.tmpdir(), freeRamMb = FREE_RAM_MB, waitMaxS = 1800, dry = false, log = () => {}, ramMb = null } = {}) {
   const run = {
     key: trial.key, dry, where: trial.where, ran: false, completed: false, outcome: null, exitCode: null, seconds: null, waitedS: null,
     metric: null, metricName: null, metricFrom: null, printedMetric: false, failed: false, firstLine: null, peakRssMb: null,
@@ -153,7 +173,7 @@ export async function runTrial(trial, { root = ROOT, tmpRoot = os.tmpdir(), free
 
   if (trial.runner === 'test' && !dry) {
     const gate = await import(pathToFileURL(path.join(HERE, 'gate.mjs')).href);
-    const caps = { ...gate.GATE_CAPS, timeoutMs: Math.round(minutes * 60_000), waitFreeRamMb: null };
+    const caps = { ...gate.GATE_CAPS, timeoutMs: Math.round(minutes * 60_000), waitFreeRamMb: null, ...(ramMb ? { ramMb } : {}) };
     const file = trial.argv[trial.argv.length - 1];
     const { row, out } = await gate.runTestFile(file, { root, caps });
     const b = row.budget || {};
@@ -195,7 +215,7 @@ export async function runTrial(trial, { root = ROOT, tmpRoot = os.tmpdir(), free
     const ac = new AbortController();
     const startMs = Date.now();
     const rec = await budget('node', args, {
-      ramMb: trial.ramMb, diskMb: Math.ceil(baseMb) + trial.diskMb, dir: base, intervalMs: 1000, statusMs: 3_600_000,
+      ramMb: ramMb || trial.ramMb, diskMb: Math.ceil(baseMb) + trial.diskMb, dir: base, intervalMs: 1000, statusMs: 3_600_000,
       record: false, cwd, stdio: ['ignore', 'pipe', 'pipe'], env, signal: ac.signal,
       log: (line) => { budgetLines.push(line); },
       onSpawn: (child) => {
@@ -242,14 +262,53 @@ export async function runTrial(trial, { root = ROOT, tmpRoot = os.tmpdir(), free
   return run;
 }
 
+// ------------------------------------------------------------------ the number (board 17 builder (the organism's item))
+/** The header's rule is "every": the bar is a share of exactly 1. */
+export const SHARE_BAR = 1;
+
+/**
+ * THE NUMBER BESIDE THE BAR. Of the gap lines the bar covers (self/gaps.mjs barLines; for a narrow
+ * run, keys: the lines whose trial key was selected), the share that meet it: the line carries a
+ * trial, and that trial either needs a model (the header asks such a line only to carry its
+ * command) or printed its metric in this run with the trials' wall clock (run.endS, measured from
+ * the first trial's start) still under wallS at its end. share is null when no model-free trial
+ * ran: nothing was measured. trialShare is the half a run without trials sees (lines carrying one).
+ * @returns {{share: number|null, covered: number, meeting: number, carrying: number, trialShare: number|null, notMeeting: {id: string, why: string}[]}}
+ */
+export function barShare(lines, runs, { wallS = BAR_WALL_S, keys = null } = {}) {
+  const byKey = new Map(runs.map((r) => [r.key, r]));
+  const covered = keys ? lines.filter((l) => l.trial && keys.has(l.trial.key)) : barLines(lines);
+  const notMeeting = [];
+  let meeting = 0;
+  for (const l of covered) {
+    const r = l.trial ? byKey.get(l.trial.key) : null;
+    let why = null;
+    if (!l.trial) why = 'no trial';
+    else if (l.trial.needsModel) why = null;
+    else if (!r) why = 'its trial ' + l.trial.key + ' did not run';
+    else if (!r.printedMetric) why = 'its trial ' + l.trial.key + ' failed: ' + (r.firstLine || r.outcome);
+    else if (!(num(r.endS) !== null && r.endS < wallS)) why = 'its trial ' + l.trial.key + ' printed at ' + r.endS + ' s of trial wall, past ' + wallS + ' s';
+    if (why) notMeeting.push({ id: l.id, why }); else meeting++;
+  }
+  const carrying = covered.filter((l) => l.trial).length;
+  return {
+    share: runs.length > 0 && covered.length > 0 ? r6(meeting / covered.length) : null,
+    covered: covered.length, meeting, carrying,
+    trialShare: covered.length ? r6(carrying / covered.length) : null,
+    notMeeting,
+  };
+}
+
 // ------------------------------------------------------------------ the run
 function parseArgs(argv) {
-  const o = { only: null, trials: true, tmpRoot: os.tmpdir() };
+  const o = { only: null, trials: true, tmpRoot: os.tmpdir(), tmpRootGiven: false, freeRamMb: FREE_RAM_MB, trialRamMb: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--only') o.only = argv[++i];
     else if (a === '--no-trials') o.trials = false;
-    else if (a === '--tmp-root') o.tmpRoot = path.resolve(argv[++i]);
+    else if (a === '--tmp-root') { o.tmpRoot = path.resolve(argv[++i]); o.tmpRootGiven = true; }
+    else if (a === '--wait-free-ram-mb') { o.freeRamMb = Number(argv[++i]); if (!(o.freeRamMb >= 0)) throw new Error('bench/gaps.mjs: --wait-free-ram-mb needs a number of MB'); }
+    else if (a === '--trial-ram-mb') { o.trialRamMb = Number(argv[++i]); if (!(o.trialRamMb > 0)) throw new Error('bench/gaps.mjs: --trial-ram-mb needs a number of MB'); }
     else throw new Error('bench/gaps.mjs: unknown flag ' + a);
   }
   return o;
@@ -260,7 +319,7 @@ async function main() {
   const t0 = Date.now();
   const say = (s) => process.stdout.write(s + '\n');
   const freeDiskStart = freeDiskMb(o.tmpRoot);
-  say('gaps bench (' + AUTHOR + '): free RAM ' + Math.round(os.freemem() / MB) + ' MB, free disk on the temp volume ' + freeDiskStart + ' MB');
+  say('gaps bench (' + AUTHOR + '): free RAM ' + Math.round(os.freemem() / MB) + ' MB, free disk on the temp volume ' + freeDiskStart + ' MB; each trial waits for ' + o.freeRamMb + ' MB free' + (o.freeRamMb !== FREE_RAM_MB ? ' (--wait-free-ram-mb; the rule assumes ' + FREE_RAM_MB + ')' : '') + (o.trialRamMb ? '; each trial capped at ' + o.trialRamMb + ' MB working set (--trial-ram-mb; the ledger says ' + RAM_MB + ')' : ''));
 
   const { lines, report } = await buildLedger();
   const again = await buildLedger();
@@ -268,6 +327,9 @@ async function main() {
   const differ = [...ids].filter((x) => !ids2.has(x)).length + [...ids2].filter((x) => !ids.has(x)).length;
   const w = writeLedger(lines);
   const s = summarize(lines);
+  // CONTROL (board 17 builder (the organism's item)): what the ledger read from the gaps.json on disk before this run
+  const before = lines.find((l) => l.id === 'missed:gaps.json') || null;
+  say('control   the ledger on the gaps.json before this run: ' + (before ? 'missed, measured ' + before.measured + ', bar ' + before.bar + ', distance ' + before.distance + ' (' + before.why + ')' : 'no missed line (met, absent or undecidable)'));
   say('gaps      ' + s.total + ' total: ' + KINDS.map((k) => k + ' ' + s.byKind[k]).join(', '));
   say('trials    ' + s.withTrial + ' gaps with a trial, ' + s.withoutTrial + ' without; of kinds ' + REQUIRED_KINDS.join(', ') + ': ' + s.requiredWithoutTrial.length + ' without a trial' + (s.requiredWithoutTrial.length ? ' (' + s.requiredWithoutTrial.join(', ') + ')' : ''));
   say('ledger    ' + w.file + ' rewritten (' + w.lines + ' lines' + (w.previous ? ', previous kept as ' + w.previous : '') + ', ' + w.kept.length + ' dated kept' + (w.removed.length ? ', removed ' + w.removed.join(' ') : '') + '); built twice: ' + (differ ? differ + ' ids differ (the tree is live)' : 'identical ids'));
@@ -290,10 +352,11 @@ async function main() {
   const runs = [], dries = [], unproved = [];
   let trialWallMs = 0, peakRssMb = 0;
   if (o.trials) {
-    say('run       ' + free.length + ' model-free trials, sequentially, each under tools/budget.mjs at ' + free[0]?.trial.ramMb + ' MB');
+    say('run       ' + free.length + ' model-free trials, sequentially, each under tools/budget.mjs at ' + (o.trialRamMb || free[0]?.trial.ramMb) + ' MB');
     const tRun = Date.now();
     for (const x of free) {
-      const r = await runTrial(x.trial, { tmpRoot: o.tmpRoot, log: (l) => say('          ' + l) });
+      const r = await runTrial(x.trial, { tmpRoot: o.tmpRoot, freeRamMb: o.freeRamMb, ramMb: o.trialRamMb, log: (l) => say('          ' + l) });
+      r.endS = r2((Date.now() - tRun) / 1000);
       r.gaps = x.gaps; r.recorded = x.recorded; r.unit = x.unit;
       runs.push(r);
       peakRssMb = Math.max(peakRssMb, r.peakRssMb || 0);
@@ -302,7 +365,7 @@ async function main() {
     trialWallMs = Date.now() - tRun;
     for (const x of model) {
       if (!x.trial.dry) { unproved.push(x.trial.key); continue; }
-      const r = await runTrial(x.trial, { tmpRoot: o.tmpRoot, dry: true, log: (l) => say('          ' + l) });
+      const r = await runTrial(x.trial, { tmpRoot: o.tmpRoot, freeRamMb: o.freeRamMb, ramMb: o.trialRamMb, dry: true, log: (l) => say('          ' + l) });
       r.gaps = x.gaps;
       dries.push(r);
       peakRssMb = Math.max(peakRssMb, r.peakRssMb || 0);
@@ -314,7 +377,7 @@ async function main() {
   const fastest = runs.filter((r) => r.printedMetric && r.where === 'copy').sort((a, b) => a.seconds - b.seconds)[0];
   if (fastest) {
     const x = trials.get(fastest.key);
-    const r = await runTrial(x.trial, { tmpRoot: o.tmpRoot });
+    const r = await runTrial(x.trial, { tmpRoot: o.tmpRoot, freeRamMb: o.freeRamMb, ramMb: o.trialRamMb });
     noise = { key: fastest.key, metric: [fastest.metric, r.metric], seconds: [fastest.seconds, r.seconds], metricDelta: r.metric !== null ? r3(r.metric - fastest.metric) : null, secondsDelta: r.seconds !== null ? r3(r.seconds - fastest.seconds) : null, copyGone: r.copyGone };
     say('noise     ' + fastest.key + ' run twice: ' + fastest.metricName + ' ' + fastest.metric + ' then ' + r.metric + ', wall ' + fastest.seconds + ' s then ' + r.seconds + ' s (not counted in the bar)');
   }
@@ -334,22 +397,32 @@ async function main() {
   peakRssMb = Math.max(peakRssMb, ownPeak);
 
   const narrow = !!o.only || !o.trials;
-  const barMet = !narrow && s.requiredWithoutTrial.length === 0 && runs.length > 0 && printed === runs.length && trialWallMs < BAR_WALL_S * 1000;
+  // THE NUMBER and barMet from it alone (board 17 builder (the organism's item))
+  const sh = barShare(lines, runs, { keys: o.only ? new Set(all.map((x) => x.trial.key)) : null });
+  const barMet = !narrow && sh.share !== null && sh.share >= SHARE_BAR;
+  say('number    share ' + sh.share + ' against a bar of ' + SHARE_BAR + ': ' + sh.meeting + ' of ' + sh.covered + ' gap lines the bar covers meet it (' + sh.carrying + ' carry a trial, trialShare ' + sh.trialShare + ')');
+  for (const m of sh.notMeeting) say('short     ' + m.id + ': ' + m.why);
   const statement = 'The gap ledger (self/gaps.mjs) read ' + report.verdicts.read + ' verdict files (' + report.verdicts.barFiles + ' bars: ' + report.verdicts.met.length + ' met, ' + report.verdicts.missed.length + ' missed, ' + report.verdicts.undecidable.length + ' undecidable), ladder.json, gate.json, ' + report.notes.files + ' notes and ' + report.census.seeds + ' emitted seeds, and wrote ' + s.total + ' gaps to state/self/gaps.jsonl: '
     + KINDS.map((k) => s.byKind[k] + ' ' + k).join(', ') + '. ' + s.withTrial + ' carry a bounded trial and ' + s.withoutTrial + ' do not (' + (noTrial.length - noTrialNamed.length) + ' of those are OPEN lines, judged by fix evidence); of the kinds the bar requires (' + REQUIRED_KINDS.join(', ') + ') ' + s.requiredWithoutTrial.length + ' lack one. '
     + (o.trials ? runs.length + ' distinct model-free trials ran once each, sequentially, each through tools/budget.mjs: ' + completed + ' ran to completion, ' + printed + ' printed their metric, ' + failed.length + ' failed' + (failed.length ? ' (' + failed.map((f) => f.key).join(', ') + ')' : '') + ', in ' + r2(trialWallMs / 1000) + ' s of wall clock against a bar of ' + BAR_WALL_S + ' s. ' + model.length + ' trials need a model and none was run: ' + dries.filter((d) => d.printedMetric).length + ' proved by a socket-free dry form, ' + unproved.length + ' unproved (' + unproved.join(', ') + '). ' : 'No trial ran (--no-trials). ')
     + (noise ? 'Run-to-run noise on ' + noise.key + ': metric ' + noise.metric.join(' then ') + ', wall ' + noise.seconds.join(' s then ') + ' s. ' : '')
-    + 'Bar ' + (barMet ? 'MET' : 'NOT MET') + (narrow ? ' (a narrow run is never the bar)' : '') + ': every gap of kinds missed, ladder, gate red and gate slow has a trial command, and every model-free trial printed its metric in one run under ' + TRIAL_MAX_MINUTES + ' minutes.';
+    + 'The number beside the bar: of the ' + sh.covered + ' gap lines the bar covers (every line of the required kinds and every line carrying a model-free trial), ' + sh.meeting + ' meet it (a trial carried; a model-free trial printed its metric before the trials passed ' + BAR_WALL_S + ' s), a share of ' + sh.share + ' against a bar of ' + SHARE_BAR + '; ' + sh.carrying + ' carry a trial (trialShare ' + sh.trialShare + ')' + (sh.notMeeting.length ? '; short: ' + sh.notMeeting.map((m) => m.id).join(', ') : '') + '. '
+    + 'Bar ' + (barMet ? 'MET' : 'NOT MET') + (narrow ? ' (a narrow run is never the bar)' : '') + ': every gap of kinds missed, ladder, gate red and gate slow has a trial command, and every model-free trial printed its metric in one run under ' + TRIAL_MAX_MINUTES + ' minutes, so the share must be ' + SHARE_BAR + '.';
+  const heap = process.execArgv.find((a) => a.startsWith('--max-old-space-size'));
   const verdict = {
     name: 'gaps', item: 'gaps', board: 14, by: AUTHOR, at: new Date().toISOString(),
-    command: 'node --max-old-space-size=6000 bench/gaps.mjs' + (o.only ? ' --only ' + o.only : '') + (o.trials ? '' : ' --no-trials'),
+    command: 'node ' + (heap ? heap + ' ' : '') + 'bench/gaps.mjs' + (o.only ? ' --only ' + o.only : '') + (o.trials ? '' : ' --no-trials') + (o.freeRamMb !== FREE_RAM_MB ? ' --wait-free-ram-mb ' + o.freeRamMb : '') + (o.trialRamMb ? ' --trial-ram-mb ' + o.trialRamMb : '') + (o.tmpRootGiven ? ' --tmp-root ' + o.tmpRoot : ''),
     node: process.version, isTheBar: !narrow, barMet,
     bar: {
       rule: 'every gap of kinds ' + REQUIRED_KINDS.join(', ') + ' has a trial command, and every model-free trial printed its metric in one run under ' + TRIAL_MAX_MINUTES + ' minutes',
+      number: 'share: of the gap lines the bar covers (self/gaps.mjs barLines: every line of the required kinds and every line carrying a model-free trial), the share that meet it (a trial carried; a model-free trial printed its metric in this run before the trials passed limitS of wall clock); barMet is share >= shareBar',
+      share: sh.share, shareBar: SHARE_BAR, better: 'higher', coveredLines: sh.covered, meetingLines: sh.meeting, carryingTrial: sh.carrying, trialShare: sh.trialShare, notMeeting: sh.notMeeting,
       requiredWithoutTrial: s.requiredWithoutTrial, modelFreeTrials: runs.length, printedMetric: printed, trialWallS: r2(trialWallMs / 1000), limitS: BAR_WALL_S, met: barMet,
     },
     split: {
-      development: 'test/gaps.test.mjs: five planted verdict files (met, missed, undecidable, partial only, bar object), a planted ladder with not measured fields, a trial past its minutes, nine dated ledgers, all under the OS temp dir',
+      development: 'test/gaps.test.mjs: five planted verdict files (met, missed, undecidable, partial only, bar object), a planted ladder with not measured fields, a trial past its minutes, nine dated ledgers, planted gaps.json files with and without bar.share, planted lines and runs for barShare, all under the OS temp dir',
+      contaminated: false,
+      contaminationNote: 'the share is computed from this run\'s own trials over the live ledger; no line, trial or bound was chosen by looking at this run',
       heldOut: 'the live tree as it stood at this run: every file under bench/verdicts/, ladder.json, gate.json, notes/, the census records and docs/ARCHITECTURE.md; nothing in self/gaps.mjs was tuned to it',
     },
     statement,
@@ -357,14 +430,16 @@ async function main() {
     verdicts: { read: report.verdicts.read, barFiles: report.verdicts.barFiles, met: report.verdicts.met, missed: report.verdicts.missed, undecidable: report.verdicts.undecidable, noTopLevelBarMet: report.verdicts.noTopLevelBarMet, unparseable: report.verdicts.unparseable, partialOnly: report.verdicts.partialOnly, decidedBy: report.verdicts.fields },
     ladderRungs: report.ladder.rungs,
     census: report.census,
-    trials: runs, dry: dries, unproved, noise,
+    trials: runs, dry: dries, unproved, noise, waitFreeRamMb: o.freeRamMb, trialRamMb: o.trialRamMb || RAM_MB,
     disk: { freeMbBefore: freeDiskStart, freeMbAfter: freeDiskEnd, leftoverDirs: leftover },
     peakRssMb, modelCalls: 0, wallS: r2((Date.now() - t0) / 1000),
     models: 'none: no trial that needs a model ran, and each dry proof is a documented flag that opens no socket',
   };
   const out = path.join(ROOT, 'bench', 'verdicts', narrow ? 'gaps-partial.json' : 'gaps.json');
   writeFileSync(out, JSON.stringify(verdict, null, 2) + '\n');
-  say('bar       ' + (barMet ? 'MET' : 'NOT MET') + ': required gaps without a trial ' + s.requiredWithoutTrial.length + ', model-free trials printing a metric ' + printed + ' of ' + runs.length + ', trial wall ' + r2(trialWallMs / 1000) + ' s of ' + BAR_WALL_S);
+  const after = measureOf('gaps', verdict);
+  say('control   the ledger on the gaps.json this run wrote: ' + classifyBar(verdict).state + ', measured ' + after.measured + ', bar ' + after.bar + ', distance ' + after.distance + ' (' + after.from + '); before it: ' + (before ? 'measured ' + before.measured + ', distance ' + before.distance : 'no missed line'));
+  say('bar       ' + (barMet ? 'MET' : 'NOT MET') + ': share ' + sh.share + ' of ' + SHARE_BAR + '; required gaps without a trial ' + s.requiredWithoutTrial.length + ', model-free trials printing a metric ' + printed + ' of ' + runs.length + ', trial wall ' + r2(trialWallMs / 1000) + ' s of ' + BAR_WALL_S);
   say('peak      ' + peakRssMb + ' MB (the largest working set of any trial tree, or this process); model calls 0; wall ' + verdict.wallS + ' s');
   say('verdict   ' + path.relative(ROOT, out).replaceAll('\\', '/') + ' (isTheBar ' + verdict.isTheBar + ', barMet ' + barMet + ')');
 }

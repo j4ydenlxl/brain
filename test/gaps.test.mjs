@@ -1,11 +1,16 @@
 // test/gaps.test.mjs: the gap ledger and its trial runner (board 14 builder). Every tree is planted
 // under the OS temp dir and deleted; no model is called and the real tree is never written.
+// The gap bar's own number (board 17 builder (the organism's item)): a planted gaps.json with
+// bar.share is read by the ledger with a number and a distance, the same file without it is the
+// control, barShare counts the covered lines that meet the bar, and --dry prints trialShare; the
+// hisData, autonomy and handoff rows carry a trial that grades the row alone (self/gaps.mjs --row).
 import { test } from 'node:test';
+import { spawnSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync, rmSync, existsSync, utimesSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { buildLedger, writeLedger, readLedger, classifyBar, summarize, measureOf, LEDGER_REL , rowTrial } from '../self/gaps.mjs';
-import { runTrial } from '../bench/gaps.mjs';
+import { buildLedger, writeLedger, readLedger, classifyBar, summarize, measureOf, LEDGER_REL , rowTrial, barLines, trialShareOf, PARSERS, ROOT, rowAlone, ROW_ALONE } from '../self/gaps.mjs';
+import { runTrial, barShare, SHARE_BAR } from '../bench/gaps.mjs';
 import { plantTree, put, EXPECTED, BAROBJ_MEASURE, plantedLadder, plantedGate } from './gaps-plant.mjs';
 
 const pick = (l) => ({ id: l.id, kind: l.kind, measured: l.measured, bar: l.bar, distance: l.distance, subsystem: l.subsystem });
@@ -139,5 +144,141 @@ test('the rewrite keeps at most 7 dated files', () => {
     writeFileSync(path.join(dir, 'gaps.jsonl'), '{"id":"x"}\nnot json\n');
     assert.deepEqual(readLedger(root), { lines: [{ id: 'x' }], bad: 1, found: true });
     assert.ok(!existsSync(path.join(dir, 'gaps.jsonl.tmp')));
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+// ------------------------------------------------------------------ board 17 builder (the organism's item)
+const gapsVerdict = (bar, barMet) => ({ at: '2026-09-26T12:00:00.000Z', node: 'v24', command: 'node --max-old-space-size=4000 bench/gaps.mjs', isTheBar: true, barMet, split: { development: 'd', heldOut: 'h', contaminated: false }, statement: 's', bar });
+
+test('a planted gaps.json with bar.share is read by the ledger with a number and a distance; the old shape is the control', async () => {
+  const root = plantTree({ verdicts: { 'gaps.json': gapsVerdict({ share: 0.75, shareBar: 1, coveredLines: 4, meetingLines: 3, met: false }, false) } });
+  try {
+    const { lines } = await buildLedger({ root });
+    const l = lines.find((x) => x.id === 'missed:gaps.json');
+    assert.ok(l, 'a missed gaps.json is one ledger line');
+    assert.deepEqual([l.measured, l.bar, l.distance, l.better], [0.75, 1, 0.25, 'higher']);
+    assert.match(l.unit, /share of the gap lines/);
+    assert.match(l.why, /decided by barMet; measured bar\.share, bar bar\.shareBar/);
+    assert.equal(l.trial.key, 'gaps', 'its trial is self/gaps.mjs --dry');
+    assert.equal(l.trial.parser, 'gapsDry');
+  } finally { rmSync(root, { recursive: true, force: true }); }
+  const control = plantTree({ verdicts: { 'gaps.json': gapsVerdict({ requiredWithoutTrial: ['missed:operators.json'], modelFreeTrials: 35, printedMetric: 35, trialWallS: 397.99, limitS: 600, met: false }, false) } });
+  try {
+    const { lines } = await buildLedger({ root: control });
+    const l = lines.find((x) => x.id === 'missed:gaps.json');
+    assert.deepEqual([l.measured, l.bar, l.distance], [null, null, null], 'without bar.share no registered field holds a number');
+    assert.match(l.why, /no registered field holds a number beside this bar/);
+  } finally { rmSync(control, { recursive: true, force: true }); }
+  const met = plantTree({ verdicts: { 'gaps.json': gapsVerdict({ share: 1, shareBar: 1, met: true }, true) } });
+  try {
+    const { lines, report } = await buildLedger({ root: met });
+    assert.equal(lines.find((x) => x.id === 'missed:gaps.json'), undefined, 'a met gaps.json is no gap');
+    assert.ok(report.verdicts.met.includes('gaps.json'));
+  } finally { rmSync(met, { recursive: true, force: true }); }
+  const m = measureOf('gaps', gapsVerdict({ share: 0.5, shareBar: 1 }, false));
+  assert.deepEqual([m.measured, m.bar, m.distance], [0.5, 1, 0.5]);
+});
+
+test('a missed contamination.json shares the CONTAMINATION row trial', async () => {
+  const root = plantTree({ verdicts: { 'contamination.json': { ...gapsVerdict({ rule: 'no cause' }, false), command: 'node tools/contamination-row.mjs' } } });
+  try {
+    const { lines } = await buildLedger({ root });
+    const l = lines.find((x) => x.id === 'missed:contamination.json');
+    assert.equal(l.trial.key, 'row:contamination');
+    assert.deepEqual(l.trial.argv.slice(1), ['bench/gate.mjs', '--contamination']);
+    assert.equal(l.trial.needsModel, false);
+    assert.deepEqual(summarize(lines).requiredWithoutTrial, [], 'the required gap carries a trial');
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('barShare: a covered line meets the bar only with a trial that printed inside the bound; the share is the bar\'s number', () => {
+  const t = (key, needsModel = false) => ({ key, needsModel });
+  const lines = [
+    { id: 'missed:a.json', kind: 'missed', trial: t('ta') },
+    { id: 'missed:b.json', kind: 'missed', trial: null },
+    { id: 'ladder:x', kind: 'ladder', trial: t('model', true) },
+    { id: 'gate-slow:test/s.test.mjs', kind: 'gate slow', trial: t('tb') },
+    { id: 'dead:organism/g', kind: 'dead share', trial: t('tc') },
+    { id: 'open:notes/x.md#1', kind: 'open', trial: null },
+    { id: 'unreadable:u.json', kind: 'unreadable bar', trial: null },
+  ];
+  assert.deepEqual(barLines(lines).map((l) => l.id), ['missed:a.json', 'missed:b.json', 'ladder:x', 'gate-slow:test/s.test.mjs', 'dead:organism/g'], 'the required kinds and every model-free trial line; open and unreadable lines are not covered');
+  assert.equal(trialShareOf(lines), 0.8);
+  const runs = [
+    { key: 'ta', printedMetric: true, endS: 10 },
+    { key: 'tb', printedMetric: false, firstLine: 'exit 1: boom', endS: 20 },
+    { key: 'tc', printedMetric: true, endS: 700 },
+  ];
+  const sh = barShare(lines, runs, { wallS: 600 });
+  assert.deepEqual([sh.share, sh.covered, sh.meeting, sh.carrying, sh.trialShare], [0.4, 5, 2, 4, 0.8]);
+  assert.deepEqual(sh.notMeeting.map((m) => m.id), ['missed:b.json', 'gate-slow:test/s.test.mjs', 'dead:organism/g']);
+  assert.match(sh.notMeeting[0].why, /^no trial$/);
+  assert.match(sh.notMeeting[1].why, /failed: exit 1: boom/);
+  assert.match(sh.notMeeting[2].why, /printed at 700 s of trial wall, past 600 s/);
+  assert.ok(!(sh.share >= SHARE_BAR), 'short of the bar');
+  const fixed = lines.map((l) => (l.id === 'missed:b.json' ? { ...l, trial: t('ta') } : l));
+  const all = barShare(fixed, runs.map((r) => ({ ...r, printedMetric: true, endS: Math.min(r.endS, 599) })), { wallS: 600 });
+  assert.equal(all.share, 1);
+  assert.ok(all.share >= SHARE_BAR, 'every covered line meets it: the bar is met');
+  assert.equal(barShare(lines, []).share, null, 'no model-free trial ran: nothing measured, never a 0');
+  assert.deepEqual([barShare(lines, runs, { keys: new Set(['ta']) }).share, barShare(lines, runs, { keys: new Set(['ta']) }).covered], [1, 1], 'a narrow run covers the lines of its own trials');
+});
+
+test('the gaps trial reads trialShare: self/gaps.mjs --dry prints it and writes nothing', () => {
+  assert.equal(PARSERS.gapsDry.read('noise\n{"trialShare":0.8,"requiredWithoutTrial":5}\n'), 0.8);
+  assert.equal(PARSERS.gapsDry.read('not json'), null);
+  const r = spawnSync(process.execPath, ['self/gaps.mjs', '--dry'], { cwd: ROOT, encoding: 'utf8', timeout: 60_000 });
+  assert.equal(r.status, 0, r.stderr);
+  const j = JSON.parse(r.stdout.trim().split(/\r?\n/).pop());
+  assert.ok(j.barLines > 0);
+  assert.ok(j.trialShare > 0 && j.trialShare <= 1, 'a share: ' + j.trialShare);
+  assert.equal(PARSERS.gapsDry.read(r.stdout), j.trialShare);
+});
+
+test('a red hisData, autonomy or handoff row carries a trial that grades it alone; the planted fixture flips hisData', async () => {
+  const gate = { ...plantedGate(), rows: { hisData: { ok: false, line: 'HIS DATA RED' }, autonomy: { ok: false, line: 'AUTONOMY RED' }, handoff: { ok: false, line: 'HANDOFF RED' }, budget: { ok: false, line: 'BUDGET RED' } } };
+  const root = plantTree({ gate });
+  try {
+    const { lines } = await buildLedger({ root });
+    for (const name of ROW_ALONE) {
+      const l = lines.find((x) => x.id === 'gate-red:row:' + name);
+      assert.equal(l.trial.key, 'row:' + name);
+      assert.deepEqual(l.trial.argv, ['self/gaps.mjs', '--row', name]);
+      assert.equal(l.trial.parser, 'row');
+      assert.match(l.why, /graded alone by self\/gaps\.mjs --row /);
+    }
+    const b = lines.find((x) => x.id === 'gate-red:row:budget');
+    assert.equal(b.trial, null, 'the BUDGET row is computed over the test run: no bounded form, the control');
+    assert.match(b.why, /no bounded form/);
+    put(root, 'bench/fixtures/set/data.json', '{"x":1}\n');
+    const red = await rowAlone('hisData', { root });
+    assert.deepEqual([red.row, red.ok, red.metric], ['hisData', false, 1]);
+    put(root, 'bench/fixtures/SOURCES.md', '# sources\n\n- set/data.json: planted by test/gaps.test.mjs, MIT\n');
+    const green = await rowAlone('hisData', { root });
+    assert.deepEqual([green.ok, green.metric], [true, 0], green.line);
+    await assert.rejects(() => rowAlone('budget', { root }), /no row graded alone is named budget/);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+  const out = '{"row":"autonomy","ok":false,"rules":true,"graded":true,"metric":2}\nAUTONOMY RED: two causes\n';
+  assert.equal(PARSERS.row.read(out), 2);
+  assert.equal(PARSERS.row.read('AUTONOMY RED only'), null);
+  const r = spawnSync(process.execPath, ['self/gaps.mjs', '--row', 'hisData'], { cwd: ROOT, encoding: 'utf8', timeout: 60_000 });
+  const j = JSON.parse(r.stdout.split(/\r?\n/)[0]);
+  assert.equal(j.row, 'hisData');
+  assert.equal(r.status, j.ok || !j.rules ? 0 : 1, 'the exit code is the row');
+  assert.equal(PARSERS.row.read(r.stdout), j.metric);
+});
+
+test('--trial-ram-mb: a trial capped under its ledger cap is killed at the smaller cap and recorded alone; its ledger cap is the control', async () => {
+  const root = plantTree({ verdicts: {} });
+  try {
+    const eat = 'const a = []; for (let i = 0; i < 40; i++) a.push(Buffer.alloc(8 * 1024 * 1024, 1)); setTimeout(() => process.stdout.write(String(a.length)), 3500);';
+    const trial = { key: 'eater', argv: ['-e', eat], minutes: 0.5, needsModel: false, where: 'tree', writes: [], parser: null, runner: 'budget', ramMb: 6000, diskMb: 50 };
+    const capped = await runTrial(trial, { root, freeRamMb: 0, ramMb: 150 });
+    assert.equal(capped.outcome, 'killed', 'killed at the 150 MB cap: ' + capped.firstLine);
+    assert.equal(capped.failed, true);
+    assert.match(capped.firstLine, /BUDGET KILLED/);
+    const control = await runTrial(trial, { root, freeRamMb: 0 });
+    assert.equal(control.outcome, 'exit', 'the ledger cap of 6000 MB lets the same trial finish');
+    assert.equal(control.exitCode, 0);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
