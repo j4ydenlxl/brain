@@ -55,7 +55,7 @@ footer { color: var(--dim); margin-top: 44px; padding-top: 14px; border-top: 1px
 
 <header class="top">
   <h1>DILATION <span class="dim">/</span> BRAIN <span class="dim">/</span> FINDINGS</h1>
-  <div class="dim"><a href="../">back to the organism</a> &middot; <a href="../ladder/">the ladder</a> &middot; generated <span class="v" data-src="gen:generatedAt">2026-09-26T02:00:55.166Z</span></div>
+  <div class="dim"><a href="../">back to the organism</a> &middot; <a href="../ladder/">the ladder</a> &middot; generated <span class="v" data-src="gen:generatedAt">2026-09-26T05:41:19.428Z</span></div>
 </header>
 
 <section class="intro">
@@ -67,7 +67,7 @@ footer { color: var(--dim); margin-top: 44px; padding-top: 14px; border-top: 1px
 <p class="lede">One card per verdict file. The command is the one that writes that verdict, the numbers are
 read out of it at generation time, and the note is the paragraph where a builder wrote it up. Nothing on
 this page is typed by hand: the generator refuses to emit a number it did not read.</p>
-<p class="lede"><span class="v" data-src="gen:verdicts">101</span> verdict files read, <span class="v" data-src="gen:values">1002</span> measures on the cards, <span class="v" data-src="gen:nulls">20</span> verdicts null or negative, <span class="v" data-src="gen:skipped">74</span> unreadable. <span class="v" data-src="gen:indexed">605</span> of the shown measures are also carried in docs/NUMBERS.md, which indexes <span class="v" data-src="gen:indexRows">7763</span> rows.</p>
+<p class="lede"><span class="v" data-src="gen:verdicts">105</span> verdict files read, <span class="v" data-src="gen:values">1042</span> measures on the cards, <span class="v" data-src="gen:nulls">20</span> verdicts null or negative, <span class="v" data-src="gen:skipped">76</span> unreadable. <span class="v" data-src="gen:indexed">605</span> of the shown measures are also carried in docs/NUMBERS.md, which indexes <span class="v" data-src="gen:indexRows">7763</span> rows.</p>
 <div class="grid">
   <article class="card" id="v-act-llm">
     <div class="head"><h3 data-name="act-llm.json">act-llm</h3><span class="at" data-src="act-llm:at">2026-09-17T21:28:08.424Z</span></div>
@@ -106,14 +106,14 @@ this page is typed by hand: the generator refuses to emit a number it did not re
     <p class="note"><span class="tag">notes/mutants.md</span><q data-quoted="notes/mutants.md">Unmutated baselines in this sweep: act-web 16 pass / 0 fail, act-shell 19 / 0, act-llm 15 / 0, simd 19 / 0, self 30 / 0, epochs 30 / 0. The epochs baseline was 29 pass / 1 fail in the 22:38 sweep (genome: the default genome is valid and carries every region, owned by another builder); that test passes now, so this</q> <span class="dim">...</span></p>
   </article>
   <article class="card" id="v-act-web">
-    <div class="head"><h3 data-name="act-web.json">act-web</h3><span class="at" data-src="act-web:at">2026-09-26T01:52:46.721Z</span></div>
+    <div class="head"><h3 data-name="act-web.json">act-web</h3><span class="at" data-src="act-web:at">2026-09-26T05:25:55.983Z</span></div>
     <p class="cmd">printed by <code data-cmd="file|test/act-web.test.mjs">node --test test/act-web.test.mjs</code></p>
     <div class="rule"></div>
     <div class="nums">
       <div class="row"><span class="k" data-path="act-web:refusals.length">refusals.length</span><span class="v" data-src="act-web:refusals.length">12</span></div>
       <div class="row"><span class="k" data-path="act-web:fixture.page.status">fixture.page.status</span><span class="v" data-src="act-web:fixture.page.status">200</span></div>
       <div class="row"><span class="k" data-path="act-web:fixture.page.bytes">fixture.page.bytes</span><span class="v" data-src="act-web:fixture.page.bytes">138</span></div>
-      <div class="row"><span class="k" data-path="act-web:fixture.page.ms">fixture.page.ms</span><span class="v" data-src="act-web:fixture.page.ms">12</span></div>
+      <div class="row"><span class="k" data-path="act-web:fixture.page.ms">fixture.page.ms</span><span class="v" data-src="act-web:fixture.page.ms">11</span></div>
       <div class="row"><span class="k" data-path="act-web:fixture.truncation.bytes">fixture.truncation.bytes</span><span class="v" data-src="act-web:fixture.truncation.bytes">4096</span></div>
       <div class="row"><span class="k" data-path="act-web:fixture.ingest.ticks">fixture.ingest.ticks</span><span class="v" data-src="act-web:fixture.ingest.ticks">107</span></div>
       <div class="row"><span class="k" data-path="act-web:fixture.sense.failed">fixture.sense.failed</span><span class="v" data-src="act-web:fixture.sense.failed">0</span></div>
@@ -230,6 +230,24 @@ this page is typed by hand: the generator refuses to emit a number it did not re
       <div class="row"><span class="k" data-path="boundary:tests[0].duration_ms">tests[0].duration_ms</span><span class="v" data-src="boundary:tests[0].duration_ms">310.629</span></div>
     </div>
     <p class="note"><span class="tag">notes/ladder.md</span><q data-quoted="notes/ladder.md">BOUNDARY reads bench/verdicts/boundary.json, which node tools/boundary-audit.mjs --bar writes. It also runs the audit's own static scan of the tree now against its allowlist, which takes well under a second. It is RED when the verdict is missing (&quot;not measured&quot;), partial, or has a copied buffer at or over the cap. The rule is the audit's: copied bytes must be under the cap, and its own underCap false is RED too. It is also RED when a row was not measured, when an allowlist entry is over the cap, when the verdict's unlisted list is not empty or was never recorded, or when the scan of the tree now finds a boundary the allowlist does not name. The wire size, strings included, is printed and does not turn the row RED, because the audit reports it as context and not as its cap measure. One boundary is over the cap on the wire today: runtime/shard.mjs line 474,</q> <span class="dim">...</span></p>
+  </article>
+  <article class="card" id="v-brief">
+    <div class="head"><h3 data-name="brief.json">brief</h3><span class="at" data-src="brief:at">2026-09-26T02:40:45.586Z</span></div>
+    <p class="cmd">printed by <code data-cmd="field|brief:command">node bench/brief.mjs --tmp C:/Users/ybmic/AppData/Local/Temp/claude/C--Users-ybmic-Downloads-claudeskillsvideo-to-website/deda19c8-a876-4012-a921-4723af645dfc/scratchpad/brief-run</code></p>
+    <div class="rule"></div>
+    <div class="nums">
+      <div class="row"><span class="k" data-path="brief:modelCalls">modelCalls</span><span class="v" data-src="brief:modelCalls">8</span></div>
+      <div class="row"><span class="k" data-path="brief:peakRssMb">peakRssMb</span><span class="v" data-src="brief:peakRssMb">1792.68</span></div>
+      <div class="row"><span class="k" data-path="brief:gateBase.seconds">gateBase.seconds</span><span class="v" data-src="brief:gateBase.seconds">506.21</span></div>
+      <div class="row"><span class="k" data-path="brief:gateBase.peakRssMb">gateBase.peakRssMb</span><span class="v" data-src="brief:gateBase.peakRssMb">1792.68</span></div>
+      <div class="row"><span class="k" data-path="brief:gateBase.emDash">gateBase.emDash</span><span class="v" data-src="brief:gateBase.emDash">0</span></div>
+      <div class="row"><span class="k" data-path="brief:gateBase.badImports">gateBase.badImports</span><span class="v" data-src="brief:gateBase.badImports">0</span></div>
+      <div class="row"><span class="k" data-path="brief:planted.copy.bytes">planted.copy.bytes</span><span class="v" data-src="brief:planted.copy.bytes">66,143,243</span></div>
+      <div class="row"><span class="k" data-path="brief:replay.copy.bytes">replay.copy.bytes</span><span class="v" data-src="brief:replay.copy.bytes">66,143,243</span></div>
+      <div class="row"><span class="k" data-path="brief:control.copy.bytes">control.copy.bytes</span><span class="v" data-src="brief:control.copy.bytes">66,143,243</span></div>
+      <div class="row"><span class="k" data-path="brief:real.copy.bytes">real.copy.bytes</span><span class="v" data-src="brief:real.copy.bytes">66,143,243</span></div>
+    </div>
+    <p class="note"><span class="tag">its own sentence</span><q data-quoted="bench/verdicts/brief.json">planted board-planted:clamp: KEPT with 3 model call(s) (131.24 s), organism share 0.25; replay: KEPT with 0 model call(s), organism share 1; control (table off, 0 calls): refused at the budget wall; plan ask on the table: median 39.2 us (lookup 100 ns) against 1098.8 us with the table off; real board-13:exit: refused at the test wall after 5 model call(s), 11 steps printed; base gate (no item) GREEN. The planted item was seen in development (contaminated, labelled here); the real item was not.</q></p><p class="note"><span class="tag">notes/brief.md</span><q data-quoted="notes/brief.md">Planted (the clamp item, the real model, a fresh table): - PLAN exact (brief-grammar), step 9567.4 us, 0 model calls. - WRITE planted/clamp.mjs model+exact, 3/3 stated examples passed, 38.38 s. - WRITE test/planted-clamp.test.mjs model, 28.51 s; WRITE bench/planted-clamp.mjs model, 64.55 s (thinking closed at 51.76</q> <span class="dim">...</span></p>
   </article>
   <article class="card" id="v-budget">
     <div class="head"><h3 data-name="budget.json">budget</h3><span class="at" data-src="budget:at">2026-09-24T02:14:12.069Z</span></div>
@@ -589,25 +607,25 @@ this page is typed by hand: the generator refuses to emit a number it did not re
       <div class="row"><span class="k" data-path="gaps:verdicts.partialOnly.length">verdicts.partialOnly.length</span><span class="v" data-src="gaps:verdicts.partialOnly.length">8</span></div>
       <div class="row"><span class="k" data-path="gaps:dry[0].copy.ms">dry[0].copy.ms</span><span class="v" data-src="gaps:dry[0].copy.ms">298</span></div>
     </div>
-    <p class="note"><span class="tag">notes/generations.md</span><q data-quoted="notes/generations.md">Determinism, and a band that was the wrong ruler. The inherited test/planes.test.mjs (f) asserted that the best fitness of two runs of one plane agreed inside 0.02, and it went red once at 0.649256 against 0.671157 while every other quantity matched. It was not a defect in the yield: eight reruns of plane 2 at 400 ticks in a quiet process read 0.669606 to 0.671819, a range of 0.002213, and the throughput component is cell runs per WALL second, so a machine that gets busy can move it as far as it likes and no band is a fact about the search. The first replacement asserted that the other four components were identical, and it went red too, on a real finding: novelty is a SECOND wall clock term, because novelty is the distance to the elites the archive held when the generation began and which organism holds a cell is decided by a fitness that already carries throughput, so a flip inside generation 1 travels into every novelty read in generation 2. Cell 2-4-1-4 read novelty 0.46159629149296 on one run and 0.45194341828297546 on the next with prediction, task and cost identical to the last bit. What is graded now is an identity instead of a tolerance: over the 15</q> <span class="dim">...</span></p>
+    <p class="note"><span class="tag">notes/nextboard.md</span><q data-quoted="notes/nextboard.md">What it does node self/nextboard.mjs reads state/self/gaps.jsonl (plus the PROMOTED lines of generations/spread), ranks every gap by normalized distance to its bar over its trial minutes, and writes docs/boards/proposed/board-&lt;N&gt;.md (N = highest board number on disk + 1, board-15b counts as 15) in the grammar</q> <span class="dim">...</span></p>
   </article>
   <article class="card" id="v-gate">
-    <div class="head"><h3 data-name="gate.json">gate</h3><span class="at" data-src="gate:at">2026-09-26T02:00:44.956Z</span></div>
+    <div class="head"><h3 data-name="gate.json">gate</h3><span class="at" data-src="gate:at">2026-09-26T05:34:11.127Z</span></div>
     <p class="cmd">printed by <code data-cmd="field|gate:command">node bench/gate.mjs</code></p>
     <div class="rule"></div>
     <div class="nums">
-      <div class="row"><span class="k" data-path="gate:testsPassed">testsPassed</span><span class="v" data-src="gate:testsPassed">95</span></div>
-      <div class="row"><span class="k" data-path="gate:testsTotal">testsTotal</span><span class="v" data-src="gate:testsTotal">95</span></div>
-      <div class="row"><span class="k" data-path="gate:assertionsPassed">assertionsPassed</span><span class="v" data-src="gate:assertionsPassed">1209</span></div>
+      <div class="row"><span class="k" data-path="gate:testsPassed">testsPassed</span><span class="v" data-src="gate:testsPassed">98</span></div>
+      <div class="row"><span class="k" data-path="gate:testsTotal">testsTotal</span><span class="v" data-src="gate:testsTotal">98</span></div>
+      <div class="row"><span class="k" data-path="gate:assertionsPassed">assertionsPassed</span><span class="v" data-src="gate:assertionsPassed">1239</span></div>
       <div class="row"><span class="k" data-path="gate:assertionsFailed">assertionsFailed</span><span class="v" data-src="gate:assertionsFailed">0</span></div>
-      <div class="row"><span class="k" data-path="gate:lines.code">lines.code</span><span class="v" data-src="gate:lines.code">157,854</span></div>
-      <div class="row"><span class="k" data-path="gate:lines.prose">lines.prose</span><span class="v" data-src="gate:lines.prose">1,046,910</span></div>
-      <div class="row"><span class="k" data-path="gate:lines.codeFiles">lines.codeFiles</span><span class="v" data-src="gate:lines.codeFiles">471</span></div>
+      <div class="row"><span class="k" data-path="gate:lines.code">lines.code</span><span class="v" data-src="gate:lines.code">161,813</span></div>
+      <div class="row"><span class="k" data-path="gate:lines.prose">lines.prose</span><span class="v" data-src="gate:lines.prose">1,055,109</span></div>
+      <div class="row"><span class="k" data-path="gate:lines.codeFiles">lines.codeFiles</span><span class="v" data-src="gate:lines.codeFiles">479</span></div>
       <div class="row"><span class="k" data-path="gate:lines.generated">lines.generated</span><span class="v" data-src="gate:lines.generated">10,990,921</span></div>
       <div class="row"><span class="k" data-path="gate:lines.generatedFiles">lines.generatedFiles</span><span class="v" data-src="gate:lines.generatedFiles">321</span></div>
       <div class="row"><span class="k" data-path="gate:verdict">verdict</span><span class="v" data-src="gate:verdict">GREEN</span></div>
     </div>
-    <p class="note"><span class="tag">notes/ladder.md</span><q data-quoted="notes/ladder.md">BUDGET. Each test file runs as node --max-old-space-size=6000 --test &lt;file&gt; under budget() with its own TEMP directory. The caps are a 6000 MB working set for the file's whole process tree, 2048 MB on its TEMP directory, and a 600 s timeout, sampled every 1000 ms, and a file waits for 16384 MB free before it starts.</q> <span class="dim">...</span></p>
+    <p class="note"><span class="tag">notes/imagine.md</span><q data-quoted="notes/imagine.md">tasks 321 (the fixed vocabulary timed out on every one at 3000 ms in bench/verdicts/grid-evaluation.json) solved with invented primitives at the same budget: 7 of 321 (32e9702f, 45737921, 62ab2642, 9110e3c5, 929ab4e9, 9c1e755f, bf32578f) solved by the null arm (random compositions and recombinations at the same</q> <span class="dim">...</span></p>
   </article>
   <article class="card" id="v-grid-evaluation">
     <div class="head"><h3 data-name="grid-evaluation.json">grid-evaluation</h3><span class="at" data-src="grid-evaluation:at">2026-09-23T22:30:54.236Z</span></div>
@@ -838,6 +856,24 @@ this page is typed by hand: the generator refuses to emit a number it did not re
       <div class="row"><span class="k" data-path="native:semantic.declared.bytes">semantic.declared.bytes</span><span class="v" data-src="native:semantic.declared.bytes">0</span></div>
     </div>
     <p class="note"><span class="tag">notes/ns.md</span><q data-quoted="notes/ns.md">Wiki direct class, re-measured. - The table was filled from 284749 titles on 2 worker threads in 307.9 s: 281533 entries. - The direct share was 176/200 (88.0%) with the solved region on, of them 122 right; the same 176/200 with it off; 0/200 with the control table (the drawn titles left out). - Solved on and off gave</q> <span class="dim">...</span></p>
+  </article>
+  <article class="card" id="v-nextboard">
+    <div class="head"><h3 data-name="nextboard.json">nextboard</h3><span class="at" data-src="nextboard:at">2026-09-26T02:26:06.441Z</span></div>
+    <p class="cmd">printed by <code data-cmd="field|nextboard:command">node --max-old-space-size=6000 bench/nextboard.mjs</code></p>
+    <div class="rule"></div>
+    <div class="nums">
+      <div class="row"><span class="k" data-path="nextboard:modelCalls">modelCalls</span><span class="v" data-src="nextboard:modelCalls">0</span></div>
+      <div class="row"><span class="k" data-path="nextboard:seconds">seconds</span><span class="v" data-src="nextboard:seconds">2.67</span></div>
+      <div class="row"><span class="k" data-path="nextboard:board.items">board.items</span><span class="v" data-src="nextboard:board.items">8</span></div>
+      <div class="row"><span class="k" data-path="nextboard:board.bytes">board.bytes</span><span class="v" data-src="nextboard:board.bytes">12,835</span></div>
+      <div class="row"><span class="k" data-path="nextboard:loop.runs[0].ms">loop.runs[0].ms</span><span class="v" data-src="nextboard:loop.runs[0].ms">1125</span></div>
+      <div class="row"><span class="k" data-path="nextboard:loop.runs[1].ms">loop.runs[1].ms</span><span class="v" data-src="nextboard:loop.runs[1].ms">1129</span></div>
+      <div class="row"><span class="k" data-path="nextboard:heldOut[0].lines">heldOut[0].lines</span><span class="v" data-src="nextboard:heldOut[0].lines">153</span></div>
+      <div class="row"><span class="k" data-path="nextboard:heldOut[0].items">heldOut[0].items</span><span class="v" data-src="nextboard:heldOut[0].items">8</span></div>
+      <div class="row"><span class="k" data-path="nextboard:heldOut[1].lines">heldOut[1].lines</span><span class="v" data-src="nextboard:heldOut[1].lines">184</span></div>
+      <div class="row"><span class="k" data-path="nextboard:heldOut[1].items">heldOut[1].items</span><span class="v" data-src="nextboard:heldOut[1].items">8</span></div>
+    </div>
+    <p class="note"><span class="tag">notes/nextboard.md</span><q data-quoted="notes/nextboard.md">Bar (bench/nextboard.mjs, bench/verdicts/nextboard.json) Printed at 2026-09-26T02:25:01.650Z: - 3. WROTE docs/boards/proposed/board-17.md: board 17, 8 items (rewrite: ...), 12835 bytes; round trip through self/boards.mjs: ok - 2. CONTROL planted root, ledger 185 lines without docs/boards/proposed/board-17.md: board-17</q> <span class="dim">...</span></p>
   </article>
   <article class="card" id="v-ns">
     <div class="head"><h3 data-name="ns.json">ns</h3><span class="at" data-src="ns:at">2026-09-25T21:29:10.995Z</span></div>
@@ -1109,6 +1145,42 @@ this page is typed by hand: the generator refuses to emit a number it did not re
     </div>
     <p class="note"><span class="tag">notes/recall.md</span><q data-quoted="notes/recall.md">Printed (node bench/recall.mjs, 2026-09-24T02:07:10.747Z): wiki tier on: native 176/200 (88.0%), accuracy 122/200 (61.0%), native mean 8940.3 us, model calls 24; tier off: native 0/200, accuracy 0/200, model calls 200. Suite 200/200 accurate and native in both arms, 0 model calls. 0 hidden sentences in the store. Bar</q> <span class="dim">...</span></p>
   </article>
+  <article class="card" id="v-resume">
+    <div class="head"><h3 data-name="resume.json">resume</h3><span class="at" data-src="resume:at">2026-09-26T03:54:26.715Z</span></div>
+    <p class="cmd">printed by <code data-cmd="field|resume:command">node bench/resume.mjs</code></p>
+    <div class="rule"></div>
+    <div class="nums">
+      <div class="row"><span class="k" data-path="resume:split.first.linesBefore">split.first.linesBefore</span><span class="v" data-src="resume:split.first.linesBefore">1111</span></div>
+      <div class="row"><span class="k" data-path="resume:split.first.linesAfter">split.first.linesAfter</span><span class="v" data-src="resume:split.first.linesAfter">1234</span></div>
+      <div class="row"><span class="k" data-path="resume:split.first.linesAdded">split.first.linesAdded</span><span class="v" data-src="resume:split.first.linesAdded">123</span></div>
+      <div class="row"><span class="k" data-path="resume:split.first.toolLinesBefore">split.first.toolLinesBefore</span><span class="v" data-src="resume:split.first.toolLinesBefore">1111</span></div>
+      <div class="row"><span class="k" data-path="resume:split.first.toolLinesAfter">split.first.toolLinesAfter</span><span class="v" data-src="resume:split.first.toolLinesAfter">1234</span></div>
+      <div class="row"><span class="k" data-path="resume:split.second.linesBefore">split.second.linesBefore</span><span class="v" data-src="resume:split.second.linesBefore">1234</span></div>
+      <div class="row"><span class="k" data-path="resume:split.second.linesAfter">split.second.linesAfter</span><span class="v" data-src="resume:split.second.linesAfter">1249</span></div>
+      <div class="row"><span class="k" data-path="resume:split.second.linesAdded">split.second.linesAdded</span><span class="v" data-src="resume:split.second.linesAdded">15</span></div>
+      <div class="row"><span class="k" data-path="resume:control.linesBefore">control.linesBefore</span><span class="v" data-src="resume:control.linesBefore">1111</span></div>
+      <div class="row"><span class="k" data-path="resume:control.linesAfter">control.linesAfter</span><span class="v" data-src="resume:control.linesAfter">1111</span></div>
+    </div>
+    <p class="note"><span class="tag">notes/resume.md</span><q data-quoted="notes/resume.md">Bar (node tools/budget.mjs ... -- node bench/resume.mjs, bench/verdicts/resume-bar.log) - CONTROL: journal 1111 -&gt; 1111 lines in 120 s with no resume - EARLIER: 1.45 tasks/min at task 13, 2 at the cut; 10-record band 1.24 .. 3.62 - FIRST (20 min): lines 1111 -&gt; 1234, 41 records, 2.0343 records/min (bench RATE 2.04),</q> <span class="dim">...</span></p>
+  </article>
+  <article class="card" id="v-rows">
+    <div class="head"><h3 data-name="rows.json">rows</h3><span class="at" data-src="rows:at">2026-09-26T05:36:42.736Z</span></div>
+    <p class="cmd">printed by <code data-cmd="field|rows:command">node bench/ladder.mjs --rows</code></p>
+    <div class="rule"></div>
+    <div class="nums">
+      <div class="row"><span class="k" data-path="rows:parts.gate.verdict">parts.gate.verdict</span><span class="v" data-src="rows:parts.gate.verdict">GREEN</span></div>
+      <div class="row"><span class="k" data-path="rows:parts.gate.testsPassed">parts.gate.testsPassed</span><span class="v" data-src="rows:parts.gate.testsPassed">98</span></div>
+      <div class="row"><span class="k" data-path="rows:parts.gate.testsTotal">parts.gate.testsTotal</span><span class="v" data-src="rows:parts.gate.testsTotal">98</span></div>
+      <div class="row"><span class="k" data-path="rows:parts.gate.assertionsPassed">parts.gate.assertionsPassed</span><span class="v" data-src="rows:parts.gate.assertionsPassed">1239</span></div>
+      <div class="row"><span class="k" data-path="rows:parts.gate.assertionsFailed">parts.gate.assertionsFailed</span><span class="v" data-src="rows:parts.gate.assertionsFailed">0</span></div>
+      <div class="row"><span class="k" data-path="rows:parts.gate.rowsPrintedCount">parts.gate.rowsPrintedCount</span><span class="v" data-src="rows:parts.gate.rowsPrintedCount">7</span></div>
+      <div class="row"><span class="k" data-path="rows:parts.tests[0].pass">parts.tests[0].pass</span><span class="v" data-src="rows:parts.tests[0].pass">24</span></div>
+      <div class="row"><span class="k" data-path="rows:parts.tests[3].pass">parts.tests[3].pass</span><span class="v" data-src="rows:parts.tests[3].pass">9</span></div>
+      <div class="row"><span class="k" data-path="rows:parts.tests[3].fail">parts.tests[3].fail</span><span class="v" data-src="rows:parts.tests[3].fail">0</span></div>
+      <div class="row"><span class="k" data-path="rows:parts.tests[3].ms">parts.tests[3].ms</span><span class="v" data-src="rows:parts.tests[3].ms">615</span></div>
+    </div>
+    <p class="note"><span class="tag">notes/ladder.md</span><q data-quoted="notes/ladder.md">the rulers on the board and two rows on the gate (Board 12, his P15 and P8, 2026-09-24)</q></p>
+  </article>
   <article class="card" id="v-scale">
     <div class="head"><h3 data-name="scale.json">scale</h3><span class="at" data-src="scale:at">2026-09-18T04:04:40.820Z</span></div>
     <p class="cmd">printed by <code data-cmd="file|bench/scale.mjs">node bench/scale.mjs</code></p>
@@ -1161,7 +1233,7 @@ this page is typed by hand: the generator refuses to emit a number it did not re
       <div class="row"><span class="k" data-path="self-code:realTree.afterPass">realTree.afterPass</span><span class="v" data-src="self-code:realTree.afterPass">17</span></div>
       <div class="row"><span class="k" data-path="self-code:verdict">verdict</span><span class="v" data-src="self-code:verdict">GREEN</span></div>
     </div>
-    <p class="note"><span class="tag">notes/autopilot.md</span><q data-quoted="notes/autopilot.md">His 2026-09-18 08:42: &quot;Soon it needs to generate itself open source more cells and gets better without your help&quot;. His 10:26, answering the ask for self-code approval: &quot;Nah im not doing shit bro. Find a way to do it yrself everything is in ur hands&quot;.</q></p>
+    <p class="note"><span class="tag">notes/nextboard.md</span><q data-quoted="notes/nextboard.md">Bar (bench/nextboard.mjs, bench/verdicts/nextboard.json) Printed at 2026-09-26T02:25:01.650Z: - 3. WROTE docs/boards/proposed/board-17.md: board 17, 8 items (rewrite: ...), 12835 bytes; round trip through self/boards.mjs: ok - 2. CONTROL planted root, ledger 185 lines without docs/boards/proposed/board-17.md: board-17</q> <span class="dim">...</span></p>
   </article>
   <article class="card" id="v-semantic-cleanup">
     <div class="head"><h3 data-name="semantic-cleanup.json">semantic-cleanup</h3><span class="at" data-src="semantic-cleanup:at">2026-09-18T02:44:43.421Z</span></div>
@@ -1344,19 +1416,19 @@ this page is typed by hand: the generator refuses to emit a number it did not re
     <p class="note"><span class="tag">notes/synth.md</span><q data-quoted="notes/synth.md">Bar run: node tools/budget.mjs ... -- node --max-old-space-size=6000 bench/synth.mjs, exit 0, wall 8064.33 s, peak ram 89.6MB. Development records: HumanEval 0 to 39 by index and the 40 task internal suite. Records 40 to 160 are held out.</q></p>
   </article>
   <article class="card" id="v-tasks">
-    <div class="head"><h3 data-name="tasks.json">tasks</h3><span class="at" data-src="tasks:at">2026-09-26T01:59:47.050Z</span></div>
+    <div class="head"><h3 data-name="tasks.json">tasks</h3><span class="at" data-src="tasks:at">2026-09-26T05:33:13.247Z</span></div>
     <p class="cmd">printed by <code data-cmd="file|bench/tasks.mjs">node bench/tasks.mjs</code></p>
     <div class="rule"></div>
     <div class="nums">
       <div class="row"><span class="k" data-path="tasks:suites[0].failureCount">suites[0].failureCount</span><span class="v" data-src="tasks:suites[0].failureCount">0</span></div>
-      <div class="row"><span class="k" data-path="tasks:suites[0].ms">suites[0].ms</span><span class="v" data-src="tasks:suites[0].ms">1.425</span></div>
+      <div class="row"><span class="k" data-path="tasks:suites[0].ms">suites[0].ms</span><span class="v" data-src="tasks:suites[0].ms">1.415</span></div>
       <div class="row"><span class="k" data-path="tasks:suites[2].failureCount">suites[2].failureCount</span><span class="v" data-src="tasks:suites[2].failureCount">1</span></div>
-      <div class="row"><span class="k" data-path="tasks:suites[2].ms">suites[2].ms</span><span class="v" data-src="tasks:suites[2].ms">32.787</span></div>
+      <div class="row"><span class="k" data-path="tasks:suites[2].ms">suites[2].ms</span><span class="v" data-src="tasks:suites[2].ms">32.641</span></div>
       <div class="row"><span class="k" data-path="tasks:suites[2].cells">suites[2].cells</span><span class="v" data-src="tasks:suites[2].cells">287</span></div>
       <div class="row"><span class="k" data-path="tasks:suites[2].ticks">suites[2].ticks</span><span class="v" data-src="tasks:suites[2].ticks">287</span></div>
       <div class="row"><span class="k" data-path="tasks:totals.n">totals.n</span><span class="v" data-src="tasks:totals.n">725</span></div>
       <div class="row"><span class="k" data-path="tasks:totals.correct">totals.correct</span><span class="v" data-src="tasks:totals.correct">724</span></div>
-      <div class="row"><span class="k" data-path="tasks:totals.ms">totals.ms</span><span class="v" data-src="tasks:totals.ms">47.305</span></div>
+      <div class="row"><span class="k" data-path="tasks:totals.ms">totals.ms</span><span class="v" data-src="tasks:totals.ms">47.671</span></div>
       <div class="row"><span class="k" data-path="tasks:totals.accuracy">totals.accuracy</span><span class="v" data-src="tasks:totals.accuracy">0.998621</span></div>
     </div>
     <p class="note"><span class="tag">notes/act.md</span><q data-quoted="notes/act.md">Neighbours after the change, all green: node --test test/solve.test.mjs test/act-prompt.test.mjs test/answer.test.mjs test/act-llm.test.mjs 56 pass 0 fail 935.5194 ms; node --test test/act-prompt.test.mjs test/answer.test.mjs test/act-llm.test.mjs test/tasks.test.mjs test/capability.test.mjs 81 pass 0 fail 21187.141 ms (that run prints bench verdict: 724/725</q> <span class="dim">...</span></p>
@@ -1707,22 +1779,22 @@ survives when you hide half of it is not a result.</p>
     <p class="note"><span class="tag">null or negative</span><span class="k" data-path="lab:counts.refuted">counts.refuted</span> <span class="k" data-path="lab:experiments.0.verdict">experiments.0.verdict</span></p><p class="note"><span class="tag">notes/lab.md</span><q data-quoted="notes/lab.md">One consequence that belongs to this subsystem and is not fixed here. The tie-break moved goal-routing's TREATMENT arm: treatmentMean 0.41875 becomes 0.418125 and effectMean 0.29375 becomes 0.293125. The control arm did not move at all (0.125 on all 16 seeds, before and after), the permutation share is unchanged at</q> <span class="dim">...</span></p>
   </article>
   <article class="card null" id="v-ladder">
-    <div class="head"><h3 data-name="ladder.json">ladder</h3><span class="at" data-src="ladder:at">2026-09-24T15:45:16.051Z</span></div>
+    <div class="head"><h3 data-name="ladder.json">ladder</h3><span class="at" data-src="ladder:at">2026-09-26T05:36:29.200Z</span></div>
     <p class="cmd">printed by <code data-cmd="field|ladder:command">node bench/ladder.mjs</code></p>
     <div class="rule"></div>
     <div class="nums">
       <div class="row"><span class="k" data-path="ladder:board.totals.sets">board.totals.sets</span><span class="v" data-src="ladder:board.totals.sets">3</span></div>
       <div class="row"><span class="k" data-path="ladder:board.totals.whole">board.totals.whole</span><span class="v" data-src="ladder:board.totals.whole">1</span></div>
       <div class="row"><span class="k" data-path="ladder:board.totals.partial">board.totals.partial</span><span class="v" data-src="ladder:board.totals.partial">2</span></div>
-      <div class="row"><span class="k" data-path="ladder:board.totals.correct">board.totals.correct</span><span class="v" data-src="ladder:board.totals.correct">372</span></div>
-      <div class="row"><span class="k" data-path="ladder:board.totals.n">board.totals.n</span><span class="v" data-src="ladder:board.totals.n">739</span></div>
-      <div class="row"><span class="k" data-path="ladder:board.totals.accuracy">board.totals.accuracy</span><span class="v" data-src="ladder:board.totals.accuracy">0.503383</span></div>
-      <div class="row"><span class="k" data-path="ladder:board.totals.records">board.totals.records</span><span class="v" data-src="ladder:board.totals.records">739</span></div>
-      <div class="row"><span class="k" data-path="ladder:board.instances.restartCount">board.instances.restartCount</span><span class="v" data-src="ladder:board.instances.restartCount">14</span></div>
+      <div class="row"><span class="k" data-path="ladder:board.totals.correct">board.totals.correct</span><span class="v" data-src="ladder:board.totals.correct">460</span></div>
+      <div class="row"><span class="k" data-path="ladder:board.totals.n">board.totals.n</span><span class="v" data-src="ladder:board.totals.n">837</span></div>
+      <div class="row"><span class="k" data-path="ladder:board.totals.accuracy">board.totals.accuracy</span><span class="v" data-src="ladder:board.totals.accuracy">0.549582</span></div>
+      <div class="row"><span class="k" data-path="ladder:board.totals.records">board.totals.records</span><span class="v" data-src="ladder:board.totals.records">837</span></div>
+      <div class="row"><span class="k" data-path="ladder:board.instances.restartCount">board.instances.restartCount</span><span class="v" data-src="ladder:board.instances.restartCount">3</span></div>
       <div class="row"><span class="k" data-path="ladder:board.knowledge.heldTotal">board.knowledge.heldTotal</span><span class="v" data-src="ladder:board.knowledge.heldTotal">284,454</span></div>
       <div class="row"><span class="k" data-path="ladder:board.bytesPerPoint.records">board.bytesPerPoint.records</span><span class="v" data-src="ladder:board.bytesPerPoint.records">5</span></div>
     </div>
-    <p class="note"><span class="tag">null or negative</span><span class="k" data-path="ladder:deltas[0].perColumn.health">deltas[0].perColumn.health</span> <span class="k" data-path="ladder:deltas[0].composite">deltas[0].composite</span></p><p class="note"><span class="tag">notes/ladder.md</span><q data-quoted="notes/ladder.md">The first day is in bench/verdicts/ladder.json, which takes bench/verdicts/ladder/2026-09-18.json as the one run of 2026-09-18: at tier 1 on the seed ladder/2026-09-18 the answer column scored 1.000000 (12 of 12 on the organism arm, and the null arm also 12 of 12, so the gap is zero and nFor95 is null), the code column scored 0.166667 (1 of 6 on the organism arm against 0 of 6 on the null arm, nFor95 20,</q> <span class="dim">...</span></p>
+    <p class="note"><span class="tag">null or negative</span><span class="k" data-path="ladder:deltas[0].perColumn.health">deltas[0].perColumn.health</span> <span class="k" data-path="ladder:deltas[0].composite">deltas[0].composite</span></p><p class="note"><span class="tag">notes/ladder.md</span><q data-quoted="notes/ladder.md">The first day is in bench/verdicts/ladder.json, which takes bench/verdicts/ladder/2026-09-18.json as the one run of 2026-09-18: at tier 1 on the seed ladder/2026-09-18 the answer column scored 1.000000 (12 of 12 on the organism arm, and the null arm also 12 of 12, so the gap is zero and nFor95 is null), the code</q> <span class="dim">...</span></p>
   </article>
   <article class="card null" id="v-reproduce">
     <div class="head"><h3 data-name="reproduce.json">reproduce</h3><span class="at" data-src="reproduce:at">2026-09-18T08:24:20.795Z</span></div>

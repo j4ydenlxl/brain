@@ -458,7 +458,7 @@ export function landedFromLog(root, board, { logRel = LOG_REL, zone = LOG_ZONE }
  */
 export function boardsLandedInSubject(subject) {
   const out = new Set();
-  for (const m of String(subject).matchAll(/\bboards?\s+(\d+)(?:\s+to\s+(\d+))?(?:\s+(?!not\b)[A-Za-z]+)?\s+landed\b/gi)) {
+  for (const m of String(subject).matchAll(/\bboards?\s+(\d+)(?:\s+to\s+(\d+))?(?:\s+(?!not\b)[A-Za-z]+){0,5}\s+landed\b/gi)) {
     const a = Number(m[1]), b = m[2] ? Number(m[2]) : a;
     if (b >= a && b - a < 100) for (let n = a; n <= b; n++) out.add(n);
   }
