@@ -313,6 +313,7 @@ whole project done tonight. Lets goo!" (2026-09-17 22:18)
 - 2026-09-26 17:16 EDT, his words verbatim (mid-turn, after the three running boards died with an interrupted turn): "The baords are stopped.... Is the vision close to done> u still have $81 left. After boards 17 and 20 ill spend the rest of money in a seperate cloud sesssion." Read as: finish boards 17 and 20, then stop; the rest of the money goes to a separate cloud session; his card read $81 at 17:16 EDT.
 - 2026-09-26 17:18 EDT, his words verbatim (on the answer that the vision is not close to done): "well the vision NEEDS TO BE DONE THOUGH???? WTFFFF. EVERYTHIGN NEEDS TO BE DONE"
 - 2026-09-26 17:32 EDT, his words verbatim (quoting the orchestrator's line "Is the vision close to done? No. The brief names five end-state tests. None is met. What the verdict files print:"): "All of these should be met". Read as: the five end-state tests of docs/CLOUD-SESSION.md are the bar, each must be met, not reported; the orchestrator holds the reading that the $250 pool cannot meet them (the brief itself says the distance is the whole month) and puts every remaining dollar, board and handoff line toward them.
+- 2026-09-26 17:32 EDT, his words verbatim: "$68 left work like its burning. Im not moving to a new context window i change my mind". Read as: the 17:16 plan of a separate session is withdrawn; the rest of the money is spent in THIS session; board 21 launches now beside boards 17 and 20; his card read $68 at 17:32 EDT.
 
 ## §B. OBJECTIVES + PROGRESS (mine; terse; updated only after re-reading §A)
 
