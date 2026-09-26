@@ -720,6 +720,42 @@ function answerFromDirect(brain, text, d, started) {
 }
 
 const NOT_ASKED_SOLVED = 'not asked: a solved template answered';
+const NOT_ASKED_EXACT = 'not asked: the exact path computed it';
+
+// The answer object of the early exact path (act/solve.mjs, tried right after the solved region).
+// Same shape and same values as the late path's exact answer (from 'exact', provenance.answer
+// 'exact', route 'direct', llm.reason /not asked/), plus exact.ns: the nanoseconds the parse and
+// the BigInt arithmetic took, measured around solve() and nothing else. No recall, no model.
+function answerFromExact(brain, text, s, ns, started) {
+  const hash = promptHash(text);
+  const answer = {
+    ok: true,
+    promptHash: hash,
+    promptChars: text.length,
+    from: 'exact',
+    text: renderSolved(s).replace(/\n/, ' (' + ns + ' ns)\n'),
+    memory: null,
+    exact: { answer: s.answer, method: s.method, steps: s.steps, ns },
+    cites: [],
+    redacted: 0,
+    redactedShapes: [],
+    provenance: {
+      answer: 'exact', method: s.method, tier: 'exact', exactNs: ns, modelAgreed: null, memoryHits: 0, webPages: 0,
+      llm: { provider: null, model: null, ms: 0, tokens: 0, ok: false, reason: NOT_ASKED_EXACT, fellBack: null, probed: null },
+    },
+    words: [],
+    ms: Date.now() - started,
+    route: 'direct',
+    ticks: 0,
+    hops: [],
+  };
+  answer.seq = logEvent(brain, {
+    type: ASK_EVENT, by: SURFACE, route: 'direct', promptHash: hash, promptChars: text.length, from: 'exact',
+    provenance: 'exact', tier: 'exact', exactNs: ns, method: s.method, modelAgreed: null,
+    memoryHits: 0, webPages: 0, redacted: 0, provider: null, model: null, llmMs: 0, llmOk: false, ms: answer.ms,
+  });
+  return answer;
+}
 
 // The answer object of a solved hit (Board 15, item ns; author: board 15 builder), in the shape
 // answerFromDirect returns: one line that says which template answered, how it matched (the same
@@ -1249,6 +1285,22 @@ export async function ask(brain, prompt, opts = {}) {
     let m = mem.match(text0);
     if (m.pending) m = await mem.resolve(m);
     if (m.hit) return answerFromSolved(brain, text0, m, Number(process.hrtime.bigint() - t0), started0);
+  }
+  // THE EXACT PATH, EARLY (2026-09-26, his order of 10:05: "less than a token ... in microseconds").
+  // act/solve.mjs answers arithmetic, spoken or symbolic, linear equations, sequences and grids
+  // with BigInt and no model; until today ask() reached it only after spawn, the knowledge tier,
+  // the regions and recall, at milliseconds. Now it is tried here, at the nanoseconds the parse
+  // and the arithmetic take, and the answer object is the one the late path built (from 'exact',
+  // provenance.answer 'exact', route 'direct'), so every reader of that shape reads this one.
+  // With opts.prose the model is still asked and the late path keeps its record of agreement.
+  if (opts.prose !== true && opts.exact !== false) {
+    const t0 = process.hrtime.bigint();
+    const early = solve(text0);
+    if (early) {
+      const ns = Number(process.hrtime.bigint() - t0);
+      learnDirect(opts, text0, { exact: early });
+      return answerFromExact(brain, text0, early, ns, started0);
+    }
   }
   const viaSpawn = askBySpawn(brain, prompt, opts); if (viaSpawn) return viaSpawn;
   const route = routeFor(brain, opts);

@@ -18,7 +18,7 @@ import { Brain } from '../core/brain.mjs';
 import { attachMemory } from '../memory/index.mjs';
 import { ask } from '../act/prompt.mjs';
 import { buildQuestions, gradeAnswer } from '../bench/answer.mjs';
-import { CAPS, METHODS, modelAgrees, renderSolved, solve } from '../act/solve.mjs';
+import { CAPS, METHODS, modelAgrees, renderSolved, solve, spokenExpression } from '../act/solve.mjs';
 
 // ---------------------------------------------------------------- this file's own rationals
 // { n, d } on BigInt with d > 0 and gcd 1. Nothing here is imported.
@@ -231,4 +231,84 @@ test('ask with provider null on an algebra prompt is exact, and opens no socket'
   assert.equal(asked[0].method, 'exact.linear');
   assert.equal(asked[1].provenance, 'memory');
   assert.equal(JSON.stringify(asked[0]).includes('8.9'), false, 'the ledger line does not carry the prompt');
+});
+
+// ---------------------------------------------------------------- spoken arithmetic (2026-09-26)
+// His order of 10:05 EDT: "Every request should be less than a token and it should be done in
+// microseconds." The expected values below are BUILT from the operands with this file's own
+// rationals, as everywhere above; the refusals are graded as nulls, and one ask() through the
+// early exact path is graded on its shape (the late path's shape, plus exact.ns).
+test('spoken arithmetic is rewritten into the grammar and computed exactly', () => {
+  const cases = [
+    ['what is 17 times 23', mul(Q(17n), Q(23n))],
+    ['17 times 23', mul(Q(17n), Q(23n))],
+    ['what is 17 * 23?', mul(Q(17n), Q(23n))],
+    ['what is 12 plus 5', add(Q(12n), Q(5n))],
+    ['what is 2 to the power of 10', pow(Q(2n), 10n)],
+    ['what is 15 percent of 200', div(mul(Q(15n), Q(200n)), Q(100n))],
+    ['what is the square root of 144', Q(12n)],
+    ["what's the sum of 1234567 and 7654321", add(Q(1234567n), Q(7654321n))],
+    ['subtract 3 from 10', sub(Q(10n), Q(3n))],
+    ['how much is 7 x 8', mul(Q(7n), Q(8n))],
+    ['what is 100 divided by 8', div(Q(100n), Q(8n))],
+    ['calculate 9 squared', pow(Q(9n), 2n)],
+    ['what is the difference between 50 and 8', sub(Q(50n), Q(8n))],
+  ];
+  for (const [prompt, expect] of cases) {
+    const s = solve(prompt);
+    assert.ok(s, 'null for ' + JSON.stringify(prompt));
+    assert.equal(s.method, 'exact.arith', prompt);
+    assert.equal(s.answer, str(expect), prompt);
+    assert.match(s.steps[0], /^read "/, 'the steps say how the prompt was read: ' + prompt);
+  }
+});
+
+test('spoken arithmetic refuses a word it does not know, an inexact root and a bare number', () => {
+  for (const prompt of [
+    'what is the square root of 2',            // not rational: never printed as exact
+    'what is the capital of France',            // a fact question, the knowledge tier owns it
+    'what is 2024',                             // a bare number is not arithmetic
+    'what is 17 times 23 apples',               // a word the table does not know
+    'how many words are in the sentence: 3 + 4', // prose with an expression inside
+    'what is 5 divided by 0',                   // division by zero
+  ]) assert.equal(solve(prompt), null, prompt);
+  assert.equal(spokenExpression('what is 17 times 23'), '17 * 23');
+  assert.equal(spokenExpression('what is 17 times 23 apples'), null);
+});
+
+test('ask with provider null answers spoken arithmetic on the early exact path, in nanoseconds, with no socket', async () => {
+  const brain = new Brain({ name: 'solve-spoken', ledger: 'full' });
+  const tape = [];
+  brain.ledger.on((e) => tape.push(e));
+  attachMemory(brain, { name: 'solve-spoken:' + Math.random().toString(36).slice(2) });
+  const real = globalThis.fetch;
+  let fetches = 0;
+  globalThis.fetch = (...args) => { fetches++; return real(...args); };
+  try {
+    const a = await ask(brain, 'what is 17 times 23', { provider: 'null' });
+    assert.equal(a.provenance.answer, 'exact');
+    assert.equal(a.provenance.method, 'exact.arith');
+    assert.equal(a.provenance.tier, 'exact');
+    assert.equal(a.from, 'exact');
+    assert.equal(a.route, 'direct');
+    assert.equal(a.exact.answer, '391');
+    assert.equal(a.text.split('\n').pop(), '391');
+    assert.equal(typeof a.exact.ns, 'number');
+    assert.ok(a.exact.ns > 0 && a.exact.ns < 5e9, 'the nanoseconds were measured: ' + a.exact.ns);
+    assert.match(a.text.split('\n')[0], /\(\d+ ns\)$/, 'the first line carries the nanoseconds');
+    assert.equal(a.provenance.llm.ok, false);
+    assert.equal(a.provenance.llm.provider, null);
+    assert.match(a.provenance.llm.reason, /not asked/);
+    assert.equal(a.cites.length, 0);
+    assert.equal(fetches, 0, 'an exact answer opened ' + fetches + ' connections');
+    const ev = tape.filter((e) => e.type === 'act.ask');
+    assert.equal(ev.length, 1);
+    assert.equal(ev[0].provenance, 'exact');
+    assert.equal(ev[0].tier, 'exact');
+    assert.equal(typeof ev[0].exactNs, 'number');
+    // prose:true still asks the model (here the null provider) and keeps the late path's record.
+    const prose = await ask(brain, 'what is 17 times 23', { provider: 'null', prose: true });
+    assert.equal(prose.provenance.answer, 'exact');
+    assert.equal(prose.exact.ns, undefined, 'the late path has no early clock');
+  } finally { globalThis.fetch = real; }
 });

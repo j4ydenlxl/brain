@@ -107,7 +107,9 @@ export function tokenize(src) {
     }
     if (/[A-Za-z]/.test(c)) {
       const m = /^[A-Za-z]+/.exec(s.slice(i));
-      if (m[0].toLowerCase() !== 'of') return null;
+      const w = m[0].toLowerCase();
+      if (w === 'sqrt') { out.push({ t: 'fn', v: 'sqrt' }); i += m[0].length; continue; }
+      if (w !== 'of') return null;
       out.push({ t: 'op', v: 'of' });
       i += m[0].length;
       continue;
@@ -203,6 +205,16 @@ function parsePrimary(ts, p) {
   if (!tk) return null;
   if (tk.t === 'q') { p.i++; return { op: 'q', value: tk.v, text: tk.text }; }
   if (tk.t === 'x') { p.i++; return { op: 'x' }; }
+  if (tk.t === 'fn') {
+    p.i++;
+    if (!ts[p.i] || ts[p.i].t !== '(') return null;
+    p.i++;
+    const inner = parseExpr(ts, p);
+    if (!inner) return null;
+    if (!ts[p.i] || ts[p.i].t !== ')') return null;
+    p.i++;
+    return { op: tk.v, args: [inner] };
+  }
   if (tk.t === '(') {
     p.i++;
     const inner = parseExpr(ts, p);
@@ -249,6 +261,19 @@ function hasUnknown(node) {
 // ---------------------------------------------------------------- exact evaluation
 const HUNDRED = E.Q(100n);
 
+// The integer square root of a non-negative BigInt when it is exact, else null (Newton's
+// method on BigInt, then the one check that matters: r*r === n).
+function isqrt(n) {
+  if (n < 0n) return null;
+  if (n < 2n) return n;
+  let x = BigInt(Math.floor(Math.sqrt(Number(n)))) + 1n;
+  if (x <= 0n) x = 1n;
+  for (;;) { const y = (x + n / x) >> 1n; if (y >= x) break; x = y; }
+  while (x * x > n) x -= 1n;
+  while ((x + 1n) * (x + 1n) <= n) x += 1n;
+  return x * x === n ? x : null;
+}
+
 /**
  * The AST as an exact rational, or null when it cannot be one. Every arithmetic step is
  * tasks/exact.mjs on BigInt, so a thirteen digit product is the product and not a float.
@@ -262,6 +287,15 @@ export function evalExact(node) {
     case 'x': return null;
     case 'neg': { const a = evalExact(node.args[0]); return a === null ? null : E.qNeg(a); }
     case '%': { const a = evalExact(node.args[0]); return a === null ? null : E.qDiv(a, HUNDRED); }
+    case 'sqrt': {
+      // Exact only when both integers of the rational are perfect squares; sqrt(2) is not a
+      // rational and this file does not print an approximation under the provenance 'exact'.
+      const a = evalExact(node.args[0]);
+      if (a === null || a.n < 0n) return null;
+      const rn = isqrt(a.n), rd = isqrt(a.d);
+      if (rn === null || rd === null) return null;
+      return E.qDiv(E.Q(rn), E.Q(rd));
+    }
     case '+': case '-': case '*': case '/': {
       const a = evalExact(node.args[0]), b = evalExact(node.args[1]);
       if (a === null || b === null) return null;
@@ -302,6 +336,7 @@ function toSym(node) {
     case '*': return L.mul(toSym(node.args[0]), toSym(node.args[1]));
     case '/': return L.div(toSym(node.args[0]), toSym(node.args[1]));
     case '^': return L.pow(toSym(node.args[0]), toSym(node.args[1]));
+    case 'sqrt': return null;                        // not linear: solveLinear refuses it
     default: throw new Error('solve: unknown node ' + node.op);
   }
 }
@@ -464,6 +499,75 @@ function solveGrid(prompt) {
  * @returns {{answer: string, method: string, steps: string[]}|null} null when the prompt is
  *   not something this file can answer completely. Never a partial answer.
  */
+// ---------------------------------------------------------------- spoken arithmetic
+// "what is 17 times 23" is the same expression as "17 * 23", and on 2026-09-26 10:12 EDT the
+// organism answered the second in microseconds and the first with "nothing in memory matches
+// times." (his order of 10:05: "Every request should be less than a token and it should be done
+// in microseconds"). This front end rewrites the spoken shapes below into the operator grammar
+// above and then hands the result to the same tokenizer, parser and BigInt arithmetic. The
+// contract of solve() holds unchanged: after the rewrite EVERY letter must be gone (except the
+// two words the tokenizer knows, "of" and "sqrt"), or the whole prompt is null. A word this
+// table does not know is a refusal, never a word to skip over.
+const SPOKEN_LEAD_RE = /^(?:(?:please|hey|ok|okay|so|and|now|then|quick|quickly|just)\s+)*(?:(?:can|could|would|will)\s+you\s+(?:please\s+)?)?(?:(?:tell|show)\s+me\s+)?(?:(?:what|whats|what's|how\s+much|how\s+many)\s+(?:is|are|was|were|does|do|will|would)?\s*(?:the\s+(?:value|result|answer|total|product|sum|difference|quotient)\s+(?:of|to|for)\s+)?|(?:calculate|compute|evaluate|work\s+out|find|figure\s+out|solve|simplify|give\s+me)\s+(?:the\s+(?:value|result|answer)\s+(?:of|to|for)\s+)?)?/i;
+const SPOKEN_TAIL_RE = /\s*(?:(?:,|\s)\s*please)?\s*(?:(?:is\s+)?(?:equal\s+to\s+)?(?:what|how\s+much))?\s*(?:[?.!=]+\s*)*$/i;
+// Each rule is [pattern, replacement], applied in order, on the lower-cased text. A rule with
+// two operands keeps their order unless the words say otherwise ("subtract 3 from 10" is 10 - 3).
+const SPOKEN_RULES = [
+  [/\bthe\s+(?:sum|total)\s+of\s+(.+?)\s+and\s+(.+)$/i, '($1) + ($2)'],
+  [/\bthe\s+difference\s+(?:between|of)\s+(.+?)\s+and\s+(.+)$/i, '($1) - ($2)'],
+  [/\bthe\s+product\s+of\s+(.+?)\s+and\s+(.+)$/i, '($1) * ($2)'],
+  [/\bthe\s+quotient\s+of\s+(.+?)\s+and\s+(.+)$/i, '($1) / ($2)'],
+  [/\b(?:add|sum)\s+(.+?)\s+(?:and|to|with)\s+(.+)$/i, '($1) + ($2)'],
+  [/\bsubtract\s+(.+?)\s+from\s+(.+)$/i, '($2) - ($1)'],
+  [/\b(.+?)\s+subtracted\s+from\s+(.+)$/i, '($2) - ($1)'],
+  [/\b(?:multiply|times)\s+(.+?)\s+(?:by|and|with)\s+(.+)$/i, '($1) * ($2)'],
+  [/\bdivide\s+(.+?)\s+by\s+(.+)$/i, '($1) / ($2)'],
+  [/\b(?:the\s+)?square\s+root\s+of\s+(.+)$/i, 'sqrt($1)'],
+  [/\b(?:the\s+)?square\s+of\s+(.+)$/i, '($1) ^ 2'],
+  [/\b(?:the\s+)?cube\s+of\s+(.+)$/i, '($1) ^ 3'],
+  [/\b(?:a\s+)?half\s+of\s+(.+)$/i, '($1) / 2'],
+  [/\b(?:a\s+)?(?:third|one\s+third)\s+of\s+(.+)$/i, '($1) / 3'],
+  [/\b(?:a\s+)?(?:quarter|one\s+quarter|fourth|one\s+fourth)\s+of\s+(.+)$/i, '($1) / 4'],
+  [/\bdouble\s+(.+)$/i, '2 * ($1)'],
+  [/\btriple\s+(.+)$/i, '3 * ($1)'],
+  [/\s+squared\b/gi, ' ^ 2'],
+  [/\s+cubed\b/gi, ' ^ 3'],
+  [/\s+(?:raised\s+)?to\s+the\s+(?:power\s+(?:of\s+)?|exponent\s+(?:of\s+)?)/gi, ' ^ '],
+  [/\s+raised\s+to\s+/gi, ' ^ '],
+  [/\s+(?:to\s+the\s+)?power\s+(?:of\s+)?/gi, ' ^ '],
+  [/\s+(?:plus|added\s+to|increased\s+by|and)\s+/gi, ' + '],
+  [/\s+(?:minus|less|take\s+away|decreased\s+by|reduced\s+by)\s+/gi, ' - '],
+  [/\s+(?:times|multiplied\s+by|multiplied\s+with|×)\s+/gi, ' * '],
+  [/(\d)\s+x\s+(?=[\d(])/gi, '$1 * '],
+  [/\s+(?:divided\s+by|over|÷)\s+/gi, ' / '],
+  [/\s*(?:percent|per\s+cent|pct)\b/gi, '%'],
+  [/\bsquare\s+root\s*\(/gi, 'sqrt('],
+  [/\bsqrt\s+(\d[\d.,/]*)/gi, 'sqrt($1)'],
+];
+const SPOKEN_LETTERS_RE = /[A-Za-z]+/g;
+
+/**
+ * The spoken prompt as an expression in the grammar above, or null. Null when no spoken shape
+ * matched, when a word survived the rewrite, or when nothing to compute survived (a bare number
+ * is a fact question for the knowledge tier, not arithmetic).
+ * @param {string} text
+ * @returns {string|null}
+ */
+export function spokenExpression(text) {
+  let s = String(text ?? '').replace(/\s+/g, ' ').trim();
+  if (!s || s.length > CAPS.chars) return null;
+  const lead = SPOKEN_LEAD_RE.exec(s);
+  if (lead && lead[0]) s = s.slice(lead[0].length);
+  s = s.replace(SPOKEN_TAIL_RE, '');
+  if (!s) return null;
+  for (const [re, to] of SPOKEN_RULES) s = s.replace(re, to);
+  s = s.replace(/\s+/g, ' ').trim();
+  const words = s.match(SPOKEN_LETTERS_RE) || [];
+  for (const w of words) { const l = w.toLowerCase(); if (l !== 'of' && l !== 'sqrt' && l !== 'x') return null; }
+  if (!/[-+*/^%]|sqrt\(/.test(s)) return null;
+  return s;
+}
+
 export function solve(prompt) {
   const text = String(prompt ?? '');
   if (!text.trim() || text.length > CAPS.chars) return null;
@@ -481,7 +585,12 @@ export function solve(prompt) {
   const direct = solveExpression(text);
   if (direct) return direct;
   const stripped = COMPUTE_PREFIX_RE.exec(text);
-  if (stripped) return solveExpression(text.slice(stripped[0].length));
+  if (stripped) { const r = solveExpression(text.slice(stripped[0].length)); if (r) return r; }
+  const spoken = spokenExpression(text);
+  if (spoken && spoken !== text.trim()) {
+    const r = solveExpression(spoken);
+    if (r) { r.steps.unshift('read "' + text.trim() + '" as ' + spoken); return r; }
+  }
   return null;
 }
 

@@ -1,0 +1,2052 @@
+{
+  "at": "2026-09-26T14:53:50.232Z",
+  "node": "v24.15.0",
+  "command": "node bench/spoken.mjs",
+  "isTheBar": true,
+  "barMet": true,
+  "met": {
+    "heldOut": true,
+    "control": true,
+    "ns": true
+  },
+  "bar": {
+    "heldOut": 200,
+    "control": 200,
+    "warmMedianNsUnder": 10000,
+    "rule": "every held-out spoken prompt exact against arithmetic written in this bench, every control prompt (one unknown word inserted) null, and the slowest template warm median under 10000 ns"
+  },
+  "split": {
+    "kind": "operands",
+    "development": {
+      "n": 11,
+      "prompts": [
+        "what is 17 times 23",
+        "17 * 23",
+        "what is 12 plus 5",
+        "what is 2 to the power of 10",
+        "what is 15 percent of 200",
+        "what is the square root of 144",
+        "what's the sum of 1234567 and 7654321",
+        "subtract 3 from 10",
+        "how much is 7 x 8",
+        "what is 17 * 23?",
+        "17 times 23"
+      ],
+      "what": "the prompts on the screen while the rewrite rules were written"
+    },
+    "heldOut": {
+      "n": 200,
+      "seed": "spoken/1",
+      "templates": [
+        "times",
+        "plus",
+        "minus",
+        "divided",
+        "power",
+        "percent",
+        "sqrt",
+        "sum-of",
+        "subtract-from"
+      ],
+      "what": "operands drawn by a seeded generator and values computed by this bench, never by the parser under test"
+    },
+    "notHeldOut": "the nine phrasing templates are the shapes the rules know; a phrasing outside them is null by contract, and this bar does not measure phrasing coverage"
+  },
+  "control": {
+    "what": "the same prompt with the word \"apples\" inserted after its first words; every one must be null",
+    "nullCount": 200,
+    "n": 200
+  },
+  "timing": {
+    "warm": 100,
+    "reps": 1000,
+    "perTemplate": [
+      {
+        "template": "times",
+        "prompt": "what is 977 times 990",
+        "median": 4300,
+        "p90": 4800,
+        "p99": 12100
+      },
+      {
+        "template": "plus",
+        "prompt": "what is 63756 plus 2416?",
+        "median": 3900,
+        "p90": 4200,
+        "p99": 6400
+      },
+      {
+        "template": "minus",
+        "prompt": "how much is 105 minus 6332",
+        "median": 3800,
+        "p90": 4000,
+        "p99": 7000
+      },
+      {
+        "template": "divided",
+        "prompt": "what is 636 divided by 96",
+        "median": 3700,
+        "p90": 4000,
+        "p99": 6800
+      },
+      {
+        "template": "power",
+        "prompt": "what is 11 to the power of 3",
+        "median": 3700,
+        "p90": 3900,
+        "p99": 6600
+      },
+      {
+        "template": "percent",
+        "prompt": "what is 71 percent of 6424",
+        "median": 3800,
+        "p90": 4000,
+        "p99": 7000
+      },
+      {
+        "template": "sqrt",
+        "prompt": "what is the square root of 206116",
+        "median": 3900,
+        "p90": 4100,
+        "p99": 6900
+      },
+      {
+        "template": "sum-of",
+        "prompt": "what's the sum of 8320908 and 2588569",
+        "median": 3700,
+        "p90": 3800,
+        "p99": 4800
+      },
+      {
+        "template": "subtract-from",
+        "prompt": "subtract 925 from 804",
+        "median": 3700,
+        "p90": 3800,
+        "p99": 6000
+      }
+    ],
+    "medianOfMedians": 3800,
+    "slowestTemplateMedian": 4300,
+    "cold": "the CLI pays module load and the first regex compile per process (about 1.7 ms printed by bin/brain.mjs ask at 10:51 EDT 2026-09-26); not in this bar"
+  },
+  "perTemplate": {
+    "times": {
+      "n": 23,
+      "exact": 23,
+      "controlNull": 23
+    },
+    "plus": {
+      "n": 23,
+      "exact": 23,
+      "controlNull": 23
+    },
+    "minus": {
+      "n": 22,
+      "exact": 22,
+      "controlNull": 22
+    },
+    "divided": {
+      "n": 22,
+      "exact": 22,
+      "controlNull": 22
+    },
+    "power": {
+      "n": 22,
+      "exact": 22,
+      "controlNull": 22
+    },
+    "percent": {
+      "n": 22,
+      "exact": 22,
+      "controlNull": 22
+    },
+    "sqrt": {
+      "n": 22,
+      "exact": 22,
+      "controlNull": 22
+    },
+    "sum-of": {
+      "n": 22,
+      "exact": 22,
+      "controlNull": 22
+    },
+    "subtract-from": {
+      "n": 22,
+      "exact": 22,
+      "controlNull": 22
+    }
+  },
+  "development": [
+    {
+      "prompt": "what is 17 times 23",
+      "got": "391"
+    },
+    {
+      "prompt": "17 * 23",
+      "got": "391"
+    },
+    {
+      "prompt": "what is 12 plus 5",
+      "got": "17"
+    },
+    {
+      "prompt": "what is 2 to the power of 10",
+      "got": "1024"
+    },
+    {
+      "prompt": "what is 15 percent of 200",
+      "got": "30"
+    },
+    {
+      "prompt": "what is the square root of 144",
+      "got": "12"
+    },
+    {
+      "prompt": "what's the sum of 1234567 and 7654321",
+      "got": "8888888"
+    },
+    {
+      "prompt": "subtract 3 from 10",
+      "got": "7"
+    },
+    {
+      "prompt": "how much is 7 x 8",
+      "got": "56"
+    },
+    {
+      "prompt": "what is 17 * 23?",
+      "got": "391"
+    },
+    {
+      "prompt": "17 times 23",
+      "got": "391"
+    }
+  ],
+  "rows": [
+    {
+      "i": 0,
+      "template": "times",
+      "prompt": "what is 977 times 990",
+      "expect": "967230",
+      "got": "967230",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 1,
+      "template": "plus",
+      "prompt": "what is 63756 plus 2416?",
+      "expect": "66172",
+      "got": "66172",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 2,
+      "template": "minus",
+      "prompt": "how much is 105 minus 6332",
+      "expect": "-6227",
+      "got": "-6227",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 3,
+      "template": "divided",
+      "prompt": "what is 636 divided by 96",
+      "expect": "53/8",
+      "got": "53/8",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 4,
+      "template": "power",
+      "prompt": "what is 11 to the power of 3",
+      "expect": "1331",
+      "got": "1331",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 5,
+      "template": "percent",
+      "prompt": "what is 71 percent of 6424",
+      "expect": "114026/25",
+      "got": "114026/25",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 6,
+      "template": "sqrt",
+      "prompt": "what is the square root of 206116",
+      "expect": "454",
+      "got": "454",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 7,
+      "template": "sum-of",
+      "prompt": "what's the sum of 8320908 and 2588569",
+      "expect": "10909477",
+      "got": "10909477",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 8,
+      "template": "subtract-from",
+      "prompt": "subtract 925 from 804",
+      "expect": "-121",
+      "got": "-121",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 9,
+      "template": "times",
+      "prompt": "what is 898 times 561",
+      "expect": "503778",
+      "got": "503778",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 10,
+      "template": "plus",
+      "prompt": "what is 44473 plus 68961?",
+      "expect": "113434",
+      "got": "113434",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 11,
+      "template": "minus",
+      "prompt": "how much is 1154 minus 3533",
+      "expect": "-2379",
+      "got": "-2379",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 12,
+      "template": "divided",
+      "prompt": "what is 857 divided by 6",
+      "expect": "857/6",
+      "got": "857/6",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 13,
+      "template": "power",
+      "prompt": "what is 9 to the power of 9",
+      "expect": "387420489",
+      "got": "387420489",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 14,
+      "template": "percent",
+      "prompt": "what is 13 percent of 3125",
+      "expect": "1625/4",
+      "got": "1625/4",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 15,
+      "template": "sqrt",
+      "prompt": "what is the square root of 580644",
+      "expect": "762",
+      "got": "762",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 16,
+      "template": "sum-of",
+      "prompt": "what's the sum of 494764 and 843783",
+      "expect": "1338547",
+      "got": "1338547",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 17,
+      "template": "subtract-from",
+      "prompt": "subtract 695 from 523",
+      "expect": "-172",
+      "got": "-172",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 18,
+      "template": "times",
+      "prompt": "what is 883 times 397",
+      "expect": "350551",
+      "got": "350551",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 19,
+      "template": "plus",
+      "prompt": "what is 55447 plus 87795?",
+      "expect": "143242",
+      "got": "143242",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 20,
+      "template": "minus",
+      "prompt": "how much is 2626 minus 608",
+      "expect": "2018",
+      "got": "2018",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 21,
+      "template": "divided",
+      "prompt": "what is 564 divided by 50",
+      "expect": "282/25",
+      "got": "282/25",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 22,
+      "template": "power",
+      "prompt": "what is 3 to the power of 7",
+      "expect": "2187",
+      "got": "2187",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 23,
+      "template": "percent",
+      "prompt": "what is 48 percent of 39",
+      "expect": "468/25",
+      "got": "468/25",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 24,
+      "template": "sqrt",
+      "prompt": "what is the square root of 806404",
+      "expect": "898",
+      "got": "898",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 25,
+      "template": "sum-of",
+      "prompt": "what's the sum of 8916903 and 3658419",
+      "expect": "12575322",
+      "got": "12575322",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 26,
+      "template": "subtract-from",
+      "prompt": "subtract 350 from 227",
+      "expect": "-123",
+      "got": "-123",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 27,
+      "template": "times",
+      "prompt": "what is 652 times 600",
+      "expect": "391200",
+      "got": "391200",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 28,
+      "template": "plus",
+      "prompt": "what is 32348 plus 58501?",
+      "expect": "90849",
+      "got": "90849",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 29,
+      "template": "minus",
+      "prompt": "how much is 1481 minus 1949",
+      "expect": "-468",
+      "got": "-468",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 30,
+      "template": "divided",
+      "prompt": "what is 180 divided by 85",
+      "expect": "36/17",
+      "got": "36/17",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 31,
+      "template": "power",
+      "prompt": "what is 4 to the power of 3",
+      "expect": "64",
+      "got": "64",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 32,
+      "template": "percent",
+      "prompt": "what is 86 percent of 2660",
+      "expect": "11438/5",
+      "got": "11438/5",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 33,
+      "template": "sqrt",
+      "prompt": "what is the square root of 62500",
+      "expect": "250",
+      "got": "250",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 34,
+      "template": "sum-of",
+      "prompt": "what's the sum of 5209343 and 4024398",
+      "expect": "9233741",
+      "got": "9233741",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 35,
+      "template": "subtract-from",
+      "prompt": "subtract 31 from 369",
+      "expect": "338",
+      "got": "338",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 36,
+      "template": "times",
+      "prompt": "what is 75 times 684",
+      "expect": "51300",
+      "got": "51300",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 37,
+      "template": "plus",
+      "prompt": "what is 42792 plus 77863?",
+      "expect": "120655",
+      "got": "120655",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 38,
+      "template": "minus",
+      "prompt": "how much is 9732 minus 6258",
+      "expect": "3474",
+      "got": "3474",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 39,
+      "template": "divided",
+      "prompt": "what is 900 divided by 61",
+      "expect": "900/61",
+      "got": "900/61",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 40,
+      "template": "power",
+      "prompt": "what is 11 to the power of 5",
+      "expect": "161051",
+      "got": "161051",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 41,
+      "template": "percent",
+      "prompt": "what is 78 percent of 1793",
+      "expect": "69927/50",
+      "got": "69927/50",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 42,
+      "template": "sqrt",
+      "prompt": "what is the square root of 41616",
+      "expect": "204",
+      "got": "204",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 43,
+      "template": "sum-of",
+      "prompt": "what's the sum of 6305356 and 7776682",
+      "expect": "14082038",
+      "got": "14082038",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 44,
+      "template": "subtract-from",
+      "prompt": "subtract 547 from 730",
+      "expect": "183",
+      "got": "183",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 45,
+      "template": "times",
+      "prompt": "what is 370 times 640",
+      "expect": "236800",
+      "got": "236800",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 46,
+      "template": "plus",
+      "prompt": "what is 53606 plus 61672?",
+      "expect": "115278",
+      "got": "115278",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 47,
+      "template": "minus",
+      "prompt": "how much is 5911 minus 2422",
+      "expect": "3489",
+      "got": "3489",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 48,
+      "template": "divided",
+      "prompt": "what is 132 divided by 37",
+      "expect": "132/37",
+      "got": "132/37",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 49,
+      "template": "power",
+      "prompt": "what is 6 to the power of 8",
+      "expect": "1679616",
+      "got": "1679616",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 50,
+      "template": "percent",
+      "prompt": "what is 2 percent of 7012",
+      "expect": "3506/25",
+      "got": "3506/25",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 51,
+      "template": "sqrt",
+      "prompt": "what is the square root of 3364",
+      "expect": "58",
+      "got": "58",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 52,
+      "template": "sum-of",
+      "prompt": "what's the sum of 40319 and 7554139",
+      "expect": "7594458",
+      "got": "7594458",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 53,
+      "template": "subtract-from",
+      "prompt": "subtract 253 from 638",
+      "expect": "385",
+      "got": "385",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 54,
+      "template": "times",
+      "prompt": "what is 922 times 55",
+      "expect": "50710",
+      "got": "50710",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 55,
+      "template": "plus",
+      "prompt": "what is 78651 plus 91531?",
+      "expect": "170182",
+      "got": "170182",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 56,
+      "template": "minus",
+      "prompt": "how much is 6430 minus 3418",
+      "expect": "3012",
+      "got": "3012",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 57,
+      "template": "divided",
+      "prompt": "what is 909 divided by 32",
+      "expect": "909/32",
+      "got": "909/32",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 58,
+      "template": "power",
+      "prompt": "what is 5 to the power of 5",
+      "expect": "3125",
+      "got": "3125",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 59,
+      "template": "percent",
+      "prompt": "what is 80 percent of 28",
+      "expect": "112/5",
+      "got": "112/5",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 60,
+      "template": "sqrt",
+      "prompt": "what is the square root of 164836",
+      "expect": "406",
+      "got": "406",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 61,
+      "template": "sum-of",
+      "prompt": "what's the sum of 6273770 and 1761415",
+      "expect": "8035185",
+      "got": "8035185",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 62,
+      "template": "subtract-from",
+      "prompt": "subtract 832 from 217",
+      "expect": "-615",
+      "got": "-615",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 63,
+      "template": "times",
+      "prompt": "what is 662 times 131",
+      "expect": "86722",
+      "got": "86722",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 64,
+      "template": "plus",
+      "prompt": "what is 50054 plus 78038?",
+      "expect": "128092",
+      "got": "128092",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 65,
+      "template": "minus",
+      "prompt": "how much is 4897 minus 9930",
+      "expect": "-5033",
+      "got": "-5033",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 66,
+      "template": "divided",
+      "prompt": "what is 881 divided by 52",
+      "expect": "881/52",
+      "got": "881/52",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 67,
+      "template": "power",
+      "prompt": "what is 11 to the power of 4",
+      "expect": "14641",
+      "got": "14641",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 68,
+      "template": "percent",
+      "prompt": "what is 77 percent of 6224",
+      "expect": "119812/25",
+      "got": "119812/25",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 69,
+      "template": "sqrt",
+      "prompt": "what is the square root of 1024",
+      "expect": "32",
+      "got": "32",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 70,
+      "template": "sum-of",
+      "prompt": "what's the sum of 3656657 and 7913509",
+      "expect": "11570166",
+      "got": "11570166",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 71,
+      "template": "subtract-from",
+      "prompt": "subtract 644 from 626",
+      "expect": "-18",
+      "got": "-18",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 72,
+      "template": "times",
+      "prompt": "what is 33 times 777",
+      "expect": "25641",
+      "got": "25641",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 73,
+      "template": "plus",
+      "prompt": "what is 45102 plus 31714?",
+      "expect": "76816",
+      "got": "76816",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 74,
+      "template": "minus",
+      "prompt": "how much is 7776 minus 5308",
+      "expect": "2468",
+      "got": "2468",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 75,
+      "template": "divided",
+      "prompt": "what is 637 divided by 67",
+      "expect": "637/67",
+      "got": "637/67",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 76,
+      "template": "power",
+      "prompt": "what is 12 to the power of 5",
+      "expect": "248832",
+      "got": "248832",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 77,
+      "template": "percent",
+      "prompt": "what is 42 percent of 9352",
+      "expect": "98196/25",
+      "got": "98196/25",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 78,
+      "template": "sqrt",
+      "prompt": "what is the square root of 27225",
+      "expect": "165",
+      "got": "165",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 79,
+      "template": "sum-of",
+      "prompt": "what's the sum of 5642190 and 6675403",
+      "expect": "12317593",
+      "got": "12317593",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 80,
+      "template": "subtract-from",
+      "prompt": "subtract 743 from 427",
+      "expect": "-316",
+      "got": "-316",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 81,
+      "template": "times",
+      "prompt": "what is 894 times 420",
+      "expect": "375480",
+      "got": "375480",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 82,
+      "template": "plus",
+      "prompt": "what is 82513 plus 6242?",
+      "expect": "88755",
+      "got": "88755",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 83,
+      "template": "minus",
+      "prompt": "how much is 7191 minus 8764",
+      "expect": "-1573",
+      "got": "-1573",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 84,
+      "template": "divided",
+      "prompt": "what is 755 divided by 38",
+      "expect": "755/38",
+      "got": "755/38",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 85,
+      "template": "power",
+      "prompt": "what is 7 to the power of 2",
+      "expect": "49",
+      "got": "49",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 86,
+      "template": "percent",
+      "prompt": "what is 87 percent of 861",
+      "expect": "74907/100",
+      "got": "74907/100",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 87,
+      "template": "sqrt",
+      "prompt": "what is the square root of 261121",
+      "expect": "511",
+      "got": "511",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 88,
+      "template": "sum-of",
+      "prompt": "what's the sum of 2716349 and 2654911",
+      "expect": "5371260",
+      "got": "5371260",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 89,
+      "template": "subtract-from",
+      "prompt": "subtract 534 from 158",
+      "expect": "-376",
+      "got": "-376",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 90,
+      "template": "times",
+      "prompt": "what is 878 times 643",
+      "expect": "564554",
+      "got": "564554",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 91,
+      "template": "plus",
+      "prompt": "what is 20759 plus 1812?",
+      "expect": "22571",
+      "got": "22571",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 92,
+      "template": "minus",
+      "prompt": "how much is 7624 minus 9178",
+      "expect": "-1554",
+      "got": "-1554",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 93,
+      "template": "divided",
+      "prompt": "what is 271 divided by 5",
+      "expect": "271/5",
+      "got": "271/5",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 94,
+      "template": "power",
+      "prompt": "what is 4 to the power of 6",
+      "expect": "4096",
+      "got": "4096",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 95,
+      "template": "percent",
+      "prompt": "what is 79 percent of 3217",
+      "expect": "254143/100",
+      "got": "254143/100",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 96,
+      "template": "sqrt",
+      "prompt": "what is the square root of 986049",
+      "expect": "993",
+      "got": "993",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 97,
+      "template": "sum-of",
+      "prompt": "what's the sum of 9291265 and 8688171",
+      "expect": "17979436",
+      "got": "17979436",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 98,
+      "template": "subtract-from",
+      "prompt": "subtract 481 from 868",
+      "expect": "387",
+      "got": "387",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 99,
+      "template": "times",
+      "prompt": "what is 303 times 520",
+      "expect": "157560",
+      "got": "157560",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 100,
+      "template": "plus",
+      "prompt": "what is 17615 plus 374?",
+      "expect": "17989",
+      "got": "17989",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 101,
+      "template": "minus",
+      "prompt": "how much is 7834 minus 4841",
+      "expect": "2993",
+      "got": "2993",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 102,
+      "template": "divided",
+      "prompt": "what is 231 divided by 27",
+      "expect": "77/9",
+      "got": "77/9",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 103,
+      "template": "power",
+      "prompt": "what is 3 to the power of 5",
+      "expect": "243",
+      "got": "243",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 104,
+      "template": "percent",
+      "prompt": "what is 75 percent of 8536",
+      "expect": "6402",
+      "got": "6402",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 105,
+      "template": "sqrt",
+      "prompt": "what is the square root of 2304",
+      "expect": "48",
+      "got": "48",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 106,
+      "template": "sum-of",
+      "prompt": "what's the sum of 4293712 and 9946453",
+      "expect": "14240165",
+      "got": "14240165",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 107,
+      "template": "subtract-from",
+      "prompt": "subtract 363 from 54",
+      "expect": "-309",
+      "got": "-309",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 108,
+      "template": "times",
+      "prompt": "what is 624 times 435",
+      "expect": "271440",
+      "got": "271440",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 109,
+      "template": "plus",
+      "prompt": "what is 86818 plus 16826?",
+      "expect": "103644",
+      "got": "103644",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 110,
+      "template": "minus",
+      "prompt": "how much is 6472 minus 4594",
+      "expect": "1878",
+      "got": "1878",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 111,
+      "template": "divided",
+      "prompt": "what is 615 divided by 26",
+      "expect": "615/26",
+      "got": "615/26",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 112,
+      "template": "power",
+      "prompt": "what is 9 to the power of 3",
+      "expect": "729",
+      "got": "729",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 113,
+      "template": "percent",
+      "prompt": "what is 12 percent of 251",
+      "expect": "753/25",
+      "got": "753/25",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 114,
+      "template": "sqrt",
+      "prompt": "what is the square root of 481636",
+      "expect": "694",
+      "got": "694",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 115,
+      "template": "sum-of",
+      "prompt": "what's the sum of 3275995 and 298046",
+      "expect": "3574041",
+      "got": "3574041",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 116,
+      "template": "subtract-from",
+      "prompt": "subtract 241 from 330",
+      "expect": "89",
+      "got": "89",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 117,
+      "template": "times",
+      "prompt": "what is 372 times 203",
+      "expect": "75516",
+      "got": "75516",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 118,
+      "template": "plus",
+      "prompt": "what is 96445 plus 3540?",
+      "expect": "99985",
+      "got": "99985",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 119,
+      "template": "minus",
+      "prompt": "how much is 6425 minus 6297",
+      "expect": "128",
+      "got": "128",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 120,
+      "template": "divided",
+      "prompt": "what is 939 divided by 37",
+      "expect": "939/37",
+      "got": "939/37",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 121,
+      "template": "power",
+      "prompt": "what is 12 to the power of 3",
+      "expect": "1728",
+      "got": "1728",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 122,
+      "template": "percent",
+      "prompt": "what is 10 percent of 8164",
+      "expect": "4082/5",
+      "got": "4082/5",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 123,
+      "template": "sqrt",
+      "prompt": "what is the square root of 872356",
+      "expect": "934",
+      "got": "934",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 124,
+      "template": "sum-of",
+      "prompt": "what's the sum of 7165436 and 5843845",
+      "expect": "13009281",
+      "got": "13009281",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 125,
+      "template": "subtract-from",
+      "prompt": "subtract 619 from 182",
+      "expect": "-437",
+      "got": "-437",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 126,
+      "template": "times",
+      "prompt": "what is 391 times 326",
+      "expect": "127466",
+      "got": "127466",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 127,
+      "template": "plus",
+      "prompt": "what is 96502 plus 67968?",
+      "expect": "164470",
+      "got": "164470",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 128,
+      "template": "minus",
+      "prompt": "how much is 332 minus 3608",
+      "expect": "-3276",
+      "got": "-3276",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 129,
+      "template": "divided",
+      "prompt": "what is 743 divided by 72",
+      "expect": "743/72",
+      "got": "743/72",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 130,
+      "template": "power",
+      "prompt": "what is 2 to the power of 8",
+      "expect": "256",
+      "got": "256",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 131,
+      "template": "percent",
+      "prompt": "what is 12 percent of 5437",
+      "expect": "16311/25",
+      "got": "16311/25",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 132,
+      "template": "sqrt",
+      "prompt": "what is the square root of 815409",
+      "expect": "903",
+      "got": "903",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 133,
+      "template": "sum-of",
+      "prompt": "what's the sum of 1819719 and 7380457",
+      "expect": "9200176",
+      "got": "9200176",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 134,
+      "template": "subtract-from",
+      "prompt": "subtract 683 from 589",
+      "expect": "-94",
+      "got": "-94",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 135,
+      "template": "times",
+      "prompt": "what is 259 times 805",
+      "expect": "208495",
+      "got": "208495",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 136,
+      "template": "plus",
+      "prompt": "what is 29224 plus 77415?",
+      "expect": "106639",
+      "got": "106639",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 137,
+      "template": "minus",
+      "prompt": "how much is 6650 minus 4070",
+      "expect": "2580",
+      "got": "2580",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 138,
+      "template": "divided",
+      "prompt": "what is 957 divided by 47",
+      "expect": "957/47",
+      "got": "957/47",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 139,
+      "template": "power",
+      "prompt": "what is 4 to the power of 7",
+      "expect": "16384",
+      "got": "16384",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 140,
+      "template": "percent",
+      "prompt": "what is 54 percent of 5644",
+      "expect": "76194/25",
+      "got": "76194/25",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 141,
+      "template": "sqrt",
+      "prompt": "what is the square root of 262144",
+      "expect": "512",
+      "got": "512",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 142,
+      "template": "sum-of",
+      "prompt": "what's the sum of 6205037 and 5341155",
+      "expect": "11546192",
+      "got": "11546192",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 143,
+      "template": "subtract-from",
+      "prompt": "subtract 82 from 403",
+      "expect": "321",
+      "got": "321",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 144,
+      "template": "times",
+      "prompt": "what is 289 times 470",
+      "expect": "135830",
+      "got": "135830",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 145,
+      "template": "plus",
+      "prompt": "what is 87971 plus 6906?",
+      "expect": "94877",
+      "got": "94877",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 146,
+      "template": "minus",
+      "prompt": "how much is 1149 minus 3277",
+      "expect": "-2128",
+      "got": "-2128",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 147,
+      "template": "divided",
+      "prompt": "what is 316 divided by 67",
+      "expect": "316/67",
+      "got": "316/67",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 148,
+      "template": "power",
+      "prompt": "what is 9 to the power of 9",
+      "expect": "387420489",
+      "got": "387420489",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 149,
+      "template": "percent",
+      "prompt": "what is 71 percent of 7566",
+      "expect": "268593/50",
+      "got": "268593/50",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 150,
+      "template": "sqrt",
+      "prompt": "what is the square root of 933156",
+      "expect": "966",
+      "got": "966",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 151,
+      "template": "sum-of",
+      "prompt": "what's the sum of 7708419 and 2217469",
+      "expect": "9925888",
+      "got": "9925888",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 152,
+      "template": "subtract-from",
+      "prompt": "subtract 389 from 508",
+      "expect": "119",
+      "got": "119",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 153,
+      "template": "times",
+      "prompt": "what is 243 times 483",
+      "expect": "117369",
+      "got": "117369",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 154,
+      "template": "plus",
+      "prompt": "what is 42441 plus 92797?",
+      "expect": "135238",
+      "got": "135238",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 155,
+      "template": "minus",
+      "prompt": "how much is 1859 minus 7799",
+      "expect": "-5940",
+      "got": "-5940",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 156,
+      "template": "divided",
+      "prompt": "what is 862 divided by 2",
+      "expect": "431",
+      "got": "431",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 157,
+      "template": "power",
+      "prompt": "what is 2 to the power of 5",
+      "expect": "32",
+      "got": "32",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 158,
+      "template": "percent",
+      "prompt": "what is 97 percent of 1779",
+      "expect": "172563/100",
+      "got": "172563/100",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 159,
+      "template": "sqrt",
+      "prompt": "what is the square root of 6889",
+      "expect": "83",
+      "got": "83",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 160,
+      "template": "sum-of",
+      "prompt": "what's the sum of 3946928 and 2651603",
+      "expect": "6598531",
+      "got": "6598531",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 161,
+      "template": "subtract-from",
+      "prompt": "subtract 772 from 209",
+      "expect": "-563",
+      "got": "-563",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 162,
+      "template": "times",
+      "prompt": "what is 610 times 910",
+      "expect": "555100",
+      "got": "555100",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 163,
+      "template": "plus",
+      "prompt": "what is 16464 plus 35160?",
+      "expect": "51624",
+      "got": "51624",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 164,
+      "template": "minus",
+      "prompt": "how much is 4602 minus 5112",
+      "expect": "-510",
+      "got": "-510",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 165,
+      "template": "divided",
+      "prompt": "what is 924 divided by 14",
+      "expect": "66",
+      "got": "66",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 166,
+      "template": "power",
+      "prompt": "what is 8 to the power of 8",
+      "expect": "16777216",
+      "got": "16777216",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 167,
+      "template": "percent",
+      "prompt": "what is 86 percent of 2188",
+      "expect": "47042/25",
+      "got": "47042/25",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 168,
+      "template": "sqrt",
+      "prompt": "what is the square root of 910116",
+      "expect": "954",
+      "got": "954",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 169,
+      "template": "sum-of",
+      "prompt": "what's the sum of 5219209 and 5925231",
+      "expect": "11144440",
+      "got": "11144440",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 170,
+      "template": "subtract-from",
+      "prompt": "subtract 675 from 87",
+      "expect": "-588",
+      "got": "-588",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 171,
+      "template": "times",
+      "prompt": "what is 622 times 541",
+      "expect": "336502",
+      "got": "336502",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 172,
+      "template": "plus",
+      "prompt": "what is 96537 plus 25766?",
+      "expect": "122303",
+      "got": "122303",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 173,
+      "template": "minus",
+      "prompt": "how much is 2171 minus 4902",
+      "expect": "-2731",
+      "got": "-2731",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 174,
+      "template": "divided",
+      "prompt": "what is 866 divided by 79",
+      "expect": "866/79",
+      "got": "866/79",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 175,
+      "template": "power",
+      "prompt": "what is 6 to the power of 4",
+      "expect": "1296",
+      "got": "1296",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 176,
+      "template": "percent",
+      "prompt": "what is 13 percent of 3598",
+      "expect": "23387/50",
+      "got": "23387/50",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 177,
+      "template": "sqrt",
+      "prompt": "what is the square root of 75625",
+      "expect": "275",
+      "got": "275",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 178,
+      "template": "sum-of",
+      "prompt": "what's the sum of 1693415 and 96871",
+      "expect": "1790286",
+      "got": "1790286",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 179,
+      "template": "subtract-from",
+      "prompt": "subtract 421 from 217",
+      "expect": "-204",
+      "got": "-204",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 180,
+      "template": "times",
+      "prompt": "what is 171 times 922",
+      "expect": "157662",
+      "got": "157662",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 181,
+      "template": "plus",
+      "prompt": "what is 4777 plus 51995?",
+      "expect": "56772",
+      "got": "56772",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 182,
+      "template": "minus",
+      "prompt": "how much is 1587 minus 1645",
+      "expect": "-58",
+      "got": "-58",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 183,
+      "template": "divided",
+      "prompt": "what is 765 divided by 38",
+      "expect": "765/38",
+      "got": "765/38",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 184,
+      "template": "power",
+      "prompt": "what is 4 to the power of 9",
+      "expect": "262144",
+      "got": "262144",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 185,
+      "template": "percent",
+      "prompt": "what is 54 percent of 4884",
+      "expect": "65934/25",
+      "got": "65934/25",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 186,
+      "template": "sqrt",
+      "prompt": "what is the square root of 58081",
+      "expect": "241",
+      "got": "241",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 187,
+      "template": "sum-of",
+      "prompt": "what's the sum of 1671989 and 6960917",
+      "expect": "8632906",
+      "got": "8632906",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 188,
+      "template": "subtract-from",
+      "prompt": "subtract 509 from 632",
+      "expect": "123",
+      "got": "123",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 189,
+      "template": "times",
+      "prompt": "what is 253 times 162",
+      "expect": "40986",
+      "got": "40986",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 190,
+      "template": "plus",
+      "prompt": "what is 75244 plus 14001?",
+      "expect": "89245",
+      "got": "89245",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 191,
+      "template": "minus",
+      "prompt": "how much is 5037 minus 6910",
+      "expect": "-1873",
+      "got": "-1873",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 192,
+      "template": "divided",
+      "prompt": "what is 371 divided by 4",
+      "expect": "371/4",
+      "got": "371/4",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 193,
+      "template": "power",
+      "prompt": "what is 12 to the power of 8",
+      "expect": "429981696",
+      "got": "429981696",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 194,
+      "template": "percent",
+      "prompt": "what is 76 percent of 7770",
+      "expect": "29526/5",
+      "got": "29526/5",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 195,
+      "template": "sqrt",
+      "prompt": "what is the square root of 435600",
+      "expect": "660",
+      "got": "660",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 196,
+      "template": "sum-of",
+      "prompt": "what's the sum of 6609573 and 7721435",
+      "expect": "14331008",
+      "got": "14331008",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 197,
+      "template": "subtract-from",
+      "prompt": "subtract 556 from 516",
+      "expect": "-40",
+      "got": "-40",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 198,
+      "template": "times",
+      "prompt": "what is 271 times 487",
+      "expect": "131977",
+      "got": "131977",
+      "ok": true,
+      "controlNull": true
+    },
+    {
+      "i": 199,
+      "template": "plus",
+      "prompt": "what is 24710 plus 60109?",
+      "expect": "84819",
+      "got": "84819",
+      "ok": true,
+      "controlNull": true
+    }
+  ],
+  "printed": [
+    "spoken bar: node bench/spoken.mjs",
+    "  times          exact 23/23  control null 23/23",
+    "  plus           exact 23/23  control null 23/23",
+    "  minus          exact 22/22  control null 22/22",
+    "  divided        exact 22/22  control null 22/22",
+    "  power          exact 22/22  control null 22/22",
+    "  percent        exact 22/22  control null 22/22",
+    "  sqrt           exact 22/22  control null 22/22",
+    "  sum-of         exact 22/22  control null 22/22",
+    "  subtract-from  exact 22/22  control null 22/22",
+    "held-out: exact 200/200, control null 200/200 (seed spoken/1, 9 templates, operands drawn here, values computed here)",
+    "  times          warm median   4300 ns  p90   4800  p99   12100  what is 977 times 990",
+    "  plus           warm median   3900 ns  p90   4200  p99    6400  what is 63756 plus 2416?",
+    "  minus          warm median   3800 ns  p90   4000  p99    7000  how much is 105 minus 6332",
+    "  divided        warm median   3700 ns  p90   4000  p99    6800  what is 636 divided by 96",
+    "  power          warm median   3700 ns  p90   3900  p99    6600  what is 11 to the power of 3",
+    "  percent        warm median   3800 ns  p90   4000  p99    7000  what is 71 percent of 6424",
+    "  sqrt           warm median   3900 ns  p90   4100  p99    6900  what is the square root of 206116",
+    "  sum-of         warm median   3700 ns  p90   3800  p99    4800  what's the sum of 8320908 and 2588569",
+    "  subtract-from  warm median   3700 ns  p90   3800  p99    6000  subtract 925 from 804",
+    "warm: median of medians 3800 ns, slowest template median 4300 ns (WARM 100, REPS 1000 per prompt)",
+    "development (the 11 prompts the rules were written against): 11/11 answered",
+    "BAR MET: held-out 200/200 (bar 200), control null 200/200 (bar 200), slowest warm median 4300 ns (bar under 10000)"
+  ]
+}
