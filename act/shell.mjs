@@ -13,8 +13,12 @@
 //      allows nothing, so a fresh install runs no commands at all.
 //   3. cwd must resolve (symlinks included) to a path under a policy root.
 //   4. stdout and stderr are capped in bytes and the result says so with `truncated`.
-//   5. a timeout kills the PROCESS TREE, with taskkill /T on win32 and the process group
-//      on posix, so a child that spawned its own children leaves nothing behind.
+//   5. a timeout kills the PROCESS TREE, with taskkill /T on win32 and, on Linux, a walk of
+//      /proc that closes every ppid chain rooted at the child (detached grandchildren in
+//      their own group and session included), so a child that spawned its own children
+//      leaves nothing behind. A platform without /proc falls back to the process group kill
+//      and says so in res.reason, because a group kill alone misses a detached grandchild.
+//      (the /proc walk: board 17 builder (the organism's item), shell-linux)
 //   6. every run is one ledger event carrying argv, the exit code and the milliseconds.
 //   7. the environment is a small base plus only the variable NAMES the caller asked for.
 //      A value is never read into a log, and opts.env with values in it is refused: this
@@ -25,7 +29,7 @@
 // world/policy.mjs, and the process is spawned only if the gate answers 'approved'. Two
 // allowlists, written by different hands, must both say yes.
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, realpathSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineKind, hasKind } from '../core/cell.mjs';
@@ -207,14 +211,133 @@ function take(acc, chunk, max) {
 }
 const textOf = (acc) => Buffer.concat(acc.parts, acc.bytes).toString('utf8');
 
+// ------------------------------------------------ the descendant walk (board 17 builder (the organism's item))
+// On Linux the child is spawned detached, so it leads its own group and session, and a
+// negative pid signals that group. That is NOT the whole tree: a grandchild the child spawned
+// with detached true called setsid, sits in a group and a session of its own, and survives a
+// group kill (measured on this host: test/act-shell.test.mjs test 9 read 13 then 22 bytes from
+// such a grandchild after the group kill). /proc is the source of truth for the tree: every
+// /proc/<pid>/stat names its ppid, pgrp and session, read in process, no ps, no pkill, no shell.
+export const PROC_ROOT = '/proc';
+const WALK_ROUNDS = 32;
+
+/**
+ * One /proc/<pid>/stat line. The command name sits in parentheses and may itself hold spaces
+ * and parentheses, so the fields are read after the LAST ')': state ppid pgrp session ...
+ * starttime is field 22 of the line (index 19 after the name).
+ * @returns {{pid:number, state:string, ppid:number, pgrp:number, session:number, start:string|null}|null}
+ */
+export function parseProcStat(text) {
+  const t = String(text || '');
+  const open = t.indexOf('('), close = t.lastIndexOf(')');
+  if (open < 0 || close < open) return null;
+  const pid = Number(t.slice(0, open).trim());
+  const f = t.slice(close + 2).trim().split(/\s+/);
+  const ppid = Number(f[1]), pgrp = Number(f[2]), session = Number(f[3]);
+  if (!Number.isInteger(pid) || pid <= 0 || !Number.isInteger(ppid)) return null;
+  return { pid, state: f[0] || '?', ppid, pgrp: Number.isInteger(pgrp) ? pgrp : -1, session: Number.isInteger(session) ? session : -1, start: f[19] ?? null };
+}
+
+/** Every process /proc lists, by pid. Throws when procRoot cannot be read. */
+function readProcTable(procRoot) {
+  const table = new Map();
+  for (const n of readdirSync(procRoot)) {
+    const c = n.charCodeAt(0);
+    if (c < 48 || c > 57) continue;
+    let s;
+    try { s = parseProcStat(readFileSync(path.join(procRoot, n, 'stat'), 'utf8')); } catch { continue; /* exited between the list and the read */ }
+    if (s) table.set(s.pid, s);
+  }
+  return table;
+}
+
+/**
+ * Every descendant of rootPid, DEEPEST FIRST, closed over the ppid chains rooted at it. A
+ * process whose parent already died was reparented and lost its ppid link, but it keeps the
+ * session and the group it was born in: anything whose session or group id is rootPid (the
+ * child leads both, it was spawned detached) is a seed of the walk too. A pid still in use as
+ * a session or group id is never handed to a new process, so that match is never a stranger.
+ * Never lists rootPid itself, this process, or pid 1.
+ * @param {number} rootPid
+ * @param {string} [procRoot] where /proc is (tests plant a fake one)
+ * @returns {{pid:number, depth:number, ppid:number, start:string|null}[]|null} null when procRoot cannot be read
+ */
+export function descendants(rootPid, procRoot = PROC_ROOT) {
+  let table;
+  try { table = readProcTable(procRoot); } catch { return null; }
+  const kids = new Map();
+  for (const p of table.values()) {
+    if (!kids.has(p.ppid)) kids.set(p.ppid, []);
+    kids.get(p.ppid).push(p.pid);
+  }
+  const depth = new Map();
+  const queue = [];
+  for (const k of kids.get(rootPid) || []) queue.push([k, 1]);
+  for (const p of table.values()) if (p.session === rootPid || p.pgrp === rootPid) queue.push([p.pid, 1]);
+  while (queue.length) {
+    const [pid, d] = queue.shift();
+    if (pid === rootPid || pid === process.pid || pid <= 1) continue;
+    if (depth.has(pid) && depth.get(pid) >= d) continue;
+    depth.set(pid, d);
+    for (const k of kids.get(pid) || []) queue.push([k, d + 1]);
+  }
+  return [...depth.entries()]
+    .map(([pid, d]) => ({ pid, depth: d, ppid: table.get(pid).ppid, start: table.get(pid).start }))
+    .sort((a, b) => b.depth - a.depth || a.pid - b.pid);
+}
+
+const signal = (pid, sig) => { try { process.kill(pid, sig); return true; } catch { return false; } };
+
+/**
+ * The posix tree kill. FREEZE, then KILL: SIGSTOP the child so it forks no more, walk /proc,
+ * SIGSTOP every descendant the walk found, and walk again until a walk finds nothing new (a
+ * stopped process cannot fork, so the set closes). Then SIGKILL every descendant deepest
+ * first, the child, and the child's group for anything the walk could not see. Without a
+ * readable /proc: the group kill alone, and the note says what it misses.
+ * @returns {{by:string, proc:boolean, found:number, killed:number, rounds:number, note:string|null}}
+ */
+export function killPosixTree(rootPid, procRoot = PROC_ROOT) {
+  const report = { by: 'tree', proc: true, found: 0, killed: 0, rounds: 0, note: null };
+  const first = descendants(rootPid, procRoot);
+  if (first === null) {
+    report.proc = false;
+    report.note = 'no readable ' + procRoot + ' on this platform: the process group kill alone, which misses a detached grandchild';
+    try { process.kill(-rootPid, 'SIGKILL'); report.by = 'group'; }
+    catch { report.by = signal(rootPid, 'SIGKILL') ? 'child' : 'gone'; }
+    return report;
+  }
+  signal(rootPid, 'SIGSTOP');
+  const seen = new Map();
+  let walk = first;
+  for (let round = 0; round < WALK_ROUNDS; round++) {
+    report.rounds++;
+    let fresh = 0;
+    for (const x of walk || []) {
+      const had = seen.get(x.pid);
+      if (!had) { seen.set(x.pid, x); signal(x.pid, 'SIGSTOP'); fresh++; }
+      else if (x.depth > had.depth) had.depth = x.depth;
+    }
+    if (!fresh && round > 0) break;
+    walk = descendants(rootPid, procRoot);
+  }
+  report.found = seen.size;
+  for (const x of [...seen.values()].sort((a, b) => b.depth - a.depth)) if (signal(x.pid, 'SIGKILL')) report.killed++;
+  const root = signal(rootPid, 'SIGKILL');
+  try { process.kill(-rootPid, 'SIGKILL'); } catch { /* the group went down with its members */ }
+  if (!root && !report.killed) report.by = 'gone';
+  return report;
+}
+
 /**
  * Kill a child and everything it spawned. On win32 the only reliable way to reach a
  * grandchild is taskkill with /T, because a windows process has no process group the
- * parent can signal. On posix the child was spawned detached, which makes it the leader of
- * its own group, and a negative pid signals the whole group.
+ * parent can signal. On posix the /proc walk above takes the whole descendant tree down,
+ * detached grandchildren included; without /proc, the process group.
+ * @param {object} child  a ChildProcess
+ * @param {{procRoot?: string, report?: object}} [opts] report is filled with the posix walk's counts
  * @returns {string} how it was killed
  */
-export function killTree(child) {
+export function killTree(child, opts = {}) {
   if (!child || child.pid == null) return 'none';
   if (WIN) {
     const r = spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { windowsHide: true, encoding: 'utf8' });
@@ -222,8 +345,9 @@ export function killTree(child) {
     try { child.kill('SIGKILL'); } catch { /* already gone */ }
     return 'taskkill-failed';
   }
-  try { process.kill(-child.pid, 'SIGKILL'); return 'group'; }
-  catch { try { child.kill('SIGKILL'); return 'child'; } catch { return 'gone'; } }
+  const t = killPosixTree(child.pid, (opts && opts.procRoot) || PROC_ROOT);
+  if (opts && opts.report && typeof opts.report === 'object') Object.assign(opts.report, t);
+  return t.by;
 }
 
 /**
@@ -238,6 +362,8 @@ export function killTree(child) {
  * @param {string} [opts.stdin]
  * @param {object} [opts.brain]      when given, one ledger event per run
  * @param {boolean} [opts.checked]   the caller already ran allowArgv and allowCwd
+ * @param {string} [opts.procRoot]   where /proc is, for the posix tree kill (tests only; a
+ *                                   root that cannot be read falls back to the group kill)
  * @returns {Promise<{ok, code, stdout, stderr, ms, truncated, argv, cwd}>}
  */
 export function runArgv(argv, opts = {}) {
@@ -274,8 +400,10 @@ export function runArgv(argv, opts = {}) {
     }
     const out = { parts: [], bytes: 0, seen: 0, truncated: false }, err = { parts: [], bytes: 0, seen: 0, truncated: false };
     let settled = false, timedOut = false, killedBy = null, hardTimer = null;
+    const tree = {};
+    const killOpts = { procRoot: opts.procRoot || PROC_ROOT, report: tree };
     const cell = opts.cell || null;
-    const closer = cell ? retain(cell, () => { killTree(child); }) : null;
+    const closer = cell ? retain(cell, () => { killTree(child, killOpts); }) : null;
     const settle = (code, signal, thrown) => {
       if (settled) return;
       settled = true;
@@ -290,14 +418,15 @@ export function runArgv(argv, opts = {}) {
         seen: out.seen + err.seen, kept: out.bytes + err.bytes, maxBytes,
         argv: list, cwd,
         signal: signal ?? null, timedOut, killedBy, refused: false,
-        reason: thrown != null ? thrown : (timedOut ? 'killed by the ' + timeoutMs + 'ms timeout' : (code === 0 ? null : 'exit ' + code)),
+        tree: tree.by ? { by: tree.by, proc: tree.proc, found: tree.found, killed: tree.killed, rounds: tree.rounds } : null,
+        reason: thrown != null ? thrown : (timedOut ? 'killed by the ' + timeoutMs + 'ms timeout' + (tree.note ? '; ' + tree.note : '') : (code === 0 ? null : 'exit ' + code)),
       };
       logShell(opts.brain, res, names, 'act.shell');
       resolve(res);
     };
     const timer = setTimeout(() => {
       timedOut = true;
-      killedBy = killTree(child);
+      killedBy = killTree(child, killOpts);
       // A tree that does not go down still has to answer: the run is over either way.
       hardTimer = setTimeout(() => settle(null, 'SIGKILL', null), 2000);
     }, timeoutMs);

@@ -9,13 +9,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
-import { existsSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { Brain } from '../core/brain.mjs';
 import { attachWorld, closeWorld } from '../world/index.mjs';
 import {
-  allowArgv, allowCwd, childEnv, closeShell, denyAll, loadShellPolicy, normalizeShellPolicy,
+  allowArgv, allowCwd, childEnv, closeShell, denyAll, descendants, loadShellPolicy, normalizeShellPolicy, parseProcStat,
   registerShellKind, runArgv, shellActuator, tightenTo,
   BASE_ENV_NAMES, PROPOSAL_OP, SHELL_CELL_KIND, SHELL_SIGNAL_KIND,
 } from '../act/shell.mjs';
@@ -380,4 +380,126 @@ test('a policy is read from a nested shell block too, and a written file round t
   assert.deepEqual(b.argv, [], 'an unreadable policy denies everything rather than opening up');
   assert.ok(b.loadError, 'and it says why');
   assert.equal(readFileSync(file, 'utf8').length > 0, true, 'the test wrote its own policy, never the shipped one');
+});
+
+// ================================================================== the Linux tree kill
+// board 17 builder (the organism's item), shell-linux. On Linux the child leads its own
+// group and session, and a group kill alone missed test 9's detached grandchild on this host
+// (13 then 22 bytes). act/shell.mjs now walks /proc and closes every ppid chain rooted at the
+// child before the kill. These cases prove the walk two detached levels deep, with nothing
+// below the child at all, against a planted /proc, and with the walk switched off (the
+// control: the same grandchild keeps writing, so the walk is what kills it).
+
+const HAS_PROC = process.platform !== 'win32' && existsSync('/proc/self/stat');
+const J = JSON.stringify;
+const sizeOf = (f) => (existsSync(f) ? statSync(f).size : 0);
+const killPidFile = (f) => {
+  try { const pid = Number(readFileSync(f, 'utf8')); if (pid > 1) process.kill(pid, 'SIGKILL'); } catch { /* never written or already dead */ }
+};
+
+test('a detached great-grandchild, two detached levels below the child, stops writing with the tree', { skip: process.platform !== 'win32' && !HAS_PROC ? 'no /proc on this posix platform: the group kill fallback cannot reach a detached descendant' : false }, async (t) => {
+  const dir = newTmpDir(t);
+  const m2 = path.join(dir, 'grandchild.log'), m3 = path.join(dir, 'great-grandchild.log');
+  const p2 = path.join(dir, 'grandchild.pid'), p3 = path.join(dir, 'great-grandchild.pid');
+  // Every level is spawned DETACHED, so on Linux each one calls setsid and sits in a group
+  // and a session of its own: only the ppid chain links the great-grandchild to the child.
+  const great = 'const fs=require("fs");fs.writeFileSync(' + J(p3) + ',String(process.pid));setInterval(()=>{try{fs.appendFileSync(' + J(m3) + ',"x")}catch(e){}},100);';
+  const grand = 'const fs=require("fs"),cp=require("child_process");fs.writeFileSync(' + J(p2) + ',String(process.pid));const c=cp.spawn(process.execPath,["-e",' + J(great) + '],{stdio:"ignore",detached:true});c.unref();setInterval(()=>{try{fs.appendFileSync(' + J(m2) + ',"x")}catch(e){}},100);';
+  const parent = 'const cp=require("child_process");const c=cp.spawn(process.execPath,["-e",' + J(grand) + '],{stdio:"ignore",detached:true});c.unref();process.stdout.write("pid "+c.pid+"\\n");setInterval(()=>{},1000);';
+  t.after(() => { killPidFile(p2); killPidFile(p3); });
+
+  const t0 = Date.now();
+  const res = await runArgv([NODE, '-e', parent], { cwd: dir, policy: nodeOnly([dir]), timeoutMs: 2000 });
+  const elapsed = Date.now() - t0;
+  assert.equal(res.timedOut, true, 'the run reports the timeout');
+  assert.equal(res.ok, false, 'a killed run is not ok');
+  assert.ok(elapsed < 7000, 'it was killed near the timeout: ' + elapsed + 'ms');
+  if (HAS_PROC) {
+    assert.equal(res.killedBy, 'tree', 'the /proc walk did the kill: ' + res.killedBy);
+    assert.ok(res.tree && res.tree.proc === true && res.tree.found >= 2, 'the walk found the grandchild and the great-grandchild: ' + J(res.tree));
+  }
+
+  await wait(400);
+  const a2 = sizeOf(m2), a3 = sizeOf(m3);
+  await wait(900);
+  const b2 = sizeOf(m2), b3 = sizeOf(m3);
+  t.diagnostic('great-grandchild bytes ' + a3 + ' then ' + b3 + ', grandchild bytes ' + a2 + ' then ' + b2);
+  assert.ok(a2 > 0 && a3 > 0, 'both descendants were really alive and writing before the kill: ' + a2 + ' and ' + a3 + ' bytes');
+  assert.equal(b2, a2, 'the grandchild stopped writing (' + a2 + ' then ' + b2 + ' bytes)');
+  assert.equal(b3, a3, 'the great-grandchild stopped writing: two detached levels down went with the tree (' + a3 + ' then ' + b3 + ' bytes)');
+});
+
+test('a timeout on a child with 0 descendants still kills it and reports the timeout', async (t) => {
+  const dir = newTmpDir(t);
+  const t0 = Date.now();
+  const res = await runArgv([NODE, '-e', 'setInterval(()=>{},1000)'], { cwd: dir, policy: nodeOnly([dir]), timeoutMs: 1000 });
+  const elapsed = Date.now() - t0;
+  assert.equal(res.timedOut, true, 'the run reports the timeout');
+  assert.equal(res.ok, false, 'a killed run is not ok');
+  assert.equal(res.code, null, 'a killed child has no exit code');
+  assert.match(String(res.reason), /killed by the 1000ms timeout/, 'the reason names the timeout: ' + res.reason);
+  assert.ok(elapsed < 5000, 'it was killed near the timeout: ' + elapsed + 'ms');
+  if (HAS_PROC) {
+    assert.equal(res.killedBy, 'tree', 'the /proc walk ran: ' + res.killedBy);
+    assert.equal(res.tree.found, 0, 'the walk found nothing below the child: ' + J(res.tree));
+    assert.equal(res.tree.proc, true, 'the walk read /proc');
+    assert.equal(res.signal, 'SIGKILL', 'the child itself was killed: ' + res.signal);
+    assert.doesNotMatch(String(res.reason), /group kill alone/, 'no fallback is claimed when /proc was read');
+  }
+});
+
+test('the control: with /proc unreadable the group kill alone runs, the reason says so, and the detached grandchild keeps writing', { skip: process.platform === 'win32' ? 'win32 kills with taskkill /T, there is no group kill to control' : false }, async (t) => {
+  const dir = newTmpDir(t);
+  const marker = path.join(dir, 'grandchild.log');
+  // Test 9's grandchild, byte for byte, with the walk switched off by a /proc that is not there.
+  const grand = 'const fs=require("fs");setInterval(()=>{try{fs.appendFileSync(' + J(marker) + ',"x")}catch(e){}},100);';
+  const parent = 'const cp=require("child_process");const c=cp.spawn(process.execPath,["-e",' + J(grand) + '],{stdio:"ignore",detached:true});c.unref();process.stdout.write("pid "+c.pid+"\\n");setInterval(()=>{},1000);';
+  const res = await runArgv([NODE, '-e', parent], { cwd: dir, policy: nodeOnly([dir]), timeoutMs: 1000, procRoot: path.join(dir, 'no-proc-here') });
+  const pid = Number((res.stdout.match(/pid (\d+)/) || [])[1]);
+  t.after(() => { if (pid) { try { process.kill(pid, 'SIGKILL'); } catch { /* already dead */ } } });
+
+  assert.equal(res.timedOut, true, 'the run reports the timeout');
+  assert.equal(res.killedBy, 'group', 'the fallback is the process group kill: ' + res.killedBy);
+  assert.match(String(res.reason), /killed by the 1000ms timeout; no readable .*no-proc-here on this platform: the process group kill alone, which misses a detached grandchild/, 'the reason says the walk did not run: ' + res.reason);
+  assert.equal(res.tree.proc, false, 'the report says /proc was not read');
+  assert.ok(Number.isFinite(pid) && pid > 0, 'the parent told us its child pid: ' + J(res.stdout));
+
+  await wait(400);
+  const a = sizeOf(marker);
+  await wait(900);
+  const b = sizeOf(marker);
+  t.diagnostic('control grandchild bytes ' + a + ' then ' + b);
+  assert.ok(a > 0, 'the grandchild was alive before the kill: ' + a + ' bytes');
+  assert.ok(b > a, 'with the walk off the group kill misses the detached grandchild, which is why the walk exists (' + a + ' then ' + b + ' bytes)');
+});
+
+test('descendants walks a planted /proc: every ppid chain from the root, deepest first, orphans by session or group, never the root, this process or pid 1', (t) => {
+  const dir = newTmpDir(t);
+  const proc = path.join(dir, 'proc');
+  const stat = (pid, comm, ppid, pgrp, sid, start) => pid + ' (' + comm + ') S ' + ppid + ' ' + pgrp + ' ' + sid + ' 0 -1 4194304 0 0 0 0 0 0 0 0 20 0 1 0 ' + start + ' 1000 100';
+  const plant = (name, text) => { mkdirSync(path.join(proc, name), { recursive: true }); if (text != null) writeFileSync(path.join(proc, name, 'stat'), text); };
+  const ROOTPID = 700001;
+  plant('1', stat(1, 'init', 0, 1, 1, 5));
+  plant(String(ROOTPID), stat(ROOTPID, 'node', 699999, ROOTPID, ROOTPID, 100));
+  plant('700002', stat(700002, 'a (b) c', ROOTPID, 700002, 700002, 101));    // detached child of the root, a name with spaces and parens
+  plant('700003', stat(700003, 'node', 700002, 700003, 700003, 102));        // detached, two levels down
+  plant('700004', stat(700004, 'node', 700003, 700004, 700004, 103));        // detached, three levels down
+  plant('700005', stat(700005, 'orphan', 1, ROOTPID, ROOTPID, 104));        // reparented to 1, still in the root's session
+  plant('700006', stat(700006, 'node', 700005, 700006, 700006, 105));        // below the orphan
+  plant('700007', stat(700007, 'stranger', 1, 700007, 700007, 106));        // unrelated
+  plant('700008', stat(700008, 'stranger', 700007, 700007, 700007, 107));   // below the stranger
+  plant(String(process.pid), stat(process.pid, 'self', ROOTPID, ROOTPID, ROOTPID, 108)); // never this process
+  plant('700009', 'garbled');                                                 // unreadable stat, skipped
+  plant('700010', null);                                                      // no stat at all, skipped
+  plant('self', stat(ROOTPID, 'node', 699999, ROOTPID, ROOTPID, 100));         // not a pid, skipped
+
+  assert.deepEqual(parseProcStat(stat(700002, 'a (b) c', ROOTPID, 700002, 700002, 101)), { pid: 700002, state: 'S', ppid: ROOTPID, pgrp: 700002, session: 700002, start: '101' }, 'the fields are read after the LAST paren');
+  assert.equal(parseProcStat('garbled'), null, 'a garbled line is no process');
+
+  const d = descendants(ROOTPID, proc);
+  assert.deepEqual(d.map((x) => x.pid), [700004, 700003, 700006, 700002, 700005], 'the whole tree, deepest first, and nothing else: ' + J(d));
+  assert.deepEqual(d.map((x) => x.depth), [3, 2, 2, 1, 1], 'the depths of the walk');
+  assert.equal(d.some((x) => x.pid === process.pid || x.pid === 1 || x.pid === ROOTPID), false, 'never the root, this process or pid 1');
+  assert.deepEqual(descendants(700004, proc), [], 'a leaf has 0 descendants');
+  assert.equal(descendants(ROOTPID, path.join(dir, 'missing')), null, 'an unreadable /proc answers null, which is the group kill fallback');
 });

@@ -1,0 +1,162 @@
+{
+  "at": "2026-09-26T21:48:13.464Z",
+  "startedAt": "2026-09-26T21:47:25.814Z",
+  "command": "node test/budget-linux-bar.mjs (bar runs: node --test test/budget.test.mjs and node tools/budget.mjs --ram-mb 4000 --disk-mb 2048 --dir <tmp> --record <tmp>/r.json -- node --max-old-space-size=4000 --test test/budget.test.mjs with TEMP, TMP and TMPDIR at <tmp>)",
+  "node": "v24.9.0",
+  "host": {
+    "platform": "linux",
+    "cpus": 4,
+    "totalMemMb": 16096
+  },
+  "item": "budget-linux (board 17): the reaper of tools/budget.mjs walks /proc on Linux",
+  "isTheBar": true,
+  "barMet": true,
+  "bar": {
+    "rule": "every bar run (direct twice, wrapped as the gate runs it twice) exits 0 with every test passing, none failed or skipped, each under the 15000 ms gate row",
+    "rowMs": 15000
+  },
+  "runs": [
+    {
+      "label": "direct1",
+      "kind": "direct",
+      "exit": 0,
+      "wallMs": 5479,
+      "durationMs": 5402,
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "skipped": 0,
+      "peakRssMb": null,
+      "budgetOutcome": null,
+      "walkLine": "the /proc walk: wrapper killed outright left [] (control, walker absent: [\"great-grandchild\",\"grandchild\"]), library reap left [] (control, no /proc: [\"great-grandchild\",\"grandchild\"])",
+      "reaperLines": [
+        "BUDGET reaper: the /proc walk (act/shell.mjs killPosixTree) from 1 root found 2 descendants and killed 2 deepest first, the child last; the sweep killed 0 more, 0 left, 114 ms",
+        "BUDGET reaper: no readable /tmp/brain-budget-test-CUpo0t/walk-8/no-proc on this platform: the process group kill and the reported pids alone (a detached descendant the wrapper never reported escapes it), 0 killed in the re-listing, 304 ms"
+      ],
+      "failed": []
+    },
+    {
+      "label": "wrapped1",
+      "kind": "wrapped",
+      "exit": 0,
+      "wallMs": 5174,
+      "durationMs": 5049,
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "skipped": 0,
+      "peakRssMb": 712.695,
+      "budgetOutcome": "exit",
+      "walkLine": "the /proc walk: wrapper killed outright left [] (control, walker absent: [\"great-grandchild\",\"grandchild\"]), library reap left [] (control, no /proc: [\"great-grandchild\",\"grandchild\"])",
+      "reaperLines": [
+        "BUDGET reaper: the /proc walk (act/shell.mjs killPosixTree) from 1 root found 2 descendants and killed 2 deepest first, the child last; the sweep killed 0 more, 0 left, 126 ms",
+        "BUDGET reaper: no readable /tmp/budget-linux-wrapped1-il8e1Q/brain-budget-test-aPlcrO/walk-8/no-proc on this platform: the process group kill and the reported pids alone (a detached descendant the wrapper never reported escapes it), 0 killed in the re-listing, 304 ms"
+      ],
+      "failed": []
+    },
+    {
+      "label": "direct2",
+      "kind": "direct",
+      "exit": 0,
+      "wallMs": 6030,
+      "durationMs": 5980,
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "skipped": 0,
+      "peakRssMb": null,
+      "budgetOutcome": null,
+      "walkLine": "the /proc walk: wrapper killed outright left [] (control, walker absent: [\"great-grandchild\",\"grandchild\"]), library reap left [] (control, no /proc: [\"great-grandchild\",\"grandchild\"])",
+      "reaperLines": [
+        "BUDGET reaper: the /proc walk (act/shell.mjs killPosixTree) from 1 root found 2 descendants and killed 2 deepest first, the child last; the sweep killed 0 more, 0 left, 172 ms",
+        "BUDGET reaper: no readable /tmp/brain-budget-test-c0BbWP/walk-8/no-proc on this platform: the process group kill and the reported pids alone (a detached descendant the wrapper never reported escapes it), 0 killed in the re-listing, 303 ms"
+      ],
+      "failed": []
+    },
+    {
+      "label": "wrapped2",
+      "kind": "wrapped",
+      "exit": 0,
+      "wallMs": 6189,
+      "durationMs": 5796,
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "skipped": 0,
+      "peakRssMb": 637.75,
+      "budgetOutcome": "exit",
+      "walkLine": "the /proc walk: wrapper killed outright left [] (control, walker absent: [\"great-grandchild\",\"grandchild\"]), library reap left [] (control, no /proc: [\"great-grandchild\",\"grandchild\"])",
+      "reaperLines": [
+        "BUDGET reaper: the /proc walk (act/shell.mjs killPosixTree) from 1 root found 2 descendants and killed 2 deepest first, the child last; the sweep killed 0 more, 0 left, 178 ms",
+        "BUDGET reaper: no readable /tmp/budget-linux-wrapped2-0htYRn/brain-budget-test-crQeF9/walk-8/no-proc on this platform: the process group kill and the reported pids alone (a detached descendant the wrapper never reported escapes it), 0 killed in the re-listing, 309 ms"
+      ],
+      "failed": []
+    }
+  ],
+  "noiseMs": {
+    "direct": 551,
+    "wrapped": 1015
+  },
+  "control": {
+    "walkOff": {
+      "what": "the wrapped command on a minimal copy of tools/budget.mjs, bench/budget.mjs and test/budget.test.mjs as they are now with no act/shell.mjs, so the reaper cannot load its walker",
+      "run": {
+        "label": "control-walk-off",
+        "kind": "wrapped",
+        "exit": 1,
+        "wallMs": 9273,
+        "durationMs": 9073,
+        "tests": 11,
+        "pass": 10,
+        "fail": 1,
+        "skipped": 0,
+        "peakRssMb": 704.852,
+        "budgetOutcome": "exit",
+        "walkLine": "the /proc walk: wrapper killed outright left [\"great-grandchild\",\"grandchild\"] (control, walker absent: [\"great-grandchild\",\"grandchild\"]), library reap left [\"great-grandchild\",\"grandchild\"] (control, no /proc: [\"great-grandchild\",\"grandchild\"])",
+        "reaperLines": [
+          "BUDGET reaper: the walker act/shell.mjs did not load (Cannot find module '/tmp/budget-linux-bare-aH4STa/act/shell.mjs' imported from /tmp/budget-linux-bare-aH4STa/tools/budget.mjs): the process group kill and the reported pids alone (a detached descendant the wrapper never reported escapes it), 0 killed in the re-listing, 312 ms",
+          "BUDGET reaper: no readable /tmp/budget-linux-control-walk-off-1tOlSt/brain-budget-test-76XhJE/walk-8/no-proc on this platform: the process group kill and the reported pids alone (a detached descendant the wrapper never reported escapes it), 0 killed in the re-listing, 302 ms"
+        ],
+        "failed": [
+          "the Linux reaper walks /proc: a detached great-grandchild two levels below the child, born after the last report, dies with the killed wrapper (controls: the walker absent, and no readable /proc, the group kill alone, leave the detached descendants alive)"
+        ]
+      }
+    },
+    "head": {
+      "what": "the wrapped command on a minimal copy of the same three files at git HEAD f50959c (before board 17 touched them)",
+      "run": {
+        "label": "control-head",
+        "kind": "wrapped",
+        "exit": 1,
+        "wallMs": 15469,
+        "durationMs": 15270,
+        "tests": 10,
+        "pass": 9,
+        "fail": 1,
+        "skipped": 0,
+        "peakRssMb": 529.434,
+        "budgetOutcome": "exit",
+        "walkLine": null,
+        "reaperLines": [],
+        "failed": [
+          "a wrapper killed outright: its reaper takes the tree down (control: --no-reaper leaves the detached grandchild alive)"
+        ]
+      }
+    }
+  },
+  "gateRowThisHost": {
+    "at": "2026-09-26T20:53:54.217Z",
+    "node": "v24.9.0",
+    "ms": 15226,
+    "pass": 9,
+    "fail": 1,
+    "total": 10
+  },
+  "split": {
+    "development": "test/budget.test.mjs",
+    "heldOut": "none",
+    "contaminated": false,
+    "reason": "no held-out set exists for a test tally: the bar runs the same test file the reaper was developed against, on the same host; the claim is the file green here, not a generalisation"
+  },
+  "statement": "On linux with v24.9.0, test/budget.test.mjs ran twice directly (11 of 11 passing, exit 0, 5479 ms; 11 of 11 passing, exit 0, 6030 ms) and twice through tools/budget.mjs as the gate runs it (11 of 11 passing, exit 0, 5174 ms; 11 of 11 passing, exit 0, 6189 ms), against the file's 15000 ms gate row, with run to run noise of 551 ms direct and 1015 ms wrapped, so the bar is met. With the walk off (the same files, no act/shell.mjs beside them) the same wrapped command passed 10 of 11 (failed: the Linux reaper walks /proc: a detached great-grandchild tw), and the files at git HEAD f50959c passed 9 of 10, where the gate on this host read 9 of 10."
+}

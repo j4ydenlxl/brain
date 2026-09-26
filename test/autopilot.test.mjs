@@ -51,12 +51,27 @@
 //
 // Every run is against a FIXTURE root, never the brain tree, so nothing here can write a
 // source file of the brain.
-import test from 'node:test';
+//
+// Board 17 (gate-slow:test/autopilot.test.mjs; board 17 builder (the organism's item)): the same
+// tests and the same assertions, run faster. (a) The planted soak's real self/improve.mjs runs every
+// trial under tools/budget.mjs, which first waits for WAIT_FREE_RAM_MB (16384) free; on a host with
+// less RAM than that the wait lasts its full 1800 s and six tests timed out at 120 s, so free RAM
+// reads as at least that wait while the planted soak runs (a host fixture: its trials are a few MB).
+// (b) That soak starts before the first test and runs beside the synchronous tests (a yield before
+// each test lets its child processes be reaped); the real-gate runs and the two slow-test runs go
+// to worker threads at the start; the two CLI tests spawn without blocking. (c) Those four tests
+// and the soak tests run concurrently in one suite at the end, and each soak's wall is the shortest
+// that still fits the rounds it asserts (every wall assertion reads that wall). (d) Fixture gate
+// commands run their test files in one process (--test-isolation=none).
+import test, { describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, existsSync, cpSync, readdirSync } from 'node:fs';
-import { spawnSync } from 'node:child_process';
-import { tmpdir } from 'node:os';
+import { spawnSync, spawn } from 'node:child_process';
+import os, { tmpdir } from 'node:os';
 import path from 'node:path';
+import { Worker } from 'node:worker_threads';
+import { syncBuiltinESMExports } from 'node:module';
+import { WAIT_FREE_RAM_MB } from '../self/improve.mjs';
 import { ROOT, verifyPatch, applyUnifiedPatch } from '../self/code.mjs';
 import {
   allowTarget, splitCommand, gateDecision, runAutopilot, runGate, acquireLock, releaseLock,
@@ -72,6 +87,51 @@ import { plantInto, plantGaps } from './operators-plant.mjs';
 
 const TMP = mkdtempSync(path.join(tmpdir(), 'brain-autopilot-test-'));
 test.after(() => { try { rmSync(TMP, { recursive: true, force: true }); } catch { /* the OS will get it */ } });
+// Board 17: the three long fixtures (the planted soak, the real-gate runs, the slow-test runs) start
+// before the first test and run beside the synchronous ones; the tests that read them await them
+// where they stand. The synchronous tests never yield on their own, so a few turns of the event
+// loop before each test let the soak reap its trial processes and start the next one.
+// (the root before hook runs as it is registered, so it waits one turn for the module to finish)
+test.before(async () => { await new Promise((r) => setImmediate(r)); keptSoak(); gateRuns(); slowRuns(); });
+test.beforeEach(async () => { for (let i = 0; i < 4; i++) await new Promise((r) => setImmediate(r)); });
+
+// Board 17: run `body` (the text of a function body that sees A, the self/autopilot.mjs module, W,
+// the data, fs and path) in a worker thread, so its synchronous autopilot runs do not block this
+// thread; its return value comes back as JSON and the test asserts on it here.
+function inWorker(body, data) {
+  const code = [
+    "const { parentPort, workerData: W } = require('node:worker_threads');",
+    "const fs = require('node:fs');",
+    "const path = require('node:path');",
+    'import(W.autopilot).then((A) => {',
+    '  const out = (() => {\n' + body + '\n  })();',
+    '  parentPort.postMessage({ json: JSON.stringify(out) });',
+    '}).catch((e) => parentPort.postMessage({ error: String((e && e.stack) || e) }));',
+  ].join('\n');
+  const p = new Promise((resolve, reject) => {
+    const w = new Worker(code, { eval: true, workerData: { ...data, autopilot: new URL('../self/autopilot.mjs', import.meta.url).href } });
+    w.once('message', (m) => (m.error ? reject(new Error(m.error)) : resolve(JSON.parse(m.json))));
+    w.once('error', reject);
+    w.once('exit', (c) => reject(new Error('a worker exited ' + c + ' before it answered')));
+  });
+  p.catch(() => { /* the test that awaits it reports it */ });
+  return p;
+}
+
+// Board 17: spawnSync's answer ({ status, stdout, stderr }, utf8, killed at `timeout`) from an
+// asynchronous spawn, so a CLI run in the concurrent suite at the end never blocks the event loop
+// the soaks sleep on.
+function spawnAsync(cmd, args, { cwd, env, timeout }) {
+  return new Promise((resolve) => {
+    const c = spawn(cmd, args, { cwd, env });
+    let stdout = '', stderr = '';
+    c.stdout.setEncoding('utf8').on('data', (d) => { stdout += d; });
+    c.stderr.setEncoding('utf8').on('data', (d) => { stderr += d; });
+    const t = setTimeout(() => c.kill(), timeout);
+    c.on('error', (e) => { clearTimeout(t); resolve({ status: null, stdout, stderr: stderr + String(e) }); });
+    c.on('close', (status) => { clearTimeout(t); resolve({ status, stdout, stderr }); });
+  });
+}
 
 function fixture(files) {
   const dir = mkdtempSync(path.join(TMP, 'fx-'));
@@ -93,7 +153,9 @@ const AREA_TEST = HEAD + "import { area } from '../lib/scale.mjs';\ntest('area o
 const SCALE_TEST = HEAD + "import { scale } from '../lib/scale.mjs';\ntest('scale of 2 is 20', () => { assert.equal(scale(2), 20); });\n";
 const PATCH_TEN = '--- a/lib/scale.mjs\n+++ b/lib/scale.mjs\n@@ -1,2 +1,2 @@\n-\uFEFFexport const FACTOR = 5;\n+\uFEFFexport const FACTOR = 10;\n export function scale(x) { return x * FACTOR; }\n';
 const TEN = { key: 'fx:ten', file: 'lib/scale.mjs', test: 'test/scale.test.mjs', patch: PATCH_TEN };
-const GATE_ALL = 'node --test test/sum.test.mjs test/area.test.mjs test/scale.test.mjs';
+// Board 17: a fixture gate runs its test files in one process; its exit code is the verdict, as before
+const NODE_TEST = 'node --test --test-isolation=none';
+const GATE_ALL = NODE_TEST + ' test/sum.test.mjs test/area.test.mjs test/scale.test.mjs';
 const readLedger = (root) => {
   const dir = path.join(root, 'bench', 'verdicts', 'autopilot');
   if (!existsSync(dir)) return [];
@@ -154,7 +216,7 @@ test('gateDecision: green keeps, a regression reverts, a red tree keeps only a f
 test('a verified patch with a green gate is KEPT, snapshotted and ledgered with both hashes', () => {
   const root = fixture({ 'lib/sum.mjs': SUM_BUGGY, 'test/sum.test.mjs': SUM_TEST });
   const before = readFileSync(path.join(root, 'lib/sum.mjs'));
-  const r = runAutopilot({ root, candidates: [ADD], gateCmd: 'node --test test/sum.test.mjs' });
+  const r = runAutopilot({ root, candidates: [ADD], gateCmd: NODE_TEST + ' test/sum.test.mjs' });
   const d = r.decisions[0];
   assert.equal(d.decision, 'kept', d.reason);
   assert.equal(d.gate.verdict, 'GREEN');
@@ -195,37 +257,9 @@ test('a verified patch that breaks another test is REVERTED byte for byte (BOM a
   assert.equal(JSON.parse(readFileSync(path.join(root, 'state', 'self-code', d.id, 'outcome.json'), 'utf8')).decision, 'reverted');
 });
 
-test('the real gate program: a red tree keeps a fix with no regression, reverts one with a regression, and gate.json is restored', () => {
-  const root = fixture({
-    'lib/sum.mjs': SUM_BUGGY, 'test/sum.test.mjs': SUM_TEST,
-    'lib/scale.mjs': SCALE, 'test/area.test.mjs': AREA_TEST, 'test/scale.test.mjs': SCALE_TEST,
-  });
-  cpSync(path.join(ROOT, 'bench', 'gate.mjs'), path.join(root, 'bench', 'gate.mjs'));
-  const base = runGate({ root });
-  assert.equal(base.exit, 1);
-  assert.deepEqual(base.red.sort(), ['test/scale.test.mjs', 'test/sum.test.mjs']);
-  const r = runAutopilot({ root, candidates: [TEN] });
-  const [ten] = r.decisions;
-  assert.equal(ten.decision, 'reverted', ten.reason);
-  assert.deepEqual(ten.gate.regressions, ['test/area.test.mjs']);
-  assert.equal(ten.gateJsonRestored, true);
-  // read before any later gate run can rewrite it: it must be this run's baseline, the tree
-  // as it now is, not the reverted patch and not absent
-  const gjFile = path.join(root, 'bench', 'verdicts', 'gate.json');
-  assert.ok(existsSync(gjFile), 'gate.json is restored, not deleted');
-  const gj = JSON.parse(readFileSync(gjFile, 'utf8'));
-  const exitOf = (f) => gj.tests.find((t) => t.file === f).exit;
-  assert.deepEqual([exitOf('test/area.test.mjs') === 0, exitOf('test/scale.test.mjs') === 0, exitOf('test/sum.test.mjs') === 0], [true, false, false]);
-  const r2 = runAutopilot({ root, candidates: [ADD] });
-  const [add] = r2.decisions;
-  assert.equal(add.decision, 'kept', add.reason);
-  assert.equal(add.gate.verdict, 'RED-NO-REGRESSION');
-  assert.deepEqual(add.gate.fixed, ['test/sum.test.mjs']);
-});
-
 test('--dry verifies and writes nothing: no snapshot, no ledger, no lock, the file unchanged', () => {
   const root = fixture({ 'lib/sum.mjs': SUM_BUGGY, 'test/sum.test.mjs': SUM_TEST });
-  const r = runAutopilot({ root, dry: true, candidates: [ADD], gateCmd: 'node --test test/sum.test.mjs' });
+  const r = runAutopilot({ root, dry: true, candidates: [ADD], gateCmd: NODE_TEST + ' test/sum.test.mjs' });
   assert.equal(r.decisions[0].decision, 'would-apply');
   assert.equal(r.counts.wouldApply, 1);
   assert.equal(r.ledgerFile, null);
@@ -239,14 +273,14 @@ test('a live lock refuses a second autopilot; a dead one is taken over', () => {
   const dir = path.join(root, 'state', 'self-code');
   const held = acquireLock(dir);
   assert.equal(held.ok, true);
-  const r = runAutopilot({ root, candidates: [ADD], gateCmd: 'node --test test/sum.test.mjs' });
+  const r = runAutopilot({ root, candidates: [ADD], gateCmd: NODE_TEST + ' test/sum.test.mjs' });
   assert.equal(r.ok, false);
   assert.match(r.reason, /another autopilot/);
   assert.equal(readFileSync(path.join(root, 'lib/sum.mjs'), 'utf8'), SUM_BUGGY, 'refused before any write');
   releaseLock(held);
   const dead = spawnSync(process.execPath, ['-e', '0']).pid;
   writeFileSync(path.join(dir, LOCK_NAME), JSON.stringify({ pid: dead, at: 'then' }));
-  const r2 = runAutopilot({ root, candidates: [ADD], gateCmd: 'node --test test/sum.test.mjs' });
+  const r2 = runAutopilot({ root, candidates: [ADD], gateCmd: NODE_TEST + ' test/sum.test.mjs' });
   assert.equal(r2.ok, true, r2.reason);
   assert.equal(r2.lockTakenOver.pid, dead);
   assert.equal(r2.decisions[0].decision, 'kept');
@@ -273,7 +307,7 @@ test('a snapshot the gate never ruled on is restored by the next run', () => {
 test('a file that moves during verification, and a patch that makes its test run fewer tests, are refused', () => {
   const root = fixture({ 'lib/sum.mjs': SUM_BUGGY, 'test/sum.test.mjs': SUM_TEST });
   const moving = (a) => { const v = verifyPatch(a); writeFileSync(path.join(root, 'lib/sum.mjs'), SUM_BUGGY + '// moved\n'); return v; };
-  const r = runAutopilot({ root, candidates: [ADD], verify: moving, gateCmd: 'node --test test/sum.test.mjs' });
+  const r = runAutopilot({ root, candidates: [ADD], verify: moving, gateCmd: NODE_TEST + ' test/sum.test.mjs' });
   assert.deepEqual([r.decisions[0].decision, r.decisions[0].wall], ['refused', 'moved']);
 
   const root2 = fixture({
@@ -281,30 +315,10 @@ test('a file that moves during verification, and a patch that makes its test run
     'test/f.test.mjs': HEAD + "import * as m from '../lib/f.mjs';\ntest('v is 2', () => { assert.equal(m.v, 2); });\nif (!m.skip) test('never', () => { assert.ok(false); });\n",
   });
   const PATCH = '--- a/lib/f.mjs\n+++ b/lib/f.mjs\n@@ -1,2 +1,2 @@\n-export const v = 1;\n-export const skip = false;\n+export const v = 2;\n+export const skip = true;\n';
-  const r2 = runAutopilot({ root: root2, candidates: [{ key: 'fx:skip', file: 'lib/f.mjs', test: 'test/f.test.mjs', patch: PATCH }], gateCmd: 'node --test test/f.test.mjs' });
+  const r2 = runAutopilot({ root: root2, candidates: [{ key: 'fx:skip', file: 'lib/f.mjs', test: 'test/f.test.mjs', patch: PATCH }], gateCmd: NODE_TEST + ' test/f.test.mjs' });
   assert.equal(r2.decisions[0].decision, 'refused');
   assert.match(r2.decisions[0].reason, /fewer tests \(2 -> 1\)/);
   assert.equal(readFileSync(path.join(root2, 'lib/f.mjs'), 'utf8'), 'export const v = 1;\nexport const skip = false;\n');
-});
-
-test('the CLI: brain self-code --auto --dry and --auto reach the autopilot', () => {
-  const root = fixture({ 'lib/sum.mjs': SUM_BUGGY, 'test/sum.test.mjs': SUM_TEST });
-  const cand = path.join(root, '..', path.basename(root) + '-candidates.json');
-  writeFileSync(cand, JSON.stringify([ADD]));
-  const env = {};
-  for (const [k, v] of Object.entries(process.env)) if (!k.startsWith('NODE_TEST') && k !== 'NODE_OPTIONS') env[k] = v;
-  const cli = (...args) => spawnSync(process.execPath, [path.join(ROOT, 'bin', 'brain.mjs'), 'self-code', ...args], { cwd: ROOT, encoding: 'utf8', timeout: 90_000, env });
-  const common = ['--root', root, '--candidates', cand, '--gate-cmd', 'node --test test/sum.test.mjs'];
-  const dry = cli('--auto', '--dry', '--json', ...common);
-  assert.equal(dry.status, 0, dry.stderr);
-  const dj = JSON.parse(dry.stdout);
-  assert.deepEqual([dj.auto, dj.dry, dj.counts.wouldApply], [true, true, 1]);
-  assert.equal(readFileSync(path.join(root, 'lib/sum.mjs'), 'utf8'), SUM_BUGGY);
-  const live = cli('--auto', '--no-color', ...common);
-  assert.equal(live.status, 0, live.stderr);
-  assert.match(live.stdout, /KEPT fx:add/);
-  assert.match(live.stdout, /gate GREEN/);
-  assert.notEqual(readFileSync(path.join(root, 'lib/sum.mjs'), 'utf8'), SUM_BUGGY);
 });
 
 // ================================================================ Board 10: sources, the author, the record
@@ -353,12 +367,12 @@ test('parseOpenLines reads the OPEN: grammar and the bullets of Open sections, n
 
 test('authored.jsonl grows only on a KEPT patch: never on a revert, a refusal or a dry run', () => {
   const root = fixture({ 'lib/sum.mjs': SUM_BUGGY, 'test/sum.test.mjs': SUM_TEST, 'lib/scale.mjs': SCALE, 'test/area.test.mjs': AREA_TEST, 'test/scale.test.mjs': SCALE_TEST });
-  runAutopilot({ root, dry: true, candidates: [ADD], gateCmd: 'node --test test/sum.test.mjs' });
+  runAutopilot({ root, dry: true, candidates: [ADD], gateCmd: NODE_TEST + ' test/sum.test.mjs' });
   assert.equal(authoredLines(root).length, 0, 'a dry run appends nothing');
-  const r1 = runAutopilot({ root, candidates: [TEN, { key: 'fx:none', file: 'lib/sum.mjs', test: 'test/sum.test.mjs', patch: null }], gateCmd: 'node --test test/area.test.mjs test/scale.test.mjs' });
+  const r1 = runAutopilot({ root, candidates: [TEN, { key: 'fx:none', file: 'lib/sum.mjs', test: 'test/sum.test.mjs', patch: null }], gateCmd: NODE_TEST + ' test/area.test.mjs test/scale.test.mjs' });
   assert.deepEqual(r1.decisions.map((d) => d.decision), ['reverted', 'refused']);
   assert.equal(authoredLines(root).length, 0, 'a revert and a refusal append nothing');
-  const r2 = runAutopilot({ root, candidates: [ADD], gateCmd: 'node --test test/sum.test.mjs' });
+  const r2 = runAutopilot({ root, candidates: [ADD], gateCmd: NODE_TEST + ' test/sum.test.mjs' });
   assert.equal(r2.decisions[0].decision, 'kept');
   const lines = authoredLines(root);
   assert.equal(lines.length, 1, 'one kept patch, one line');
@@ -373,12 +387,12 @@ test('authored.jsonl grows only on a KEPT patch: never on a revert, a refusal or
 test('a census prune is written by the autopilot itself and KEPT when every test stays green; a pinned seed is refused', () => {
   const root = fixture({ 'seed/gen-p/index.mjs': P.SEED_INDEX, 'seed/gen-p/edges-000.mjs': P.SEED_EDGES, 'lib/net.mjs': P.NET, 'test/net.test.mjs': P.NET_TEST, 'bench/verdicts/census.json': P.CENSUS });
   const pinned = fixture({ 'seed/gen-p/index.mjs': P.SEED_INDEX, 'seed/gen-p/edges-000.mjs': P.SEED_EDGES, 'seed/gen-p/manifest.json': '{"hash":"' + 'a'.repeat(64) + '"}\n', 'lib/net.mjs': P.NET, 'test/net.test.mjs': P.NET_TEST, 'bench/verdicts/census.json': P.CENSUS });
-  const rp = runAutopilot({ root: pinned, sources: ['census'], gateCmd: 'node --test test/net.test.mjs' });
+  const rp = runAutopilot({ root: pinned, sources: ['census'], gateCmd: NODE_TEST + ' test/net.test.mjs' });
   assert.deepEqual([rp.decisions[0].decision, rp.decisions[0].wall], ['refused', 'patch']);
   assert.match(rp.decisions[0].reason, /genome\/emit\.mjs --prune/);
   assert.equal(readFileSync(path.join(pinned, 'seed/gen-p/edges-000.mjs'), 'utf8'), P.SEED_EDGES);
 
-  const r = runAutopilot({ root, sources: ['census'], gateCmd: 'node --test test/net.test.mjs' });
+  const r = runAutopilot({ root, sources: ['census'], gateCmd: NODE_TEST + ' test/net.test.mjs' });
   const d = r.decisions[0];
   assert.deepEqual([d.decision, d.source, d.author, d.evidence, d.gate.verdict], ['kept', 'census', 'deterministic:census-prune', 'preserve', 'GREEN']);
   assert.deepEqual([d.verification.passesBefore, d.verification.passesAfter], [true, true]);
@@ -392,7 +406,7 @@ test('a census prune is written by the autopilot itself and KEPT when every test
 test('an OPEN line goes to the author only while its test fails: authored, gated, KEPT; a stale one never reaches the model', () => {
   const root = fixture({ 'lib/mean.mjs': P.MEAN_BUGGY, 'test/mean.test.mjs': P.MEAN_TEST, 'notes/mean.md': P.MEAN_NOTE });
   const author = fakeAuthor(P.MEAN_PATCH, 'lib/mean.mjs');
-  const r = runAutopilot({ root, sources: ['notes'], author, gateCmd: 'node --test test/mean.test.mjs' });
+  const r = runAutopilot({ root, sources: ['notes'], author, gateCmd: NODE_TEST + ' test/mean.test.mjs' });
   assert.deepEqual(r.decisions.map((d) => [d.key, d.decision, d.wall ?? null]), [['notes:notes/mean.md:5', 'kept', null], ['notes:notes/mean.md:9', 'refused', 'stale']]);
   assert.equal(author.calls.length, 1, 'the model is asked once: the second OPEN line was stale by then');
   assert.equal(author.calls[0].mode, 'fix');
@@ -406,7 +420,7 @@ test('an OPEN line goes to the author only while its test fails: authored, gated
 
   const fixed = fixture({ 'lib/mean.mjs': P.MEAN_BUGGY.replace('let i = 1', 'let i = 0'), 'test/mean.test.mjs': P.MEAN_TEST, 'notes/mean.md': P.MEAN_NOTE });
   const idle = fakeAuthor(P.MEAN_PATCH, 'lib/mean.mjs');
-  const r2 = runAutopilot({ root: fixed, sources: ['notes'], author: idle, gateCmd: 'node --test test/mean.test.mjs' });
+  const r2 = runAutopilot({ root: fixed, sources: ['notes'], author: idle, gateCmd: NODE_TEST + ' test/mean.test.mjs' });
   assert.deepEqual(r2.decisions.map((d) => d.wall), ['stale', 'stale']);
   assert.equal(idle.calls.length, 0, 'no model call for a test that already passes');
   assert.equal(authoredLines(fixed).length, 0);
@@ -420,26 +434,11 @@ test('several OPEN lines naming one test run it once per tree state, never once 
   const note = '# count\n\nOPEN: lib/c.mjs test/count.test.mjs one\nOPEN: lib/c.mjs test/count.test.mjs two\nOPEN: lib/c.mjs test/count.test.mjs three\n';
   const root = fixture({ 'lib/c.mjs': 'export const c = 1;\n', 'test/count.test.mjs': COUNT_TEST, 'notes/count.md': note });
   const idle = fakeAuthor(P.MEAN_PATCH, 'lib/c.mjs');
-  const r = runAutopilot({ root, sources: ['notes'], author: idle, gateCmd: 'node --test test/count.test.mjs' });
+  const r = runAutopilot({ root, sources: ['notes'], author: idle, gateCmd: NODE_TEST + ' test/count.test.mjs' });
   assert.deepEqual(r.decisions.map((d) => [d.key, d.wall]), [['notes:notes/count.md:3', 'stale'], ['notes:notes/count.md:4', 'stale'], ['notes:notes/count.md:5', 'stale']]);
   assert.equal(idle.calls.length, 0, 'no model call for a test that already passes');
   const runs = readFileSync(path.join(root, 'runs.log'), 'utf8').split('\n').filter(Boolean).length;
   assert.equal(runs, 1, 'test/count.test.mjs ran ' + runs + ' times for 3 OPEN lines on one unchanged tree');
-});
-
-test('a slow green test is KEPT only when the patch keeps it green AND makes it at least 20 percent faster', () => {
-  const files = { 'lib/slow.mjs': P.SLOW_LIB, 'test/slow.test.mjs': P.SLOW_TEST, 'bench/verdicts/gate.json': P.gateJson([{ file: 'test/slow.test.mjs', pass: 1, fail: 0, total: 1, exit: 0, ms: 20_000 }]) };
-  const root = fixture(files);
-  const r = runAutopilot({ root, sources: ['slow'], author: fakeAuthor(P.SLOW_PATCH, 'lib/slow.mjs'), gateCmd: 'node --test test/slow.test.mjs' });
-  const d = r.decisions[0];
-  assert.deepEqual([d.decision, d.source, d.evidence, d.verification.mode], ['kept', 'slow', 'faster', 'faster']);
-  assert.ok(d.verification.afterMs <= 0.8 * d.verification.beforeMs, d.verification.beforeMs + ' ms -> ' + d.verification.afterMs + ' ms');
-  const same = fixture(files);
-  const NOOP = '--- a/lib/slow.mjs\n+++ b/lib/slow.mjs\n@@ -1 +1 @@\n-export const DELAY = 1500;\n+export const DELAY = 1500 + 0;\n';
-  const r2 = runAutopilot({ root: same, sources: ['slow'], author: fakeAuthor(NOOP, 'lib/slow.mjs'), gateCmd: 'node --test test/slow.test.mjs' });
-  assert.deepEqual([r2.decisions[0].decision, r2.decisions[0].wall], ['refused', 'evidence']);
-  assert.match(r2.decisions[0].reason, /not faster enough/);
-  assert.equal(readFileSync(path.join(same, 'lib/slow.mjs'), 'utf8'), P.SLOW_LIB);
 });
 
 test('the patch author runs on open weights only: a Claude or Anthropic model or endpoint is refused before any socket opens', () => {
@@ -505,20 +504,6 @@ test('the share: organism kept patches over all kept patches plus files landed b
   assert.ok(Number.isFinite(Date.parse(v.at)));
 });
 
-test('the CLI dry run on a planted tree prints candidates per source and writes nothing', () => {
-  const root = plant(P.plantAllSources, 'cli-all');
-  const env = {};
-  for (const [k, v] of Object.entries(process.env)) if (!k.startsWith('NODE_TEST') && k !== 'NODE_OPTIONS') env[k] = v;
-  const r = spawnSync(process.execPath, ['--max-old-space-size=1024', path.join(ROOT, 'bin', 'brain.mjs'), 'self-code', '--auto', '--dry', '--json', '--root', root], { cwd: ROOT, encoding: 'utf8', timeout: 90_000, env });
-  assert.equal(r.status, 0, r.stderr);
-  const j = JSON.parse(r.stdout);
-  assert.equal(j.author.on, false, 'the model author is off in a dry run');
-  assert.deepEqual(Object.keys(j.bySource).sort(), [...SOURCE_ORDER].sort());
-  assert.deepEqual([j.bySource.imagine.wouldApply, j.bySource.census.wouldApply, j.bySource.notes.refused, j.bySource.mutants.refused], [1, 1, 2, 1]);
-  assert.equal(existsSync(path.join(root, 'state')), false, 'no snapshot, no lock, no authored line');
-  assert.equal(readFileSync(path.join(root, 'lib/clamp.mjs'), 'utf8'), P.CLAMP_BUGGY);
-});
-
 // ------------------------------------------------------------------ Board 14: THE SOAK
 // Every soak here runs on a planted temp tree (test/operators-plant.mjs, a fixture gate), with its
 // copies under a temp base of its own, the gap source only, no author and gate-minutes 0.
@@ -544,7 +529,21 @@ const noRate = () => ({ ok: false, reason: 'not read in a test' });
 const SOAK_OPTS = { author: 'off', sources: 'gaps', 'gate-minutes': 0, 'idle-step-ms': 200, rateFn: noRate };
 
 // One real soak on the planted tune gap: knob-tune through the real self/improve.mjs on a copy.
-// Three tests below read it; it runs once, the first time one of them asks.
+// Several tests below read it; it runs once, started by test.before at the top of the file.
+// Board 17: its wall is 0.1 min (it was 0.2): a round plans min(6, floor(wall / 600 ms) - 3) trials
+// for this 0.01-minute gap, 6 at either wall, and the soak idles to its wall after the one round.
+const KEPT_SOAK_MIN = 0.1;
+// Board 17, the host fixture: improve() runs each trial under tools/budget.mjs, which first waits
+// until os.freemem() reaches WAIT_FREE_RAM_MB (16384, sized for his 64 GB PC; the wait ends at
+// 1800 s). On a host with less RAM than that the planted trials (a few MB each) never start. While
+// this soak runs, free RAM reads as the larger of the real value and that wait, and nothing else.
+function withFreeRamForTrials(start) {
+  const real = os.freemem;
+  os.freemem = () => Math.max(real(), (WAIT_FREE_RAM_MB + 1) * 1024 * 1024);
+  syncBuiltinESMExports();
+  const restore = () => { os.freemem = real; syncBuiltinESMExports(); };
+  try { return start().finally(restore); } catch (e) { restore(); throw e; }
+}
 let keptSoakP = null;
 function keptSoak() {
   if (keptSoakP) return keptSoakP;
@@ -561,10 +560,129 @@ function keptSoak() {
     return { lines };
   };
   const before = readFileSync(path.join(root, 'planted', 'tune.mjs'), 'utf8');
-  keptSoakP = runSoak({ ...SOAK_OPTS, soak: 0.2, root, tmpBase, refreshLedger: remeasure, log: (l) => logs.push(l) })
+  keptSoakP = withFreeRamForTrials(() => runSoak({ ...SOAK_OPTS, soak: KEPT_SOAK_MIN, root, tmpBase, refreshLedger: remeasure, log: (l) => logs.push(l) }))
     .then((r) => ({ r, root, tmpBase, logs, refreshCalls, before, after: readFileSync(path.join(root, 'planted', 'tune.mjs'), 'utf8') }));
+  keptSoakP.catch(() => { /* the tests that await it report it */ });
   return keptSoakP;
 }
+
+// Board 17: the real gate program runs five times in its test (about half a second each), so the
+// runs go to a worker thread from the start of the file, in this order: runGate on the red tree,
+// the TEN patch, gate.json read before any later gate run can rewrite it, the ADD patch. The test
+// (item 5 above) asserts on them in the concurrent suite at the end of the file.
+let gateRunsP = null;
+function gateRuns() {
+  if (gateRunsP) return gateRunsP;
+  const root = fixture({
+    'lib/sum.mjs': SUM_BUGGY, 'test/sum.test.mjs': SUM_TEST,
+    'lib/scale.mjs': SCALE, 'test/area.test.mjs': AREA_TEST, 'test/scale.test.mjs': SCALE_TEST,
+  });
+  cpSync(path.join(ROOT, 'bench', 'gate.mjs'), path.join(root, 'bench', 'gate.mjs'));
+  const body = [
+    'const base = A.runGate({ root: W.root });',
+    'const r = A.runAutopilot({ root: W.root, candidates: [W.TEN] });',
+    "const gjFile = path.join(W.root, 'bench', 'verdicts', 'gate.json');",
+    'const gjExists = fs.existsSync(gjFile);',
+    "const gj = gjExists ? JSON.parse(fs.readFileSync(gjFile, 'utf8')) : null;",
+    'const r2 = A.runAutopilot({ root: W.root, candidates: [W.ADD] });',
+    'return { base, r, gjExists, gj, r2 };',
+  ].join('\n');
+  gateRunsP = inWorker(body, { root, TEN, ADD });
+  return gateRunsP;
+}
+
+// Board 17: the slow test's two autopilot runs wait out the planted 1500 ms test four times between
+// them, so each runs in a worker thread of its own from the start of the file: the same
+// runAutopilot, the same two fixture trees and the same fake author (fakeAuthor's answer). The
+// planted delay is a wall-clock wait, so a busy neighbour stretches only the node start around it.
+// The test (item 15 above) asserts on them in the concurrent suite at the end of the file.
+let slowRunsP = null;
+function slowRuns() {
+  if (slowRunsP) return slowRunsP;
+  const files = { 'lib/slow.mjs': P.SLOW_LIB, 'test/slow.test.mjs': P.SLOW_TEST, 'bench/verdicts/gate.json': P.gateJson([{ file: 'test/slow.test.mjs', pass: 1, fail: 0, total: 1, exit: 0, ms: 20_000 }]) };
+  const root = fixture(files);
+  const same = fixture(files);
+  const NOOP = '--- a/lib/slow.mjs\n+++ b/lib/slow.mjs\n@@ -1 +1 @@\n-export const DELAY = 1500;\n+export const DELAY = 1500 + 0;\n';
+  const body = [
+    "const author = (patch) => () => ({ called: true, ok: true, patch, file: 'lib/slow.mjs', ms: 7, model: 'fake-open-weights' });",
+    "return W.runs.map((x) => A.runAutopilot({ root: x.root, sources: ['slow'], author: author(x.patch), gateCmd: W.gateCmd }));",
+  ].join('\n');
+  const gateCmd = NODE_TEST + ' test/slow.test.mjs';
+  slowRunsP = Promise.all([inWorker(body, { gateCmd, runs: [{ root, patch: P.SLOW_PATCH }] }), inWorker(body, { gateCmd, runs: [{ root: same, patch: NOOP }] })])
+    .then(([[r], [r2]]) => ({ root, same, runs: [r, r2] }));
+  slowRunsP.catch(() => { /* the test that awaits it reports it */ });
+  return slowRunsP;
+}
+
+// Board 17: the tests that wait (the real gate and the slow test on their workers, the two CLI tests
+// on their child processes, and every soak test to the end of the file) run in this one suite,
+// concurrently: each has its own fixture or planted tree, temp base, lock and soak file, and most of
+// a soak's wall is its idle sleep. The synchronous tests above have all finished before the suite
+// starts, so no soak here waits behind a blocked event loop.
+describe('the tests that wait: the real gate, the slow test, the CLI and the soak (Boards 14 and 15), concurrently', { concurrency: true }, () => {
+
+test('the real gate program: a red tree keeps a fix with no regression, reverts one with a regression, and gate.json is restored', async () => {
+  const { base, r, gjExists, gj, r2 } = await gateRuns();
+  assert.equal(base.exit, 1);
+  assert.deepEqual(base.red.sort(), ['test/scale.test.mjs', 'test/sum.test.mjs']);
+  const [ten] = r.decisions;
+  assert.equal(ten.decision, 'reverted', ten.reason);
+  assert.deepEqual(ten.gate.regressions, ['test/area.test.mjs']);
+  assert.equal(ten.gateJsonRestored, true);
+  // read before any later gate run can rewrite it: it must be this run's baseline, the tree
+  // as it now is, not the reverted patch and not absent
+  assert.ok(gjExists, 'gate.json is restored, not deleted');
+  const exitOf = (f) => gj.tests.find((t) => t.file === f).exit;
+  assert.deepEqual([exitOf('test/area.test.mjs') === 0, exitOf('test/scale.test.mjs') === 0, exitOf('test/sum.test.mjs') === 0], [true, false, false]);
+  const [add] = r2.decisions;
+  assert.equal(add.decision, 'kept', add.reason);
+  assert.equal(add.gate.verdict, 'RED-NO-REGRESSION');
+  assert.deepEqual(add.gate.fixed, ['test/sum.test.mjs']);
+});
+
+test('a slow green test is KEPT only when the patch keeps it green AND makes it at least 20 percent faster', async () => {
+  const { same, runs: [r, r2] } = await slowRuns();
+  const d = r.decisions[0];
+  assert.deepEqual([d.decision, d.source, d.evidence, d.verification.mode], ['kept', 'slow', 'faster', 'faster']);
+  assert.ok(d.verification.afterMs <= 0.8 * d.verification.beforeMs, d.verification.beforeMs + ' ms -> ' + d.verification.afterMs + ' ms');
+  assert.deepEqual([r2.decisions[0].decision, r2.decisions[0].wall], ['refused', 'evidence']);
+  assert.match(r2.decisions[0].reason, /not faster enough/);
+  assert.equal(readFileSync(path.join(same, 'lib/slow.mjs'), 'utf8'), P.SLOW_LIB);
+});
+
+test('the CLI: brain self-code --auto --dry and --auto reach the autopilot', async () => {
+  const root = fixture({ 'lib/sum.mjs': SUM_BUGGY, 'test/sum.test.mjs': SUM_TEST });
+  const cand = path.join(root, '..', path.basename(root) + '-candidates.json');
+  writeFileSync(cand, JSON.stringify([ADD]));
+  const env = {};
+  for (const [k, v] of Object.entries(process.env)) if (!k.startsWith('NODE_TEST') && k !== 'NODE_OPTIONS') env[k] = v;
+  const cli = (...args) => spawnAsync(process.execPath, [path.join(ROOT, 'bin', 'brain.mjs'), 'self-code', ...args], { cwd: ROOT, encoding: 'utf8', timeout: 90_000, env });
+  const common = ['--root', root, '--candidates', cand, '--gate-cmd', NODE_TEST + ' test/sum.test.mjs'];
+  const dry = await cli('--auto', '--dry', '--json', ...common);
+  assert.equal(dry.status, 0, dry.stderr);
+  const dj = JSON.parse(dry.stdout);
+  assert.deepEqual([dj.auto, dj.dry, dj.counts.wouldApply], [true, true, 1]);
+  assert.equal(readFileSync(path.join(root, 'lib/sum.mjs'), 'utf8'), SUM_BUGGY);
+  const live = await cli('--auto', '--no-color', ...common);
+  assert.equal(live.status, 0, live.stderr);
+  assert.match(live.stdout, /KEPT fx:add/);
+  assert.match(live.stdout, /gate GREEN/);
+  assert.notEqual(readFileSync(path.join(root, 'lib/sum.mjs'), 'utf8'), SUM_BUGGY);
+});
+
+test('the CLI dry run on a planted tree prints candidates per source and writes nothing', async () => {
+  const root = plant(P.plantAllSources, 'cli-all');
+  const env = {};
+  for (const [k, v] of Object.entries(process.env)) if (!k.startsWith('NODE_TEST') && k !== 'NODE_OPTIONS') env[k] = v;
+  const r = await spawnAsync(process.execPath, ['--max-old-space-size=1024', path.join(ROOT, 'bin', 'brain.mjs'), 'self-code', '--auto', '--dry', '--json', '--root', root], { cwd: ROOT, encoding: 'utf8', timeout: 90_000, env });
+  assert.equal(r.status, 0, r.stderr);
+  const j = JSON.parse(r.stdout);
+  assert.equal(j.author.on, false, 'the model author is off in a dry run');
+  assert.deepEqual(Object.keys(j.bySource).sort(), [...SOURCE_ORDER].sort());
+  assert.deepEqual([j.bySource.imagine.wouldApply, j.bySource.census.wouldApply, j.bySource.notes.refused, j.bySource.mutants.refused], [1, 1, 2, 1]);
+  assert.equal(existsSync(path.join(root, 'state')), false, 'no snapshot, no lock, no authored line');
+  assert.equal(readFileSync(path.join(root, 'lib/clamp.mjs'), 'utf8'), P.CLAMP_BUGGY);
+});
 
 test('the soak: state/self/STOP refuses it with exit 0 before any lock, soak file, ledger line or copy; a STOP written mid-soak ends it between rounds', { timeout: 120_000 }, async () => {
   const { root, tmpBase } = soakTree([fastGap(plantGaps().tune), fastGap(plantGaps().strategy)]);
@@ -707,11 +825,14 @@ test('the soak ends at its minute with every copy deleted, a leaked one swept, t
   };
   const logs = [];
   const t = Date.now();
-  const r = await runSoak({ ...SOAK_OPTS, soak: 0.1, root, tmpBase, improveFn: copying, log: (l) => logs.push(l) });
+  // Board 17: a 0.05-minute wall (it was 0.1): each of the three rounds needs 2400 ms left (two
+  // baseline runs and two trials of the 0.01-minute floor) and the fake improve returns at once
+  const WALL_MIN = 0.05;
+  const r = await runSoak({ ...SOAK_OPTS, soak: WALL_MIN, root, tmpBase, improveFn: copying, log: (l) => logs.push(l) });
   const ms = Date.now() - t;
   assert.equal(r.exitCode, 0, String(r.reason));
   assert.equal(r.status, 'done');
-  assert.ok(r.elapsedMs >= 6000 && ms >= 6000, 'it ran to its minute: ' + r.elapsedMs + ' ms');
+  assert.ok(r.elapsedMs >= WALL_MIN * 60_000 && ms >= WALL_MIN * 60_000, 'it ran to its minute: ' + r.elapsedMs + ' ms');
   assert.ok(r.overrunMs < 1500, 'and stopped there: overrun ' + r.overrunMs + ' ms');
   assert.equal(n, 3);
   assert.equal(r.copies.made, 3);
@@ -742,7 +863,7 @@ test('the soak grades itself: a soak under the bar writes bench/verdicts/soak-pa
   for (const k of ['at', 'command', 'node', 'isTheBar', 'barMet', 'split', 'statement']) assert.ok(k in v, 'the verdict has ' + k);
   assert.equal(v.isTheBar, false);
   assert.equal(v.barMet, false);
-  assert.match(v.notTheBarBecause, /^a soak of 0\.2 min is under the bar's 60$/);
+  assert.match(v.notTheBarBecause, new RegExp('^a soak of ' + String(KEPT_SOAK_MIN).replace('.', '\\.') + " min is under the bar's 60$"));
   assert.equal(v.soak.runId, r.runId);
   assert.equal(v.totals.gapsOnly.attempts, 1);
   assert.equal(v.kept.length, 1);
@@ -760,10 +881,13 @@ test('the soak grades itself: with the bar lowered on a planted tree, a soak wit
   const refuse = async () => { calls++; return { kept: false, reason: 'a planted refusal', trials: [{ kind: 'trial', seconds: 0.01 }] }; };
   const noModel = async () => { throw new Error('no model call in a test'); };
   const o = { ...SOAK_OPTS, root, tmpBase, improveFn: refuse, authorFn: noModel, queryTask: noTask, log: () => {} };
-  const proof = await runSoak({ ...o, soak: 0.05, author: 'off' });
+  // Board 17: the proof soak 0.01 min (it was 0.05; it needs only its exit 0), the bar soak and its
+  // lowered bar 0.05 min (they were 0.1): its three rounds each need 2400 ms left and return at once
+  const BAR_MIN = 0.05;
+  const proof = await runSoak({ ...o, soak: 0.01, author: 'off' });
   assert.equal(proof.exitCode, 0, String(proof.reason));
   assert.equal(proof.verdict.file, 'bench/verdicts/soak-partial.json');
-  const bar = await runSoak({ ...o, soak: 0.1, author: 'on', 'gate-after': 'on', barMinutes: 0.1 });
+  const bar = await runSoak({ ...o, soak: BAR_MIN, author: 'on', 'gate-after': 'on', barMinutes: BAR_MIN });
   assert.equal(bar.exitCode, 0, String(bar.reason));
   assert.equal(bar.verdict.file, 'bench/verdicts/soak.json');
   assert.deepEqual(bar.verdict.checks, { ranFullWall: true, gapsAttempts: true, gateGreenAfter: true, proofSoakExit0: true });
@@ -776,13 +900,13 @@ test('the soak grades itself: with the bar lowered on a planted tree, a soak wit
   assert.equal(v.checks.proofSoakExit0.runId, proof.runId);
   assert.equal(v.checks.proofSoakExit0.exit, 0);
   assert.match(v.checks.proofSoakExit0.exitFrom, /exit \(the code the soak returned to its CLI\)$/);
-  assert.match(v.bar, /^a 0\.1-minute unattended soak/);
+  assert.match(v.bar, new RegExp('^a ' + String(BAR_MIN).replace('.', '\\.') + '-minute unattended soak'));
   assert.match(v.statement, /Bar MET: ranFullWall pass, gapsAttempts pass, gateGreenAfter pass, proofSoakExit0 pass\./);
   assert.equal(existsSync(path.join(root, 'bench', 'verdicts', 'soak-history.jsonl')), false, 'nothing replaced yet');
   // the control: a copied .exit file is the process's own code and wins over the record
   mkdirSync(path.join(root, 'bench', 'verdicts', 'autopilot'), { recursive: true });
   writeFileSync(path.join(root, 'bench', 'verdicts', 'autopilot', 'soak1-' + proof.runId + '.exit'), 'exit 1\n2026-09-25T00:00:00Z\n');
-  const re = await regradeSoak({ root, runId: bar.runId, barMinutes: 0.1, write: true, queryTask: noTask });
+  const re = await regradeSoak({ root, runId: bar.runId, barMinutes: BAR_MIN, write: true, queryTask: noTask });
   assert.equal(re.ok, true);
   assert.equal(re.verdict.barMet, false);
   assert.equal(re.verdict.checks.proofSoakExit0.pass, false);
@@ -795,7 +919,7 @@ test('the soak grades itself: with the bar lowered on a planted tree, a soak wit
   assert.equal(hist[0].previous.soak.runId, bar.runId);
   assert.equal(readJ(path.join(root, 'bench', 'verdicts', 'soak.json')).barMet, false);
   // the same writer grading the same soak again replaces its own file without a second history line
-  const again = await regradeSoak({ root, runId: bar.runId, barMinutes: 0.1, write: true, queryTask: noTask });
+  const again = await regradeSoak({ root, runId: bar.runId, barMinutes: BAR_MIN, write: true, queryTask: noTask });
   assert.equal(again.wrote.archived, false);
   assert.equal(readFileSync(path.join(root, 'bench', 'verdicts', 'soak-history.jsonl'), 'utf8').split('\n').filter(Boolean).length, 1);
 });
@@ -876,3 +1000,5 @@ test('bench/autopilot.mjs --grade-soak keeps every number and line of the file i
   const lost = baselineKept(prev, { ...next, totals: { attempts: 150 } });
   assert.deepEqual(lost, { total: 4, kept: 3, missing: ['totals.attempts = 43'] });
 });
+
+}); // the soak suite (Board 17)

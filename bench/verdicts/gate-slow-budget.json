@@ -1,0 +1,301 @@
+{
+  "at": "2026-09-26T21:26:35.768Z",
+  "command": "node test/gate-slow-budget-bar.mjs (each run: node tools/budget.mjs --ram-mb 4000 --disk-mb 2048 --dir <tmp> --record <tmp>/budget-record.json -- node --max-old-space-size=4000 --test test/budget.test.mjs)",
+  "node": "v24.9.0",
+  "host": {
+    "platform": "linux",
+    "cpus": 4,
+    "totalMemMb": 16096
+  },
+  "gap": "gate-slow:test/budget.test.mjs",
+  "isTheBar": true,
+  "barMet": true,
+  "bar": {
+    "ms": 15000,
+    "rule": "lower is better: both runs of the trial under 15000 ms of wall time, every test passing",
+    "ledgerMs": 30574
+  },
+  "runs": [
+    {
+      "label": "bar1",
+      "wallMs": 3353,
+      "durationMs": 3240,
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "exit": 0,
+      "peakRssMb": 312.754,
+      "perTest": [
+        {
+          "name": "kill on RAM: a child allocating past a 200 MB cap is killed, exit 137, within 5 s of crossing",
+          "ok": true,
+          "ms": 716
+        },
+        {
+          "name": "kill on disk: the CLI kills a child writing past a 10 MB cap into the watched dir, exit 137",
+          "ok": true,
+          "ms": 366
+        },
+        {
+          "name": "pass-through exit code: 42 and 0 come back unchanged, a missing command is 127",
+          "ok": true,
+          "ms": 409
+        },
+        {
+          "name": "no orphan processes after a kill, proved by listing the pid tree (with a control that CAN see an orphan)",
+          "ok": true,
+          "ms": 773
+        },
+        {
+          "name": "a wrapper killed outright: its reaper takes the tree down (control: --no-reaper leaves the detached grandchild alive)",
+          "ok": true,
+          "ms": 153
+        },
+        {
+          "name": "kill on CPU seconds, and a status line at the status period",
+          "ok": true,
+          "ms": 609
+        },
+        {
+          "name": "library abort: an AbortSignal stops the whole tree, outcome aborted, exit 130",
+          "ok": true,
+          "ms": 107
+        },
+        {
+          "name": "ProcessTree: membership by identity, a reused pid is not the tree, an orphan still is",
+          "ok": true,
+          "ms": 0
+        },
+        {
+          "name": "DirMeter: new files, grown files and removed files, readdir only when a dir mtime moves",
+          "ok": true,
+          "ms": 22
+        },
+        {
+          "name": "parsers: /proc stat and status (the Linux container path), the Windows sample line, the CLI",
+          "ok": true,
+          "ms": 1
+        }
+      ]
+    },
+    {
+      "label": "bar2",
+      "wallMs": 3435,
+      "durationMs": 3328,
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "exit": 0,
+      "peakRssMb": 328.801,
+      "perTest": [
+        {
+          "name": "kill on RAM: a child allocating past a 200 MB cap is killed, exit 137, within 5 s of crossing",
+          "ok": true,
+          "ms": 717
+        },
+        {
+          "name": "kill on disk: the CLI kills a child writing past a 10 MB cap into the watched dir, exit 137",
+          "ok": true,
+          "ms": 354
+        },
+        {
+          "name": "pass-through exit code: 42 and 0 come back unchanged, a missing command is 127",
+          "ok": true,
+          "ms": 404
+        },
+        {
+          "name": "no orphan processes after a kill, proved by listing the pid tree (with a control that CAN see an orphan)",
+          "ok": true,
+          "ms": 772
+        },
+        {
+          "name": "a wrapper killed outright: its reaper takes the tree down (control: --no-reaper leaves the detached grandchild alive)",
+          "ok": true,
+          "ms": 261
+        },
+        {
+          "name": "kill on CPU seconds, and a status line at the status period",
+          "ok": true,
+          "ms": 607
+        },
+        {
+          "name": "library abort: an AbortSignal stops the whole tree, outcome aborted, exit 130",
+          "ok": true,
+          "ms": 108
+        },
+        {
+          "name": "ProcessTree: membership by identity, a reused pid is not the tree, an orphan still is",
+          "ok": true,
+          "ms": 1
+        },
+        {
+          "name": "DirMeter: new files, grown files and removed files, readdir only when a dir mtime moves",
+          "ok": true,
+          "ms": 22
+        },
+        {
+          "name": "parsers: /proc stat and status (the Linux container path), the Windows sample line, the CLI",
+          "ok": true,
+          "ms": 1
+        }
+      ]
+    }
+  ],
+  "control": {
+    "what": "the same trial command on test/budget.test.mjs as committed at 8a55dc4 (the intervention off), in a minimal copy holding tools/budget.mjs and bench/budget.mjs unchanged",
+    "runs": [
+      {
+        "label": "control1",
+        "wallMs": 15229,
+        "durationMs": 15130,
+        "tests": 10,
+        "pass": 9,
+        "fail": 1,
+        "exit": 1,
+        "peakRssMb": 561.402,
+        "perTest": [
+          {
+            "name": "kill on RAM: a child allocating past a 300 MB cap is killed, exit 137, within 5 s of crossing",
+            "ok": true,
+            "ms": 2031
+          },
+          {
+            "name": "kill on disk: the CLI kills a child writing past a 50 MB cap into the watched dir, exit 137",
+            "ok": true,
+            "ms": 2066
+          },
+          {
+            "name": "pass-through exit code: 42 and 0 come back unchanged, a missing command is 127",
+            "ok": true,
+            "ms": 854
+          },
+          {
+            "name": "no orphan processes after a kill, proved by listing the pid tree (with a control that CAN see an orphan)",
+            "ok": true,
+            "ms": 2390
+          },
+          {
+            "name": "a wrapper killed outright: its reaper takes the tree down (control: --no-reaper leaves the detached grandchild alive)",
+            "ok": false,
+            "ms": 3613
+          },
+          {
+            "name": "kill on CPU seconds, and a status line at the status period",
+            "ok": true,
+            "ms": 1509
+          },
+          {
+            "name": "library abort: an AbortSignal stops the whole tree, outcome aborted, exit 130",
+            "ok": true,
+            "ms": 2558
+          },
+          {
+            "name": "ProcessTree: membership by identity, a reused pid is not the tree, an orphan still is",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "DirMeter: new files, grown files and removed files, readdir only when a dir mtime moves",
+            "ok": true,
+            "ms": 21
+          },
+          {
+            "name": "parsers: /proc stat and status (the Linux container path), the Windows sample line, the CLI",
+            "ok": true,
+            "ms": 1
+          }
+        ]
+      },
+      {
+        "label": "control2",
+        "wallMs": 15216,
+        "durationMs": 15118,
+        "tests": 10,
+        "pass": 9,
+        "fail": 1,
+        "exit": 1,
+        "peakRssMb": 561.277,
+        "perTest": [
+          {
+            "name": "kill on RAM: a child allocating past a 300 MB cap is killed, exit 137, within 5 s of crossing",
+            "ok": true,
+            "ms": 2026
+          },
+          {
+            "name": "kill on disk: the CLI kills a child writing past a 50 MB cap into the watched dir, exit 137",
+            "ok": true,
+            "ms": 2064
+          },
+          {
+            "name": "pass-through exit code: 42 and 0 come back unchanged, a missing command is 127",
+            "ok": true,
+            "ms": 863
+          },
+          {
+            "name": "no orphan processes after a kill, proved by listing the pid tree (with a control that CAN see an orphan)",
+            "ok": true,
+            "ms": 2388
+          },
+          {
+            "name": "a wrapper killed outright: its reaper takes the tree down (control: --no-reaper leaves the detached grandchild alive)",
+            "ok": false,
+            "ms": 3612
+          },
+          {
+            "name": "kill on CPU seconds, and a status line at the status period",
+            "ok": true,
+            "ms": 1506
+          },
+          {
+            "name": "library abort: an AbortSignal stops the whole tree, outcome aborted, exit 130",
+            "ok": true,
+            "ms": 2558
+          },
+          {
+            "name": "ProcessTree: membership by identity, a reused pid is not the tree, an orphan still is",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "DirMeter: new files, grown files and removed files, readdir only when a dir mtime moves",
+            "ok": true,
+            "ms": 22
+          },
+          {
+            "name": "parsers: /proc stat and status (the Linux container path), the Windows sample line, the CLI",
+            "ok": true,
+            "ms": 1
+          }
+        ]
+      }
+    ]
+  },
+  "noiseMs": {
+    "bar": 82,
+    "control": 13
+  },
+  "gapMs": 11829,
+  "gapAboveNoise": true,
+  "gateRowThisHost": {
+    "at": "2026-09-26T20:53:54.217Z",
+    "node": "v24.9.0",
+    "ms": 15226,
+    "pass": 9,
+    "fail": 1,
+    "total": 10
+  },
+  "split": {
+    "development": {
+      "what": "test/budget.test.mjs itself: its fixtures, caps, sample periods and waits were changed and timed against the same planted children (bench/budget.mjs --plant) and the same wrapper (tools/budget.mjs, unchanged)",
+      "files": [
+        "test/budget.test.mjs"
+      ]
+    },
+    "heldOut": {
+      "what": "none: the bar re-times the same test file on the same host it was tuned on; his Windows PC (where the ledger measured 30574 ms) is the unseen host, measured at the next gate there",
+      "n": 0
+    },
+    "contaminated": "no held-out set: the bar times the same file the changes were developed against, on the same host"
+  },
+  "statement": "The trial command of gap gate-slow:test/budget.test.mjs ran twice in the tree on linux with v24.9.0 and took 3353 ms and 3435 ms of wall time (10 of 10 tests passing and 10 of 10 tests passing), against a bar of 15000 ms where the ledger measured 30574 ms on his PC, so barMet is true. The control, the same command on the file as committed at 8a55dc4, took 15229 ms and 15216 ms (9 of 10 passing and 9 of 10 passing), and a failing test stops at its failed assertion, so the control times are a lower bound for that file run whole. Run-to-run noise was 82 ms in the bar arm and 13 ms in the control arm; the gap between the arm means is 11829 ms. Nothing was held out: the same file on the same host was both tuned and timed, so the unseen host is his Windows PC at its next gate."
+}

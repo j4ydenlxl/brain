@@ -51,6 +51,16 @@
 // direct child down with it, but a detached or non-node grandchild survived that (measured), so a
 // detached reaper holding the wrapper's last report of the tree kills what is left.
 //
+// The Linux reaper (board 17 builder (the organism's item), gap budget-linux, 2026-09-26): on
+// Linux the reaper walks /proc BEFORE it kills anything, from the child and from every reported
+// member still alive under its own identity, along every ppid chain, deepest first, the child
+// last (act/shell.mjs killPosixTree, the shell-linux item's walker, imported by name and lazily,
+// in the reaper only: the wrapper itself never loads it). So a descendant the wrapper never
+// reported (born after its last sample, detached into a group and a session of its own) dies too
+// while its chain to the child holds. No ps, no pkill: /proc is the source. Without a readable
+// /proc, or when the walker cannot load, the reaper falls back to the report-based reap (the
+// process group kill and the reported pids) and its printed line says so. Windows is unchanged.
+//
 // Library form: budget(cmd, args, caps) resolves to the run record; caps takes ramMb, diskMb,
 // cpuS, dir, intervalMs, statusMs, ramMetric, record (a path, or false for none), stdio, env,
 // cwd, shell, keepOrphans, signal (an AbortSignal), waitFreeRamMb, waitMaxS, log (a line
@@ -772,6 +782,87 @@ export async function reap(rootPid, last) {
   return killed;
 }
 
+// ------------------------------------------------ the Linux reaper: the /proc walk
+// board 17 builder (the organism's item), gap budget-linux, 2026-09-26. reap() above kills the
+// reported pids and the child's group, then re-lists by parent links. On Linux that misses a
+// descendant the wrapper never reported once its parent is killed: a DETACHED one sits in a group
+// and a session of its own, and a killed parent's children are re-parented at once, so no link
+// leads to it any more. reapTree walks /proc FIRST, while every chain to the child still holds:
+// act/shell.mjs killPosixTree freezes a root with SIGSTOP, walks /proc until the walk closes
+// (a stopped process cannot fork), SIGKILLs every descendant deepest first, then the root and
+// its group. The roots are the child and every reported member still alive under its reported
+// identity (a pid whose start time moved is a stranger and is never walked). A re-listing of the
+// reported tree by identity sweeps up the rest. Without a readable /proc, or when the walker
+// does not load, it is reap() above, and the line says so.
+export const PROC_ROOT = '/proc';
+const WALKER_URL = new URL('../act/shell.mjs', import.meta.url).href;
+const WALKER_NAME = 'act/shell.mjs killPosixTree';
+
+function procStatOf(pid, procRoot) {
+  try { return parseProcStat(readFileSync(path.join(procRoot, String(pid), 'stat'), 'utf8')); } catch { return null; }
+}
+
+/**
+ * Take a dead wrapper's tree down on Linux. last is the wrapper's last report {ids: [[pid,
+ * created], ...], pgrp}; opts.procRoot is where /proc is (a test points it at a missing dir to
+ * turn the walk off), opts.walker replaces the lazily imported act/shell.mjs.
+ * @returns {Promise<{by:string, proc:boolean, walker:string|null, roots:number, found:number,
+ *   killed:number, swept:number, left:number|null, ms:number, note:string|null, line:string}>}
+ */
+export async function reapTree(rootPid, last = {}, opts = {}) {
+  const t0 = performance.now();
+  const procRoot = opts.procRoot || PROC_ROOT;
+  const ids = Array.isArray(last.ids) ? last.ids : [];
+  const pgrp = last.pgrp || 0;
+  const rep = { by: 'group', proc: false, walker: null, roots: 0, found: 0, killed: 0, swept: 0, left: null, ms: 0, note: null, line: '' };
+  try { readdirSync(procRoot); rep.proc = true; } catch { rep.note = 'no readable ' + procRoot + ' on this platform'; }
+  let walker = opts.walker || null;
+  if (rep.proc && !walker) {
+    try { walker = await import(WALKER_URL); } catch (e) { rep.note = 'the walker act/shell.mjs did not load (' + e.message + ')'; }
+  }
+  if (walker && typeof walker.killPosixTree !== 'function') { rep.note = 'act/shell.mjs exports no killPosixTree'; walker = null; }
+  if (!rep.proc || !walker) {
+    rep.killed = await reap(rootPid, last);
+    rep.ms = r3(performance.now() - t0);
+    rep.line = 'BUDGET reaper: ' + rep.note + ': the process group kill and the reported pids alone (a detached descendant the wrapper never reported escapes it), '
+      + rep.killed + ' killed in the re-listing, ' + rep.ms.toFixed(0) + ' ms';
+    return rep;
+  }
+  rep.by = 'walk';
+  rep.walker = WALKER_NAME;
+  const reported = new Map(ids.map(([pid, created]) => [Number(pid), String(created)]));
+  const aliveAs = (pid) => {
+    const s = procStatOf(pid, procRoot);
+    if (!s || s.state === 'Z' || s.state === 'X') return false;
+    return !reported.has(pid) || s.starttime === reported.get(pid);
+  };
+  const roots = [rootPid, ...[...reported.keys()].filter((pid) => pid !== rootPid)];
+  for (const pid of roots) {
+    if (!(pid > 1) || pid === process.pid || !aliveAs(pid)) continue; // checked at its turn: an earlier walk may have killed it
+    const t = walker.killPosixTree(pid, procRoot);
+    rep.roots++;
+    rep.found += t.found || 0;
+    rep.killed += t.killed || 0;
+  }
+  if (pgrp > 1) { try { process.kill(-pgrp, 'SIGKILL'); } catch { /* the group went down with its members */ } }
+  // the sweep: the reported tree re-listed by identity (and the child's group), as reap() does
+  const sampler = new ProcSampler(procRoot);
+  for (let round = 0; round < 3; round++) {
+    await sleep(round === 0 ? 50 : 300);
+    let procs;
+    try { procs = await sampler.sample(); } catch { break; }
+    const live = new ProcessTree(rootPid).seed(ids, pgrp).update(procs);
+    rep.left = live.length;
+    if (!live.length) break;
+    rep.swept += killPids(live.map((p) => p.pid), pgrp);
+  }
+  rep.ms = r3(performance.now() - t0);
+  rep.line = 'BUDGET reaper: the /proc walk (' + WALKER_NAME + ') from ' + rep.roots + ' root' + (rep.roots === 1 ? '' : 's') + ' found '
+    + rep.found + ' descendant' + (rep.found === 1 ? '' : 's') + ' and killed ' + rep.killed + ' deepest first, the child last; the sweep killed '
+    + rep.swept + ' more, ' + (rep.left === null ? 'unlisted' : rep.left + ' left') + ', ' + rep.ms.toFixed(0) + ' ms';
+  return rep;
+}
+
 function reaperMain(rootPid) {
   let last = { ids: [], pgrp: 0 };
   let done = false;
@@ -787,7 +878,11 @@ function reaperMain(rootPid) {
       else if (line.startsWith('T ')) { try { last = JSON.parse(line.slice(2)); } catch { /* a torn line: keep the previous report */ } }
     }
   });
-  const onEnd = () => { if (!done) reap(rootPid, last).catch(() => {}); };
+  // Linux: the /proc walk first (reapTree); its line goes to this detached process's stderr,
+  // which a wrapped run ignores and a reaper run by hand prints. Windows: reap(), as it was.
+  const onEnd = !IS_WIN
+    ? () => { if (!done) reapTree(rootPid, last).then((r) => { try { process.stderr.write(r.line + '\n'); } catch { /* no stderr */ } }).catch(() => {}); }
+    : () => { if (!done) reap(rootPid, last).catch(() => {}); };
   process.stdin.once('end', onEnd);
   process.stdin.once('error', onEnd);
 }
