@@ -4,7 +4,121 @@ His order of 2026-09-24: "Self improving to the magnitude of yourself is the top
 
 This note is the builder's record (author "board 14 builder"): what was built, what the bar measured and by which command, and what is still open. The model is OFF for this item: 0 model calls, no network.
 
-## The result, in one paragraph
+## Board 20 (author "board 20 builder"): the bar met, and the line on the site
+
+Queue item 8, his words: "Its gotta be nanoseconds", "It also needs to evolve over billions of years in a bunch of seconds", "clock dilation, and I SHOULD BE ABLE TO TEST AND USE IT". The bar is bench/spread.mjs's own rule, unchanged: ON beats OFF on the held-out score by more than the seed-to-seed noise (the larger sample sd of the two arms, 5 seeds), every kept improvement reaches all N within k, and at least one candidate is promoted. The rule now lives in generations/spread.mjs spreadChecks so a test can hold it; the arithmetic is the same.
+
+What the Windows verdict of 2026-09-24T20:34Z actually missed: its held-out gain 0.0156 was above its noise 0.014315 (onBeatsOffByMoreThanNoise true), and the bar failed on promotion (0 promoted, "no confirmed survivor"). Both halves were worked here.
+
+### The bar, on this host (Linux, 4 CPUs, Node v24.9.0, other builders' processes on the same CPUs)
+
+Command, under the budget, run once, detached (it wrote bench/verdicts/spread.json and spread-control.json, isTheBar true, barMet true, at 2026-09-26T22:52:42.051Z):
+
+```
+node tools/budget.mjs --ram-mb 4000 --disk-mb 2000 --dir <scratch>/bar --record <scratch>/budget-bar.json -- node --max-old-space-size=4000 bench/spread.mjs --cache <scratch>/mx --state-root <scratch>/bar-root/bar
+```
+
+Printed lines, verbatim:
+
+```
+[spread] held-out (grid/velocity:heldout + fresh1..4): ON 0.661906 0.691210 0.667149 0.684249 0.675692 | OFF 0.643602 0.639504 0.658826 0.647149 0.657827
+[spread] held-out mean ON 0.676041 vs OFF 0.649382: diff 0.026660, seed-to-seed noise 0.012005 (sd ON 0.012005, sd OFF 0.008609; paired sd 0.017462)
+[spread] reach: 834 of 834 kept improvements reached all 3 instances; 834 within k = 1 generations; the latest reached them all 1 generation(s) after it was kept
+[spread] survivors: 339 kept moves still held by every instance 16 generations later; 271 distinct confirmed on the file OPTIONS (base 0.574062), 6 beat the range noise
+[spread] promotion: 6 written, self/gaps.mjs writeLedger (6 lines), into <scratch>/bar-root/bar
+[spread] organism-years per wall hour: 5,757,760 organism-years / 317.437 s (the whole run) x 3,600 s per hour = 65,297,897
+[spread] bar: ON beats OFF by more than the noise true, every kept improvement reached all within k true, at least one promoted true -> barMet true
+BUDGET done exit 0: wall 317.61 s, peak ram 323.7MB, peak dir 0.0MB, cpu 330.40 s, 159 samples
+```
+
+The first promoted line: `bins 6 -> 5, crossoverRate 0.15 -> 0.206533, directed 0.75 -> 0.99975, initLenMax 8 -> 9, lmax 32 -> 48, mutationRate 1.5 -> 2.18067, strategy -> unpruned, simulated before 0.574062, after 0.703136 (gain 0.129073, noise 0.084302)`. The promotions went to a scratch state root (`--state-root`), never this tree's state/, which is on this item's deny list; a run without the flag writes state/self/gaps.jsonl as before.
+
+### The control of the change: the same command with the intervention off
+
+`... bench/spread.mjs --cache <scratch>/mx --intervention off --state-root <scratch>/bar-root/ctl` (bench/verdicts/spread-intervention-off.json, isTheBar false), run right after the bar:
+
+```
+[spread] held-out mean ON 0.671807 vs OFF 0.653189: diff 0.018619, seed-to-seed noise 0.019099 (sd ON 0.019099, sd OFF 0.009197; paired sd 0.027686)
+[spread] survivors: 391 kept moves still held by every instance 16 generations later; 118 distinct confirmed on the file OPTIONS (base 0.574062), 0 beat the range noise
+[spread] bar: ON beats OFF by more than the noise false, every kept improvement reached all within k true, at least one promoted false -> barMet false (a partial run is never the bar)
+```
+
+The run-to-run noise first, from the two verdict files (runBand; the OFF arm is the same code in both runs, its generations differ with the wall):
+
+```
+held-out, n 5 seeds: G bar 156,168,162,185,208 | G control 152,168,154,173,189
+OFF arm (the same code in both runs) run-to-run band 0.003807, per seed max 0.009984, sd 0.009197
+ON arm: intervention on 0.676041 vs off 0.671807 (moved 0.004234), sd on 0.012005 vs off 0.019099
+gain: intervention on 0.02666 (noise 0.012005, barMet true) vs off 0.018619 (noise 0.019099); promoted 6 vs 0
+```
+
+Reading it plainly: the ON mean moved by 0.004234, about the OFF arm's own run-to-run band (0.003807), so the mean alone is not a moved gap. What moved is the ON arm's seed-to-seed sd (0.019099 to 0.012005), which is the noise band the rule reads, and promotion (0 to 6). The held-out gain 0.026660 over the noise 0.012005 is one run; the control's 0.018619 against 0.019099 is the other.
+
+### (1) The noise, per n (development draws, never the held-out ones)
+
+The same command twice (my scratch harness, identical to the bench's arms: spread ON by wall, 30 s per arm, OFF matched in generations; scored on the development draws grid/velocity:spread-dev1..5, 800 tasks, seeds spread/dev/1..5), before any change:
+
+```
+band baseA vs baseB seeds 1,2,3,4,5 G 176,169,169,173,113 | 158,165,167,166,117
+n seeds 5, held bursts 3: control (OFF) run-to-run band 0.001531 (per seed max 0.008603); ON band 0.009764; gain -0.004467 vs 0.006828 band 0.011295; seed-to-seed noise max(sdOn,sdOff) 0.014272 | 0.015546
+n seeds 5, held bursts 6: control (OFF) run-to-run band 0.001358 (per seed max 0.005839); ON band 0.011491; gain -0.005987 vs 0.006862 band 0.012849; seed-to-seed noise max(sdOn,sdOff) 0.015441 | 0.015798
+n seeds 5, held bursts 12: control (OFF) run-to-run band 0.002639 (per seed max 0.012960); ON band 0.008040; gain -0.000205 vs 0.010475 band 0.010680; seed-to-seed noise max(sdOn,sdOff) 0.017554 | 0.022579
+n seeds 5, held bursts 24: control (OFF) run-to-run band 0.003174 (per seed max 0.008958); ON band 0.007666; gain 0.000221 vs 0.011062 band 0.010841; seed-to-seed noise max(sdOn,sdOff) 0.018089 | 0.020913
+```
+
+- The control arm's run-to-run band at the stated n (5 seeds, 3 held bursts) is 0.001531, under half the stated gain 0.0156, so n was not raised for the band.
+- Raising n in held-out bursts (3, 6, 12, 24 per organism) did not narrow the seed-to-seed noise the rule reads (0.014272 to 0.018089 in run A): that noise is lineage-to-lineage, not scorer noise. More seeds estimate a standard deviation better but do not shrink it, so n stays 5 and the heldSeeds stays 3.
+- Under wall-bound generations the ON arm moves run to run (band 0.009764) because G moves with the load; at a fixed G of 170 the same code gives a band of exactly 0.
+
+### (2) The gain: the defects named, the knob moved (development only), then held-out once
+
+What spread did to the population: every kept move was applied by every receiver on arrival, so one organism's single noisy trial (2 to 4 seeds, a loose genes noise rule) became every organism's config, the 3 lineages collapsed into one, and the ON arm's seed-to-seed sd carried one lineage's luck. And a survivor was confirmed as its own knob values laid on OPTIONS, a config no trial ever measured.
+
+The changes, in generations/spread.mjs (SPREAD fields; BEFORE_BOARD20 is the old setting):
+- `replicate: true`: a received move waits in the receiver's pending list; the receiver runs its own matched trial and takes it only above its own noise. `replicateAs: 'config'`: the receiver tries the whole config the sender kept the move in (the elite is shared, never imposed). The move still travels the conduits and still reaches all N within k.
+- `confirm: 'config'`: a survivor is confirmed as the whole config it was kept in, against the file's own OPTIONS, same promotion seeds, same range rule.
+
+Development, at a fixed 170 generations (so the OFF arm is identical across variants; seeds spread/dev/1..5):
+
+```
+g170base G 170,170,170,170,170 held bursts 3: meanOn 0.655484 meanOff 0.657485 gain -0.002001 noise 0.018423 (sdOn 0.008175, sdOff 0.018423) gain above noise false; promo confirmed move/config per seed 0/19 0/15 0/27 0/30 0/0
+g170rep G 170,170,170,170,170 held bursts 3: meanOn 0.674731 meanOff 0.657485 gain 0.017246 noise 0.018423 (sdOn 0.010880, sdOff 0.018423) gain above noise false; promo confirmed move/config per seed 0/14 0/17 0/19 0/13 0/1
+g170repcfg G 170,170,170,170,170 held bursts 3: meanOn 0.672464 meanOff 0.657485 gain 0.014979 noise 0.018423 (sdOn 0.008228, sdOff 0.018423) gain above noise false; promo confirmed move/config per seed 0/19 0/13 0/17 0/27 0/2
+g170repcfg G 170,170,170,170,170 held bursts 12: meanOn 0.676074 meanOff 0.658747 gain 0.017327 noise 0.017343 (sdOn 0.002597, sdOff 0.017343) gain above noise false; promo confirmed move/config per seed 0/19 0/13 0/17 0/27 0/2
+```
+
+And the bench's own development run with the chosen setting (`node bench/spread.mjs --dev`, wall-bound, bench/verdicts/spread-dev-partial.json):
+
+```
+[spread] held-out mean ON 0.676730 vs OFF 0.659260: diff 0.017470, seed-to-seed noise 0.019661 (sd ON 0.006345, sd OFF 0.019661; paired sd 0.022299)
+[spread] promotion: 4 written, self/gaps.mjs writeLedger (4 lines), into <scratch>/bar-root/dev
+```
+
+(That line says "held-out mean" because the label was fixed after the run; its draws were the development ones, as its first line and the verdict's split say.)
+
+Said straight: on the development draws the change moved the gain from about 0 to about 0.015 to 0.017 and cut the ON sd, but the gain did NOT clear the development noise (0.017 to 0.020, set by the OFF arm's seed 1). It was chosen there anyway, as the one change that moved the gain, and the held-out suite was then run once: 0.026660 against 0.012005, met. The held-out OFF sd (0.008609) is narrower than the development OFF sd; a reader should weigh the met bar with that in mind.
+
+### The site line: organism-years per wall hour
+
+web/ladder.mjs renders one line on the ladder page (card id per-hour). The page types no number and its walker (web/ladder-walk.mjs) accepts only fields, so each figure is a field of bench/verdicts/spread-rate.json (written by `node bench/spread.mjs --rate` and at the end of every spread bar run); at build time web/ladder.mjs does the arithmetic again over years.json and spread.json and shows a figure only where the record equals it; a source verdict without its field throws; a stale record is named, with no figure. `node web/build.mjs` printed `dist ladder/index.html    184286 bytes   1057 numbers traced in 732 spans from 17 verdict files; gsm8k partial, humaneval partial, arc whole; native whole, years whole`, and the line reads:
+
+```
+organism-years per wall hour: 6035882 for grid 300 s (502991 organism-years in 300000.49 ms, bench/verdicts/years.json) 502,991 organism-years / 300.000 s x 3,600 s per hour = 6,035,882 organism-years per wall hour (bench/verdicts/years.json, runs.2.years.organismYears over runs.2.years.wallMs); 65297897 for spread, both arms (5757760 organism-years in 317.4365 s, bench/verdicts/spread.json) 5,757,760 organism-years / 317.437 s x 3,600 s per hour = 65,297,897 organism-years per wall hour (bench/verdicts/spread.json, organismYears over wallS)
+```
+
+Not deployed (the orchestrator deploys). When years.json is re-run, the line names spread-rate.json as stale until `node bench/spread.mjs --rate` runs.
+
+### Tests
+
+`node --test --test-timeout=120000 test/spread.test.mjs test/ladder-page.test.mjs`: 14 tests, 14 pass. Added to test/spread.test.mjs: runBand on a planted pair of runs; spreadChecks on planted gains and bands (gain 0.9 and 1.1 of the band, a noisy ON arm, each other check failing alone, one seed); replication; confirm config. New test/ladder-page.test.mjs: the span equals the test's own arithmetic over the two files; planted years.json or spread.json without the field throws; a stale or bent record shows no figure. test/web-ladder.test.mjs and test/ladder.test.mjs still pass (47 of 47 with the two above).
+
+### Next rung
+
+- The bar met once, on one host; the control of the change missed on the same host. Run the bar and `--intervention off` again on a quiet machine, each twice, and print the band of the gain before calling the move robust.
+- On the development draws the gain sat just under the OFF arm's sd. A larger gain needs what the band corners forbid: every arm ends at 0.7x to 1.5x of OPTIONS. The promoted lines (lmax 32 -> 48, mutationRate 1.5 -> 2.18) are the way out: an improve round applying one moves the band itself.
+- The promotion trial (`--trial`) still scores the promotion seeds that selected the line (board 14's open item).
+
+## Board 14: the result, in one paragraph
 
 The bar ran once, to completion, and is **not met**. It printed a null with its noise.
 - **Held-out score:** ON 0.668053 against OFF 0.653430 on the same 5 seeds and the same generations. The difference is 0.014623; the seed-to-seed noise is 0.014646.

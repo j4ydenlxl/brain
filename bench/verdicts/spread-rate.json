@@ -1,0 +1,43 @@
+{
+  "name": "spread-rate",
+  "at": "2026-09-26T22:52:42.055Z",
+  "command": "node bench/spread.mjs --rate",
+  "node": "v24.9.0",
+  "isTheBar": false,
+  "derived": true,
+  "author": "board 20 builder",
+  "rule": "organism-years per wall hour = organism-years / wall seconds x 3600, each pair read from one verdict file (years.json: its longest grid run; spread.json: organismYears over wallS, the whole run)",
+  "sources": [
+    {
+      "key": "years",
+      "file": "years.json",
+      "labelField": "runs.2.label",
+      "organismYearsField": "runs.2.years.organismYears",
+      "wallField": "runs.2.years.wallMs",
+      "wallUnit": "ms",
+      "at": "2026-09-26T18:51:04.620Z",
+      "label": "grid 300 s",
+      "organismYears": 502991,
+      "wall": 300000.49380599987,
+      "wallS": 300.0004938059999,
+      "perWallHour": 6035882,
+      "arithmetic": "502,991 organism-years / 300.000 s x 3,600 s per hour = 6,035,882 organism-years per wall hour (bench/verdicts/years.json, runs.2.years.organismYears over runs.2.years.wallMs)"
+    },
+    {
+      "key": "spread",
+      "file": "spread.json",
+      "labelField": null,
+      "organismYearsField": "organismYears",
+      "wallField": "wallS",
+      "wallUnit": "s",
+      "at": "2026-09-26T22:52:42.051Z",
+      "label": "spread, both arms",
+      "organismYears": 5757760,
+      "wall": 317.4365,
+      "wallS": 317.4365,
+      "perWallHour": 65297897,
+      "arithmetic": "5,757,760 organism-years / 317.437 s x 3,600 s per hour = 65,297,897 organism-years per wall hour (bench/verdicts/spread.json, organismYears over wallS)"
+    }
+  ],
+  "statement": "grid 300 s: 502,991 organism-years / 300.000 s x 3,600 s per hour = 6,035,882 organism-years per wall hour (bench/verdicts/years.json, runs.2.years.organismYears over runs.2.years.wallMs); spread, both arms: 5,757,760 organism-years / 317.437 s x 3,600 s per hour = 65,297,897 organism-years per wall hour (bench/verdicts/spread.json, organismYears over wallS)."
+}

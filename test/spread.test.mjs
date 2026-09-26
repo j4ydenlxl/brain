@@ -210,3 +210,99 @@ test('populationIds and spreadConduits: the ring daemon/multiply.mjs names', () 
   assert.deepEqual(spreadConduits(['a', 'b']), [['a', 'b'], ['b', 'a']]);
   assert.equal(spreadConduits(populationIds(5)).length, 10);
 });
+
+// ---------------------------------------------------------------- board 20 builder: added cases
+import { runBand, spreadChecks, sampleSd as sd20, BEFORE_BOARD20, DEV_SEEDS, SPREAD as SPREAD20 } from '../generations/spread.mjs';
+
+test('runBand: the run-to-run band of a planted pair of runs', () => {
+  const a = [0.60, 0.62, 0.64], b = [0.61, 0.62, 0.66];
+  const r = runBand(a, b);
+  assert.equal(r.n, 3);
+  assert.ok(Math.abs(r.meanA - 0.62) < 1e-12 && Math.abs(r.meanB - 0.63) < 1e-12, 'the two means');
+  assert.ok(Math.abs(r.band - 0.01) < 1e-12, 'band is the gap between the two means: ' + r.band);
+  assert.ok(Math.abs(r.perSeed - 0.02) < 1e-12, 'the largest gap on one seed: ' + r.perSeed);
+  assert.ok(Math.abs(r.sd - Math.max(sd20(a), sd20(b))) < 1e-15 && Math.abs(r.sd - sd20(b)) < 1e-15, 'sd is the larger seed-to-seed sd, here run b');
+  // the same run twice is a band of exactly zero; a run of other seeds is refused
+  assert.equal(runBand(a, [...a]).band, 0);
+  assert.equal(runBand(a, [...a]).perSeed, 0);
+  assert.throws(() => runBand(a, [0.6, 0.62]), /same seeds/);
+  assert.throws(() => runBand([], []), /same seeds/);
+});
+
+test('spreadChecks: the bar rule of bench/spread.mjs on planted gains and bands', () => {
+  const off = [0.60, 0.61, 0.62, 0.63, 0.64];
+  const noiseOff = sd20(off);
+  // a gain far above the band, every kept move within k, one promoted: met
+  const on = off.map((x) => x + 0.05);
+  const r = spreadChecks({ on, off, keptOn: 10, withinK: 10, promoted: 1 });
+  assert.ok(Math.abs(r.diff - 0.05) < 1e-12 && Math.abs(r.noise - noiseOff) < 1e-12, 'diff ' + r.diff + ', noise ' + r.noise);
+  assert.deepEqual(r.checks, { onBeatsOffByMoreThanNoise: true, everyKeptReachedAllWithinK: true, promotedAtLeastOne: true });
+  assert.equal(r.met, true);
+  // a gain inside its band is not a gain: the same shift, but the band is wider than it
+  const small = off.map((x) => x + noiseOff * 0.9);
+  assert.equal(spreadChecks({ on: small, off, keptOn: 10, withinK: 10, promoted: 1 }).checks.onBeatsOffByMoreThanNoise, false, 'gain 0.9 of the band');
+  assert.equal(spreadChecks({ on: off.map((x) => x + noiseOff * 1.1), off, keptOn: 10, withinK: 10, promoted: 1 }).checks.onBeatsOffByMoreThanNoise, true, 'gain 1.1 of the band');
+  // the band is the LARGER sd of the two arms: a noisy ON arm widens it
+  const noisyOn = [0.60, 0.75, 0.62, 0.78, 0.64];
+  const rn = spreadChecks({ on: noisyOn, off, keptOn: 10, withinK: 10, promoted: 1 });
+  assert.ok(Math.abs(rn.noise - sd20(noisyOn)) < 1e-12 && rn.noise > noiseOff);
+  assert.equal(rn.checks.onBeatsOffByMoreThanNoise, rn.diff > rn.noise);
+  // each other check fails the bar on its own
+  assert.equal(spreadChecks({ on, off, keptOn: 10, withinK: 9, promoted: 1 }).met, false, 'one kept move late');
+  assert.equal(spreadChecks({ on, off, keptOn: 0, withinK: 0, promoted: 1 }).met, false, 'nothing kept');
+  assert.equal(spreadChecks({ on, off, keptOn: 10, withinK: 10, promoted: 0 }).met, false, 'nothing promoted');
+  // one seed has no band: never met
+  assert.equal(spreadChecks({ on: [0.9], off: [0.1], keptOn: 1, withinK: 1, promoted: 1 }).checks.onBeatsOffByMoreThanNoise, false);
+});
+
+test('replication: a received move is applied only after the receiver\'s own trial beats its noise', () => {
+  assert.deepEqual({ ...BEFORE_BOARD20 }, { replicate: false, replicateAs: 'move', confirm: 'move' }, 'the control of the board 20 change is the population as it was');
+  for (const d of DEV_SEEDS) assert.ok(!d.includes(':heldout') && !/:fresh\d/.test(d) && !/:draw\d/.test(d), d + ' is neither a held-out nor a searched draw name');
+  const pop = new SpreadPopulation({ suite, seed: 'rep', spread: true, registry: reg, cfg: { ...TINY, replicate: true } });
+  assert.equal(pop.replicate, true);
+  const m = pop.plant('i1', { config: { lmax: 40 } });
+  for (let t = 0; t <= pop.k; t++) pop.brain.tick(); // the origin emits on its tick, the receivers hear it k ticks later
+  for (const id of ['i0', 'i2']) {
+    const st = pop.state(id);
+    assert.equal(st.config.lmax, OPTIONS.lmax, id + ' has not applied the move on arrival');
+    assert.deepEqual(st.pending.map((p) => p.id), [m.id], id + ' holds it for its own trial');
+  }
+  assert.ok(pop.reach().find((x) => x.id === m.id).reachedAll, 'the move still reaches every organism');
+  const trials0 = pop.stats.trials;
+  pop.generation();
+  for (const id of ['i0', 'i2']) assert.equal(pop.state(id).pending.length, 0, id + ' ran its pending trial');
+  const s = pop.stats;
+  assert.ok(s.trials - trials0 >= 2, 'each receiver spent a trial on it');
+  assert.equal(s.replicated + s.replicaRefused + s.replicaHeld, 2, 'two receivers: each applied, refused or already held it');
+  for (const id of ['i0', 'i2']) {
+    const lmax = pop.state(id).config.lmax;
+    assert.ok(lmax === OPTIONS.lmax || lmax === 40 || s.kept > 1, id + ' either kept its own value or took the replicated one');
+  }
+  // a population that runs no trials cannot replicate: it applies on arrival, as before
+  const bare = new SpreadPopulation({ suite, seed: 'rep', spread: true, registry: reg, trials: false, cfg: { ...TINY, replicate: true } });
+  assert.equal(bare.replicate, false);
+  // spread OFF never replicates and carries no pending list
+  const off = new SpreadPopulation({ suite, seed: 'rep', spread: false, registry: reg, cfg: { ...TINY, replicate: true } });
+  assert.equal(off.replicate, false);
+  assert.equal(off.state('i0').pending, undefined);
+});
+
+test('confirm config: a survivor is confirmed as the whole config it was kept in, against the file OPTIONS', () => {
+  const pop = new SpreadPopulation({ suite, seed: 'confirm', spread: true, registry: reg, trials: false, cfg: TINY });
+  pop.plant('i0', { config: { lmax: 40 } });
+  const m = pop.plant('i0', { config: { bins: 7 } });
+  const surv = [{ ...pop.archive.get(m.id), survivedTo: m.gen + TINY.survive }];
+  const byMove = confirmSurvivors(suite.matrix, surv, { cfg: { ...pop.cfg, confirm: 'move' } }).rows[0];
+  const byConfig = confirmSurvivors(suite.matrix, surv, { cfg: { ...pop.cfg, confirm: 'config' } }).rows[0];
+  assert.deepEqual(byMove.knobs, ['bins'], 'move: only the knob the move turned');
+  assert.equal(byMove.config.lmax, OPTIONS.lmax);
+  assert.deepEqual(byConfig.knobs, ['bins', 'lmax'], 'config: every knob the kept config holds away from OPTIONS');
+  assert.equal(byConfig.config.lmax, 40);
+  assert.equal(byConfig.config.bins, 7);
+  assert.deepEqual(byConfig.beforeXs, byMove.beforeXs, 'the same base: the file OPTIONS on the same promotion seeds');
+  const line = promotedLine(byConfig, { runTag: 'confirm' });
+  assert.deepEqual(Object.keys(line.simulated.knobs), ['bins', 'lmax']);
+  assert.equal(line.simulated.confirm, 'config');
+  assert.equal(line.id, 'promoted:spread:bins+lmax:confirm');
+  assert.equal(SPREAD20.confirm === 'move' || SPREAD20.confirm === 'config', true);
+});

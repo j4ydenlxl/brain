@@ -519,6 +519,82 @@ const YEARS_HEADS = [
   { label: 'plateau second', re: /plateau/i, want: 'number' },
 ];
 
+// ------------------------------------------------------------------ organism-years per wall hour
+//
+// Board 20 builder. One line: organism-years per wall hour, for the grid plane of years.json and
+// for the spread run of spread.json. The page types no number, so each per-hour figure is a field
+// of bench/verdicts/spread-rate.json (node bench/spread.mjs --rate writes it, and so does every
+// spread run at its end). At build time this file does the arithmetic again over the two source
+// verdicts on disk and shows a figure only when the record holds exactly that arithmetic. A source
+// verdict on disk without its field throws: the line is never drawn from a guess. A record that
+// no longer matches its source (the source was re-run since) is named, with no number.
+
+export const RATE = 'spread-rate.json';
+export const HOUR_S = 3600;
+const RATE_KEYS = ['years', 'spread'];
+const fmtInt = (x) => Math.round(x).toLocaleString('en-US');
+
+/** Where a source verdict keeps its organism-years and its wall; null when the file is absent or does not parse. */
+export function rateSource(key, json) {
+  if (!json || typeof json !== 'object') return null;
+  if (key === 'years') {
+    const runs = Array.isArray(json.runs) ? json.runs : [];
+    let best = -1;
+    runs.forEach((r, i) => { if (r && r.plane === 'grid' && (best < 0 || (Number(r.budgetS) || 0) > (Number(runs[best].budgetS) || 0))) best = i; });
+    if (best < 0) throw new Error('ladder: years.json has no grid run in runs, so organism-years per wall hour cannot be computed from it');
+    return { key, file: 'years.json', labelField: 'runs.' + best + '.label', organismYearsField: 'runs.' + best + '.years.organismYears', wallField: 'runs.' + best + '.years.wallMs', wallUnit: 'ms' };
+  }
+  if (key === 'spread') return { key, file: 'spread.json', labelField: null, organismYearsField: 'organismYears', wallField: 'wallS', wallUnit: 's' };
+  throw new Error('rateSource: unknown source ' + key);
+}
+
+/** One source's arithmetic: organism-years over its wall in seconds, times the seconds of an hour. Throws when a field is missing. */
+export function rateOf(key, json) {
+  const s = rateSource(key, json);
+  if (!s) return null;
+  const y = resolve(json, s.organismYearsField), w = resolve(json, s.wallField);
+  if (!isNum(y) || y < 0) throw new Error('ladder: ' + s.file + ' has no organism-years at ' + s.organismYearsField + ', so organism-years per wall hour cannot be computed');
+  if (!isNum(w) || w <= 0) throw new Error('ladder: ' + s.file + ' has no wall at ' + s.wallField + ', so organism-years per wall hour cannot be computed');
+  const wallS = s.wallUnit === 'ms' ? w / 1000 : w;
+  const perWallHour = Math.round((y / wallS) * HOUR_S);
+  return {
+    ...s, at: json.at ?? null, label: s.labelField ? (resolve(json, s.labelField) ?? null) : 'spread, both arms', organismYears: y, wall: w, wallS, perWallHour,
+    arithmetic: fmtInt(y) + ' organism-years / ' + wallS.toFixed(3) + ' s x ' + fmtInt(HOUR_S) + ' s per hour = ' + fmtInt(perWallHour) + ' organism-years per wall hour (bench/verdicts/' + s.file + ', ' + s.organismYearsField + ' over ' + s.wallField + ')',
+  };
+}
+
+/** The record bench/spread.mjs --rate writes as bench/verdicts/spread-rate.json, from the parsed source verdicts. */
+export function rateRecord(sources, { command = null, node = process.version, at = new Date().toISOString() } = {}) {
+  const rows = RATE_KEYS.map((k) => rateOf(k, sources[k])).filter(Boolean);
+  return {
+    name: 'spread-rate', at, command, node, isTheBar: false, derived: true, author: 'board 20 builder',
+    rule: 'organism-years per wall hour = organism-years / wall seconds x ' + HOUR_S + ', each pair read from one verdict file (years.json: its longest grid run; spread.json: organismYears over wallS, the whole run)',
+    sources: rows,
+    statement: rows.length ? rows.map((r) => r.label + ': ' + r.arithmetic).join('; ') + '.' : 'no source verdict on disk.',
+  };
+}
+
+/** The line on the page: each figure a field of spread-rate.json that equals the arithmetic over its source now. */
+function rateLine(ctx, names) {
+  const head = '<section class="card" id="per-hour"><div class="head"><h2>Organism-years per wall hour</h2></div>';
+  const now = RATE_KEYS.map((k) => (names.includes(k + '.json') ? rateOf(k, ctx.json(k + '.json')) : null)).filter(Boolean);
+  if (!now.length) return head + '<p>organism-years per wall hour: ' + NM + ' (no years.json and no spread.json under bench/verdicts).</p></section>';
+  const rec = names.includes(RATE) ? ctx.json(RATE) : null;
+  const recRows = rec && Array.isArray(rec.sources) ? rec.sources : [];
+  const parts = now.map((s) => {
+    const i = recRows.findIndex((r) => r && r.key === s.key);
+    const r = i >= 0 ? recRows[i] : null;
+    const label = s.labelField ? or(ctx.t(s.file, s.labelField), esc(s.key)) : esc(s.label);
+    const same = r && r.perWallHour === s.perWallHour && r.organismYears === s.organismYears && r.wall === s.wall && r.organismYearsField === s.organismYearsField && r.wallField === s.wallField;
+    if (!same) return label + ': ' + NM + (rec ? ', ' + ctx.file(RATE) + ' was not computed from ' + ctx.file(s.file) + ' as it is on disk now; node bench/spread.mjs --rate rewrites it' : ', bench/verdicts/spread-rate.json is absent; node bench/spread.mjs --rate writes it');
+    return '<b>' + ctx.t(RATE, 'sources.' + i + '.perWallHour') + '</b> for ' + label + ' (' + ctx.t(s.file, s.organismYearsField) + ' organism-years in '
+      + ctx.t(s.file, s.wallField, s.wallUnit === 'ms' ? 'pts' : 'raw') + (s.wallUnit === 'ms' ? ' ms' : ' s') + ', ' + ctx.file(s.file) + ')'
+      + ' <span class="dim">' + ctx.t(RATE, 'sources.' + i + '.arithmetic') + '</span>';
+  });
+  return head + '<p class="rate" id="organism-years-per-wall-hour">organism-years per wall hour: ' + parts.join('; ') + '</p>'
+    + '<p class="dim">Read at build time from ' + (rec ? ctx.file(RATE) : 'bench/verdicts/spread-rate.json') + ', and shown only where it equals the arithmetic over the source verdict on disk now.</p></section>';
+}
+
 // ------------------------------------------------------------------ the board's own rows
 
 function p15Card(ctx, ladder) {
@@ -587,7 +663,7 @@ export function generateLadder({ verdictsDir = VERDICTS, template = TEMPLATE, ou
   const years = verdictCard(ctx, names, 'years', 'Organism-years',
     'His "billions of years in a bunch of seconds": generations of a whole population on a plane, counted as organism-years, with the arithmetic that makes the count, printed beside it.', YEARS_HEADS, yearsRuns);
 
-  const body = '<section class="sets">' + cards.map((c) => c.html).join('') + '</section>' + native.html + years.html + p15Card(ctx, ladder) + dailyCard(ctx, ladder)
+  const body = '<section class="sets">' + cards.map((c) => c.html).join('') + '</section>' + native.html + years.html + rateLine(ctx, names) + p15Card(ctx, ladder) + dailyCard(ctx, ladder)
     + (ladder && ladder.statement ? '<section class="card" id="statement"><div class="head"><h2>The board\'s own statement</h2></div><p class="statement">' + ctx.t(LADDER, 'statement') + '</p><p class="dim">From '
       + ctx.file(LADDER) + ', printed by <code>' + or(ctx.t(LADDER, 'command'), 'an unrecorded command') + '</code>.</p></section>' : '');
 

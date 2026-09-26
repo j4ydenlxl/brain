@@ -48,6 +48,21 @@
 // measurement and are counted apart.
 //
 // The model is never called here: the author operator is skipped with a printed "model off".
+//
+// BOARD 20 (author line: board 20 builder). Two defects of the spread above, each behind a SPREAD
+// field so its control is the same run with the field as it was (BEFORE_BOARD20):
+//   REPLICATE    a received move used to be applied on arrival, so one organism's single noisy
+//                trial became every organism's config and the N lineages collapsed into one. With
+//                SPREAD.replicate, a received move waits in the receiver's pending list and the
+//                receiver runs its own matched trial (its seeds, its noise rule) of the config the
+//                sender kept it in (SPREAD.replicateAs 'config'; 'move' tries only the move's values)
+//                against its own, and takes it only when it beats that noise: the elite is shared,
+//                never imposed. The move still travels the conduits and still reaches every organism.
+//   CONFIRM      a survivor used to be confirmed as its own knob values laid on OPTIONS, a config no
+//                trial ever measured (the move was kept inside an evolved config). With
+//                SPREAD.confirm = 'config', it is confirmed as the whole config it was kept in,
+//                against the file's own OPTIONS, on the same promotion seeds and the same range rule.
+// runBand and spreadChecks are the noise band and the bar rule of bench/spread.mjs as pure functions.
 import { existsSync, mkdirSync, appendFileSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -102,12 +117,49 @@ export const SPREAD = Object.freeze({
   heldSeeds: 3,       // held-out bursts per organism
   floorTasks: 1,      // the noise floor when every seed agrees: this many tasks of the objective
   maxSteps: 200,      // operator steps (refused ones included) one organism may take in one generation
+  replicate: true,    // spread on: a received move is applied only after the receiver's own matched trial beats its noise
+  pendingMax: 16,     // received moves an organism may hold for replication; the oldest beyond this are dropped
+  replicateAs: 'config', // what a receiver tries: 'move' (its config with the move's values) or 'config' (the whole config the sender kept it in)
+  confirm: 'config',  // promotion confirms 'move' (the survivor's own knob values on OPTIONS) or 'config' (the config it was kept in)
 });
+
+/** The population as it ran before board 20 (bench/spread.mjs --intervention off): the control of the board 20 change. */
+export const BEFORE_BOARD20 = Object.freeze({ replicate: false, replicateAs: 'move', confirm: 'move' });
+
+/** The development draws (board 20 builder): grid draws never searched and never held out, where a change is chosen. */
+export const DEV_SEEDS = Object.freeze(['grid/velocity:spread-dev1', 'grid/velocity:spread-dev2', 'grid/velocity:spread-dev3', 'grid/velocity:spread-dev4', 'grid/velocity:spread-dev5']);
 
 // ---------------------------------------------------------------- small pure helpers
 const r6 = (x) => Math.round(x * 1e6) / 1e6;
 const mean = (xs) => (xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : NaN);
 export function sampleSd(xs) { if (xs.length < 2) return 0; const m = mean(xs); return Math.sqrt(xs.reduce((s, x) => s + (x - m) ** 2, 0) / (xs.length - 1)); }
+
+/**
+ * The run-to-run band of one arm (board 20 builder): the same command run twice on the same seeds.
+ * band is how far the two runs' means sit apart; perSeed the largest gap on any one seed; sd the
+ * larger seed-to-seed standard deviation of the two runs (the noise bench/spread.mjs's bar reads).
+ */
+export function runBand(a, b) {
+  if (!Array.isArray(a) || !Array.isArray(b) || !a.length || a.length !== b.length) throw new Error('runBand: two runs of the same seeds are required');
+  return { n: a.length, meanA: mean(a), meanB: mean(b), band: Math.abs(mean(a) - mean(b)), perSeed: Math.max(...a.map((x, i) => Math.abs(x - b[i]))), sd: Math.max(sampleSd(a), sampleSd(b)) };
+}
+
+/**
+ * The bar rule of bench/spread.mjs, as a pure function of what the run measured: ON beats OFF on the
+ * held-out score by more than the seed-to-seed noise (the larger sample sd of the two arms, at least
+ * two seeds), every kept improvement reached all N within k, and at least one candidate promoted.
+ */
+export function spreadChecks({ on, off, keptOn, withinK, promoted }) {
+  const diffs = on.map((x, i) => x - off[i]);
+  const noise = Math.max(sampleSd(on), sampleSd(off));
+  const diff = on.length ? mean(diffs) : NaN;
+  const checks = {
+    onBeatsOffByMoreThanNoise: on.length >= 2 && on.length === off.length && diff > noise,
+    everyKeptReachedAllWithinK: keptOn > 0 && withinK === keptOn,
+    promotedAtLeastOne: promoted >= 1,
+  };
+  return { checks, diff, noise, sdOn: sampleSd(on), sdOff: sampleSd(off), pairedSd: sampleSd(diffs), met: Object.values(checks).every(Boolean) };
+}
 
 /**
  * The knobs of the simulated gap, banded the way self/knobs.mjs bands them (the registry's bandOf, or
@@ -175,10 +227,17 @@ if (!hasKind(KIND)) {
   });
 }
 
-/** A received move: its values are applied, its sender's config is a partner, its genes an offer. */
+/**
+ * A received move: its values are applied (or, when the organism replicates, queued for its own
+ * matched trial at its next generation), its sender's config is a partner, its genes an offer.
+ */
 function receive(st, m) {
-  for (const [k, v] of Object.entries(m.to.config || {})) st.config[k] = v;
-  if (m.to.strategy) st.strategy = m.to.strategy;
+  if (st.replicate) {
+    st.pending.push({ id: m.id, origin: m.origin, gen: m.gen, to: { config: { ...(m.to.config || {}) }, ...(m.to.strategy ? { strategy: m.to.strategy } : {}) }, config: { ...m.config }, strategyNow: m.strategyNow });
+  } else {
+    for (const [k, v] of Object.entries(m.to.config || {})) st.config[k] = v;
+    if (m.to.strategy) st.strategy = m.to.strategy;
+  }
   st.received++;
   st.partners[m.origin] = { config: { ...m.config }, strategy: m.strategyNow, t: m.gen };
   if (m.genes) st.offers.push({ genes: m.genes, fit: m.fit, from: m.origin });
@@ -213,6 +272,9 @@ export class SpreadPopulation {
     this.archive = new Map();
     this.history = [];
     this.stats = { generations: 0, engineGens: 0, evals: 0, trials: 0, refused: 0, kept: 0, received: 0, modelOff: 0, noPartner: 0, adopted: 0, reverted: 0, mutated: 0, measureGens: 0, wallMs: 0, cloneMs: 0 };
+    // replication (board 20 builder): only a spread population that runs trials can replicate what it receives
+    this.replicate = this.spread && this.trialsOn && !!this.cfg.replicate;
+    if (this.replicate) Object.assign(this.stats, { replicated: 0, replicaRefused: 0, replicaHeld: 0, replicaDropped: 0 });
     this.instYears = Object.fromEntries(this.ids.map((id) => [id, 0]));
     this.brain = new Brain({ name: 'spread/' + this.seed + (this.spread ? '' : ':off'), seed: this.seed, ledger: 'off', pruneEvery: 0, growth: { threshold: Number.MAX_SAFE_INTEGER } });
     this.brain.spreadArchive = this.archive;
@@ -224,6 +286,7 @@ export class SpreadPopulation {
         id, spread: this.spread, config: { ...this.options }, strategy, genes: genesToJSON(gg), parentGenes: null, genesFit: null, parentFit: null,
         cursor: newCursor(), seen: {}, partners: {}, offers: [], kept: 0, received: 0, trials: 0, seq: 0, yard: null, yardYears: 0,
       };
+      if (this.replicate) Object.assign(cell.state, { replicate: true, pending: [] });
     });
     if (this.spread) for (const [a, b] of spreadConduits(this.ids)) this.brain.connect(a, 'out', b, 'in', { w: 1, delay: this.cfg.delay });
     this.k = this.spread ? conduitReach(this.brain, this.ids) : null;
@@ -316,6 +379,26 @@ export class SpreadPopulation {
     return { spent: 1, kept, done: c.pi >= partners.length };
   }
 
+  /**
+   * Replication (board 20 builder): the moves this organism received wait in st.pending; each is
+   * run as a matched trial of the receiver's own (candidate = its config with the move's values,
+   * control = its config, its own engine seeds, its own noise rule) and applied only when it beats
+   * that noise. A move it already holds costs nothing. Returns the trials spent (at most budget).
+   */
+  replicateStep(id, st, g, budget) {
+    let spent = 0;
+    while (st.pending.length > this.cfg.pendingMax) { st.pending.shift(); this.stats.replicaDropped++; }
+    while (st.pending.length && spent < budget) {
+      const p = st.pending.shift();
+      const cand = this.cfg.replicateAs === 'config' ? { config: { ...st.config, ...p.config }, strategy: p.strategyNow || st.strategy } : { config: { ...st.config, ...p.to.config }, strategy: p.to.strategy || st.strategy };
+      if (cand.strategy === st.strategy && this.knobs.every((k) => cand.config[k.name] === st.config[k.name])) { this.stats.replicaHeld++; continue; }
+      const v = this.judge(id, st, cand, g, 'r' + spent);
+      spent++;
+      if (v.s > 0) { st.config = { ...cand.config }; st.strategy = cand.strategy; this.stats.replicated++; } else this.stats.replicaRefused++;
+    }
+    return spent;
+  }
+
   /** One organism's generation, on a clone of its own cell. */
   organismGeneration(id, g) {
     const c0 = performance.now();
@@ -325,6 +408,7 @@ export class SpreadPopulation {
     const budget = st.genes.budget, order = st.genes.order;
     const kept = [];
     let trials = 0, steps = 0, idle = 0;
+    if (st.replicate) trials += this.replicateStep(id, st, g, budget);
     while (trials < budget && steps < this.cfg.maxSteps && idle <= 2 * order.length) {
       steps++;
       const op = order[st.cursor.op % order.length];
@@ -531,20 +615,25 @@ export function confirmSurvivors(matrix, survivors, { options = OPTIONS, strateg
   const seeds = promoteSeeds(cfg.promoteSeeds);
   const base = seeds.map((s) => burst(matrix, options, strategy, s, cfg.burstGens, cfg.burstPop).fitness);
   const seen = new Set(), rows = [];
+  const whole = cfg.confirm === 'config';
   for (const a of survivors) {
-    const cfgTo = { ...options, ...(a.to.config || {}) }, stTo = a.to.strategy || strategy;
+    // 'move': the survivor's own knob values on OPTIONS; 'config' (board 20 builder): the whole config it was kept in, the one its trial measured
+    const cfgTo = whole ? { ...options, ...(a.config || a.to.config || {}) } : { ...options, ...(a.to.config || {}) };
+    const stTo = whole ? (a.strategyNow || a.to.strategy || strategy) : (a.to.strategy || strategy);
     const key = JSON.stringify([cfgTo, stTo]);
     if (seen.has(key)) continue;
     seen.add(key);
     const after = seeds.map((s) => burst(matrix, cfgTo, stTo, s, cfg.burstGens, cfg.burstPop).fitness);
     const gain = mean(after.map((x, i) => x - base[i]));
     const noise = noiseOf('range', after, base, floor);
-    rows.push({ move: a, config: cfgTo, strategy: stTo, before: r6(mean(base)), after: r6(mean(after)), gain: r6(gain), noise: r6(noise), confirmed: gain > noise, beforeXs: base.map(r6), afterXs: after.map(r6) });
+    const knobs = whole ? Object.keys(options).filter((k) => cfgTo[k] !== options[k]).sort() : Object.keys(a.to.config || {}).sort();
+    const strategyTo = whole ? (stTo !== strategy ? stTo : null) : (a.to.strategy || null);
+    rows.push({ move: a, config: cfgTo, strategy: stTo, knobs, strategyTo, confirm: whole ? 'config' : 'move', before: r6(mean(base)), after: r6(mean(after)), gain: r6(gain), noise: r6(noise), confirmed: gain > noise, beforeXs: base.map(r6), afterXs: after.map(r6) });
   }
   // one line per knob set: the best confirmed gain
   const best = new Map();
   for (const r of rows.filter((x) => x.confirmed)) {
-    const key = Object.keys(r.move.to.config || {}).sort().join('+') + (r.move.to.strategy ? '+strategy' : '');
+    const key = r.knobs.join('+') + (r.strategyTo ? '+strategy' : '');
     if (!best.has(key) || r.gain > best.get(key).gain) best.set(key, r);
   }
   return { rows, confirmed: [...best.values()].sort((a, b) => b.gain - a.gain).slice(0, cfg.maxPromote), baseXs: base.map(r6), seeds };
@@ -564,8 +653,9 @@ export function promotedTrial() {
 /** The ledger line of one confirmed survivor. */
 export function promotedLine(row, { runTag, at = new Date().toISOString(), options = OPTIONS } = {}) {
   const a = row.move;
-  const knobs = Object.keys(a.to.config || {}).sort();
-  const what = knobs.map((k) => 'OPTIONS.' + k + ' ' + options[k] + ' -> ' + row.config[k]).concat(a.to.strategy ? ['STRATEGY ' + STRATEGY + ' -> ' + a.to.strategy] : []).join(', ');
+  const knobs = row.knobs || Object.keys(a.to.config || {}).sort();
+  const strategyTo = row.knobs ? row.strategyTo : (a.to.strategy || null);
+  const what = knobs.map((k) => 'OPTIONS.' + k + ' ' + options[k] + ' -> ' + row.config[k]).concat(strategyTo ? ['STRATEGY ' + STRATEGY + ' -> ' + strategyTo] : []).join(', ');
   const trial = promotedTrial();
   return {
     id: 'promoted:spread:' + (knobs.join('+') || 'strategy') + ':' + runTag,
@@ -574,12 +664,12 @@ export function promotedLine(row, { runTag, at = new Date().toISOString(), optio
     distance: r6(row.after - row.before),
     verdictFile: 'bench/verdicts/spread.json', benchCommand: 'node tools/budget.mjs --ram-mb 6000 --disk-mb 64 --dir <out> -- node --max-old-space-size=6000 bench/spread.mjs',
     trial, files: [REL], since: at, better: 'higher',
-    why: 'promoted from simulation: ' + what + ' was kept by ' + a.origin + ' (' + a.operator + ') at generation ' + a.gen + ' of run ' + runTag + ', held by every organism ' + SPREAD.survive
+    why: 'promoted from simulation: ' + what + (row.confirm === 'config' ? ' is the config ' + a.origin + ' held when it kept ' + a.id + ' (' + a.operator + ') at generation ' : ' was kept by ' + a.origin + ' (' + a.operator + ') at generation ') + a.gen + ' of run ' + runTag + ', held by every organism ' + SPREAD.survive
       + ' generations later, and confirmed on the file own OPTIONS: before ' + row.before + ', after ' + row.after + ' (gain ' + row.gain + ' over the range noise ' + row.noise + ')',
     author: 'organism (' + a.operator + ')',
     simulated: {
       before: row.before, after: row.after, gain: row.gain, noise: row.noise, beforeXs: row.beforeXs, afterXs: row.afterXs,
-      knobs: Object.fromEntries(knobs.map((k) => [k, { asRead: options[k], to: row.config[k] }])), strategy: a.to.strategy || null,
+      knobs: Object.fromEntries(knobs.map((k) => [k, { asRead: options[k], to: row.config[k] }])), strategy: strategyTo, confirm: row.confirm || 'move',
       keptBy: a.origin, operator: a.operator, gen: a.gen, survivedTo: a.survivedTo, trialBefore: a.before, trialAfter: a.after, trialGain: a.gain, trialNoise: a.noise, rule: a.rule, run: runTag,
     },
   };
