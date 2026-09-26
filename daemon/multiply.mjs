@@ -49,9 +49,15 @@
 // Every message across the worker boundary, both directions and workerData, goes through
 // runtime/protocol.mjs ownBytes (postToPlane on this side, post in the worker).
 //
-//   node daemon/multiply.mjs instance --dir <popDir>/inst-<id>
+//   node daemon/multiply.mjs instance --dir <popDir>/inst-<id> [--heartbeat-ms 1000]
 //   node daemon/multiply.mjs population --dir <popDir> [--wall-s 240] [--seed 1] [--size 3]
 //   node daemon/multiply.mjs prebuild --cache <dir>   (build the suite's matrices once into a cache)
+//
+// Author: board 17 builder (the organism's item), gap gate-slow:test/multiply.test.mjs. instance.json
+// organism.mindBytes is passed through to live() (absent, the build keeps its default of 40000
+// bytes), so a test organism can build its language region from a short text instead of
+// retraining the full one at every start and restore; and "instance --heartbeat-ms N" sets the
+// heartbeat period (default 1000 ms) for a test that times its kill on the heartbeat.
 import { Worker, isMainThread, parentPort, workerData, threadId } from 'node:worker_threads';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync, rmSync, readdirSync, statSync, copyFileSync, openSync, closeSync, appendFileSync } from 'node:fs';
@@ -708,6 +714,9 @@ export async function runInstance(instDir, { out = (l) => console.log(l), heartb
       const { live } = await import('./run.mjs');
       payload = await live({
         name: BRAIN_NAME, majors: org.majors, substrateUnits: org.units, seed: 'multiply:' + inst.seed, checkpointEvery: org.checkpointEvery, chunk: org.chunk,
+        // organism.mindBytes (optional): the language model's training text in bytes, passed to
+        // live() as it stands (absent: buildWhole's own default); board 17 builder (the organism's item)
+        mindBytes: org.mindBytes,
         wallMs, loopEvery: 0, selfEvery: 0, genEvery: 0, dreamEvery: 0, ruler: false, ledger: 'summary', ledgerBudgetMb: org.ledgerBudgetMb,
         instance: id, onCheckpoint,
         out: (line) => {
@@ -915,7 +924,10 @@ async function main(argv) {
   const cmd = a._[0];
   if (cmd === 'instance') {
     if (!a.dir) throw new Error('instance: --dir <instance dir> is required');
-    await runInstance(a.dir);
+    // --heartbeat-ms N: the heartbeat period (default DEFAULTS.heartbeatMs, 1000); a test that times a
+    // kill on the heartbeat passes a shorter one (board 17 builder (the organism's item))
+    const heartbeatMs = Number(a['heartbeat-ms']);
+    await runInstance(a.dir, Number.isFinite(heartbeatMs) && heartbeatMs >= 10 ? { heartbeatMs } : {});
     return;
   }
   if (cmd === 'prebuild') {

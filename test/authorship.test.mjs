@@ -245,3 +245,182 @@ test('6. the real tree, read only: the share over launched boards 8 to 12, per b
   const share = r.text.split('\n').find((l) => l.startsWith('SHARE (cumulative): '));
   assert.ok(share && share.includes('denominator ' + v.denominator + ' ('), share);
 });
+
+// ------------------------------------------------------------------ the commits since the last derived board
+// Author: board 17 builder (the organism's item), gap missed:authorship.json. Added cases:
+//   7. the Linux cloud session's LANDED lines and commit subjects (a lower-case item, a number
+//      among the words, a second board) are landings; a "not" is never one
+//   8. the author line of one added line, and a commit's author in the header's order (merge,
+//      subject organism, subject board, board author line, organism author line, the orchestrator),
+//      over a planted git log text; a mention (Markdown prose, a JSON value, a string) is no author
+//   9. readCommitWindow over a planted git (a reader function, no process): the base, the split,
+//      the share with its parts, and barOf; the control: the same rows with the organism's line
+//      gone move the share from 1/3 to 0/3
+//  10. the real checkout, read only: every commit since the last derived board is attributed and
+//      the COMMITS line prints its numerator and denominator; a --root that is no directory here
+//      is read from the checkout; --no-commits (the control arm) leaves the two files alone
+import {
+  authorOfLine, attributeCommit, marksFromPatches, commitsFromLog, summarizeCommits, readCommitWindow, barOf,
+  resolveRoot, saysOrganismAuthored, computeShare, PARSER_HEAD, ROOT as TOOL_ROOT,
+} from '../tools/authorship.mjs';
+
+test('7. the Linux session\'s LANDED lines and subjects: a lower-case item, a number among the words, a second board', () => {
+  const root = plant({
+    'docs/LOG.md': [
+      '- 2026-09-26 15:15 EDT BOARD 18 LANDED in the $250 cloud session (wf_ff09d1ae-320, 6 agents)',
+      '- 2026-09-26 17:06 EDT BOARD 20 host LANDED (wf_3d46f962-980, 2 agents)',
+      '- 2026-09-26 18:00 EDT BOARD 17 WAVES 1 AND 2 LANDED in the $250 cloud session (shell-linux from wf_7d418774-6d0)',
+      '- 2026-09-26 18:03 EDT BOARD 21 AND BOARD 20 SPEED LANDED in the $250 cloud session (wf_b7808252-6f4, 4 agents)',
+      '- 2026-09-26 19:00 EDT BOARD 22 not LANDED (the control: a "not" is no landing)',
+      '- 2026-09-26 19:01 EDT BOARD 23 NOT LANDED',
+      '',
+    ].join('\n'),
+  });
+  assert.deepEqual([landedFromLog(root, 18).at, landedFromLog(root, 18).lineNo], ['2026-09-26T19:15:00Z', 1]);
+  assert.deepEqual([landedFromLog(root, 20).at, landedFromLog(root, 20).lineNo, landedFromLog(root, 20).runId], ['2026-09-26T21:06:00Z', 2, 'wf_3d46f962-980'], 'board 20 lands first on its host line');
+  assert.deepEqual([landedFromLog(root, 17).at, landedFromLog(root, 17).lineNo], ['2026-09-26T22:00:00Z', 3]);
+  assert.deepEqual([landedFromLog(root, 21).at, landedFromLog(root, 21).lineNo, landedFromLog(root, 21).runId], ['2026-09-26T22:03:00Z', 4, 'wf_b7808252-6f4'], 'the second board of a line lands with it');
+  assert.equal(landedFromLog(root, 22), null, 'a lower-case not is no landing');
+  assert.equal(landedFromLog(root, 23), null, 'an upper-case NOT is no landing');
+  assert.equal(landedFromLog(root, 2), null, 'the 2 of "WAVES 1 AND 2" is no board');
+
+  assert.deepEqual(boardsLandedInSubject('board 17 waves 1 and 2 landed: shell-linux (the /proc walk kills the detached grandchild)'), [17]);
+  assert.deepEqual(boardsLandedInSubject('board 21 and board 20 speed landed: census (the loop round spawns a typed cell)'), [20, 21]);
+  assert.deepEqual(boardsLandedInSubject('board 20 host landed: the P13 ruler read from the GitHub host'), [20]);
+  assert.deepEqual(boardsLandedInSubject('board 17 missed-gaps landed, bar not met: gaps share 0.090909 against 1'), [17], 'an item key with a hyphen');
+  assert.deepEqual(boardsLandedInSubject('board 21 written for the separate session: census and yield'), []);
+  assert.deepEqual(boardsLandedInSubject('board 17 gains the budget-linux item (the reaper\'s detached grandchild on Linux), wave 2'), []);
+  assert.deepEqual(boardsLandedInSubject('Board 13 not landed yet'), [], 'still never a "not landed"');
+});
+
+const H = (sha, parents, at, who, subject) => '\u0000' + [sha, parents, at, who, subject].join('\t') + '\n';
+const SHA = (c) => c.repeat(40);
+
+test('8. the author line of an added line, and a commit\'s author in the header\'s order', () => {
+  assert.deepEqual(authorOfLine('// Author: organism (self-code). The kept patch of gap x.', 'lib/a.mjs'), { kind: 'organism', operator: 'self-code' });
+  assert.deepEqual(authorOfLine('author: organism (nextboard)', 'docs/boards/proposed/board-17.md'), { kind: 'organism', operator: 'nextboard' });
+  assert.deepEqual(authorOfLine('# Author: board 18 builder.', '.github/workflows/site-ask.yml'), { kind: 'board', board: 18 });
+  assert.deepEqual(authorOfLine('const h = x.hash; // absent on an older Node (board 20 builder)', 'act/prompt.mjs'), { kind: 'board', board: 20 });
+  assert.deepEqual(authorOfLine("// Author: board 15 builder (the code). The boards it writes carry \"organism (nextboard)\".", 'self/nextboard.mjs'), { kind: 'board', board: 15 }, 'the field names the board, the organism is a mention');
+  assert.deepEqual(authorOfLine('Author: board 17 builder (the organism\'s item), 2026-09-26.', 'notes/x.md'), { kind: 'board', board: 17 });
+  // mentions are not author lines
+  assert.equal(authorOfLine('- answer-questions.json: written by the Board 8 builder from the internal suites', 'bench/fixtures/SOURCES.md'), null, 'Markdown prose');
+  assert.equal(authorOfLine('      "author": "organism (knob-tune)",', 'bench/verdicts/autopilot.json'), null, 'a JSON value');
+  assert.equal(authorOfLine("  const who = 'board 17 builder (the organism\\'s item)';", 'lib/a.mjs'), null, 'a string');
+  assert.equal(authorOfLine('// appends "organism (knob-tune)" to the authored ledger', 'bench/autopilot.mjs'), null, 'an organism mention in a comment');
+  assert.equal(saysOrganismAuthored('organism authored: the kept patch of gap x'), true);
+  assert.equal(saysOrganismAuthored('the gate is not organism authored'), false);
+
+  const log = [
+    H(SHA('a'), SHA('b'), '2026-09-28T10:00:00+00:00', 'Claude', 'organism authored: gap x closed') + '\nlib/x.mjs\n',
+    H(SHA('b'), SHA('c'), '2026-09-28T09:00:00+00:00', 'Claude', 'board 30 landed: the prompt box') + '\nact/a.mjs\ndocs/LOG.md\n',
+    H(SHA('c'), SHA('d'), '2026-09-28T08:00:00+00:00', 'Claude', 'the checkpoint of the week') + '\nlib/y.mjs\nlib/z.mjs\n',
+    H(SHA('d'), SHA('e'), '2026-09-28T07:00:00+00:00', 'Claude', 'a fix after the board') + '\nact/b.mjs\n',
+    H(SHA('e'), SHA('f') + ' ' + SHA('9'), '2026-09-28T06:00:00+00:00', 'Claude', 'Merge branch x') + '\n',
+    H(SHA('f'), '', '2026-09-28T05:00:00+00:00', 'jayden', 'his words recorded') + '\nMANUAL.md\n',
+  ].join('');
+  const rows = commitsFromLog(log);
+  assert.deepEqual(rows.map((r) => [r.sha[0], r.parents.length, r.at, r.files.length]), [['a', 1, '2026-09-28T10:00:00Z', 1], ['b', 1, '2026-09-28T09:00:00Z', 2], ['c', 1, '2026-09-28T08:00:00Z', 2], ['d', 1, '2026-09-28T07:00:00Z', 1], ['e', 2, '2026-09-28T06:00:00Z', 0], ['f', 0, '2026-09-28T05:00:00Z', 1]]);
+  const patches = [
+    '\u0000' + SHA('c') + '\n\ndiff --git a/lib/y.mjs b/lib/y.mjs\nnew file mode 100644\n--- /dev/null\n+++ b/lib/y.mjs\n@@ -0,0 +1,2 @@\n+// Author: organism (self-code). gap x.\n+export const y = 1;\n',
+    'diff --git a/docs/NOTE.md b/docs/NOTE.md\n--- a/docs/NOTE.md\n+++ b/docs/NOTE.md\n@@ -3,0 +4 @@\n+written by the Board 8 builder, a mention\n',
+    '\u0000' + SHA('d') + '\n\ndiff --git a/act/b.mjs b/act/b.mjs\n--- a/act/b.mjs\n+++ b/act/b.mjs\n@@ -10 +10,2 @@\n-old\n+new(); // the fast path (board 31 builder)\n+// Author: organism (prune)\n',
+  ].join('');
+  const marks = marksFromPatches(patches);
+  assert.deepEqual(marks.get(SHA('c')).map((k) => [k.file, k.line, k.kind, k.operator]), [['lib/y.mjs', 1, 'organism', 'self-code']], 'the Markdown mention of the same commit is no mark');
+  assert.deepEqual(marks.get(SHA('d')).map((k) => [k.file, k.line, k.kind]), [['act/b.mjs', 10, 'board'], ['act/b.mjs', 11, 'organism']]);
+  const who = rows.map((r) => { const a = attributeCommit(r, marks.get(r.sha) || []); return [r.sha[0], a.author, a.by, a.boards.join(',') || a.operators.join(',')]; });
+  assert.deepEqual(who, [
+    ['a', 'organism', 'subject', ''],
+    ['b', 'board', 'subject', '30'],
+    ['c', 'organism', 'author line', 'self-code'],
+    ['d', 'board', 'author line', '31'],
+    ['e', 'merge', 'merge', ''],
+    ['f', 'orchestrator', 'no author line', ''],
+  ], 'a board line beside an organism line makes the commit the board\'s');
+});
+
+test('9. readCommitWindow over a planted git: the base, the split, the share with its parts, barOf, and the control', () => {
+  const root = plant({});
+  const boards = [{ board: 30, at: '2026-09-27T00:00:00Z', commits: [SHA('1')], files: ['a.mjs'] }, { board: 31, launched: false, commits: [], files: [] }, { board: 29, at: '2026-09-20T00:00:00Z', commits: ['deadbee'], files: ['b.mjs'] }];
+  const logText = () => [
+    H(SHA('a'), SHA('b'), '2026-09-28T10:00:00+00:00', 'Claude', 'board 32 landed') + '\nx.mjs\n',
+    H(SHA('b'), SHA('c'), '2026-09-28T09:00:00+00:00', 'Claude', 'the week\'s patch') + '\nlib/y.mjs\n',
+    H(SHA('c'), SHA('1'), '2026-09-28T08:00:00+00:00', 'Claude', 'his words recorded') + '\nMANUAL.md\n',
+  ].join('');
+  const patchText = (organismLine) => organismLine ? '\u0000' + SHA('b') + '\n\ndiff --git a/lib/y.mjs b/lib/y.mjs\n--- a/lib/y.mjs\n+++ b/lib/y.mjs\n@@ -1 +1,2 @@\n+// Author: organism (self-code)\n+x\n' : '';
+  const calls = [];
+  const gitFn = (organismLine, devHead) => (r, args, input) => {
+    calls.push(args[0] === '-c' ? args[2] : args[0]);
+    if (args[0] === 'rev-parse') return r + '\n';
+    if (args[0] === 'cat-file') return input.split('\n').filter(Boolean).map((x) => (x === SHA('1') ? SHA('1') + ' commit' : x + ' missing')).join('\n') + '\n';
+    if (args[0] === 'log' && args[1] === '--no-walk=unsorted') return SHA('1') + '\t2026-09-27T01:00:00+00:00\n';
+    if (args[0] === 'log' && args[1] === '--name-only') { assert.deepEqual(args.slice(-3), ['HEAD', '--not', SHA('1')]); return logText(); }
+    if (args[0] === '-c') return patchText(organismLine);
+    if (args[0] === 'rev-list') { if (args[1] !== devHead) throw new Error('bad revision'); return SHA('b') + '\n' + SHA('c') + '\n'; }
+    throw new Error('unexpected git ' + args.join(' '));
+  };
+  const w = readCommitWindow({ root, boards, gitFn: gitFn(true, 'head1'), parserHead: 'head1' });
+  assert.equal(w.read, true);
+  assert.deepEqual(w.since, { board: 30, sha: SHA('1').slice(0, 7), at: '2026-09-27T01:00:00Z' });
+  assert.deepEqual(w.missingBase, ['deadbee'], 'a checkpoint commit this checkout lacks is named, not used');
+  assert.deepEqual(w.rows.map((r) => [r.sha[0], r.author, r.set]), [['a', 'board', 'heldOut'], ['b', 'organism', 'development'], ['c', 'orchestrator', 'development']]);
+  assert.deepEqual([w.numerator, w.denominator, w.share, w.organism, w.board, w.orchestrator, w.merges], [1, 3, 1 / 3, 1, 1, 1, 0]);
+  assert.match(w.split.development, /^2 of the 3 counted commits/);
+  assert.match(w.split.heldOut, /^1 commit landed after head1: the parser was not written against them/);
+  assert.match(w.split.contaminated, /no held-out set/);
+  assert.ok(!calls.includes('commit') && !calls.includes('push') && !calls.includes('add'), 'read only: ' + calls.join(' '));
+  // the control: the same commits with the organism's author line gone
+  const c = readCommitWindow({ root, boards, gitFn: gitFn(false, 'head1'), parserHead: 'head1' });
+  assert.deepEqual([c.numerator, c.denominator, c.rows[1].author], [0, 3, 'orchestrator']);
+  // a parser head this checkout lacks: nothing is known to be development
+  const u = readCommitWindow({ root, boards, gitFn: gitFn(true, 'head1'), parserHead: 'nohead' });
+  assert.deepEqual(u.rows.map((r) => r.set), ['heldOut', 'heldOut', 'heldOut']);
+  assert.equal(u.split.contaminated, false);
+  // not the top of a checkout: not read, with the reason
+  assert.deepEqual(readCommitWindow({ root, boards, gitFn: () => { throw new Error('not a git repository'); } }), { read: false, reason: 'no git checkout at ' + root + ': not a git repository' });
+  assert.equal(readCommitWindow({ root, boards, gitFn: () => '/elsewhere\n' }).read, false);
+
+  // barOf: the latest week with a unit must be the organism's in both records
+  const s = computeShare({ authored: [{ at: '2026-09-28T11:00:00Z', author: 'organism (self-code)' }], boards: [] });
+  assert.deepEqual(barOf(s, { read: false }), { week: '2026-W40', met: true, files: { numerator: 1, denominator: 1 }, commits: null }, 'the two files alone: 1/1 met');
+  assert.equal(barOf(s, w).met, false, 'the same week holds a board\'s and the orchestrator\'s commit: not met');
+  assert.deepEqual(barOf(s, w).commits, { numerator: 1, denominator: 3 });
+  const only = summarizeCommits([{ at: '2026-09-28T09:00:00Z', author: 'organism', boards: [] }, { at: '2026-09-28T09:00:00Z', author: 'merge', boards: [] }]);
+  assert.equal(barOf(s, { read: true, ...only }).met, true, 'every counted commit the organism\'s: met, a merge not counted');
+  assert.equal(barOf(computeShare({}), { read: false }).met, false, 'nothing counted is never met');
+});
+
+test('10. the real checkout, read only: every commit since the last derived board attributed, the share with its parts, the root, the control', () => {
+  const r = main(['--no-write', '--json'], new Date());
+  assert.equal(r.out, null);
+  const v = r.verdict;
+  assert.equal(v.root.used, TOOL_ROOT);
+  if (!HAS_GIT) { assert.equal(v.commits.read, false, 'a trial copy without .git reads no commits'); return; }
+  const c = v.commits;
+  assert.ok(c.rows.length > 0 && c.since && c.since.sha, 'the window has a base and rows');
+  for (const row of c.rows) assert.ok(['organism', 'board', 'orchestrator', 'merge'].includes(row.author) && row.by && row.evidence, row.sha + ' is attributed');
+  const counted = c.rows.filter((x) => x.author !== 'merge');
+  assert.deepEqual([c.counted, c.numerator, c.denominator], [counted.length, counted.filter((x) => x.author === 'organism').length, counted.length]);
+  assert.equal(c.organism + c.board + c.orchestrator, c.counted);
+  assert.ok(c.rows.some((x) => x.sha === '29889a9' && x.author === 'board' && x.boards.join() === '18'), 'board 18\'s landing is board 18\'s');
+  assert.ok(c.rows.some((x) => x.sha === '3483bb2' && x.author === 'board' && x.boards.join() === '20,21'), 'one landing, two boards');
+  assert.ok(c.rows.some((x) => x.sha === '9b7b6c0' && x.author === 'merge'), 'the merge is listed and not counted');
+  assert.equal(c.parserHead, PARSER_HEAD);
+  assert.ok(typeof v.split.development === 'string' && v.split.heldOut && 'contaminated' in v.split, 'the split names development, held out and contamination');
+  const plain = main(['--no-write'], new Date());
+  const line = plain.text.split('\n').find((l) => l.startsWith('COMMITS (since the last derived board): '));
+  assert.ok(line && line.includes('numerator ' + c.numerator + ' organism-authored commits, denominator ' + c.denominator + ' counted commits'), line);
+  assert.equal(v.denominator, v.kept + v.boardFiles, 'the files share keeps its own parts');
+  // the root read from the checkout
+  const win = main(['--root', 'C:\\Users\\someone\\brain', '--no-write'], new Date());
+  assert.equal(win.verdict.root.used, TOOL_ROOT);
+  assert.match(win.text, /^root: .* \(the checkout this file is in: --root C:\\Users\\someone\\brain is (a Windows path on this \w+ host|not a directory here)\)/);
+  assert.equal(resolveRoot('C:\\x', { platform: 'linux', fallback: '/r' }).root, '/r');
+  assert.equal(resolveRoot(os.tmpdir()).root, path.resolve(os.tmpdir()), 'a directory here is used as given');
+  // the control arm: the window off, the two files alone
+  const ctl = main(['--no-write', '--no-commits'], new Date());
+  assert.deepEqual(ctl.verdict.commits, { read: false, reason: '--no-commits (the control arm: the two files alone)' });
+  assert.deepEqual([ctl.verdict.numerator, ctl.verdict.denominator], [v.numerator, v.denominator]);
+  assert.equal(ctl.text.includes('COMMITS (since'), false);
+});

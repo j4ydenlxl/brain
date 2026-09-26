@@ -1,0 +1,303 @@
+{
+  "at": "2026-09-26T22:29:52.665Z",
+  "command": "PATH=$HOME/node24/bin:$PATH node test/gate-slow-multiply-bar.mjs",
+  "trialCommand": "node tools/budget.mjs --ram-mb 4000 --disk-mb 2048 --dir <tmp> --record <tmp>/budget-record.json -- node --max-old-space-size=4000 --test test/multiply.test.mjs",
+  "node": "v24.9.0",
+  "gap": "gate-slow:test/multiply.test.mjs",
+  "board": "BOARD 17 (the organism's own board)",
+  "author": "board 17 builder (the organism's item)",
+  "host": {
+    "platform": "linux",
+    "cpus": 4,
+    "totalMemMb": 16096,
+    "availableMbAtStart": 15157,
+    "loadavgAtStart": [
+      3.73,
+      3.21,
+      2.5
+    ]
+  },
+  "head": "596b011",
+  "isTheBar": true,
+  "barMet": true,
+  "bar": {
+    "ms": 15000,
+    "rule": "lower is better: both runs of the trial under 15000 ms of wall time (spawn to exit), every test passing",
+    "ledgerMs": 28924,
+    "ledgerFrom": "bench/verdicts/gate.json by node bench/gate.mjs --quiet (state/self/gaps.jsonl line 41)"
+  },
+  "runs": [
+    {
+      "label": "bar1",
+      "wallMs": 10590,
+      "durationMs": 10478,
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "exit": 0,
+      "peakRamMb": 1008.527,
+      "budgetDone": "BUDGET done exit 0: wall 10.54 s, peak ram 1008.5MB, peak dir 2.1MB, cpu 23.27 s, 6 samples, record ../../../tmp/gate-slow-multiply-bar1-RiCCze/budget-record.json",
+      "perTest": [
+        {
+          "name": "duplicate produces a distinct seed and a distinct state dir, from the checkpoint",
+          "ok": true,
+          "ms": 7
+        },
+        {
+          "name": "a duplicate plane inherits its parent elites and starts its own plane list under its own seed",
+          "ok": true,
+          "ms": 120
+        },
+        {
+          "name": "the elite store keeps the better of two, a tie keeps the incumbent, and the source is recorded",
+          "ok": true,
+          "ms": 1
+        },
+        {
+          "name": "the exchange keeps the better of two across instances, re-scores every import, and rejects a row from another matrix",
+          "ok": true,
+          "ms": 9
+        },
+        {
+          "name": "ownBytes on every worker boundary: workerData, main to worker, worker to main",
+          "ok": true,
+          "ms": 377
+        },
+        {
+          "name": "health prints instances alive, the instance id, duplications, elites imported and exported",
+          "ok": true,
+          "ms": 36
+        },
+        {
+          "name": "daemon/run.mjs calls the exchange hook after every checkpoint, and a throwing hook never stops it",
+          "ok": true,
+          "ms": 9429
+        },
+        {
+          "name": "a dead instance restarts from its own checkpoint (a scripted instance)",
+          "ok": true,
+          "ms": 301
+        },
+        {
+          "name": "a real instance duplicates, is killed, comes back from its own checkpoint, and both end (tiny organism, synthetic plane)",
+          "ok": true,
+          "ms": 1
+        }
+      ]
+    },
+    {
+      "label": "bar2",
+      "wallMs": 10477,
+      "durationMs": 10373,
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "exit": 0,
+      "peakRamMb": 1007.84,
+      "budgetDone": "BUDGET done exit 0: wall 10.43 s, peak ram 1007.8MB, peak dir 2.1MB, cpu 23.46 s, 6 samples, record ../../../tmp/gate-slow-multiply-bar2-vwqOFT/budget-record.json",
+      "perTest": [
+        {
+          "name": "duplicate produces a distinct seed and a distinct state dir, from the checkpoint",
+          "ok": true,
+          "ms": 8
+        },
+        {
+          "name": "a duplicate plane inherits its parent elites and starts its own plane list under its own seed",
+          "ok": true,
+          "ms": 121
+        },
+        {
+          "name": "the elite store keeps the better of two, a tie keeps the incumbent, and the source is recorded",
+          "ok": true,
+          "ms": 1
+        },
+        {
+          "name": "the exchange keeps the better of two across instances, re-scores every import, and rejects a row from another matrix",
+          "ok": true,
+          "ms": 7
+        },
+        {
+          "name": "ownBytes on every worker boundary: workerData, main to worker, worker to main",
+          "ok": true,
+          "ms": 374
+        },
+        {
+          "name": "health prints instances alive, the instance id, duplications, elites imported and exported",
+          "ok": true,
+          "ms": 28
+        },
+        {
+          "name": "daemon/run.mjs calls the exchange hook after every checkpoint, and a throwing hook never stops it",
+          "ok": true,
+          "ms": 9356
+        },
+        {
+          "name": "a dead instance restarts from its own checkpoint (a scripted instance)",
+          "ok": true,
+          "ms": 302
+        },
+        {
+          "name": "a real instance duplicates, is killed, comes back from its own checkpoint, and both end (tiny organism, synthetic plane)",
+          "ok": true,
+          "ms": 1
+        }
+      ]
+    }
+  ],
+  "control": {
+    "what": "test/multiply.test.mjs and daemon/multiply.mjs as committed at 596b011 (every change of this item off), copied into a temp dir with their relative imports pointed at this tree; the same trial command, run in the tree",
+    "runs": [
+      {
+        "label": "control1",
+        "wallMs": 34382,
+        "durationMs": 34294,
+        "tests": 9,
+        "pass": 9,
+        "fail": 0,
+        "exit": 0,
+        "peakRamMb": 1232.676,
+        "budgetDone": "BUDGET done exit 0: wall 34.34 s, peak ram 1232.7MB, peak dir 2.9MB, cpu 76.71 s, 18 samples, record ../../../tmp/gate-slow-multiply-control1-oASfuN/budget-record.json",
+        "perTest": [
+          {
+            "name": "duplicate produces a distinct seed and a distinct state dir, from the checkpoint",
+            "ok": true,
+            "ms": 4
+          },
+          {
+            "name": "a duplicate plane inherits its parent elites and starts its own plane list under its own seed",
+            "ok": true,
+            "ms": 114
+          },
+          {
+            "name": "the elite store keeps the better of two, a tie keeps the incumbent, and the source is recorded",
+            "ok": true,
+            "ms": 2
+          },
+          {
+            "name": "the exchange keeps the better of two across instances, re-scores every import, and rejects a row from another matrix",
+            "ok": true,
+            "ms": 4
+          },
+          {
+            "name": "ownBytes on every worker boundary: workerData, main to worker, worker to main",
+            "ok": true,
+            "ms": 368
+          },
+          {
+            "name": "health prints instances alive, the instance id, duplications, elites imported and exported",
+            "ok": true,
+            "ms": 27
+          },
+          {
+            "name": "daemon/run.mjs calls the exchange hook after every checkpoint, and a throwing hook never stops it",
+            "ok": true,
+            "ms": 7084
+          },
+          {
+            "name": "a dead instance restarts from its own checkpoint (a scripted instance)",
+            "ok": true,
+            "ms": 553
+          },
+          {
+            "name": "a real instance duplicates, is killed, comes back from its own checkpoint, and both end (tiny organism, synthetic plane)",
+            "ok": true,
+            "ms": 25926
+          }
+        ]
+      },
+      {
+        "label": "control2",
+        "wallMs": 33967,
+        "durationMs": 33852,
+        "tests": 9,
+        "pass": 9,
+        "fail": 0,
+        "exit": 0,
+        "peakRamMb": 1235.754,
+        "budgetDone": "BUDGET done exit 0: wall 33.91 s, peak ram 1235.8MB, peak dir 2.9MB, cpu 74.15 s, 17 samples, record ../../../tmp/gate-slow-multiply-control2-qR7TAs/budget-record.json",
+        "perTest": [
+          {
+            "name": "duplicate produces a distinct seed and a distinct state dir, from the checkpoint",
+            "ok": true,
+            "ms": 4
+          },
+          {
+            "name": "a duplicate plane inherits its parent elites and starts its own plane list under its own seed",
+            "ok": true,
+            "ms": 114
+          },
+          {
+            "name": "the elite store keeps the better of two, a tie keeps the incumbent, and the source is recorded",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "the exchange keeps the better of two across instances, re-scores every import, and rejects a row from another matrix",
+            "ok": true,
+            "ms": 7
+          },
+          {
+            "name": "ownBytes on every worker boundary: workerData, main to worker, worker to main",
+            "ok": true,
+            "ms": 369
+          },
+          {
+            "name": "health prints instances alive, the instance id, duplications, elites imported and exported",
+            "ok": true,
+            "ms": 23
+          },
+          {
+            "name": "daemon/run.mjs calls the exchange hook after every checkpoint, and a throwing hook never stops it",
+            "ok": true,
+            "ms": 7182
+          },
+          {
+            "name": "a dead instance restarts from its own checkpoint (a scripted instance)",
+            "ok": true,
+            "ms": 303
+          },
+          {
+            "name": "a real instance duplicates, is killed, comes back from its own checkpoint, and both end (tiny organism, synthetic plane)",
+            "ok": true,
+            "ms": 25640
+          }
+        ]
+      }
+    ]
+  },
+  "noiseMs": {
+    "bar": 113,
+    "control": 415
+  },
+  "meansMs": {
+    "bar": 10534,
+    "control": 34175
+  },
+  "gapMs": 23641,
+  "gapAboveNoise": true,
+  "peakRamMb": 1235.754,
+  "gateRowThisHost": {
+    "at": "2026-09-26T20:53:54.217Z",
+    "node": "v24.9.0",
+    "ms": 33490,
+    "pass": 9,
+    "fail": 0,
+    "total": 9
+  },
+  "split": {
+    "development": {
+      "what": "test/multiply.test.mjs (its fixtures, schedule and planted instance) and the two pass-through options of daemon/multiply.mjs (organism.mindBytes, instance --heartbeat-ms), changed and timed on this host",
+      "files": [
+        "test/multiply.test.mjs",
+        "daemon/multiply.mjs"
+      ]
+    },
+    "heldOut": {
+      "what": "none: the bar re-times the same test file on the same host it was tuned on; his PC (where the ledger measured 28924 ms) is the unseen host, measured at the next gate there",
+      "n": 0
+    },
+    "contaminated": false,
+    "reason": "a test file has no held-out set: the metric is the wall time of the file itself, measured by the gap's own trial command"
+  },
+  "statement": "The trial command of gap gate-slow:test/multiply.test.mjs ran twice in the tree on linux with v24.9.0 and took 10590 ms and 10477 ms of wall time (9 of 9 tests passing and 9 of 9 tests passing), against a bar of 15000 ms where the ledger measured 28924 ms, so barMet is true. The control, the same command on test/multiply.test.mjs and daemon/multiply.mjs as committed at 596b011, took 34382 ms and 33967 ms (9 of 9 passing and 9 of 9 passing). Run-to-run noise was 113 ms in the bar arm and 415 ms in the control arm; the gap between the arm means is 23641 ms, above the larger noise. Budget caps were 4000 MB, not the proposal's 6000, on a 16096 MB host shared with other builders; the peak RAM of any run was 1235.754 MB. Nothing was held out: the same file on the same host was both tuned and timed, so the unseen host is his PC at its next gate."
+}

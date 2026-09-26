@@ -5,6 +5,19 @@
 // every crossing of the worker boundary goes through ownBytes; the health endpoint prints the
 // population fields; daemon/run.mjs calls the exchange hook at every checkpoint. No Ollama, no
 // network beyond 127.0.0.1, every process it starts is waited for.
+//
+// Author: board 17 builder (the organism's item), gap gate-slow:test/multiply.test.mjs (the gate timed this
+// file at 28924 ms against a bar of 15000): what it waited on was three in-process organism builds
+// (about 2.3 s each, most of it training the language model on 40000 bytes), a real population
+// whose instances live 20 s from their own first start, a heartbeat once a second before the kill,
+// and the real population starting only after every other test. Now: every organism trains its
+// language region on TINY_MIND bytes (live() opts.mindBytes, instance.json organism.mindBytes),
+// the real population lives REAL_WALL_S seconds, heartbeats every 100 ms (instance --heartbeat-ms)
+// and is polled every 50 ms, and it is started before the first test (its instances are child
+// processes, so the in-process tests run beside it); its test awaits it, and the hook test's
+// organism builds (synchronous, on this thread) wait until its killed instance runs again, so the
+// supervisor's clocks never wait behind a build while the restart window is open. The planted
+// instance of the scripted test writes whole files. Every test and every assertion is the one it was.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
@@ -22,6 +35,60 @@ const TMP = mkdtempSync(path.join(os.tmpdir(), 'brain-multiply-'));
 process.on('exit', () => { try { rmSync(TMP, { recursive: true, force: true }); } catch { /* best effort */ } });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const SYN = Object.freeze({ kind: 'synthetic', seed: 'multiply-test', tasks: 256, planted: 8, decoys: 504 });
+const TINY_MIND = 2000;  // bytes of training text for each organism's language region (default 40000)
+const REAL_WALL_S = 7;   // the real population's wall seconds per instance (was 20)
+
+// The real population (the last test) runs in child processes: it starts here, before the first
+// test, and its test awaits REAL and asserts on it. The steps are the ones that test ran inline:
+// create i0 with a spawn plan, launch it, wait for its third exchange and its duplicate, SIGKILL
+// it, wait for every member to settle, stop the supervisor; a population that never reached its
+// third exchange is stopped at once (no kill, no wait), where the test stops asserting. RESTARTED
+// resolves once the killed i0 runs its organism again (its heartbeat shows its second start
+// resumed) or settled without: the hook test's synchronous organism builds wait for it, so the
+// supervisor's heartbeat poll, request poll and restart timer (the restart window runs on the
+// instance's wall clock) never wait behind a build on this thread.
+let restarted = null;
+const RESTARTED = new Promise((r) => { restarted = r; });
+async function realPopulation() {
+  const popDir = path.join(TMP, 'real');
+  try {
+    const { dir } = createInstance({
+      popDir, id: 'i0', seed: '1', wallS: REAL_WALL_S, suite: SYN, minSpawnLeftS: 2,
+      organism: { majors: 4, units: 64, checkpointEvery: 100, chunk: 5, ledgerBudgetMb: 1, mindBytes: TINY_MIND },
+      spawnPlan: [{ id: 'i1', seed: '2', afterExchange: 2 }],
+    });
+    const lines = [];
+    const launch = plainLauncher({ heapMb: 512, args: (d) => ['instance', '--dir', d, '--heartbeat-ms', '100'] });
+    const pop = new Population({ popDir, launch, backoffMs: 200, pollMs: 50, log: (l) => lines.push(l) }).start();
+    pop.add('i0');
+    // wait for i0 to have exchanged at least twice (so it has duplicated) and checkpointed
+    let hb = null;
+    for (let i = 0; i < 300; i++) {
+      hb = readJson(path.join(popDir, 'instances', 'i0.json'));
+      if (hb && hb.exchanges >= 3 && hb.duplications >= 1) break;
+      await sleep(50);
+    }
+    if (!(hb && hb.exchanges >= 3)) { await pop.stop(); return { popDir, dir, lines, hb, killedPid: null, s: null }; }
+    const killedPid = pop.kill('i0');
+    if (!(killedPid > 0)) { await pop.stop(); return { popDir, dir, lines, hb, killedPid, s: null }; }
+    let settled = false;
+    const watch = (async () => {
+      for (;;) {
+        const h = readJson(path.join(popDir, 'instances', 'i0.json'));
+        const m = pop.members.get('i0');
+        if (settled || !m || m.done || (h && h.starts >= 2 && h.resumed)) break;
+        await sleep(50);
+      }
+      restarted();
+    })();
+    const s = await pop.waitAll({ timeoutMs: 60_000, pollMs: 50 });
+    settled = true;
+    await watch;
+    await pop.stop();
+    return { popDir, dir, lines, hb, killedPid, s };
+  } finally { restarted(); }
+}
+const REAL = realPopulation().then((v) => ({ v }), (e) => ({ e }));
 
 function fakeCheckpoint(instDir, { t = 42, planeId = 'i0' } = {}) {
   const b = path.join(instDir, BRAIN_NAME);
@@ -217,39 +284,44 @@ test('health prints instances alive, the instance id, duplications, elites impor
 });
 
 test('daemon/run.mjs calls the exchange hook after every checkpoint, and a throwing hook never stops it', async () => {
+  await RESTARTED; // the real population's restart window is past (RESTARTED above)
   process.env.BRAIN_STATE_DIR = path.join(TMP, 'hookstate');
   const { live } = await import('../daemon/run.mjs');
   const calls = [];
-  const p = await live({ name: 'hook', majors: 4, substrateUnits: 64, seed: 'hook', ticks: 40, checkpointEvery: 20, ledger: 'summary', ledgerBudgetMb: 1, instance: 'h0', onCheckpoint: (info) => calls.push(info) });
+  const p = await live({ name: 'hook', majors: 4, substrateUnits: 64, seed: 'hook', ticks: 40, checkpointEvery: 20, ledger: 'summary', ledgerBudgetMb: 1, mindBytes: TINY_MIND, instance: 'h0', onCheckpoint: (info) => calls.push(info) });
   assert.deepEqual(calls.map((c) => c.kind), ['built', 'checkpoint', 'checkpoint', 'final']);
   assert.deepEqual(calls.map((c) => c.t), [0, 20, 40, 40]);
   assert.ok(calls.every((c) => c.bytes > 0 && c.name === 'hook'));
   assert.equal(p.exchange.calls, 4);
   assert.equal(p.instance, 'h0');
-  const q = await live({ name: 'hook2', majors: 4, substrateUnits: 64, seed: 'hook', ticks: 20, checkpointEvery: 10, ledger: 'summary', ledgerBudgetMb: 1, onCheckpoint: () => { throw new Error('boom'); } });
+  const q = await live({ name: 'hook2', majors: 4, substrateUnits: 64, seed: 'hook', ticks: 20, checkpointEvery: 10, ledger: 'summary', ledgerBudgetMb: 1, mindBytes: TINY_MIND, onCheckpoint: () => { throw new Error('boom'); } });
   assert.equal(q.exchange.calls, 0);
   assert.equal(q.exchange.errors.length, 4);
   assert.equal(q.end.t, 20);
-  const r = await live({ name: 'hook3', majors: 4, substrateUnits: 64, seed: 'hook', ticks: 10, checkpointEvery: 10, ledger: 'summary', ledgerBudgetMb: 1 });
+  const r = await live({ name: 'hook3', majors: 4, substrateUnits: 64, seed: 'hook', ticks: 10, checkpointEvery: 10, ledger: 'summary', ledgerBudgetMb: 1, mindBytes: TINY_MIND });
   assert.equal(r.exchange, null, 'no hook, no exchange record');
 });
 
 test('a dead instance restarts from its own checkpoint (a scripted instance)', async () => {
   const popDir = path.join(TMP, 'restart');
   const { dir } = createInstance({ popDir, id: 'i0', seed: '1', wallS: 60, suite: SYN });
-  // the script: first start writes a checkpoint and waits to be killed; a later start reads it back and ends
+  // the script: first start writes a checkpoint and waits to be killed; a later start reads it back and ends.
+  // Every write lands whole (a temp file and one rename, as the real instance's writeJsonAtomic does): a plain
+  // writeFileSync killed between its create and its write left an empty meta.json that the restart could not
+  // parse (seen with the file beside other load; board 17 builder (the organism's item))
   const script = path.join(TMP, 'fake-instance.mjs');
   writeFileSync(script, `
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, renameSync } from 'node:fs';
 import path from 'node:path';
+const put = (f, v) => { writeFileSync(f + '.tmp', JSON.stringify(v)); renameSync(f + '.tmp', f); };
 const dir = process.argv[process.argv.indexOf('--dir') + 1];
 const b = path.join(dir, 'brain');
 mkdirSync(b, { recursive: true });
 const inst = JSON.parse(readFileSync(path.join(dir, 'instance.json'), 'utf8'));
 inst.starts = (inst.starts || 0) + 1; if (!inst.firstStartMs) inst.firstStartMs = Date.now();
-writeFileSync(path.join(dir, 'instance.json'), JSON.stringify(inst));
-if (!existsSync(path.join(b, 'meta.json'))) { writeFileSync(path.join(b, 'meta.json'), JSON.stringify({ t: 314 })); setInterval(() => {}, 1000); }
-else { const m = JSON.parse(readFileSync(path.join(b, 'meta.json'), 'utf8')); writeFileSync(path.join(b, 'done.json'), JSON.stringify({ resumedAt: m.t, starts: inst.starts, pid: process.pid })); }
+put(path.join(dir, 'instance.json'), inst);
+if (!existsSync(path.join(b, 'meta.json'))) { put(path.join(b, 'meta.json'), { t: 314 }); setInterval(() => {}, 1000); }
+else { const m = JSON.parse(readFileSync(path.join(b, 'meta.json'), 'utf8')); put(path.join(b, 'done.json'), { resumedAt: m.t, starts: inst.starts, pid: process.pid }); }
 `);
   const lines = [];
   const pop = new Population({ popDir, launch: plainLauncher({ script, heapMb: 64 }), backoffMs: 100, log: (l) => lines.push(l) }).start();
@@ -270,27 +342,12 @@ else { const m = JSON.parse(readFileSync(path.join(b, 'meta.json'), 'utf8')); wr
 });
 
 test('a real instance duplicates, is killed, comes back from its own checkpoint, and both end (tiny organism, synthetic plane)', async () => {
-  const popDir = path.join(TMP, 'real');
-  const { dir } = createInstance({
-    popDir, id: 'i0', seed: '1', wallS: 20, suite: SYN, minSpawnLeftS: 2,
-    organism: { majors: 4, units: 64, checkpointEvery: 100, chunk: 5, ledgerBudgetMb: 1 },
-    spawnPlan: [{ id: 'i1', seed: '2', afterExchange: 2 }],
-  });
-  const lines = [];
-  const pop = new Population({ popDir, launch: plainLauncher({ heapMb: 512 }), backoffMs: 200, log: (l) => lines.push(l) }).start();
-  pop.add('i0');
-  // wait for i0 to have exchanged at least twice (so it has duplicated) and checkpointed
-  let hb = null;
-  for (let i = 0; i < 300; i++) {
-    hb = readJson(path.join(popDir, 'instances', 'i0.json'));
-    if (hb && hb.exchanges >= 3 && hb.duplications >= 1) break;
-    await sleep(50);
-  }
+  // started before the first test (REAL above): created, launched, killed after its third exchange, waited for
+  const got = await REAL;
+  if (got.e) throw got.e;
+  const { popDir, dir, lines, hb, killedPid, s } = got.v;
   assert.ok(hb && hb.exchanges >= 3, 'i0 exchanged: ' + JSON.stringify(hb));
-  const killedPid = pop.kill('i0');
   assert.ok(killedPid > 0);
-  const s = await pop.waitAll({ timeoutMs: 60_000 });
-  await pop.stop();
   const byId = Object.fromEntries(s.map((x) => [x.id, x]));
   assert.ok(byId.i1, 'the duplicate was launched: ' + lines.join('\n'));
   assert.equal(byId.i0.restarts, 1, lines.join('\n'));

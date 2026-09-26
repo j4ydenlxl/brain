@@ -55,7 +55,27 @@
 // --derive does, carrying an existing entry's skipped items and run id (the run id is otherwise
 // read from the LANDED line). A board with no LANDED line, or with one and no commit yet, is
 // printed with that reason and left as it is.
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'node:fs';
+//
+// THE COMMITS SINCE THE LAST DERIVED BOARD (author: board 17 builder (the organism's item), gap
+// missed:authorship.json). The two files miss every change that landed after the checkpoint
+// commits docs/BOARDS.json names. Those commits are read from git (log and cat-file, read only:
+// git log HEAD --not <every checkpoint commit of a launched entry>) and each is attributed by its
+// author line, in this order: a merge is listed and not counted (its changes are the merged
+// commits'); the organism's when its subject says "organism authored"; a board's when its subject
+// says the board landed (boardsLandedInSubject); a board's when a line it adds carries a "board N
+// builder" author line (an "Author:" field, or a code comment); the organism's when the lines it
+// adds carry "Author: organism (<operator>)" headers and no board's; the orchestrator's otherwise.
+// A mention is not an author line: prose in a .md file, a JSON "author" value and a string are not
+// read. The commits are counted apart, in commits (the COMMITS line and verdict.commits), since a
+// commit is not a board file; barMet needs every counted commit of the latest week to be the
+// organism's as well. --no-commits turns the window off (the control arm). The split names the
+// commits the parser was written against (PARSER_HEAD and its ancestors) as development; a commit
+// landed after it is held out.
+//
+// THE ROOT IS READ FROM THE CHECKOUT when --root names no directory on this host (the ledger's
+// command carries his C:\ path, which on Linux would resolve under the working directory): the
+// run prints that and reads the checkout this file is in.
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, realpathSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -324,8 +344,8 @@ export function pathMatcher(p) {
   return (f) => f === p;
 }
 
-function git(root, args) {
-  const r = spawnSync('git', ['-C', root, ...args], { encoding: 'utf8', windowsHide: true, maxBuffer: 64 * 1024 * 1024 });
+function git(root, args, input = undefined) {
+  const r = spawnSync('git', ['-C', root, ...args], { encoding: 'utf8', windowsHide: true, maxBuffer: 64 * 1024 * 1024, ...(input === undefined ? {} : { input }) });
   if (r.error || r.status !== 0) throw new Error('git ' + args.join(' ') + ' failed: ' + String(r.error ? r.error.message : r.stderr).split('\n')[0]);
   return r.stdout;
 }
@@ -429,7 +449,13 @@ export function zonedToUtc(y, mo, d, h, mi, zone = LOG_ZONE) {
 
 // Since 2026-09-25 the LOG line carries its zone after the clock ("18:06 EDT BOARD 16 CLOUD LANDED");
 // the zone token is LOG_ZONE spelled out, so it is accepted and the time is still read in LOG_ZONE.
-const LANDED_LINE = /^- (\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})(?: [A-Z]{2,4})? BOARD (\d+)((?: [A-Z][A-Z0-9-]*)*) LANDED\b/;
+// The Linux cloud session's lines (2026-09-26) differ in three ways, each accepted here (board 17
+// builder (the organism's item)): an item name in lower case ("BOARD 20 host LANDED"), a number
+// among the words ("BOARD 17 WAVES 1 AND 2 LANDED"), and a second board ("BOARD 21 AND BOARD 20
+// SPEED LANDED", which lands both). A "not" among the words is never a landing.
+const LANDED_LINE = /^- (\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})(?: [A-Z]{2,4})? BOARD (\d+)((?: (?!(?:not|NOT)\b)(?:[A-Za-z][A-Za-z0-9-]*|\d+))*) LANDED\b/;
+/** The boards one matched LANDED line lands: its first board and every "AND BOARD N" after it. */
+const boardsOfLandedMatch = (m) => [Number(m[6]), ...[...String(m[7] || '').matchAll(/\bAND BOARD (\d+)\b/g)].map((x) => Number(x[1]))];
 
 /**
  * The docs/LOG.md line that says board N LANDED ("- 2026-09-24 04:12 BOARD 10 LANDED (wf_...",
@@ -442,7 +468,7 @@ export function landedFromLog(root, board, { logRel = LOG_REL, zone = LOG_ZONE }
   const lines = text.split('\n');
   for (let i = 0; i < lines.length; i++) {
     const m = LANDED_LINE.exec(lines[i]);
-    if (!m || Number(m[6]) !== Number(board)) continue;
+    if (!m || !boardsOfLandedMatch(m).includes(Number(board))) continue;
     const at = zonedToUtc(Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4]), Number(m[5]), zone);
     if (!at) return null;
     const run = /\b(wf_[0-9a-f]+-[0-9a-f]+)\b/.exec(lines[i]);
@@ -458,9 +484,14 @@ export function landedFromLog(root, board, { logRel = LOG_REL, zone = LOG_ZONE }
  */
 export function boardsLandedInSubject(subject) {
   const out = new Set();
-  for (const m of String(subject).matchAll(/\bboards?\s+(\d+)(?:\s+to\s+(\d+))?(?:\s+(?!not\b)[A-Za-z]+){0,5}\s+landed\b/gi)) {
+  // The Linux cloud session's subjects (board 17 builder (the organism's item)): a number among the
+  // words ("board 17 waves 1 and 2 landed"), an item's hyphenated key ("board 17 missed-gaps
+  // landed") and a second board ("board 21 and board 20 speed landed", both landed); the words stay
+  // at most five and a "not" is never a landing.
+  for (const m of String(subject).matchAll(/\bboards?\s+(\d+)(?:\s+to\s+(\d+))?((?:\s+(?!not\b)(?:[A-Za-z][A-Za-z0-9-]*|\d+)){0,5})\s+landed\b/gi)) {
     const a = Number(m[1]), b = m[2] ? Number(m[2]) : a;
     if (b >= a && b - a < 100) for (let n = a; n <= b; n++) out.add(n);
+    for (const x of String(m[3] || '').matchAll(/\band\s+boards?\s+(\d+)\b/gi)) out.add(Number(x[1]));
   }
   return [...out].sort((x, y) => x - y);
 }
@@ -509,8 +540,245 @@ export function fillBoards({ root = ROOT, boards = [], readCommitFn = readCommit
   return out;
 }
 
+// ================================================================ the commits since the last derived board
+// Author: board 17 builder (the organism's item). The ruler made exact on a checkout: every commit
+// since the checkpoint commits docs/BOARDS.json names is read from git (read only) and attributed
+// by its author line. See THE COMMITS SINCE THE LAST DERIVED BOARD in the header.
+
+/** The HEAD this parser was written against (the $250 cloud session, 2026-09-26): it and its ancestors are the development set. */
+export const PARSER_HEAD = '596b011a43c9fc2663b6f512c74dae42b8ce7f65';
+
+/** The --root the run reads: the one given when it is a directory here, else the checkout this file is in. */
+export function resolveRoot(given, { fallback = ROOT, platform = process.platform, isDir = (p) => { try { return statSync(p).isDirectory(); } catch { return false; } } } = {}) {
+  if (typeof given !== 'string' || !given) return { root: fallback, given: null, source: 'the checkout this file is in (no --root)' };
+  const windowsPath = /^[A-Za-z]:[\\/]/.test(given) && platform !== 'win32';
+  const abs = path.resolve(given);
+  if (!windowsPath && isDir(abs)) return { root: abs, given, source: 'given (--root)' };
+  return { root: fallback, given, source: 'the checkout this file is in: --root ' + given + (windowsPath ? ' is a Windows path on this ' + platform + ' host' : ' is not a directory here') };
+}
+
+// An author FIELD: "Author: X", "// Author: X", "# Author: X", " * Author: X", or a Markdown header
+// line "author: X". A JSON "author": value never matches (the quote before the colon).
+const AUTHOR_FIELD = /^\s*(?:(?:\/\/+|\/\*+|\*+|#+|<!--)\s*)?author\s*:\s*(.+)$/i;
+const ORGANISM_AUTHOR = /^organism \(([a-z][a-z0-9-]*)\)/i;
+const BOARD_AUTHOR = /\bboard (\d+) builder\b/i;
+const SLASH_COMMENTS = /\.(?:mjs|cjs|js|jsx|ts|tsx|css)$/i;
+const HASH_COMMENTS = /(?:\.(?:ya?ml|sh|py|toml|ps1)|(?:^|\/)(?:Dockerfile|\.gitignore|\.dockerignore|\.gitattributes))$/i;
+/** git log -G pre-filter (POSIX extended): a superset of what authorOfLine accepts. */
+export const AUTHOR_PICKAXE = '[Bb][Oo][Aa][Rr][Dd] [0-9]+ [Bb][Uu][Ii][Ll][Dd][Ee][Rr]|[Aa][Uu][Tt][Hh][Oo][Rr][[:space:]]*:';
+
+/** The comment text of one line of a code file, or null (prose, JSON and strings carry no author line). */
+function commentOf(text, file) {
+  const t = String(text);
+  if (SLASH_COMMENTS.test(file)) {
+    const s = t.trimStart();
+    if (s.startsWith('//') || s.startsWith('/*') || s.startsWith('*')) return s;
+    const i = t.search(/(?<![:'"`\\])\/\/|\/\*/);
+    return i >= 0 ? t.slice(i) : null;
+  }
+  if (HASH_COMMENTS.test(file)) {
+    const i = t.indexOf('#');
+    return i >= 0 ? t.slice(i) : null;
+  }
+  if (/\.html?$/i.test(file)) { const i = t.indexOf('<!--'); return i >= 0 ? t.slice(i) : null; }
+  return null;
+}
+
+/**
+ * The author one added line names: {kind: 'organism', operator} | {kind: 'board', board} | null.
+ * An "Author:" field names either; a code comment names a board ("(board 20 builder)"), never the
+ * organism (an organism mention in a comment is a description, not a header).
+ */
+export function authorOfLine(text, file = '') {
+  const f = AUTHOR_FIELD.exec(String(text));
+  if (f && !/\.json$/i.test(file)) {
+    const o = ORGANISM_AUTHOR.exec(f[1]);
+    if (o) return { kind: 'organism', operator: o[1].toLowerCase() };
+    const b = /^board (\d+) builder\b/i.exec(f[1]);
+    if (b) return { kind: 'board', board: Number(b[1]) };
+  }
+  const c = commentOf(text, file);
+  const m = c ? BOARD_AUTHOR.exec(c) : null;
+  return m ? { kind: 'board', board: Number(m[1]) } : null;
+}
+
+/** The path of a "diff --git a/X b/X" line (--no-renames, so both sides name one path). */
+function pathOfDiffGit(line) {
+  let s = line.slice('diff --git '.length);
+  if (s.startsWith('"')) { const m = /^"a\/((?:[^"\\]|\\.)*)"/.exec(s); return m ? m[1].replace(/\\(.)/g, '$1') : s; }
+  const half = (s.length - 1) / 2;
+  if (Number.isInteger(half) && s.slice(half) === ' b/' + s.slice(2, half)) return s.slice(2, half);
+  const i = s.lastIndexOf(' b/');
+  return i > 2 ? s.slice(2, i) : s;
+}
+
+/** Per commit, the author lines its added lines carry: Map sha -> [{file, line, kind, operator|board, text}]. */
+export function marksFromPatches(text) {
+  const out = new Map();
+  for (const chunk of String(text).split('\u0000')) {
+    const nl = chunk.indexOf('\n');
+    const sha = (nl < 0 ? chunk : chunk.slice(0, nl)).trim();
+    if (!/^[0-9a-f]{7,40}$/.test(sha)) continue;
+    const marks = [];
+    let file = null, hunk = false, n = 0;
+    for (const l of chunk.slice(nl + 1).split('\n')) {
+      if (l.startsWith('diff --git ')) { file = pathOfDiffGit(l); hunk = false; continue; }
+      if (l.startsWith('@@')) { const m = /\+(\d+)/.exec(l); n = m ? Number(m[1]) : 0; hunk = true; continue; }
+      if (!hunk || !l.startsWith('+')) continue;
+      const a = authorOfLine(l.slice(1), file || '');
+      if (a) marks.push({ file, line: n, ...a, text: l.slice(1).trim().slice(0, 100) });
+      n++;
+    }
+    out.set(sha, marks);
+  }
+  return out;
+}
+
+/** The commit rows of git log --name-only --format=%x00%H%x09%P%x09%cI%x09%an%x09%s: [{sha, parents, at, gitAuthor, subject, files}]. */
+export function commitsFromLog(text) {
+  const rows = [];
+  for (const chunk of String(text).split('\u0000')) {
+    const lines = chunk.split('\n');
+    const [sha, parents, at, gitAuthor, ...subject] = lines[0].split('\t');
+    if (!/^[0-9a-f]{7,40}$/.test(sha || '')) continue;
+    const d = Date.parse(at);
+    rows.push({
+      sha, parents: String(parents || '').split(' ').filter(Boolean), at: Number.isFinite(d) ? new Date(d).toISOString().replace('.000Z', 'Z') : null,
+      gitAuthor: gitAuthor || '', subject: subject.join('\t'), files: [...new Set(lines.slice(1).map((l) => l.trim()).filter(Boolean))],
+    });
+  }
+  return rows;
+}
+
+/** Does a commit subject say the organism authored it? A "not organism authored" does not. */
+export const saysOrganismAuthored = (subject) => /(?<!\bnot\s)\borganism authored\b/i.test(String(subject));
+
+/**
+ * One commit's author: {author: 'organism' | 'board' | 'orchestrator' | 'merge', boards, operators, by, evidence}.
+ * The order is the header's: merge, subject organism, subject board, board author line, organism author line, the orchestrator.
+ */
+export function attributeCommit(c, marks = []) {
+  if (c.parents && c.parents.length > 1) return { author: 'merge', boards: [], operators: [], by: 'merge', evidence: 'a merge: its changes are the merged commits\', each counted where it appears' };
+  if (saysOrganismAuthored(c.subject)) return { author: 'organism', boards: [], operators: [], by: 'subject', evidence: 'its subject says organism authored' };
+  const landed = boardsLandedInSubject(c.subject);
+  if (landed.length) return { author: 'board', boards: landed, operators: [], by: 'subject', evidence: 'its subject says board ' + landed.join(' and ') + ' landed' };
+  const where = (k) => k.file + ':' + k.line + ' "' + k.text + '"';
+  const b = marks.filter((k) => k.kind === 'board');
+  if (b.length) return { author: 'board', boards: [...new Set(b.map((k) => k.board))].sort((x, y) => x - y), operators: [], by: 'author line', evidence: b.length + ' board author lines, first ' + where(b[0]) };
+  const o = marks.filter((k) => k.kind === 'organism');
+  if (o.length) return { author: 'organism', boards: [], operators: [...new Set(o.map((k) => k.operator))].sort(), by: 'author line', evidence: o.length + ' organism author lines, first ' + where(o[0]) };
+  return { author: 'orchestrator', boards: [], operators: [], by: 'no author line', evidence: 'no organism or board author line in its ' + (c.files ? c.files.length : 0) + ' files; git author ' + (c.gitAuthor || 'unknown') };
+}
+
+/** The counts of attributed rows, per ISO week and in all: organism commits over counted (non-merge) commits. */
+export function summarizeCommits(rows = []) {
+  const blank = () => ({ counted: 0, merges: 0, organism: 0, board: 0, orchestrator: 0, byBoard: {} });
+  const add = (s, r) => {
+    if (r.author === 'merge') { s.merges++; return; }
+    s.counted++;
+    s[r.author]++;
+    if (r.author === 'board') for (const n of r.boards) s.byBoard[n] = (s.byBoard[n] || 0) + 1;
+  };
+  const all = blank();
+  const weeks = new Map();
+  for (const r of rows) {
+    add(all, r);
+    const w = isoWeek(r.at);
+    if (!w) continue;
+    if (!weeks.has(w)) weeks.set(w, { week: w, ...blank() });
+    add(weeks.get(w), r);
+  }
+  const fin = (s) => Object.assign(s, { numerator: s.organism, denominator: s.counted, share: ratio(s.organism, s.counted) });
+  return { ...fin(all), weeks: [...weeks.values()].sort((a, b) => (a.week < b.week ? -1 : 1)).map(fin) };
+}
+
+/**
+ * The commits since the last derived board, attributed. Read only (rev-parse, cat-file, log,
+ * rev-list). {read: false, reason} when root is not the top of a git checkout.
+ * @param {{root: string, boards: object[], gitFn?: (root, args, input?) => string, parserHead?: string}} o
+ */
+export function readCommitWindow({ root = ROOT, boards = [], gitFn = git, parserHead = PARSER_HEAD } = {}) {
+  const why = (e) => String(e && e.message || e).split('\n')[0];
+  let top;
+  try { top = gitFn(root, ['rev-parse', '--show-toplevel']).trim(); } catch (e) { return { read: false, reason: 'no git checkout at ' + root + ': ' + why(e) }; }
+  const real = (p) => { try { return realpathSync(p); } catch { return path.resolve(p); } };
+  if (!top || real(top) !== real(root)) return { read: false, reason: root + ' is not the top of its git checkout (' + (top || 'none') + ')' };
+  const derived = boards.filter((b) => isLaunched(b) && Array.isArray(b.commits) && b.commits.length);
+  const named = [...new Set(derived.flatMap((b) => b.commits.filter((c) => typeof c === 'string' && /^[0-9a-f]{7,40}$/.test(c))))];
+  const present = [], missing = [];
+  if (named.length) {
+    const check = gitFn(root, ['cat-file', '--batch-check=%(objectname) %(objecttype)'], named.join('\n') + '\n').split('\n').filter(Boolean);
+    named.forEach((sha, i) => { const [full, type] = String(check[i] || '').split(' '); if (type === 'commit') present.push(full); else missing.push(sha); });
+  }
+  const dates = new Map();
+  if (present.length) for (const l of gitFn(root, ['log', '--no-walk=unsorted', '--format=%H%x09%cI', ...present]).split('\n')) { const [h, d] = l.split('\t'); if (h && d) dates.set(h, new Date(d).toISOString().replace('.000Z', 'Z')); }
+  let last = null;
+  for (const b of derived) for (const c of b.commits) {
+    const full = present.find((p) => p.startsWith(c));
+    if (full && (!last || dates.get(full) > last.at)) last = { board: b.board ?? null, sha: full, at: dates.get(full) || null };
+  }
+  const not = present.length ? ['--not', ...present] : [];
+  const rows = commitsFromLog(gitFn(root, ['log', '--name-only', '--no-renames', '--format=%x00%H%x09%P%x09%cI%x09%an%x09%s', 'HEAD', ...not]));
+  const marks = marksFromPatches(gitFn(root, ['-c', 'core.quotePath=false', 'log', '-p', '--unified=0', '--no-renames', '--no-color', '--no-ext-diff', '--no-textconv', '-G' + AUTHOR_PICKAXE, '--format=%x00%H', 'HEAD', ...not]));
+  let dev = null;
+  try { dev = new Set(gitFn(root, ['rev-list', parserHead, ...not]).split('\n').map((l) => l.trim()).filter(Boolean)); } catch { dev = null; }
+  const attributed = rows.map((c) => {
+    const a = attributeCommit(c, marks.get(c.sha) || []);
+    return { sha: c.sha.slice(0, 7), at: c.at, week: isoWeek(c.at), gitAuthor: c.gitAuthor, subject: c.subject.slice(0, 100), files: c.files.length, ...a, set: dev ? (dev.has(c.sha) ? 'development' : 'heldOut') : 'heldOut' };
+  });
+  const sum = summarizeCommits(attributed);
+  const counted = attributed.filter((r) => r.author !== 'merge');
+  const development = counted.filter((r) => r.set === 'development').length;
+  return {
+    read: true, reason: null,
+    since: last ? { board: last.board, sha: last.sha.slice(0, 7), at: last.at } : null,
+    range: 'git log HEAD' + (present.length ? ' --not ' + present.length + ' checkpoint commits of ' + derived.length + ' launched entries' : ' (no launched entry names a commit here: the whole history)'),
+    missingBase: missing,
+    ...sum,
+    rows: attributed,
+    split: {
+      development: development + ' of the ' + counted.length + ' counted commits: the ones the author-line parser was written against (' + parserHead.slice(0, 7) + ' and its ancestors since the last derived board)' + (dev ? '' : '; ' + parserHead.slice(0, 7) + ' is not in this checkout, so none is known to be'),
+      heldOut: (counted.length - development) ? (counted.length - development) + ((counted.length - development) === 1 ? ' commit' : ' commits') + ' landed after ' + parserHead.slice(0, 7) + ': the parser was not written against them and was not changed for them' : 'none',
+      contaminated: development ? 'a ruler over its own repository has no held-out set when it is written: every development commit is one its parser was written while reading, and only a commit landed after ' + parserHead.slice(0, 7) + ' is unseen' : false,
+    },
+  };
+}
+
+/** The printed lines of the commit window. */
+export function renderCommits(w) {
+  if (!w) return [];
+  if (!w.read) return ['  commits since the last derived board: not read (' + w.reason + ')'];
+  const L = [];
+  L.push('  commits since the last derived board' + (w.since ? ' (board ' + w.since.board + ', checkpoint ' + w.since.sha + ' at ' + w.since.at + ')' : '') + ', ' + w.range + ', read only: '
+    + w.rows.length + ' commits, ' + w.counted + ' counted, ' + w.merges + (w.merges === 1 ? ' merge' : ' merges') + ' not counted' + (w.missingBase.length ? '; checkpoint commits absent from this checkout: ' + w.missingBase.join(', ') : ''));
+  for (const r of w.rows) {
+    const who = r.author === 'board' ? 'board ' + r.boards.join(',') : r.author === 'organism' ? 'organism' + (r.operators.length ? ' (' + r.operators.join(',') + ')' : '') : r.author;
+    L.push('    ' + r.sha + ' ' + (r.at || 'undated') + '  ' + who.padEnd(12) + '  by ' + r.by.padEnd(14) + '  ' + r.set.padEnd(11) + '  ' + r.files + ' files  ' + r.subject.slice(0, 70));
+  }
+  for (const x of w.weeks) L.push('  commits week ' + x.week + '  organism ' + x.organism + '  board ' + x.board + '  orchestrator ' + x.orchestrator + '  merges ' + x.merges + '  share ' + fmtShare(x.numerator, x.denominator));
+  const bb = Object.entries(w.byBoard).map(([n, k]) => 'board ' + n + ' ' + k).join(', ');
+  L.push('COMMITS (since the last derived board): numerator ' + w.numerator + ' organism-authored commits, denominator ' + w.denominator + ' counted commits ('
+    + w.organism + ' the organism\'s + ' + w.board + ' a board\'s' + (bb ? ' [' + bb + ']' : '') + ' + ' + w.orchestrator + ' the orchestrator\'s; ' + w.merges + (w.merges === 1 ? ' merge' : ' merges') + ' not counted) = ' + fmtShare(w.numerator, w.denominator));
+  return L;
+}
+
+/**
+ * barMet over both records: the latest ISO week that holds any counted unit (a kept patch, a board
+ * file, a counted commit) has every one of them the organism's.
+ */
+export function barOf(s, w) {
+  const fileWeeks = s.weeks.filter((r) => r.denominator > 0);
+  const commitWeeks = w && w.read ? w.weeks.filter((r) => r.counted > 0) : [];
+  const latest = [...fileWeeks.map((r) => r.week), ...commitWeeks.map((r) => r.week)].sort().at(-1) || null;
+  if (!latest) return { week: null, met: false, files: null, commits: null };
+  const f = fileWeeks.find((r) => r.week === latest) || null;
+  const c = commitWeeks.find((r) => r.week === latest) || null;
+  const met = (!f || f.numerator === f.denominator) && (!c || c.organism === c.counted);
+  return { week: latest, met, files: f ? { numerator: f.numerator, denominator: f.denominator } : null, commits: c ? { numerator: c.organism, denominator: c.counted } : null };
+}
+
 // ================================================================ the CLI
-const BOOLEAN = new Set(['json', 'no-write', 'not-launched', 'write-boards', 'fill']);
+const BOOLEAN = new Set(['json', 'no-write', 'not-launched', 'write-boards', 'fill', 'no-commits']);
 function parseArgs(argv) {
   const o = {};
   for (let i = 0; i < argv.length; i++) {
@@ -526,7 +794,8 @@ function parseArgs(argv) {
 
 export function main(argv = process.argv.slice(2), now = new Date()) {
   const o = parseArgs(argv);
-  const root = o.root ? path.resolve(o.root) : ROOT;
+  const rootInfo = resolveRoot(o.root); // the root read from the checkout when --root names no directory here (board 17 builder (the organism's item))
+  const root = rootInfo.root;
   const authoredFile = o.authored ? path.resolve(o.authored) : path.join(root, ...AUTHORED_REL.split('/'));
   const boardsFile = o.boards ? path.resolve(o.boards) : path.join(root, ...BOARDS_REL.split('/'));
   const out = o.out ? path.resolve(o.out) : path.join(root, ...VERDICT_REL.split('/'));
@@ -568,29 +837,36 @@ export function main(argv = process.argv.slice(2), now = new Date()) {
   const ledgerDir = path.join(root, ...LEDGER_DIR_REL.split('/'));
   const led = readLedgers(ledgerDir);
   const perDay = perSourcePerDay(led.lines);
-  const text = renderShare(s, { authoredRel: rel(authoredFile), boardsRel: rel(boardsFile), authoredInfo: a, boardsInfo: b, missing, stale, perDay, ledgerRel: rel(ledgerDir) });
+  // the commits since the last derived board (board 17 builder (the organism's item)); --no-commits is the control arm
+  const win = o['no-commits'] ? { read: false, reason: '--no-commits (the control arm: the two files alone)' } : o.boards ? { read: false, reason: '--boards names a file other than the checkout\'s' } : readCommitWindow({ root, boards: b.boards });
+  const rootLine = rootInfo.source === 'given (--root)' ? [] : ['root: ' + root + ' (' + rootInfo.source + ')'];
+  const text = [...rootLine, renderShare(s, { authoredRel: rel(authoredFile), boardsRel: rel(boardsFile), authoredInfo: a, boardsInfo: b, missing, stale, perDay, ledgerRel: rel(ledgerDir) }), ...renderCommits(win)].join('\n');
   const command = 'node tools/authorship.mjs' + (argv.length ? ' ' + argv.join(' ') : '');
-  const lastWeek = s.weeks.at(-1) || null;
-  const barMet = !!lastWeek && lastWeek.share === 1;
+  const bar = barOf(s, win);
+  const barMet = bar.met;
   const launched = s.boards.filter((x) => x.launched !== false).map((x) => x.board);
   const verdict = {
     at: now.toISOString(), command, node: process.version, isTheBar: true, barMet,
     bar: BAR_TEXT,
-    barRule: 'barMet is true when the latest ISO week in the record has an organism share of exactly 1 (every kept patch and every landed board file that week authored by the organism). MANUAL.md P15 gives N checkpoints no number, so this is the necessary per-week condition; the ladder climbing is read by bench/ladder.mjs, not here.',
-    split: { development: 'none: the share is a count over two files, nothing is fit or tuned', heldOut: 'none: every kept patch and every landed board file is counted' },
+    barRule: 'barMet is true when the latest ISO week that holds any counted unit (a kept patch, a landed board file, or a commit since the last derived board) has an organism share of exactly 1 in both records: every kept patch and every landed board file that week authored by the organism, and every counted commit that week attributed to the organism by its author line. MANUAL.md P15 gives N checkpoints no number, so this is the necessary per-week condition; the ladder climbing is read by bench/ladder.mjs, not here.',
+    split: win.read ? { development: win.split.development + '; the files share is a count over two files, nothing fit or tuned', heldOut: win.split.heldOut, contaminated: win.split.contaminated } : { development: 'none: the share is a count over two files, nothing is fit or tuned', heldOut: 'none: every kept patch and every landed board file is counted', contaminated: false },
     statement: 'The organism authored ' + s.numerator + ' of the ' + s.denominator + ' units of change counted here: ' + s.numerator + ' kept patches in ' + rel(authoredFile)
       + ' carry an organism author (a model cell on open weights, the deterministic census prune, or mind/imagine.mjs), against a denominator of ' + s.kept + ' kept patches of any author plus '
       + s.boardFiles + ' files landed by ' + launched.length + ' launched boards (' + (launched.join(', ') || 'none') + ') in ' + rel(boardsFile) + ', so the cumulative share is ' + fmtShare(s.numerator, s.denominator)
-      + '. The latest week, ' + (lastWeek ? lastWeek.week + ', holds ' + fmtShare(lastWeek.numerator, lastWeek.denominator) : 'none, holds nothing') + ', so the P15 bar (100 percent per week) is ' + (barMet ? 'MET' : 'NOT MET') + '. '
+      + '. ' + (win.read ? 'Apart from those files, the ' + win.counted + ' commits counted since the last derived board' + (win.since ? ' (board ' + win.since.board + ', checkpoint ' + win.since.sha + ')' : '') + ' are attributed by their author lines: ' + win.organism + ' the organism\'s, ' + win.board + ' a board\'s, ' + win.orchestrator + ' the orchestrator\'s (' + win.merges + (win.merges === 1 ? ' merge' : ' merges') + ' not counted), so the commit share is ' + fmtShare(win.numerator, win.denominator) + '. The split of that attribution: development ' + win.split.development + '; held out ' + win.split.heldOut + '; ' + (win.split.contaminated ? 'contaminated, because ' + win.split.contaminated : 'not contaminated') + '. ' : 'The commits since the last derived board were not read (' + win.reason + '). ')
+      + 'The latest week with a counted unit, ' + (bar.week ? bar.week + ', holds ' + (bar.files ? fmtShare(bar.files.numerator, bar.files.denominator) + ' in files' : 'no file unit') + ' and ' + (bar.commits ? fmtShare(bar.commits.numerator, bar.commits.denominator) + ' in commits' : 'no counted commit') : 'none, holds nothing') + ', so the P15 bar (100 percent per week) is ' + (barMet ? 'MET' : 'NOT MET') + '. '
       + (s.lastBoard ? 'The last launched board is ' + s.lastBoard.board + ' at ' + s.lastBoard.at + ', ' + (s.daysSinceLastBoard === null ? 'n/a' : s.daysSinceLastBoard.toFixed(2)) + ' days before this run. ' : '')
       + (missing.length ? 'Board sources with no entry, so not yet in the denominator: ' + missing.map((m) => m.board).join(', ') + '. ' : '')
       + (stale.length ? 'Entries that say launched false while docs/LOG.md says the board LANDED: ' + stale.map((x) => x.board + ' (' + x.landed.source + ')').join(', ') + '. ' : '')
-      + 'The share reads only these two files (the per source per day rows read the ledgers in ' + rel(ledgerDir) + '); a board that has not yet been appended to ' + rel(boardsFile) + ' is not in the denominator, and a patch the autopilot reverted or refused is in neither.',
+      + 'The files share reads only these two files (the per source per day rows read the ledgers in ' + rel(ledgerDir) + (win.read ? ', and the commit share reads git log, read only' : '') + '); a board that has not yet been appended to ' + rel(boardsFile) + ' is not in the files denominator' + (win.read ? ' (its commits are in the commit share until it is)' : '') + ', and a patch the autopilot reverted or refused is in neither.',
     numerator: s.numerator, denominator: s.denominator, share: s.share,
     organism: s.organism, given: s.given, kept: s.kept, boardFiles: s.boardFiles,
     boards: s.boards, weeks: s.weeks, undated: s.undated,
     lastBoard: s.lastBoard, daysSinceLastBoard: s.daysSinceLastBoard, missingBoards: missing,
     staleBoards: stale.map((x) => ({ board: x.board, landed: x.landed.source, at: x.landed.at })),
+    root: { used: root, given: rootInfo.given, source: rootInfo.source },
+    latestWeek: bar,
+    commits: win.read ? { since: win.since, range: win.range, missingBase: win.missingBase, counted: win.counted, merges: win.merges, organism: win.organism, board: win.board, orchestrator: win.orchestrator, byBoard: win.byBoard, numerator: win.numerator, denominator: win.denominator, share: win.share, weeks: win.weeks, rows: win.rows, parserHead: PARSER_HEAD } : { read: false, reason: win.reason },
     perSourcePerDay: perDay,
     sources: {
       authored: { file: rel(authoredFile), present: a.present, lines: a.lines.length, bad: a.bad },
