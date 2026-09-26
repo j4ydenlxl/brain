@@ -45,6 +45,27 @@ Written by this item: `.github/workflows/cloud.yml`, `tools/cloud-github.mjs`, `
 
 ## Measured
 
+### Board 20: the ruler read FROM the host through the REST API (2026-09-26)
+
+Author of this subsection: board 20 builder, host item, model off (no model socket). gh is absent on the cloud-session host, so `bench/cloud-host.mjs` gained a REST path: the token is read at request time from the variable whose NAME is in `BRAIN_GITHUB_TOKEN_VAR` (default GH_TOKEN, then GITHUB_TOKEN) and sent only to api.github.com; the signed redirect of the zip is followed without it; the zip is read by `readZip` (central directory, stored and deflated entries, CRC-32, node:zlib, no dependency).
+
+The bar: `node tools/budget.mjs --ram-mb 2000 --disk-mb 100 --dir <scratch>/hostbar --record <scratch>/hostbar/budget.json -- node --max-old-space-size=2000 bench/cloud-host.mjs`. Verdict `bench/verdicts/cloud-host.json` at 2026-09-26T20:36:56.786Z, node v24.9.0, isTheBar true, **barMet false**, exit 1. Budget: wall 3.54 s, peak ram 69.9MB.
+
+- From the host (api.github.com, 9 calls, X-RateLimit-Remaining 14984): runs 3 in 7 days, conclusions success 2, failure 1: 36243371509 (schedule, success), 36236925421 (workflow_dispatch, success), 36198423380 (workflow_dispatch, failure). Uptime fraction 0.0131 (the runs' wall minutes 132 over 10080; health poll minutes from the job steps 130.1). Newest run 36243371509, run 3, schedule, success, 12:53:48Z to 13:34:45Z.
+- Artifacts listed (brain-cloud, none expired): 10907232354, 138464 bytes (run 36243371509); 10905368023, 102767 bytes (run 36236925421); 10891638248, 42432 bytes (run 36198423380).
+- Job steps: run 36243371509 health poll success 2400 s, the ladder step success 27 s, crash loop step skipped; run 36236925421 health poll success 3301 s, ladder skipped, crash loop skipped; run 36198423380 health poll 2102 s, crash loop step failure. Relay step skipped in all three.
+- **Not measured**: healthOk, restartsInJob, ticksPerHour, checkpointAgeS, checkpointBytes, ladderLine, lastHealthLine: "the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443". One refusal, not retried on the other two artifacts. The rule of the bar is unchanged; it reads "not measured" and barMet false.
+- PC: the workflow parses, 20681 bytes, 27 of 27 structural checks; 10 of 10 files it names exist. CONTROL: barOf holds true (true on the planted pass, false on its 8 planted failures).
+- The control of the REST path (the same command with GH_TOKEN and GITHUB_TOKEN unset, `--out` in the scratchpad): every host row "not measured: gh is not on PATH", barMet false, the Board 16 reading.
+
+Cost arithmetic of the daily job, printed by the ruler: the completed jobs of the window bill 133 minutes (each rounded up); the daily scheduled job (run 36243371509) bills 41 minutes, 30 of them 1230 of the 2000 free private minutes a month (fits true); the newest artifact is 138464 bytes, 90 days of daily ones 12461760 of the 524288000 bytes a free account stores.
+
+What remains for P13: (1) the health rows from a host whose egress allows the signed artifact host (his PC with gh logged in), or the workflow writing its health row where api.github.com serves it (a check-run annotation or the relay's branch); (2) the relay for a public repository (24/7 is 1440 minutes a day; the relay step was skipped in every run read); (3) the checkpoint store off the Actions cache (this host's proxy also refuses the caches path of the API: "Access to this GitHub Actions path is not permitted through this proxy"). The OPEN bullet "no run has happened" below is superseded by the three runs above.
+
+Tests: `node --test test/cloud-host.test.mjs`: tests 30, pass 30, fail 0 (a planted API and a planted signed host on 127.0.0.1; the second never receives the Authorization header; a planted proxy refusing CONNECT; a rate limit stops after one request; a planted token absent from the verdict, the printed lines and this note). `pidAlive` now reads a zombie as dead (/proc state Z): the trial test failed at HEAD on this container without it.
+
+### Board 16
+
 ### The bar: `node tools/budget.mjs --ram-mb 6000 --disk-mb 500 --dir <scratch>/hostbar --record <scratch>/hostbar/budget-bar.json -- node --max-old-space-size=6000 bench/cloud-host.mjs --checkout-trial 90 --counterfactual bench/fixtures/answer-questions.json --repeat 3` (TEMP and TMP set to `<scratch>/hostbar/tmp`)
 
 Verdict `bench/verdicts/cloud-host.json`, at 2026-09-25T22:33:30.073Z (it replaces the file of 2026-09-25T22:10:15.303Z, a re-measure by the fix stage; `replaces` in the file says so), isTheBar true, barMet false, exit 1. Budget: wall 441.46 s, peak ram 813.8 MB, peak dir 113.8 MB. The verdict was written at 441 s of a 441.46 s wall: no timer outlives the run any more.

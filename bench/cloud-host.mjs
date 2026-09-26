@@ -3,8 +3,17 @@
 // 24/7 on the cloud remember Its literally a sandboxed ARTIFICIAL SUPERINTELLIGENCE"; his
 // 2026-09-25 about 17:05: "set up the p13 idk how idk"). Writes bench/verdicts/cloud-host.json.
 //
-//   node bench/cloud-host.mjs [--days 7] [--checkout-trial SECONDS]
+//   node bench/cloud-host.mjs [--days 7] [--checkout-trial SECONDS] [--repo OWNER/NAME]
 //                             [--counterfactual FILE[,FILE] [--repeat N]] [--root DIR] [--out FILE]
+//
+// THE REST PATH (board 20 builder, 2026-09-26): when gh is absent or not logged in and a token
+// variable is set (the NAME in BRAIN_GITHUB_TOKEN_VAR, default GH_TOKEN, then GITHUB_TOKEN; the
+// value is read at request time and never printed, logged or written), the same rows are read
+// from the GitHub REST API: the workflow's runs, each completed run's jobs and artifacts, and the
+// brain-cloud zip through its signed redirect, followed WITHOUT the token and read by readZip
+// (node:zlib inflateRaw, no dependency). A zip that cannot be fetched leaves the health rows
+// "not measured: <cause>" and barMet false; X-RateLimit-Remaining 0 stops with "not measured:
+// rate limit". The uptime fraction on this path is the runs' wall minutes over 10,080.
 //
 // FROM THE HOST (GitHub Actions on his account, the orchestrator's ASSUMPTION of 2026-09-25; test:
 // his confirmation), read with gh, read only: `gh run list --workflow cloud.yml` (status,
@@ -40,11 +49,14 @@
 import { fork, spawn, spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync, existsSync, readdirSync, statfsSync, statSync, lstatSync } from 'node:fs';
 import http from 'node:http';
+import https from 'node:https';
+import tls from 'node:tls';
+import zlib from 'node:zlib';
 import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ROOT as TREE, WORKFLOW_REL, ARTIFACT, BAR, barOf, ghStatus, git, runCmd, workflowReport, parseYaml } from '../tools/cloud-github.mjs';
+import { ROOT as TREE, WORKFLOW_REL, ARTIFACT, BAR, barOf, ghStatus, git, runCmd, workflowReport, parseYaml, PRIVATE_MINUTES, WEEK_MINUTES } from '../tools/cloud-github.mjs';
 
 const SELF = fileURLToPath(import.meta.url);
 const HERE = path.dirname(SELF);
@@ -69,10 +81,18 @@ export function ticksPerHourOf(logText) {
 
 /** One run's artifact directory read into a reading. */
 export function readingOf(run, dir) {
-  const ladder = existsSync(path.join(dir, 'ladder.log')) ? readFileSync(path.join(dir, 'ladder.log'), 'utf8') : '';
-  const ladderLine = ladder.split(/\r?\n/).find((l) => /^LADDER \d{4}-\d{2}-\d{2}:/.test(l)) || null;
-  const log = existsSync(path.join(dir, 'health.log')) ? readFileSync(path.join(dir, 'health.log'), 'utf8') : '';
-  return { run, health: readJson(path.join(dir, 'health.json')), container: readJson(path.join(dir, 'container.json')), job: readJson(path.join(dir, 'run.json')), ticksPerHour: ticksPerHourOf(log), ladderLine };
+  return readingFromFiles(run, (name) => (existsSync(path.join(dir, name)) ? readFileSync(path.join(dir, name), 'utf8') : null));
+}
+
+/** One run's artifact files read into a reading; read(name) answers the file's text or null (a directory or an in-memory zip). */
+export function readingFromFiles(run, read) {
+  const json = (n) => { const t = read(n); if (t == null) return null; try { return JSON.parse(t); } catch { return null; } };
+  const ladderLine = String(read('ladder.log') || '').split(/\r?\n/).find((l) => /^LADDER \d{4}-\d{2}-\d{2}:/.test(l)) || null;
+  const log = String(read('health.log') || '');
+  const lines = log.split(/\r?\n/).filter(Boolean);
+  let lastHealthLine = null;
+  if (lines.length) { try { lastHealthLine = JSON.parse(lines[lines.length - 1]); } catch { lastHealthLine = { unparsed: lines[lines.length - 1].slice(0, 200) }; } }
+  return { run, health: json('health.json'), container: json('container.json'), job: json('run.json'), ticksPerHour: ticksPerHourOf(log), ladderLine, lastHealthLine, healthLogLines: lines.length };
 }
 
 /** Every host row, read only. env carries PATH (a planted gh in the tests). */
@@ -145,6 +165,351 @@ export function measureHost({ root = TREE, env = process.env, days = 7, now = Da
   return { rows, readings, cause: null };
 }
 
+// ---------------------------------------------------------------- the REST path (board 20 builder)
+// board 20 builder, host item (P13, the ruler read FROM the host): when gh is absent or not logged
+// in, the host is read through the GitHub REST API. The token is read at request time from the
+// environment variable whose NAME is BRAIN_GITHUB_TOKEN_VAR (default GH_TOKEN, then GITHUB_TOKEN);
+// its value goes only into the Authorization header of a request to the API origin and is never
+// printed, logged or written, and never sent to the host a redirect names (the signed artifact
+// URL, whose query string is never printed either). Endpoints, read only: the repository, the
+// workflow's runs, each completed run's jobs (step conclusions and times), its artifacts, and the
+// brain-cloud zip (a redirect followed without the token). The zip is read in memory by readZip
+// (the central directory is the reference for sizes; stored and deflated entries; CRC-32
+// checked; no dependency). X-RateLimit-Remaining 0 (or a 429) stops the path with
+// "not measured: rate limit" and no further request. Sockets: 127.0.0.1 (a planted API, or the
+// egress proxy named by HTTPS_PROXY, tunnelled with CONNECT) and api.github.com.
+export const API_DEFAULT = 'https://api.github.com';
+export const HOST_EXTRA_ROWS = ['artifacts', 'jobSteps', 'lastHealthLine', 'cost'];
+export const STORE_BYTES = 500 * 1048576; // the artifact storage a free account holds (cloud.yml's own comment)
+const UA = 'brain-cloud-host (bench/cloud-host.mjs)';
+const RETENTION_DAYS = 90; // cloud.yml uploads brain-cloud with retention-days 90
+
+/** Which variable holds the token: {name} or {name: null, cause}. Only NAMES leave this function. */
+export function tokenVarOf(env = process.env) {
+  const named = env.BRAIN_GITHUB_TOKEN_VAR;
+  if (named) {
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(named)) return { name: null, explicit: true, cause: 'BRAIN_GITHUB_TOKEN_VAR is not a variable name' };
+    return env[named] ? { name: named, explicit: true } : { name: null, explicit: true, cause: 'the variable ' + named + ' named by BRAIN_GITHUB_TOKEN_VAR is empty' };
+  }
+  if (env.GH_TOKEN) return { name: 'GH_TOKEN' };
+  if (env.GITHUB_TOKEN) return { name: 'GITHUB_TOKEN' };
+  return { name: null, cause: 'no token in GH_TOKEN or GITHUB_TOKEN (or the variable BRAIN_GITHUB_TOKEN_VAR names)' };
+}
+
+/** The API origin: https://api.github.com, or an http listener on 127.0.0.1 (a planted API in the tests). */
+export function apiBaseOf(env = process.env) {
+  const raw = env.BRAIN_GITHUB_API || API_DEFAULT;
+  let u;
+  try { u = new URL(raw); } catch { return { error: 'BRAIN_GITHUB_API is not a URL' }; }
+  const local = ['127.0.0.1', 'localhost'].includes(u.hostname);
+  if (!(u.protocol === 'https:' && u.hostname === 'api.github.com' && !u.port) && !(local && u.protocol === 'http:')) return { error: 'BRAIN_GITHUB_API must be https://api.github.com or an http listener on 127.0.0.1' };
+  return { base: u.origin };
+}
+
+/** owner/repo from a github.com remote URL (https or ssh), or null. */
+export function repoOf(remote) {
+  const m = /github\.com[:/]+([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+?)(?:\.git)?\/?$/.exec(String(remote || '').trim());
+  return m ? m[1] + '/' + m[2] : null;
+}
+
+function bypassProxy(host, env) {
+  const h = host.toLowerCase();
+  return String(env.NO_PROXY || env.no_proxy || '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean)
+    .some((n) => n === '*' || h === n || (n.startsWith('*.') ? h.endsWith(n.slice(1)) : n.startsWith('.') ? h.endsWith(n) : h.endsWith('.' + n)));
+}
+
+/** The egress proxy an https request goes through (HTTPS_PROXY, NO_PROXY honoured), or null. */
+export function proxyFor(url, env = process.env) {
+  if (url.protocol !== 'https:') return null;
+  const p = env.HTTPS_PROXY || env.https_proxy;
+  if (!p || bypassProxy(url.hostname, env)) return null;
+  try { return new URL(p); } catch { return null; }
+}
+
+function tunnel(proxy, host, port, ms) {
+  return new Promise((resolve, reject) => {
+    const req = http.request({ hostname: proxy.hostname, port: Number(proxy.port) || 80, method: 'CONNECT', path: host + ':' + port, headers: { host: host + ':' + port }, agent: false });
+    const timer = setTimeout(() => req.destroy(new Error('the egress proxy gave no answer to CONNECT ' + host + ':' + port + ' in ' + ms + ' ms')), ms);
+    req.on('connect', (res, socket) => {
+      clearTimeout(timer);
+      if (res.statusCode === 200) { resolve(socket); return; }
+      socket.destroy();
+      reject(Object.assign(new Error('the egress proxy answered ' + res.statusCode + ' to CONNECT ' + host + ':' + port), { refused: true }));
+    });
+    req.on('error', (e) => { clearTimeout(timer); reject(e); });
+    req.end();
+  });
+}
+
+/** One GET: {status, headers, body}. https goes through the egress proxy when one is set; nothing is retried. */
+export async function httpGet(u, { headers = {}, env = process.env, timeoutMs = 60_000, maxBytes = 16 * 1048576 } = {}) {
+  const url = new URL(u);
+  const secure = url.protocol === 'https:';
+  if (!secure && url.protocol !== 'http:') throw new Error('refused: ' + url.protocol + ' is not http or https');
+  const port = Number(url.port) || (secure ? 443 : 80);
+  const proxy = proxyFor(url, env);
+  const opts = { method: 'GET', hostname: url.hostname, port, path: url.pathname + url.search, headers: { host: url.host, ...headers } };
+  let mod = secure ? https : http;
+  if (proxy) {
+    const raw = await tunnel(proxy, url.hostname, port, timeoutMs);
+    const sock = await new Promise((resolve, reject) => { const s = tls.connect({ socket: raw, servername: url.hostname }, () => resolve(s)); s.once('error', reject); });
+    opts.createConnection = () => sock;
+    mod = http;
+  } else opts.agent = false;
+  return new Promise((resolve, reject) => {
+    const req = mod.request(opts, (res) => {
+      const chunks = [];
+      let n = 0;
+      res.on('data', (c) => { n += c.length; if (n > maxBytes) { req.destroy(new Error('the answer passed ' + maxBytes + ' bytes')); return; } chunks.push(c); });
+      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: Buffer.concat(chunks) }));
+      res.on('error', reject);
+    });
+    req.setTimeout(timeoutMs, () => req.destroy(new Error('no answer from ' + url.host + ' in ' + timeoutMs + ' ms')));
+    req.on('error', reject);
+    req.end();
+  });
+}
+
+// ---------------------------------------------------------------- the zip reader (and its writer, for the tests)
+const CRC_TABLE = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+export function crc32(buf) { let c = 0xffffffff; for (let i = 0; i < buf.length; i++) c = CRC_TABLE[(c ^ buf[i]) & 0xff] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; }
+
+/** A zip archive read in memory: Map name -> Buffer. The central directory is the reference for sizes (a local header may carry zeros and a data descriptor). */
+export function readZip(buf, { maxBytes = 256 * 1048576 } = {}) {
+  if (!Buffer.isBuffer(buf) || buf.length < 22) throw new Error('not a zip: ' + (buf ? buf.length : 0) + ' bytes');
+  let e = -1;
+  for (let i = buf.length - 22; i >= Math.max(0, buf.length - 22 - 65535); i--) if (buf.readUInt32LE(i) === 0x06054b50) { e = i; break; }
+  if (e < 0) throw new Error('not a zip: no end of central directory record');
+  const count = buf.readUInt16LE(e + 10), cdSize = buf.readUInt32LE(e + 12), cdOff = buf.readUInt32LE(e + 16);
+  if (count === 0xffff || cdSize === 0xffffffff || cdOff === 0xffffffff) throw new Error('a zip64 archive is not read here');
+  if (cdOff + cdSize > e) throw new Error('the central directory runs past its end record');
+  const out = new Map();
+  let p = cdOff, total = 0;
+  for (let k = 0; k < count; k++) {
+    if (p + 46 > e || buf.readUInt32LE(p) !== 0x02014b50) throw new Error('central directory entry ' + k + ' has no signature');
+    const flags = buf.readUInt16LE(p + 8), method = buf.readUInt16LE(p + 10), crc = buf.readUInt32LE(p + 16);
+    const csize = buf.readUInt32LE(p + 20), usize = buf.readUInt32LE(p + 24);
+    const nlen = buf.readUInt16LE(p + 28), xlen = buf.readUInt16LE(p + 30), clen = buf.readUInt16LE(p + 32), lho = buf.readUInt32LE(p + 42);
+    const name = buf.toString('utf8', p + 46, p + 46 + nlen);
+    p += 46 + nlen + xlen + clen;
+    if (csize === 0xffffffff || usize === 0xffffffff || lho === 0xffffffff) throw new Error(name + ': zip64 sizes are not read here');
+    if (flags & 1) throw new Error(name + ': encrypted');
+    if (name.endsWith('/')) continue;
+    if (lho + 30 > buf.length || buf.readUInt32LE(lho) !== 0x04034b50) throw new Error(name + ': no local file header at ' + lho);
+    const start = lho + 30 + buf.readUInt16LE(lho + 26) + buf.readUInt16LE(lho + 28);
+    if (start + csize > buf.length) throw new Error(name + ': the data runs past the archive');
+    total += usize;
+    if (total > maxBytes) throw new Error('the archive holds more than ' + maxBytes + ' bytes');
+    const raw = buf.subarray(start, start + csize);
+    let data;
+    if (method === 0) data = Buffer.from(raw);
+    else if (method === 8) data = usize === 0 ? Buffer.alloc(0) : zlib.inflateRawSync(raw, { maxOutputLength: usize });
+    else throw new Error(name + ': compression method ' + method + ' is not read here');
+    if (data.length !== usize) throw new Error(name + ': ' + data.length + ' bytes, the central directory says ' + usize);
+    if (crc32(data) !== crc) throw new Error(name + ': CRC-32 differs from the central directory');
+    out.set(name, data);
+  }
+  return out;
+}
+
+/** The reverse of readZip: files {name: text|Buffer} into a zip. method 0 stores, 8 deflates (or a function of the name); descriptor puts zeros in the local headers and a data descriptor after each entry. */
+export function zipOf(files, { method = 8, descriptor = false } = {}) {
+  const locals = [], centrals = [];
+  let off = 0, n = 0;
+  for (const [name, content] of Object.entries(files)) {
+    const data = Buffer.isBuffer(content) ? content : Buffer.from(String(content));
+    const m = typeof method === 'function' ? method(name) : method;
+    const comp = m === 8 ? zlib.deflateRawSync(data) : data;
+    const crc = crc32(data), nb = Buffer.from(name, 'utf8'), flags = 0x0800 | (descriptor ? 0x0008 : 0);
+    const lh = Buffer.alloc(30);
+    lh.writeUInt32LE(0x04034b50, 0); lh.writeUInt16LE(20, 4); lh.writeUInt16LE(flags, 6); lh.writeUInt16LE(m, 8);
+    lh.writeUInt32LE(descriptor ? 0 : crc, 14); lh.writeUInt32LE(descriptor ? 0 : comp.length, 18); lh.writeUInt32LE(descriptor ? 0 : data.length, 22); lh.writeUInt16LE(nb.length, 26);
+    const dd = descriptor ? Buffer.alloc(16) : Buffer.alloc(0);
+    if (descriptor) { dd.writeUInt32LE(0x08074b50, 0); dd.writeUInt32LE(crc, 4); dd.writeUInt32LE(comp.length, 8); dd.writeUInt32LE(data.length, 12); }
+    const ch = Buffer.alloc(46);
+    ch.writeUInt32LE(0x02014b50, 0); ch.writeUInt16LE(20, 4); ch.writeUInt16LE(20, 6); ch.writeUInt16LE(flags, 8); ch.writeUInt16LE(m, 10);
+    ch.writeUInt32LE(crc, 16); ch.writeUInt32LE(comp.length, 20); ch.writeUInt32LE(data.length, 24); ch.writeUInt16LE(nb.length, 28); ch.writeUInt32LE(off, 42);
+    locals.push(lh, nb, comp, dd); centrals.push(ch, nb);
+    off += 30 + nb.length + comp.length + dd.length; n++;
+  }
+  const cd = Buffer.concat(centrals), eo = Buffer.alloc(22);
+  eo.writeUInt32LE(0x06054b50, 0); eo.writeUInt16LE(n, 8); eo.writeUInt16LE(n, 10); eo.writeUInt32LE(cd.length, 12); eo.writeUInt32LE(off, 16);
+  return Buffer.concat([...locals, cd, eo]);
+}
+
+// ---------------------------------------------------------------- the host through the REST API
+const runOfApi = (r) => ({ databaseId: r.id, number: r.run_number, event: r.event, status: r.status, conclusion: r.conclusion, createdAt: r.created_at, startedAt: r.run_started_at || r.created_at, updatedAt: r.updated_at, url: r.html_url, headSha: r.head_sha ? String(r.head_sha).slice(0, 7) : null });
+const secondsOf = (a, b) => (a && b ? Math.round((Date.parse(b) - Date.parse(a)) / 1000) : null);
+const msgOf = (r) => { try { const j = JSON.parse(r.body.toString('utf8')); return j && j.message ? String(j.message).slice(0, 200) : ''; } catch { return ''; } };
+class RateLimited extends Error {}
+
+/** Every host row through the REST API, read only. Returns {rows, extra, readings, cause, artifactCause, via}. */
+export async function measureHostRest({ root = TREE, env = process.env, days = 7, now = Date.now(), log = () => {}, repo = null, why = 'gh is not on PATH', maxRuns = 10, timeoutMs = 60_000 } = {}) {
+  const rows = {}, extra = {}, readings = [], missing = [];
+  const tv = tokenVarOf(env), api = apiBaseOf(env);
+  const via = { path: 'REST', api: api.base || null, tokenVar: tv.name, gh: why, calls: 0, rateRemaining: null };
+  const fill = (cause) => { for (const k of HOST_ROWS) if (!rows[k]) rows[k] = notMeasured(cause); for (const k of HOST_EXTRA_ROWS) if (!extra[k]) extra[k] = notMeasured(cause); };
+  const all = (cause) => { fill(cause); return { rows, extra, readings: [], cause, artifactCause: null, via }; };
+  if (!tv.name) return all(why + ' and ' + tv.cause);
+  if (api.error) return all(api.error);
+  let slug = repo, origin = null;
+  if (!slug) {
+    const o = git(root, ['remote', 'get-url', 'origin']);
+    if (o.code !== 0) return all('no origin remote: the repository was never created (node tools/cloud-github.mjs)');
+    origin = o.stdout.trim();
+    slug = repoOf(origin);
+    if (!slug) return all('the origin remote is not a github.com repository (pass --repo owner/name)');
+  }
+  if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(slug)) return all('--repo must be owner/name');
+  const state = { remaining: null, reset: null };
+  const rateCause = () => 'rate limit: X-RateLimit-Remaining ' + state.remaining + (state.reset ? ', resets at ' + new Date(Number(state.reset) * 1000).toISOString() : '');
+  const call = async (p, { accept = 'application/vnd.github+json', maxBytes = 16 * 1048576 } = {}) => {
+    if (state.remaining === 0) throw new RateLimited(rateCause());
+    // the token is read here, at request time, from the variable tv.name; it goes into this header and nowhere else
+    const r = await httpGet(api.base + p, { headers: { accept, 'user-agent': UA, 'x-github-api-version': '2022-11-28', authorization: 'Bearer ' + String(env[tv.name] || '') }, env, timeoutMs, maxBytes });
+    via.calls++;
+    const rem = Number(r.headers['x-ratelimit-remaining']);
+    if (r.headers['x-ratelimit-remaining'] !== undefined && Number.isFinite(rem)) { state.remaining = rem; state.reset = r.headers['x-ratelimit-reset'] || null; via.rateRemaining = rem; }
+    if (r.status === 429 || (r.status === 403 && state.remaining === 0)) { if (state.remaining === null) state.remaining = 0; throw new RateLimited(rateCause()); }
+    return r;
+  };
+  const json = (r) => { try { return JSON.parse(r.body.toString('utf8')); } catch { return null; } };
+  try {
+    const rv = await call('/repos/' + slug);
+    const rj = rv.status === 200 ? json(rv) : null;
+    if (rv.status === 404) return all('the repository ' + slug + ' answered 404 (the token named ' + tv.name + ' cannot read it, or it does not exist)');
+    if (rv.status === 401) return all('the API answered 401 to the token named ' + tv.name);
+    rows.gh = row('REST path (' + why + ')', { api: api.base, tokenVar: tv.name });
+    rows.repository = row(origin || slug, rj ? { nameWithOwner: rj.full_name, visibility: rj.visibility, defaultBranch: rj.default_branch } : { view: rv.status + ' ' + msgOf(rv) });
+    const wf = path.basename(WORKFLOW_REL);
+    const stop = (c) => { fill(c); return { rows, extra, readings, cause: c, artifactCause: null, via }; };
+    const lr = await call('/repos/' + slug + '/actions/workflows/' + wf + '/runs?per_page=20');
+    if (lr.status === 404) return stop(wf + ' is not on the default branch' + (rj ? ' (' + rj.default_branch + ')' : '') + ' of ' + slug + ' yet');
+    if (lr.status !== 200) return stop('the runs list answered ' + lr.status + (msgOf(lr) ? ': ' + msgOf(lr) : ''));
+    const lj = json(lr);
+    if (!lj || !Array.isArray(lj.workflow_runs)) return stop('the runs list is not JSON');
+    const runs = lj.workflow_runs.map(runOfApi);
+    const since = now - days * 86_400_000;
+    const win = runs.filter((r) => Date.parse(r.createdAt) >= since).sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+    if (!runs.length) return stop('no run of ' + wf + ' yet');
+    if (!win.length) return stop('no run of ' + wf + ' in the last ' + days + ' days (' + runs.length + ' older)');
+    rows.runs = row(win.length, { window: days + ' days', ids: win.map((r) => r.databaseId), totalCount: lj.total_count ?? null });
+    const tally = {};
+    for (const r of win) { const k = r.status === 'completed' ? String(r.conclusion) : String(r.status); tally[k] = (tally[k] || 0) + 1; }
+    rows.conclusions = row(tally, { byRun: win.map((r) => ({ id: r.databaseId, event: r.event, conclusion: r.status === 'completed' ? r.conclusion : r.status, createdAt: r.createdAt, updatedAt: r.updatedAt, head: r.headSha })) });
+    const done = win.filter((x) => x.status === 'completed');
+    let wall = 0;
+    for (const r of done) wall += Math.max(0, (Date.parse(r.updatedAt) - Date.parse(r.startedAt)) / 60000);
+    rows.actionsMinutes = row(r1(wall), { how: 'updated_at minus run_started_at over the completed runs of the window; GitHub bills each job rounded up to the minute' });
+    const nr = done[0];
+    rows.newestRun = nr ? row({ id: nr.databaseId, number: nr.number, event: nr.event, conclusion: nr.conclusion, createdAt: nr.createdAt, updatedAt: nr.updatedAt, url: nr.url }) : notMeasured('no completed run in the window');
+
+    // each completed run: its jobs (steps), its artifacts, and the brain-cloud zip
+    const steps = [], arts = [];
+    let stopped = null;
+    for (const r of done.slice(0, maxRuns)) {
+      const jr = await call('/repos/' + slug + '/actions/runs/' + r.databaseId + '/jobs?per_page=10');
+      const jj = jr.status === 200 ? json(jr) : null;
+      if (jj && Array.isArray(jj.jobs)) {
+        for (const j of jj.jobs) {
+          steps.push({ run: r.databaseId, event: r.event, job: j.name, conclusion: j.conclusion, seconds: secondsOf(j.started_at, j.completed_at),
+            billedMinutes: j.started_at && j.completed_at ? Math.max(1, Math.ceil((Date.parse(j.completed_at) - Date.parse(j.started_at)) / 60000)) : null,
+            steps: (j.steps || []).map((s) => ({ n: s.number, name: s.name, conclusion: s.conclusion, seconds: secondsOf(s.started_at, s.completed_at) })) });
+        }
+      } else steps.push({ run: r.databaseId, event: r.event, error: 'the jobs list answered ' + jr.status + (msgOf(jr) ? ': ' + msgOf(jr) : '') });
+      const ar = await call('/repos/' + slug + '/actions/runs/' + r.databaseId + '/artifacts?per_page=30');
+      const aj = ar.status === 200 ? json(ar) : null;
+      const art = aj && Array.isArray(aj.artifacts) ? aj.artifacts.find((x) => x.name === ARTIFACT) : null;
+      if (!aj) { missing.push({ id: r.databaseId, cause: 'the artifacts list answered ' + ar.status + (msgOf(ar) ? ': ' + msgOf(ar) : '') }); continue; }
+      if (!art) { missing.push({ id: r.databaseId, cause: 'no ' + ARTIFACT + ' artifact in the run' }); continue; }
+      arts.push({ run: r.databaseId, id: art.id, name: art.name, bytes: art.size_in_bytes, expired: art.expired, createdAt: art.created_at, expiresAt: art.expires_at });
+      if (art.expired) { missing.push({ id: r.databaseId, cause: 'the ' + ARTIFACT + ' artifact expired' }); continue; }
+      if (stopped) { missing.push({ id: r.databaseId, cause: 'not attempted: ' + stopped }); continue; }
+      const zr = await call('/repos/' + slug + '/actions/artifacts/' + art.id + '/zip', { maxBytes: 256 * 1048576 });
+      let zip = null, where = new URL(api.base).host;
+      if (zr.status === 200) zip = zr.body;
+      else if ([301, 302, 303, 307, 308].includes(zr.status) && zr.headers.location) {
+        let loc;
+        try { loc = new URL(zr.headers.location, api.base); } catch { missing.push({ id: r.databaseId, cause: 'the zip redirect named no URL' }); continue; }
+        where = loc.host;
+        const local = ['127.0.0.1', 'localhost'].includes(loc.hostname);
+        if (!(loc.protocol === 'https:' || (loc.protocol === 'http:' && local))) { missing.push({ id: r.databaseId, cause: 'refused: the zip redirect is not https (' + loc.protocol + ')' }); continue; }
+        try {
+          // the signed URL carries its own grant: the token is NOT sent to this second host
+          const z = await httpGet(loc.href, { headers: { 'user-agent': UA }, env, timeoutMs, maxBytes: 256 * 1048576 });
+          if (z.status === 200) zip = z.body;
+          else { const c = 'the signed artifact host ' + loc.host + ' answered ' + z.status; missing.push({ id: r.databaseId, cause: c }); stopped = c; continue; }
+        } catch (err) {
+          const c = 'the signed artifact host ' + loc.host + ' was not reached: ' + firstLine(err.message);
+          missing.push({ id: r.databaseId, cause: c });
+          stopped = c; // a refusal (an egress policy, a closed host) is not retried on the next run's artifact
+          continue;
+        }
+      } else { missing.push({ id: r.databaseId, cause: 'the zip endpoint answered ' + zr.status + (msgOf(zr) ? ': ' + msgOf(zr) : '') }); continue; }
+      let files;
+      try { files = readZip(zip); } catch (err) { missing.push({ id: r.databaseId, cause: 'the zip from ' + where + ' did not read: ' + firstLine(err.message) }); continue; }
+      const reading = readingFromFiles(r, (n) => (files.has(n) ? files.get(n).toString('utf8') : null));
+      reading.zip = { bytes: zip.length, files: files.size, from: where };
+      readings.push(reading);
+    }
+    log('REST: ' + via.calls + ' API calls, X-RateLimit-Remaining ' + via.rateRemaining + '; ' + readings.length + ' artifact(s) read, ' + missing.length + ' not');
+    extra.artifacts = arts.length ? row(arts, { read: readings.map((x) => ({ run: x.run.databaseId, zipBytes: x.zip.bytes, files: x.zip.files })), missing }) : notMeasured('no ' + ARTIFACT + ' artifact listed' + (missing[0] ? ' (' + missing[0].cause + ')' : ''));
+    extra.jobSteps = steps.length ? row(steps) : notMeasured('no completed run');
+    const artifactCause = readings.length ? null : 'the ' + ARTIFACT + ' artifact could not be read (' + (missing[0] ? missing[0].cause : 'none listed') + ')';
+
+    const pollS = steps.reduce((s, j) => s + (j.steps || []).filter((x) => /health poll/.test(x.name)).reduce((t, x) => t + (x.seconds || 0), 0), 0);
+    const upS = readings.reduce((s, x) => s + (x.health && Number.isFinite(x.health.uptimeS) ? x.health.uptimeS : 0), 0);
+    rows.uptimeFraction = row(r4(wall / (days * 1440)), { how: 'the completed runs\' wall minutes (updated_at minus run_started_at) over ' + (days * 1440), runWallMinutes: r1(wall), windowMinutes: days * 1440,
+      containerMinutesFromHealth: readings.length ? r1(upS / 60) : null, healthPollMinutesFromSteps: r1(pollS / 60), artifactsMissing: missing });
+
+    const newest = readings[0];
+    if (!newest) {
+      for (const k of ['healthOk', 'restartsInJob', 'ticksPerHour', 'checkpointAgeS', 'checkpointBytes', 'ladderLine']) rows[k] = notMeasured(artifactCause);
+      extra.lastHealthLine = notMeasured(artifactCause);
+    } else {
+      const h = newest.health || {};
+      const at = { run: newest.run.databaseId };
+      if (!newest.health) for (const k of ['healthOk', 'restartsInJob', 'checkpointAgeS', 'checkpointBytes']) rows[k] = notMeasured('health.json absent in the artifact of run ' + newest.run.databaseId);
+      else {
+        rows.healthOk = h.ok === undefined ? notMeasured('ok absent in health.json') : row(h.ok === true, at);
+        const cr = newest.container && Number.isFinite(newest.container.restartCount) ? newest.container.restartCount : 0;
+        rows.restartsInJob = Number.isFinite(h.restarts) ? row(h.restarts + cr, { ...at, serve: h.restarts, container: cr, budgetKills: h.budgetKills ?? null }) : notMeasured('restarts absent in health.json');
+        rows.checkpointAgeS = h.checkpoint && Number.isFinite(h.checkpoint.ageS) ? row(h.checkpoint.ageS, { ...at, atStopS: newest.job ? newest.job.checkpointAgeAtStopS ?? null : null }) : notMeasured('checkpoint.ageS absent in health.json');
+        rows.checkpointBytes = h.checkpoint && Number.isFinite(h.checkpoint.bytes) ? row(h.checkpoint.bytes, { ...at, atStop: newest.job ? newest.job.checkpointBytesAtStop ?? null : null }) : notMeasured('checkpoint.bytes absent in health.json');
+      }
+      if (newest.ticksPerHour !== null) rows.ticksPerHour = row(newest.ticksPerHour, { ...at, from: 'health.log' });
+      else if (Number.isFinite(h.ticksPerSec)) rows.ticksPerHour = row(Math.floor(h.ticksPerSec * 3600), { ...at, from: 'health.json ticksPerSec' });
+      else rows.ticksPerHour = notMeasured('ticksPerSec absent in health.json and health.log has fewer than two ticks');
+      extra.lastHealthLine = newest.lastHealthLine ? row(newest.lastHealthLine.health ? { at: newest.lastHealthLine.at ?? null, epoch: newest.lastHealthLine.epoch ?? null, ok: newest.lastHealthLine.health.ok ?? null, tick: newest.lastHealthLine.health.tick ?? null } : newest.lastHealthLine, { ...at, lines: newest.healthLogLines }) : notMeasured('health.log absent or empty in the artifact of run ' + newest.run.databaseId);
+      const lad = readings.find((x) => x.ladderLine);
+      rows.ladderLine = lad ? row(lad.ladderLine, { run: lad.run.databaseId, event: lad.run.event }) : notMeasured('no LADDER line in any ladder.log of the window (a scheduled run, or a dispatch with ladder=true, runs it)');
+    }
+    // the cost arithmetic of the daily job, from the jobs' own times (each job billed rounded up to the minute)
+    const billed = steps.reduce((s, j) => s + (j.billedMinutes || 0), 0);
+    const sched = steps.find((j) => j.event === 'schedule' && j.billedMinutes);
+    const daily = sched ? sched.billedMinutes : null;
+    const newestArt = arts[0] || null;
+    extra.cost = steps.length ? row({ billedMinutesInWindow: billed, dailyJobBilledMinutes: daily, dailyJobFrom: sched ? sched.run : null, perMonth30: daily === null ? null : daily * 30, freePrivateMinutes: PRIVATE_MINUTES,
+      fits: daily === null ? null : daily * 30 <= PRIVATE_MINUTES, artifactBytesNewest: newestArt ? newestArt.bytes : null, retainedBytes90Days: newestArt ? newestArt.bytes * RETENTION_DAYS : null, freeStoreBytes: STORE_BYTES }, { weekMinutes: WEEK_MINUTES }) : notMeasured('no job read');
+    fill('not read');
+    return { rows, extra, readings, cause: null, artifactCause, via };
+  } catch (err) {
+    const c = err instanceof RateLimited ? err.message : 'the API was not reached: ' + firstLine(err.message);
+    fill(c);
+    return { rows, extra, readings: [], cause: c, artifactCause: null, via };
+  }
+}
+
+/** The host through gh when gh is logged in; through the REST API when gh is absent or logged out and a token variable is set. */
+export async function measureHostAny(opts = {}) {
+  const env = opts.env || process.env;
+  const st = ghStatus(env);
+  if (st.gh && st.loggedIn) return { ...measureHost(opts), via: { path: 'gh', gh: st.gh } };
+  const tv = tokenVarOf(env);
+  if (!tv.name && !tv.explicit) return { ...measureHost(opts), via: { path: 'gh', gh: st.cause } };
+  return measureHostRest({ ...opts, why: st.cause || 'gh not logged in' });
+}
+
 // ---------------------------------------------------------------- small process helpers
 /** Wait for p or ms, whichever is first; the timer is cleared either way, so no handle outlives the wait. */
 export async function within(p, ms) {
@@ -156,7 +521,13 @@ export async function within(p, ms) {
 /** True when a process of that pid exists (EPERM: it exists and is not ours). */
 export function pidAlive(pid) {
   if (!Number.isInteger(pid) || pid <= 0) return false;
-  try { process.kill(pid, 0); return true; } catch (e) { return e.code === 'EPERM'; }
+  try { process.kill(pid, 0); } catch (e) { return e.code === 'EPERM'; }
+  // board 20 builder: a zombie (exited, not yet reaped, as in a container whose pid 1 never reaps)
+  // answers signal 0 but runs nothing; /proc names its state Z (or X), and it reads as dead
+  if (process.platform === 'linux') {
+    try { const st = readFileSync('/proc/' + pid + '/stat', 'utf8'); const state = st.slice(st.lastIndexOf(')') + 2, st.lastIndexOf(')') + 3); if (state === 'Z' || state === 'X') return false; } catch { /* no /proc entry: the signal's answer stands */ }
+  }
+  return true;
 }
 
 function duBytes(d) {
@@ -475,10 +846,19 @@ async function main(argv) {
   const say = (l) => console.log(l);
   const previous = readJson(outFile);
 
-  const host = measureHost({ root, days, log: (l) => say('HOST ' + l) });
+  const host = await measureHostAny({ root, days, repo: a.repo && a.repo !== true ? String(a.repo) : null, log: (l) => say('HOST ' + l) });
+  const via = host.via || { path: 'gh' };
   for (const k of HOST_ROWS) {
     const r = host.rows[k];
-    say('HOST ' + k + ': ' + (r.measured ? JSON.stringify(r.value) : 'not measured: ' + r.cause));
+    say('HOST ' + k + ': ' + (r.measured ? JSON.stringify(r.value) : 'not measured: ' + r.cause) + (r.measured && r.runWallMinutes !== undefined ? ' (the runs\' wall minutes ' + r.runWallMinutes + ' over ' + r.windowMinutes + '; health poll minutes from the job steps ' + r.healthPollMinutesFromSteps + '; container minutes from health.json ' + (r.containerMinutesFromHealth ?? 'not read') + ')' : ''));
+  }
+  if (host.extra) for (const k of HOST_EXTRA_ROWS) {
+    const r = host.extra[k];
+    if (!r.measured) { say('HOST ' + k + ': not measured: ' + r.cause); continue; }
+    if (k === 'artifacts') for (const x of r.value) say('HOST artifacts: run ' + x.run + ' ' + x.name + ' id ' + x.id + ', ' + x.bytes + ' bytes, expired ' + x.expired + ', expires ' + x.expiresAt);
+    else if (k === 'jobSteps') for (const j of r.value) say('HOST jobSteps: run ' + j.run + ' (' + j.event + ') ' + (j.error ? j.error : 'job ' + j.job + ' ' + j.conclusion + ' in ' + j.seconds + ' s; ' + j.steps.filter((x) => !/^(Set up job|Post |Complete job|checkout$)/.test(x.name)).map((x) => x.name + ' ' + x.conclusion + (x.seconds ? ' ' + x.seconds + ' s' : '')).join('; ')));
+    else if (k === 'cost') { const c = r.value; say('HOST cost: the completed jobs of the window bill ' + c.billedMinutesInWindow + ' minutes (each rounded up); the daily scheduled job ' + (c.dailyJobFrom ? '(run ' + c.dailyJobFrom + ') bills ' + c.dailyJobBilledMinutes + ' minutes, 30 of them ' + c.perMonth30 + ' of the ' + c.freePrivateMinutes + ' free private minutes a month (fits ' + c.fits + ')' : 'has not run yet') + '; the newest artifact is ' + c.artifactBytesNewest + ' bytes, 90 days of daily ones ' + c.retainedBytes90Days + ' of the ' + c.freeStoreBytes + ' bytes a free account stores'); }
+    else say('HOST ' + k + ': ' + JSON.stringify(r.value));
   }
   const wf = workflowReport(root);
   const passed = wf.checks.filter((c) => c.ok).length;
@@ -515,7 +895,7 @@ async function main(argv) {
   const ctl = control();
   say('CONTROL barOf on planted readings: pass ' + ctl.pass + '; restarts 1 ' + ctl.restarts1 + '; container restart 1 ' + ctl.containerRestart1 + '; checkpoint age 200 s ' + ctl.age200 + '; no ladder line ' + ctl.noLadder + '; conclusion failure ' + ctl.failure + '; health not ok ' + ctl.healthNotOk + '; a push event ' + ctl.pushEvent + '; no run ' + ctl.empty + ' (holds ' + ctl.holds + ')');
 
-  const bar = host.cause ? { met: false, why: 'not measured: ' + host.cause } : barOf(host.readings);
+  const bar = host.cause ? { met: false, why: 'not measured: ' + host.cause } : !host.readings.length && host.artifactCause ? { met: false, why: 'not measured: ' + host.artifactCause } : barOf(host.readings);
   const barMet = Boolean(bar.met && wf.parses && wf.missing.length === 0 && ctl.holds);
   const lacks = trialBroken ? (trial.missingFiles && trial.missingFiles.length ? trial.missingFiles.join(', ') : 'whatever the daemon needs (the trial named no file; read its lastLines)') : '';
   const addCmd = trialBroken && trial.missingFiles && trial.missingFiles.length ? ' (git add -f ' + trial.missingFiles.join(' ') + ')' : '';
@@ -523,7 +903,8 @@ async function main(argv) {
   const hisStep = host.cause === 'gh not logged in' ? fixFirst + 'gh auth login, then node tools/cloud-github.mjs (a private repository named brain unless he passes --public --yes)'
     : host.cause && /no origin/.test(host.cause) ? fixFirst + 'node tools/cloud-github.mjs (it creates the private repository and dispatches the first run)'
       : host.cause && /not on the default branch|no run of cloud\.yml/.test(host.cause) ? 'commit .github/workflows/cloud.yml' + (trialBroken ? ' with ' + lacks + addCmd + ' (the checkout trial at HEAD ' + trial.head + ' read built false without it)' : '') + ', then node tools/cloud-github.mjs (it pushes, enables the workflow and dispatches the first run)'
-        : host.cause ? fixFirst + 'none that a command can name yet: ' + host.cause : 'none';
+        : host.cause ? fixFirst + 'none that a command can name yet: ' + host.cause
+          : host.artifactCause ? 'none on his side: from this host ' + host.artifactCause + '; the health rows are read where the artifact host is reachable (node bench/cloud-host.mjs on his PC with gh logged in)' : 'none';
   const verdict = {
     at: new Date().toISOString(),
     replaces: previous && previous.at ? { at: previous.at, command: previous.command || null, why: 'a re-measure: this run\'s file replaces the one written at that time' } : null,
@@ -536,19 +917,33 @@ async function main(argv) {
     bar: { rule: BAR, met: barMet, why: bar.why },
     hisStep,
     split: {
-      measuredFromHost: HOST_ROWS,
+      via: via.path === 'REST' ? 'the GitHub REST API at ' + via.api + ' (token read from the variable named ' + via.tokenVar + ', value never written; ' + via.calls + ' calls, X-RateLimit-Remaining ' + via.rateRemaining + ' after the last)' : 'gh (' + (via.gh || 'the gh CLI') + ')',
+      measuredFromHost: [...HOST_ROWS.filter((k) => host.rows[k].measured), ...HOST_EXTRA_ROWS.filter((k) => host.extra && host.extra[k] && host.extra[k].measured)],
+      notMeasuredFromHost: Object.fromEntries([...HOST_ROWS.filter((k) => !host.rows[k].measured).map((k) => [k, host.rows[k].cause]), ...HOST_EXTRA_ROWS.filter((k) => host.extra && host.extra[k] && !host.extra[k].measured).map((k) => [k, host.extra[k].cause])]),
+      runsRead: host.rows.runs && host.rows.runs.measured ? host.rows.runs.ids : [],
+      artifactsRead: host.readings.map((x) => x.run.databaseId),
       measuredOnThisPc: ['the workflow parses and passes its structural checks', 'every tree file the workflow names exists', ...(trial ? ['the committed tree (git archive HEAD) run under bin/serve.mjs natively: the CONTROL arm'] : []), ...(counterfactual ? ['COUNTERFACTUAL: the committed tree plus ' + cf.join(', ') + ', ' + repeat + ' trials: the intervention arm and its run-to-run band'] : [])],
       development: 'the tests plant git repositories, a gh on PATH that answers logged in or not, artifact directories, stale copies and a trial process that dies; the control grades barOf on planted readings',
       heldOut: 'the host itself: runs of .github/workflows/cloud.yml on GitHub Actions under his account, which no test and no development step has read',
+      contaminated: false,
     },
     host_rows: host.rows,
+    host_extra: host.extra || null,
+    via,
     pc: { workflow: { exists: wf.exists, parses: wf.parses, error: wf.error, bytes: wf.bytes ?? null, checks: wf.checks, named: wf.named, missing: wf.missing }, checkoutTrial: trial, counterfactual },
     control: ctl,
     ms: Date.now() - t0,
   };
+  const restPart = () => {
+    const c = host.rows.conclusions.byRun.map((x) => x.id + ' (' + x.event + ', ' + x.conclusion + ')').join(', ');
+    const ar = host.extra && host.extra.artifacts && host.extra.artifacts.measured ? host.extra.artifacts.value.map((x) => x.id + ' of ' + x.bytes + ' bytes from run ' + x.run).join(', ') : 'none';
+    const ex = host.extra && host.extra.cost && host.extra.cost.measured ? host.extra.cost.value : null;
+    return 'From the host through ' + verdict.split.via + ': runs ' + c + ' in ' + days + ' days; their wall minutes ' + host.rows.uptimeFraction.runWallMinutes + ' over ' + (days * 1440) + ' give the uptime fraction ' + host.rows.uptimeFraction.value + '; ' + ARTIFACT + ' artifacts listed: ' + ar + '; artifacts read: ' + (host.readings.length ? host.readings.map((x) => x.run.databaseId).join(', ') : 'none') + (host.artifactCause ? ' (' + host.artifactCause + ')' : '') + (ex ? '; the jobs bill ' + ex.billedMinutesInWindow + ' minutes in the window' + (ex.dailyJobFrom ? ', the daily scheduled job ' + ex.dailyJobBilledMinutes + ' (' + ex.perMonth30 + ' a month of ' + ex.freePrivateMinutes + ' free)' : '') : '') + '; the bar reads ' + bar.why + '. ';
+  };
   const hostPart = host.cause
     ? 'No run was read from the host: ' + host.cause + ', so the rows that need a run (runs, uptime fraction, ticks per hour, restarts, checkpoint age and bytes, the ladder line) are not measured and barMet is false. His step: ' + hisStep + '. '
-    : 'From the host: ' + host.rows.runs.value + ' run(s) in ' + days + ' days, conclusions ' + JSON.stringify(host.rows.conclusions.value) + ', uptime fraction ' + host.rows.uptimeFraction.value + ' of ' + (days * 1440) + ' minutes; the bar reads ' + bar.why + '. ';
+    : via.path === 'REST' ? restPart()
+      : 'From the host: ' + host.rows.runs.value + ' run(s) in ' + days + ' days, conclusions ' + JSON.stringify(host.rows.conclusions.value) + ', uptime fraction ' + host.rows.uptimeFraction.value + ' of ' + (days * 1440) + ' minutes; the bar reads ' + bar.why + '. ';
   const cb = counterfactual && counterfactual.band;
   verdict.statement = hostPart
     + 'On this PC, ' + WORKFLOW_REL + ' parses ' + wf.parses + ' and passes ' + passed + ' of ' + wf.checks.length + ' structural checks, and ' + (wf.named.length - wf.missing.length) + ' of ' + wf.named.length + ' tree files it names exist. '

@@ -1,12 +1,12 @@
 {
-  "at": "2026-09-25T22:46:20.016Z",
+  "at": "2026-09-26T20:39:38.715Z",
   "replaces": {
-    "at": "2026-09-25T22:33:30.073Z",
-    "command": "node bench/cloud-host.mjs --checkout-trial 90 --counterfactual bench/fixtures/answer-questions.json --repeat 3",
+    "at": "2026-09-26T20:36:56.786Z",
+    "command": "node bench/cloud-host.mjs",
     "why": "a re-measure: this run's file replaces the one written at that time"
   },
-  "command": "node bench/cloud-host.mjs --checkout-trial 90 --counterfactual bench/fixtures/answer-questions.json --repeat 3",
-  "node": "v24.15.0",
+  "command": "node bench/cloud-host.mjs",
+  "node": "v24.9.0",
   "isTheBar": true,
   "barMet": false,
   "item": "host",
@@ -16,10 +16,11 @@
   "bar": {
     "rule": "a scheduled or dispatched run concluded success with health ok true, restarts 0 inside the job (serve restarts plus container restarts), checkpoint age under 120 s at the end, and the LADDER line present in a ladder.log from the host",
     "met": false,
-    "why": "not measured: cloud.yml is not on the default branch (master) of j4ydenlxl/brain yet"
+    "why": "not measured: the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)"
   },
-  "hisStep": "commit .github/workflows/cloud.yml with bench/fixtures/answer-questions.json (git add -f bench/fixtures/answer-questions.json) (the checkout trial at HEAD bd04dac read built false without it), then node tools/cloud-github.mjs (it pushes, enables the workflow and dispatches the first run)",
+  "hisStep": "none on his side: from this host the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443); the health rows are read where the artifact host is reachable (node bench/cloud-host.mjs on his PC with gh logged in)",
   "split": {
+    "via": "the GitHub REST API at https://api.github.com (token read from the variable named GH_TOKEN, value never written; 9 calls, X-RateLimit-Remaining 14979 after the last)",
     "measuredFromHost": [
       "gh",
       "repository",
@@ -28,91 +29,615 @@
       "uptimeFraction",
       "actionsMinutes",
       "newestRun",
-      "healthOk",
-      "restartsInJob",
-      "ticksPerHour",
-      "checkpointAgeS",
-      "checkpointBytes",
-      "ladderLine"
+      "artifacts",
+      "jobSteps",
+      "cost"
     ],
+    "notMeasuredFromHost": {
+      "healthOk": "the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)",
+      "restartsInJob": "the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)",
+      "ticksPerHour": "the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)",
+      "checkpointAgeS": "the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)",
+      "checkpointBytes": "the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)",
+      "ladderLine": "the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)",
+      "lastHealthLine": "the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)"
+    },
+    "runsRead": [
+      36243371509,
+      36236925421,
+      36198423380
+    ],
+    "artifactsRead": [],
     "measuredOnThisPc": [
       "the workflow parses and passes its structural checks",
-      "every tree file the workflow names exists",
-      "the committed tree (git archive HEAD) run under bin/serve.mjs natively: the CONTROL arm",
-      "COUNTERFACTUAL: the committed tree plus bench/fixtures/answer-questions.json, 3 trials: the intervention arm and its run-to-run band"
+      "every tree file the workflow names exists"
     ],
     "development": "the tests plant git repositories, a gh on PATH that answers logged in or not, artifact directories, stale copies and a trial process that dies; the control grades barOf on planted readings",
-    "heldOut": "the host itself: runs of .github/workflows/cloud.yml on GitHub Actions under his account, which no test and no development step has read"
+    "heldOut": "the host itself: runs of .github/workflows/cloud.yml on GitHub Actions under his account, which no test and no development step has read",
+    "contaminated": false
   },
   "host_rows": {
     "gh": {
       "measured": true,
-      "value": "logged in",
-      "path": "C:\\Program Files\\GitHub CLI\\gh.EXE",
-      "version": "gh version 2.96.0 (2026-07-02)"
+      "value": "REST path (gh is not on PATH)",
+      "api": "https://api.github.com",
+      "tokenVar": "GH_TOKEN"
     },
     "repository": {
       "measured": true,
-      "value": "https://github.com/j4ydenlxl/brain.git",
+      "value": "https://github.com/j4ydenlxl/brain",
       "nameWithOwner": "j4ydenlxl/brain",
-      "visibility": "PRIVATE",
+      "visibility": "private",
       "defaultBranch": "master"
     },
     "runs": {
-      "measured": false,
-      "value": null,
-      "cause": "cloud.yml is not on the default branch (master) of j4ydenlxl/brain yet"
+      "measured": true,
+      "value": 3,
+      "window": "7 days",
+      "ids": [
+        36243371509,
+        36236925421,
+        36198423380
+      ],
+      "totalCount": 3
     },
     "conclusions": {
-      "measured": false,
-      "value": null,
-      "cause": "cloud.yml is not on the default branch (master) of j4ydenlxl/brain yet"
-    },
-    "uptimeFraction": {
-      "measured": false,
-      "value": null,
-      "cause": "cloud.yml is not on the default branch (master) of j4ydenlxl/brain yet"
+      "measured": true,
+      "value": {
+        "success": 2,
+        "failure": 1
+      },
+      "byRun": [
+        {
+          "id": 36243371509,
+          "event": "schedule",
+          "conclusion": "success",
+          "createdAt": "2026-09-26T12:53:48Z",
+          "updatedAt": "2026-09-26T13:34:45Z",
+          "head": "4c08a4d"
+        },
+        {
+          "id": 36236925421,
+          "event": "workflow_dispatch",
+          "conclusion": "success",
+          "createdAt": "2026-09-26T10:49:08Z",
+          "updatedAt": "2026-09-26T11:44:41Z",
+          "head": "4c08a4d"
+        },
+        {
+          "id": 36198423380,
+          "event": "workflow_dispatch",
+          "conclusion": "failure",
+          "createdAt": "2026-09-25T22:48:28Z",
+          "updatedAt": "2026-09-25T23:24:00Z",
+          "head": "890d63d"
+        }
+      ]
     },
     "actionsMinutes": {
-      "measured": false,
-      "value": null,
-      "cause": "cloud.yml is not on the default branch (master) of j4ydenlxl/brain yet"
+      "measured": true,
+      "value": 132,
+      "how": "updated_at minus run_started_at over the completed runs of the window; GitHub bills each job rounded up to the minute"
     },
     "newestRun": {
-      "measured": false,
-      "value": null,
-      "cause": "cloud.yml is not on the default branch (master) of j4ydenlxl/brain yet"
+      "measured": true,
+      "value": {
+        "id": 36243371509,
+        "number": 3,
+        "event": "schedule",
+        "conclusion": "success",
+        "createdAt": "2026-09-26T12:53:48Z",
+        "updatedAt": "2026-09-26T13:34:45Z",
+        "url": "https://github.com/j4ydenlxl/brain/actions/runs/36243371509"
+      }
+    },
+    "uptimeFraction": {
+      "measured": true,
+      "value": 0.0131,
+      "how": "the completed runs' wall minutes (updated_at minus run_started_at) over 10080",
+      "runWallMinutes": 132,
+      "windowMinutes": 10080,
+      "containerMinutesFromHealth": null,
+      "healthPollMinutesFromSteps": 130.1,
+      "artifactsMissing": [
+        {
+          "id": 36243371509,
+          "cause": "the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443"
+        },
+        {
+          "id": 36236925421,
+          "cause": "not attempted: the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443"
+        },
+        {
+          "id": 36198423380,
+          "cause": "not attempted: the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443"
+        }
+      ]
     },
     "healthOk": {
       "measured": false,
       "value": null,
-      "cause": "cloud.yml is not on the default branch (master) of j4ydenlxl/brain yet"
+      "cause": "the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)"
     },
     "restartsInJob": {
       "measured": false,
       "value": null,
-      "cause": "cloud.yml is not on the default branch (master) of j4ydenlxl/brain yet"
+      "cause": "the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)"
     },
     "ticksPerHour": {
       "measured": false,
       "value": null,
-      "cause": "cloud.yml is not on the default branch (master) of j4ydenlxl/brain yet"
+      "cause": "the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)"
     },
     "checkpointAgeS": {
       "measured": false,
       "value": null,
-      "cause": "cloud.yml is not on the default branch (master) of j4ydenlxl/brain yet"
+      "cause": "the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)"
     },
     "checkpointBytes": {
       "measured": false,
       "value": null,
-      "cause": "cloud.yml is not on the default branch (master) of j4ydenlxl/brain yet"
+      "cause": "the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)"
     },
     "ladderLine": {
       "measured": false,
       "value": null,
-      "cause": "cloud.yml is not on the default branch (master) of j4ydenlxl/brain yet"
+      "cause": "the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)"
     }
+  },
+  "host_extra": {
+    "artifacts": {
+      "measured": true,
+      "value": [
+        {
+          "run": 36243371509,
+          "id": 10907232354,
+          "name": "brain-cloud",
+          "bytes": 138464,
+          "expired": false,
+          "createdAt": "2026-09-26T13:34:42Z",
+          "expiresAt": "2026-12-25T12:53:48Z"
+        },
+        {
+          "run": 36236925421,
+          "id": 10905368023,
+          "name": "brain-cloud",
+          "bytes": 102767,
+          "expired": false,
+          "createdAt": "2026-09-26T11:44:37Z",
+          "expiresAt": "2026-12-25T10:49:09Z"
+        },
+        {
+          "run": 36198423380,
+          "id": 10891638248,
+          "name": "brain-cloud",
+          "bytes": 42432,
+          "expired": false,
+          "createdAt": "2026-09-25T23:23:56Z",
+          "expiresAt": "2026-12-24T22:48:31Z"
+        }
+      ],
+      "read": [],
+      "missing": [
+        {
+          "id": 36243371509,
+          "cause": "the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443"
+        },
+        {
+          "id": 36236925421,
+          "cause": "not attempted: the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443"
+        },
+        {
+          "id": 36198423380,
+          "cause": "not attempted: the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443"
+        }
+      ]
+    },
+    "jobSteps": {
+      "measured": true,
+      "value": [
+        {
+          "run": 36243371509,
+          "event": "schedule",
+          "job": "organism",
+          "conclusion": "success",
+          "seconds": 2453,
+          "billedMinutes": 41,
+          "steps": [
+            {
+              "n": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "seconds": 1
+            },
+            {
+              "n": 2,
+              "name": "checkout",
+              "conclusion": "success",
+              "seconds": 3
+            },
+            {
+              "n": 3,
+              "name": "STOP check",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 4,
+              "name": "restore the last checkpoint",
+              "conclusion": "success",
+              "seconds": 2
+            },
+            {
+              "n": 5,
+              "name": "restored or fresh, the wall, the ladder",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 6,
+              "name": "docker build",
+              "conclusion": "success",
+              "seconds": 11
+            },
+            {
+              "n": 7,
+              "name": "docker run under the caps",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 8,
+              "name": "health poll, the runner is the only client",
+              "conclusion": "success",
+              "seconds": 2400
+            },
+            {
+              "n": 9,
+              "name": "stop with SIGINT, the checkpoint is written",
+              "conclusion": "success",
+              "seconds": 2
+            },
+            {
+              "n": 10,
+              "name": "the 04:00 ladder, on the cloud host",
+              "conclusion": "success",
+              "seconds": 27
+            },
+            {
+              "n": 11,
+              "name": "job summary and run.json",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 12,
+              "name": "is there a checkpoint to save",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 13,
+              "name": "save the checkpoint",
+              "conclusion": "success",
+              "seconds": 3
+            },
+            {
+              "n": 14,
+              "name": "upload the host readings",
+              "conclusion": "success",
+              "seconds": 1
+            },
+            {
+              "n": 15,
+              "name": "health to the store, when he configured one",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 16,
+              "name": "a crash loop fails the run",
+              "conclusion": "skipped",
+              "seconds": 0
+            },
+            {
+              "n": 17,
+              "name": "relay the next run",
+              "conclusion": "skipped",
+              "seconds": 0
+            },
+            {
+              "n": 34,
+              "name": "Post checkout",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 35,
+              "name": "Complete job",
+              "conclusion": "success",
+              "seconds": 0
+            }
+          ]
+        },
+        {
+          "run": 36236925421,
+          "event": "workflow_dispatch",
+          "job": "organism",
+          "conclusion": "success",
+          "seconds": 3328,
+          "billedMinutes": 56,
+          "steps": [
+            {
+              "n": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "seconds": 1
+            },
+            {
+              "n": 2,
+              "name": "checkout",
+              "conclusion": "success",
+              "seconds": 3
+            },
+            {
+              "n": 3,
+              "name": "STOP check",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 4,
+              "name": "restore the last checkpoint",
+              "conclusion": "success",
+              "seconds": 2
+            },
+            {
+              "n": 5,
+              "name": "restored or fresh, the wall, the ladder",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 6,
+              "name": "docker build",
+              "conclusion": "success",
+              "seconds": 10
+            },
+            {
+              "n": 7,
+              "name": "docker run under the caps",
+              "conclusion": "success",
+              "seconds": 1
+            },
+            {
+              "n": 8,
+              "name": "health poll, the runner is the only client",
+              "conclusion": "success",
+              "seconds": 3301
+            },
+            {
+              "n": 9,
+              "name": "stop with SIGINT, the checkpoint is written",
+              "conclusion": "success",
+              "seconds": 2
+            },
+            {
+              "n": 10,
+              "name": "the 04:00 ladder, on the cloud host",
+              "conclusion": "skipped",
+              "seconds": 0
+            },
+            {
+              "n": 11,
+              "name": "job summary and run.json",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 12,
+              "name": "is there a checkpoint to save",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 13,
+              "name": "save the checkpoint",
+              "conclusion": "success",
+              "seconds": 3
+            },
+            {
+              "n": 14,
+              "name": "upload the host readings",
+              "conclusion": "success",
+              "seconds": 1
+            },
+            {
+              "n": 15,
+              "name": "health to the store, when he configured one",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 16,
+              "name": "a crash loop fails the run",
+              "conclusion": "skipped",
+              "seconds": 0
+            },
+            {
+              "n": 17,
+              "name": "relay the next run",
+              "conclusion": "skipped",
+              "seconds": 0
+            },
+            {
+              "n": 34,
+              "name": "Post checkout",
+              "conclusion": "success",
+              "seconds": 1
+            },
+            {
+              "n": 35,
+              "name": "Complete job",
+              "conclusion": "success",
+              "seconds": 0
+            }
+          ]
+        },
+        {
+          "run": 36198423380,
+          "event": "workflow_dispatch",
+          "job": "organism",
+          "conclusion": "failure",
+          "seconds": 2125,
+          "billedMinutes": 36,
+          "steps": [
+            {
+              "n": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "seconds": 1
+            },
+            {
+              "n": 2,
+              "name": "checkout",
+              "conclusion": "success",
+              "seconds": 2
+            },
+            {
+              "n": 3,
+              "name": "STOP check",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 4,
+              "name": "restore the last checkpoint",
+              "conclusion": "success",
+              "seconds": 1
+            },
+            {
+              "n": 5,
+              "name": "restored or fresh, the wall, the ladder",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 6,
+              "name": "docker build",
+              "conclusion": "success",
+              "seconds": 10
+            },
+            {
+              "n": 7,
+              "name": "docker run under the caps",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 8,
+              "name": "health poll, the runner is the only client",
+              "conclusion": "success",
+              "seconds": 2102
+            },
+            {
+              "n": 9,
+              "name": "stop with SIGINT, the checkpoint is written",
+              "conclusion": "success",
+              "seconds": 2
+            },
+            {
+              "n": 10,
+              "name": "the 04:00 ladder, on the cloud host",
+              "conclusion": "skipped",
+              "seconds": 0
+            },
+            {
+              "n": 11,
+              "name": "job summary and run.json",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 12,
+              "name": "is there a checkpoint to save",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 13,
+              "name": "save the checkpoint",
+              "conclusion": "success",
+              "seconds": 2
+            },
+            {
+              "n": 14,
+              "name": "upload the host readings",
+              "conclusion": "success",
+              "seconds": 1
+            },
+            {
+              "n": 15,
+              "name": "health to the store, when he configured one",
+              "conclusion": "success",
+              "seconds": 0
+            },
+            {
+              "n": 16,
+              "name": "a crash loop fails the run",
+              "conclusion": "failure",
+              "seconds": 0
+            },
+            {
+              "n": 17,
+              "name": "relay the next run",
+              "conclusion": "skipped",
+              "seconds": 0
+            },
+            {
+              "n": 34,
+              "name": "Post checkout",
+              "conclusion": "success",
+              "seconds": 1
+            },
+            {
+              "n": 35,
+              "name": "Complete job",
+              "conclusion": "success",
+              "seconds": 0
+            }
+          ]
+        }
+      ]
+    },
+    "lastHealthLine": {
+      "measured": false,
+      "value": null,
+      "cause": "the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)"
+    },
+    "cost": {
+      "measured": true,
+      "value": {
+        "billedMinutesInWindow": 133,
+        "dailyJobBilledMinutes": 41,
+        "dailyJobFrom": 36243371509,
+        "perMonth30": 1230,
+        "freePrivateMinutes": 2000,
+        "fits": true,
+        "artifactBytesNewest": 138464,
+        "retainedBytes90Days": 12461760,
+        "freeStoreBytes": 524288000
+      },
+      "weekMinutes": 10080
+    }
+  },
+  "via": {
+    "path": "REST",
+    "api": "https://api.github.com",
+    "tokenVar": "GH_TOKEN",
+    "gh": "gh is not on PATH",
+    "calls": 9,
+    "rateRemaining": 14979
   },
   "pc": {
     "workflow": {
@@ -271,412 +796,8 @@
       ],
       "missing": []
     },
-    "checkoutTrial": {
-      "seconds": 90,
-      "source": "git archive HEAD",
-      "head": "bd04dac",
-      "files": 785,
-      "bytes": 100400578,
-      "skippedEntries": 0,
-      "overlay": [],
-      "env": {
-        "BRAIN_NAME": "cloud",
-        "BRAIN_INSTANCE": "checkout-trial",
-        "BRAIN_MAJORS": "12",
-        "BRAIN_UNITS": "256",
-        "BRAIN_CHECKPOINT_EVERY": "1000",
-        "BRAIN_LEDGER": "summary",
-        "BRAIN_LEDGER_BUDGET_MB": "64",
-        "BRAIN_HEAP_MB": "224",
-        "BRAIN_RSS_CAP_MB": "448",
-        "BRAIN_DISK_CAP_MB": "2048",
-        "BRAIN_LADDER": "off",
-        "BRAIN_LADDER_HOUR": "4",
-        "TZ": "UTC",
-        "BRAIN_MODEL_URL": "http://127.0.0.1:60684 (a closed port: no model, no socket to 11434)",
-        "BRAIN_CHECKPOINT_URL": "",
-        "BRAIN_EGRESS_ALLOW": ""
-      },
-      "firstOkS": 72.4,
-      "firstCheckpointS": null,
-      "lastHealth": {
-        "ok": false,
-        "uptimeS": 88.5,
-        "restarts": 6,
-        "budgetKills": 0,
-        "tick": null,
-        "ticksPerSec": null,
-        "rssMb": null,
-        "checkpoint": null
-      },
-      "stopCode": 0,
-      "checkpointTickAtStop": null,
-      "peak": {
-        "daemonRssMb": 0,
-        "serveRssMb": 62
-      },
-      "restarts": 6,
-      "budgetKills": 0,
-      "daemonLeftBehind": false,
-      "built": false,
-      "budgetKilledLines": 0,
-      "missingFiles": [
-        "bench/fixtures/answer-questions.json"
-      ],
-      "missingIgnored": [],
-      "lastLines": [
-        "[serve] daemon exited code=1 signal=null at t=null after 1.8 s (exit); restart 5 from checkpoint t=null",
-        "[serve] up 60 s, restarts 5, t=null, daemon rss null MB (peak 0), state 2217 bytes",
-        "[serve child] live failed: ENOENT: no such file or directory, open 'C:\\Users\\ybmic\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\deda19c8-a876-4012-a921-4723af645dfc\\scratchpad\\verify\\hostbar\\tmp\\brain-checkout-0150dU\\tree\\bench\\fixtures\\answer-questions.json'",
-        "[serve] daemon exited code=1 signal=null at t=null after 1.8 s (exit); restart 6 from checkpoint t=null",
-        "[serve] stop message: checkpointing the daemon and stopping",
-        "[serve] stopped after 90 s, restarts 6"
-      ],
-      "workerExit": 0,
-      "crashed": false,
-      "deleted": true,
-      "killedAfter": [],
-      "freeMbAfter": 1050515,
-      "attemptWallS": 91.8,
-      "attempts": [
-        {
-          "attempt": 1,
-          "workerExit": 0,
-          "crashed": false,
-          "wallS": 91.8,
-          "deleted": true,
-          "killedAfter": []
-        }
-      ],
-      "sweep": {
-        "found": 0,
-        "swept": 0,
-        "bytes": 0,
-        "kept": 0,
-        "failed": []
-      },
-      "wallS": 91.8
-    },
-    "counterfactual": {
-      "overlay": [
-        "bench/fixtures/answer-questions.json"
-      ],
-      "repeat": 3,
-      "band": {
-        "built": 3,
-        "restarts": {
-          "min": 0,
-          "max": 0,
-          "n": 3
-        },
-        "firstCheckpointS": {
-          "min": 2,
-          "max": 4,
-          "n": 3
-        },
-        "ticksPerSec": {
-          "min": 211,
-          "max": 215,
-          "n": 3
-        },
-        "daemonPeakRssMb": {
-          "min": 552,
-          "max": 557,
-          "n": 3
-        },
-        "budgetKills": {
-          "min": 0,
-          "max": 1,
-          "n": 3
-        },
-        "crashedAttempts": 0,
-        "copiesDeleted": 3
-      },
-      "trials": [
-        {
-          "seconds": 90,
-          "source": "git archive HEAD plus 1 file(s) from the working tree",
-          "head": "bd04dac",
-          "files": 785,
-          "bytes": 100400578,
-          "skippedEntries": 0,
-          "overlay": [
-            {
-              "rel": "bench/fixtures/answer-questions.json",
-              "bytes": 6591
-            }
-          ],
-          "env": {
-            "BRAIN_NAME": "cloud",
-            "BRAIN_INSTANCE": "checkout-trial",
-            "BRAIN_MAJORS": "12",
-            "BRAIN_UNITS": "256",
-            "BRAIN_CHECKPOINT_EVERY": "1000",
-            "BRAIN_LEDGER": "summary",
-            "BRAIN_LEDGER_BUDGET_MB": "64",
-            "BRAIN_HEAP_MB": "224",
-            "BRAIN_RSS_CAP_MB": "448",
-            "BRAIN_DISK_CAP_MB": "2048",
-            "BRAIN_LADDER": "off",
-            "BRAIN_LADDER_HOUR": "4",
-            "TZ": "UTC",
-            "BRAIN_MODEL_URL": "http://127.0.0.1:63037 (a closed port: no model, no socket to 11434)",
-            "BRAIN_CHECKPOINT_URL": "",
-            "BRAIN_EGRESS_ALLOW": ""
-          },
-          "firstOkS": 2,
-          "firstCheckpointS": 4,
-          "lastHealth": {
-            "ok": true,
-            "uptimeS": 88.5,
-            "restarts": 0,
-            "budgetKills": 0,
-            "tick": 18001,
-            "ticksPerSec": 214,
-            "rssMb": 410,
-            "checkpoint": {
-              "tick": 17097,
-              "savedAt": "2026-09-25T22:43:01.116Z",
-              "ageS": 5.6,
-              "bytes": 10840840
-            }
-          },
-          "stopCode": 0,
-          "checkpointTickAtStop": 18680,
-          "peak": {
-            "daemonRssMb": 552,
-            "serveRssMb": 63
-          },
-          "restarts": 0,
-          "budgetKills": 0,
-          "daemonLeftBehind": false,
-          "built": true,
-          "budgetKilledLines": 0,
-          "missingFiles": [],
-          "missingIgnored": [],
-          "lastLines": [
-            "[live] SIGTERM: checkpointing and stopping",
-            "[ruler] k=19 final t=18680 done=18583 wall 90.339 s | exact 36/36 carried 36/36 | algebra 12/12 carried 12, sequence 12/12 carried 12, grid 12/12 carried 12 | per wall s since k=18: exact 0, carried 0 | mode growth | plateau generations.best fired | 28.394 ms",
-            "[ledger] summary: 2,244 B over 583 ticks = 3,849 B per 1000 ticks, file 58,310 B, disk 58,310 B, rotations 0, checkpoint 11,679,544 B",
-            "[serve child] live ended at t=18680 (sigterm), 20 checkpoints",
-            "[serve] daemon stopped (stop) at t=18680 after 93 s",
-            "[serve] stopped after 93 s, restarts 0"
-          ],
-          "workerExit": 0,
-          "crashed": false,
-          "deleted": true,
-          "killedAfter": [],
-          "freeMbAfter": 1050520,
-          "attemptWallS": 94.3,
-          "attempts": [
-            {
-              "attempt": 1,
-              "workerExit": 0,
-              "crashed": false,
-              "wallS": 94.3,
-              "deleted": true,
-              "killedAfter": []
-            }
-          ],
-          "sweep": {
-            "found": 0,
-            "swept": 0,
-            "bytes": 0,
-            "kept": 0,
-            "failed": []
-          },
-          "wallS": 94.3
-        },
-        {
-          "seconds": 90,
-          "source": "git archive HEAD plus 1 file(s) from the working tree",
-          "head": "bd04dac",
-          "files": 785,
-          "bytes": 100400578,
-          "skippedEntries": 0,
-          "overlay": [
-            {
-              "rel": "bench/fixtures/answer-questions.json",
-              "bytes": 6591
-            }
-          ],
-          "env": {
-            "BRAIN_NAME": "cloud",
-            "BRAIN_INSTANCE": "checkout-trial",
-            "BRAIN_MAJORS": "12",
-            "BRAIN_UNITS": "256",
-            "BRAIN_CHECKPOINT_EVERY": "1000",
-            "BRAIN_LEDGER": "summary",
-            "BRAIN_LEDGER_BUDGET_MB": "64",
-            "BRAIN_HEAP_MB": "224",
-            "BRAIN_RSS_CAP_MB": "448",
-            "BRAIN_DISK_CAP_MB": "2048",
-            "BRAIN_LADDER": "off",
-            "BRAIN_LADDER_HOUR": "4",
-            "TZ": "UTC",
-            "BRAIN_MODEL_URL": "http://127.0.0.1:63180 (a closed port: no model, no socket to 11434)",
-            "BRAIN_CHECKPOINT_URL": "",
-            "BRAIN_EGRESS_ALLOW": ""
-          },
-          "firstOkS": 2,
-          "firstCheckpointS": 4,
-          "lastHealth": {
-            "ok": true,
-            "uptimeS": 88.5,
-            "restarts": 0,
-            "budgetKills": 0,
-            "tick": 18010,
-            "ticksPerSec": 215,
-            "rssMb": 412,
-            "checkpoint": {
-              "tick": 18097,
-              "savedAt": "2026-09-25T22:44:40.933Z",
-              "ageS": 0,
-              "bytes": 11368128
-            }
-          },
-          "stopCode": 0,
-          "checkpointTickAtStop": 18708,
-          "peak": {
-            "daemonRssMb": 552,
-            "serveRssMb": 66
-          },
-          "restarts": 0,
-          "budgetKills": 0,
-          "daemonLeftBehind": false,
-          "built": true,
-          "budgetKilledLines": 0,
-          "missingFiles": [],
-          "missingIgnored": [],
-          "lastLines": [
-            "[live] SIGTERM: checkpointing and stopping",
-            "[ruler] k=19 final t=18708 done=18611 wall 90.312 s | exact 36/36 carried 36/36 | algebra 12/12 carried 12, sequence 12/12 carried 12, grid 12/12 carried 12 | per wall s since k=18: exact 0, carried 0 | mode growth | plateau generations.best fired | 27.316 ms",
-            "[ledger] summary: 2,243 B over 611 ticks = 3,671 B per 1000 ticks, file 58,299 B, disk 58,299 B, rotations 0, checkpoint 11,700,600 B",
-            "[serve child] live ended at t=18708 (sigterm), 20 checkpoints",
-            "[serve] daemon stopped (stop) at t=18708 after 92.8 s",
-            "[serve] stopped after 93 s, restarts 0"
-          ],
-          "workerExit": 0,
-          "crashed": false,
-          "deleted": true,
-          "killedAfter": [],
-          "freeMbAfter": 1050520,
-          "attemptWallS": 94.2,
-          "attempts": [
-            {
-              "attempt": 1,
-              "workerExit": 0,
-              "crashed": false,
-              "wallS": 94.2,
-              "deleted": true,
-              "killedAfter": []
-            }
-          ],
-          "sweep": {
-            "found": 0,
-            "swept": 0,
-            "bytes": 0,
-            "kept": 0,
-            "failed": []
-          },
-          "wallS": 94.2
-        },
-        {
-          "seconds": 90,
-          "source": "git archive HEAD plus 1 file(s) from the working tree",
-          "head": "bd04dac",
-          "files": 785,
-          "bytes": 100400578,
-          "skippedEntries": 0,
-          "overlay": [
-            {
-              "rel": "bench/fixtures/answer-questions.json",
-              "bytes": 6591
-            }
-          ],
-          "env": {
-            "BRAIN_NAME": "cloud",
-            "BRAIN_INSTANCE": "checkout-trial",
-            "BRAIN_MAJORS": "12",
-            "BRAIN_UNITS": "256",
-            "BRAIN_CHECKPOINT_EVERY": "1000",
-            "BRAIN_LEDGER": "summary",
-            "BRAIN_LEDGER_BUDGET_MB": "64",
-            "BRAIN_HEAP_MB": "224",
-            "BRAIN_RSS_CAP_MB": "448",
-            "BRAIN_DISK_CAP_MB": "2048",
-            "BRAIN_LADDER": "off",
-            "BRAIN_LADDER_HOUR": "4",
-            "TZ": "UTC",
-            "BRAIN_MODEL_URL": "http://127.0.0.1:63312 (a closed port: no model, no socket to 11434)",
-            "BRAIN_CHECKPOINT_URL": "",
-            "BRAIN_EGRESS_ALLOW": ""
-          },
-          "firstOkS": 2,
-          "firstCheckpointS": 2,
-          "lastHealth": {
-            "ok": true,
-            "uptimeS": 88.4,
-            "restarts": 0,
-            "budgetKills": 0,
-            "tick": 18025,
-            "ticksPerSec": 211,
-            "rssMb": 408,
-            "checkpoint": {
-              "tick": 17097,
-              "savedAt": "2026-09-25T22:46:10.829Z",
-              "ageS": 4.3,
-              "bytes": 10842960
-            }
-          },
-          "stopCode": 0,
-          "checkpointTickAtStop": 18353,
-          "peak": {
-            "daemonRssMb": 557,
-            "serveRssMb": 62
-          },
-          "restarts": 0,
-          "budgetKills": 1,
-          "daemonLeftBehind": false,
-          "built": true,
-          "budgetKilledLines": 2,
-          "missingFiles": [],
-          "missingIgnored": [],
-          "lastLines": [
-            "[ruler] k=19 final t=18353 done=18256 wall 90.314 s | exact 36/36 carried 36/36 | algebra 12/12 carried 12, sequence 12/12 carried 12, grid 12/12 carried 12 | per wall s since k=18: exact 0, carried 0 | mode growth | plateau generations.best fired | 27.509 ms",
-            "[ledger] summary: 1,151 B over 256 ticks = 4,496 B per 1000 ticks, file 57,207 B, disk 57,207 B, rotations 0, checkpoint 11,504,976 B",
-            "[serve child] live ended at t=18353 (sigterm), 20 checkpoints",
-            "[serve] BUDGET KILLED rss 461 MB over cap 448 MB",
-            "[serve] daemon stopped (BUDGET KILLED rss 461 MB over cap 448 MB) at t=18353 after 92.7 s",
-            "[serve] stopped after 93 s, restarts 0"
-          ],
-          "workerExit": 0,
-          "crashed": false,
-          "deleted": true,
-          "killedAfter": [],
-          "freeMbAfter": 1050517,
-          "attemptWallS": 94.1,
-          "attempts": [
-            {
-              "attempt": 1,
-              "workerExit": 0,
-              "crashed": false,
-              "wallS": 94.1,
-              "deleted": true,
-              "killedAfter": []
-            }
-          ],
-          "sweep": {
-            "found": 0,
-            "swept": 0,
-            "bytes": 0,
-            "kept": 0,
-            "failed": []
-          },
-          "wallS": 94.1
-        }
-      ]
-    }
+    "checkoutTrial": null,
+    "counterfactual": null
   },
   "control": {
     "pass": true,
@@ -690,6 +811,6 @@
     "empty": false,
     "holds": true
   },
-  "ms": 375344,
-  "statement": "No run was read from the host: cloud.yml is not on the default branch (master) of j4ydenlxl/brain yet, so the rows that need a run (runs, uptime fraction, ticks per hour, restarts, checkpoint age and bytes, the ladder line) are not measured and barMet is false. His step: commit .github/workflows/cloud.yml with bench/fixtures/answer-questions.json (git add -f bench/fixtures/answer-questions.json) (the checkout trial at HEAD bd04dac read built false without it), then node tools/cloud-github.mjs (it pushes, enables the workflow and dispatches the first run). On this PC, .github/workflows/cloud.yml parses true and passes 27 of 27 structural checks, and 10 of 10 tree files it names exist. The committed tree alone (HEAD bd04dac, 785 files, the control) ran natively for 90 s: built false, first checkpoint at null s, restarts 6, budget kills 0, stop code 0, the copy deleted true; the daemon opened files the tree lacks: bench/fixtures/answer-questions.json. The same HEAD plus bench/fixtures/answer-questions.json from the working tree (the counterfactual, 3 trials) built 3 of 3 times, restarts 0, first checkpoint 2..4 s, 211..215 ticks/s, daemon peak rss 552..557 MB. The bar function said true on a planted passing reading and false on each of its 8 planted failures (holds true)."
+  "ms": 3644,
+  "statement": "From the host through the GitHub REST API at https://api.github.com (token read from the variable named GH_TOKEN, value never written; 9 calls, X-RateLimit-Remaining 14979 after the last): runs 36243371509 (schedule, success), 36236925421 (workflow_dispatch, success), 36198423380 (workflow_dispatch, failure) in 7 days; their wall minutes 132 over 10080 give the uptime fraction 0.0131; brain-cloud artifacts listed: 10907232354 of 138464 bytes from run 36243371509, 10905368023 of 102767 bytes from run 36236925421, 10891638248 of 42432 bytes from run 36198423380; artifacts read: none (the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443)); the jobs bill 133 minutes in the window, the daily scheduled job 41 (1230 a month of 2000 free); the bar reads not measured: the brain-cloud artifact could not be read (the signed artifact host productionresultssa19.blob.core.windows.net was not reached: the egress proxy answered 403 to CONNECT productionresultssa19.blob.core.windows.net:443). On this PC, .github/workflows/cloud.yml parses true and passes 27 of 27 structural checks, and 10 of 10 tree files it names exist. The bar function said true on a planted passing reading and false on each of its 8 planted failures (holds true)."
 }

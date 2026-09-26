@@ -11,6 +11,12 @@
 //   4. the trial's process hygiene: a wait leaves no timer behind; copies a dead run left are swept
 //      and a live run's are kept; a trial process that dies is recorded with its exit code, what
 //      it left running is killed, its copy is deleted, and it is tried once more
+//   5. the REST path (board 20 builder): a planted API listener answers the repository, the runs,
+//      the jobs, the artifacts and a redirect to a planted zip on a second listener, which must never
+//      see the Authorization header; the zip reader on planted archives (its own writer in reverse,
+//      a data-descriptor archive, one written by another implementation); a planted token never in
+//      the verdict, the printed lines or the note; "not measured" on an empty run list; a rate
+//      limit stops after one request; a proxy refusing the signed host stops the downloads
 // node --test test/cloud-host.test.mjs    (no network: gh is a planted script first on PATH; git
 // runs only inside temp directories; the real tree is only read)
 import test from 'node:test';
@@ -34,6 +40,8 @@ const tmp = (tag) => { const d = mkdtempSync(path.join(os.tmpdir(), 'brain-cloud
 test.after(() => { for (const d of temps) rmSync(d, { recursive: true, force: true, maxRetries: 5 }); });
 
 // ---------------------------------------------------------------- the planted gh
+// the planted gh's environment carries no token variable, so the gh path (not the REST path) is what those tests read (board 20 builder)
+const TOKEN_VARS = ['GH_TOKEN', 'GITHUB_TOKEN', 'BRAIN_GITHUB_TOKEN_VAR', 'BRAIN_GITHUB_API'];
 const MOCK = `
 import { appendFileSync, readFileSync, existsSync, mkdirSync, readdirSync, copyFileSync } from 'node:fs';
 import path from 'node:path';
@@ -69,7 +77,7 @@ function plantGh(mode) {
   else { writeFileSync(path.join(bin, 'gh'), '#!/bin/sh\nexec "' + process.execPath + '" "$(dirname "$0")/gh-mock.mjs" "$@"\n'); chmodSync(path.join(bin, 'gh'), 0o755); }
   writeFileSync(path.join(dir, 'mode'), mode);
   const env = {};
-  for (const [k, v] of Object.entries(process.env)) if (k.toLowerCase() !== 'path') env[k] = v;
+  for (const [k, v] of Object.entries(process.env)) if (k.toLowerCase() !== 'path' && !TOKEN_VARS.includes(k)) env[k] = v;
   env.PATH = bin + path.delimiter + (process.env.PATH || process.env.Path || '');
   env.GH_MOCK_DIR = dir;
   return { bin, dir, env, calls: () => (existsSync(path.join(dir, 'calls.log')) ? readFileSync(path.join(dir, 'calls.log'), 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []) };
@@ -427,7 +435,9 @@ test('the ruler as a command writes a verdict with barMet false and the split wh
   const v = JSON.parse(readFileSync(out, 'utf8'));
   assert.equal(v.isTheBar, true);
   assert.equal(v.barMet, false);
-  assert.deepEqual(Object.keys(v.split).sort(), ['development', 'heldOut', 'measuredFromHost', 'measuredOnThisPc']);
+  for (const k of ['development', 'heldOut', 'measuredFromHost', 'measuredOnThisPc', 'notMeasuredFromHost', 'contaminated']) assert.ok(k in v.split, k);
+  assert.equal(v.split.contaminated, false);
+  assert.deepEqual(v.split.measuredFromHost, []);
   assert.match(v.statement, /not measured/);
   assert.match(v.hisStep, /gh auth login/);
   assert.equal(v.control.holds, true);
@@ -545,4 +555,221 @@ test('the ruler refuses the old --overlay and a counterfactual without its contr
   const r2 = spawnSync(process.execPath, [RULER, '--counterfactual', 'x.json', '--out', path.join(tmp('o'), 'v.json')], { encoding: 'utf8', timeout: 30_000 });
   assert.equal(r2.status, 2);
   assert.match(r2.stdout, /needs --checkout-trial S/);
+});
+
+// ---------------------------------------------------------------- 5. the REST path (board 20 builder)
+const PLANTED_TOKEN = 'planted-token-' + 'x7Qm2Zr9Lk4Vw8Ns';
+const PY_ZIP = 'UEsDBBQAAAAAAAAAIQD0Tms+GQAAABkAAAALAAAAaGVhbHRoLmpzb257Im9rIjp0cnVlLCJyZXN0YXJ0cyI6MH0KUEsDBBQAAAAIAAAAIQCB9CCWSgAAAMwAAAAKAAAAbGFkZGVyLmxvZytPLMpVKC3g8nF0cXENUjAyMDLTNbDUNTKzUkjOzy3IL84sSVUw0DPVUSjIScwrSU1RSKpUKKgsycjPU6jKLEjLzEnlKh8kZgAAUEsBAhQDFAAAAAAAAAAhAPROaz4ZAAAAGQAAAAsAAAAAAAAAAAAAAIABAAAAAGhlYWx0aC5qc29uUEsBAhQDFAAAAAgAAAAhAIH0IJZKAAAAzAAAAAoAAAAAAAAAAAAAAIABQgAAAGxhZGRlci5sb2dQSwUGAAAAAAIAAgBxAAAAtAAAAAAA';
+const NOW = Date.parse('2026-09-26T20:00:00Z');
+const ARTIFACT_FILES = {
+  'health.json': JSON.stringify({ ok: true, uptimeS: 2400, restarts: 0, budgetKills: 0, tick: 900, checkpoint: { ageS: 4.5, bytes: 6543210 } }),
+  'health.log': '{"at":"2026-09-26T12:55:09Z","epoch":1000,"health":{"ok":true,"tick":100}}\n{"at":"2026-09-26T13:34:09Z","epoch":4600,"health":{"ok":true,"tick":550}}\n',
+  'container.json': JSON.stringify({ restartCount: 0, oomKilled: false }),
+  'run.json': JSON.stringify({ checkpointAgeAtStopS: 1, checkpointBytesAtStop: 6543299 }),
+  'ladder.log': 'warm\nLADDER 2026-09-26: composite 0.500000, planted\n',
+};
+
+/** A planted listener on 127.0.0.1: handler(req) -> {status, headers, body}; every request is recorded with its headers. */
+async function listener(handler) {
+  const http = await import('node:http');
+  const seen = [];
+  const server = http.createServer((req, res) => {
+    seen.push({ method: req.method, url: req.url, headers: req.headers });
+    const a = handler(req) || { status: 404, body: '{"message":"Not Found"}' };
+    res.writeHead(a.status, { 'content-type': 'application/json', ...(a.headers || {}) });
+    res.end(a.body === undefined ? '' : a.body);
+  });
+  await new Promise((r) => server.listen(0, '127.0.0.1', r));
+  return { server, seen, base: 'http://127.0.0.1:' + server.address().port, close: () => new Promise((r) => { server.closeAllConnections(); server.close(r); }) };
+}
+
+/** The planted GitHub API: two completed runs (a schedule and a dispatch), each with a brain-cloud artifact whose zip redirects to zipBase. */
+function plantedApi({ runs, zipBase, rate = '4999', zipStatus = 302 }) {
+  return (req) => {
+    const u = new URL(req.url, 'http://x');
+    const h = { 'x-ratelimit-remaining': rate, 'x-ratelimit-reset': '1790000000' };
+    if (u.pathname === '/repos/planted/brain') return { status: 200, headers: h, body: JSON.stringify({ full_name: 'planted/brain', visibility: 'private', default_branch: 'master' }) };
+    if (u.pathname === '/repos/planted/brain/actions/workflows/cloud.yml/runs') return { status: 200, headers: h, body: JSON.stringify({ total_count: runs.length, workflow_runs: runs }) };
+    let m = /^\/repos\/planted\/brain\/actions\/runs\/(\d+)\/jobs$/.exec(u.pathname);
+    if (m) return { status: 200, headers: h, body: JSON.stringify({ jobs: [{ name: 'organism', conclusion: 'success', started_at: '2026-09-26T12:53:51Z', completed_at: '2026-09-26T13:34:44Z', steps: [{ number: 8, name: 'health poll, the runner is the only client', conclusion: 'success', started_at: '2026-09-26T12:54:09Z', completed_at: '2026-09-26T13:34:09Z' }] }] }) };
+    m = /^\/repos\/planted\/brain\/actions\/runs\/(\d+)\/artifacts$/.exec(u.pathname);
+    if (m) return { status: 200, headers: h, body: JSON.stringify({ artifacts: [{ id: Number(m[1]) + 7, name: 'brain-cloud', size_in_bytes: 1234, expired: false, created_at: '2026-09-26T13:34:42Z', expires_at: '2026-12-25T13:34:42Z' }] }) };
+    m = /^\/repos\/planted\/brain\/actions\/artifacts\/(\d+)\/zip$/.exec(u.pathname);
+    if (m) return { status: zipStatus, headers: { ...h, location: zipBase + '/signed/' + m[1] + '.zip?sig=planted-signature' } };
+    return { status: 404, headers: h, body: '{"message":"Not Found"}' };
+  };
+}
+const RUNS = [
+  { id: 222, run_number: 2, event: 'schedule', status: 'completed', conclusion: 'success', created_at: '2026-09-26T12:53:48Z', run_started_at: '2026-09-26T12:53:48Z', updated_at: '2026-09-26T13:34:45Z', html_url: 'https://example.invalid/r/222', head_sha: 'abcdef0123' },
+  { id: 111, run_number: 1, event: 'workflow_dispatch', status: 'completed', conclusion: 'success', created_at: '2026-09-26T10:49:08Z', run_started_at: '2026-09-26T10:49:08Z', updated_at: '2026-09-26T11:44:41Z', html_url: 'https://example.invalid/r/111', head_sha: 'abcdef0123' },
+];
+const restEnv = (base, extra = {}) => ({ PATH: process.env.PATH || '', GH_TOKEN: PLANTED_TOKEN, BRAIN_GITHUB_API: base, ...extra });
+
+test('the zip reader reads its own writer in reverse, a data-descriptor archive and one written by another implementation', async () => {
+  const { readZip, zipOf, crc32 } = await import('../bench/cloud-host.mjs');
+  const files = { 'health.json': '{"ok":true}', 'ladder.log': 'LADDER 2026-09-26: composite 0.5\n'.repeat(40) };
+  const both = zipOf(files, { method: (n) => (n === 'health.json' ? 0 : 8) });
+  const got = readZip(both);
+  assert.deepEqual([...got.keys()], ['health.json', 'ladder.log']);
+  for (const [k, v] of Object.entries(files)) assert.equal(got.get(k).toString('utf8'), v);
+  assert.ok(both.length < Buffer.byteLength(files['ladder.log']), 'the deflated entry is smaller than its text');
+  const dd = readZip(zipOf(files, { descriptor: true }));
+  assert.equal(dd.get('ladder.log').toString('utf8'), files['ladder.log']);
+  const py = readZip(Buffer.from(PY_ZIP, 'base64'));
+  assert.equal(py.get('health.json').toString('utf8'), '{"ok":true,"restarts":0}\n');
+  assert.match(py.get('ladder.log').toString('utf8'), /^LADDER 2026-09-26: composite 0.5, planted by python zipfile$/m);
+  assert.equal(crc32(Buffer.from('123456789')), 0xcbf43926);
+  const bad = Buffer.from(both);
+  const at = bad.indexOf('{"ok":true}');
+  bad[at + 2] ^= 1;
+  assert.throws(() => readZip(bad), /CRC-32/);
+  assert.throws(() => readZip(Buffer.from('not a zip at all, twenty-two bytes or more')), /no end of central directory/);
+});
+
+test('the REST path reads runs, jobs, artifacts and the zip through its redirect; the second host never sees the token', async () => {
+  const { measureHostRest } = await import('../bench/cloud-host.mjs');
+  const blob = await listener((req) => ({ status: 200, headers: { 'content-type': 'application/zip' }, body: zipOf2(ARTIFACT_FILES) }));
+  const api = await listener(plantedApi({ runs: RUNS, zipBase: blob.base }));
+  try {
+    const h = await measureHostRest({ root: tmp('rest'), env: restEnv(api.base), repo: 'planted/brain', now: NOW });
+    assert.equal(h.cause, null);
+    assert.equal(h.artifactCause, null);
+    assert.equal(h.rows.runs.value, 2);
+    assert.deepEqual(h.rows.runs.ids, [222, 111]);
+    assert.deepEqual(h.rows.conclusions.value, { success: 2 });
+    assert.equal(h.rows.healthOk.value, true);
+    assert.equal(h.rows.restartsInJob.value, 0);
+    assert.equal(h.rows.ticksPerHour.value, 450);
+    assert.equal(h.rows.checkpointAgeS.value, 4.5);
+    assert.equal(h.rows.checkpointBytes.value, 6543210);
+    assert.equal(h.rows.ladderLine.value, 'LADDER 2026-09-26: composite 0.500000, planted');
+    assert.equal(h.rows.uptimeFraction.runWallMinutes, 96.5);
+    assert.equal(h.extra.lastHealthLine.value.tick, 550);
+    assert.equal(h.extra.cost.value.dailyJobBilledMinutes, 41);
+    assert.equal(h.readings.length, 2);
+    assert.equal(barOf(h.readings).met, true);
+    assert.equal(blob.seen.length, 2);
+    for (const r of blob.seen) assert.equal(r.headers.authorization, undefined, 'the signed host received an Authorization header');
+    for (const r of api.seen) assert.equal(r.headers.authorization, 'Bearer ' + PLANTED_TOKEN);
+    assert.ok(!JSON.stringify(h).includes(PLANTED_TOKEN));
+    assert.ok(!JSON.stringify(h).includes('planted-signature'), 'the signed URL query never enters a reading');
+  } finally { await api.close(); await blob.close(); }
+});
+const zipOf2 = (files) => zipOfSync(files);
+let zipOfSync;
+test.before(async () => { ({ zipOf: zipOfSync } = await import('../bench/cloud-host.mjs')); });
+
+test('the REST path prints "not measured" when the run list is empty, and a rate limit stops it after one request', async () => {
+  const { measureHostRest, HOST_EXTRA_ROWS } = await import('../bench/cloud-host.mjs');
+  const empty = await listener(plantedApi({ runs: [], zipBase: 'http://127.0.0.1:9' }));
+  try {
+    const h = await measureHostRest({ root: tmp('rest'), env: restEnv(empty.base), repo: 'planted/brain', now: NOW });
+    assert.equal(h.cause, 'no run of cloud.yml yet');
+    assert.equal(h.rows.repository.measured, true);
+    for (const k of HOST_ROWS.filter((x) => !['gh', 'repository'].includes(x))) assert.equal(h.rows[k].cause, 'no run of cloud.yml yet', k);
+    for (const k of HOST_EXTRA_ROWS) assert.equal(h.extra[k].measured, false, k);
+    assert.equal(h.readings.length, 0);
+  } finally { await empty.close(); }
+  const limited = await listener(() => ({ status: 403, headers: { 'x-ratelimit-remaining': '0', 'x-ratelimit-reset': '1790000000' }, body: '{"message":"API rate limit exceeded"}' }));
+  try {
+    const h = await measureHostRest({ root: tmp('rest'), env: restEnv(limited.base), repo: 'planted/brain', now: NOW });
+    assert.match(h.cause, /^rate limit: X-RateLimit-Remaining 0, resets at 2026-/);
+    assert.equal(limited.seen.length, 1, 'no second request after the limit');
+    for (const k of HOST_ROWS) assert.match(h.rows[k].cause, /^rate limit/);
+  } finally { await limited.close(); }
+  const tail = await listener(plantedApi({ runs: RUNS, zipBase: 'http://127.0.0.1:9', rate: '0' }));
+  try {
+    const h = await measureHostRest({ root: tmp('rest'), env: restEnv(tail.base), repo: 'planted/brain', now: NOW });
+    assert.match(h.cause, /^rate limit/);
+    assert.equal(tail.seen.length, 1, 'remaining 0 on the first answer: no second request');
+  } finally { await tail.close(); }
+});
+
+test('an egress proxy refusing the signed host stops the downloads after one CONNECT, and the health rows read not measured', async () => {
+  const { measureHostRest } = await import('../bench/cloud-host.mjs');
+  const net = await import('node:net');
+  const connects = [];
+  const proxy = net.createServer((sock) => {
+    sock.once('data', (d) => { connects.push(d.toString('latin1')); sock.end('HTTP/1.1 403 Forbidden\r\ncontent-length: 0\r\n\r\n'); });
+  });
+  await new Promise((r) => proxy.listen(0, '127.0.0.1', r));
+  const api = await listener(plantedApi({ runs: RUNS, zipBase: 'https://blob.example.invalid' }));
+  try {
+    const env = restEnv(api.base, { HTTPS_PROXY: 'http://127.0.0.1:' + proxy.address().port, NO_PROXY: '127.0.0.1,localhost' });
+    const h = await measureHostRest({ root: tmp('rest'), env, repo: 'planted/brain', now: NOW, timeoutMs: 10_000 });
+    assert.equal(h.cause, null);
+    assert.equal(h.readings.length, 0);
+    assert.match(h.artifactCause, /the signed artifact host blob\.example\.invalid was not reached: the egress proxy answered 403 to CONNECT blob\.example\.invalid:443/);
+    assert.equal(connects.length, 1, 'one refusal, not retried on the next run');
+    assert.match(connects[0], /^CONNECT blob\.example\.invalid:443 /);
+    assert.ok(!/authorization/i.test(connects[0]), 'the CONNECT carries no Authorization header');
+    assert.equal(api.seen.filter((r) => /\/zip$/.test(r.url)).length, 1);
+    for (const k of ['healthOk', 'restartsInJob', 'ticksPerHour', 'checkpointAgeS', 'checkpointBytes', 'ladderLine']) assert.match(h.rows[k].cause, /^the brain-cloud artifact could not be read/, k);
+    assert.equal(h.rows.runs.value, 2);
+    assert.equal(h.extra.artifacts.value.length, 2);
+    assert.match(h.extra.artifacts.missing[1].cause, /^not attempted: /);
+  } finally { await api.close(); proxy.close(); }
+});
+
+test('the token is read from the variable BRAIN_GITHUB_TOKEN_VAR names; a foreign API origin is refused before any request', async () => {
+  const { tokenVarOf, apiBaseOf, repoOf, measureHostRest } = await import('../bench/cloud-host.mjs');
+  assert.deepEqual(tokenVarOf({ BRAIN_GITHUB_TOKEN_VAR: 'MY_TOKEN', MY_TOKEN: 'v', GH_TOKEN: 'w' }), { name: 'MY_TOKEN', explicit: true });
+  assert.equal(tokenVarOf({ BRAIN_GITHUB_TOKEN_VAR: 'EMPTY' }).name, null);
+  assert.equal(tokenVarOf({ GITHUB_TOKEN: 'v' }).name, 'GITHUB_TOKEN');
+  assert.equal(tokenVarOf({}).name, null);
+  assert.equal(apiBaseOf({}).base, 'https://api.github.com');
+  assert.match(apiBaseOf({ BRAIN_GITHUB_API: 'http://evil.example.invalid' }).error, /must be https:\/\/api\.github\.com/);
+  assert.match(apiBaseOf({ BRAIN_GITHUB_API: 'https://api.github.com.evil.invalid' }).error, /must be/);
+  assert.equal(repoOf('https://github.com/j4ydenlxl/brain'), 'j4ydenlxl/brain');
+  assert.equal(repoOf('git@github.com:j4ydenlxl/brain.git'), 'j4ydenlxl/brain');
+  assert.equal(repoOf('https://example.invalid/planted/brain.git'), null);
+  const h = await measureHostRest({ root: tmp('rest'), env: { GH_TOKEN: PLANTED_TOKEN, BRAIN_GITHUB_API: 'http://evil.example.invalid' }, repo: 'planted/brain' });
+  assert.match(h.cause, /must be https:\/\/api\.github\.com/);
+  const api = await listener(plantedApi({ runs: [], zipBase: 'http://127.0.0.1:9' }));
+  try {
+    await measureHostRest({ root: tmp('rest'), env: { BRAIN_GITHUB_TOKEN_VAR: 'MY_TOKEN', MY_TOKEN: 'named-' + PLANTED_TOKEN, BRAIN_GITHUB_API: api.base }, repo: 'planted/brain', now: NOW });
+    assert.equal(api.seen[0].headers.authorization, 'Bearer named-' + PLANTED_TOKEN);
+  } finally { await api.close(); }
+});
+
+test('the ruler as a command on the REST path: a planted token never appears in the verdict, the printed lines or the note', async () => {
+  const { spawn } = await import('node:child_process');
+  const g = plantGh('out');
+  const repo = plantRepo({ origin: true, extra: Object.fromEntries(workflowReport(ROOT).named.map((n) => [n, 'planted\n'])) });
+  spawnSync('git', ['-C', repo, 'remote', 'set-url', 'origin', 'https://github.com/planted/brain.git']);
+  const blob = await listener(() => ({ status: 200, headers: { 'content-type': 'application/zip' }, body: zipOf2(ARTIFACT_FILES) }));
+  const api = await listener(plantedApi({ runs: RUNS.map((r) => ({ ...r, created_at: new Date(Date.now() - 3600_000).toISOString(), run_started_at: new Date(Date.now() - 3600_000).toISOString(), updated_at: new Date(Date.now() - 1200_000).toISOString() })), zipBase: blob.base }));
+  const out = path.join(tmp('verdict'), 'cloud-host.json');
+  try {
+    const env = { ...g.env, GH_TOKEN: PLANTED_TOKEN, BRAIN_GITHUB_API: api.base };
+    const r = await new Promise((resolve) => {
+      const c = spawn(process.execPath, [RULER, '--root', repo, '--out', out], { env });
+      let stdout = '', stderr = '';
+      c.stdout.on('data', (d) => { stdout += d; });
+      c.stderr.on('data', (d) => { stderr += d; });
+      const timer = setTimeout(() => c.kill(), 90_000);
+      c.on('close', (code) => { clearTimeout(timer); resolve({ code, stdout, stderr }); });
+    });
+    assert.equal(r.code, 0, r.stdout + r.stderr);
+    assert.match(r.stdout, /^HOST gh: "REST path \(gh not logged in\)"$/m);
+    assert.match(r.stdout, /^HOST runs: 2$/m);
+    assert.match(r.stdout, /^HOST ladderLine: "LADDER 2026-09-26: composite 0.500000, planted"$/m);
+    assert.match(r.stdout, /^CLOUD-HOST barMet true: met/m);
+    const text = readFileSync(out, 'utf8');
+    const v = JSON.parse(text);
+    assert.equal(v.isTheBar, true);
+    assert.equal(v.barMet, true);
+    assert.equal(v.via.tokenVar, 'GH_TOKEN');
+    assert.ok(v.split.measuredFromHost.includes('healthOk'));
+    assert.match(v.statement, /runs 222 \(schedule, success\), 111 \(workflow_dispatch, success\)/);
+    for (const blobText of [text, r.stdout, r.stderr, readFileSync(path.join(ROOT, 'notes', 'cloud-host.md'), 'utf8')]) {
+      assert.ok(!blobText.includes(PLANTED_TOKEN), 'the planted token leaked');
+      assert.ok(!blobText.includes('planted-signature'), 'the signed URL query leaked');
+      assert.ok(!/\b(gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})/.test(blobText), 'a GitHub token shape appears');
+      assert.ok(!blobText.includes(EM));
+    }
+    for (const x of blob.seen) assert.equal(x.headers.authorization, undefined);
+    const real = path.join(ROOT, 'bench', 'verdicts', 'cloud-host.json');
+    if (existsSync(real)) assert.ok(!/\b(gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})/.test(readFileSync(real, 'utf8')), 'the real verdict holds a token shape');
+  } finally { await api.close(); await blob.close(); }
 });
