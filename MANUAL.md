@@ -338,6 +338,16 @@ whole project done tonight. Lets goo!" (2026-09-17 22:18)
 
 (What this binds: the answer to his doubt is printed numbers, never comfort. The reply of 09:20 EDT gave him the organism-over-model gap on the same 815 GSM8K records, 731 of 815 = 89.69 percent against 647 of 815 = 79.39 percent, the model-off answers, the census growth 17 to 46 cells, and every gap in points: the 400B row 96.8, ARC 17.75 against 98, imagine 5 against a null of 5, multiply undecided, no file where Opus 5.5 is beaten. His 21:03 rule stands: close with numbers, never far, never a lie, reached only when MET equals the total.)
 
+### His words, verbatim (2026-09-27, 09:28:17 EDT by the transcript clock, and two more that arrived mid-turn between 09:28:17 and 09:39:36 EDT)
+
+> Yeah but i said hey to it and it said it couldnt respond
+
+> Also it cant code or write complex essays right? Like basiaclly i want to make it better than you out of countless self itterations
+
+> remember time is of the essence. Look at my vision, and my history of everything i said. its in the manual. Make exactly that
+
+(What was found and what binds: on https://dilation.dev/ask the tab printed three refusal lines for "hey" before the server's native greeting, and printed the greeting twice; "hey, how are you" fell to memory with "nothing in memory matches hey."; board 25 (docs/boards/board-25.js: converse-cover, ask-fallthrough, tab-converse) was launched at about 09:40 EDT to fix all three. The code question: the only code bar is a 30-task HumanEval smoke, organism 23 of 30, the model alone 14 of 30, frontier 99.3; no essay bar exists and no model cell is configured on the server; both are order 38. "Make exactly that": this section and docs/VISION.md are the history; every order carries a bar; nothing is reinterpreted; order 39.)
+
 ## §B. OBJECTIVES + PROGRESS (mine; terse; updated only after re-reading §A)
 
 Rules for this section (P9, his 2026-09-23 order on cache reads): objectives are his WHAT in order; STATE is the whole live picture in under 40 lines and is rewritten whole at every checkpoint; the full history is `brain/docs/LOG.md` (append-only, one line per checkpoint, never read in full at session start; the hook prints its last 3 lines). Numbers live in bench/verdicts and docs/NUMBERS.md, not here. Every fact I need survives on disk, none of it needs my context.
