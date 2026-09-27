@@ -378,6 +378,22 @@ whole project done tonight. Lets goo!" (2026-09-17 22:18)
 
 (Recorded before any answer. The answer: docs/VISION.md section 1 and the quote of every order read back to him in his words, each beside its printed status; "impressive" answered from the live site-probe rows and the local numbers, never from a prediction.)
 
+### His words, re-sent (2026-09-27, the message after the vision was read back to him; recorded at the clock read 15:05:45 EDT, re-sent 2026-09-27 15:05)
+
+> What about this ""What if everything the human could concieve of in their brain was native to the brain and completely plausible finding ways to do it straight. And what if its ASI? What if its creative itself, runs AI itself, and self improving and simulating millions of years until perfection by itself? millions of lines of code. Also never stop. Just build
+
+(The inner sentence is his, already in this section above at the line that begins "What if everything the human could concieve of"; it was never listed as an order in docs/VISION.md. Recorded before any answer. Now order 42 there, one bar per clause; "Also never stop. Just build" binds every session from here.)
+
+### His words, re-sent, plus one new question (2026-09-27, arrived mid-turn after 15:05:45 EDT and before 15:09:53 EDT; re-sent 2026-09-27 15:09)
+
+> - "Tonight. You are to finish the whole project. Make it the most crazy model ever made. Make it crazy, better than fronteir models. Make it a historically impressive and extravagant Ai research model that can attribute much information to AI. Make it ASI. Make it able to be an expert at everything, and be able to execute literally evrything in the world. Open up the Vercel log in for me. I quit Tesseract Browser because Grok Bot took the whole moat. They are talking about AGI. Isolated environments. Not the whole world. I have so much knowledge from all other systems I built. Not isolated environments, this brain should have access to being a genius and prodigy in literally every single segment of everything capable. Look at my instructions and my visions. Millions of lines. Better than all fronteir models. Its gonna be able to do anything. Ai apps/wrappers will be useless after this. BEcause it is a genius in everything. thats why i said in the manual, when the brain is done, the trader is done. Look at Grok bot. And make ours 10000x better and cheaper. Tonight, you are to make pivotal changes. Keep in mind of compaction protocol. DO not ever stop, and never turn off my computer"                  Annd what about nanoseconds per response?
+
+(The quoted sentence is his 2026-09-16 line in this section, the one after "What if everything the human could concieve of"; never listed as an order until now: order 43 in docs/VISION.md. The question about nanoseconds is new. Standing from this line: no shutdown, restart, sleep, hibernate or logoff command is ever run on his machine; the Vercel sign-in is his hand, never mine.)
+
+### His paste (2026-09-27, arrived mid-turn after 15:09:53 EDT and before 15:13:47 EDT): "here this is an interpretation of the manual:"
+
+Followed by a 125-row prompt-to-idea map written by another model from this section ("I read the whole post-manual prompt history. I am treating lines 26-147 as the initial manual..."). Not his words: saved in full at docs/INTERPRETATION-2026-09-27.md (em-dashes replaced by hyphens, the only change). Board 30 item vision-coverage audits every row against the orders of docs/VISION.md, quoting this section byte for byte, and drafts the orders that are missing.
+
 ## §B. OBJECTIVES + PROGRESS (mine; terse; updated only after re-reading §A)
 
 Rules for this section (P9, his 2026-09-23 order on cache reads): objectives are his WHAT in order; STATE is the whole live picture in under 40 lines and is rewritten whole at every checkpoint; the full history is `brain/docs/LOG.md` (append-only, one line per checkpoint, never read in full at session start; the hook prints its last 3 lines). Numbers live in bench/verdicts and docs/NUMBERS.md, not here. Every fact I need survives on disk, none of it needs my context.
