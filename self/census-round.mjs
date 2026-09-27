@@ -42,7 +42,29 @@
 //
 // The loop's call: runCensus({ rounds }) from a model-off pass (bench/spawn.mjs --census N is the
 // bar command). MODEL OFF: nothing here opens a socket (provider 'null'; spawned answers never ask).
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, copyFileSync } from 'node:fs';
+//
+// THE LOOP (board 23 builder, item census-loop; his 2026-09-24 12:02 "Its gotta work without me ...
+// EVERY GAP should be able to be filled by itself" and 2026-09-26 10:51 "it needs to adapat and
+// generate cells or smthn"). self/autopilot.mjs runSoak calls soakCensus ONCE per soak, after the
+// soak has read its ledger rows, under the soak's own wall and RAM (--census-minutes,
+// --census-ram-mb, --census-rounds; --census-round off is the control). soakCensus runs the rounds
+// on every red bench of that ledger with a model-off item source (redBenches, one bench per item
+// source, in ledger order), and then PROMOTES: a cell the real arm spawned goes into the organism
+// the soak keeps (state/<brain>/snapshot.json) only when
+//   1. its bench improved (after above before, promotionOf), and the round kept it (no
+//      development item lost, no control row lost), and
+//   2. THE CENSUS SAYS IT RAN: every cell the round spawned fired (brain.hooks.afterTick) while
+//      answering at least one development item the round gained. A cell that never ran on a
+//      gained item is not load bearing and is discarded with its circuit.
+// Everything else is discarded (the trial copy deleted and the deletion checked). The promoted
+// organism is built from the census start (a byte copy of the live snapshot at open), grown with
+// exactly the promoted circuits (one cell.add proposal each through its own gate), written to a
+// stage, restored from disk and graded again: the bench must still move, no development item may
+// be lost, no control row may be lost and every promoted cell must run again. Only then are its
+// bytes written over the live snapshot, and only when the live bytes still hash to what the census
+// copied at open; the bytes replaced are kept under state/self/census-promoted/ (the newest 7).
+// A dry soak promotes nothing and says what it would have promoted.
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, copyFileSync, writeFileSync, readdirSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -215,22 +237,39 @@ function planned(ctx, item) {
  * held cells answer. An item none of whose planned circuits the brain holds cannot be answered by
  * cells and is not asked (spawnAsk would find no incumbent and try to grow).
  */
-export function cellsScore(ctx, brain, items) {
+export function cellsScore(ctx, brain, items, { watch = null } = {}) {
   const t = performance.now();
   const policy = brain.gate.policy;
   brain.gate.policy = (p, c) => (p.kind === 'cell.add' ? 'reject' : policy(p, c));
   const right = new Set();
+  // THE FIRING CENSUS (board 23): which watched cells fired while each item was answered
+  const fired = new Map();
+  let cur = null;
+  const hook = watch && watch.size ? (b, _t, idxs) => { for (const i of idxs) { const c = b.cells[i]; if (c && watch.has(c.id)) cur.add(c.id); } } : null;
+  if (hook) brain.hooks.afterTick.push(hook);
   let asked = 0;
   try {
     for (const item of items) {
       const circuits = planned(ctx, item);
       if (!circuits.some((c) => holds(brain, c))) continue;
       asked++;
+      cur = new Set();
       const r = spawnAsk(brain, item.prompt, { by: 'census.bench' });
+      if (cur.size) fired.set(item.id, cur);
       if (item.grade(r.answer)) right.add(item.id);
     }
-  } finally { brain.gate.policy = policy; }
-  return { right: right.size, n: items.length, asked, ids: right, ms: performance.now() - t };
+  } finally {
+    brain.gate.policy = policy;
+    if (hook) { const k = brain.hooks.afterTick.indexOf(hook); if (k >= 0) brain.hooks.afterTick.splice(k, 1); }
+  }
+  return { right: right.size, n: items.length, asked, ids: right, ms: performance.now() - t, fired };
+}
+
+/** Per watched cell: on how many of the gained items (right after, not right before) it fired. */
+export function ranOnGained(cells, gained, fired) {
+  const out = {};
+  for (const id of cells) out[id] = gained.filter((it) => fired && fired.has(it) && fired.get(it).has(id)).length;
+  return out;
 }
 
 /** The control rows: the spawn bench's own suites through ask() on a throwaway restore. */
@@ -253,7 +292,7 @@ function rmVerified(dir) {
 export async function runArm(ctx, which, circuit, meta = {}) {
   const t = performance.now();
   const L = ctx.lineage[which];
-  const out = { arm: which, ...meta, spawned: 0, edges: 0, cells: [], before: L.score.right, after: null, moved: false, lost: [], controlBefore: L.control.right, controlAfter: null, kept: false, why: null, ms: 0 };
+  const out = { arm: which, ...meta, spawned: 0, edges: 0, cells: [], before: L.score.right, after: null, moved: false, lost: [], gained: 0, ran: null, controlBefore: L.control.right, controlAfter: null, kept: false, why: null, ms: 0 };
   const done = () => { out.ms = performance.now() - t; L.ms += out.ms; if (out.kept) L.kept.push({ round: meta.round, cells: out.cells, target: meta.target || null }); return out; };
   if (!circuit) { out.why = meta.why || 'no circuit'; return done(); }
   const trial = path.join(ctx.work, which + '-trial-' + (++ctx.trials));
@@ -265,10 +304,13 @@ export async function runArm(ctx, which, circuit, meta = {}) {
     if (!g.ok || g.status === 'none') { out.why = g.ok ? 'the brain already holds every cell of this circuit' : 'the gate did not approve cell.add: ' + g.reason; rmVerified(trial); return done(); }
     brain.snapshot(trial);
     brain = restore(trial);
-    const after = cellsScore(ctx, brain, ctx.items.dev);
+    const after = cellsScore(ctx, brain, ctx.items.dev, { watch: new Set(g.cells) });
     out.after = after.right;
     out.moved = after.right > L.score.right;
     out.lost = [...L.score.ids].filter((id) => !after.ids.has(id));
+    const gained = [...after.ids].filter((id) => !L.score.ids.has(id));
+    out.gained = gained.length;
+    out.ran = ranOnGained(out.cells, gained, after.fired);
     const control = await controlScore(ctx, trial);
     out.controlAfter = control.right;
     const regressed = out.lost.length > 0 || control.right < L.control.right;
@@ -317,7 +359,7 @@ export async function openCensus(o = {}) {
   const log = o.log || (() => {});
   const ctx = { root, name, seed: o.seed || 'census', rounds: [], plans: new Map(), planMs: 0, trials: 0, cursor: 0, lineageBrain: null, log };
   // 1. the ledger
-  let lines = o.lines, ledgerFrom = 'injected';
+  let lines = o.lines, ledgerFrom = o.ledgerFrom || 'injected';
   if (!lines) {
     const G = await import('./gaps.mjs');
     const read = G.readLedger(root);
@@ -327,7 +369,7 @@ export async function openCensus(o = {}) {
   }
   ctx.ledger = { from: ledgerFrom, lines: lines.length };
   // 2. the bench
-  ctx.bench = pickBench(lines);
+  ctx.bench = o.bench && o.bench.line ? o.bench : pickBench(lines);
   if (!ctx.bench.line) throw new Error('no red bench of a typed kind with a model-off item source in the ledger (' + lines.length + ' lines; typed but skipped: ' + ctx.bench.skipped.map((s) => s.id).join(', ') + ')');
   ctx.items = o.items || await itemsFor(ctx.bench.source, { root });
   // 3. the control rows
@@ -351,14 +393,21 @@ export async function openCensus(o = {}) {
     copyFileSync(live, path.join(start, 'snapshot.json'));
     ctx.start = 'a copy of the live state/' + name + '/snapshot.json (the live state is never written)';
   }
+  // what a promotion writes over must still be these bytes (board 23): the hash of the live file as copied
+  const copiedLive = existsSync(live) && o.startFrom !== 'seed';
+  ctx.live = { file: live, existed: copiedLive, hash: copiedLive ? sha256(readFileSync(path.join(start, 'snapshot.json'))) : null };
+  ctx.startDir = start;
   const startBrain = restore(start);
   ctx.startCensus = censusOf(startBrain);
   // the baselines: the bench twice (its run to run noise), the held-out items, the controls
   const b1 = cellsScore(ctx, startBrain, ctx.items.dev);
   const b2 = cellsScore(ctx, restore(start), ctx.items.dev);
   ctx.noise = { devRuns: [b1.right, b2.right], diff: Math.abs(b1.right - b2.right) };
-  ctx.heldOutBefore = cellsScore(ctx, startBrain, ctx.items.heldOut);
+  ctx.heldOutOff = o.heldOut === false;
+  ctx.heldOutBefore = ctx.heldOutOff ? null : cellsScore(ctx, startBrain, ctx.items.heldOut);
   const control = await controlScore(ctx, start);
+  ctx.startScore = { right: b1.right, ids: new Set(b1.ids) };
+  ctx.startControl = { ...control };
   ctx.lineage = {};
   for (const which of ['real', 'placebo']) {
     const dir = path.join(ctx.work, which, name);
@@ -369,17 +418,20 @@ export async function openCensus(o = {}) {
   ctx.rng = rngFrom(ctx.seed + '/placebo');
   ctx.openMs = performance.now() - t0;
   log('census open: bench ' + ctx.bench.line.id + ' (' + ctx.bench.kind + '), ledger ' + ctx.ledger.from + ', ' + ctx.items.dev.length + ' development items, ' + ctx.items.heldOut.length + ' held out, '
-    + ctx.controls.length + ' control rows; start ' + ctx.startCensus.cells + ' cells; bench before ' + b1.right + ' and ' + b2.right + ' (noise ' + ctx.noise.diff + '); held out ' + ctx.heldOutBefore.right + '; controls ' + control.right + '/' + control.n
+    + ctx.controls.length + ' control rows; start ' + ctx.startCensus.cells + ' cells; bench before ' + b1.right + ' and ' + b2.right + ' (noise ' + ctx.noise.diff + '); held out ' + (ctx.heldOutBefore ? ctx.heldOutBefore.right : 'not graded here') + '; controls ' + control.right + '/' + control.n
     + '; open ' + (ctx.openMs / 1000).toFixed(1) + ' s');
   return ctx;
 }
 
 /** One census round: the real arm, then the placebo arm, by the same path and the same rule. */
-export async function censusRound(ctx) {
+export async function censusRound(ctx, { needTarget = false } = {}) {
   const round = ctx.rounds.length + 1;
   const tr = performance.now();
   const target = nextTarget(ctx);
   const pickMs = performance.now() - tr;
+  // the loop's rounds (board 23) stop at the first round with nothing left to spawn for, placebo included
+  if (!target && needTarget) return null;
+  if (target) (ctx.circuits || (ctx.circuits = new Map())).set(round, target.circuit);
   const realMeta = target ? { round, target: target.item.id, steps: stepsOf(target.circuit), gene: target.circuit.gene } : { round, why: 'no development item left that the held cells miss and the spawn operator expresses as a ' + ctx.bench.kind };
   const real = await runArm(ctx, 'real', target ? target.circuit : null, realMeta);
   real.ms += pickMs; ctx.lineage.real.ms += pickMs;
@@ -409,8 +461,8 @@ export function censusOf(brain) {
 export function closeCensus(ctx) {
   const real = restore(ctx.lineage.real.dir), placebo = restore(ctx.lineage.placebo.dir);
   const out = {
-    heldOutAfter: cellsScore(ctx, real, ctx.items.heldOut),
-    heldOutPlaceboAfter: cellsScore(ctx, placebo, ctx.items.heldOut),
+    heldOutAfter: ctx.heldOutOff ? null : cellsScore(ctx, real, ctx.items.heldOut),
+    heldOutPlaceboAfter: ctx.heldOutOff ? null : cellsScore(ctx, placebo, ctx.items.heldOut),
     census: censusOf(real), placeboCensus: censusOf(placebo),
   };
   rmVerified(ctx.work);
@@ -442,4 +494,255 @@ export async function runCensus(o = {}) {
     band: bootstrapBand(ctx.rounds, { hours, seed: ctx.seed + '/bootstrap' }),
     wallS, ...closed,
   };
+}
+
+// ================================================================ THE LOOP (board 23 builder, item census-loop)
+function sha256(bytes) { return createHash('sha256').update(bytes).digest('hex'); }
+const shortHash = (h) => (h ? String(h).slice(0, 12) : 'absent');
+export const PROMOTE_BY = 'census.promote';
+export const PROMOTED_REL = 'state/self/census-promoted';
+export const PROMOTED_KEEP = 7;
+/** The loop's defaults when the soak names none: rounds per soak, and the RAM a round may start under. */
+export const SOAK_CENSUS_ROUNDS = 200;
+export const SOAK_CENSUS_RAM_MB = 2048;
+
+/**
+ * Every red bench of a ledger the census can run, in ledger order: the lines pickBench would take
+ * one at a time, one bench per item source (a second line of the same source is the same items).
+ * The first is pickBench's pick. Typed lines without a source are listed with the reason.
+ */
+export function redBenches(lines) {
+  const benches = [], skipped = [], bySource = new Map();
+  let red = 0;
+  for (const l of Array.isArray(lines) ? lines : []) {
+    if (!l || !RED_KINDS.includes(l.kind)) continue;
+    red++;
+    const hay = [l.id, l.verdictFile].filter(Boolean).join(' ');
+    const rule = BENCH_KINDS.find((r) => r.test.test(hay));
+    if (!rule) continue;
+    if (!rule.source) { skipped.push({ id: l.id, kind: rule.kind, why: rule.why }); continue; }
+    if (bySource.has(rule.source)) { skipped.push({ id: l.id, kind: rule.kind, why: 'the same item source (' + rule.source + ') as ' + bySource.get(rule.source) + ', already a bench of this cycle' }); continue; }
+    bySource.set(rule.source, l.id);
+    benches.push({ line: { id: l.id, kind: l.kind, measured: l.measured ?? null, bar: l.bar ?? null, verdictFile: l.verdictFile ?? null }, kind: rule.kind, source: rule.source, skipped: [] });
+  }
+  return { red, benches, skipped };
+}
+
+/**
+ * THE PROMOTION RULE for one real arm, pure: promote only when the bench improved (after above
+ * before), the round kept it (no development item lost, no control row lost), and the census says
+ * every spawned cell ran on an item the round gained. spawned false: nothing was grown, so nothing
+ * is discarded either.
+ */
+export function promotionOf(a) {
+  if (!a || !(a.spawned > 0)) return { promote: false, spawned: false, delta: null, why: (a && a.why) || 'the round spawned nothing' };
+  const delta = Number.isFinite(a.after) && Number.isFinite(a.before) ? a.after - a.before : null;
+  if (!(delta > 0)) return { promote: false, spawned: true, delta, why: 'its bench did not improve (' + a.before + ' -> ' + (a.after ?? 'not graded') + ')' };
+  if (!a.kept) return { promote: false, spawned: true, delta, why: 'the round did not keep it: ' + (a.why || 'no reason given') };
+  const cells = Array.isArray(a.cells) ? a.cells : [];
+  const ran = a.ran && typeof a.ran === 'object' ? a.ran : null;
+  const never = cells.filter((id) => !(ran && ran[id] > 0));
+  if (!ran || !cells.length || never.length) return { promote: false, spawned: true, delta, never, why: 'the census says ' + (never.length ? never.join(', ') : 'no cell') + ' never ran on an item the bench gained: not load bearing' };
+  return { promote: true, spawned: true, delta, never: [], why: 'the bench moved ' + a.before + ' -> ' + a.after + ' and every spawned cell ran on an item it gained' };
+}
+
+const rowOf = (ctx, r, d) => ({
+  bench: ctx.bench.line.id, kind: ctx.bench.kind, round: r.round, target: r.real.target || null, gene: r.real.gene || null,
+  cells: r.real.cells || [], steps: r.real.steps || [], before: r.real.before, after: r.real.after ?? null, delta: d.delta ?? null,
+  gained: r.real.gained ?? null, ran: r.real.ran || null, why: d.why,
+});
+
+/** Keep the newest `keep` promotion records under PROMOTED_REL (their names sort by time). */
+function prunePromoted(dir, keep = PROMOTED_KEEP) {
+  let names = [];
+  try { names = readdirSync(dir).filter((n) => /^\d{8}T\d{9}Z-/.test(n)).sort(); } catch { return 0; }
+  const drop = names.slice(0, Math.max(0, names.length - keep));
+  for (const n of drop) rmSync(path.join(dir, n), { recursive: true, force: true });
+  return drop.length;
+}
+
+/**
+ * THE PROMOTION of one bench's rounds into the organism the soak keeps. Decides every round by
+ * promotionOf, builds the promoted organism on a stage (the census start grown with exactly the
+ * promoted circuits), grades it again from disk, and (write true) writes it over
+ * state/<name>/snapshot.json when the live bytes are still the ones copied at open.
+ * @returns {{bench, promote: object[], discard: object[], written: boolean, why: string|null, verify: object|null, to: string, hashBefore, hashAfter, record, ms}}
+ */
+export async function promoteKept(ctx, { root = ctx.root, write = true, runId = null, log = () => {} } = {}) {
+  const t = performance.now();
+  const rel = 'state/' + ctx.name + '/snapshot.json';
+  const out = { bench: ctx.bench.line.id, promote: [], discard: [], written: false, why: null, verify: null, to: rel, hashBefore: ctx.live ? ctx.live.hash : null, hashAfter: null, record: null, ms: 0 };
+  const done = () => { out.ms = performance.now() - t; return out; };
+  const refuse = (why) => { out.why = why; for (const r of out.promote) out.discard.push({ ...r, why }); out.promote = []; return done(); };
+  for (const r of ctx.rounds) {
+    const d = promotionOf(r.real);
+    if (d.promote) out.promote.push(rowOf(ctx, r, d));
+    else if (d.spawned) out.discard.push(rowOf(ctx, r, d));
+  }
+  if (!out.promote.length) { out.why = 'no spawned cell passed the rule (bench improved, kept, ran on an item it gained)'; return done(); }
+  // the organism to be: the census start, grown with exactly the promoted circuits, one proposal each
+  const stage = path.join(ctx.work, 'promote', ctx.name);
+  rmSync(path.dirname(stage), { recursive: true, force: true });
+  mkdirSync(path.dirname(stage), { recursive: true });
+  cpSync(ctx.startDir, stage, { recursive: true });
+  let brain = restore(stage);
+  const cellsBefore = brain.cells.length;
+  for (const row of out.promote) {
+    const c = ctx.circuits && ctx.circuits.get(row.round);
+    if (!c) return refuse('not promoted: round ' + row.round + ' left no circuit to grow');
+    const g = grow(brain, [c], { by: PROMOTE_BY, why: 'census round ' + row.round + ' on ' + out.bench + ': the bench moved ' + row.before + ' -> ' + row.after + ' and every spawned cell ran on an item it gained' });
+    if (!g.ok) return refuse('not promoted: the gate did not approve the cell.add of round ' + row.round + ': ' + g.reason);
+    row.proposal = g.proposal;
+    row.grown = g.cells.length;
+  }
+  brain.snapshot(stage);
+  brain = restore(stage);
+  // graded again, from disk: the bench, the development items, the control rows, the firing census
+  const ids = new Set(out.promote.flatMap((r) => r.cells));
+  const after = cellsScore(ctx, brain, ctx.items.dev, { watch: ids });
+  const start = ctx.startScore;
+  const lost = [...start.ids].filter((id) => !after.ids.has(id));
+  const gained = [...after.ids].filter((id) => !start.ids.has(id));
+  const ranOn = ranOnGained([...ids], gained, after.fired);
+  const never = Object.keys(ranOn).filter((id) => !(ranOn[id] > 0));
+  const control = await controlScore(ctx, stage);
+  out.verify = {
+    benchBefore: start.right, benchAfter: after.right, n: after.n, delta: after.right - start.right, lost: lost.length, gained: gained.length,
+    controlBefore: ctx.startControl.right, controlAfter: control.right, controlN: control.n, ranOn, cellsBefore, cellsAfter: brain.cells.length,
+  };
+  const bad = !(after.right > start.right) ? 'the promoted organism did not move the bench (' + start.right + ' -> ' + after.right + ')'
+    : lost.length ? 'the promoted organism lost ' + lost.length + ' development item(s) the start answered'
+      : control.right < ctx.startControl.right ? 'the promoted organism lost control rows (' + ctx.startControl.right + ' -> ' + control.right + ')'
+        : never.length ? 'the census on the promoted organism says ' + never.join(', ') + ' never ran on a gained item' : null;
+  if (bad) return refuse('not promoted: ' + bad);
+  const stageBytes = readFileSync(path.join(stage, 'snapshot.json'));
+  out.hashAfter = sha256(stageBytes);
+  if (!write) { out.why = 'dry: ' + out.promote.length + ' circuit(s) would be promoted into ' + rel; return done(); }
+  // the write: only over the bytes the census copied at open, the replaced bytes kept
+  const live = path.join(root, 'state', ctx.name, 'snapshot.json');
+  const nowBytes = existsSync(live) ? readFileSync(live) : null;
+  const nowHash = nowBytes ? sha256(nowBytes) : null;
+  const openHash = ctx.live && ctx.live.existed ? ctx.live.hash : null;
+  if (nowHash !== openHash) return refuse('not promoted: ' + rel + ' changed while the census ran (' + shortHash(openHash) + ' -> ' + shortHash(nowHash) + '); a promotion writes only over the bytes it was measured against');
+  const recDir = path.join(root, ...PROMOTED_REL.split('/'));
+  const id = new Date().toISOString().replace(/[-:]/g, '').replace('.', '') + '-' + out.hashAfter.slice(0, 8);
+  const rec = path.join(recDir, id);
+  mkdirSync(rec, { recursive: true });
+  if (nowBytes) writeFileSync(path.join(rec, 'before-snapshot.json'), nowBytes);
+  writeFileSync(path.join(rec, 'meta.json'), JSON.stringify({
+    at: new Date().toISOString(), runId, by: PROMOTE_BY, bench: out.bench, to: rel, hashBefore: nowHash, hashAfter: out.hashAfter,
+    before: nowBytes ? 'before-snapshot.json' : null, verify: out.verify,
+    rounds: out.promote.map((r) => ({ round: r.round, target: r.target, cells: r.cells, before: r.before, after: r.after, delta: r.delta, ran: r.ran, proposal: r.proposal ?? null })),
+  }, null, 2));
+  mkdirSync(path.dirname(live), { recursive: true });
+  writeFileSync(live + '.tmp', stageBytes);
+  renameSync(live + '.tmp', live);
+  const back = readFileSync(live);
+  out.written = back.equals(stageBytes);
+  if (!out.written) {
+    if (nowBytes) writeFileSync(live, nowBytes); else rmSync(live, { force: true });
+    return refuse('not promoted: the bytes on disk after the write are not the promoted bytes; the live file was put back');
+  }
+  out.record = PROMOTED_REL + '/' + id;
+  out.recordsPruned = prunePromoted(recDir);
+  out.why = out.promote.length + ' circuit(s) promoted into ' + rel + ' (' + shortHash(nowHash) + ' -> ' + shortHash(out.hashAfter) + ')';
+  log('promoted ' + out.promote.length + ' circuit(s) of ' + out.bench + ' into ' + rel + ': bench ' + start.right + ' -> ' + after.right + ' of ' + after.n + ', controls ' + control.right + '/' + control.n + ', cells ' + cellsBefore + ' -> ' + out.verify.cellsAfter);
+  return done();
+}
+
+/**
+ * THE LOOP'S CALL, once per soak: every red bench of the soak's ledger rows (redBenches), rounds
+ * under the soak's wall and RAM, then the promotion (promoteKept) bench by bench, so the next bench
+ * starts from the organism the last one promoted. Model off. Never throws: a failure is the
+ * report's why. The report is plain JSON (the soak writes it into its record).
+ * @param {object} o { root, name, lines, ledgerFrom, tmp, wallMs, ramMb, rounds, write, runId, seed, log, items, controls, gradeControl }
+ */
+export async function soakCensus(o = {}) {
+  const t0 = performance.now();
+  const root = o.root || ROOT;
+  const name = o.name || BRAIN_NAME;
+  const log = typeof o.log === 'function' ? o.log : () => {};
+  const wallMs = Number(o.wallMs) > 0 ? Number(o.wallMs) : 10 * 60_000;
+  const ramMb = Number(o.ramMb) > 0 ? Number(o.ramMb) : SOAK_CENSUS_RAM_MB;
+  const maxRounds = Number.isInteger(o.rounds) && o.rounds > 0 ? o.rounds : SOAK_CENSUS_ROUNDS;
+  const write = o.write !== false;
+  const rss = () => Math.round(process.memoryUsage().rss / 1048576);
+  const rep = {
+    ran: false, why: null, at: new Date().toISOString(), modelCalls: 0, write,
+    budget: { wallMs, ramMb, rounds: maxRounds }, stoppedBy: null,
+    ledger: null, red: 0, benches: [], skipped: [],
+    rounds: 0, spawned: 0, cellsSpawned: 0, kept: 0, discarded: 0, keptCells: [], discardedCells: [],
+    placebo: { spawned: 0, kept: 0 }, promoted: 0, written: false, promotions: [], ms: 0, peakRssMb: rss(),
+  };
+  const finish = () => { rep.ms = Math.round(performance.now() - t0); rep.peakRssMb = Math.max(rep.peakRssMb, rss()); return rep; };
+  let lines = Array.isArray(o.lines) && o.lines.length ? o.lines : null, ledgerFrom = o.ledgerFrom || 'injected';
+  try {
+    if (!lines) {
+      const G = await import('./gaps.mjs');
+      const read = G.readLedger(root);
+      const got = Array.isArray(read) ? read : read && Array.isArray(read.lines) ? read.lines : [];
+      if (got.length) { lines = got; ledgerFrom = G.LEDGER_REL; }
+      else { lines = (await G.buildLedger({ root })).lines; ledgerFrom = 'self/gaps.mjs buildLedger, in memory, nothing written'; }
+    }
+  } catch (e) { rep.why = 'the ledger could not be read: ' + (e && e.message ? e.message : String(e)); return finish(); }
+  rep.ledger = { from: ledgerFrom, lines: lines.length };
+  const rb = redBenches(lines);
+  rep.red = rb.red;
+  rep.skipped = rb.skipped;
+  if (!rb.benches.length) { rep.why = 'no red bench of a typed kind with a model-off item source in the ' + lines.length + ' ledger lines (' + rb.red + ' red)'; return finish(); }
+  rep.ran = true;
+  let lastRoundMs = 0;
+  for (const bench of rb.benches) {
+    const b = { id: bench.line.id, kind: bench.kind, source: bench.source, rounds: 0, spawned: 0, kept: 0, discarded: 0, promoted: 0, written: false, why: null, openS: null, dev: null, before: null, after: null };
+    rep.benches.push(b);
+    if (rep.rounds >= maxRounds) { rep.stoppedBy = rep.stoppedBy || 'rounds'; b.why = 'not opened: the rounds cap of ' + maxRounds + ' is spent'; continue; }
+    if (performance.now() - t0 >= wallMs) { rep.stoppedBy = rep.stoppedBy || 'wall'; b.why = 'not opened: the census wall of ' + Math.round(wallMs / 1000) + ' s is spent'; continue; }
+    if (rss() > ramMb) { rep.stoppedBy = rep.stoppedBy || 'ram'; b.why = 'not opened: RSS ' + rss() + ' MB over the ' + ramMb + ' MB budget'; continue; }
+    let ctx = null;
+    try {
+      ctx = await openCensus({ root, name, tmp: o.tmp, seed: o.seed || 'census', lines, ledgerFrom, bench, heldOut: false, items: o.items, controls: o.controls, gradeControl: o.gradeControl, log });
+      b.openS = Math.round(ctx.openMs) / 1000;
+      b.dev = ctx.items.dev.length;
+      b.before = ctx.startScore.right;
+      for (;;) {
+        if (rep.rounds >= maxRounds) { rep.stoppedBy = 'rounds'; break; }
+        if (performance.now() - t0 + lastRoundMs > wallMs) { rep.stoppedBy = 'wall'; break; }
+        if (rss() > ramMb) { rep.stoppedBy = 'ram'; break; }
+        const tr = performance.now();
+        const r = await censusRound(ctx, { needTarget: true });
+        if (!r) { b.why = 'every development item the held cells miss and the operator expresses was tried'; break; }
+        lastRoundMs = Math.max(lastRoundMs, performance.now() - tr);
+        rep.rounds++; b.rounds++;
+        rep.peakRssMb = Math.max(rep.peakRssMb, rss());
+        if (r.real.spawned > 0) { rep.spawned++; b.spawned++; rep.cellsSpawned += r.real.spawned; }
+        if (r.placebo.spawned > 0) rep.placebo.spawned++;
+        if (r.placebo.kept) rep.placebo.kept++;
+      }
+      const p = await promoteKept(ctx, { root, write, runId: o.runId || null, log });
+      rep.promotions.push({ bench: p.bench, why: p.why, written: p.written, verify: p.verify, to: p.to, hashBefore: p.hashBefore, hashAfter: p.hashAfter, record: p.record, promoted: p.promote.length, discarded: p.discard.length });
+      b.kept = p.promote.length; b.discarded = p.discard.length; b.promoted = p.written ? p.promote.length : 0; b.written = p.written;
+      b.after = p.verify ? p.verify.benchAfter : b.before;
+      b.why = b.why ? b.why + '; ' + p.why : p.why;
+      rep.kept += p.promote.length;
+      rep.discarded += p.discard.length;
+      rep.keptCells.push(...p.promote);
+      rep.discardedCells.push(...p.discard);
+      if (p.written) { rep.promoted += p.promote.length; rep.written = true; }
+    } catch (e) {
+      b.why = 'error: ' + (e && e.message ? e.message.split('\n')[0] : String(e));
+    } finally {
+      if (ctx) { try { const c = closeCensus(ctx); b.workDeleted = c.workDeleted; } catch (e) { b.workDeleted = false; b.why = (b.why ? b.why + '; ' : '') + 'close: ' + (e && e.message ? e.message : String(e)); } }
+    }
+  }
+  if (!rep.why) rep.why = rep.kept ? rep.kept + ' circuit(s) kept, ' + (rep.written ? rep.promoted + ' promoted into state/' + name : 'none written (' + (write ? 'see promotions' : 'dry') + ')') : rep.rounds ? 'no spawned cell passed the promotion rule' : 'no round ran: ' + rep.benches.map((b) => b.id + ': ' + b.why).join('; ');
+  return finish();
+}
+
+/** One line for a soak's log. */
+export function censusLine(r) {
+  if (!r) return 'CENSUS ROUND not run';
+  if (r.off) return 'CENSUS ROUND off: ' + r.why;
+  return 'CENSUS ROUND ' + (r.ran ? 'ran' : 'did not run') + ': ' + r.rounds + ' round(s) on ' + (r.benches || []).map((b) => b.id).join(', ') + '; spawned ' + r.spawned + ' (' + r.cellsSpawned + ' cells), kept ' + r.kept + ', discarded ' + r.discarded
+    + ', promoted ' + r.promoted + (r.written ? ' (written)' : '') + '; placebo spawned ' + (r.placebo ? r.placebo.spawned : 0) + ', kept ' + (r.placebo ? r.placebo.kept : 0) + '; ledger ' + (r.ledger ? r.ledger.lines : '?') + ' rows, ' + (Number.isFinite(r.red) ? r.red : '?') + ' red; ' + Math.round((r.ms || 0) / 100) / 10 + ' s, peak RSS ' + r.peakRssMb + ' MB'
+    + (r.stoppedBy ? ', stopped by ' + r.stoppedBy : '') + (r.why ? ': ' + r.why : '');
 }

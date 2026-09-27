@@ -1736,6 +1736,55 @@ export async function runSoak(o = {}) {
     }
     let plans = wantGaps ? gapQueue(lines, planOpts) : [];
     if (wantGaps) say('gaps: ' + lines.length + ' ledger lines, ' + lines.filter((g) => g && g.trial).length + ' with a trial; ' + plans.reduce((s, p) => s + p.rounds.length, 0) + ' rounds planned, ' + plans.filter((p) => p.refused).length + ' gaps refused before any copy');
+
+    // Board 23 (census-loop): THE CENSUS ROUND, once per soak cycle, after the ledger rows are read.
+    // The organism spawns cells where a red bench of these rows misses (self/census-round.mjs
+    // soakCensus, model off) under this soak's own wall and RAM, and a spawned cell is PROMOTED into
+    // the organism this soak keeps (state/dilation/snapshot.json) only when its bench improved and
+    // the census says it ran on an item it gained; every other spawned cell is discarded. On unless
+    // --census-round off (the control) or --sources leaves census-round out. Budget: --census-minutes
+    // (default a quarter of the soak, at least 2 and at most 10, never past the soak's wall),
+    // --census-ram-mb (default the soak's own heap, --soak-heap-mb), --census-rounds. A resumed soak
+    // keeps the settings it started with and never runs the round twice. Test seam: o.censusModule.
+    const CENSUS_SOURCE = 'census-round';
+    if (!st.censusCfg) {
+      const pos = (v) => { const x = Number(v); return v !== undefined && v !== null && v !== true && Number.isFinite(x) && x > 0 ? x : null; };
+      const flagOff = o['census-round'] === false || /^(off|false|0|no)$/i.test(String(o['census-round'] ?? ''));
+      const leftOut = !!cfg.sources && !cfg.sources.includes(CENSUS_SOURCE);
+      st.censusCfg = {
+        on: !flagOff && !leftOut, why: flagOff ? '--census-round off' : leftOut ? '--sources leaves ' + CENSUS_SOURCE + ' out' : null,
+        minutes: pos(o['census-minutes']) ?? Math.min(10, Math.max(2, (Number(cfg.soakMinutes) || 0) / 4)),
+        ramMb: pos(o['census-ram-mb']) ?? pos(o['soak-heap-mb']) ?? SOAK_HEAP_MB,
+        rounds: Number.isInteger(pos(o['census-rounds'])) ? pos(o['census-rounds']) : null,
+      };
+    }
+    if (!st.censusRound) {
+      const cc = st.censusCfg;
+      const wallMs = Math.max(0, Math.min(cc.minutes * 60_000, deadline - Date.now()));
+      if (!cc.on) st.censusRound = { ran: false, off: true, why: cc.why, rounds: 0, spawned: 0, cellsSpawned: 0, kept: 0, discarded: 0, promoted: 0, written: false, keptCells: [], discardedCells: [], benches: [] };
+      else if (wallMs <= 0) st.censusRound = { ran: false, off: false, why: 'no wall left in this soak', rounds: 0, spawned: 0, cellsSpawned: 0, kept: 0, discarded: 0, promoted: 0, written: false, keptCells: [], discardedCells: [], benches: [] };
+      else {
+        say('CENSUS ROUND: the red benches of ' + (lines.length || 'the') + ' ledger rows, at most ' + rnd(wallMs / 60_000, 3) + ' min and ' + cc.ramMb + ' MB RSS' + (cfg.dry ? ' (DRY: nothing promoted)' : '') + ', model off');
+        let rep;
+        try {
+          const C = o.censusModule || await import(new URL('./census-round.mjs', import.meta.url).href);
+          rep = await C.soakCensus({ root, lines, ledgerFrom: GAPS_REL, tmp: tmpRoot, wallMs, ramMb: cc.ramMb, rounds: cc.rounds || undefined, write: !cfg.dry, runId: st.runId, log: (l) => say('  [census] ' + l) });
+        } catch (e) { rep = null; say('  the census round threw: ' + firstLine(e)); st.censusRound = { ran: false, off: false, why: 'self/census-round.mjs threw: ' + firstLine(e), rounds: 0, spawned: 0, cellsSpawned: 0, kept: 0, discarded: 0, promoted: 0, written: false, keptCells: [], discardedCells: [], benches: [] }; }
+        if (rep) st.censusRound = rep;
+      }
+      st.censusRound.cfg = { ...st.censusCfg, wallMs, dry: !!cfg.dry };
+      const cr = st.censusRound;
+      record({
+        candidate: false, event: 'census-round', source: CENSUS_SOURCE, key: 'census-round:' + st.runId, ran: !!cr.ran, off: !!cr.off, reason: cr.why || null,
+        rounds: cr.rounds, spawned: cr.spawned, cellsSpawned: cr.cellsSpawned, kept: cr.kept, discarded: cr.discarded, promoted: cr.promoted, written: !!cr.written,
+        benches: (cr.benches || []).map((b) => ({ id: b.id, rounds: b.rounds, kept: b.kept, discarded: b.discarded, before: b.before, after: b.after })),
+        keptCells: (cr.keptCells || []).map((k) => ({ bench: k.bench, round: k.round, target: k.target, cells: k.cells, before: k.before, after: k.after, delta: k.delta })),
+        author: cr.written ? 'organism (census-round)' : null,
+      });
+      save();
+      say(cr.off ? 'CENSUS ROUND off: ' + cr.why : 'CENSUS ROUND ' + (cr.ran ? 'ran' : 'did not run') + ': ' + cr.rounds + ' round(s), spawned ' + cr.spawned + ', kept ' + cr.kept + ', discarded ' + cr.discarded + ', promoted ' + cr.promoted + (cr.written ? ' into state/dilation' : '') + (cr.why ? ': ' + cr.why : ''));
+      for (const k of cr.keptCells || []) say('  census kept ' + k.bench + ' round ' + k.round + ' ' + (k.target || '-') + ': before ' + k.before + ' after ' + k.after + ' (delta ' + k.delta + '), ' + (k.cells || []).length + ' cell(s) ran on ' + (k.gained ?? '-') + ' gained item(s)');
+    }
     const pending = () => plans.flatMap((p) => (p.refused ? [{ plan: p, key: p.refused.key, refusal: p.refused }] : p.rounds.map((r) => ({ plan: p, key: r.key, round: r })))).filter((x) => !st.done.includes(x.key));
     const baselineReused = (g) => {
       if (!K.improve || !K.operators || !g.trial || !g.trial.command || typeof K.improve.findBaseline !== 'function') return false;
@@ -2037,7 +2086,7 @@ export async function runSoak(o = {}) {
       say('VERDICT ' + w.rel + ': isTheBar ' + v.isTheBar + ', barMet ' + v.barMet + ' (' + Object.entries(v.checks).map(([k, c]) => k + ' ' + (c.pass ? 'pass' : 'FAIL')).join(', ') + ')' + (w.archived ? '; the bar file it replaced went to ' + SOAK_HISTORY_REL : ''));
     } catch (e) { say('the soak verdict was not written: ' + firstLine(e)); verdict = { file: null, error: firstLine(e) }; }
   }
-  return { ...out, ok: !failed, exitCode, reason: failed, soakFile: relOf(root, sfile), stopped, ...summary, lines, verdict };
+  return { ...out, ok: !failed, exitCode, reason: failed, soakFile: relOf(root, sfile), stopped, ...summary, lines, verdict, censusRound: st.censusRound || null };
 }
 
 /** Counts of a soak: per source and per operator, model calls, trials, peaks, copies. */
