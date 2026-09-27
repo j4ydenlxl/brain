@@ -21,7 +21,7 @@
   },
   "missed": []
  },
- "statement": "The ladder page (/ladder) was built by node web/build.mjs, which exited 0 and printed \"pages built: 4 (index.html, findings/index.html, portfolio/index.html, ladder/index.html)\". The built page is 148662 bytes; a walker that shares no code with the generator walked it against bench/verdicts and traced 722 numbers in 570 spans (709 of them in 483 field values, the rest in field-path labels and file names) to 9 verdict files, with 0 untraced and 0 em dashes. test/web-ladder.test.mjs exited 0 with 4 of 4 passing: it renders the page from the current verdicts and from a fixture with HumanEval missing and GSM8K only -partial, asserts \"not measured\" and \"partial\", and shows that the walker rejects a bent number, a loose digit and a bad path. test/web-daemon.test.mjs exited 0 with 4 of 4 passing: the live view shows the health numbers through daemon/health.mjs and web/serve.mjs, and \"daemon not running\" when the endpoint is closed. The counts are a snapshot of verdicts other builders are still writing; no model was called and the machine was shared.",
+ "statement": "The ladder page (/ladder) was built by node web/build.mjs, which exited 0 and printed \"pages built: 4 (index.html, findings/index.html, portfolio/index.html, ladder/index.html)\". The built page is 148662 bytes; a walker that shares no code with the generator walked it against bench/verdicts and traced 722 numbers in 570 spans (709 of them in 483 field values, the rest in field-path labels and file names) to 9 verdict files, with 0 untraced and 0 em dashes. test/web-ladder.test.mjs exited 0 with 4 of 4 passing: it renders the page from the current verdicts and from a fixture with HumanEval missing and GSM8K only -partial, asserts \"not measured\" and \"partial\", and shows that the walker rejects a bent number, a loose digit and a bad path. test/web-daemon.test.mjs exited 0 with 4 of 4 passing: the live view shows the health numbers through daemon/health.mjs and web/serve.mjs, and \"daemon not running\" when the endpoint is closed. The counts are a snapshot of verdicts other builders are still writing; no model was called and the machine was shared. Contaminated, as the split stamped by tools/split-stamp.mjs says: no held-out set: the page is checked against the same verdicts it was built from.",
  "build": {
   "exit": 0,
   "signal": null,
@@ -108,5 +108,36 @@
  },
  "peakRssMb": 57.3,
  "peakRssNote": "this runner process only (process.resourceUsage().maxRSS); the build and test children ran one at a time under the same heap cap",
- "wallMs": 764
+ "wallMs": 764,
+ "contaminated": true,
+ "split": {
+  "development": {
+   "what": "the verdicts under bench/verdicts the page is generated from, and the fixture of test/web-ladder.test.mjs (one set missing, one -partial)"
+  },
+  "heldOut": {
+   "what": "none: the walker (web/ladder-walk.mjs) shares no code with the generator, which makes it an independent check of the same page, not a held-out set",
+   "n": 0
+  },
+  "contaminated": "no held-out set: the page is checked against the same verdicts it was built from"
+ },
+ "splitStampedAt": "2026-09-27T13:44:27.546Z",
+ "splitStampedBy": "tools/split-stamp.mjs",
+ "splitSource": {
+  "writer": "web/ladder-bar.mjs",
+  "fn": "splitFor",
+  "args": {},
+  "fnSha256": "bdf799009cdddd9e8187ba4e7d0fcc19428abf5005b9a4daaa3ed6264f2c0bd0",
+  "notRerunBecause": "web/ladder-bar.mjs refuses to start while web-ladder.json exists (a bar file is written once; tonight it printed [refused] and exit 2), and a bar run rebuilds web/dist, which this board never edits (its own run took wallMs 764)",
+  "contaminatedMark": "added by the stamp: the split gives a contamination reason, so the file carries contaminated true at its top level and one sentence appended to its statement (splitStampedOver.statementAppended), the rule bench/compress.mjs, bench/math.mjs and bench/synth.mjs apply on their own runs; cutting both out gives the old bytes back"
+ },
+ "splitStampedOver": {
+  "sha256": "30a3dc39577088b78508bbd87d04c5e010397ac72b944dbfc662f12a612e5e8e",
+  "bytes": 5651,
+  "prefixChars": 5632,
+  "suffixChars": 3,
+  "statementAt": 1949,
+  "statementChars": 148,
+  "statementAppended": " Contaminated, as the split stamped by tools/split-stamp.mjs says: no held-out set: the page is checked against the same verdicts it was built from.",
+  "markAdded": true
+ }
 }

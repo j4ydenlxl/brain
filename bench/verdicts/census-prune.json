@@ -4,7 +4,7 @@
   "command": "node --max-old-space-size=6000 tools/organism-census.mjs --seed organism/gen-0-pruned --ticks 200 --min-free-mb 16000 --progress 50",
   "node": "v24.15.0",
   "isTheBar": true,
-  "statement": "The census loaded 16 of 16 files of organism/gen-0-pruned (259943 of 259943 lines), drove it 200 ticks one tick per event loop turn with nothing injected, then ran the hosted algebra and sequence problems inside it (68 more ticks). Of 37533 declared cells 37533 ran at least once (100.00 percent) and 20456 emitted; of 217122 declared edges 217122 delivered at least once (100.00 percent); 47 of 47 kinds ran. Of 259662 declaration lines 259662 declared something that ran or delivered, and 259943 of 259943 loaded lines are load bearing counting the 281 structure lines. Leaving out edges-001.mjs (20000 lines, 19994 edges) moved drive runs by -170870 and drive deliveries by -3774972, changed the drive run count of 3842 of 37533 surviving cells, and moved the hosted task score by 0. Leaving out cells-000.mjs (20000 lines, 19994 cells and 133158 edges that named them) moved drive runs by -3389055 and drive deliveries by -27088592, changed the drive run count of 3427 of 17539 surviving cells, and moved the hosted task score by -0.083333. Against bench/verdicts/census.json, the census this seed was pruned by: lines 485992 to 259943, load bearing share 0.53513 to 1, algebra 34 to 34 of 36, sequence 0 to 0 of 22, drive runs 5479058 to 5479058; the bar is met.",
+  "statement": "The census loaded 16 of 16 files of organism/gen-0-pruned (259943 of 259943 lines), drove it 200 ticks one tick per event loop turn with nothing injected, then ran the hosted algebra and sequence problems inside it (68 more ticks). Of 37533 declared cells 37533 ran at least once (100.00 percent) and 20456 emitted; of 217122 declared edges 217122 delivered at least once (100.00 percent); 47 of 47 kinds ran. Of 259662 declaration lines 259662 declared something that ran or delivered, and 259943 of 259943 loaded lines are load bearing counting the 281 structure lines. Leaving out edges-001.mjs (20000 lines, 19994 edges) moved drive runs by -170870 and drive deliveries by -3774972, changed the drive run count of 3842 of 37533 surviving cells, and moved the hosted task score by 0. Leaving out cells-000.mjs (20000 lines, 19994 cells and 133158 edges that named them) moved drive runs by -3389055 and drive deliveries by -27088592, changed the drive run count of 3427 of 17539 surviving cells, and moved the hosted task score by -0.083333. Against bench/verdicts/census.json, the census this seed was pruned by: lines 485992 to 259943, load bearing share 0.53513 to 1, algebra 34 to 34 of 36, sequence 0 to 0 of 22, drive runs 5479058 to 5479058; the bar is met. Contaminated, as the split stamped by tools/split-stamp.mjs says: no held-out set: the tasks the census reports are the ones its liveness, and so any prune made from it, was taken on.",
   "seed": "organism/gen-0-pruned",
   "ticks": 200,
   "knockoutSeed": "census",
@@ -1235,5 +1235,42 @@
         "phases": "the drive ticks plus the hosted algebra and sequence problems"
       }
     }
+  },
+  "contaminated": true,
+  "split": {
+    "development": {
+      "what": "the seed it describes, driven for its ticks with nothing injected, then the hosted algebra and sequence problems (tasks/host.mjs) at the counts generations/organism-genome.mjs scores a genome on",
+      "seed": "organism/gen-0-pruned",
+      "ticks": 200
+    },
+    "heldOut": {
+      "what": "none: a census is a measurement of one seed, and the liveness it writes (the prune input) comes from the same drive and tasks it reports",
+      "n": 0
+    },
+    "contaminated": "no held-out set: the tasks the census reports are the ones its liveness, and so any prune made from it, was taken on"
+  },
+  "splitStampedAt": "2026-09-27T13:44:27.546Z",
+  "splitStampedBy": "tools/split-stamp.mjs",
+  "splitSource": {
+    "writer": "tools/organism-census.mjs",
+    "fn": "splitFor",
+    "args": {
+      "mode": "run",
+      "seed": "organism/gen-0-pruned",
+      "ticks": 200
+    },
+    "fnSha256": "a128983d190141872782db05df47e93e5cbaec94b34b9af69c99f05bc8dc9e94",
+    "notRerunBecause": "its run does not fit this board's 4000 MB cap: its own memoryMB.rssEnd was 6916.8 MB and rssAfterFull 5848.4 MB",
+    "contaminatedMark": "added by the stamp: the split gives a contamination reason, so the file carries contaminated true at its top level and one sentence appended to its statement (splitStampedOver.statementAppended), the rule bench/compress.mjs, bench/math.mjs and bench/synth.mjs apply on their own runs; cutting both out gives the old bytes back"
+  },
+  "splitStampedOver": {
+    "sha256": "d817bcc6df176b36d7cdf1af06f0d094f419a3f95ae073f6675e14e215f1c5e5",
+    "bytes": 106763,
+    "prefixChars": 106760,
+    "suffixChars": 3,
+    "statementAt": 1532,
+    "statementChars": 184,
+    "statementAppended": " Contaminated, as the split stamped by tools/split-stamp.mjs says: no held-out set: the tasks the census reports are the ones its liveness, and so any prune made from it, was taken on.",
+    "markAdded": true
   }
 }

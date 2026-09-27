@@ -491,6 +491,7 @@ export async function run(opts = {}) {
 
   const verdict = {
     at: new Date().toISOString(), command: cfg.command, node: process.version, isTheBar, met: bar.met, whyNotTheBar: whyNot,
+    contaminated: false,
     statement,
     split: splitFor({ split: data.split, file: data.file, fallback: data.fallback, n: planned, seed: cfg.seed, overlapWithPublicStage: pubOverlap }),
     item: 'math: reason/math.mjs program of thought with an exact executor (P4 toward the 405B GSM8K row)',
@@ -510,6 +511,12 @@ export async function run(opts = {}) {
     rate: { smallRecordsRunHere: smallRan, smallMinutes: r2(smallMs / 60000), bigRecordsRunHere: bigRan, wallMinutes: r2((Date.now() - t0) / 60000) },
     journal: journal.file ? rel(journal.file) : null,
   };
+  // board 24b builder (item unsplit-bars): the top-level mark and the statement saying so, read from
+  // the split the verdict carries (a reason in split.contaminated is told to the reader)
+  if (typeof verdict.split.contaminated === 'string') {
+    verdict.contaminated = true;
+    verdict.statement += ' Contaminated, as the split says: ' + verdict.split.contaminated + '.';
+  }
 
   let writtenTo = null;
   if (write) {

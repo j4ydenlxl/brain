@@ -773,6 +773,45 @@ export function splitOf(set, item) {
   if (set === 'gsm8k') return gsm8kDevIds().set.has(String(item.id)) ? 'development' : 'heldOut';
   return null;
 }
+// board 24b builder (item unsplit-bars): the split object of a public verdict, which the gate's
+// CONTAMINATION row reads (twoRulers above is the per set rule in words; this is the object).
+/**
+ * What a public verdict developed on and what it scored: pure, from the per set counts of the
+ * records the run graded, as splitOf placed them. Clean (contaminated false) only when no graded
+ * record is a development record; a count that was not measured is a reason, never clean.
+ * @param {{set?: string, development?: number, heldOut?: number, sets?: Object<string, {development: number, heldOut: number}>}} [opts]
+ */
+export function splitFor(opts = {}) {
+  const RULE = {
+    gsm8k: 'the 200 GSM8K test ids bench/verdicts/math.json lists under records.ids plus gsm8k.0 to gsm8k.2 (the records reason/math.mjs prompts were probed on)',
+    humaneval: 'MultiPL-E JavaScript HumanEval records 0 to 39 by index (the reason/synth.mjs extractor was written reading them)',
+    arc: 'no ARC-AGI-1 evaluation task (splitOf gives null for ARC: bench/grid.mjs develops on the training directory)',
+  };
+  const given = opts.sets && typeof opts.sets === 'object' ? opts.sets : opts.set ? { [opts.set]: { development: opts.development, heldOut: opts.heldOut } } : {};
+  const sets = {};
+  const unmeasured = [];
+  let dev = 0, held = 0;
+  for (const name of Object.keys(given).sort()) {
+    const c = given[name] || {};
+    const d = Number.isInteger(c.development) && c.development >= 0 ? c.development : null;
+    const h = Number.isInteger(c.heldOut) && c.heldOut >= 0 ? c.heldOut : null;
+    if (d === null || h === null) unmeasured.push(name); else { dev += d; held += h; }
+    sets[name] = { development: d, heldOut: h };
+  }
+  const names = Object.keys(sets);
+  const measured = names.length > 0 && unmeasured.length === 0;
+  const perSet = (k) => names.map((n) => n + ' ' + sets[n][k]).join(', ');
+  const contaminated = !names.length ? 'no set was named, so no graded record was placed on either side of the split'
+    : !measured ? 'the development and held-out counts were not measured for ' + unmeasured.join(', ') + ', so the split cannot be called clean'
+    : dev > 0 ? dev + ' of the ' + (dev + held) + ' graded records are development records (' + perSet('development') + '): every count over all records includes them, and only the held-out counts (' + perSet('heldOut') + ') are clean'
+    : false;
+  return {
+    development: { what: 'records a builder developed against, graded apart under TWO RULERS: ' + (names.length ? names.map((n) => n + ', ' + (RULE[n] || 'no development rule is known for this set')).join('; ') : 'no set named'), n: measured ? dev : null, sets: Object.fromEntries(names.map((n) => [n, sets[n].development])) },
+    heldOut: { what: 'every other record of each set, never read while the arm that grades it was built; the held-out counts are the ones to quote', n: measured ? held : null, sets: Object.fromEntries(names.map((n) => [n, sets[n].heldOut])) },
+    contaminated,
+  };
+}
+
 const SPLIT_SOURCE = Object.freeze({
   humaneval: () => 'records 0 to ' + (HUMANEVAL_DEV_BELOW - 1) + ' by index of the file are development (bench/verdicts/synth.json development.humaneval: the extractor was written reading them); 40 to 160 are held out',
   gsm8k: () => gsm8kDevIds().source + ' are development; every other record is held out',
@@ -1120,6 +1159,7 @@ function buildVerdict(st, { final }) {
         : 'act/prompt.mjs ask() exactly as bench/answer.mjs asks it: act/solve.mjs first, then recall from memory, then the model cell with that recall as its system block; the brain holds nothing from this set',
     regions: cfg.set === 'arc' ? null : { on: !!cfg.regions, k: cfg.regions ? cfg.k : null, check: cfg.regions ? !!cfg.check : null, sent: regionsOf(cfg) },
     twoRulers: SPLIT_SOURCE[cfg.set](),
+    split: splitFor({ set: cfg.set, development: rows.filter((r) => r.split === 'development').length, heldOut: rows.filter((r) => r.split !== 'development').length }),
     sharedQueue: cfg.set === 'arc' || modelOff ? null : 'every millisecond and microsecond here was measured on ONE Ollama queue at ' + cfg.base + ' that other builders on this machine were using at the same time: a model latency is this run wait plus its compute, not the model own speed',
     ladder,
     etaWhole: whole,

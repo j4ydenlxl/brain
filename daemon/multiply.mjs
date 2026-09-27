@@ -65,7 +65,7 @@ import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
 import { ownBytes } from '../runtime/protocol.mjs';
-import { EvalMatrix, MatrixElites, PlateauRuler, matrixPlaneCoordinate, buildGridMatrix, stackDraws, drawSeeds, gridChainOf, OPS, popcnt, DEFAULT_BINS, syntheticMatrix } from '../generations/velocity.mjs';
+import { EvalMatrix, MatrixElites, PlateauRuler, matrixPlaneCoordinate, buildGridMatrix, stackDraws, drawSeeds, gridChainOf, OPS, popcnt, DEFAULT_BINS, syntheticMatrix, LEN_CAP } from '../generations/velocity.mjs';
 
 const SELF = fileURLToPath(import.meta.url);
 export const MULTIPLY_FILE = SELF;
@@ -148,9 +148,9 @@ export function storeCellOf(matrix, genome, n, count, words, { bins = DEFAULT_BI
   return ((a0 * B + a1) * B + a2) * B + a3;
 }
 
-/** A genome a store may hold: 1..STORE_LMAX whole component indices of this matrix. */
-export function validGenome(genome, C) {
-  if (!Array.isArray(genome) || genome.length < 1 || genome.length > STORE_LMAX) return false;
+/** A genome a store may hold: 1..lmax (STORE_LMAX unless the suite raises the cap) whole component indices of this matrix. */
+export function validGenome(genome, C, lmax = STORE_LMAX) {
+  if (!Array.isArray(genome) || genome.length < 1 || genome.length > lmax) return false;
   for (const c of genome) if (!(Number.isInteger(c) && c >= 0 && c < C)) return false;
   return true;
 }
@@ -300,27 +300,37 @@ export function loadSuite({ cacheDir = null, suite = SUITE } = {}) {
  * into generation zero; an EliteStore holding the best per cell; and the exchange.
  */
 export class PlaneSearch {
-  constructor({ id, base, matrix, fresh = [], patience = DEFAULTS.patience, epsilon = DEFAULTS.epsilon, state = null } = {}) {
+  // lmax and popScale (multiply-suite item, board 24B): lmax, when given, is the length cap of
+  // EVERY plane and of the store's cell grid (the ladder's 32..96 is then not used; absent, the
+  // behaviour is the one it was); popScale multiplies every plane's children per generation (the
+  // single instance given N times the population, the island model's panmictic control).
+  constructor({ id, base, matrix, fresh = [], patience = DEFAULTS.patience, epsilon = DEFAULTS.epsilon, state = null, lmax = null, popScale = 1 } = {}) {
     this.id = String(id); this.base = String(base);
     this.m = matrix; this.fresh = fresh;
     this.patience = patience; this.epsilon = epsilon;
-    this.store = new EliteStore({ id: this.id });
+    this.lmaxCap = lmax === null || lmax === undefined ? null : Math.max(1, Math.min(LEN_CAP, lmax | 0));
+    this.storeLmax = this.lmaxCap || STORE_LMAX;
+    this.popScale = Math.max(1, popScale | 0);
+    this.gens = 0;
+    this.store = new EliteStore({ id: this.id, lmax: this.storeLmax });
     this.planeIndex = 0; this.planesRun = 0; this.planesFired = 0;
     this.evalsDone = 0; this.rescoreEvals = 0; this.exchanges = 0;
     this.imported = { files: 0, rows: 0, filled: 0, replaced: 0, kept: 0, rejected: 0, injected: 0 };
     this.exported = 0; this.exportedKeys = new Map();
     this.inherited = null; this.resumed = null; this.clockT = null;
     this.words = new Uint32Array(matrix.W);
-    this.buf = new Int32Array(STORE_LMAX);
+    this.buf = new Int32Array(this.storeLmax);
     if (state) this.load(state);
     this.startPlane();
   }
 
   /** Matrix evaluations by this instance's plane engines (carries and injected imports included). */
   get evals() { return this.evalsDone + (this.engine ? this.engine.evals : 0); }
+  /** Every matrix evaluation this instance made: its engines' and its re-scores (harvests and imports). The organism-years budget is on this. */
+  get totalEvals() { return this.evals + this.rescoreEvals; }
 
   load(state) {
-    const store = EliteStore.from(state.store || { rows: [] }, { id: this.id });
+    const store = EliteStore.from(state.store || { rows: [], lmax: this.storeLmax }, { id: this.id });
     if (state.id !== this.id) {
       // a duplicate: the parent's elites are inherited (their source stays the parent), the
       // counters and the plane list start over under this instance's own base
@@ -342,7 +352,7 @@ export class PlaneSearch {
     const coord = matrixPlaneCoordinate(this.planeIndex, { base: this.base });
     const carry = this.store.rows().sort((a, b) => b.fitness - a.fitness || a.cell - b.cell).map((r) => r.genome);
     this.coord = coord;
-    this.engine = new MatrixElites(this.m, { seed: coord.seed, popSize: coord.popSize, lmax: coord.lmax, mutationRate: coord.mutationRate, crossoverRate: coord.crossoverRate, prune: coord.prune, directed: coord.directed, carry });
+    this.engine = new MatrixElites(this.m, { seed: coord.seed, popSize: coord.popSize * this.popScale, lmax: this.lmaxCap || coord.lmax, mutationRate: coord.mutationRate, crossoverRate: coord.crossoverRate, prune: coord.prune, directed: coord.directed, carry });
     this.ruler = new PlateauRuler({ epsilon: this.epsilon, patience: this.patience });
   }
 
@@ -369,12 +379,80 @@ export class PlaneSearch {
 
   /** Score a genome on this instance's own matrix: count, length, fitness and store cell; null when invalid. */
   rescore(genome) {
-    if (!validGenome(genome, this.m.C)) return null;
+    if (!validGenome(genome, this.m.C, this.storeLmax)) return null;
     const n = genome.length;
     for (let i = 0; i < n; i++) this.buf[i] = genome[i];
     const count = this.m.scoreAt(this.buf, 0, n, this.words);
     this.rescoreEvals++;
-    return { count, len: n, fitness: this.m.objective(count, n), cell: storeCellOf(this.m, this.buf, n, count, this.words) };
+    return { count, len: n, fitness: this.m.objective(count, n), cell: storeCellOf(this.m, this.buf, n, count, this.words, { lmax: this.storeLmax }) };
+  }
+
+  // ---- THE ISLAND MODEL (multiply-suite item, board 24B). The generations run by COUNT, never by
+  // the clock, and every evaluation is counted, so an island run is a pure function of its seed,
+  // its budget and the migrants it is handed: the same command gives the same numbers on a loaded
+  // desk and an idle one.
+  /** Up to `gens` generations, stopping early once totalEvals reaches `evalCap`. Returns the generations run. */
+  generations(gens, { evalCap = Infinity } = {}) {
+    let g = 0;
+    while (g < gens && this.totalEvals < evalCap) {
+      const row = this.engine.step();
+      g++; this.gens++;
+      if (this.ruler.observe(row.gen, row.best).fired) this.endPlane(true);
+    }
+    return g;
+  }
+
+  /** The best by the searched objective held right now (the store or the running plane), with no evaluation spent. */
+  searchedBest() {
+    const s = this.store.best(), e = this.engine && this.engine.bestCell >= 0 ? this.engine.best() : null;
+    const b = s && (!e || s.fitness >= e.fitness) ? { fitness: s.fitness, count: s.count, len: s.len } : e ? { fitness: e.fitness, count: e.count, len: e.len } : null;
+    return b;
+  }
+
+  /**
+   * The migrants: the best `k` libraries this island holds (the store and the running plane), by
+   * the searched objective, shorter first on a tie, one copy of each genome. No evaluation spent:
+   * each carries the count its own scoring gave, and the receiver scores it again.
+   */
+  emigrants(k) {
+    const cand = [];
+    for (const r of this.store.rows()) cand.push({ fitness: r.fitness, count: r.count, genome: r.genome, source: r.source });
+    if (this.engine) for (const e of this.engine.elites()) cand.push({ fitness: e.fitness, count: e.count, genome: e.genome, source: this.id });
+    cand.sort((a, b) => b.fitness - a.fitness || a.genome.length - b.genome.length);
+    const out = [], seen = new Set();
+    for (const c of cand) {
+      if (out.length >= k) break;
+      const key = c.genome.join(',');
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push({ count: c.count, fitness: c.fitness, genome: Array.from(c.genome), source: String(c.source) });
+    }
+    return out;
+  }
+
+  /**
+   * Take migrants from other islands: each row is scored again on this island's matrix (a row
+   * whose count disagrees is rejected), offered to the store (strictly better replaces) and, when
+   * it filled or replaced a cell, dropped into the running plane. Batches in the order given.
+   * @param {{from: string, rows: object[]}[]} batches
+   */
+  immigrate(batches) {
+    const r = { files: 0, rows: 0, filled: 0, replaced: 0, kept: 0, rejected: 0 };
+    for (const b of batches) {
+      if (!b || b.from === this.id || !Array.isArray(b.rows)) continue;
+      r.files++;
+      for (const row of b.rows) {
+        r.rows++;
+        const s = row ? this.rescore(row.genome) : null;
+        if (!s || s.count !== row.count || !ID_RE.test(String(row.source || b.from))) { r.rejected++; continue; }
+        const out = this.store.offer({ ...s, genome: row.genome, source: String(row.source || b.from), at: this.gens }, { via: String(b.from) });
+        r[out]++;
+        if (out !== 'kept') this.inject(row.genome);
+      }
+    }
+    for (const k of Object.keys(r)) this.imported[k] += r[k];
+    this.exchanges++;
+    return r;
   }
 
   /** The running plane's elites into the store (idempotent: a held elite is replaced only by a better one). */
@@ -468,11 +546,12 @@ export class PlaneSearch {
         searchedMeanCount: best.count / this.m.draws, tasksPerDraw: this.m.tasksPerDraw,
         fresh: counts.length ? counts[0] : null, freshT: this.fresh.length ? this.fresh[0].matrix.T : null,
         freshMore: more, freshMoreMean: more.length ? more.reduce((a, x) => a + x, 0) / more.length : null,
+        freshCounts: counts, freshTs: this.fresh.map((f) => f.matrix.T), freshSeeds: this.fresh.map((f) => f.seed ?? null),
         genome: best.genome,
       };
     }
     return {
-      id: this.id, base: this.base, evals: this.evals, rescoreEvals: this.rescoreEvals,
+      id: this.id, base: this.base, evals: this.evals, rescoreEvals: this.rescoreEvals, totalEvals: this.totalEvals, gens: this.gens, lmax: this.storeLmax, popScale: this.popScale,
       planesRun: this.planesRun, planesFired: this.planesFired, planeIndex: this.planeIndex,
       storeRows: this.store.size, ownRows: this.store.own().length, exchanges: this.exchanges,
       imported: { ...this.imported }, elitesImported: this.imported.filled + this.imported.replaced, elitesExported: this.exported,
@@ -533,6 +612,7 @@ export class PlaneWorker {
 }
 
 function planeWorkerMain(cfg) {
+  if (cfg.mode === 'island') { islandWorkerMain(cfg); return; }
   const post = (m) => postFromPlane(parentPort, m);
   let search, stopping = false;
   try {
@@ -558,6 +638,121 @@ function planeWorkerMain(cfg) {
   });
   const loop = () => { if (stopping) return; try { search.slice(cfg.sliceMs); } catch (e) { stopping = true; post({ op: 'error', seq: -1, error: 'slice: ' + firstLine(e) }); return; } setImmediate(loop); };
   setImmediate(loop);
+}
+
+/**
+ * AN ISLAND (multiply-suite item, board 24B): the same PlaneSearch, driven by generation COUNT
+ * from the main thread (no free running loop, no clock), so an island model run is deterministic.
+ * Ops: run {gens, evalCap}, emigrants {k}, immigrate {batches}, report, stop.
+ */
+function islandWorkerMain(cfg) {
+  const post = (m) => postFromPlane(parentPort, m);
+  let search;
+  try {
+    const t0 = performance.now();
+    const suite = loadSuite({ cacheDir: cfg.cacheDir, suite: cfg.suite });
+    // noFresh: the fresh draws are not handed to the search at all, so a tuning run cannot score one
+    search = new PlaneSearch({ id: cfg.id, base: cfg.base, matrix: suite.matrix, fresh: cfg.noFresh ? [] : suite.fresh, patience: cfg.patience, epsilon: cfg.epsilon, lmax: cfg.lmax ?? null, popScale: cfg.popScale || 1 });
+    post({ op: 'ready', seq: 0, loadMs: r3(performance.now() - t0), suiteMs: r3(suite.ms), cached: suite.cached, built: suite.built, seeds: suite.seeds, freshSeeds: cfg.noFresh ? [] : suite.freshSeeds, C: suite.matrix.C, T: suite.matrix.T, lmax: search.storeLmax, popScale: search.popScale, freshScored: search.fresh.length });
+  } catch (e) { post({ op: 'error', seq: 0, error: firstLine(e) }); return; }
+  const state = () => ({ totalEvals: search.totalEvals, evals: search.evals, rescoreEvals: search.rescoreEvals, gens: search.gens, planesRun: search.planesRun, planesFired: search.planesFired, storeRows: search.store.size, best: search.searchedBest() });
+  parentPort.on('message', (m) => {
+    if (!m || typeof m !== 'object') return;
+    try {
+      if (m.op === 'run') {
+        const t0 = performance.now();
+        const ran = search.generations(m.gens | 0, { evalCap: Number.isFinite(m.evalCap) ? m.evalCap : Infinity });
+        post({ op: 'ran', seq: m.seq, ran, ms: r3(performance.now() - t0), ...state() });
+      } else if (m.op === 'emigrants') post({ op: 'emigrants', seq: m.seq, rows: search.emigrants(m.k | 0) });
+      else if (m.op === 'immigrate') post({ op: 'immigrated', seq: m.seq, result: search.immigrate(m.batches || []), ...state() });
+      else if (m.op === 'report' || m.op === 'stop') {
+        const before = state();
+        post({ op: m.op === 'stop' ? 'stopped' : 'report', seq: m.seq, before, report: search.report() });
+      } else post({ op: 'error', seq: m.seq, error: 'unknown op ' + m.op });
+    } catch (e) { post({ op: 'error', seq: m.seq, error: firstLine(e) }); }
+  });
+}
+
+/**
+ * THE ISLAND MODEL, MEASURED BY EVALUATIONS (multiply-suite item, board 24B). `n` islands, each a
+ * PlaneWorker in island mode with its own seed (base multiply/<seed>/i<k>), each given an equal
+ * share of `evalBudget` matrix evaluations (engines, harvests and imports all counted). They run in
+ * lock step, `every` generations per epoch; with `exchange` on, after each epoch every island still
+ * under its share hands its best `migrants` libraries to every other such island (all to all), which
+ * scores each again and keeps it only when its count agrees. With `exchange` off the islands are
+ * independent runs. n = 1 with popScale N is the single instance given N times the population.
+ * The pick is the best library by the SEARCHED objective over all islands (a tie goes to the lower
+ * island); the fresh draws are scored only in the final report, and not at all with noFresh.
+ * wallMs: a guard, never the budget: past it no further epoch starts and the run says stoppedBy 'wall'.
+ */
+export async function runIslands({ n = 4, exchange = true, every = 50, migrants = 8, evalBudget, popScale = 1, suite = SUITE, cacheDir = null, seed = '1', lmax = null, patience = DEFAULTS.patience, epsilon = DEFAULTS.epsilon, heapMb = DEFAULTS.planeHeapMb, onEpoch = null, noFresh = false, wallMs = Infinity } = {}) {
+  if (!(Number.isInteger(n) && n >= 1)) throw new Error('runIslands: n must be a whole number of at least 1');
+  if (!(evalBudget > 0)) throw new Error('runIslands: evalBudget must be positive');
+  if (!(Number.isInteger(every) && every >= 1)) throw new Error('runIslands: every must be a whole number of generations');
+  const ids = Array.from({ length: n }, (_, k) => 'i' + k);
+  const cap = Math.ceil(evalBudget / n);
+  const t0 = performance.now();
+  const workers = ids.map((id) => new PlaneWorker({ mode: 'island', id, base: 'multiply/' + seed + '/' + id, suite, cacheDir, lmax, popScale, patience, epsilon, heapMb, noFresh: !!noFresh }));
+  try {
+    const ready = await Promise.all(workers.map((w) => w.start()));
+    const st = ids.map(() => ({ totalEvals: 0, gens: 0, best: null, done: false }));
+    const trace = [], exchangeLog = [];
+    let epochs = 0, exchanges = 0, stoppedBy = 'budget';
+    for (;;) {
+      const res = await Promise.all(workers.map((w, i) => (st[i].done ? null : w.request('run', { gens: every, evalCap: cap }))));
+      res.forEach((r, i) => { if (r) st[i] = { ...r, done: r.ran === 0 || r.totalEvals >= cap }; });
+      epochs++;
+      const bestOf = st.reduce((a, x) => (x.best && (!a || x.best.fitness > a.fitness) ? x.best : a), null);
+      const point = { epoch: epochs, evals: st.reduce((a, x) => a + x.totalEvals, 0), gens: st.reduce((a, x) => a + x.gens, 0), wallMs: r3(performance.now() - t0), count: bestOf ? bestOf.count : null, fitness: bestOf ? bestOf.fitness : null, len: bestOf ? bestOf.len : null };
+      trace.push(point);
+      if (onEpoch) onEpoch(point);
+      const live = ids.map((id, i) => (st[i].done ? null : i)).filter((i) => i !== null);
+      if (!live.length) break;
+      if (performance.now() - t0 > wallMs) { stoppedBy = 'wall'; break; }
+      if (exchange && live.length > 1) {
+        const out = await Promise.all(live.map((i) => workers[i].request('emigrants', { k: migrants })));
+        const batches = live.map((i, j) => ({ from: ids[i], rows: out[j].rows }));
+        const got = await Promise.all(live.map((i) => workers[i].request('immigrate', { batches: batches.filter((b) => b.from !== ids[i]) })));
+        live.forEach((i, j) => { st[i] = { ...st[i], totalEvals: got[j].totalEvals, gens: got[j].gens, best: got[j].best }; if (got[j].totalEvals >= cap) st[i].done = true; });
+        exchanges++;
+        const sumR = (k) => got.reduce((a, g) => a + g.result[k], 0);
+        exchangeLog.push({ epoch: epochs, islands: live.length, rows: sumR('rows'), filled: sumR('filled'), replaced: sumR('replaced'), kept: sumR('kept'), rejected: sumR('rejected') });
+      }
+    }
+    const finals = await Promise.all(workers.map((w) => w.request('report')));
+    const islands = finals.map((f, i) => ({ id: ids[i], evalsAtStop: f.before.totalEvals, gens: f.before.gens, planesRun: f.before.planesRun, planesFired: f.before.planesFired, report: f.report, loadMs: ready[i].loadMs }));
+    let pick = null;
+    islands.forEach((x, i) => { const b = x.report.best; if (b && (!pick || b.fitness > pick.best.fitness)) pick = { island: ids[i], best: b }; });
+    const sumI = (k) => islands.reduce((a, x) => a + (Number(x[k]) || 0), 0);
+    return {
+      n, exchange: !!exchange, every, migrants, popScale, seed: String(seed), lmax: ready[0].lmax, evalBudget, cap,
+      evals: sumI('evalsAtStop'), evalsWithReport: islands.reduce((a, x) => a + x.report.totalEvals, 0), gens: sumI('gens'),
+      epochs, exchanges, exchangeLog, trace, islands, pick, wallMs: r3(performance.now() - t0), stoppedBy, freshScored: ready[0].freshScored,
+      elitesImported: islands.reduce((a, x) => a + x.report.elitesImported, 0),
+      bestFreshOverIslands: islands.reduce((a, x) => (x.report.best && x.report.best.freshCounts.length ? Math.max(a, x.report.best.freshCounts.reduce((s, c) => s + c, 0)) : a), -1),
+    };
+  } finally {
+    await Promise.all(workers.map((w) => (w.worker ? w.worker.terminate().catch(() => {}) : null)));
+  }
+}
+
+/**
+ * Where a run stood at the last quarter of its budget, from its trace: the last epoch at or under
+ * 75% of the evaluations it ended on, against the end. rising: the searched count went up in that
+ * last quarter. slopePerMEvals: tasks gained per million evaluations over it.
+ */
+export function lastQuarter(trace) {
+  if (!Array.isArray(trace) || !trace.length) return null;
+  const end = trace[trace.length - 1];
+  let q = trace[0];
+  for (const p of trace) if (p.evals <= 0.75 * end.evals) q = p;
+  const dE = end.evals - q.evals;
+  return {
+    at: { evals: q.evals, count: q.count, fitness: q.fitness, wallMs: q.wallMs }, end: { evals: end.evals, count: end.count, fitness: end.fitness, wallMs: end.wallMs },
+    gained: end.count - q.count, rising: end.count > q.count, fitnessRising: end.fitness > q.fitness,
+    slopePerMEvals: dE > 0 ? ((end.count - q.count) / dE) * 1e6 : null,
+    slopePerS: end.wallMs > q.wallMs ? ((end.count - q.count) / (end.wallMs - q.wallMs)) * 1000 : null,
+  };
 }
 
 // ---------------------------------------------------------------- instances on disk

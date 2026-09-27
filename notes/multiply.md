@@ -1,157 +1,186 @@
-# notes/multiply.md: the multiply item (Board 12)
+# notes/multiply.md: the multiply items (Board 12, then board 24B multiply-suite)
 
 His P15: "multiplying, duplicating, all within cloud".
 
-This note is the builder's record: what was built, what was measured and by which command, and what is still open.
+This note is the builder's record: what was built, what was measured and by which command, and what is still open. Board 24B's item (multiply-suite) rewrote it on 2026-09-27; the Board 12 version (the organism population, its kill and its bar) is in git history with the bench flow it described.
+
+## Before this item
+
+Board 12 built the organism population in daemon/multiply.mjs: an instance, a duplicate, the elite exchange through a shared store, and a supervisor that restarts a killed instance from its own checkpoint. Its bar ran one instance against a population of 3 on the grid suite of 4 draws with the plane ladder's library cap (32 to 96). The picks of both arms shared one searched score, so the fresh gap between the arms was decided by the store's tie-break, and bench/ladder.mjs labels that bar "decided by tie-break noise, not a bar". Its Open list asked for "a suite or a length cap the single instance does not saturate". This item is that suite, and the island model measured on it.
+
+The organism population code and its nine tests are unchanged. The bench flow that ran it (single against a population of 3, a SIGKILL at 120 s) is retired from bench/multiply.mjs: the bench now measures the island model.
 
 ## Files
 
-Written by this item:
-- daemon/multiply.mjs (new)
-- bench/multiply.mjs (new)
-- test/multiply.test.mjs (new)
+Written or edited by this item (board 24B, multiply-suite):
+- **daemon/multiply.mjs:** the island model, added beside the organism population.
+  - `PlaneSearch` takes `lmax` (a library cap up to LEN_CAP 256) and `popScale` (N times the children per generation).
+  - New methods: `generations(gens, {evalCap})`, `searchedBest()`, `emigrants(k)` and `immigrate(batches)`.
+  - `islandWorkerMain` is a worker mode driven by generation count from the main thread.
+  - `runIslands()` runs N islands in lock step. `lastQuarter(trace)` reads the last quarter of a run.
+- **bench/multiply.mjs:** rewritten. It runs the probe, the M sweep (`--tune`) and the deciding run, and writes the verdict. It still exports the pure `splitFor`, plus `bandOf`, `beats` and `chooseSuite`. Importing it runs nothing.
+- **test/multiply.test.mjs:** six tests added. The nine before them are untouched.
 - this note
-- bench/verdicts/multiply.json, written by the bench
-
-Edited:
-- **daemon/run.mjs:** the exchange hook only. `opts.onCheckpoint` is called after every checkpoint with `{kind, t, done, bytes, dir, name}`. A throw is counted in `exchange.errors` and does not stop the run. `opts.instance` and `exchange` ride in the payload.
-- **daemon/health.mjs:** the instances fields only. `populationAlive(popDir)` counts `<popDir>/instances/*.json` heartbeats that are fresh (10 s), not ended, and whose pid is alive. `readHealth` reads `<brain>/multiply.json` and adds the `multiply` block: instance, seed, parent, instancesAlive, duplications, elitesImported, elitesExported, storeRows, evals, exchanges, resumed. `startHealth` takes an `onDuplicate` option, which /duplicate calls when it is given.
-
-Not edited: bin/serve.mjs. Its /duplicate route did not have to change.
+- **bench/verdicts/multiply.json:** the bar, written by the bench.
+- **bench/verdicts/multiply-tune-partial.json:** the M sweep (development), written by the bench.
 
 ## Design
 
-**One instance** is one node process. It runs daemon/run.mjs `live()` on its own state dir (`<popDir>/inst-<id>/brain`, via BRAIN_STATE_DIR), serves /health on its own port (port 0 on 127.0.0.1), and runs one worker thread that searches the grid plane.
+**One island** is a PlaneSearch in a worker thread (`new PlaneWorker({mode: 'island'})`). It runs MatrixElites plane after plane, each until the PlateauRuler plateau (patience 200). A new plane starts from the store's elites.
 
-**The organism** is 12 majors x 256 units. It checkpoints every 250 ticks with ledger summary (16 MB, rotating). It is never run with ledger full. Loop, self, generations and dream are off, because the item is multiplication, not those steps.
+The main thread drives every island by COUNT. The message `run {gens, evalCap}` runs that many generations and stops at the island's share of the evaluations. No island runs free on a clock. So a run is a pure function of its seed, its budget and its flags: the same command prints the same scores on an idle desk and a loaded one.
 
-**(a) Duplicate.** `duplicateInstance()` copies the latest checkpoint into `<popDir>/inst-<new id>` through a temp dir and one rename. It copies snapshot.json, meta.json and plane.json, and never control.json or the ledger. The copy is re-statted, and retried once if a checkpoint landed mid-copy. The new instance.json carries a DIFFERENT seed. The same seed is refused with 400, an existing id with 409, and no checkpoint with 404. The copy's parent, tick, bytes and sha256 are recorded.
+Every evaluation is counted:
+- engine children
+- harvest rescoring at plane ends and at the report
+- the rescoring of every migrant
 
-An instance runs its spawn plan after its Nth exchange. In the bar, i0 duplicates into i1 after exchange 2 and into i2 after exchange 3, so "the first instance spawns a third the same way". Each duplicate is written to instance.json, so a restarted parent never makes it twice.
+The exchange therefore pays for itself out of the same budget.
 
-The copy is launched by the population supervisor as its own node process under tools/budget.mjs caps, not as a child of its parent. Two reasons:
-- a container is not a child of another container;
-- a parent killed at 120 s must not take its duplicates down.
+**The exchange.** After every M generations (an epoch), each island still under its share hands its best `migrants` libraries to every other such island (all to all). A library ranks by the searched objective, shorter first on a tie, one copy per genome. The receiver scores each migrant again on its own matrix and rejects it when the count disagrees. It offers the migrant to its store (strictly better replaces) and, when the migrant filled or replaced a cell, drops it into the running plane.
 
-In the bar, the killed parent's duplicates kept running (see the kill below).
+**The pick** is the best library by the searched objective over the arm's islands, a tie to the lower island. Only the final report scores the fresh draws (grid/velocity:heldout and :fresh1..7, 1280 tasks). Nothing selects on them.
 
-**(b) Elite exchange.**
-- **The plane.** The velocity grid library search runs on the K = 4 draw suite (`grid/velocity`, the seeds of `bench/velocity.mjs --draws 4`): MatrixElites plane after plane, each run to its PlateauRuler plateau, each carrying every stored elite into generation 0.
-- **The store.** An EliteStore keys each elite by a fixed MAP-Elites cell: the four velocity axes, with lmax fixed at 96 so that a cell means the same thing in every instance. It replaces a held elite ONLY with a strictly better one (a tie keeps the incumbent), and every row records `source` (the instance that found it) and `via` (the store file it was read from).
-- **At every checkpoint** (the hook above), the worker:
-  1. harvests its running plane;
-  2. reads every other instance's `<popDir>/store/<id>.json`;
-  3. re-scores each genome on its own matrix, rejecting a row whose count or cell disagrees;
-  4. keeps the best per cell and drops the accepted rows into its running plane;
-  5. writes its own finds to `store/<id>.json`;
-  6. saves plane.json.
-- **The fresh draws** (`grid/velocity:heldout` and `:fresh1..4`) are scored only in the report, never in selection.
+**THE CONTROL: N times the population, not N times the wall.** The island literature compares an island model with one panmictic population of the same total size at the same total evaluations. N times the wall would give the control N times the generations of a quarter-size population, so the islands would win or lose on search depth. N times the population holds three things equal:
+- the generations
+- the children per generation
+- the evaluations
 
-**(c) Health.** Each instance writes `<brain>/multiply.json` and its heartbeat once a second, and /health reports the fields listed above.
+Only the structure differs: one population, or N that trade. The control is `runIslands({n: 1, popScale: N})`, the same PlaneSearch with each plane's popSize times N. **The second control** is the same N islands with the exchange off. Its island i0 is the exact run i0 would be alone (a test holds it).
 
-**(d) Supervisor.** `Population` follows bin/serve.mjs:
-- It restarts an instance that exits without done.json from its own last checkpoint. The organism resumes from snapshot.json; the plane resumes from plane.json.
-- Backoff is 1 s, doubled when the instance died within 10 s.
-- There is a restart cap of 3.
-- An instance is never restarted past its own deadline. Its wall seconds run from its FIRST start, so a restart buys no extra time.
+**Organism-years.** generations/years.mjs declares one organism-year as one generation of the whole population, and its yearsRun uses 64 children. Every arm here is priced at that declared 64-child generation: organism-years = evaluations / 64. The budget of 800,000 evaluations per arm per seed is 12,500 organism-years.
 
-**The worker boundary.** There are three crossings and no others:
-- workerData (`planeWorkerOptions`);
-- main to worker (`postToPlane`);
-- worker to main (`postFromPlane`).
+**The suite.** Grid tasks of seed grid/velocity at maxDepth 3 (6175 components, 160 tasks per draw) are searched on K draws, with the library cap from the plane ladder or raised to 256 (LEN_CAP). Five candidates run cheapest first: k4-ladder (the prior bar's suite), k4-l256, k16-l256, k32-l256 and k64-l256.
 
-Each passes its message through `runtime/protocol.mjs` `ownBytes` first. Test 5 proves it: a 16-byte view on a 64 KB buffer crosses as its own 16 bytes, and a census of the file finds exactly two `.postMessage(` calls, both on `ownBytes(msg)`, and one `new Worker(`.
+The probe runs THE CONTROL alone at the bar's budget on the three TUNING seeds tune1, tune2 and tune3, with noFresh, so no fresh draw is even loaded. For each seed it prints the searched end score and the gain over the last quarter of the budget.
 
-**"At most 2 workers."** I read this per process. Each instance process holds ONE worker thread, and the bench process holds none. The population of 3 therefore holds three worker threads, one in each of three processes. If the rule means two worker threads across the whole tree, the population arm breaks it and would have to drop a worker (for example, search on the main thread between ticks).
+A candidate is RISING when its control gained over the last quarter on all three tuning seeds, each inside the 120 s wall. The suite is the LARGEST rising candidate. With none rising, the bench prints SATURATED and writes barMet false without running a deciding seed.
 
-**Why the plane is the grid library and not the organism archive.** The organism archive's fitness depends on wall clock and novelty, so a store could not say "strictly better" across instances. A grid library's score on a fixed matrix is exact and re-checkable by any instance. That is what lets the store reject a row from another matrix.
+**The run that decides.** It uses five DECIDING seeds, decide1 to decide5, that nothing before it ran, and three arms per seed at the same budget.
+- The singles run 4 at a time.
+- Per seed, the islands arm and the no-exchange arm each run on 4 worker threads.
+- At most 4 workers run at once, and every arm is guarded at 120 s. An arm that reaches the guard stops, says so, and cannot meet the bar.
+
+**The bar.** The islands must beat BOTH controls: the islands' mean held-out score over the five deciding seeds, minus the control's, must be above the seed band. The band is the wider of the two arms' min..max ranges over those seeds. The bar also needs the same organism-years within 0.5% and every arm inside the wall. The paired per-seed differences are printed beside it.
+
+For bench/ladder.mjs, `bar.singleFresh` and `bar.populationFresh` are the held-out counts summed over the five seeds, and `bar.noise.seedToSeed` is the per-seed band times 5 in that unit. The two rules are the same inequality. `arms.*.pick.fitness` is null because each arm has five picks, one per seed, and each pick's own searched fitness is in `perSeed`.
+
+**MODEL OFF.** Provider null, no socket, no model call. Ollama is never started and port 11434 is never called.
 
 ## Tests
 
-`node --test --test-timeout=150000 test/multiply.test.mjs`, run last, after the bar: 9 pass, 0 fail, duration_ms 28873.4316.
-- duplicate gives a distinct seed and state dir (plus 404, 400 and 409, and control.json not copied);
-- a duplicate inherits a plane and a restart resumes it;
-- the store keeps the better of two (a tie keeps the incumbent; source and via recorded);
-- a cross-instance exchange with a re-score rejection;
-- ownBytes on every worker boundary (unit, census, and a real PlaneWorker);
-- health fields with stale, ended and dead-pid heartbeats, including a checkPid:false control;
-- the live() hook: kinds, t, and a throwing hook;
-- a scripted restart;
-- a real instance that duplicates, is SIGKILLed and comes back from its checkpoint.
+`node --test test/multiply.test.mjs`: 15 tests, the 9 before this item unchanged and 6 added. The added six cover:
+- **Determinism:** an island run is deterministic (the same trace and exchange log twice), and each island stops within a generation of its share. Exchange rows are all to all and at most `migrants` each way, with 0 rejected on one matrix. The pick is the best searched fitness.
+- **Exchange off:** nothing is imported, and island i0 of the pair is the same run as i0 alone on the same share (same evaluations, generations and best genome). The exchange arm on the same seed imports.
+- **The first control:** with `popScale` 2 it spends the same evaluations as 2 islands, within a generation, in one instance with fewer generations.
+- **The cap, noFresh and the wall guard:** `lmax` 16 caps the library, noFresh scores no fresh draw, and the wall guard stops after one epoch and says `stoppedBy: 'wall'`.
+- **lastQuarter:** rising, flat, one point and empty traces.
+- **The bench helpers:** `bandOf`, `beats` (a gap equal to the band is not a beat; the wider range is the band), `chooseSuite` (the largest rising candidate), the candidate list, and `splitFor` (the deciding seeds held out, contamination reasons for an overlap or a fresh draw scored in development).
 
-No test calls Ollama.
+Mutants, each run once against the added tests and then restored (cmp against the saved copy):
+- the exchange never runs: 2 fail
+- `beats` with `>=`: 1 fails
+- the wall guard never trips: 1 fails
 
-`node --test --test-timeout=150000 test/multiply.test.mjs test/daemon.test.mjs test/cloud.test.mjs` (run.mjs and health.mjs changed; core/persist.mjs changed under this item during the work, from another item): 22 pass, 0 fail, duration_ms 29183.6283.
+The worker-boundary census still holds: 2 `.postMessage(` lines, and one `new Worker(`.
 
 ## Measured
 
-### The bar (2026-09-24T14:23:05.952Z, node v24.15.0, wall 514.1 s)
+### Read before building (the published way and the prior attempt)
 
-Command:
+- **A web search** (island model GA against a panmictic population at the same total evaluations; the migration interval; when islands help). Its summary carried three points:
+  - Parallel GAs are often reported better than one large panmictic population, but a fair comparison needs care: total evaluations can mislead when communication costs differ. Here the migrants' rescoring is charged to the budget, so the communication is inside the count.
+  - A simple island model with migration can need polynomial time where a panmictic population, and islands with no migration, need exponential time. That result is the reason for the no-exchange arm.
+  - Island advantages may come from the separable test problems they are usually run on.
+- **The emergentmind topic page** "Population and Island Models in Evolutionary Computation" says islands keep diversity through reduced mixing, with migration at configurable intervals.
+- **Failed fetches.** Whitley, Rana and Heckendorn, "The Island Model Genetic Algorithm: On Separability, Population Size and Convergence", did not load: researchgate answered 403 and the semanticscholar page came back empty. Their equal-total-population comparison, Cantu-Paz's survey and Alba and Tomassini's "Parallelism and evolutionary algorithms" are cited from background knowledge, not read this session.
+- **The prior attempt.** This note's Board 12 version (its Open item "The plateau"), bench/ladder.mjs tieBreakOf (the TRUTH label and what lifts it), generations/years.mjs (the organism-year declaration and yearsRun's popSize 64), and generations/velocity.mjs (matrixPlaneCoordinate's POP_LADDER 32 to 256, LEN_CAP 256).
+- **An earlier attempt of this item** (2026-09-26) left a scratch grid matrix cache. It was reused: the bar printed `72 cached` for k64-l256.
+
+### Exploration before the bench (scratch explore.mjs: the control only, tuning seeds, searched scores only)
+
+These are one instance with 4 times the population, on tune1, tune2 and tune3. The reports computed fresh counts inside the workers, but explore.mjs never printed or read them.
+- **k4-ladder at 3,000,000 evaluations:** ends 596/597/597 of 640, last-quarter gains 1/0/0.
+- **k4-l256 at 10,000,000:** ends 630/630/631, gains 0/0/0.
+- **k16-l256 at 4,000,000:** ends 2530/2528/2530 of 2560, gains 0/0/0.
+- **k32-l256 at 2,000,000:** ends 5004/5005/5005 of 5120, gains 0/6/0.
+- **k64-l256 at 800,000:** ends 9935/9938/9933 of 10240, gains 4/6/3.
+
+So the smaller suites stay saturated at budgets several times the bar's, and 800,000 evaluations on k64 is where the single still rose and fit the wall.
+
+### The M sweep (development, 2026-09-27T13:57:31.160Z, node v24.15.0)
+
+`node tools/budget.mjs --ram-mb 4000 --disk-mb 500 --dir <scratch> --record <scratch>/budget-tune.json -- node --max-old-space-size=4000 bench/multiply.mjs --tune --out <scratch>` wrote bench/verdicts/multiply-tune-partial.json (isTheBar false, contaminated false, 0 fresh draws scored). The budget record shows a peak of 466.387 MB, 312.408 s and 19.227 MB on disk.
 
 ```
-node tools/budget.mjs --ram-mb 6000 --disk-mb 2000 --dir state/multiply-bench --wait-free-ram-mb 16000 --record state/multiply-bench-budget.json -- node --max-old-space-size=6000 bench/multiply.mjs
+[tune] M 10   searched mean 9939.7/10240 (seeds 9943 9942 9934)
+[tune] M 50   searched mean 9936/10240 (seeds 9932 9942 9934)
+[tune] M 200  searched mean 9933/10240 (seeds 9938 9931 9930)
+[tune] M off  searched mean 9925.7/10240 (seeds 9922 9937 9918) (no exchange)
+[tune] the best M by the searched objective on the tuning seeds: 10 (mean 9939.7); no exchange 9925.7
 ```
 
-Verdict: `bench/verdicts/multiply.json`, `isTheBar: true`, `bar.met: false`.
+M = 10 became the bar's default (`BAR.every`). It was chosen on the tuning seeds by the searched objective only.
 
-**MISSED by one fresh task.** The population scored 133/160 on grid/velocity:heldout; the single instance scored 134/160. The killed instance came back.
+### The bar (2026-09-27T14:04:52.062Z, node v24.15.0, wall 421.9 s)
 
-The printed lines that decide it:
+`node tools/budget.mjs --ram-mb 4000 --disk-mb 500 --dir <scratch> --record <scratch>/budget-bar.json -- node --max-old-space-size=4000 bench/multiply.mjs --out <scratch>` (free RAM 35.5 GB at start) wrote bench/verdicts/multiply.json: isTheBar true, barMet false, contaminated false, 0 fresh draws scored in development. The budget line:
 
 ```
-[single] best fresh 134/160 (the pick by the searched objective: s0, 598 searched); evals 111167463; elites imported 0 exported 2211; duplications 0; instances alive at the end 1 [s0] at arm 237.8 s (most alive 1); peak tree ram 1595.4 MB working set (1608.2 MB private, 7 processes); per instance peak s0 1205.8 MB
-[population] best fresh 133/160 (the pick by the searched objective: i0, 598 searched); evals 297585631; elites imported 2490 exported 3597; duplications 2; instances alive at the end 3 [i0 i1 i2] at arm 234.5 s (most alive 3); peak tree ram 3984.2 MB working set (5485 MB private, 15 processes); per instance peak i0 1133.2 MB, i1 1112.9 MB, i2 1203.3 MB
-[kill] i0 pid 1920 SIGKILLed at arm 121 s (tick 1470, checkpoint on disk t=1250, plane.json t=1250)
-[kill] supervisor: [population] i0 exited code=1 signal=null after 121.3 s; restart 1 from its checkpoint t=1250 in 1000 ms (at arm 121.3 s)
-[kill] i0 log: [live] resumed brain in 2690 ms at t=1250, cells 173, edges 1799, checkpoint every 250 ticks, self every off, generations every off, ticks unbounded, wall 117488 ms, loop off, ledger summary budget 16 MB
-[kill] i0 log: [multiply i0] plane resumed from plane.json at plane 1783 with 544 stored elites (saved at t=1250); suite 6175 components x 640 tasks, 9 draws cached, 0 built, 32.46 ms
-[kill] i0 ended true after 2 starts at t=2150, resumedAt 1250 against the supervisor's checkpoint t=1250: CAME BACK from its checkpoint
-[bar] single: 134/160 fresh (s0, 598 searched)
-[bar] population pick by the searched objective: 133/160 fresh (i0, 598 searched, found by i0); i0 at the arm's 240 s mark: 133/160; best fresh over the 3 instances (selects on the held-out draw, not the bar): 133
-[bar] population BELOW the single instance on the fresh draw; killed instance came back => bar MISSED
-[ram] peak tree working set 3984.2 MB (private 5485 MB, up to 15 processes) over 256 samples; under 6000 MB: true
-[disk] state\multiply-bench holds 21.4 MB
-BUDGET done exit 0: wall 514.44 s, peak ram 4076.4MB, peak dir 21.4MB, cpu 2024.48 s, 258 samples, record state/multiply-bench-budget.json
+BUDGET done exit 0: wall 422.33 s, peak ram 470.4MB, peak dir 19.2MB, cpu 925.11 s, 212 samples
 ```
 
-**Per instance** (the bench's own lines):
+The probe, THE CONTROL on the tuning seeds at 800,000 evaluations (12,500 organism-years):
 
-| Instance | Seed | Origin | Started | End tick | Checkpoints | Exchanges | Evals | Imported / exported | Peak RSS |
-|---|---|---|---|---|---|---|---|---|---|
-| s0 | 1 | (single arm) | | t=2450 after 244.413 s | 11 | 12 | 111167463 | 0 / 2211 | 1205.8 MB |
-| i0 | 1 | first instance | | t=2150 after 246.824 s, 2 starts | 4 | 11 | 94417864 | 776 / 1732 | 1133.2 MB |
-| i1 | 2 | duplicate of i0 from t=250, 346 plane elites | arm 7 s | t=2320 after 244.482 s | 9 | 10 | 102231301 | 910 / 1020 | 1112.9 MB |
-| i2 | 3 | duplicate of i0 from t=500, 413 plane elites | arm 20.3 s | t=2410 after 245.633 s | 8 | 9 | 100936466 | 804 / 845 | 1203.3 MB |
+```
+[probe] k4-ladder: ends 593/597/595 of 640, last quarter 0 0 +43 => SATURATED (not rising on every tuning seed inside the wall)
+[probe] k4-l256: ends 630/630/630 of 640, last quarter +1 0 0 => SATURATED (not rising on every tuning seed inside the wall)
+[probe] k16-l256: ends 2527/2528/2529 of 2560, last quarter 0 0 0 => SATURATED (not rising on every tuning seed inside the wall)
+[probe] k32-l256: ends 5002/4994/5004 of 5120, last quarter +1 +2 0 => SATURATED (not rising on every tuning seed inside the wall)
+[probe] k64-l256 tune1: control end 9935/10240 searched (len 256), last quarter +4 (19.88 per M evals, from 9931 at 599,040 evals), 55.3 s
+[probe] k64-l256 tune2: control end 9938/10240 searched (len 256), last quarter +6 (29.84 per M evals, from 9932 at 599,040 evals), 53.5 s
+[probe] k64-l256 tune3: control end 9933/10240 searched (len 256), last quarter +3 (14.58 per M evals, from 9930 at 594,568 evals), 49.8 s
+[suite] chosen k64-l256 (the largest candidate whose control rises on every tuning seed): ends 9935/9938/9933 of 10240, last quarter +4 +6 +3, slopes 19.88 / 29.84 / 14.58 per M evals
+```
 
-i0 made the 2 duplications.
+The deciding run: five deciding seeds, three arms each, every arm inside the 120 s wall. The islands arms took 20.1 to 23.6 s, the no-exchange arms 20.6 to 26.5 s, and the singles 46.3 to 63.2 s, 4 at a time.
 
-**/health, last read of each instance:**
-- s0: instancesAlive 1.
-- i0, at arm 241.5 s: instancesAlive 3 [i0 i1 i2], duplications 2, elitesImported 662, elitesExported 1699.
-- i1, at arm 251.5 s: instancesAlive 2, after i0 ended.
-- i2, at arm 261.9 s: instancesAlive 1.
+```
+[arm] islands  held-out mean 1219/1280 (sd 2.3, 1215..1221, range 6; seeds 1221 1215 1220 1219 1220), organism-years 12,506 per seed, exchanges 1014, elites imported 9265, max wall 23.6 s
+[arm] noexch   held-out mean 1217.8/1280 (sd 3.3, 1213..1221, range 8; seeds 1221 1221 1217 1213 1217), organism-years 12,507 per seed, exchanges 0, elites imported 0, max wall 26.5 s
+[arm] single   held-out mean 1220/1280 (sd 1.6, 1218..1222, range 4; seeds 1219 1221 1218 1222 1220), organism-years 12,506 per seed, exchanges 0, elites imported 0, max wall 63.2 s
+[years] every arm spent 800,000 evaluations per seed within 0.04% (the last generation of each instance): the same total organism-years; every arm inside the 120 s wall: true
+```
 
-Some reads failed and are counted, not hidden: s0 43 reads and 2 failed, i0 42 and 3, i1 43 and 1, i2 44 and 0. A read times out at 2 s.
+The bar lines, verbatim:
 
-### What the numbers say
+```
+[bar] single: 6100/6400 fresh (one instance, 4 times the population, summed over the 5 deciding seeds)
+[bar] population pick by the searched objective: 6095/6400 fresh (4 islands, exchange every 10 generations, summed over the 5 deciding seeds); no exchange 6089/6400
+[bar] islands minus single: mean -1.0 against a band of 6 (paired per seed 2 -6 2 -3 0) => does not beat the single instance
+[bar] islands minus no-exchange: mean +1.2 against a band of 8 (paired per seed 0 -6 3 6 3) => does not beat the no-exchange arm
+[bar] MISSED: N islands with exchange did not beat both controls by more than the seed band on k64-l256, a suite the single does not saturate
+```
 
-- **Every instance of both arms ended on the same searched score:** 598/640 (149.5/160 per draw), length 96, fitness 0.9320403696498054. Board 10's `bench/verdicts/velocity-heldout.json` also reads searchedKMean 149.5. The population made 297585631 evaluations against the single arm's 111167463, imported 2490 elites, and still found no library above 598 inside the length cap of 96.
-- **So the fresh score is decided between libraries of identical searched fitness.** The population's pick (found by i0 after the exchange had changed its trajectory) scored 133; the single's scored 134. On the four other fresh draws the means were 133.5 (population) and 137 (single). **The population did no better.** It is printed as such, and the bar is not widened. The 80 s partial run had the same shape: single 134/160, population 133/160, i0 back from t=750 (`bench/verdicts/multiply-partial.json`, isTheBar false).
-- **The kill.** i0 died at tick 1470 with its checkpoint at t=1250. The ticks after the checkpoint were lost and replayed from it. On Windows a SIGKILL exits with code 1 and no signal. The supervisor restarted i0 after 1000 ms; its organism resumed at t=1250 in 2690 ms, and its plane resumed from plane.json at plane 1783 with 544 elites. Its deadline ran from its FIRST start: the second start was given 117488 ms, and i0 ended at 246.824 s. i1 and i2 each ran one attempt straight through their parent's death, both ending with code 0.
-- **RAM.** The organism was NOT shrunk: 12 majors x 256 units, the size Board 10's cloud ran. The tree (bench, three instances, and every tools/budget.mjs PowerShell sampler) peaked at 3984.2 MB working set in the bench's own meter, and at 4076.4 MB in the outer budget. Private bytes summed to 5485 MB. If the 6000 MB cap is read on private bytes rather than working set, the population arm is close to it. Instances grow with ticks: s0 peaked at 749.2 MB in the 80 s partial run and 1205.8 MB in the 240 s bar.
-- **Prebuild.** Inside the bar, the prebuild's budget line reads "peak ram 0.0MB" because a warm load (24 ms) ends before the first sample. The partial run built all 9 matrices cold: 12652 ms, peak 98.6 MB.
-- **Tick rate.** Beside its plane worker, s0 reached t=2450 in 244.413 s with 11 checkpoints. Alone, from a fresh build, the organism ticked 29 and 30 t/s in an earlier probe. The DEFAULTS comment now says both.
-- **Disk.** The bench wrote 21.4 MB, well under 200 MB, so it needs no rotation beyond the ledger's own (summary, 16 MB per instance).
+### Why it missed (read after the miss, from the verdict's own fields)
+
+- **The exchange works on the searched objective.** Mean searched scores (`arms.*.searched.mean`) are 9937.4 for the islands, 9934.8 for the single and 9923.2 with no exchange. With M = 10 the islands lead the no-exchange arm on every deciding seed's searched score: 9936/9938/9941/9938/9934 against 9923/9925/9918/9920/9930 in the `[islands]` and `[noexch]` lines. They end level with the single given 4 times the population.
+- **The lead does not reach the held-out draws.** On 1280 fresh tasks the arms differ by 1.0 and 1.2 tasks on average, against seed ranges of 4 to 8. The best fresh score over each arm's instances (`perSeed.bestFreshOverIslands`, which selects on the held-out draw and is not the bar) is at most 1221 for the islands (1221 1216 1221 1219 1221), 1221 with no exchange (1221 1221 1219 1219 1217) and 1222 for the single (1219 1221 1218 1222 1220): no arm holds a library the others lack on the fresh draws.
+- **The control was still rising on the deciding seeds too.** The singles' last-quarter gains (`arms.single.perSeed[].lastQuarter.gained`) are 4 6 3 3 6. So the suite was not saturated on the population the bar decided on.
+- **Every pick in every arm is 256 long** (`perSeed[].len`, one 255 in the no-exchange arm), and 256 is LEN_CAP. On k64-l256 the length cap binds again: the rise that is left (14.58 to 29.84 searched tasks per million evaluations in the probe) comes from trading components inside a library that is already full.
+
+## What the numbers say
+
+- At the same 12,500 organism-years per seed, 4 islands that trade 8 elites every 10 generations are not distinguishable on held-out tasks from one instance with 4 times the population, nor from 4 islands that never trade. The differences are 1 task in 1280, inside the seed band. The bar is missed, and it is missed on a suite the single does not saturate: its control rose over the last quarter on all 3 tuning seeds and all 5 deciding seeds.
+- The exchange is not idle. It imported 9265 elites over 1014 exchanges, and it lifted the islands' searched score above the no-exchange arm's on every deciding seed. That lift is 14.2 of 10240 searched tasks on average, and it did not show on the 1280 fresh ones.
 
 ## Open
 
-- **The tie-break.** Among libraries of identical searched fitness, the pick is the store's lowest cell. A tie-break chosen without the fresh draws (fewest components, the library held by most instances, a vote) is untested. It must be fixed before any fresh draw is looked at again, or it becomes selection on the held-out draw.
-- **The plateau.** One instance alone reaches the suite's searched plateau (598 at length 96) inside 240 s, so this suite cannot show a population advantage on the searched score. A suite or a length cap the single instance does not saturate in 240 s is the test that could.
-- **Workers.** "At most 2 workers" is read per process; see Design.
-- **Docker is absent on this desk.** The population ran as native processes under tools/budget.mjs caps, not as containers.
-- **A failed first attempt.** The first partial attempt (10:08 EDT) died at import: core/persist.mjs, changed by another item at 10:05, imported a core/checkpoint-delta.mjs that did not exist yet. It imported cleanly at 10:09:51, and every run quoted here came after that.
+- **The length cap binds at LEN_CAP 256** on k64-l256: every pick is 256 long. A suite with more headroom per library needs LEN_CAP raised or a different objective. LEN_CAP is a constant of generations/velocity.mjs, which is board 24a's file, so this item did not touch it.
+- **A larger budget is outside the wall.** The single arm at 800,000 evaluations took up to 63.2 s with 4 running at once. Doubling the budget would put it near the 120 s guard on this desk.
+- **The held-out ceiling** (how many of the 1280 fresh tasks any component can solve) was not measured. The searched union bound is printed (10134 of 10240), but the fresh one is not.
+- **Readers of the old verdict.** bench/ladder.mjs reads `bar.singleFresh`, `bar.populationFresh`, `bar.noise` and `arms.*.pick.fitness` from this file. The new verdict keeps those fields: the sums over the seeds, the band times 5, and a null fitness because each arm has five picks. test/ladder.test.mjs and the findings page were not run here (not this item's files). Its TRUTH block reads the `[bar] single` and `[bar] population pick` lines above.
 
 ## Model calls
 
-None. The bench and the tests make no model call. Every timing is wall clock on a desk shared with Board 11, which owns Ollama.
+None. Provider null, no socket, Ollama never started, port 11434 never called. The bench and the tests make no model call. The scores are counts of evaluations and do not move with the desk's load. Only the wall seconds do, on a desk shared with the other board 24B items.

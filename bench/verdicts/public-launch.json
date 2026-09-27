@@ -261,5 +261,56 @@
     }
   },
   "sharedQueue": "every latency here was measured on ONE Ollama queue that other builders were using at the same time",
-  "statement": "The bar is met. Both smokes ran 30 records through act/prompt.mjs ask() with the regions on and wrote their -partial verdicts (isTheBar false): GSM8K organism 27 of 30, alone 26 of 30; HumanEval organism 23 of 30, alone 14 of 30, held out (records 40 to 160) organism 16 of 23 against alone 10 of 23. Every organism record journals its provenance, its region provenance and its microseconds (32 of 32 and 30 of 30). No record of either smoke was native (native 0 and 0, direct 0 and 0). The chain (GSM8K whole, HumanEval whole, GSM8K on qwen3:30b-a3b) was launched detached through tools/budget.mjs with --resume; its first journal held 91 lines at 2026-09-24T13:15:13Z and 98 lines at 2026-09-24T13:16:19Z. Expected minutes for the first two steps from the smoke rates: 666.68; the 30b step is not measured. These are samples: no accuracy here is a bar for either set."
+  "statement": "The bar is met. Both smokes ran 30 records through act/prompt.mjs ask() with the regions on and wrote their -partial verdicts (isTheBar false): GSM8K organism 27 of 30, alone 26 of 30; HumanEval organism 23 of 30, alone 14 of 30, held out (records 40 to 160) organism 16 of 23 against alone 10 of 23. Every organism record journals its provenance, its region provenance and its microseconds (32 of 32 and 30 of 30). No record of either smoke was native (native 0 and 0, direct 0 and 0). The chain (GSM8K whole, HumanEval whole, GSM8K on qwen3:30b-a3b) was launched detached through tools/budget.mjs with --resume; its first journal held 91 lines at 2026-09-24T13:15:13Z and 98 lines at 2026-09-24T13:16:19Z. Expected minutes for the first two steps from the smoke rates: 666.68; the 30b step is not measured. These are samples: no accuracy here is a bar for either set. Contaminated, as the split stamped by tools/split-stamp.mjs says: 12 of the 60 graded records are development records (gsm8k 5, humaneval 7): every count over all records includes them, and only the held-out counts (gsm8k 25, humaneval 23) are clean.",
+  "contaminated": true,
+  "split": {
+    "development": {
+      "what": "records a builder developed against, graded apart under TWO RULERS: gsm8k, the 200 GSM8K test ids bench/verdicts/math.json lists under records.ids plus gsm8k.0 to gsm8k.2 (the records reason/math.mjs prompts were probed on); humaneval, MultiPL-E JavaScript HumanEval records 0 to 39 by index (the reason/synth.mjs extractor was written reading them)",
+      "n": 12,
+      "sets": {
+        "gsm8k": 5,
+        "humaneval": 7
+      }
+    },
+    "heldOut": {
+      "what": "every other record of each set, never read while the arm that grades it was built; the held-out counts are the ones to quote",
+      "n": 48,
+      "sets": {
+        "gsm8k": 25,
+        "humaneval": 23
+      }
+    },
+    "contaminated": "12 of the 60 graded records are development records (gsm8k 5, humaneval 7): every count over all records includes them, and only the held-out counts (gsm8k 25, humaneval 23) are clean"
+  },
+  "splitStampedAt": "2026-09-27T13:44:27.546Z",
+  "splitStampedBy": "tools/split-stamp.mjs",
+  "splitSource": {
+    "writer": "bench/public.mjs",
+    "fn": "splitFor",
+    "args": {
+      "sets": {
+        "gsm8k": {
+          "development": 5,
+          "heldOut": 25
+        },
+        "humaneval": {
+          "development": 7,
+          "heldOut": 23
+        }
+      }
+    },
+    "fnSha256": "14e4a290e23d43b1d7906c821d801dc1c7d939552cc211e520fa38ccf1c8e8b8",
+    "notRerunBecause": "it has no single writer: its command is a detached cmd.exe chain of bench/public.mjs runs, and the two smokes it grades asked Ollama (MODEL OFF tonight); the counts are the smokes' own splits in this file",
+    "contaminatedMark": "added by the stamp: the split gives a contamination reason, so the file carries contaminated true at its top level and one sentence appended to its statement (splitStampedOver.statementAppended), the rule bench/compress.mjs, bench/math.mjs and bench/synth.mjs apply on their own runs; cutting both out gives the old bytes back"
+  },
+  "splitStampedOver": {
+    "sha256": "21da1fa34df294307a397f75d0229af443187d66a236658982f98d665832a827",
+    "bytes": 9528,
+    "prefixChars": 9526,
+    "suffixChars": 2,
+    "statementAt": 9525,
+    "statementChars": 251,
+    "statementAppended": " Contaminated, as the split stamped by tools/split-stamp.mjs says: 12 of the 60 graded records are development records (gsm8k 5, humaneval 7): every count over all records includes them, and only the held-out counts (gsm8k 25, humaneval 23) are clean.",
+    "markAdded": true
+  }
 }

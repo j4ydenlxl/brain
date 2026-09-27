@@ -503,6 +503,45 @@ export function makeCfg(opts = {}) {
   };
 }
 
+// board 24b builder (item unsplit-bars, fix pass): the verdict run() writes is built by this one
+// exported function, so a test runs the writer's own verdict code with no model (run() itself
+// refuses to start while Ollama is down).
+/**
+ * The synth verdict for the stages measured so far: the split once, the top-level mark, and the
+ * statement saying so. Pure apart from heldOutExtraction(), which reads the HumanEval fixture.
+ * @param {{cfg: object, st: {codeHash: string, peakRss: number, started: string}, stages: object, final: boolean}} a
+ * @returns {{v: object, file: string}} the verdict and the absolute path run() writes it to
+ */
+export function verdictOf({ cfg, st, stages, final }) {
+  const full = final && cfg.limit === 0 && STAGES.every((s) => stages[s])
+    && !stages.humaneval.partial && !stages.code.partial && (!stages.big.partial || stages.big.cutByClock);
+  const v = {
+    at: new Date().toISOString(), node: process.version, command: cfg.command, isTheBar: !!full,
+    contaminated: false,
+    split: splitFor(),
+    notTheBarBecause: full ? null : (final ? 'a narrower run: stages ' + Object.keys(stages).join(', ') + (cfg.limit ? ', limit ' + cfg.limit : '') : 'a snapshot while the run is still going'),
+    startedAt: st.started, model: cfg.model, bigModel: cfg.big, k: cfg.k, repairK: cfg.k, maxTokens: cfg.maxTokens,
+    sandboxMsPerCandidate: cfg.timeoutMs, hiddenGradeMs: cfg.testMs, bigMinutes: cfg.bigMinutes, codeHash: st.codeHash,
+    development: {
+      humaneval: 'records 0 to 39 by index of bench/fixtures/public/humaneval/humaneval-js.jsonl (HumanEval_0 to HumanEval_41): the extractor was written reading these prompts',
+      code: 'the 40 task internal suite bench/fixtures/code-tasks.json',
+      heldOut: 'HumanEval records 40 to 160 by index (121 records): no model call here touched them; only their prompts were read, for extraction coverage',
+    },
+    sharedQueue: 'every latency here was measured on one Ollama queue shared with other builders; wall clock, not the model alone',
+    nesting: 'organism k=1 and k=5 are prefixes of the k=5+repair draw stream (seeded draws), graded separately',
+    ruler: 'HumanEval: the record\'s own tests string in act/run.mjs\'s sandbox on the arm\'s code cut at the record\'s stop tokens, as bench/public.mjs grades; code suite: every hidden case by act/run.mjs runCases',
+    stages, heldOutExtraction: heldOutExtraction(), peakRssMb: r2(st.peakRss / 1048576),
+  };
+  v.bar = stages.humaneval && stages.humaneval.bar ? { ...stages.humaneval.bar, measuredOn: 'HumanEval records 0 to 39, ' + cfg.model } : null;
+  v.barMet = !!(full && v.bar && v.bar.met);
+  // board 24b builder (item unsplit-bars): the top-level mark and the statement saying so, read from
+  // the split the verdict carries (a reason in split.contaminated is told to the reader)
+  const reason = typeof v.split.contaminated === 'string' ? v.split.contaminated : null;
+  if (reason) v.contaminated = true;
+  v.statement = statement({ ...v, stages }) + (reason ? ' Contaminated, as the split says: ' + reason + '.' : '');
+  return { v, file: full ? VERDICT : PARTIAL };
+}
+
 export async function run(opts = {}) {
   const cfg = makeCfg(opts);
   const st = { codeHash: codeHash(), peakRss: process.memoryUsage().rss, started: new Date().toISOString() };
@@ -511,28 +550,7 @@ export async function run(opts = {}) {
   if (!up) throw new Error('no ollama at ' + cfg.base + ': the model arms cannot be measured, nothing was written');
   const stages = {};
   const writeVerdict = (final) => {
-    const full = final && cfg.limit === 0 && STAGES.every((s) => stages[s])
-      && !stages.humaneval.partial && !stages.code.partial && (!stages.big.partial || stages.big.cutByClock);
-    const v = {
-      at: new Date().toISOString(), node: process.version, command: cfg.command, isTheBar: !!full,
-      split: splitFor(),
-      notTheBarBecause: full ? null : (final ? 'a narrower run: stages ' + Object.keys(stages).join(', ') + (cfg.limit ? ', limit ' + cfg.limit : '') : 'a snapshot while the run is still going'),
-      startedAt: st.started, model: cfg.model, bigModel: cfg.big, k: cfg.k, repairK: cfg.k, maxTokens: cfg.maxTokens,
-      sandboxMsPerCandidate: cfg.timeoutMs, hiddenGradeMs: cfg.testMs, bigMinutes: cfg.bigMinutes, codeHash: st.codeHash,
-      development: {
-        humaneval: 'records 0 to 39 by index of bench/fixtures/public/humaneval/humaneval-js.jsonl (HumanEval_0 to HumanEval_41): the extractor was written reading these prompts',
-        code: 'the 40 task internal suite bench/fixtures/code-tasks.json',
-        heldOut: 'HumanEval records 40 to 160 by index (121 records): no model call here touched them; only their prompts were read, for extraction coverage',
-      },
-      sharedQueue: 'every latency here was measured on one Ollama queue shared with other builders; wall clock, not the model alone',
-      nesting: 'organism k=1 and k=5 are prefixes of the k=5+repair draw stream (seeded draws), graded separately',
-      ruler: 'HumanEval: the record\'s own tests string in act/run.mjs\'s sandbox on the arm\'s code cut at the record\'s stop tokens, as bench/public.mjs grades; code suite: every hidden case by act/run.mjs runCases',
-      stages, heldOutExtraction: heldOutExtraction(), peakRssMb: r2(st.peakRss / 1048576),
-    };
-    v.bar = stages.humaneval && stages.humaneval.bar ? { ...stages.humaneval.bar, measuredOn: 'HumanEval records 0 to 39, ' + cfg.model } : null;
-    v.barMet = !!(full && v.bar && v.bar.met);
-    v.statement = statement({ ...v, stages });
-    const file = full ? VERDICT : PARTIAL;
+    const { v, file } = verdictOf({ cfg, st, stages, final });
     if (cfg.write) { mkdirSync(path.dirname(file), { recursive: true }); writeFileSync(file, JSON.stringify(v, null, 2) + '\n'); }
     return { v, file: rel(file) };
   };

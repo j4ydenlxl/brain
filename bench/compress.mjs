@@ -699,10 +699,14 @@ function previousRecord() {
 
 // board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
 /** What the compress bar developed on and what it graded: pure, from the run's parameters. */
+// board 24b builder (item unsplit-bars): daemon false and tiers false name a run without that part
+// (Board 10's compress-board10.json had neither); left out, the split reads as it did.
 export function splitFor(opts = {}) {
+  const daemon = opts.daemon !== false;
+  const tiers = opts.tiers !== false;
   return {
-    development: { what: 'the organisms this bench builds (the daemon bar organism and the ' + (opts.seed || 'compress-12') + ' organism) and the ruler draw of the three answer suites at their own seeds; the checkpoint formats were written against these organisms', seed: opts.seed ?? null, tasksPerSuite: opts.tasks ?? null },
-    heldOut: { what: 'none for the byte, identity and ruler parts; the tier part reads the held-out draw bench/knowledge.mjs grades (drawHeldout, DRAW_SEED) and compares packed recall with Int8 recall on the same keys, which is a comparison, not a held-out score', tierN: opts.tierN ?? null, tierKeys: opts.tierKeys ?? null },
+    development: { what: 'the organisms this bench builds (' + (daemon ? 'the daemon bar organism and ' : '') + 'the ' + (opts.seed || 'compress-12') + ' organism) and the ruler draw of the three answer suites at their own seeds; the checkpoint formats were written against these organisms', seed: opts.seed ?? null, tasksPerSuite: opts.tasks ?? null, ...(daemon ? {} : { daemon: false }) },
+    heldOut: { what: tiers ? 'none for the byte, identity and ruler parts; the tier part reads the held-out draw bench/knowledge.mjs grades (drawHeldout, DRAW_SEED) and compares packed recall with Int8 recall on the same keys, which is a comparison, not a held-out score' : 'none: the byte, identity and ruler parts have no held-out set, and this run had no tier part', tierN: opts.tierN ?? null, tierKeys: opts.tierKeys ?? null, ...(tiers ? {} : { tiers: false }) },
     contaminated: 'no held-out set: the bar measures bytes and identity on the organisms the checkpoint code was written against',
   };
 }
@@ -733,7 +737,10 @@ export async function run(opts = {}) {
   let peak = rssMb();
   const sampler = setInterval(() => { peak = Math.max(peak, rssMb()); }, 250);
   sampler.unref();
-  const freeGb = await waitForRam(say);
+  // board 24b builder (item unsplit-bars, fix pass): the 16 GB wait guards the three heavy parts;
+  // a run with all three skipped allocates none of them, so it reads free RAM and does not wait.
+  const light = !!(o.skipDaemon && o.skipOrganism && o.skipTiers);
+  const freeGb = light ? r1(freemem() / 1073741824) : await waitForRam(say);
   const root = o.tmp ? path.resolve(o.tmp) : tmpdir();
   mkdirSync(root, { recursive: true });
   say('compress: organism ' + o.majors + ' majors, ' + o.units + ' units, ' + o.ticks + ' ticks, replay ' + o.replay + ', ' + o.tasks + ' per suite, seed ' + o.seed + '; chain full every ' + o.fullEvery
@@ -790,8 +797,8 @@ export async function run(opts = {}) {
       : 'The organism replay was not run. ';
     const statement = daemonText + orgText + tierText + 'Bar ' + (met.bar ? 'MET' : 'NOT MET') + ': a ' + BAR_RATIO + 'x fall in checkpoint bytes per tick with identity intact and tier recall unchanged.';
     const verdict = {
-      name: 'compress', item: ITEM, board: 12, at: new Date().toISOString(), command: cmd, node: process.version, isTheBar: target.isTheBar, statement,
-      split: splitFor({ seed: o.seed, tasks: o.tasks, tierN: o.tierN, tierKeys: o.tierKeys }),
+      name: 'compress', item: ITEM, board: 12, at: new Date().toISOString(), command: cmd, node: process.version, isTheBar: target.isTheBar, contaminated: false, statement,
+      split: splitFor({ seed: o.seed, tasks: o.tasks, tierN: o.tierN, tierKeys: o.tierKeys, daemon: !!daemon, tiers: !!(tiers && !tiers.skipped) }),
       bar: { ratio: BAR_RATIO, measured: daemon ? daemon.ratio : null, met: met.bar },
       params: o, freeRamGbAtStart: freeGb,
       daemon,
@@ -807,8 +814,14 @@ export async function run(opts = {}) {
       writtenBytes: written, peakRssMb: maxRssMb, sampledPeakRssMb: peak, wallMs: Math.round(totalMs),
       models: 'none: the exact path (provider null) and the daemon arms call no model',
     };
+    // board 24b builder (item unsplit-bars): the top-level mark and the statement saying so, read from
+    // the split the verdict carries (a reason in split.contaminated is told to the reader)
+    if (typeof verdict.split.contaminated === 'string') {
+      verdict.contaminated = true;
+      verdict.statement += ' Contaminated, as the split says: ' + verdict.split.contaminated + '.';
+    }
     say('met       ' + Object.entries(met).map(([k, v]) => k + ' ' + v).join('   '));
-    if (!o.quiet && o.statement) say(statement);
+    if (!o.quiet && o.statement) say(verdict.statement);
     if (o.write !== false) {
       mkdirSync(VERDICTS, { recursive: true });
       const out = path.join(VERDICTS, target.file);

@@ -18,6 +18,12 @@
 // organism builds (synchronous, on this thread) wait until its killed instance runs again, so the
 // supervisor's clocks never wait behind a build while the restart window is open. The planted
 // instance of the scripted test writes whole files. Every test and every assertion is the one it was.
+//
+// Board 24B builder (multiply-suite), 2026-09-27: six tests added for the island model, every one
+// before it untouched: an island run is deterministic and each island stops at its share of the
+// evaluations; with the exchange off nothing is imported and each island is the run it would be
+// alone; the control with N times the population spends the same evaluations in one instance; the
+// library cap, noFresh and the wall guard; lastQuarter; the bench's band rule, suite choice and split.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
@@ -27,7 +33,9 @@ import http from 'node:http';
 import {
   EliteStore, PlaneSearch, PlaneWorker, Population, createInstance, duplicateInstance, instanceDir, plainLauncher,
   postToPlane, postFromPlane, planeWorkerOptions, storeCellOf, loadSuite, readJson, writeJsonAtomic, MULTIPLY_FILE, BRAIN_NAME,
+  runIslands, lastQuarter,
 } from '../daemon/multiply.mjs';
+import { splitFor, bandOf, beats, chooseSuite, CANDIDATES, suiteOf, TRACE_EVERY } from '../bench/multiply.mjs';
 import { readHealth, startHealth, populationAlive } from '../daemon/health.mjs';
 import { syntheticMatrix } from '../generations/velocity.mjs';
 
@@ -339,6 +347,123 @@ else { const m = JSON.parse(readFileSync(path.join(b, 'meta.json'), 'utf8')); pu
   assert.equal(done.starts, 2);
   assert.notEqual(done.pid, pid);
   assert.ok(lines.some((l) => /restart 1 from its checkpoint t=314/.test(l)), lines.join('\n'));
+});
+
+// ---------------------------------------------------------------- the island model (board 24B, multiply-suite)
+// runIslands() and the bench's pure helpers. Each run is a synthetic plane (SYN) at a tiny budget,
+// so every island is a worker thread that lives well under a second.
+const ISL = Object.freeze({ suite: SYN, heapMb: 128, migrants: 4 });
+
+test('an island run is a pure function of its seed and budget: the same run twice gives the same trace, and each island stops at its share', async () => {
+  const a = await runIslands({ ...ISL, n: 2, exchange: true, every: 10, evalBudget: 20000, seed: 'isl' });
+  const b = await runIslands({ ...ISL, n: 2, exchange: true, every: 10, evalBudget: 20000, seed: 'isl' });
+  assert.deepEqual(a.trace.map((p) => [p.evals, p.gens, p.count, p.fitness]), b.trace.map((p) => [p.evals, p.gens, p.count, p.fitness]));
+  assert.deepEqual(a.exchangeLog, b.exchangeLog);
+  assert.equal(a.pick.island, b.pick.island);
+  assert.equal(a.cap, 10000);
+  assert.equal(a.stoppedBy, 'budget');
+  for (const x of a.islands) {
+    assert.ok(x.evalsAtStop >= a.cap, x.id + ' reached its share: ' + x.evalsAtStop);
+    assert.ok(x.evalsAtStop < a.cap + 256 * 2 + 8, x.id + ' stopped within a generation of its share: ' + x.evalsAtStop);
+  }
+  assert.equal(a.evals, a.islands.reduce((s, x) => s + x.evalsAtStop, 0));
+  assert.ok(a.exchanges > 0 && a.exchanges === a.exchangeLog.length);
+  for (const e of a.exchangeLog) {
+    assert.ok(e.rows > 0 && e.rows <= 2 * 1 * ISL.migrants, 'all to all, at most ' + ISL.migrants + ' each way: ' + JSON.stringify(e));
+    assert.equal(e.rows, e.filled + e.replaced + e.kept + e.rejected);
+    assert.equal(e.rejected, 0, 'one matrix, so every migrant scores the count it carried');
+  }
+  assert.equal(a.elitesImported, a.islands.reduce((s, x) => s + x.report.elitesImported, 0));
+  // the pick is the best by the SEARCHED objective over the islands, a tie to the lower island
+  const best = Math.max(...a.islands.map((x) => x.report.best.fitness));
+  assert.equal(a.pick.best.fitness, best);
+  assert.equal(a.pick.island, a.islands.find((x) => x.report.best.fitness === best).id);
+  assert.ok(a.pick.best.freshCounts.length === 1 && a.pick.best.freshTs[0] === 256, 'the fresh draw is scored in the final report');
+});
+
+test('with the exchange off no island imports, and each island is the run it would be alone', async () => {
+  const x = await runIslands({ ...ISL, n: 2, exchange: false, every: 10, evalBudget: 20000, seed: 'isl' });
+  assert.equal(x.exchanges, 0);
+  assert.equal(x.exchangeLog.length, 0);
+  assert.equal(x.elitesImported, 0);
+  for (const i of x.islands) assert.equal(i.report.imported.rows, 0);
+  // island i0 of the pair is the same search as i0 run alone on the same share (base multiply/isl/i0)
+  const alone = await runIslands({ ...ISL, n: 1, exchange: false, every: 10, evalBudget: 10000, seed: 'isl' });
+  assert.equal(alone.islands[0].evalsAtStop, x.islands[0].evalsAtStop);
+  assert.equal(alone.islands[0].gens, x.islands[0].gens);
+  assert.deepEqual(alone.pick.best.genome, x.islands[0].report.best.genome);
+  // and the exchange changed the islands it ran on (the same seed, the same share)
+  const ex = await runIslands({ ...ISL, n: 2, exchange: true, every: 10, evalBudget: 20000, seed: 'isl' });
+  assert.ok(ex.elitesImported > 0, 'the exchange arm imported: ' + ex.elitesImported);
+  assert.ok(ex.islands.some((i) => i.report.imported.rows > 0));
+});
+
+test('the control given N times the population spends the same evaluations as N islands, in one instance', async () => {
+  const c = await runIslands({ ...ISL, n: 1, popScale: 2, exchange: false, every: 10, evalBudget: 20000, seed: 'isl' });
+  const i = await runIslands({ ...ISL, n: 2, exchange: false, every: 10, evalBudget: 20000, seed: 'isl' });
+  assert.equal(c.islands.length, 1);
+  assert.equal(c.popScale, 2);
+  assert.equal(c.islands[0].report.popScale, 2);
+  assert.equal(c.cap, 20000);
+  for (const r of [c, i]) assert.ok(r.evals >= 20000 && r.evals < 20000 + 2 * 256 * 2 + 8, 'within the last generation of the budget: ' + r.evals);
+  assert.ok(Math.abs(c.evals - i.evals) / 20000 < 0.06, 'the same organism-years to within a generation: ' + c.evals + ' vs ' + i.evals);
+  // twice the population per generation: the control ran fewer generations than the two islands together
+  assert.ok(c.gens < i.gens, c.gens + ' generations of the control vs ' + i.gens + ' island generations');
+});
+
+test('the library cap is honored, noFresh never loads a fresh draw, and the wall guard stops a run and says so', async () => {
+  const r = await runIslands({ ...ISL, n: 1, every: 10, evalBudget: 10000, seed: 'cap', lmax: 16, noFresh: true });
+  assert.equal(r.lmax, 16);
+  assert.equal(r.freshScored, 0);
+  assert.ok(r.pick.best.len <= 16, 'len ' + r.pick.best.len);
+  assert.deepEqual(r.pick.best.freshCounts, []);
+  assert.equal(r.pick.best.fresh, null);
+  assert.equal(r.bestFreshOverIslands, -1);
+  const w = await runIslands({ ...ISL, n: 2, every: 5, evalBudget: 400000, seed: 'wall', wallMs: 0 });
+  assert.equal(w.stoppedBy, 'wall');
+  assert.equal(w.epochs, 1, 'no epoch starts past the guard');
+  assert.ok(w.evals < 400000 / 10, 'one epoch of 5 generations, not the budget: ' + w.evals);
+  assert.equal(w.exchanges, 0);
+});
+
+test('lastQuarter reads the last quarter of a trace: rising, flat, and a trace too short to have one', () => {
+  const tr = [0, 25, 50, 75, 100].map((e, k) => ({ evals: e * 1000, count: [10, 20, 30, 40, 44][k], fitness: k, wallMs: e }));
+  const q = lastQuarter(tr);
+  assert.equal(q.at.evals, 75000);
+  assert.equal(q.gained, 4);
+  assert.equal(q.rising, true);
+  assert.equal(q.slopePerMEvals, (4 / 25000) * 1e6);
+  const flat = lastQuarter(tr.map((p, k) => ({ ...p, count: k >= 2 ? 30 : p.count })));
+  assert.equal(flat.gained, 0);
+  assert.equal(flat.rising, false);
+  const one = lastQuarter([tr[0]]);
+  assert.equal(one.gained, 0);
+  assert.equal(one.rising, false, 'a single point is never rising');
+  assert.equal(lastQuarter([]), null);
+});
+
+test('the bench: the band rule, the suite choice and the split name the deciding seeds as held out', () => {
+  const a = bandOf([10, 12, 14]);
+  assert.equal(a.mean, 12); assert.equal(a.range, 4); assert.equal(a.sd, 2); assert.deepEqual([a.min, a.max], [10, 14]);
+  assert.equal(bandOf([]).mean, null);
+  const c = bandOf([5, 6, 7]);
+  assert.deepEqual(beats(a, c), { gap: 6, band: 4, beat: true });
+  assert.equal(beats(bandOf([10, 12, 14]), bandOf([8, 8, 8])).beat, false, 'a gap equal to the band is not a beat');
+  assert.equal(beats(bandOf([10, 20]), bandOf([9, 10])).beat, false, 'the wider range of the two arms is the band');
+  assert.equal(chooseSuite([{ name: 'a', rising: true }, { name: 'b', rising: false }, { name: 'c', rising: true }, { name: 'd', rising: false }]).name, 'c', 'the largest rising candidate');
+  assert.equal(chooseSuite([{ name: 'a', rising: false }]), null);
+  assert.deepEqual(CANDIDATES.map((x) => x.draws), [4, 4, 16, 32, 64]);
+  assert.ok(CANDIDATES.every((x) => x.lmax === null || x.lmax === 256));
+  assert.equal(suiteOf(CANDIDATES[4]).freshMore, 7, 'eight fresh draws');
+  assert.equal(TRACE_EVERY, 10);
+  const s = splitFor({ suite: suiteOf(CANDIDATES[4]), tuneSeeds: ['t1', 't2', 't3'], decideSeeds: ['d1', 'd2', 'd3', 'd4', 'd5'], devFreshScored: 0 });
+  assert.deepEqual(s.heldOut.decideSeeds, ['d1', 'd2', 'd3', 'd4', 'd5']);
+  assert.match(s.heldOut.what, /DECIDING seeds d1, d2, d3, d4, d5, which the tuning seeds never touched/);
+  assert.deepEqual(s.development.tuneSeeds, ['t1', 't2', 't3']);
+  assert.equal(s.heldOut.draws.length, 8);
+  assert.equal(s.contaminated, false);
+  assert.match(splitFor({ tuneSeeds: ['x'], decideSeeds: ['x', 'y'] }).contaminated, /deciding seeds x are also tuning seeds/);
+  assert.match(splitFor({ tuneSeeds: ['x'], decideSeeds: ['y'], devFreshScored: 3 }).contaminated, /scored 3 fresh draws/);
 });
 
 test('a real instance duplicates, is killed, comes back from its own checkpoint, and both end (tiny organism, synthetic plane)', async () => {

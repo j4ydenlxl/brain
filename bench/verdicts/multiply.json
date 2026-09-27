@@ -1,631 +1,1928 @@
 {
-  "at": "2026-09-26T18:23:36.129Z",
-  "command": "node --max-old-space-size=4000 bench/multiply.mjs",
-  "node": "v22.22.2",
+  "at": "2026-09-27T14:27:29.166Z",
+  "command": "node --max-old-space-size=4000 bench/multiply.mjs --out C:/Users/ybmic/AppData/Local/Temp/claude/C--Users-ybmic-Downloads-claudeskillsvideo-to-website/f305380b-0480-49b0-97e2-42df3fa7eb30/scratchpad/board24b/multiply-suite",
+  "node": "v24.15.0",
   "isTheBar": true,
-  "statement": "One instance (s0, seed 1) ran alone for 240 wall seconds and its best library by the searched objective scored 136/160 on the fresh draw grid/velocity:heldout after 70369079 evaluations. A population of 3 (i0 seed 1, duplicated from its own checkpoints into i1 seed 2 and i2 seed 3, each for 240 wall seconds, exchanging elites through a shared store at every checkpoint) made 92818562 evaluations, imported 803 and exported 2031 elites, and its pick by the searched objective scored 133/160 on the same fresh draw, below the single instance. i0 was killed at 120 s and came back from its own checkpoint t=500. The whole tree peaked at 1710.2 MB working set. The bar (population at or above single on the fresh draw, and the killed instance back) is missed. No model was called; timings are wall clock on a desk shared with Board 11.",
+  "barMet": false,
+  "complete": true,
+  "statement": "On k64-l256 (64 grid draws, library cap 256), a suite whose control was still rising over the last quarter of its budget on all three tuning seeds, 4 islands that traded their best 8 libraries every 10 generations were run against two controls at the same 800,000 evaluations (12,500 organism-years) per seed: one instance with 4 times the population, and the same 4 islands with no exchange. On five deciding seeds the tuning never touched, each arm's pick by the searched objective scored a mean of 1219 (islands), 1220 (single) and 1217.8 (no exchange) of 1280 held-out tasks on eight fresh draws, with seed ranges of 6, 4 and 8. The islands did not beat the single instance (gap -1 against a band of 6) and did not beat the no-exchange arm (gap 1.2 against a band of 8), so the bar is missed. No model was called; the numbers are counts of evaluations and do not depend on the desk's load.",
   "split": {
     "development": {
-      "what": "the searched suite: both arms search the same 4 grid draws of seed grid/velocity (the seeds of bench/velocity.mjs --draws 4); the population pick is by this searched objective",
+      "what": "the searched suite (64 grid draws of seed grid/velocity, library cap 256) and the TUNING seeds tune1, tune2, tune3: the saturation probe of every candidate suite and the M sweep ran on them and read the searched objective only; the fresh draws were never loaded into those runs",
       "seed": "grid/velocity",
-      "draws": 4
+      "draws": 64,
+      "tuneSeeds": [
+        "tune1",
+        "tune2",
+        "tune3"
+      ],
+      "freshScoredInDevelopment": 0
     },
     "heldOut": {
-      "what": "the fresh draws, never searched and never used to pick: the bar scores both picks on grid/velocity:heldout (and prints :fresh1..4 beside it)",
+      "what": "the DECIDING seeds decide1, decide2, decide3, decide4, decide5, which the tuning seeds never touched (no suite, cap, M or budget was chosen on them), and the fresh draws grid/velocity:heldout, grid/velocity:fresh1, grid/velocity:fresh2, grid/velocity:fresh3, grid/velocity:fresh4, grid/velocity:fresh5, grid/velocity:fresh6, grid/velocity:fresh7, never searched and never used to pick: each arm is scored by its pick by the searched objective on them",
+      "decideSeeds": [
+        "decide1",
+        "decide2",
+        "decide3",
+        "decide4",
+        "decide5"
+      ],
       "draws": [
         "grid/velocity:heldout",
         "grid/velocity:fresh1",
         "grid/velocity:fresh2",
         "grid/velocity:fresh3",
-        "grid/velocity:fresh4"
+        "grid/velocity:fresh4",
+        "grid/velocity:fresh5",
+        "grid/velocity:fresh6",
+        "grid/velocity:fresh7"
       ]
     },
     "contaminated": false
   },
+  "control": {
+    "first": "single",
+    "gets": "N times the population",
+    "notGiven": "N times the wall",
+    "why": "the island model literature (Whitley, Rana and Heckendorn; Cantu-Paz; Alba and Tomassini) compares islands with one panmictic population of the same total size at the same total evaluations; N times the wall would give the control N times the generations of a quarter-size population and compare search depth, not structure",
+    "second": "noexch: the same N islands with the exchange off"
+  },
   "bar": {
     "met": false,
-    "rule": "population pick by the searched objective at or above the single instance on grid/velocity:heldout, AND the killed instance came back from its checkpoint",
-    "singleFresh": 136,
-    "populationFresh": 133,
-    "freshT": 160,
-    "atOrAbove": false,
-    "cameBack": true,
-    "populationBestFreshOverInstances": 133,
-    "i0FreshAtWall": 133
+    "rule": "N islands with exchange beat BOTH controls: mean held-out score over the deciding seeds minus the control mean above the wider min..max range of the two arms, at the same organism-years (within 0.5%), every arm inside 120 s, on a suite whose control rose over the last quarter on every tuning seed",
+    "singleFresh": 6100,
+    "populationFresh": 6095,
+    "noExchangeFresh": 6089,
+    "freshT": 6400,
+    "freshTPerSeed": 1280,
+    "noise": {
+      "seedToSeed": 30,
+      "perSeedBand": 6,
+      "unit": "tasks summed over the 5 deciding seeds, the unit of singleFresh and populationFresh: the per-seed band times 5"
+    },
+    "vsSingle": {
+      "gap": -1,
+      "band": 6,
+      "beat": false,
+      "paired": [
+        2,
+        -6,
+        2,
+        -3,
+        0
+      ]
+    },
+    "vsNoExchange": {
+      "gap": 1.2000000000000455,
+      "band": 8,
+      "beat": false,
+      "paired": [
+        0,
+        -6,
+        3,
+        6,
+        3
+      ]
+    },
+    "sameYears": true,
+    "yearsGapFraction": 0.00043875,
+    "inWall": true,
+    "suiteRising": true
   },
-  "config": {
-    "wallS": 240,
-    "killAtS": 120,
-    "seed": 1,
-    "out": "state/multiply-bench",
-    "suite": {
-      "kind": "grid",
-      "seed": "grid/velocity",
+  "suite": {
+    "chosen": "k64-l256",
+    "what": "64 grid draws, library cap 256",
+    "T": 10240,
+    "union": 10134,
+    "rule": "the largest probed candidate whose control rose over the last quarter on every tuning seed inside the wall"
+  },
+  "probe": [
+    {
+      "name": "k4-ladder",
+      "what": "the prior bar suite: 4 grid draws, the library cap of the plane ladder (32 to 96)",
       "draws": 4,
-      "maxDepth": 3,
-      "fresh": "grid/velocity:heldout",
-      "freshMore": 4
-    },
-    "organism": {
-      "majors": 12,
-      "units": 256,
-      "checkpointEvery": 250,
-      "chunk": 10,
-      "ledger": "summary",
-      "ledgerBudgetMb": 16
-    },
-    "instanceCaps": {
-      "ramMb": 1600,
-      "diskMb": 600,
-      "heapMb": 1024,
-      "planeHeapMb": 256
-    },
-    "spawnPlan": "i0 duplicates into i1 after its 2nd exchange and into i2 after its 3rd"
-  },
-  "prebuild": {
-    "exitCode": 0,
-    "peakRssMb": 112.207,
-    "wallS": 20.445
-  },
-  "arms": {
-    "single": {
-      "wallArmS": 249.4,
-      "timedOut": false,
-      "pick": {
-        "id": "s0",
-        "fitness": 0.9320403696498054,
-        "count": 598,
-        "len": 96,
-        "source": "s0",
-        "searchedMeanCount": 149.5,
-        "tasksPerDraw": 160,
-        "fresh": 136,
-        "freshT": 160,
-        "freshMore": [
-          134,
-          144,
-          137,
-          134
-        ],
-        "freshMoreMean": 137.25
-      },
-      "evals": 70369079,
-      "elitesImported": 0,
-      "elitesExported": 1843,
-      "duplications": 0,
-      "aliveAtEnd": {
-        "s": 236.8,
-        "alive": 1,
-        "ids": [
-          "s0"
-        ]
-      },
-      "maxAlive": 1,
-      "peakTreeWsMb": 870.6,
-      "peakTreePrivateMb": 0,
-      "peakTreeProcs": 3,
-      "instances": [
+      "lmax": null,
+      "T": 640,
+      "union": 634,
+      "rising": false,
+      "rows": [
         {
-          "id": "s0",
-          "seed": "1",
-          "parent": null,
-          "firstStartOffsetS": 0.2,
-          "attempts": 1,
-          "restarts": 0,
-          "gaveUp": null,
-          "exits": [
-            {
-              "attempt": 1,
-              "at": "2026-09-26T18:18:38.400Z",
-              "code": 0,
-              "signal": null,
-              "afterS": 248.5,
-              "outcome": "exit",
-              "peakRssMb": 747.164,
-              "error": null
-            }
-          ],
-          "ended": true,
-          "t": 1530,
-          "starts": 1,
-          "resumedAt": 0,
-          "wallS": 248.255,
-          "checkpoints": 8,
-          "exchangeCalls": 8,
-          "duplications": 0,
-          "spawned": [],
-          "duplicatedFrom": null,
-          "evals": 70369079,
-          "planesRun": 2850,
-          "exchanges": 9,
-          "storeRows": 544,
+          "seed": "tune1",
+          "pick": "i0",
+          "searched": 593,
+          "searchedT": 640,
+          "fitness": 0.9242278696498054,
+          "len": 96,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800877,
+          "evalsWithReport": 801228,
+          "organismYears": 12513.7,
+          "gens": 1837,
+          "epochs": 184,
+          "exchanges": 0,
           "elitesImported": 0,
-          "elitesExported": 1843,
-          "imported": {
-            "files": 0,
-            "rows": 0,
-            "filled": 0,
-            "replaced": 0,
-            "kept": 0,
-            "rejected": 0,
-            "injected": 0
-          },
-          "best": {
-            "fitness": 0.9320403696498054,
-            "count": 598,
-            "len": 96,
-            "source": "s0",
-            "searchedMeanCount": 149.5,
-            "tasksPerDraw": 160,
-            "fresh": 136,
-            "freshT": 160,
-            "freshMore": [
-              134,
-              144,
-              137,
-              134
-            ],
-            "freshMoreMean": 137.25
-          },
-          "peakRssMb": 747.2,
-          "heartbeatMaxRssMb": 749,
-          "budgetOutcomes": [
-            "exit"
+          "wallS": 2.4,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            7
           ],
-          "health": {
-            "reads": 10,
-            "fails": 39,
-            "lastS": 248.4,
-            "maxAlive": 1,
-            "last": {
-              "ok": true,
-              "instance": "s0",
-              "instancesAlive": 1,
-              "instances": [
-                "s0"
-              ],
-              "tick": 1530,
-              "rssMb": 738,
-              "multiply": {
-                "duplications": 0,
-                "elitesImported": 0,
-                "elitesExported": 1780,
-                "storeRows": 537,
-                "evals": 67478217,
-                "exchanges": 7,
-                "resumed": false,
-                "resumedAt": 0
-              }
-            }
-          }
-        }
-      ],
-      "supervisor": [
-        {
-          "s": 0,
-          "line": "[population] s0 started (attempt 1, pid 13658)"
+          "planesFired": [
+            7
+          ],
+          "lastQuarter": {
+            "gained": 0,
+            "rising": false,
+            "slopePerMEvals": 0,
+            "atEvals": 596042,
+            "atCount": 593
+          },
+          "bestFreshOverIslands": -1
         },
         {
-          "s": 248.5,
-          "line": "[population] s0 ended (code 0, attempt 1, 248.5 s, peak 747.164 MB)"
+          "seed": "tune2",
+          "pick": "i0",
+          "searched": 597,
+          "searchedT": 640,
+          "fitness": 0.9304778696498055,
+          "len": 96,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800499,
+          "evalsWithReport": 800782,
+          "organismYears": 12507.8,
+          "gens": 1733,
+          "epochs": 174,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 2.3,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            5
+          ],
+          "planesFired": [
+            5
+          ],
+          "lastQuarter": {
+            "gained": 0,
+            "rising": false,
+            "slopePerMEvals": 0,
+            "atEvals": 592748,
+            "atCount": 597
+          },
+          "bestFreshOverIslands": -1
+        },
+        {
+          "seed": "tune3",
+          "pick": "i0",
+          "searched": 595,
+          "searchedT": 640,
+          "fitness": 0.9273528696498055,
+          "len": 96,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800076,
+          "evalsWithReport": 800309,
+          "organismYears": 12501.2,
+          "gens": 1602,
+          "epochs": 161,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 2.5,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            2
+          ],
+          "planesFired": [
+            2
+          ],
+          "lastQuarter": {
+            "gained": 43,
+            "rising": true,
+            "slopePerMEvals": 206.9,
+            "atEvals": 592247,
+            "atCount": 552
+          },
+          "bestFreshOverIslands": -1
+        }
+      ],
+      "ends": [
+        593,
+        597,
+        595
+      ],
+      "gains": [
+        0,
+        0,
+        43
+      ],
+      "slopes": [
+        0,
+        0,
+        206.9
+      ],
+      "maxWallS": 2.5
+    },
+    {
+      "name": "k4-l256",
+      "what": "4 grid draws, library cap raised to 256",
+      "draws": 4,
+      "lmax": 256,
+      "T": 640,
+      "union": 634,
+      "rising": false,
+      "rows": [
+        {
+          "seed": "tune1",
+          "pick": "i0",
+          "searched": 630,
+          "searchedT": 640,
+          "fitness": 0.9812378404669261,
+          "len": 129,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800845,
+          "evalsWithReport": 801056,
+          "organismYears": 12513.2,
+          "gens": 2036,
+          "epochs": 204,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 3.1,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            7
+          ],
+          "planesFired": [
+            7
+          ],
+          "lastQuarter": {
+            "gained": 1,
+            "rising": true,
+            "slopePerMEvals": 4.99,
+            "atEvals": 600400,
+            "atCount": 629
+          },
+          "bestFreshOverIslands": -1
+        },
+        {
+          "seed": "tune2",
+          "pick": "i0",
+          "searched": 630,
+          "searchedT": 640,
+          "fitness": 0.9812135214007782,
+          "len": 130,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800098,
+          "evalsWithReport": 800276,
+          "organismYears": 12501.5,
+          "gens": 1867,
+          "epochs": 187,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 3.1,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            5
+          ],
+          "planesFired": [
+            5
+          ],
+          "lastQuarter": {
+            "gained": 0,
+            "rising": false,
+            "slopePerMEvals": 0,
+            "atEvals": 590214,
+            "atCount": 630
+          },
+          "bestFreshOverIslands": -1
+        },
+        {
+          "seed": "tune3",
+          "pick": "i0",
+          "searched": 630,
+          "searchedT": 640,
+          "fitness": 0.9812378404669261,
+          "len": 129,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800090,
+          "evalsWithReport": 800262,
+          "organismYears": 12501.4,
+          "gens": 1860,
+          "epochs": 186,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 3.1,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            5
+          ],
+          "planesFired": [
+            5
+          ],
+          "lastQuarter": {
+            "gained": 0,
+            "rising": false,
+            "slopePerMEvals": 0,
+            "atEvals": 599508,
+            "atCount": 630
+          },
+          "bestFreshOverIslands": -1
+        }
+      ],
+      "ends": [
+        630,
+        630,
+        630
+      ],
+      "gains": [
+        1,
+        0,
+        0
+      ],
+      "slopes": [
+        4.99,
+        0,
+        0
+      ],
+      "maxWallS": 3.1
+    },
+    {
+      "name": "k16-l256",
+      "what": "16 grid draws, library cap 256",
+      "draws": 16,
+      "lmax": 256,
+      "T": 2560,
+      "union": 2546,
+      "rising": false,
+      "rows": [
+        {
+          "seed": "tune1",
+          "pick": "i0",
+          "searched": 2527,
+          "searchedT": 2560,
+          "fitness": 0.9817834995136187,
+          "len": 219,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800280,
+          "evalsWithReport": 800462,
+          "organismYears": 12504.4,
+          "gens": 1653,
+          "epochs": 166,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 12.2,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            3
+          ],
+          "planesFired": [
+            3
+          ],
+          "lastQuarter": {
+            "gained": 0,
+            "rising": false,
+            "slopePerMEvals": 0,
+            "atEvals": 599908,
+            "atCount": 2527
+          },
+          "bestFreshOverIslands": -1
+        },
+        {
+          "seed": "tune2",
+          "pick": "i0",
+          "searched": 2528,
+          "searchedT": 2560,
+          "fitness": 0.982125486381323,
+          "len": 221,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800168,
+          "evalsWithReport": 800352,
+          "organismYears": 12502.6,
+          "gens": 2300,
+          "epochs": 230,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 13,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            5
+          ],
+          "planesFired": [
+            5
+          ],
+          "lastQuarter": {
+            "gained": 0,
+            "rising": false,
+            "slopePerMEvals": 0,
+            "atEvals": 594864,
+            "atCount": 2528
+          },
+          "bestFreshOverIslands": -1
+        },
+        {
+          "seed": "tune3",
+          "pick": "i0",
+          "searched": 2529,
+          "searchedT": 2560,
+          "fitness": 0.9824917923151751,
+          "len": 222,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800622,
+          "evalsWithReport": 800798,
+          "organismYears": 12509.7,
+          "gens": 2790,
+          "epochs": 279,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 11.9,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            5
+          ],
+          "planesFired": [
+            5
+          ],
+          "lastQuarter": {
+            "gained": 0,
+            "rising": false,
+            "slopePerMEvals": 0,
+            "atEvals": 596454,
+            "atCount": 2529
+          },
+          "bestFreshOverIslands": -1
+        }
+      ],
+      "ends": [
+        2527,
+        2528,
+        2529
+      ],
+      "gains": [
+        0,
+        0,
+        0
+      ],
+      "slopes": [
+        0,
+        0,
+        0
+      ],
+      "maxWallS": 13
+    },
+    {
+      "name": "k32-l256",
+      "what": "32 grid draws, library cap 256",
+      "draws": 32,
+      "lmax": 256,
+      "T": 5120,
+      "union": 5077,
+      "rising": false,
+      "rows": [
+        {
+          "seed": "tune1",
+          "pick": "i0",
+          "searched": 5002,
+          "searchedT": 5120,
+          "fitness": 0.9707274440661479,
+          "len": 256,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800758,
+          "evalsWithReport": 800935,
+          "organismYears": 12511.8,
+          "gens": 1615,
+          "epochs": 162,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 28.2,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            3
+          ],
+          "planesFired": [
+            3
+          ],
+          "lastQuarter": {
+            "gained": 1,
+            "rising": true,
+            "slopePerMEvals": 4.9,
+            "atEvals": 596710,
+            "atCount": 5001
+          },
+          "bestFreshOverIslands": -1
+        },
+        {
+          "seed": "tune2",
+          "pick": "i0",
+          "searched": 4994,
+          "searchedT": 5120,
+          "fitness": 0.9691649440661478,
+          "len": 256,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800148,
+          "evalsWithReport": 800329,
+          "organismYears": 12502.3,
+          "gens": 1861,
+          "epochs": 187,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 28,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            2
+          ],
+          "planesFired": [
+            2
+          ],
+          "lastQuarter": {
+            "gained": 2,
+            "rising": true,
+            "slopePerMEvals": 9.72,
+            "atEvals": 594324,
+            "atCount": 4992
+          },
+          "bestFreshOverIslands": -1
+        },
+        {
+          "seed": "tune3",
+          "pick": "i0",
+          "searched": 5004,
+          "searchedT": 5120,
+          "fitness": 0.9711180690661478,
+          "len": 256,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800224,
+          "evalsWithReport": 800396,
+          "organismYears": 12503.5,
+          "gens": 2586,
+          "epochs": 259,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 25.9,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            5
+          ],
+          "planesFired": [
+            5
+          ],
+          "lastQuarter": {
+            "gained": 0,
+            "rising": false,
+            "slopePerMEvals": 0,
+            "atEvals": 597098,
+            "atCount": 5004
+          },
+          "bestFreshOverIslands": -1
+        }
+      ],
+      "ends": [
+        5002,
+        4994,
+        5004
+      ],
+      "gains": [
+        1,
+        2,
+        0
+      ],
+      "slopes": [
+        4.9,
+        9.72,
+        0
+      ],
+      "maxWallS": 28.2
+    },
+    {
+      "name": "k64-l256",
+      "what": "64 grid draws, library cap 256",
+      "draws": 64,
+      "lmax": 256,
+      "T": 10240,
+      "union": 10134,
+      "rising": true,
+      "rows": [
+        {
+          "seed": "tune1",
+          "pick": "i0",
+          "searched": 9935,
+          "searchedT": 10240,
+          "fitness": 0.9639891628161479,
+          "len": 256,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800256,
+          "evalsWithReport": 800430,
+          "organismYears": 12504,
+          "gens": 1563,
+          "epochs": 157,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 57.1,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            0
+          ],
+          "planesFired": [
+            0
+          ],
+          "lastQuarter": {
+            "gained": 4,
+            "rising": true,
+            "slopePerMEvals": 19.88,
+            "atEvals": 599040,
+            "atCount": 9931
+          },
+          "bestFreshOverIslands": -1
+        },
+        {
+          "seed": "tune2",
+          "pick": "i0",
+          "searched": 9938,
+          "searchedT": 10240,
+          "fitness": 0.9642821315661478,
+          "len": 256,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800092,
+          "evalsWithReport": 800269,
+          "organismYears": 12501.4,
+          "gens": 2774,
+          "epochs": 278,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 56.4,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            1
+          ],
+          "planesFired": [
+            1
+          ],
+          "lastQuarter": {
+            "gained": 6,
+            "rising": true,
+            "slopePerMEvals": 29.84,
+            "atEvals": 599040,
+            "atCount": 9932
+          },
+          "bestFreshOverIslands": -1
+        },
+        {
+          "seed": "tune3",
+          "pick": "i0",
+          "searched": 9933,
+          "searchedT": 10240,
+          "fitness": 0.9637938503161478,
+          "len": 256,
+          "fresh": null,
+          "freshT": null,
+          "freshCounts": [],
+          "heldout": null,
+          "heldoutT": null,
+          "evals": 800392,
+          "evalsWithReport": 800553,
+          "organismYears": 12506.1,
+          "gens": 1981,
+          "epochs": 199,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 54,
+          "stoppedBy": "budget",
+          "freshScored": 0,
+          "planesRun": [
+            1
+          ],
+          "planesFired": [
+            1
+          ],
+          "lastQuarter": {
+            "gained": 3,
+            "rising": true,
+            "slopePerMEvals": 14.58,
+            "atEvals": 594568,
+            "atCount": 9930
+          },
+          "bestFreshOverIslands": -1
+        }
+      ],
+      "ends": [
+        9935,
+        9938,
+        9933
+      ],
+      "gains": [
+        4,
+        6,
+        3
+      ],
+      "slopes": [
+        19.88,
+        29.84,
+        14.58
+      ],
+      "maxWallS": 57.1
+    }
+  ],
+  "arms": {
+    "population": {
+      "what": "4 instances, elite exchange every 10 generations, 8 migrants each way, all to all",
+      "heldOut": {
+        "n": 5,
+        "mean": 1219,
+        "sd": 2.345207879911715,
+        "min": 1215,
+        "max": 1221,
+        "range": 6,
+        "values": [
+          1221,
+          1215,
+          1220,
+          1219,
+          1220
+        ]
+      },
+      "searched": {
+        "n": 5,
+        "mean": 9937.4,
+        "sd": 2.6076809620810595,
+        "min": 9934,
+        "max": 9941,
+        "range": 7,
+        "values": [
+          9936,
+          9938,
+          9941,
+          9938,
+          9934
+        ]
+      },
+      "organismYears": {
+        "n": 5,
+        "mean": 12506.2,
+        "sd": 1.534600925321759,
+        "min": 12503.7,
+        "max": 12507.4,
+        "range": 3.6999999999989086,
+        "values": [
+          12505.8,
+          12506.8,
+          12507.3,
+          12507.4,
+          12503.7
+        ]
+      },
+      "evals": 4001980,
+      "exchanges": 1014,
+      "elitesImported": 9265,
+      "duplications": 0,
+      "allWithinWall": true,
+      "maxWallS": 26.1,
+      "pick": {
+        "fresh": 6095,
+        "freshT": 6400,
+        "fitness": null,
+        "why": "one pick per deciding seed (the best library by the searched objective over the arm's instances); fresh is their held-out counts summed over the seeds, and each pick's own searched fitness is in perSeed",
+        "perSeed": [
+          {
+            "seed": "decide1",
+            "island": "i0",
+            "fresh": 1221,
+            "freshT": 1280,
+            "searched": 9936,
+            "fitness": 0.9640868190661479,
+            "len": 256
+          },
+          {
+            "seed": "decide2",
+            "island": "i1",
+            "fresh": 1215,
+            "freshT": 1280,
+            "searched": 9938,
+            "fitness": 0.9642821315661478,
+            "len": 256
+          },
+          {
+            "seed": "decide3",
+            "island": "i1",
+            "fresh": 1220,
+            "freshT": 1280,
+            "searched": 9941,
+            "fitness": 0.9645751003161479,
+            "len": 256
+          },
+          {
+            "seed": "decide4",
+            "island": "i1",
+            "fresh": 1219,
+            "freshT": 1280,
+            "searched": 9938,
+            "fitness": 0.9642821315661478,
+            "len": 256
+          },
+          {
+            "seed": "decide5",
+            "island": "i0",
+            "fresh": 1220,
+            "freshT": 1280,
+            "searched": 9934,
+            "fitness": 0.9638915065661479,
+            "len": 256
+          }
+        ]
+      },
+      "perSeed": [
+        {
+          "seed": "decide1",
+          "pick": "i0",
+          "searched": 9936,
+          "searchedT": 10240,
+          "fitness": 0.9640868190661479,
+          "len": 256,
+          "fresh": 1221,
+          "freshT": 1280,
+          "freshCounts": [
+            154,
+            151,
+            155,
+            155,
+            152,
+            149,
+            151,
+            154
+          ],
+          "heldout": 154,
+          "heldoutT": 160,
+          "evals": 800373,
+          "evalsWithReport": 800933,
+          "organismYears": 12505.8,
+          "gens": 6564,
+          "epochs": 197,
+          "exchanges": 191,
+          "elitesImported": 1818,
+          "wallS": 23.3,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            2,
+            0,
+            3,
+            2
+          ],
+          "planesFired": [
+            2,
+            0,
+            3,
+            2
+          ],
+          "lastQuarter": {
+            "gained": 2,
+            "rising": true,
+            "slopePerMEvals": 9.87,
+            "atEvals": 597836,
+            "atCount": 9934
+          },
+          "bestFreshOverIslands": 1221
+        },
+        {
+          "seed": "decide2",
+          "pick": "i1",
+          "searched": 9938,
+          "searchedT": 10240,
+          "fitness": 0.9642821315661478,
+          "len": 256,
+          "fresh": 1215,
+          "freshT": 1280,
+          "freshCounts": [
+            152,
+            148,
+            157,
+            155,
+            151,
+            150,
+            150,
+            152
+          ],
+          "heldout": 152,
+          "heldoutT": 160,
+          "evals": 800435,
+          "evalsWithReport": 801003,
+          "organismYears": 12506.8,
+          "gens": 6699,
+          "epochs": 226,
+          "exchanges": 213,
+          "elitesImported": 1903,
+          "wallS": 25.2,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            0,
+            1,
+            2,
+            0
+          ],
+          "planesFired": [
+            0,
+            1,
+            2,
+            0
+          ],
+          "lastQuarter": {
+            "gained": 5,
+            "rising": true,
+            "slopePerMEvals": 24.91,
+            "atEvals": 599723,
+            "atCount": 9933
+          },
+          "bestFreshOverIslands": 1216
+        },
+        {
+          "seed": "decide3",
+          "pick": "i1",
+          "searched": 9941,
+          "searchedT": 10240,
+          "fitness": 0.9645751003161479,
+          "len": 256,
+          "fresh": 1220,
+          "freshT": 1280,
+          "freshCounts": [
+            153,
+            151,
+            156,
+            155,
+            152,
+            150,
+            150,
+            153
+          ],
+          "heldout": 153,
+          "heldoutT": 160,
+          "evals": 800465,
+          "evalsWithReport": 801016,
+          "organismYears": 12507.3,
+          "gens": 7000,
+          "epochs": 247,
+          "exchanges": 222,
+          "elitesImported": 2029,
+          "wallS": 24.1,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            0,
+            2,
+            3,
+            0
+          ],
+          "planesFired": [
+            0,
+            2,
+            3,
+            0
+          ],
+          "lastQuarter": {
+            "gained": 1,
+            "rising": true,
+            "slopePerMEvals": 4.96,
+            "atEvals": 598937,
+            "atCount": 9940
+          },
+          "bestFreshOverIslands": 1221
+        },
+        {
+          "seed": "decide4",
+          "pick": "i1",
+          "searched": 9938,
+          "searchedT": 10240,
+          "fitness": 0.9642821315661478,
+          "len": 256,
+          "fresh": 1219,
+          "freshT": 1280,
+          "freshCounts": [
+            153,
+            150,
+            157,
+            155,
+            151,
+            150,
+            149,
+            154
+          ],
+          "heldout": 153,
+          "heldoutT": 160,
+          "evals": 800472,
+          "evalsWithReport": 801013,
+          "organismYears": 12507.4,
+          "gens": 6342,
+          "epochs": 199,
+          "exchanges": 193,
+          "elitesImported": 1636,
+          "wallS": 26.1,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            2,
+            3,
+            0,
+            2
+          ],
+          "planesFired": [
+            2,
+            3,
+            0,
+            2
+          ],
+          "lastQuarter": {
+            "gained": 4,
+            "rising": true,
+            "slopePerMEvals": 19.98,
+            "atEvals": 600278,
+            "atCount": 9934
+          },
+          "bestFreshOverIslands": 1219
+        },
+        {
+          "seed": "decide5",
+          "pick": "i0",
+          "searched": 9934,
+          "searchedT": 10240,
+          "fitness": 0.9638915065661479,
+          "len": 256,
+          "fresh": 1220,
+          "freshT": 1280,
+          "freshCounts": [
+            154,
+            151,
+            154,
+            155,
+            150,
+            150,
+            150,
+            156
+          ],
+          "heldout": 154,
+          "heldoutT": 160,
+          "evals": 800235,
+          "evalsWithReport": 800818,
+          "organismYears": 12503.7,
+          "gens": 6611,
+          "epochs": 197,
+          "exchanges": 195,
+          "elitesImported": 1879,
+          "wallS": 23.9,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            2,
+            0,
+            2,
+            2
+          ],
+          "planesFired": [
+            2,
+            0,
+            2,
+            2
+          ],
+          "lastQuarter": {
+            "gained": 3,
+            "rising": true,
+            "slopePerMEvals": 14.73,
+            "atEvals": 596548,
+            "atCount": 9931
+          },
+          "bestFreshOverIslands": 1221
         }
       ]
     },
-    "population": {
-      "wallArmS": 296.9,
-      "timedOut": false,
-      "pick": {
-        "id": "i0",
-        "fitness": 0.9320403696498054,
-        "count": 598,
-        "len": 96,
-        "source": "i1",
-        "searchedMeanCount": 149.5,
-        "tasksPerDraw": 160,
-        "fresh": 133,
-        "freshT": 160,
-        "freshMore": [
-          131,
-          141,
-          136,
-          124
-        ],
-        "freshMoreMean": 133
-      },
-      "evals": 92818562,
-      "elitesImported": 803,
-      "elitesExported": 2031,
-      "duplications": 2,
-      "aliveAtEnd": {
-        "s": 236.8,
-        "alive": 3,
-        "ids": [
-          "i0",
-          "i1",
-          "i2"
+    "single": {
+      "what": "one instance with 4 times the population (the first control)",
+      "heldOut": {
+        "n": 5,
+        "mean": 1220,
+        "sd": 1.5811388300841898,
+        "min": 1218,
+        "max": 1222,
+        "range": 4,
+        "values": [
+          1219,
+          1221,
+          1218,
+          1222,
+          1220
         ]
       },
-      "maxAlive": 3,
-      "peakTreeWsMb": 1710.2,
-      "peakTreePrivateMb": 0,
-      "peakTreeProcs": 7,
-      "instances": [
-        {
-          "id": "i0",
-          "seed": "1",
-          "parent": null,
-          "firstStartOffsetS": 0.1,
-          "attempts": 2,
-          "restarts": 1,
-          "gaveUp": null,
-          "exits": [
-            {
-              "attempt": 1,
-              "at": "2026-09-26T18:20:51.950Z",
-              "code": 137,
-              "signal": "SIGKILL",
-              "afterS": 132.7,
-              "outcome": "exit",
-              "peakRssMb": 470.188,
-              "error": null
-            },
-            {
-              "attempt": 2,
-              "at": "2026-09-26T18:22:55.407Z",
-              "code": 0,
-              "signal": null,
-              "afterS": 122.5,
-              "outcome": "exit",
-              "peakRssMb": 461.719,
-              "error": null
-            }
-          ],
-          "ended": true,
-          "t": 700,
-          "starts": 2,
-          "resumedAt": 500,
-          "wallS": 255.906,
-          "checkpoints": 1,
-          "exchangeCalls": 1,
-          "duplications": 2,
-          "spawned": [
-            {
-              "id": "i1",
-              "seed": "2",
-              "fromTick": 250,
-              "planeRows": 358
-            },
-            {
-              "id": "i2",
-              "seed": "3",
-              "fromTick": 500,
-              "planeRows": 423
-            }
-          ],
-          "duplicatedFrom": null,
-          "evals": 24161461,
-          "planesRun": 973,
-          "exchanges": 5,
-          "storeRows": 514,
-          "elitesImported": 266,
-          "elitesExported": 1021,
-          "imported": {
-            "files": 4,
-            "rows": 1128,
-            "filled": 49,
-            "replaced": 217,
-            "kept": 862,
-            "rejected": 0,
-            "injected": 266
+      "searched": {
+        "n": 5,
+        "mean": 9934.8,
+        "sd": 3.420526275297414,
+        "min": 9929,
+        "max": 9938,
+        "range": 9,
+        "values": [
+          9936,
+          9935,
+          9936,
+          9938,
+          9929
+        ]
+      },
+      "organismYears": {
+        "n": 5,
+        "mean": 12505.9,
+        "sd": 5.050742519669989,
+        "min": 12500.3,
+        "max": 12512,
+        "range": 11.700000000000728,
+        "values": [
+          12500.3,
+          12512,
+          12504,
+          12510.4,
+          12502.8
+        ]
+      },
+      "evals": 4001888,
+      "exchanges": 0,
+      "elitesImported": 0,
+      "duplications": 0,
+      "allWithinWall": true,
+      "maxWallS": 67.6,
+      "pick": {
+        "fresh": 6100,
+        "freshT": 6400,
+        "fitness": null,
+        "why": "one pick per deciding seed (the best library by the searched objective over the arm's instances); fresh is their held-out counts summed over the seeds, and each pick's own searched fitness is in perSeed",
+        "perSeed": [
+          {
+            "seed": "decide1",
+            "island": "i0",
+            "fresh": 1219,
+            "freshT": 1280,
+            "searched": 9936,
+            "fitness": 0.9640868190661479,
+            "len": 256
           },
-          "best": {
-            "fitness": 0.9320403696498054,
-            "count": 598,
-            "len": 96,
-            "source": "i1",
-            "searchedMeanCount": 149.5,
-            "tasksPerDraw": 160,
-            "fresh": 133,
-            "freshT": 160,
-            "freshMore": [
-              131,
-              141,
-              136,
-              124
-            ],
-            "freshMoreMean": 133
+          {
+            "seed": "decide2",
+            "island": "i0",
+            "fresh": 1221,
+            "freshT": 1280,
+            "searched": 9935,
+            "fitness": 0.9639891628161479,
+            "len": 256
           },
-          "peakRssMb": 470.2,
-          "heartbeatMaxRssMb": 472,
-          "budgetOutcomes": [
-            "exit",
-            "exit"
-          ],
-          "health": {
-            "reads": 4,
-            "fails": 35,
-            "lastS": 35.6,
-            "maxAlive": 2,
-            "last": {
-              "ok": true,
-              "instance": "i0",
-              "instancesAlive": 2,
-              "instances": [
-                "i0",
-                "i1"
-              ],
-              "tick": 470,
-              "rssMb": 427,
-              "multiply": {
-                "duplications": 1,
-                "elitesImported": 0,
-                "elitesExported": 575,
-                "storeRows": 358,
-                "evals": 3694551,
-                "exchanges": 2,
-                "resumed": false,
-                "resumedAt": 0
-              }
-            }
+          {
+            "seed": "decide3",
+            "island": "i0",
+            "fresh": 1218,
+            "freshT": 1280,
+            "searched": 9936,
+            "fitness": 0.9640868190661479,
+            "len": 256
+          },
+          {
+            "seed": "decide4",
+            "island": "i0",
+            "fresh": 1222,
+            "freshT": 1280,
+            "searched": 9938,
+            "fitness": 0.9642821315661478,
+            "len": 256
+          },
+          {
+            "seed": "decide5",
+            "island": "i0",
+            "fresh": 1220,
+            "freshT": 1280,
+            "searched": 9929,
+            "fitness": 0.9634032253161479,
+            "len": 256
           }
+        ]
+      },
+      "perSeed": [
+        {
+          "seed": "decide1",
+          "pick": "i0",
+          "searched": 9936,
+          "searchedT": 10240,
+          "fitness": 0.9640868190661479,
+          "len": 256,
+          "fresh": 1219,
+          "freshT": 1280,
+          "freshCounts": [
+            152,
+            148,
+            157,
+            154,
+            152,
+            150,
+            151,
+            155
+          ],
+          "heldout": 152,
+          "heldoutT": 160,
+          "evals": 800022,
+          "evalsWithReport": 800239,
+          "organismYears": 12500.3,
+          "gens": 2497,
+          "epochs": 250,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 67.6,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            1
+          ],
+          "planesFired": [
+            1
+          ],
+          "lastQuarter": {
+            "gained": 4,
+            "rising": true,
+            "slopePerMEvals": 19.83,
+            "atEvals": 598294,
+            "atCount": 9932
+          },
+          "bestFreshOverIslands": 1219
         },
         {
-          "id": "i1",
-          "seed": "2",
-          "parent": "i0",
-          "firstStartOffsetS": 12.8,
-          "attempts": 1,
-          "restarts": 0,
-          "gaveUp": null,
-          "exits": [
-            {
-              "attempt": 1,
-              "at": "2026-09-26T18:23:04.967Z",
-              "code": 0,
-              "signal": null,
-              "afterS": 253.2,
-              "outcome": "exit",
-              "peakRssMb": 521.563,
-              "error": null
-            }
+          "seed": "decide2",
+          "pick": "i0",
+          "searched": 9935,
+          "searchedT": 10240,
+          "fitness": 0.9639891628161479,
+          "len": 256,
+          "fresh": 1221,
+          "freshT": 1280,
+          "freshCounts": [
+            155,
+            149,
+            157,
+            154,
+            152,
+            150,
+            150,
+            154
           ],
-          "ended": true,
-          "t": 840,
-          "starts": 1,
-          "resumedAt": 250,
-          "wallS": 252.828,
-          "checkpoints": 3,
-          "exchangeCalls": 3,
-          "duplications": 0,
-          "spawned": [],
-          "duplicatedFrom": {
-            "id": "i0",
-            "tick": 250,
-            "planeRows": 358,
-            "bytes": 1827080
-          },
-          "evals": 34357719,
-          "planesRun": 1396,
-          "exchanges": 4,
-          "storeRows": 518,
-          "elitesImported": 298,
-          "elitesExported": 576,
-          "imported": {
-            "files": 7,
-            "rows": 2185,
-            "filled": 50,
-            "replaced": 248,
-            "kept": 1887,
-            "rejected": 0,
-            "injected": 298
-          },
-          "best": {
-            "fitness": 0.9320403696498054,
-            "count": 598,
-            "len": 96,
-            "source": "i1",
-            "searchedMeanCount": 149.5,
-            "tasksPerDraw": 160,
-            "fresh": 133,
-            "freshT": 160,
-            "freshMore": [
-              131,
-              141,
-              136,
-              124
-            ],
-            "freshMoreMean": 133
-          },
-          "peakRssMb": 521.6,
-          "heartbeatMaxRssMb": 527,
-          "budgetOutcomes": [
-            "exit"
+          "heldout": 155,
+          "heldoutT": 160,
+          "evals": 800768,
+          "evalsWithReport": 800938,
+          "organismYears": 12512,
+          "gens": 782,
+          "epochs": 79,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 52.8,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            0
           ],
-          "health": {
-            "reads": 2,
-            "fails": 36,
-            "lastS": 37.5,
-            "maxAlive": 2,
-            "last": {
-              "ok": true,
-              "instance": "i1",
-              "instancesAlive": 2,
-              "instances": [
-                "i0",
-                "i1"
-              ],
-              "tick": 440,
-              "rssMb": 351,
-              "multiply": {
-                "duplications": 0,
-                "elitesImported": 0,
-                "elitesExported": 0,
-                "storeRows": 358,
-                "evals": 0,
-                "exchanges": 0,
-                "resumed": true,
-                "resumedAt": 250
-              }
-            }
-          }
+          "planesFired": [
+            0
+          ],
+          "lastQuarter": {
+            "gained": 6,
+            "rising": true,
+            "slopePerMEvals": 29.01,
+            "atEvals": 593920,
+            "atCount": 9929
+          },
+          "bestFreshOverIslands": 1221
         },
         {
-          "id": "i2",
-          "seed": "3",
-          "parent": "i0",
-          "firstStartOffsetS": 44.6,
-          "attempts": 1,
-          "restarts": 0,
-          "gaveUp": null,
-          "exits": [
-            {
-              "attempt": 1,
-              "at": "2026-09-26T18:23:35.531Z",
-              "code": 0,
-              "signal": null,
-              "afterS": 251.8,
-              "outcome": "exit",
-              "peakRssMb": 555.906,
-              "error": null
-            }
+          "seed": "decide3",
+          "pick": "i0",
+          "searched": 9936,
+          "searchedT": 10240,
+          "fitness": 0.9640868190661479,
+          "len": 256,
+          "fresh": 1218,
+          "freshT": 1280,
+          "freshCounts": [
+            155,
+            150,
+            156,
+            155,
+            149,
+            151,
+            151,
+            151
           ],
-          "ended": true,
-          "t": 950,
-          "starts": 1,
-          "resumedAt": 500,
-          "wallS": 251.558,
-          "checkpoints": 2,
-          "exchangeCalls": 2,
-          "duplications": 0,
-          "spawned": [],
-          "duplicatedFrom": {
-            "id": "i0",
-            "tick": 500,
-            "planeRows": 423,
-            "bytes": 2467776
-          },
-          "evals": 34299382,
-          "planesRun": 1392,
-          "exchanges": 3,
-          "storeRows": 542,
-          "elitesImported": 239,
-          "elitesExported": 434,
-          "imported": {
-            "files": 6,
-            "rows": 1765,
-            "filled": 15,
-            "replaced": 224,
-            "kept": 1526,
-            "rejected": 0,
-            "injected": 239
-          },
-          "best": {
-            "fitness": 0.9320403696498054,
-            "count": 598,
-            "len": 96,
-            "source": "i1",
-            "searchedMeanCount": 149.5,
-            "tasksPerDraw": 160,
-            "fresh": 133,
-            "freshT": 160,
-            "freshMore": [
-              131,
-              141,
-              136,
-              124
-            ],
-            "freshMoreMean": 133
-          },
-          "peakRssMb": 555.9,
-          "heartbeatMaxRssMb": 569,
-          "budgetOutcomes": [
-            "exit"
+          "heldout": 155,
+          "heldoutT": 160,
+          "evals": 800256,
+          "evalsWithReport": 800436,
+          "organismYears": 12504,
+          "gens": 1563,
+          "epochs": 157,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 59.8,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            0
           ],
-          "health": {
-            "reads": 0,
-            "fails": 38,
-            "lastS": null,
-            "maxAlive": 0,
-            "last": null
-          }
+          "planesFired": [
+            0
+          ],
+          "lastQuarter": {
+            "gained": 3,
+            "rising": true,
+            "slopePerMEvals": 14.91,
+            "atEvals": 599040,
+            "atCount": 9933
+          },
+          "bestFreshOverIslands": 1218
+        },
+        {
+          "seed": "decide4",
+          "pick": "i0",
+          "searched": 9938,
+          "searchedT": 10240,
+          "fitness": 0.9642821315661478,
+          "len": 256,
+          "fresh": 1222,
+          "freshT": 1280,
+          "freshCounts": [
+            154,
+            151,
+            156,
+            155,
+            151,
+            150,
+            151,
+            154
+          ],
+          "heldout": 154,
+          "heldoutT": 160,
+          "evals": 800664,
+          "evalsWithReport": 800826,
+          "organismYears": 12510.4,
+          "gens": 2229,
+          "epochs": 223,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 57.8,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            2
+          ],
+          "planesFired": [
+            2
+          ],
+          "lastQuarter": {
+            "gained": 3,
+            "rising": true,
+            "slopePerMEvals": 14.72,
+            "atEvals": 596888,
+            "atCount": 9935
+          },
+          "bestFreshOverIslands": 1222
+        },
+        {
+          "seed": "decide5",
+          "pick": "i0",
+          "searched": 9929,
+          "searchedT": 10240,
+          "fitness": 0.9634032253161479,
+          "len": 256,
+          "fresh": 1220,
+          "freshT": 1280,
+          "freshCounts": [
+            155,
+            151,
+            154,
+            156,
+            149,
+            151,
+            150,
+            154
+          ],
+          "heldout": 155,
+          "heldoutT": 160,
+          "evals": 800178,
+          "evalsWithReport": 800353,
+          "organismYears": 12502.8,
+          "gens": 2805,
+          "epochs": 281,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 53.3,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            1
+          ],
+          "planesFired": [
+            1
+          ],
+          "lastQuarter": {
+            "gained": 6,
+            "rising": true,
+            "slopePerMEvals": 28.58,
+            "atEvals": 590258,
+            "atCount": 9923
+          },
+          "bestFreshOverIslands": 1220
         }
-      ],
-      "supervisor": [
+      ]
+    },
+    "noExchange": {
+      "what": "4 instances with the exchange off (the second control)",
+      "heldOut": {
+        "n": 5,
+        "mean": 1217.8,
+        "sd": 3.3466401061363023,
+        "min": 1213,
+        "max": 1221,
+        "range": 8,
+        "values": [
+          1221,
+          1221,
+          1217,
+          1213,
+          1217
+        ]
+      },
+      "searched": {
+        "n": 5,
+        "mean": 9923.2,
+        "sd": 4.658325879540846,
+        "min": 9918,
+        "max": 9930,
+        "range": 12,
+        "values": [
+          9923,
+          9925,
+          9918,
+          9920,
+          9930
+        ]
+      },
+      "organismYears": {
+        "n": 5,
+        "mean": 12507.16,
+        "sd": 1.9882152800939987,
+        "min": 12504.2,
+        "max": 12508.7,
+        "range": 4.5,
+        "values": [
+          12504.2,
+          12508.5,
+          12508.7,
+          12506,
+          12508.4
+        ]
+      },
+      "evals": 4002294,
+      "exchanges": 0,
+      "elitesImported": 0,
+      "duplications": 0,
+      "allWithinWall": true,
+      "maxWallS": 30,
+      "pick": {
+        "fresh": 6089,
+        "freshT": 6400,
+        "fitness": null,
+        "why": "one pick per deciding seed (the best library by the searched objective over the arm's instances); fresh is their held-out counts summed over the seeds, and each pick's own searched fitness is in perSeed",
+        "perSeed": [
+          {
+            "seed": "decide1",
+            "island": "i1",
+            "fresh": 1221,
+            "freshT": 1280,
+            "searched": 9923,
+            "fitness": 0.9628172878161478,
+            "len": 256
+          },
+          {
+            "seed": "decide2",
+            "island": "i1",
+            "fresh": 1221,
+            "freshT": 1280,
+            "searched": 9925,
+            "fitness": 0.9630126003161479,
+            "len": 256
+          },
+          {
+            "seed": "decide3",
+            "island": "i1",
+            "fresh": 1217,
+            "freshT": 1280,
+            "searched": 9918,
+            "fitness": 0.9623533256322958,
+            "len": 255
+          },
+          {
+            "seed": "decide4",
+            "island": "i1",
+            "fresh": 1213,
+            "freshT": 1280,
+            "searched": 9920,
+            "fitness": 0.9625243190661479,
+            "len": 256
+          },
+          {
+            "seed": "decide5",
+            "island": "i3",
+            "fresh": 1217,
+            "freshT": 1280,
+            "searched": 9930,
+            "fitness": 0.9635008815661479,
+            "len": 256
+          }
+        ]
+      },
+      "perSeed": [
         {
-          "s": 0,
-          "line": "[population] i0 started (attempt 1, pid 17515)"
+          "seed": "decide1",
+          "pick": "i1",
+          "searched": 9923,
+          "searchedT": 10240,
+          "fitness": 0.9628172878161478,
+          "len": 256,
+          "fresh": 1221,
+          "freshT": 1280,
+          "freshCounts": [
+            151,
+            150,
+            157,
+            155,
+            151,
+            150,
+            152,
+            155
+          ],
+          "heldout": 151,
+          "heldoutT": 160,
+          "evals": 800270,
+          "evalsWithReport": 800857,
+          "organismYears": 12504.2,
+          "gens": 8838,
+          "epochs": 326,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 24.9,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            1,
+            0,
+            1,
+            0
+          ],
+          "planesFired": [
+            1,
+            0,
+            1,
+            0
+          ],
+          "lastQuarter": {
+            "gained": 0,
+            "rising": false,
+            "slopePerMEvals": 0,
+            "atEvals": 599892,
+            "atCount": 9923
+          },
+          "bestFreshOverIslands": 1221
         },
         {
-          "s": 12.5,
-          "line": "[population] request: i0 duplicated into i1 (seed 2), launching"
+          "seed": "decide2",
+          "pick": "i1",
+          "searched": 9925,
+          "searchedT": 10240,
+          "fitness": 0.9630126003161479,
+          "len": 256,
+          "fresh": 1221,
+          "freshT": 1280,
+          "freshCounts": [
+            154,
+            152,
+            157,
+            153,
+            151,
+            150,
+            150,
+            154
+          ],
+          "heldout": 154,
+          "heldoutT": 160,
+          "evals": 800546,
+          "evalsWithReport": 801116,
+          "organismYears": 12508.5,
+          "gens": 8523,
+          "epochs": 331,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 24,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            0,
+            1,
+            1,
+            0
+          ],
+          "planesFired": [
+            0,
+            1,
+            1,
+            0
+          ],
+          "lastQuarter": {
+            "gained": 25,
+            "rising": true,
+            "slopePerMEvals": 124.62,
+            "atEvals": 599936,
+            "atCount": 9900
+          },
+          "bestFreshOverIslands": 1221
         },
         {
-          "s": 12.5,
-          "line": "[population] i1 started (attempt 1, pid 17542)"
+          "seed": "decide3",
+          "pick": "i1",
+          "searched": 9918,
+          "searchedT": 10240,
+          "fitness": 0.9623533256322958,
+          "len": 255,
+          "fresh": 1217,
+          "freshT": 1280,
+          "freshCounts": [
+            153,
+            149,
+            156,
+            156,
+            151,
+            151,
+            149,
+            152
+          ],
+          "heldout": 153,
+          "heldoutT": 160,
+          "evals": 800558,
+          "evalsWithReport": 801107,
+          "organismYears": 12508.7,
+          "gens": 9293,
+          "epochs": 456,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 30,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            0,
+            2,
+            1,
+            0
+          ],
+          "planesFired": [
+            0,
+            2,
+            1,
+            0
+          ],
+          "lastQuarter": {
+            "gained": 7,
+            "rising": true,
+            "slopePerMEvals": 34.73,
+            "atEvals": 599028,
+            "atCount": 9911
+          },
+          "bestFreshOverIslands": 1219
         },
         {
-          "s": 44.4,
-          "line": "[population] request: i0 duplicated into i2 (seed 3), launching"
+          "seed": "decide4",
+          "pick": "i1",
+          "searched": 9920,
+          "searchedT": 10240,
+          "fitness": 0.9625243190661479,
+          "len": 256,
+          "fresh": 1213,
+          "freshT": 1280,
+          "freshCounts": [
+            153,
+            149,
+            155,
+            154,
+            151,
+            148,
+            150,
+            153
+          ],
+          "heldout": 153,
+          "heldoutT": 160,
+          "evals": 800382,
+          "evalsWithReport": 800916,
+          "organismYears": 12506,
+          "gens": 8980,
+          "epochs": 406,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 28,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            2,
+            0,
+            0,
+            1
+          ],
+          "planesFired": [
+            2,
+            0,
+            0,
+            1
+          ],
+          "lastQuarter": {
+            "gained": 0,
+            "rising": false,
+            "slopePerMEvals": 0,
+            "atEvals": 599936,
+            "atCount": 9920
+          },
+          "bestFreshOverIslands": 1219
         },
         {
-          "s": 44.4,
-          "line": "[population] i2 started (attempt 1, pid 17682)"
-        },
-        {
-          "s": 132.7,
-          "line": "[population] i0 exited code=137 signal=SIGKILL after 132.7 s; restart 1 from its checkpoint t=500 in 1000 ms"
-        },
-        {
-          "s": 133.7,
-          "line": "[population] i0 started (attempt 2, pid 18992)"
-        },
-        {
-          "s": 256.1,
-          "line": "[population] i0 ended (code 0, attempt 2, 122.5 s, peak 461.719 MB)"
-        },
-        {
-          "s": 265.7,
-          "line": "[population] i1 ended (code 0, attempt 1, 253.2 s, peak 521.563 MB)"
-        },
-        {
-          "s": 296.3,
-          "line": "[population] i2 ended (code 0, attempt 1, 251.8 s, peak 555.906 MB)"
+          "seed": "decide5",
+          "pick": "i3",
+          "searched": 9930,
+          "searchedT": 10240,
+          "fitness": 0.9635008815661479,
+          "len": 256,
+          "fresh": 1217,
+          "freshT": 1280,
+          "freshCounts": [
+            154,
+            150,
+            156,
+            154,
+            150,
+            149,
+            151,
+            153
+          ],
+          "heldout": 154,
+          "heldoutT": 160,
+          "evals": 800538,
+          "evalsWithReport": 801105,
+          "organismYears": 12508.4,
+          "gens": 9966,
+          "epochs": 462,
+          "exchanges": 0,
+          "elitesImported": 0,
+          "wallS": 24.3,
+          "stoppedBy": "budget",
+          "freshScored": 8,
+          "planesRun": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "planesFired": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "lastQuarter": {
+            "gained": 7,
+            "rising": true,
+            "slopePerMEvals": 34.89,
+            "atEvals": 599936,
+            "atCount": 9923
+          },
+          "bestFreshOverIslands": 1217
         }
       ]
     }
   },
-  "kill": {
-    "id": "i0",
-    "pid": 17515,
-    "atS": 126.6,
-    "checkpointT": 500,
-    "planeT": 500,
-    "planeRows": 423,
-    "planeIndex": 429,
-    "tickAtKill": 720,
-    "supervisorLine": "[population] i0 exited code=137 signal=SIGKILL after 132.7 s; restart 1 from its checkpoint t=500 in 1000 ms",
-    "supervisorCheckpointT": 500,
-    "resumedLine": "[live] resumed brain in 7607 ms at t=500, cells 173, edges 1799, checkpoint every 250 ticks, self every off, generations every off, ticks unbounded, wall 105934 ms, loop off, ledger summary budget 16 MB",
-    "planeResumedLine": "[multiply i0] plane resumed from plane.json at plane 429 with 423 stored elites (saved at t=500); suite 6175 components x 640 tasks, 9 draws cached, 0 built, 104.126 ms",
-    "cameBack": true
-  },
-  "ram": {
-    "peakTreeWsMb": 1710.2,
-    "peakTreePrivateMb": 0,
-    "peakProcs": 7,
-    "samples": 284,
-    "samplerErrors": 0,
-    "under6000": true
+  "config": {
+    "n": 4,
+    "every": 10,
+    "migrants": 8,
+    "evals": 800000,
+    "seeds": [
+      "decide1",
+      "decide2",
+      "decide3",
+      "decide4",
+      "decide5"
+    ],
+    "tuneSeeds": [
+      "tune1",
+      "tune2",
+      "tune3"
+    ],
+    "candidates": [
+      "k4-ladder",
+      "k4-l256",
+      "k16-l256",
+      "k32-l256",
+      "k64-l256"
+    ],
+    "tuneEvery": [
+      10,
+      50,
+      200
+    ],
+    "suite": {
+      "kind": "grid",
+      "seed": "grid/velocity",
+      "draws": 64,
+      "maxDepth": 3,
+      "fresh": "grid/velocity:heldout",
+      "freshMore": 7,
+      "lmax": 256
+    },
+    "out": "..\\..\\..\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\f305380b-0480-49b0-97e2-42df3fa7eb30\\scratchpad\\board24b\\multiply-suite",
+    "evalsPerOrganismYear": 64,
+    "organismYearsPerArm": 12500,
+    "wallGuardS": 120,
+    "maxWorkers": 4,
+    "patience": 200,
+    "provider": null,
+    "schedule": "probe: the tuning seeds of each candidate in parallel; decide: the singles 4 at a time, then per seed the islands arm and the no-exchange arm, each on 4 workers"
   },
   "disk": {
-    "outMb": 16.8,
-    "over200": false
+    "outMb": 19.1,
+    "over100": false
   },
   "machine": {
-    "cpus": 4,
-    "totalMemGb": 15.7,
-    "platform": "linux"
+    "cpus": 32,
+    "totalMemGb": 63.8,
+    "platform": "win32"
   },
   "modelCalls": 0,
-  "wallMs": 566725
+  "wallMs": 464339
 }

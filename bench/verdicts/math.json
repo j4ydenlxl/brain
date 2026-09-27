@@ -5,7 +5,7 @@
   "isTheBar": true,
   "met": false,
   "whyNotTheBar": [],
-  "statement": "On 200 GSM8K test records at seed 1 (the train split was not on disk, so these are TEST records used for development; the public stage must print held-out numbers without them), exact integer accuracy on qwen3:1.7b: program of thought k=5 with verify 180 of 200 = 90.00%, k=5 179 of 200 = 89.50% (95 percent interval 84.48% to 93.03%), k=1 177 of 200 = 88.50%, the model alone in prose 164 of 200 = 82.00% (76.09% to 86.71%), null 0 of 200. The bar (the k=5 interval wholly above the alone interval) is MISSED: gap 7.5 points, clearance -0.0222, paired McNemar p 0.0041 (20 records only k=5 got, 5 only alone got). Mean seconds per record standalone: k=5 verify 52.81, k=5 42.26, k=1 8.73, alone 10.59; model calls per record 6.225, 5.02, 1.06, 1; records whose programs all failed 4 at k=5 and 12 at k=1. The verifier accepted 186, rejected 9, said neither 1; re-sampling changed 3 answers, 2 to right and 1 from right to wrong. On qwen3:30b-a3b (first 60 of these records, PARTIAL: the big model wall clock cap of 25 min: 24.61 min spent, the next record was expected to take 36.92 s): PoT k=1 40 of 40 = 100.00%, alone 39 of 40 = 97.50%, mean 22.23 s and 14.68 s per record. Latencies were measured on one Ollama queue shared with other builders.",
+  "statement": "On 200 GSM8K test records at seed 1 (the train split was not on disk, so these are TEST records used for development; the public stage must print held-out numbers without them), exact integer accuracy on qwen3:1.7b: program of thought k=5 with verify 180 of 200 = 90.00%, k=5 179 of 200 = 89.50% (95 percent interval 84.48% to 93.03%), k=1 177 of 200 = 88.50%, the model alone in prose 164 of 200 = 82.00% (76.09% to 86.71%), null 0 of 200. The bar (the k=5 interval wholly above the alone interval) is MISSED: gap 7.5 points, clearance -0.0222, paired McNemar p 0.0041 (20 records only k=5 got, 5 only alone got). Mean seconds per record standalone: k=5 verify 52.81, k=5 42.26, k=1 8.73, alone 10.59; model calls per record 6.225, 5.02, 1.06, 1; records whose programs all failed 4 at k=5 and 12 at k=1. The verifier accepted 186, rejected 9, said neither 1; re-sampling changed 3 answers, 2 to right and 1 from right to wrong. On qwen3:30b-a3b (first 60 of these records, PARTIAL: the big model wall clock cap of 25 min: 24.61 min spent, the next record was expected to take 36.92 s): PoT k=1 40 of 40 = 100.00%, alone 39 of 40 = 97.50%, mean 22.23 s and 14.68 s per record. Latencies were measured on one Ollama queue shared with other builders. Contaminated, as the split stamped by tools/split-stamp.mjs says: the graded records are GSM8K TEST records this item was developed on, so a held-out claim from them would be contaminated.",
   "item": "math: reason/math.mjs program of thought with an exact executor (P4 toward the 405B GSM8K row)",
   "records": {
     "split": "test",
@@ -582,5 +582,48 @@
     "bigRecordsRunHere": 40,
     "wallMinutes": 235.53
   },
-  "journal": "bench/verdicts/math-journal-test-1.jsonl"
+  "journal": "bench/verdicts/math-journal-test-1.jsonl",
+  "contaminated": true,
+  "split": {
+    "development": {
+      "what": "a seeded slice of the GSM8K TEST split (no train file on disk): every graded record is a development record for this item",
+      "split": "test",
+      "file": "bench/fixtures/public/gsm8k/test.jsonl",
+      "n": 200,
+      "seed": "1"
+    },
+    "heldOut": {
+      "what": "none: this bench grades development records; held-out GSM8K numbers are bench/public.mjs's, and its seed 1 samples of up to this size are inside this one (the sampler is nested)",
+      "n": 0,
+      "overlapWithPublicStage": "bench/public.mjs sampleIds is nested, so its GSM8K test samples at seed 1 of up to 200 records lie inside these 200 development records (its 6 record partial at seed 1 is inside them)"
+    },
+    "contaminated": "the graded records are GSM8K TEST records this item was developed on, so a held-out claim from them would be contaminated"
+  },
+  "splitStampedAt": "2026-09-27T13:44:27.546Z",
+  "splitStampedBy": "tools/split-stamp.mjs",
+  "splitSource": {
+    "writer": "bench/math.mjs",
+    "fn": "splitFor",
+    "args": {
+      "split": "test",
+      "file": "bench/fixtures/public/gsm8k/test.jsonl",
+      "fallback": true,
+      "n": 200,
+      "seed": "1",
+      "overlapWithPublicStage": "bench/public.mjs sampleIds is nested, so its GSM8K test samples at seed 1 of up to 200 records lie inside these 200 development records (its 6 record partial at seed 1 is inside them)"
+    },
+    "fnSha256": "5003ad5022b371f1e07c2c70074fbe0a0b8ef13f67a5fdbc6bcc716ca4339563",
+    "notRerunBecause": "its bar asks Ollama (qwen3:1.7b, and qwen3:30b-a3b for the big stage) and the one queue is taken tonight (MODEL OFF)",
+    "contaminatedMark": "added by the stamp: the split gives a contamination reason, so the file carries contaminated true at its top level and one sentence appended to its statement (splitStampedOver.statementAppended), the rule bench/compress.mjs, bench/math.mjs and bench/synth.mjs apply on their own runs; cutting both out gives the old bytes back"
+  },
+  "splitStampedOver": {
+    "sha256": "0e192f52cb0eed88c131b476a3440ac99c33ab3a8b173b4827a6f97afd3d2b65",
+    "bytes": 14614,
+    "prefixChars": 14611,
+    "suffixChars": 3,
+    "statementAt": 1440,
+    "statementChars": 189,
+    "statementAppended": " Contaminated, as the split stamped by tools/split-stamp.mjs says: the graded records are GSM8K TEST records this item was developed on, so a held-out claim from them would be contaminated.",
+    "markAdded": true
+  }
 }
