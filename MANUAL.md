@@ -354,6 +354,12 @@ whole project done tonight. Lets goo!" (2026-09-17 22:18)
 
 (What the tree already holds, measured: act/code.mjs solveCode() is the working loop (ask the model for code, RUN it on the visible cases, hand the failing case back, ask again, three rounds); on the 30-task HumanEval smoke it scored 23 of 30 against 14 of 30 for the same model with one look and no run. The self/ directory holds the self-iteration loop (propose, trial, apply, census round). The dream region (P11) runs: 231 dreams in 1200 ticks with provenance. The human layer is order 1 and board 25. The part that is not built is the model cell: qwen3:1.7b locally, none on the server; a frontier cell on the server is his billing decision (BRAIN_LLM_BASE and BRAIN_LLM_MODEL by name). Order 40.)
 
+### His words, verbatim (2026-09-27, arrived before 14:11:52 EDT, the clock read at the first command after it; the session limit had cut the morning turn at 10:32 EDT and reset at 14:10)
+
+> I hit my usage limit while you were working, but it has reset now. Please continue from where you left off.
+
+(What was found on return: boards 23 and 24a had finished while the limit held; the rung's 45-minute wall had ended at 983 of 1319. Nine landings were committed with explicit paths (dead-share bar met, census-loop bar met, contamination-split one cause left, ladder-arc 21.25 against 98, plateau not met, boundary bar met, his-data bar met, published-rows 2 of 4 pairs, the verify re-runs of shell-windows, induce and web-vision), the rung was resumed, board 24a was resumed so only fix:imagine runs (its verifier found the bar flips between runs at one seed), and board 26 was written and launched for the open verify problems plus the wiring of the induced programs into ask() and the essay bar with a named judge.)
+
 ## §B. OBJECTIVES + PROGRESS (mine; terse; updated only after re-reading §A)
 
 Rules for this section (P9, his 2026-09-23 order on cache reads): objectives are his WHAT in order; STATE is the whole live picture in under 40 lines and is rewritten whole at every checkpoint; the full history is `brain/docs/LOG.md` (append-only, one line per checkpoint, never read in full at session start; the hook prints its last 3 lines). Numbers live in bench/verdicts and docs/NUMBERS.md, not here. Every fact I need survives on disk, none of it needs my context.
