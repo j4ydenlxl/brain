@@ -91,7 +91,7 @@ function priorGradeOf(seed) {
 }
 
 // ------------------------------------------------------------------ the grader
-const ABSTAIN_RE = /^nothing in memory matches/i;
+const ABSTAIN_RE = /^nothing in memory matches/im;
 /**
  * Grade a wiki answer: the gold head noun among the words of the answer line. An abstention is wrong.
  * @param {string} text what ask() answered
