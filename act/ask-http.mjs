@@ -56,7 +56,7 @@ export const MODEL_NAME = 'BRAIN_LLM_MODEL';
 export const BRAIN_NAME = 'dilation';
 export const LIMITS = Object.freeze({ promptChars: 2000, bodyBytes: 32 * 1024, ipPerMin: 20, instancePerMin: 300, ipTable: 5000, logBytes: 256 * 1024, modelMs: 25_000 });
 /** The footer fields of `brain ask`, as this endpoint returns them (GET lists them). */
-export const FOOTER = Object.freeze(['text', 'from', 'route', 'provenance', 'exact', 'llm', 'promptHash', 'promptChars', 'redacted', 'serverUs', 'host', 'knowledge']);
+export const FOOTER = Object.freeze(['text', 'from', 'route', 'provenance', 'exact', 'native', 'llm', 'promptHash', 'promptChars', 'redacted', 'serverUs', 'host', 'knowledge']);
 export const NOT_CONFIGURED = 'the model cell is not configured on this host: the environment does not hold both ' + BASE_NAME + ' and ' + KEY_NAME + ', so the null provider (offline, no model, no socket) stood in';
 export const USAGE = 'POST application/json {"prompt": "..."} to this path; the organism answers with act/prompt.mjs ask(), as `node bin/brain.mjs ask dilation "..."` does, and returns the CLI footer fields. At most ' + LIMITS.promptChars + ' chars, ' + LIMITS.ipPerMin + ' asks a minute per client.';
 
@@ -264,6 +264,8 @@ export function createHandler(o = {}) {
       text: a.text, from: a.from, route: a.route || null,
       provenance: { answer: p.answer ?? null, method: p.method ?? null, memoryHits: p.memoryHits ?? 0, webPages: p.webPages ?? 0, modelAgreed: p.modelAgreed ?? null },
       exact: a.exact ? { answer: a.exact.answer, method: a.exact.method, ...(typeof a.exact.ns === 'number' ? { ns: a.exact.ns } : {}) } : null,
+      // The native conversation region (act/converse.mjs): the page renders native.answer the way it renders exact.answer.
+      native: a.native && a.native.answer != null ? { kind: a.native.kind, answer: a.native.answer, form: a.native.form ?? null, ...(typeof a.native.ns === 'number' ? { ns: a.native.ns } : {}) } : null,
       llm,
       promptHash: a.promptHash, promptChars: a.promptChars, redacted: a.redacted || 0,
       cites: Array.isArray(a.cites) ? a.cites.slice(0, 5) : [],
