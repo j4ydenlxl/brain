@@ -348,6 +348,12 @@ whole project done tonight. Lets goo!" (2026-09-17 22:18)
 
 (What was found and what binds: on https://dilation.dev/ask the tab printed three refusal lines for "hey" before the server's native greeting, and printed the greeting twice; "hey, how are you" fell to memory with "nothing in memory matches hey."; board 25 (docs/boards/board-25.js: converse-cover, ask-fallthrough, tab-converse) was launched at about 09:40 EDT to fix all three. The code question: the only code bar is a 30-task HumanEval smoke, organism 23 of 30, the model alone 14 of 30, frontier 99.3; no essay bar exists and no model cell is configured on the server; both are order 38. "Make exactly that": this section and docs/VISION.md are the history; every order carries a bar; nothing is reinterpreted; order 39.)
 
+### His words, verbatim (2026-09-27, arrived mid-turn between 09:39:36 and 09:41 EDT)
+
+> It has to work exactly liike how you do but with an added visionary and human layer
+
+(What the tree already holds, measured: act/code.mjs solveCode() is the working loop (ask the model for code, RUN it on the visible cases, hand the failing case back, ask again, three rounds); on the 30-task HumanEval smoke it scored 23 of 30 against 14 of 30 for the same model with one look and no run. The self/ directory holds the self-iteration loop (propose, trial, apply, census round). The dream region (P11) runs: 231 dreams in 1200 ticks with provenance. The human layer is order 1 and board 25. The part that is not built is the model cell: qwen3:1.7b locally, none on the server; a frontier cell on the server is his billing decision (BRAIN_LLM_BASE and BRAIN_LLM_MODEL by name). Order 40.)
+
 ## §B. OBJECTIVES + PROGRESS (mine; terse; updated only after re-reading §A)
 
 Rules for this section (P9, his 2026-09-23 order on cache reads): objectives are his WHAT in order; STATE is the whole live picture in under 40 lines and is rewritten whole at every checkpoint; the full history is `brain/docs/LOG.md` (append-only, one line per checkpoint, never read in full at session start; the hook prints its last 3 lines). Numbers live in bench/verdicts and docs/NUMBERS.md, not here. Every fact I need survives on disk, none of it needs my context.
