@@ -372,6 +372,12 @@ whole project done tonight. Lets goo!" (2026-09-17 22:18)
 
 (Recorded before any answer. The answer is owed from printed numbers only: what exists natively and what each part measured, what the tokens bought as counted things on disk, and what the thing can be used for today, on the site as it is, on this machine, and with a model cell set. The word "wrapper" is answered from his own words in this section: 09-18 08:37 "It should also be a wrapper. Like it auto self improves but the wrapper makes it better", 09-23 "its not a wrapper. Well not intrinsinctly. Basically it is a god at everything natively", and the 09-26 11:21 reading that the model cell answers only what no cell carries.)
 
+### His words, verbatim (2026-09-27, arrived mid-turn after 14:56:49 EDT and before 14:59:39 EDT, the two clock reads around it)
+
+> so is it impressive... I told you to READ OUT MY VISION TO ME
+
+(Recorded before any answer. The answer: docs/VISION.md section 1 and the quote of every order read back to him in his words, each beside its printed status; "impressive" answered from the live site-probe rows and the local numbers, never from a prediction.)
+
 ## §B. OBJECTIVES + PROGRESS (mine; terse; updated only after re-reading §A)
 
 Rules for this section (P9, his 2026-09-23 order on cache reads): objectives are his WHAT in order; STATE is the whole live picture in under 40 lines and is rewritten whole at every checkpoint; the full history is `brain/docs/LOG.md` (append-only, one line per checkpoint, never read in full at session start; the hook prints its last 3 lines). Numbers live in bench/verdicts and docs/NUMBERS.md, not here. Every fact I need survives on disk, none of it needs my context.
