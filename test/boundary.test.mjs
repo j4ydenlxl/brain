@@ -217,3 +217,35 @@ test('the bar split is an object the gate CONTAMINATION row accepts, and the sam
     assert.deepEqual(bad.noSplit, ['boundary.json']);
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
+
+// board 23 fix pass: board 24a's test/plateau.test.mjs brought the first test file whose only boundary
+// is a structuredClone, and no driver ran it (80 boundaries, unexercised 4, unlisted 4). undriven had
+// only met worker-source, workerData and send rows; here it meets every kind a test file can hold.
+test('undriven sorts every kind a test file can hold: each needs a plain driver, only a worker source a fault driver', () => {
+  const SC = 'structured' + 'Clone'; // built, so this file holds no boundary of its own
+  const rows = [
+    ...scanSource('test/clone.test.mjs', 'const y = ' + SC + '(matrixToWire(a));\n'),
+    ...scanSource('test/src.test.mjs', "const src = ['parentPort." + PM + "({ error: String(e) })'];\n"),
+    ...scanSource('test/wd.test.mjs', "import { Worker } from 'node:worker_threads';\nconst w = new Worker(u, { workerData: { job } });\n"),
+    ...scanSource('test/send.test.mjs', "process.send({ op: 'stop' });\n"),
+  ];
+  assert.deepEqual(rows.map((b) => b.file + ' ' + b.kind + ' ' + b.where).sort(), [
+    'test/clone.test.mjs structuredClone code', 'test/send.test.mjs send code', 'test/src.test.mjs postMessage string', 'test/wd.test.mjs workerData code',
+  ]);
+  const files = ['test/clone.test.mjs', 'test/send.test.mjs', 'test/src.test.mjs', 'test/wd.test.mjs'];
+  const none = undriven(rows, []);
+  assert.deepEqual(none.plain, files);
+  assert.deepEqual(none.noFault, ['test/src.test.mjs']);
+  const plain = files.map((f) => ({ name: 'test-' + f, test: f }));
+  assert.deepEqual(undriven(rows, plain).plain, []);
+  assert.deepEqual(undriven(rows, plain).noFault, ['test/src.test.mjs']);
+  const all = [...plain, { name: 'test-src-url', test: 'test/src.test.mjs', fault: 'url' }];
+  assert.deepEqual([undriven(rows, all).plain, undriven(rows, all).noFault], [[], []]);
+  // control: a fault driver is not a plain driver, so the clone file under a fault alone is still named
+  const faultOnly = undriven(rows, [...plain.filter((d) => d.test !== 'test/clone.test.mjs'), { name: 'x', test: 'test/clone.test.mjs', fault: 'url' }]);
+  assert.deepEqual(faultOnly.plain, ['test/clone.test.mjs']);
+  // the live tree holds more than one kind in its test files, so the sort above is not a check of one kind
+  const live = scanTree().filter((b) => b.file.startsWith('test/'));
+  assert.ok(new Set(live.map((b) => b.kind)).size >= 2, 'kinds in test files: ' + [...new Set(live.map((b) => b.kind))].join(', '));
+  assert.deepEqual(undriven(live, DRIVERS).plain, []);
+});

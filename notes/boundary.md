@@ -75,3 +75,33 @@ calls were made.
 - Bar re-run: 76 boundaries, 30 drivers, probe 74, literal 2, unexercised 0, over cap 0, allowlist 76
   listed, unlisted 0, stale 0, test/boundary.test.mjs 11 of 11, barMet true, isTheBar true; wall 89.19 s,
   peak 1434.6 MB (outer), 1164.1 MB (inner).
+
+## Measured (board 23, item boundary, second fix pass, 2026-09-27T13:36:53.168Z, Node v24.15.0, model off)
+
+- Read first: the verify plane's findings (80 boundaries, unexercised 4, unlisted 4, tests 9 of 11), the
+  runJobs function and the worker block of generations/plateau.mjs, test/plateau.test.mjs (the wire test
+  and the runJobs test, whose bad job rejects through the worker's `{ error }` post), this tool's DRIVERS,
+  bar() and ALLOWLIST, test/boundary.test.mjs and bench/gate.mjs boundaryRow. No published method applies
+  (a missing driver and allowlist entry), so no web page was read.
+- Before, on the live tree: --static printed 80 boundaries in 24 files (structuredClone 1), allowlist
+  unlisted 4, stale 0. The four are board 24a's untracked files: generations/plateau.mjs workerData
+  `{ plateauJob: job }`, postMessage `{ result }` and `{ error: ... }`, and test/plateau.test.mjs
+  structuredClone `matrixToWire(a.searched)`, the first test file whose only boundary is a clone.
+- Fix: 'plateau' added to TEST_DRIVERS (its test reaches the error post itself, so no fault driver is
+  needed); probe --label plateau --only test-plateau: 17 of 17, measured live 4, 5 message records;
+  --print-allowlist entries pasted: `{result}` copied 0 wire 1523, `{error}` copied 0 wire 372,
+  workerData copied 13592 wire 14376, structuredClone copied 9488 wire 9884.
+- test/boundary.test.mjs 12 of 12: added one case, undriven meets all four kinds a test file can hold
+  (clone, worker source, workerData, send): each needs a plain driver, only the worker source a fault
+  driver, a fault driver alone is not a plain driver, and the live tree's test files hold at least two
+  kinds. Mutant control: 'plateau' dropped from TEST_DRIVERS gives 10 of 12 (both driver cases fail).
+- First bar: barMet false, unexercised 3, orphan sites 3. Board 24a edited generations/plateau.mjs during
+  the run: the scan read lines 538, 552, 554 and the probe measured 578, 592, 594. Cause read after: the
+  file's mtime moved twice more within 3 minutes. Waited for a 240 s quiet window on both plateau files.
+- Second bar (same command, wrapped in budget.mjs --ram-mb 4000 --disk-mb 200 --dir bench/verdicts):
+  80 boundaries, 31 drivers, probe 78, literal 2, unexercised 0, orphan sites 0, over cap 0, allowlist 80
+  listed, unlisted 0, stale 0, test/boundary.test.mjs 12 of 12, barMet true, isTheBar true; wall
+  119.53 s, peak 1452.1 MB (outer), 1150.3 MB (inner). Plateau file mtimes unchanged across the run.
+- Gate BOUNDARY row computed alone with the gate's own live scan: GREEN, 80 against 80 listed.
+- Coupling: the five new lines are true only while board 24a's plateau files exist. If those files do
+  not land with this change, the four entries go stale and the test-plateau driver has no file: red.

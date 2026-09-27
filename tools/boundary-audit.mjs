@@ -637,7 +637,7 @@ function installJail(jailDir, origMkdir) {
 // Test drivers run a test file that reaches boundaries; function drivers reach the ones no
 // test does (the grid, imagine and public runners, the live-shards census, the generations
 // worker, the self-code worker) and, with a fault, the error posts of the worker sources.
-const TEST_DRIVERS = ['code', 'public', 'generations', 'velocity', 'years', 'knowledge', 'native', 'runtime', 'cloud', 'self-code', 'web-daemon', 'multiply', 'autopilot'];
+const TEST_DRIVERS = ['code', 'public', 'generations', 'velocity', 'years', 'knowledge', 'native', 'runtime', 'cloud', 'self-code', 'web-daemon', 'multiply', 'autopilot', 'plateau'];
 export const DRIVERS = [
   ...TEST_DRIVERS.map((t) => ({ name: 'test-' + t, test: 'test/' + t + '.test.mjs' })),
   // board 23: the autopilot test's eval worker posts { error } only when its import fails
@@ -1165,6 +1165,10 @@ export const ALLOWLIST = [
   { key: "daemon/run.mjs|workerData|{dir:this.dir,seed:this.seed,popSize:this.popSize,ticks:this.ticks}", bytes: 0, wire: 208, how: "probe" },
   { key: "generations/evaluate.mjs|postMessage|{type:'jobs',batch:this.batch,jobs:JSON.stringify(slice)}", bytes: 0, wire: 4151, how: "probe" },
   { key: "generations/evaluate.mjs|workerData|{task:this.task,cfg:this.cfg}", bytes: 0, wire: 299, how: "probe" },
+  // board 23 fix pass: --probe --label plateau --only test-plateau, then --print-allowlist --label plateau
+  { key: "generations/plateau.mjs|postMessage|{result}", bytes: 0, wire: 1523, how: "probe" },
+  { key: "generations/plateau.mjs|postMessage|{error:String((e&&e.stack)||e)}", bytes: 0, wire: 372, how: "probe" },
+  { key: "generations/plateau.mjs|workerData|{plateauJob:job}", bytes: 13592, wire: 14376, how: "probe" },
   { key: "generations/velocity.mjs|postMessage|out", bytes: 1376, wire: 3080, how: "probe" },
   { key: "generations/velocity.mjs|workerData|{velocityAudit:{seed,counts,maxDepth,components,batch}}", bytes: 0, wire: 1720, how: "probe" },
   { key: "generations/worker.mjs|postMessage|{type:'results',batch:msg.batch,results:JSON.stringify(out)}", bytes: 0, wire: 711, how: "probe" },
@@ -1190,6 +1194,7 @@ export const ALLOWLIST = [
   { key: "test/autopilot.test.mjs|postMessage|worker-source:{json:JSON.stringify(out)}", bytes: 0, wire: 17560, how: "probe" },
   { key: "test/autopilot.test.mjs|postMessage|worker-source:{error:String((e&&e.stack)||e)}", bytes: 0, wire: 757, how: "probe" },
   { key: "test/cloud.test.mjs|send|{op:'stop'}", bytes: 0, wire: 13, how: "probe" },
+  { key: "test/plateau.test.mjs|structuredClone|matrixToWire(a.searched)", bytes: 9488, wire: 9884, how: "probe" },
   { key: "tools/boundary-audit.mjs|postMessage|{view}", bytes: 1048576, wire: 1048585, how: "probe" },
   { key: "tools/boundary-audit.mjs|postMessage|{sview}", bytes: 0, wire: 10, how: "probe" },
   { key: "tools/ingest-wiki.mjs|postMessage|{id,shared,spans:mine}", bytes: 0, wire: 64, how: "probe" },
