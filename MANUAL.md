@@ -400,6 +400,12 @@ Followed by a 125-row prompt-to-idea map written by another model from this sect
 
 (Logged as he asked: idea 1, an OS (Tesseract is a browser); idea 2, a real human simulation, every neuron simulated and sandboxed, the AI generates objects in the sandbox, clock dilation to watch a raw human and a brain react to things and drugs. Nothing is built from this line. His question, whether the brain can build them or the engineer must, is answered in the transcript from the printed bars of orders 6 and 38: today the engineer builds; the brain builds them alone on the day those bars print MET.)
 
+### His words, verbatim (2026-09-27, recorded at the clock read 15:20:04 EDT)
+
+> No , respond to the ideas .. and tell me is the brain self iterating and generating itself so if its opus 4 level yesterday, its opus 5 level a day/month/week later? or something??
+
+(Recorded before any answer. The answer to the second question comes only from printed verdicts: the generations loop, the plateau bar, the rung, and whether any file prints a level against time. The ideas are answered as ideas, nothing built.)
+
 ## §B. OBJECTIVES + PROGRESS (mine; terse; updated only after re-reading §A)
 
 Rules for this section (P9, his 2026-09-23 order on cache reads): objectives are his WHAT in order; STATE is the whole live picture in under 40 lines and is rewritten whole at every checkpoint; the full history is `brain/docs/LOG.md` (append-only, one line per checkpoint, never read in full at session start; the hook prints its last 3 lines). Numbers live in bench/verdicts and docs/NUMBERS.md, not here. Every fact I need survives on disk, none of it needs my context.
