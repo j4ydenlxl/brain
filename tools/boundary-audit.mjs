@@ -637,9 +637,11 @@ function installJail(jailDir, origMkdir) {
 // Test drivers run a test file that reaches boundaries; function drivers reach the ones no
 // test does (the grid, imagine and public runners, the live-shards census, the generations
 // worker, the self-code worker) and, with a fault, the error posts of the worker sources.
-const TEST_DRIVERS = ['code', 'public', 'generations', 'velocity', 'years', 'knowledge', 'native', 'runtime', 'cloud', 'self-code', 'web-daemon', 'multiply'];
+const TEST_DRIVERS = ['code', 'public', 'generations', 'velocity', 'years', 'knowledge', 'native', 'runtime', 'cloud', 'self-code', 'web-daemon', 'multiply', 'autopilot'];
 export const DRIVERS = [
   ...TEST_DRIVERS.map((t) => ({ name: 'test-' + t, test: 'test/' + t + '.test.mjs' })),
+  // board 23: the autopilot test's eval worker posts { error } only when its import fails
+  { name: 'test-autopilot-url', test: 'test/autopilot.test.mjs', fault: 'url' },
   { name: 'calibrate', fn: 'calibrate' },
   { name: 'act-extra', fn: 'act-extra' },
   { name: 'grid', fn: 'grid' },
@@ -1183,6 +1185,10 @@ export const ALLOWLIST = [
   { key: "runtime/shard.mjs|postMessage|{type:'stopped',shard:ME}", bytes: 0, wire: 40, how: "probe" },
   { key: "runtime/shard.mjs|postMessage|{type:'error',shard:ME,error:String(err&&err.stack||err)}", bytes: 0, wire: 387, how: "probe" },
   { key: "runtime/shard.mjs|postMessage|{type:'ready',shard:ME,cells:myCells.length,edges:brain.connectome.live(),ghosts:ghostLocal.length,c~0d1a73ab8adf", bytes: 0, wire: 118, how: "probe" },
+  // board 23: --probe --label autopilot --only test-autopilot,test-autopilot-url, then --print-allowlist --label autopilot
+  { key: "test/autopilot.test.mjs|workerData|{...data,autopilot:newURL('../self/autopilot.mjs',import.meta.url).href}", bytes: 0, wire: 848, how: "probe" },
+  { key: "test/autopilot.test.mjs|postMessage|worker-source:{json:JSON.stringify(out)}", bytes: 0, wire: 17560, how: "probe" },
+  { key: "test/autopilot.test.mjs|postMessage|worker-source:{error:String((e&&e.stack)||e)}", bytes: 0, wire: 757, how: "probe" },
   { key: "test/cloud.test.mjs|send|{op:'stop'}", bytes: 0, wire: 13, how: "probe" },
   { key: "tools/boundary-audit.mjs|postMessage|{view}", bytes: 1048576, wire: 1048585, how: "probe" },
   { key: "tools/boundary-audit.mjs|postMessage|{sview}", bytes: 0, wire: 10, how: "probe" },

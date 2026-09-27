@@ -162,3 +162,58 @@ test('GATE: every boundary in the tree is in the allowlist with measured bytes u
   for (const a of ALLOWLIST) assert.ok(Number.isFinite(a.bytes) && a.bytes < CAP_BYTES, a.key);
   if (chk.stale.length) t.diagnostic('stale allowlist entries (a boundary removed): ' + chk.stale.map((a) => a.key).join(', '));
 });
+
+// board 23: the autopilot gap. A test file that holds a boundary must be one of the drivers (the
+// gate went red when test/autopilot.test.mjs gained three and no driver ran it), and a test file
+// that holds a worker source must also run under a fault, or its error post is never measured.
+import { DRIVERS, splitFor } from '../tools/boundary-audit.mjs';
+import { contaminationRecords, contaminationRow } from '../bench/gate.mjs';
+
+/** Test files holding a boundary with no plain driver, and those holding a worker source with no fault driver. */
+function undriven(found, drivers) {
+  const inTests = found.filter((b) => b.file.startsWith('test/'));
+  const files = [...new Set(inTests.map((b) => b.file))].sort();
+  const withSource = [...new Set(inTests.filter((b) => b.where === 'string').map((b) => b.file))].sort();
+  return {
+    files,
+    withSource,
+    plain: files.filter((f) => !drivers.some((d) => d.test === f && !d.fault)),
+    noFault: withSource.filter((f) => !drivers.some((d) => d.test === f && d.fault)),
+  };
+}
+
+test('every test file holding a boundary is a driver, and one holding a worker source also runs under a fault', () => {
+  const found = scanTree();
+  const u = undriven(found, DRIVERS);
+  assert.ok(u.files.includes('test/autopilot.test.mjs') && u.files.includes('test/cloud.test.mjs'), 'the scan saw a worker source test file and a send test file: ' + u.files.join(', '));
+  assert.ok(u.withSource.includes('test/autopilot.test.mjs') && !u.withSource.includes('test/cloud.test.mjs'), u.withSource.join(', '));
+  assert.deepEqual(u.plain, []);
+  assert.deepEqual(u.noFault, []);
+  // controls: without the autopilot pair both checks name it; without only its fault driver, only the second does
+  const none = undriven(found, DRIVERS.filter((d) => d.test !== 'test/autopilot.test.mjs'));
+  assert.deepEqual(none.plain, ['test/autopilot.test.mjs']);
+  assert.deepEqual(none.noFault, ['test/autopilot.test.mjs']);
+  const plainOnly = undriven(found, DRIVERS.filter((d) => !(d.test === 'test/autopilot.test.mjs' && d.fault)));
+  assert.deepEqual(plainOnly.plain, []);
+  assert.deepEqual(plainOnly.noFault, ['test/autopilot.test.mjs']);
+});
+
+test('the bar split is an object the gate CONTAMINATION row accepts, and the same verdict without it is a cause', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'boundary-split-'));
+  try {
+    const split = splitFor({ boundaries: 76, drivers: 30 });
+    assert.equal(split.heldOut.n, 0);
+    assert.match(split.heldOut.what, /^none/);
+    assert.notEqual(split.contaminated, true);
+    const file = path.join(dir, 'boundary.json');
+    fs.writeFileSync(file, JSON.stringify({ isTheBar: true, barMet: true, statement: 'a boundary audit', split }));
+    const ok = contaminationRow(contaminationRecords(dir));
+    assert.equal(ok.ok, true, ok.line);
+    assert.equal(ok.counts.withSplit, 1);
+    assert.equal(ok.counts.contaminated, 0);
+    fs.writeFileSync(file, JSON.stringify({ isTheBar: true, barMet: true, statement: 'a boundary audit' }));
+    const bad = contaminationRow(contaminationRecords(dir));
+    assert.equal(bad.ok, false);
+    assert.deepEqual(bad.noSplit, ['boundary.json']);
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});

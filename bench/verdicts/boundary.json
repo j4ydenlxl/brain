@@ -1,10 +1,22 @@
 {
- "at": "2026-09-26T09:14:10.885Z",
+ "at": "2026-09-27T00:59:33.627Z",
  "command": "node tools/budget.mjs --ram-mb 6000 --disk-mb 2000 --dir state/boundary --record state/boundary/budget-bar.json --wait-free-ram-mb 16384 -- node --max-old-space-size=6000 tools/boundary-audit.mjs --bar",
  "node": "v24.15.0",
  "isTheBar": true,
  "barMet": true,
- "statement": "tools/boundary-audit.mjs found 73 boundaries by static scan (54 postMessage, 14 workerData, 5 send, 0 structuredClone) and ran 28 drivers under the preload probe, which wrote 1300 message records; 71 boundaries were measured live, 2 from their literal value, 0 not at all. Before the fix 0 boundaries carried a message whose copied buffers reached the 16777216 byte cap and 0 carried a view on a wasm heap (largest copied 1048576 bytes at tools/boundary-audit.mjs:126); after it 0 and 0, the largest copied 1048576 bytes at tools/boundary-audit.mjs:126. Fixed: 0. On the wire (strings included; reported, not the cap measure) 1 boundaries reached the cap, the largest 28041254 bytes at runtime/shard.mjs:474 via driver live-shards-bench, and the wire estimate read 1.0911 of v8.serialize on a sample. The allowlist lists 73 boundaries (unlisted 0, stale 0). Touched tests: test/boundary.test.mjs 9/9. calibrate: the clone delivered 1048576 bytes for an 8192 byte view, the walker said 1048576.",
+ "statement": "tools/boundary-audit.mjs found 76 boundaries by static scan (56 postMessage, 15 workerData, 5 send, 0 structuredClone) and ran 30 drivers under the preload probe, which wrote 1289 message records; 74 boundaries were measured live, 2 from their literal value, 0 not at all. Before the fix 0 boundaries carried a message whose copied buffers reached the 16777216 byte cap and 0 carried a view on a wasm heap (largest copied 1048576 bytes at tools/boundary-audit.mjs:126); after it 0 and 0, the largest copied 1048576 bytes at tools/boundary-audit.mjs:126. Fixed: 0. On the wire (strings included; reported, not the cap measure) 1 boundaries reached the cap, the largest 28041254 bytes at runtime/shard.mjs:474 via driver live-shards-bench, and the wire estimate read 1.0911 of v8.serialize on a sample. The allowlist lists 76 boundaries (unlisted 0, stale 0). Touched tests: test/boundary.test.mjs 11/11. calibrate: the clone delivered 1048576 bytes for an 8192 byte view, the walker said 1048576.",
+ "split": {
+  "development": {
+   "what": "the whole source tree this tool scans, its DRIVERS and its ALLOWLIST, written against the same boundaries the bar measures",
+   "boundaries": 76,
+   "drivers": 30
+  },
+  "heldOut": {
+   "what": "none: an audit of every boundary in the tree has no set it was not written against",
+   "n": 0
+  },
+  "contaminated": "no held-out set: the bar audits the same tree and drivers the allowlist was measured on"
+ },
  "cap": 16777216,
  "calibrate": {
   "wireEstimate": 699437,
@@ -20,9 +32,9 @@
   "owned": 8192
  },
  "summary": {
-  "static": 73,
-  "boundaries": 73,
-  "probe": 71,
+  "static": 76,
+  "boundaries": 76,
+  "probe": 74,
   "literal": 2,
   "unexercised": 0,
   "overCap": 0,
@@ -55,7 +67,7 @@
    "bytes": 28041254,
    "driver": "live-shards-bench"
   },
-  "messages": 1989,
+  "messages": 1664,
   "fixed": 0,
   "before": {
    "boundaries": 76,
@@ -96,7 +108,7 @@
   }
  },
  "allowlist": {
-  "listed": 73,
+  "listed": 76,
   "unlisted": [],
   "stale": [],
   "overCap": []
@@ -107,15 +119,15 @@
    "test": "test/boundary.test.mjs",
    "code": 0,
    "timedOut": false,
-   "ms": 393,
-   "tests": 9,
+   "ms": 520,
+   "tests": 11,
    "suites": 0,
-   "pass": 9,
+   "pass": 11,
    "fail": 0,
    "cancelled": 0,
    "skipped": 0,
    "todo": 0,
-   "duration_ms": 356.3207
+   "duration_ms": 482.3265
   }
  ],
  "drivers": [
@@ -124,7 +136,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 2181,
+   "ms": 1580,
    "log": "state/boundary/after/logs/test-code.log",
    "tests": {
     "tests": 20,
@@ -134,7 +146,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 2114.0647
+    "duration_ms": 1531.678
    }
   },
   {
@@ -142,7 +154,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 22253,
+   "ms": 11280,
    "log": "state/boundary/after/logs/test-public.log",
    "tests": {
     "tests": 18,
@@ -152,7 +164,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 22181.9558
+    "duration_ms": 11236.5077
    }
   },
   {
@@ -160,7 +172,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 5058,
+   "ms": 2822,
    "log": "state/boundary/after/logs/test-generations.log",
    "tests": {
     "tests": 16,
@@ -170,7 +182,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 4992.5912
+    "duration_ms": 2777.0489
    }
   },
   {
@@ -178,7 +190,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 6064,
+   "ms": 3569,
    "log": "state/boundary/after/logs/test-velocity.log",
    "tests": {
     "tests": 19,
@@ -188,7 +200,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 5997.1598
+    "duration_ms": 3523.9104
    }
   },
   {
@@ -196,7 +208,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 11092,
+   "ms": 9220,
    "log": "state/boundary/after/logs/test-years.log",
    "tests": {
     "tests": 18,
@@ -206,7 +218,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 11020.3336
+    "duration_ms": 9175.3612
    }
   },
   {
@@ -214,7 +226,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 471,
+   "ms": 298,
    "log": "state/boundary/after/logs/test-knowledge.log",
    "tests": {
     "tests": 8,
@@ -224,7 +236,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 403.6109
+    "duration_ms": 254.0935
    }
   },
   {
@@ -232,7 +244,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 647,
+   "ms": 378,
    "log": "state/boundary/after/logs/test-native.log",
    "tests": {
     "tests": 7,
@@ -242,7 +254,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 582.1259
+    "duration_ms": 329.0904
    }
   },
   {
@@ -250,7 +262,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 2631,
+   "ms": 1507,
    "log": "state/boundary/after/logs/test-runtime.log",
    "tests": {
     "tests": 5,
@@ -260,7 +272,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 2562.1889
+    "duration_ms": 1462.253
    }
   },
   {
@@ -268,7 +280,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 13039,
+   "ms": 10085,
    "log": "state/boundary/after/logs/test-cloud.log",
    "tests": {
     "tests": 7,
@@ -278,7 +290,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 12974.2493
+    "duration_ms": 10039.588
    }
   },
   {
@@ -286,7 +298,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 1154,
+   "ms": 1297,
    "log": "state/boundary/after/logs/test-self-code.log",
    "tests": {
     "tests": 17,
@@ -296,7 +308,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 1114.2454
+    "duration_ms": 1251.5555
    }
   },
   {
@@ -304,7 +316,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 212,
+   "ms": 217,
    "log": "state/boundary/after/logs/test-web-daemon.log",
    "tests": {
     "tests": 4,
@@ -314,7 +326,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 169.3102
+    "duration_ms": 173.3739
    }
   },
   {
@@ -322,7 +334,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 29238,
+   "ms": 8886,
    "log": "state/boundary/after/logs/test-multiply.log",
    "tests": {
     "tests": 9,
@@ -332,7 +344,43 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 29193.0678
+    "duration_ms": 8839.2355
+   }
+  },
+  {
+   "name": "test-autopilot",
+   "fault": null,
+   "code": 0,
+   "timedOut": false,
+   "ms": 8586,
+   "log": "state/boundary/after/logs/test-autopilot.log",
+   "tests": {
+    "tests": 34,
+    "suites": 1,
+    "pass": 34,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 8534.2581
+   }
+  },
+  {
+   "name": "test-autopilot-url",
+   "fault": "url",
+   "code": 1,
+   "timedOut": false,
+   "ms": 7795,
+   "log": "state/boundary/after/logs/test-autopilot-url.log",
+   "tests": {
+    "tests": 34,
+    "suites": 1,
+    "pass": 32,
+    "fail": 2,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 7751.4967
    }
   },
   {
@@ -340,7 +388,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 49,
+   "ms": 52,
    "log": "state/boundary/after/logs/calibrate.log"
   },
   {
@@ -348,7 +396,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 169,
+   "ms": 172,
    "log": "state/boundary/after/logs/act-extra.log"
   },
   {
@@ -356,7 +404,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 816,
+   "ms": 819,
    "log": "state/boundary/after/logs/grid.log"
   },
   {
@@ -364,7 +412,7 @@
    "fault": "url",
    "code": 0,
    "timedOut": false,
-   "ms": 75,
+   "ms": 78,
    "log": "state/boundary/after/logs/grid-url.log"
   },
   {
@@ -372,7 +420,7 @@
    "fault": "poison",
    "code": 0,
    "timedOut": false,
-   "ms": 90,
+   "ms": 97,
    "log": "state/boundary/after/logs/grid-poison.log"
   },
   {
@@ -380,7 +428,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 1923,
+   "ms": 1941,
    "log": "state/boundary/after/logs/imagine.log",
    "jailLeaks": []
   },
@@ -389,7 +437,7 @@
    "fault": "url",
    "code": 0,
    "timedOut": false,
-   "ms": 108,
+   "ms": 111,
    "log": "state/boundary/after/logs/imagine-url.log",
    "jailLeaks": []
   },
@@ -398,7 +446,7 @@
    "fault": "poison",
    "code": 0,
    "timedOut": false,
-   "ms": 366,
+   "ms": 373,
    "log": "state/boundary/after/logs/imagine-poison.log",
    "jailLeaks": []
   },
@@ -407,7 +455,7 @@
    "fault": "url",
    "code": 0,
    "timedOut": false,
-   "ms": 142,
+   "ms": 146,
    "log": "state/boundary/after/logs/public-url.log"
   },
   {
@@ -415,7 +463,7 @@
    "fault": "poison",
    "code": 0,
    "timedOut": false,
-   "ms": 154,
+   "ms": 156,
    "log": "state/boundary/after/logs/public-poison.log"
   },
   {
@@ -423,7 +471,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 2080,
+   "ms": 1969,
    "log": "state/boundary/after/logs/live-shards.log"
   },
   {
@@ -431,7 +479,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 4193,
+   "ms": 4066,
    "log": "state/boundary/after/logs/live-shards-bench.log"
   },
   {
@@ -439,7 +487,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 382,
+   "ms": 336,
    "log": "state/boundary/after/logs/generations-worker.log"
   },
   {
@@ -447,7 +495,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 3318,
+   "ms": 3207,
    "log": "state/boundary/after/logs/self-code.log"
   },
   {
@@ -455,7 +503,7 @@
    "fault": "url",
    "code": 0,
    "timedOut": false,
-   "ms": 3148,
+   "ms": 3286,
    "log": "state/boundary/after/logs/self-code-url.log"
   },
   {
@@ -463,7 +511,7 @@
    "fault": "poison",
    "code": 0,
    "timedOut": false,
-   "ms": 3234,
+   "ms": 3379,
    "log": "state/boundary/after/logs/self-code-poison.log"
   }
  ],
@@ -698,7 +746,7 @@
   {
    "key": "bench/cloud-host.mjs|send|{op:'stop'}",
    "file": "bench/cloud-host.mjs",
-   "line": 338,
+   "line": 709,
    "kind": "send",
    "where": "code",
    "expr": "{ op: 'stop' }",
@@ -742,7 +790,7 @@
   {
    "key": "bench/grid.mjs|postMessage|{id,task}",
    "file": "bench/grid.mjs",
-   "line": 111,
+   "line": 141,
    "kind": "postMessage",
    "where": "code",
    "expr": "{ id, task }",
@@ -767,7 +815,7 @@
   {
    "key": "bench/grid.mjs|workerData|{searchUrl:pathToFileURL(path.join(ROOT,'capability','grid-search.mjs')).href,budgetMs:cfg.budgetMs,~420d5966c479",
    "file": "bench/grid.mjs",
-   "line": 90,
+   "line": 120,
    "kind": "workerData",
    "where": "code",
    "expr": "{ searchUrl: pathToFileURL(path.join(ROOT, 'capability', 'grid-search.mjs')).href, budgetMs: cfg.budgetMs, maxDepth: cfg.maxDepth, library: cfg.libraryJson |...",
@@ -793,7 +841,7 @@
   {
    "key": "bench/grid.mjs|postMessage|worker-source:{type:\"ready\",macros:library?library.macros.length:0}",
    "file": "bench/grid.mjs",
-   "line": 74,
+   "line": 104,
    "kind": "postMessage",
    "where": "string",
    "expr": "{ type: \"ready\", macros: library ? library.macros.length : 0 }",
@@ -818,7 +866,7 @@
   {
    "key": "bench/grid.mjs|postMessage|worker-source:{type:\"bootFailed\",error:String(e&&e.stack||e)}",
    "file": "bench/grid.mjs",
-   "line": 75,
+   "line": 105,
    "kind": "postMessage",
    "where": "string",
    "expr": "{ type: \"bootFailed\", error: String(e && e.stack || e) }",
@@ -842,7 +890,7 @@
   {
    "key": "bench/grid.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,solved:r.solved,solvedFirst:r.~72a687c3165e",
    "file": "bench/grid.mjs",
-   "line": 80,
+   "line": 110,
    "kind": "postMessage",
    "where": "string",
    "expr": "{ type: \"done\", id: msg.id, wallMs: performance.now() - t0, r: { status: r.status, solved: r.solved, solvedFirst: r.solvedFirst, names: r.names, depth: r.dep...",
@@ -866,7 +914,7 @@
   {
    "key": "bench/grid.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:\"error\",solved:false,error:String(e&&e.message||e)}}",
    "file": "bench/grid.mjs",
-   "line": 82,
+   "line": 112,
    "kind": "postMessage",
    "where": "string",
    "expr": "{ type: \"done\", id: msg.id, wallMs: performance.now() - t0, r: { status: \"error\", solved: false, error: String(e && e.message || e) } }",
@@ -890,7 +938,7 @@
   {
    "key": "bench/imagine.mjs|postMessage|msg",
    "file": "bench/imagine.mjs",
-   "line": 134,
+   "line": 148,
    "kind": "postMessage",
    "where": "code",
    "expr": "msg",
@@ -915,7 +963,7 @@
   {
    "key": "bench/imagine.mjs|workerData|{inventUrl:pathToFileURL(path.join(ROOT,'capability','grid-invent.mjs')).href,libraries}",
    "file": "bench/imagine.mjs",
-   "line": 115,
+   "line": 129,
    "kind": "workerData",
    "where": "code",
    "expr": "{ inventUrl: pathToFileURL(path.join(ROOT, 'capability', 'grid-invent.mjs')).href, libraries }",
@@ -941,7 +989,7 @@
   {
    "key": "bench/imagine.mjs|postMessage|worker-source:{type:\"ready\"}",
    "file": "bench/imagine.mjs",
-   "line": 87,
+   "line": 101,
    "kind": "postMessage",
    "where": "string",
    "expr": "{ type: \"ready\" }",
@@ -966,7 +1014,7 @@
   {
    "key": "bench/imagine.mjs|postMessage|worker-source:{type:\"bootFailed\",error:String(e&&e.stack||e)}",
    "file": "bench/imagine.mjs",
-   "line": 88,
+   "line": 102,
    "kind": "postMessage",
    "where": "string",
    "expr": "{ type: \"bootFailed\", error: String(e && e.stack || e) }",
@@ -990,7 +1038,7 @@
   {
    "key": "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,mined:r.mined||[],baseline:r.baseline}}",
    "file": "bench/imagine.mjs",
-   "line": 94,
+   "line": 108,
    "kind": "postMessage",
    "where": "string",
    "expr": "{ type: \"done\", id: msg.id, wallMs: performance.now() - t0, r: { status: r.status, mined: r.mined || [], baseline: r.baseline } }",
@@ -1014,7 +1062,7 @@
   {
    "key": "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,solved:r.solved,names:r.names,~d0b942e54d00",
    "file": "bench/imagine.mjs",
-   "line": 105,
+   "line": 119,
    "kind": "postMessage",
    "where": "string",
    "expr": "{ type: \"done\", id: msg.id, wallMs: performance.now() - t0, r: { status: r.status, solved: r.solved, names: r.names, depth: r.depth, used: r.used, searched: ...",
@@ -1038,7 +1086,7 @@
   {
    "key": "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:\"error\",solved:false,error:String(e&&e.stack||e)}}",
    "file": "bench/imagine.mjs",
-   "line": 107,
+   "line": 121,
    "kind": "postMessage",
    "where": "string",
    "expr": "{ type: \"done\", id: msg.id, wallMs: performance.now() - t0, r: { status: \"error\", solved: false, error: String(e && e.stack || e) } }",
@@ -1290,12 +1338,12 @@
    "expr": "{ type: 'status', t: lastT, tps: lastTps, rssMb: Math.round(mu.rss / 1048576), maxRssMb: Math.round((process.resourceUsage().maxRSS || 0) / 1024), heapUsedMb...",
    "transfer": null,
    "how": "probe",
-   "messages": 12,
+   "messages": 11,
    "beforeBytes": null,
    "beforeWire": null,
    "beforeWasmViews": null,
    "afterBytes": 0,
-   "afterWire": 927,
+   "afterWire": 937,
    "afterWasmViews": 0,
    "underCap": true,
    "wireUnderCap": true,
@@ -1342,7 +1390,7 @@
    "expr": "{ id, ok: true, row, best: elite(), summary: epochs.summary() }",
    "transfer": null,
    "how": "probe",
-   "messages": 15,
+   "messages": 17,
    "beforeBytes": 0,
    "beforeWire": 5094,
    "beforeWasmViews": 0,
@@ -1352,7 +1400,7 @@
    "underCap": true,
    "wireUnderCap": true,
    "fixed": false,
-   "worstDriver": "self-code-url",
+   "worstDriver": "self-code",
    "drivers": [
     "generations-worker",
     "self-code",
@@ -1464,13 +1512,13 @@
   {
    "key": "daemon/multiply.mjs|postMessage|m",
    "file": "daemon/multiply.mjs",
-   "line": 483,
+   "line": 489,
    "kind": "postMessage",
    "where": "code",
    "expr": "m",
    "transfer": null,
    "how": "probe",
-   "messages": 272,
+   "messages": 102,
    "beforeBytes": 0,
    "beforeWire": 76,
    "beforeWasmViews": 0,
@@ -1488,13 +1536,13 @@
   {
    "key": "daemon/multiply.mjs|postMessage|m#2",
    "file": "daemon/multiply.mjs",
-   "line": 485,
+   "line": 491,
    "kind": "postMessage",
    "where": "code",
    "expr": "m",
    "transfer": null,
    "how": "probe",
-   "messages": 274,
+   "messages": 104,
    "beforeBytes": 0,
    "beforeWire": 1236,
    "beforeWasmViews": 0,
@@ -1512,7 +1560,7 @@
   {
    "key": "daemon/multiply.mjs|workerData|(options)planeWorkerOptions(data,heapMb)",
    "file": "daemon/multiply.mjs",
-   "line": 498,
+   "line": 504,
    "kind": "workerData",
    "where": "code",
    "expr": "(options) planeWorkerOptions(data, heapMb)",
@@ -1536,13 +1584,13 @@
   {
    "key": "daemon/run.mjs|postMessage|{id,op,...args}",
    "file": "daemon/run.mjs",
-   "line": 391,
+   "line": 400,
    "kind": "postMessage",
    "where": "code",
    "expr": "{ id, op, ...args }",
    "transfer": null,
    "how": "probe",
-   "messages": 31,
+   "messages": 32,
    "beforeBytes": 0,
    "beforeWire": 50,
    "beforeWasmViews": 0,
@@ -1564,7 +1612,7 @@
   {
    "key": "daemon/run.mjs|workerData|{dir:this.dir,seed:this.seed,popSize:this.popSize,ticks:this.ticks}",
    "file": "daemon/run.mjs",
-   "line": 382,
+   "line": 391,
    "kind": "workerData",
    "where": "code",
    "expr": "{ dir: this.dir, seed: this.seed, popSize: this.popSize, ticks: this.ticks }",
@@ -2063,7 +2111,7 @@
    "expr": "{ type: 'stopped', shard: ME }",
    "transfer": null,
    "how": "probe",
-   "messages": 20,
+   "messages": 21,
    "beforeBytes": 0,
    "beforeWire": 40,
    "beforeWasmViews": 0,
@@ -2073,8 +2121,9 @@
    "underCap": true,
    "wireUnderCap": true,
    "fixed": false,
-   "worstDriver": "test-runtime",
+   "worstDriver": "live-shards",
    "drivers": [
+    "live-shards",
     "test-runtime"
    ]
   },
@@ -2127,6 +2176,79 @@
     "live-shards",
     "live-shards-bench",
     "test-runtime"
+   ]
+  },
+  {
+   "key": "test/autopilot.test.mjs|workerData|{...data,autopilot:newURL('../self/autopilot.mjs',import.meta.url).href}",
+   "file": "test/autopilot.test.mjs",
+   "line": 112,
+   "kind": "workerData",
+   "where": "code",
+   "expr": "{ ...data, autopilot: new URL('../self/autopilot.mjs', import.meta.url).href }",
+   "transfer": null,
+   "how": "probe",
+   "messages": 6,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 848,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-autopilot",
+   "drivers": [
+    "test-autopilot",
+    "test-autopilot-url"
+   ]
+  },
+  {
+   "key": "test/autopilot.test.mjs|postMessage|worker-source:{json:JSON.stringify(out)}",
+   "file": "test/autopilot.test.mjs",
+   "line": 108,
+   "kind": "postMessage",
+   "where": "string",
+   "expr": "{ json: JSON.stringify(out) }",
+   "transfer": null,
+   "how": "probe",
+   "messages": 3,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 17563,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-autopilot",
+   "drivers": [
+    "test-autopilot"
+   ]
+  },
+  {
+   "key": "test/autopilot.test.mjs|postMessage|worker-source:{error:String((e&&e.stack)||e)}",
+   "file": "test/autopilot.test.mjs",
+   "line": 109,
+   "kind": "postMessage",
+   "where": "string",
+   "expr": "{ error: String((e && e.stack) || e) }",
+   "transfer": null,
+   "how": "probe",
+   "messages": 3,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 757,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-autopilot-url",
+   "drivers": [
+    "test-autopilot-url"
    ]
   },
   {
