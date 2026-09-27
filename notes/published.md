@@ -85,10 +85,26 @@ summary of one search result claimed GPT-4o scored 96.8 on GSM8K in the Llama pa
 read directly says 96.1 (96.8 is Llama 3 405B), which is why every value here was read from the
 source text and not from a summary.
 
-## Bar, this run (2026-09-27T00:53:27.859Z, the verdict's at)
+Fix pass (2026-09-27, verify plane): read the two findings, then `test/published.test.mjs` line 54
+(`assert.equal(r.readAt.slice(0, 10), '2026-09-26')`, so any row added on 2026-09-27 or later turned
+the gate red) and `test/published-rows-bar.mjs` line 199 (the statement typed "under 15 words", a
+number no line of the bar printed). Fixed at the source: `rowProblems` now checks that the date read
+is a real calendar date and not after the latest calendar date anywhere on Earth at the time of the
+check (UTC+14), the test asserts that date check instead of one literal day and proves it with a copy
+of a real added row dated today and a fixed clock (2026-10-06 passes and 2026-10-07 fails at
+2026-10-05 12:00 UTC; 2026-09-31 and 2026-02-29 are not dates, 2024-02-29 is); the word limit is one
+constant, `QUOTE_WORDS_UNDER`, and the bar prints a ROWS line (counts, dates read, after-today and
+off-calendar counts) and a QUOTES line (the longest added quote against the limit), so every number
+the statement quotes is printed. The control now requires each mutant to be rejected for the fault
+it plants (its `expect` among the problems returned), not merely rejected, and gained a date after
+today and a date off the calendar for both kinds of row (12 mutants became 16).
+
+## Bar, this run (2026-09-27T13:25:31.171Z, the verdict's at)
 
 `node tools/budget.mjs --ram-mb 4000 --disk-mb 64 --dir <scratch> --record <scratch>/budget.json -- node --max-old-space-size=4000 test/published-rows-bar.mjs`
-printed: `CONTROL mutants of real rows rejected: 12/12`, `TESTS node --test test/published.test.mjs: tests 11 pass 11 fail 0 skipped 0 (exit 0)`,
+printed: `ROWS 40 in research/published.json: 33 read before 2026-09-26, 7 read on or after it; dates read 2026-09-18 to 2026-09-26; 0 after today, 0 not on the calendar`,
+`QUOTES of the 7 added rows: longest 14 words (whitespace tokens), the limit is under 15 words`,
+`CONTROL mutants of real rows rejected for their own cause: 16/16`, `TESTS node --test test/published.test.mjs: tests 12 pass 12 fail 0 skipped 0 (exit 0)`,
 `BAR published-rows: barMet false; required pairs with a row 2/4; rows clean 40/40; added 7`. Not met
 because Claude Opus 5.5 has no published GSM8K or HumanEval number at the places above. The bar is
 re-run as written: a later published row (a third party measuring Opus 5.5 on either set) turns the

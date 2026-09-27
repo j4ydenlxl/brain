@@ -11,8 +11,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  rowProblems, modelOf, omissionsOf, matrix, mutants, readPublished,
-  NOTES_FILE, FULL_CITATION_FROM, MODELS, BENCHMARKS,
+  rowProblems, modelOf, omissionsOf, matrix, mutants, caught, readPublished, readDateOf, latestDayAt,
+  NOTES_FILE, FULL_CITATION_FROM, QUOTE_WORDS_UNDER, MODELS, BENCHMARKS,
 } from './published-rows-bar.mjs';
 import { publishedFor, SET_META, SETS } from '../bench/public.mjs';
 
@@ -22,6 +22,19 @@ const added = rows.filter((r) => String(r.readAt || '').slice(0, 10) >= FULL_CIT
 const earlier = rows.filter((r) => String(r.readAt || '').slice(0, 10) < FULL_CITATION_FROM);
 const omitted = omissionsOf(readFileSync(NOTES_FILE, 'utf8'));
 const of = (model, benchmark) => rows.filter((r) => r.benchmark === benchmark && modelOf(r) === model);
+
+/** The assertions every added row must pass at time now; the real rows and a copy dated today both go through it. */
+function assertAddedRow(r, now) {
+  assert.deepEqual(rowProblems(r, now), [], r.system + ' (' + r.benchmark + ') passes the row check');
+  assert.ok(r.model && r.metric && r.printed && r.quote, r.system + ' carries model, metric, printed, quote');
+  assert.ok(r.quote.trim().split(/\s+/).length < QUOTE_WORDS_UNDER, r.system + ' quote is under ' + QUOTE_WORDS_UNDER + ' words');
+  assert.ok(r.quote.includes(r.printed), r.system + ' quote holds ' + r.printed);
+  const day = r.readAt.slice(0, 10);
+  const t = readDateOf(r.readAt);
+  assert.ok(t !== null, r.system + ' was read on a calendar date: ' + day);
+  assert.ok(day >= FULL_CITATION_FROM, r.system + ' was read on or after ' + FULL_CITATION_FROM + ': ' + day);
+  assert.ok(t <= latestDayAt(now), r.system + ' was not read after today: ' + day);
+}
 
 test('the population checked holds both kinds of row: earlier boards\' rows and the rows this item added', () => {
   assert.ok(Array.isArray(rows) && rows.length > 0, 'research/published.json has rows');
@@ -45,21 +58,42 @@ test('every accuracy is a number in [0,100]', () => {
   }
 });
 
-test('every row passes the row check; an added row carries model, metric, the printed value and a quote under 15 words that holds it', () => {
-  for (const r of rows) assert.deepEqual(rowProblems(r), [], r.system + ' (' + r.benchmark + ')');
-  for (const r of added) {
-    assert.ok(r.model && r.metric && r.printed && r.quote, r.system + ' carries model, metric, printed, quote');
-    assert.ok(r.quote.trim().split(/\s+/).length < 15, r.system + ' quote is under 15 words');
-    assert.ok(r.quote.includes(r.printed), r.system + ' quote holds ' + r.printed);
-    assert.equal(r.readAt.slice(0, 10), '2026-09-26', r.system + ' was read today');
+test('every row passes the row check; an added row carries model, metric, the printed value and a quote under ' + QUOTE_WORDS_UNDER + ' words that holds it, read on a real date not after today', () => {
+  const now = Date.now();
+  for (const r of rows) assert.deepEqual(rowProblems(r, now), [], r.system + ' (' + r.benchmark + ')');
+  for (const r of added) assertAddedRow(r, now);
+});
+
+test('the date check is not pinned to one day: a row added today or on any day since passes, a future or impossible date fails', () => {
+  const base = added[0];
+  // the real clock: a copy of a real added row, dated today in UTC and in this machine's zone, passes every added-row assertion
+  const now = Date.now();
+  const utcToday = new Date(now).toISOString().slice(0, 10);
+  const d = new Date(now);
+  const localToday = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  for (const day of [utcToday, localToday]) assertAddedRow({ ...base, readAt: day + ' 09:00 EDT' }, now);
+  // a fixed clock, so the boundary is exact whatever day the gate runs: 2026-10-05 12:00 UTC
+  const fixed = Date.UTC(2026, 9, 5, 12);
+  for (const day of ['2026-09-26', '2026-09-27', '2026-10-05', '2026-10-06']) {
+    assertAddedRow({ ...base, readAt: day + ' 20:45 EDT' }, fixed);
   }
+  assert.ok(rowProblems({ ...base, readAt: '2026-10-07 00:00 EDT' }, fixed).some((p) => /is after today/.test(p)), '2026-10-07 is after the latest date on Earth at 2026-10-05 12:00 UTC');
+  assert.ok(rowProblems({ ...base, readAt: '2026-09-31 00:00 EDT' }, fixed).some((p) => /is not a calendar date/.test(p)), 'September has 30 days');
+  assert.ok(rowProblems({ ...earlier[0], readAt: '2026-02-29 00:00 EDT' }, fixed).some((p) => /is not a calendar date/.test(p)), '2026 is not a leap year');
+  assert.deepEqual(rowProblems({ ...earlier[0], readAt: '2024-02-29 00:00 EDT' }, fixed), [], '2024 is a leap year');
+  assert.ok(rowProblems({ ...base, readAt: '2025-09-26 20:45 EDT' }, fixed).length === 0, 'a date before FULL_CITATION_FROM is an earlier-format row, still clean with the full fields');
 });
 
 test('control: the row check rejects broken copies of real rows of both kinds, and accepts a clean one', () => {
   const ms = mutants(rows);
   assert.ok(ms.length >= 12, 'mutants of both an earlier row and an added row: ' + ms.length);
   assert.ok(ms.some((m) => /url removed/.test(m.name)) && ms.some((m) => /quote padded/.test(m.name)), 'both kinds of mutant are present');
-  for (const m of ms) assert.ok(rowProblems(m.row).length > 0, 'rejected: ' + m.name);
+  for (const m of ms) {
+    const c = caught(m);
+    assert.ok(c.rejected, 'rejected: ' + m.name);
+    assert.ok(c.forItsCause, m.name + ' is rejected for the fault it plants (' + m.expect + '), got: ' + c.problems.join('; '));
+  }
+  assert.ok(ms.some((m) => /date after today/.test(m.name)) && ms.some((m) => /date not on the calendar/.test(m.name)), 'the date mutants are present');
   assert.deepEqual(rowProblems({ benchmark: 'gsm8k', system: 'X', score: 50, source: 'https://x.example', readAt: '2026-09-18 00:00 EDT' }), [], 'an earlier-format clean row passes');
   assert.deepEqual(rowProblems({ benchmark: 'gsm8k', system: 'X', model: 'X', metric: 'm', score: 4.5, printed: '0.045', quote: 'score 0.045', source: 'https://x.example', readAt: '2026-09-26 00:00 EDT' }), [], 'a fraction printed as 0.045 is the percent 4.5');
   assert.ok(rowProblems({ benchmark: 'gsm8k', system: 'X', model: 'X', metric: 'm', score: 4.5, printed: '0.46', quote: 'score 0.46', source: 'https://x.example', readAt: '2026-09-26 00:00 EDT' }).length > 0, '0.46 is not 4.5');

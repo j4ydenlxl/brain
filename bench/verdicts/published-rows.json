@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-27T00:54:26.138Z",
+  "at": "2026-09-27T13:26:54.091Z",
   "item": "published-rows",
   "board": 23,
   "command": "node test/published-rows-bar.mjs (launched as node tools/budget.mjs --ram-mb 4000 --disk-mb 64 --dir <scratch> --record <scratch>/budget.json -- node --max-old-space-size=4000 test/published-rows-bar.mjs)",
@@ -18,64 +18,112 @@
     "contaminated": false
   },
   "control": {
-    "name": "mutants of real rows through rowProblems",
-    "rejected": 12,
-    "of": 12,
+    "name": "mutants of real rows through rowProblems, each required to fail for the fault it plants",
+    "rejected": 16,
+    "of": 16,
     "mutants": [
       {
         "name": "url removed (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
-        "rejected": true
+        "expect": "/source has no URL/",
+        "rejected": true,
+        "forItsCause": true
       },
       {
         "name": "score 101 (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
-        "rejected": true
+        "expect": "/score is not a number in \\[0,100\\]/",
+        "rejected": true,
+        "forItsCause": true
       },
       {
         "name": "score as a string (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
-        "rejected": true
+        "expect": "/score is not a number in \\[0,100\\]/",
+        "rejected": true,
+        "forItsCause": true
       },
       {
         "name": "date removed (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
-        "rejected": true
+        "expect": "/readAt has no date/",
+        "rejected": true,
+        "forItsCause": true
+      },
+      {
+        "name": "date after today (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
+        "expect": "/is after today/",
+        "rejected": true,
+        "forItsCause": true
+      },
+      {
+        "name": "date not on the calendar (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
+        "expect": "/is not a calendar date/",
+        "rejected": true,
+        "forItsCause": true
       },
       {
         "name": "url removed (Human Panel)",
-        "rejected": true
+        "expect": "/source has no URL/",
+        "rejected": true,
+        "forItsCause": true
       },
       {
         "name": "score 101 (Human Panel)",
-        "rejected": true
+        "expect": "/score is not a number in \\[0,100\\]/",
+        "rejected": true,
+        "forItsCause": true
       },
       {
         "name": "score as a string (Human Panel)",
-        "rejected": true
+        "expect": "/score is not a number in \\[0,100\\]/",
+        "rejected": true,
+        "forItsCause": true
       },
       {
         "name": "date removed (Human Panel)",
-        "rejected": true
+        "expect": "/readAt has no date/",
+        "rejected": true,
+        "forItsCause": true
+      },
+      {
+        "name": "date after today (Human Panel)",
+        "expect": "/is after today/",
+        "rejected": true,
+        "forItsCause": true
+      },
+      {
+        "name": "date not on the calendar (Human Panel)",
+        "expect": "/is not a calendar date/",
+        "rejected": true,
+        "forItsCause": true
       },
       {
         "name": "printed changed (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
-        "rejected": true
+        "expect": "/is not the score/",
+        "rejected": true,
+        "forItsCause": true
       },
       {
-        "name": "quote padded to 15 words (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
-        "rejected": true
+        "name": "quote padded past 15 words (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
+        "expect": "/words, not under/",
+        "rejected": true,
+        "forItsCause": true
       },
       {
         "name": "quote without the value (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
-        "rejected": true
+        "expect": "/does not hold the printed value/",
+        "rejected": true,
+        "forItsCause": true
       },
       {
         "name": "model removed (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
-        "rejected": true
+        "expect": "/no model/",
+        "rejected": true,
+        "forItsCause": true
       }
     ]
   },
   "tests": {
     "command": "node --test test/published.test.mjs",
-    "tests": 11,
-    "pass": 11,
+    "tests": 12,
+    "pass": 12,
     "fail": 0,
     "skipped": 0,
     "todo": 0,
@@ -84,9 +132,21 @@
   },
   "rows": {
     "total": 40,
+    "earlier": 33,
     "added": 7,
     "clean": 40,
-    "bad": []
+    "bad": [],
+    "datesRead": {
+      "first": "2026-09-18",
+      "last": "2026-09-26",
+      "afterToday": 0,
+      "offCalendar": 0
+    }
+  },
+  "quotes": {
+    "limitUnderWords": 15,
+    "longestWords": 14,
+    "of": 7
   },
   "required": [
     {
@@ -251,6 +311,6 @@
     }
   ],
   "modelCalls": 0,
-  "ms": 239,
-  "statement": "research/published.json holds 40 cited rows, 7 of them added on 2026-09-26 with a source URL, the date read, the metric variant, the value exactly as printed and a quote under 15 words; 40 of 40 rows pass the row check and 12 of 12 deliberately broken copies of real rows are rejected by it. Of the four pairs the item named (GPT-4o and Claude Opus 5.5, each on GSM8K and HumanEval) 2 have a published row that bench/public.mjs publishedFor returns: GPT-4o gsm8k, GPT-4o humaneval. Claude Opus 5.5 gsm8k and Claude Opus 5.5 humaneval were not found published (the vendor announcement and system card were read and name neither benchmark), so no number was typed and the bar as written is not met. Both endpoints do have a row on ARC-AGI-1: GPT-4o 4.5 percent and Claude Opus 5.5 98.5 percent on the ARC Prize semi-private set, which is not the public evaluation set this tree runs. Pairs with no published row: Claude Opus 5.5 gsm8k, Claude Opus 5.5 humaneval, Claude Fable 5.1 gsm8k, Claude Fable 5.1 humaneval. No model was called and no set was re-run."
+  "ms": 320,
+  "statement": "research/published.json holds 40 cited rows, 7 of them read on or after 2026-09-26 and carrying a source URL, the date read, the metric variant, the value exactly as printed and a quote under 15 words (the longest is 14); 40 of 40 rows pass the row check (0 of them dated after today), and 16 of 16 deliberately broken copies of real rows are rejected by it, each for the fault planted in it. Of the four pairs the item named (GPT-4o and Claude Opus 5.5, each on GSM8K and HumanEval) 2 have a published row that bench/public.mjs publishedFor returns: GPT-4o gsm8k, GPT-4o humaneval. Claude Opus 5.5 gsm8k and Claude Opus 5.5 humaneval were not found published (the vendor announcement and system card were read and name neither benchmark), so no number was typed and the bar as written is not met. Both endpoints do have a row on ARC-AGI-1: GPT-4o 4.5 percent and Claude Opus 5.5 98.5 percent on the ARC Prize semi-private set, which is not the public evaluation set this tree runs. Pairs with no published row: Claude Opus 5.5 gsm8k, Claude Opus 5.5 humaneval, Claude Fable 5.1 gsm8k, Claude Fable 5.1 humaneval. No model was called and no set was re-run."
 }
