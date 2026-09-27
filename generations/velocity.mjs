@@ -777,7 +777,7 @@ export function syntheticMatrix({ seed = 'synthetic', tasks = 256, planted = 8, 
  * probe never saw, and prints the undirected engine (directed 0) on the same seeds beside it.
  */
 export class MatrixElites {
-  constructor(matrix, { seed = 'velocity', popSize = 64, lmax = 32, initLen = [1, 8], mutationRate = 1.5, crossoverRate = 0.15, bins = DEFAULT_BINS, carry = null, prune = true, directed = 0.75 } = {}) {
+  constructor(matrix, { seed = 'velocity', popSize = 64, lmax = 32, initLen = [1, 8], mutationRate = 1.5, crossoverRate = 0.15, bins = DEFAULT_BINS, carry = null, prune = true, directed = 0.75, descriptor = null } = {}) {
     if (!(lmax >= 1 && lmax <= LEN_CAP)) throw new Error('MatrixElites: lmax must be 1..' + LEN_CAP);
     this.m = matrix;
     this.seed = String(seed);
@@ -788,7 +788,13 @@ export class MatrixElites {
     this.mutationRate = Math.max(1, mutationRate);
     this.crossoverRate = crossoverRate;
     this.bins = bins;
-    this.capacity = bins ** 4;
+    // THE ARCHIVE DESCRIPTORS (plateau item, board 24A). With no `descriptor` the four axes below
+    // (binOf) key the archive, exactly as before. A `descriptor` ({ capacity, binOf(engine, buf, n,
+    // count, words) }) keys it instead: generations/plateau.mjs passes behaviour descriptors (which
+    // tasks a library solves), so two libraries of one score that solve different tasks can hold
+    // two cells. Scoring and selection are untouched: only the cell a scored library lands in moves.
+    this.descriptor = descriptor && typeof descriptor.binOf === 'function' ? descriptor : null;
+    this.capacity = this.descriptor ? Math.max(1, descriptor.capacity | 0) : bins ** 4;
     this.fit = new Float64Array(this.capacity).fill(-Infinity);
     this.cnt = new Int32Array(this.capacity);
     this.len = new Int32Array(this.capacity);
@@ -920,6 +926,7 @@ export class MatrixElites {
   }
 
   binOf(buf, n, count, words) {
+    if (this.descriptor) return this.descriptor.binOf(this, buf, n, count, words);
     const m = this.m, B = this.bins;
     let sumSize = 0, ops = 0;
     for (let i = 0; i < n; i++) { const c = buf[i]; sumSize += m.size[c]; ops |= m.opMask[c]; }
