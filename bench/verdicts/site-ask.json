@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-27T01:06:59.317Z",
+  "at": "2026-09-27T14:25:11.982Z",
   "command": "node bench/site-ask.mjs --url https://dilation.dev/ask",
   "node": "v24.21.0",
   "isTheBar": true,
@@ -7,6 +7,8 @@
   "met": {
     "exact391": true,
     "novelRoutePrinted": true,
+    "heyInTheTab": true,
+    "compoundInTheTab": true,
     "parity": true,
     "tabNoRequest": true,
     "refusedOnePost": true,
@@ -25,8 +27,10 @@
   "control": false,
   "modelCalls": 0,
   "split": {
-    "what": "no learning happens here: the tab prompts are the page examples (web/ask.mjs EXAMPLES), graded against act/solve.mjs in node; the server prompts are the two the brief names plus a 2001 character cap probe and 30 rapid repeats of the first; none is a held-out set",
+    "what": "no learning happens here: the tab prompts are the page examples (web/ask.mjs EXAMPLES) plus \"hey, how are you\" and \"tell me a joke\", each graded against what the tab order computes in node (act/converse.mjs converse() first, then act/solve.mjs solve()); the server prompts are the two the brief names plus a 2001 character cap probe and 30 rapid repeats of the first; none is a held-out set",
     "development": [
+      "hey",
+      "who are you",
       "what is 17 times 23",
       "2 to the power of 100",
       "15 percent of 200",
@@ -34,6 +38,8 @@
       "subtract 3 from 10",
       "Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?",
       "write a poem about the sea",
+      "hey, how are you",
+      "tell me a joke",
       "what is 17 times 23",
       "write a poem about the sea",
       "2001 x characters (the 413 probe)"
@@ -41,14 +47,21 @@
     "heldOut": [],
     "contaminated": false
   },
-  "statement": "The prompt box on https://dilation.dev/ask answered in the browser tab with the organism exact reader (act/exact-read.mjs sha256 6d7e524b90a6, tasks/exact.mjs sha256 ede0ce88f1ad, act/word.mjs sha256 c2dd2fe71b77), 6 of 7 examples with no request; 7 of 7 page results equal act/solve.mjs solve() on the same prompt; the 1 prompt(s) the tab refused made 1 POST(s) to https://dilation.dev/api/ask and the page printed the server route (direct, provenance memory, model null). On the server, \"what is 17 times 23\" answered 391 with provenance exact in 770 us on host iad1; \"write a poem about the sea\" answered with route direct and llm null (the model cell is not configured on this host: the environment does not hold both BRAIN_LLM_BASE and BRAIN_LLM_KEY, so the null provider (offline, no model, no socket) stood in); a 2001 character prompt got 413; 30 rapid POSTs got {\"200\":17,\"429\":13}. The knowledge store on the server host: absent (no finished ingest at bench/fixtures/wiki/store (no readable meta.json)), so the knowledge tier answered nothing there. Cold start 68.078 ms and warm 0.419 ms were measured in a fresh node v24.21.0 child process on the bench host (linux), not the Vercel instance. Every rule met.",
-  "coldStartMs": 68.078,
-  "warmMs": 0.419,
+  "joke": {
+    "prompt": "tell me a joke",
+    "firstLine": "No region of mine carries jokes, songs, poems, stories or free writing on this host yet, so I will not fake one. Three prompts I do carry: \"what is 17 times 23\", \"what can you do\" and \"who made you\".",
+    "answeredIn": "tab",
+    "ok": true,
+    "dependsOn": "items converse-cover (act/converse.mjs, the uncarried kind, in the deployed page and on the server) or ask-fallthrough (act/prompt.mjs, the memory-miss end) being deployed; recorded as a row, never a rule of this bar"
+  },
+  "statement": "The prompt box on https://dilation.dev/ask answered in the browser tab with the organism modules it copies byte for byte (act/exact-read.mjs sha256 6d7e524b90a6, tasks/exact.mjs sha256 ede0ce88f1ad, act/word.mjs sha256 c2dd2fe71b77, act/converse.mjs sha256 4389c43af457), 9 of 10 graded prompts with no request; 10 of 10 page results equal what the tab order computes in node on the same prompt (the conversation region first, then act/solve.mjs). \"hey\" was answered in the tab by the conversation region (route direct, provenance native, no request, 1953 ns per ask on this device), and \"hey, how are you\" was too. \"tell me a joke\" is a row, not a rule: its first line does not start with \"nothing in memory matches\", which depends on items converse-cover (act/converse.mjs, the uncarried kind, in the deployed page and on the server) or ask-fallthrough (act/prompt.mjs, the memory-miss end) being deployed; recorded as a row, never a rule of this bar. The 1 prompt(s) the tab refused made 1 POST(s) to https://dilation.dev/api/ask and the page printed the server route (direct, provenance memory, model null). On the server, \"what is 17 times 23\" answered 391 with provenance exact in 1241 us on host iad1; \"write a poem about the sea\" answered with route direct and llm null (the model cell is not configured on this host: the environment does not hold both BRAIN_LLM_BASE and BRAIN_LLM_KEY, so the null provider (offline, no model, no socket) stood in); a 2001 character prompt got 413; 30 rapid POSTs got {\"200\":16,\"429\":14}. The knowledge store on the server host: absent (no finished ingest at bench/fixtures/wiki/store (no readable meta.json)), so the knowledge tier answered nothing there. Cold start 45.66 ms and warm 0.371 ms were measured in a fresh node v24.21.0 child process on the bench host (linux), not the Vercel instance. Every rule met.",
+  "coldStartMs": 45.66,
+  "warmMs": 0.371,
   "coldStart": {
-    "line": "importMs 123.167 coldStartMs 68.078 warmMs 0.419 status 200 200 serverUs 670 184",
-    "importMs": 123.167,
-    "coldStartMs": 68.078,
-    "warmMs": 0.419,
+    "line": "importMs 128.626 coldStartMs 45.660 warmMs 0.371 status 200 200 serverUs 576 171",
+    "importMs": 128.626,
+    "coldStartMs": 45.66,
+    "warmMs": 0.371,
     "where": "a fresh node v24.21.0 child process on the bench host (linux), not the Vercel instance"
   },
   "requestsAfterLoad": 1,
@@ -68,18 +81,86 @@
       "file": "act/word.mjs",
       "bytes": 103185,
       "sha256": "c2dd2fe71b77a9dfd1a9dcf33f61c2805fa11434e66e7c6cac6589beca2578cb"
+    },
+    {
+      "file": "act/converse.mjs",
+      "bytes": 39590,
+      "sha256": "4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"
     }
   ],
   "rows": [
+    {
+      "prompt": "hey",
+      "answer": "Hello. I am Dilation, a computational organism: cells wired into circuits and regions, grown by generations and measured by benches. Ask me a sum, an equation, a word problem or a fact I hold; every answer prints the route that reached it.",
+      "route": "direct",
+      "provenance": "native",
+      "nsPerAsk": 1953,
+      "cli": null,
+      "cliMethod": null,
+      "expected": {
+        "from": "converse",
+        "answer": "Hello. I am Dilation, a computational organism: cells wired into circuits and regions, grown by generations and measured by benches. Ask me a sum, an equation, a word problem or a fact I hold; every answer prints the route that reached it.",
+        "kind": "greeting",
+        "route": "direct",
+        "provenance": "native"
+      },
+      "parity": true,
+      "inBar": true,
+      "firstLine": "Hello. I am Dilation, a computational organism: cells wired into circuits and regions, grown by generations and measured by benches. Ask me a sum, an equation, a word problem or a fact I hold; every answer prints the route that reached it.",
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> hey",
+        "Hello. I am Dilation, a computational organism: cells wired into circuits and regions, grown by generations and measured by benches. Ask me a sum, an equation, a word problem or a fact I hold; every answer prints the route that reached it.",
+        "answered natively in this tab by the conversation region (kind greeting), with no model, no memory read and no network.",
+        "route direct provenance native kind greeting model none tokens 0 network 0 1,953 ns per ask on this device (median of 7 batches, 1,792 asks)"
+      ]
+    },
+    {
+      "prompt": "who are you",
+      "answer": "I am Dilation, a computational organism: cells wired into circuits and regions, grown by generations and measured by benches. I am not a chat model: language models are cells I can route to, and the exact path, my memory and this region answer without them. Ask me a sum, an equation, a word problem or a fact I hold; every answer prints the route that reached it.",
+      "route": "direct",
+      "provenance": "native",
+      "nsPerAsk": 2051,
+      "cli": null,
+      "cliMethod": null,
+      "expected": {
+        "from": "converse",
+        "answer": "I am Dilation, a computational organism: cells wired into circuits and regions, grown by generations and measured by benches. I am not a chat model: language models are cells I can route to, and the exact path, my memory and this region answer without them. Ask me a sum, an equation, a word problem or a fact I hold; every answer prints the route that reached it.",
+        "kind": "identity",
+        "route": "direct",
+        "provenance": "native"
+      },
+      "parity": true,
+      "inBar": true,
+      "firstLine": "I am Dilation, a computational organism: cells wired into circuits and regions, grown by generations and measured by benches. I am not a chat model: language models are cells I can route to, and the exact path, my memory and this region answer without them. Ask me a sum, an equation, a word problem or a fact I hold; every answer prints the route that reached it.",
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> who are you",
+        "I am Dilation, a computational organism: cells wired into circuits and regions, grown by generations and measured by benches. I am not a chat model: language models are cells I can route to, and the exact path, my memory and this region answer without them. Ask me a sum, an equation, a word problem or a fact I hold; every answer prints the route that reached it.",
+        "answered natively in this tab by the conversation region (kind identity), with no model, no memory read and no network.",
+        "route direct provenance native kind identity model none tokens 0 network 0 2,051 ns per ask on this device (median of 7 batches, 7,168 asks)"
+      ]
+    },
     {
       "prompt": "what is 17 times 23",
       "answer": "391",
       "route": "exact",
       "provenance": "exact",
-      "nsPerAsk": 15625,
+      "nsPerAsk": 8594,
       "cli": "391",
       "cliMethod": "exact.arith",
+      "expected": {
+        "from": "solve",
+        "answer": "391",
+        "method": "exact.arith",
+        "route": "exact",
+        "provenance": "exact"
+      },
       "parity": true,
+      "inBar": true,
+      "firstLine": "391",
       "requests": [],
       "server": null,
       "lines": [
@@ -89,7 +170,7 @@
         "- expression 17 * 23",
         "- exact rational arithmetic on BigInt, no rounding at any step",
         "391",
-        "route exact provenance exact method exact.arith model none tokens 0 network 0 15,625 ns per ask on this device (median of 7 batches, 448 asks)"
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 8,594 ns per ask on this device (median of 7 batches, 896 asks)"
       ]
     },
     {
@@ -100,7 +181,16 @@
       "nsPerAsk": 31250,
       "cli": "1267650600228229401496703205376",
       "cliMethod": "exact.arith",
+      "expected": {
+        "from": "solve",
+        "answer": "1267650600228229401496703205376",
+        "method": "exact.arith",
+        "route": "exact",
+        "provenance": "exact"
+      },
       "parity": true,
+      "inBar": true,
+      "firstLine": "1267650600228229401496703205376",
       "requests": [],
       "server": null,
       "lines": [
@@ -118,10 +208,19 @@
       "answer": "30",
       "route": "exact",
       "provenance": "exact",
-      "nsPerAsk": 10938,
+      "nsPerAsk": 7813,
       "cli": "30",
       "cliMethod": "exact.arith",
+      "expected": {
+        "from": "solve",
+        "answer": "30",
+        "method": "exact.arith",
+        "route": "exact",
+        "provenance": "exact"
+      },
       "parity": true,
+      "inBar": true,
+      "firstLine": "30",
       "requests": [],
       "server": null,
       "lines": [
@@ -131,7 +230,7 @@
         "- expression 15% of 200",
         "- exact rational arithmetic on BigInt, no rounding at any step",
         "30",
-        "route exact provenance exact method exact.arith model none tokens 0 network 0 10,938 ns per ask on this device (median of 7 batches, 896 asks)"
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 7,813 ns per ask on this device (median of 7 batches, 1,792 asks)"
       ]
     },
     {
@@ -139,10 +238,19 @@
       "answer": "12",
       "route": "exact",
       "provenance": "exact",
-      "nsPerAsk": 8203,
+      "nsPerAsk": 13281,
       "cli": "12",
       "cliMethod": "exact.arith",
+      "expected": {
+        "from": "solve",
+        "answer": "12",
+        "method": "exact.arith",
+        "route": "exact",
+        "provenance": "exact"
+      },
       "parity": true,
+      "inBar": true,
+      "firstLine": "12",
       "requests": [],
       "server": null,
       "lines": [
@@ -152,7 +260,7 @@
         "- expression sqrt(144)",
         "- exact rational arithmetic on BigInt, no rounding at any step",
         "12",
-        "route exact provenance exact method exact.arith model none tokens 0 network 0 8,203 ns per ask on this device (median of 7 batches, 1,792 asks)"
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 13,281 ns per ask on this device (median of 7 batches, 896 asks)"
       ]
     },
     {
@@ -160,10 +268,19 @@
       "answer": "7",
       "route": "exact",
       "provenance": "exact",
-      "nsPerAsk": 14062,
+      "nsPerAsk": 8594,
       "cli": "7",
       "cliMethod": "exact.arith",
+      "expected": {
+        "from": "solve",
+        "answer": "7",
+        "method": "exact.arith",
+        "route": "exact",
+        "provenance": "exact"
+      },
       "parity": true,
+      "inBar": true,
+      "firstLine": "7",
       "requests": [],
       "server": null,
       "lines": [
@@ -173,7 +290,7 @@
         "- expression (10) - (3)",
         "- exact rational arithmetic on BigInt, no rounding at any step",
         "7",
-        "route exact provenance exact method exact.arith model none tokens 0 network 0 14,062 ns per ask on this device (median of 7 batches, 448 asks)"
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 8,594 ns per ask on this device (median of 7 batches, 1,792 asks)"
       ]
     },
     {
@@ -184,7 +301,16 @@
       "nsPerAsk": 181250,
       "cli": "72",
       "cliMethod": "exact.word",
+      "expected": {
+        "from": "solve",
+        "answer": "72",
+        "method": "exact.word",
+        "route": "exact",
+        "provenance": "exact"
+      },
       "parity": true,
+      "inBar": true,
+      "firstLine": "72",
       "requests": [],
       "server": null,
       "lines": [
@@ -205,7 +331,15 @@
       "nsPerAsk": null,
       "cli": null,
       "cliMethod": null,
+      "expected": {
+        "from": "server",
+        "answer": null,
+        "route": "refused",
+        "provenance": "none"
+      },
       "parity": true,
+      "inBar": true,
+      "firstLine": "I do not carry that yet: I answer greetings and questions about myself natively, arithmetic and equations exactly, word problems with my own programs and facts I ingested from memory; no language model is configured on this host.",
       "requests": [
         {
           "method": "POST",
@@ -217,25 +351,81 @@
         "route": "direct",
         "provenance": "memory",
         "provider": "null",
-        "serverUs": 1166,
-        "rttMs": 106,
-        "text": "nothing in memory matches write, poem, about, sea.\nserver: route direct provenance memory model none: the model cell is not configured on this host: the environment does not hold both BRAIN_LLM_BASE and BRAIN_LLM_KEY, so the null provider (offline, no model, no socket) stood in memory hits 0 web pages 0 1,166 us on the server (iad1) round trip 106 ms in this tab\nknowledge store on the server: absent (no finished ingest at bench/fixtures/wiki/store (no readable meta.json)), so the knowledge tier answers nothing there."
+        "serverUs": 1654,
+        "rttMs": 114,
+        "text": "I do not carry that yet: I answer greetings and questions about myself natively, arithmetic and equations exactly, word problems with my own programs and facts I ingested from memory; no language model is configured on this host.\nnothing in memory matches write, poem, about, sea.\nTry asking: who are you, what can you do, hello.\nserver: route direct provenance memory model none: the model cell is not configured on this host: the environment does not hold both BRAIN_LLM_BASE and BRAIN_LLM_KEY, so the null provider (offline, no model, no socket) stood in memory hits 0 web pages 0 1,654 us on the server (iad1) round trip 114 ms in this tab\nknowledge store on the server: absent (no finished ingest at bench/fixtures/wiki/store (no readable meta.json)), so the knowledge tier answers nothing there."
       },
       "lines": [
         "> write a poem about the sea",
+        "I do not carry that yet: I answer greetings and questions about myself natively, arithmetic and equations exactly, word problems with my own programs and facts I ingested from memory; no language model is configured on this host.",
+        "nothing in memory matches write, poem, about, sea.",
+        "Try asking: who are you, what can you do, hello.",
+        "server: route direct provenance memory model none: the model cell is not configured on this host: the environment does not hold both BRAIN_LLM_BASE and BRAIN_LLM_KEY, so the null provider (offline, no model, no socket) stood in memory hits 0 web pages 0 1,654 us on the server (iad1) round trip 114 ms in this tab",
+        "knowledge store on the server: absent (no finished ingest at bench/fixtures/wiki/store (no readable meta.json)), so the knowledge tier answers nothing there.",
         "no cell in this tab carries this question, so the tab refuses it, not guesses; the organism on the server answers it.",
         "tab: route refused provenance none model none (the model cell is not in the browser) tokens 0 words the spoken reader could not read: write, a, poem, about, the, sea",
-        "the word problem reader stopped at: \"one sentence\" in: write a poem about the sea",
-        "nothing in memory matches write, poem, about, sea.",
-        "server: route direct provenance memory model none: the model cell is not configured on this host: the environment does not hold both BRAIN_LLM_BASE and BRAIN_LLM_KEY, so the null provider (offline, no model, no socket) stood in memory hits 0 web pages 0 1,166 us on the server (iad1) round trip 106 ms in this tab",
-        "knowledge store on the server: absent (no finished ingest at bench/fixtures/wiki/store (no readable meta.json)), so the knowledge tier answers nothing there."
+        "the word problem reader stopped at: \"one sentence\" in: write a poem about the sea"
+      ]
+    },
+    {
+      "prompt": "hey, how are you",
+      "answer": "Hello. I am Dilation, a computational organism: cells wired into circuits and regions, grown by generations and measured by benches. Running. This reply came from my native conversation region in microseconds, with no model and no network. Ask me a sum, an equation, a word problem or a fact I hold; every answer prints the route that reached it.",
+      "route": "direct",
+      "provenance": "native",
+      "nsPerAsk": 3516,
+      "cli": null,
+      "cliMethod": null,
+      "expected": {
+        "from": "converse",
+        "answer": "Hello. I am Dilation, a computational organism: cells wired into circuits and regions, grown by generations and measured by benches. Running. This reply came from my native conversation region in microseconds, with no model and no network. Ask me a sum, an equation, a word problem or a fact I hold; every answer prints the route that reached it.",
+        "kind": "greeting+wellbeing",
+        "route": "direct",
+        "provenance": "native"
+      },
+      "parity": true,
+      "inBar": true,
+      "firstLine": "Hello. I am Dilation, a computational organism: cells wired into circuits and regions, grown by generations and measured by benches. Running. This reply came from my native conversation region in microseconds, with no model and no network. Ask me a sum, an equation, a word problem or a fact I hold; every answer prints the route that reached it.",
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> hey, how are you",
+        "Hello. I am Dilation, a computational organism: cells wired into circuits and regions, grown by generations and measured by benches. Running. This reply came from my native conversation region in microseconds, with no model and no network. Ask me a sum, an equation, a word problem or a fact I hold; every answer prints the route that reached it.",
+        "answered natively in this tab by the conversation region (kind greeting+wellbeing), with no model, no memory read and no network.",
+        "route direct provenance native kind greeting+wellbeing model none tokens 0 network 0 3,516 ns per ask on this device (median of 7 batches, 1,792 asks)"
+      ]
+    },
+    {
+      "prompt": "tell me a joke",
+      "answer": "No region of mine carries jokes, songs, poems, stories or free writing on this host yet, so I will not fake one. Three prompts I do carry: \"what is 17 times 23\", \"what can you do\" and \"who made you\".",
+      "route": "direct",
+      "provenance": "native",
+      "nsPerAsk": 3027,
+      "cli": null,
+      "cliMethod": null,
+      "expected": {
+        "from": "converse",
+        "answer": "No region of mine carries jokes, songs, poems, stories or free writing on this host yet, so I will not fake one. Three prompts I do carry: \"what is 17 times 23\", \"what can you do\" and \"who made you\".",
+        "kind": "uncarried",
+        "route": "direct",
+        "provenance": "native"
+      },
+      "parity": true,
+      "inBar": false,
+      "firstLine": "No region of mine carries jokes, songs, poems, stories or free writing on this host yet, so I will not fake one. Three prompts I do carry: \"what is 17 times 23\", \"what can you do\" and \"who made you\".",
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> tell me a joke",
+        "No region of mine carries jokes, songs, poems, stories or free writing on this host yet, so I will not fake one. Three prompts I do carry: \"what is 17 times 23\", \"what can you do\" and \"who made you\".",
+        "answered natively in this tab by the conversation region (kind uncarried), with no model, no memory read and no network.",
+        "route direct provenance native kind uncarried model none tokens 0 network 0 3,027 ns per ask on this device (median of 7 batches, 7,168 asks)"
       ]
     }
   ],
   "serverRows": {
     "exact": {
       "status": 200,
-      "rttMs": 158,
+      "rttMs": 211.9,
       "waitedFor429": false,
       "json": {
         "ok": true,
@@ -252,7 +442,7 @@
         "exact": {
           "answer": "391",
           "method": "exact.arith",
-          "ns": 197762
+          "ns": 253762
         },
         "native": null,
         "llm": {
@@ -268,7 +458,7 @@
         "promptChars": 19,
         "redacted": 0,
         "cites": [],
-        "serverUs": 770,
+        "serverUs": 1241,
         "host": "iad1",
         "knowledge": {
           "ready": false,
@@ -281,17 +471,18 @@
             "BRAIN_LLM_BASE",
             "BRAIN_LLM_KEY",
             "BRAIN_LLM_MODEL"
-          ]
+          ],
+          "keyName": "BRAIN_LLM_KEY"
         }
       }
     },
     "novel": {
       "status": 200,
-      "rttMs": 152.6,
+      "rttMs": 162.9,
       "waitedFor429": false,
       "json": {
         "ok": true,
-        "text": "nothing in memory matches write, poem, about, sea.",
+        "text": "I do not carry that yet: I answer greetings and questions about myself natively, arithmetic and equations exactly, word problems with my own programs and facts I ingested from memory; no language model is configured on this host.\nnothing in memory matches write, poem, about, sea.\nTry asking: who are you, what can you do, hello.",
         "from": "memory",
         "route": "direct",
         "provenance": {
@@ -316,7 +507,7 @@
         "promptChars": 26,
         "redacted": 0,
         "cites": [],
-        "serverUs": 901,
+        "serverUs": 961,
         "host": "iad1",
         "knowledge": {
           "ready": false,
@@ -329,7 +520,8 @@
             "BRAIN_LLM_BASE",
             "BRAIN_LLM_KEY",
             "BRAIN_LLM_MODEL"
-          ]
+          ],
+          "keyName": "BRAIN_LLM_KEY"
         }
       }
     },
@@ -384,21 +576,21 @@
     "rapid": {
       "n": 30,
       "statuses": {
-        "200": 17,
-        "429": 13
+        "200": 16,
+        "429": 14
       },
       "first429": 17,
       "retryAfter": "1",
       "serverUs": {
-        "min": 230,
-        "median": 352,
-        "max": 717,
-        "n": 17
+        "min": 215,
+        "median": 303,
+        "max": 588,
+        "n": 16
       },
       "rttMs": {
-        "min": 79.2,
-        "median": 85.1,
-        "max": 109.6
+        "min": 51.6,
+        "median": 59.7,
+        "max": 89.2
       }
     },
     "secrets": [
