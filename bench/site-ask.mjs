@@ -60,8 +60,17 @@ const SECRETS = ['sk-', 'sk_', 'Bearer ', 'BRAIN_LLM_KEY='];
 const HEY = 'hey';
 const COMPOUND = 'hey, how are you';
 const JOKE = 'tell me a joke';
-const PROMPTS = EXAMPLES.concat([COMPOUND, JOKE].filter((q) => !EXAMPLES.includes(q)));
-const IN_BAR = (q) => q !== JOKE;
+// HIS PROBE (docs/VISION.md order 41, his 2026-09-27 14:37 EDT: "i said hey and it responded with the same thig as hi
+// and i just said "h" and it couldnt respond. neither could it respond to complex questions"): the five prompts he
+// typed are asked the same way and graded into their OWN verdict, bench/verdicts/site-probe.json (isTheBar on the
+// live site). A row is ok when the page printed an answer whose first line is not the memory miss ("nothing in
+// memory matches" or the wrapper "I do not carry that yet"); the greetings must be tab answers (route direct,
+// provenance native). Whether "hey" and "hi" print one text is recorded as a fact, not a rule. These rows never
+// change the rules of site-ask.json: order 2's bar and order 41's bar are two files.
+const HIS_PROBE = ['h', 'hey', 'hi', 'What is the capital of France?', 'Write a short essay on why the ocean is salty.'];
+const PROMPTS = EXAMPLES.concat([COMPOUND, JOKE].concat(HIS_PROBE).filter((q, i, a) => !EXAMPLES.includes(q) && a.indexOf(q) === i));
+const IN_BAR = (q) => q !== JOKE && (EXAMPLES.includes(q) || q === COMPOUND);
+const MISS_RE = /^(?:nothing in memory matches|I do not carry that yet)/;
 /** What the page must print for q, in the tab's order: the conversation region, then the exact reader, then the server. */
 function expected(q) {
   const c = converse(q);
@@ -208,6 +217,19 @@ async function main() {
   const heyRow = rows.find((r) => r.prompt === HEY), compoundRow = rows.find((r) => r.prompt === COMPOUND), jokeRow = rows.find((r) => r.prompt === JOKE);
   const joke = jokeRow ? { prompt: JOKE, firstLine: jokeRow.firstLine, answeredIn: jokeRow.answer !== null ? 'tab' : jokeRow.server ? 'server' : 'nowhere', ok: typeof jokeRow.firstLine === 'string' && jokeRow.firstLine.length > 0 && !/^nothing in memory matches/.test(jokeRow.firstLine),
     dependsOn: 'items converse-cover (act/converse.mjs, the uncarried kind, in the deployed page and on the server) or ask-fallthrough (act/prompt.mjs, the memory-miss end) being deployed; recorded as a row, never a rule of this bar' } : null;
+  const probeRows = HIS_PROBE.map((p) => {
+    const r = rows.find((x) => x.prompt === p);
+    if (!r) return { prompt: p, asked: false, ok: false };
+    const answeredIn = r.answer !== null ? 'tab' : r.server ? 'server' : 'nowhere';
+    const greeting = p === 'hey' || p === 'hi';
+    const printed = typeof r.firstLine === 'string' && r.firstLine.length > 0 && !MISS_RE.test(r.firstLine);
+    const ok = greeting ? printed && r.route === 'direct' && r.provenance === 'native' && r.requests.length === 0 : printed;
+    return { prompt: p, asked: true, answeredIn, firstLine: r.firstLine, route: r.route, provenance: r.provenance, nsPerAsk: r.nsPerAsk, requests: r.requests.length, server: r.server ? { status: r.server.status, route: r.server.route, provenance: r.server.provenance, provider: r.server.provider, serverUs: r.server.serverUs } : null, ok };
+  });
+  const heyText = (rows.find((x) => x.prompt === 'hey') || {}).answer, hiText = (rows.find((x) => x.prompt === 'hi') || {}).answer;
+  const probe = { rows: probeRows, sameGreetingText: heyText !== undefined && hiText !== undefined && heyText === hiText, ok: probeRows.filter((r) => r.ok).length, n: probeRows.length };
+  for (const r of probeRows) say('HIS PROBE ' + JSON.stringify(r.prompt) + ' -> ' + (r.asked ? r.answeredIn + ' route ' + r.route + ' provenance ' + r.provenance + (r.server ? ' server ' + r.server.route + '/' + r.server.provenance + '/' + r.server.provider : '') + ' first line ' + JSON.stringify(r.firstLine) : 'not asked') + ' -> ' + (r.ok ? 'ok' : 'MISSED'));
+  say('HIS PROBE ' + probe.ok + ' of ' + probe.n + ' answered; hey and hi print one text: ' + probe.sameGreetingText);
   const met = {
     exact391: !!r17 && r17.answer === '391' && r17.provenance === 'exact' && Number.isFinite(r17.nsPerAsk),
     novelRoutePrinted: !!novel && novel.answer === null && novel.route === 'refused' && !!novel.server && novel.server.status === 200 && !!novel.server.route && /route/.test(novel.server.text),
@@ -257,6 +279,16 @@ async function main() {
   const file = path.join(ROOT, 'bench', 'verdicts', name);
   fs.writeFileSync(file, JSON.stringify(out, null, 2) + '\n');
   say('wrote ' + path.relative(ROOT, file).split(path.sep).join('/'));
+  const probeFile = path.join(ROOT, 'bench', 'verdicts', staticOnly ? 'site-probe-control.json' : live ? 'site-probe.json' : 'site-probe-local.json');
+  fs.writeFileSync(probeFile, JSON.stringify({
+    at, command: out.command, node: process.version, isTheBar: live && !staticOnly, barMet: probe.ok === probe.n, url, origin: base, control: staticOnly,
+    prompts: HIS_PROBE, ok: probe.ok, n: probe.n, sameGreetingText: probe.sameGreetingText, rows: probeRows,
+    modelConfigured: !!(server.get.json && server.get.json.model && server.get.json.model.configured), knowledgeReady: !!(server.get.json && server.get.json.knowledge && server.get.json.knowledge.ready),
+    split: { what: 'his five probe prompts of 2026-09-27 14:37 EDT, asked from the page exactly as typed; no learning happens here', development: HIS_PROBE.slice(), heldOut: [], contaminated: false },
+    control: staticOnly ? 'the server half off' : 'none: the miss is the page itself printing the memory miss',
+    statement: 'His five probe prompts (docs/VISION.md order 41) asked from ' + url + ': ' + probe.ok + ' of ' + probe.n + ' answered (' + probeRows.map((r) => JSON.stringify(r.prompt.slice(0, 32)) + ' ' + (r.ok ? 'ok' : 'MISSED') + ' in the ' + (r.asked ? r.answeredIn : 'nowhere')).join('; ') + '). "hey" and "hi" print one text: ' + probe.sameGreetingText + '. The server reports model configured ' + !!(server.get.json && server.get.json.model && server.get.json.model.configured) + ' and knowledge ready ' + !!(server.get.json && server.get.json.knowledge && server.get.json.knowledge.ready) + '. ' + (probe.ok === probe.n ? 'Bar met.' : 'Bar missed: every prompt the page cannot carry ends in the memory miss until a model cell (BRAIN_LLM_BASE, BRAIN_LLM_KEY, BRAIN_LLM_MODEL on the Vercel project) and the knowledge store are on the server.'),
+  }, null, 2) + '\n');
+  say('wrote ' + path.relative(ROOT, probeFile).split(path.sep).join('/') + ' (his probe ' + probe.ok + ' of ' + probe.n + ')');
   process.exitCode = barMet ? 0 : 1;
 }
 
