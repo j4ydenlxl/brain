@@ -18,6 +18,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { generateLadder, rateRecord, RATE } from '../web/ladder.mjs';
 import { walkLadder, cardHtml, pageText } from '../web/ladder-walk.mjs';
+import { injectLadder } from '../web/build.mjs';
+import { countVision, countLine } from '../tools/vision-count.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const VERDICTS = path.join(ROOT, 'bench', 'verdicts');
@@ -132,4 +134,111 @@ test('the page from bench/verdicts itself shows a figure only where it equals th
     const key = rec.sources[f.i].key;
     assert.equal(Number(f.text), want[key].perHour, key + ' on the page equals the arithmetic over the file on disk');
   }
+});
+
+// ------------------------------------------------ board 24b, item web-vision: the header line
+// web/build.mjs puts one line in the ladder header after web/ladder.mjs writes the page: the gate (gate.json) and the
+// vision counter line (vision-count.json), every value a traced span. These cases build the page into a temp dir from
+// planted files, read it back from disk, and walk it with web/ladder-walk.mjs (the second walker, not the build's guard).
+const EMDASH = String.fromCharCode(0x2014);
+const VISION_MD = path.join(ROOT, 'docs', 'VISION.md');
+const digitCount = (s) => (String(s).match(/\d/g) || []).length;
+const plantedGate = (extra = {}) => ({ verdict: 'GREEN', testsPassed: 7, testsTotal: 8, assertionsPassed: 91, assertionsFailed: 1, at: '2026-09-27T09:08:07.000Z', ...extra });
+function visionWorld() {
+  const dir = mkdtempSync(path.join(os.tmpdir(), 'ladder-hdr-'));
+  temps.push(dir);
+  const visionDoc = path.join(dir, 'VISION.md');
+  copyFileSync(VISION_MD, visionDoc);
+  const md = readFileSync(visionDoc, 'utf8');
+  const c = countVision(md);
+  const count = { at: '2026-09-27T12:00:00.000Z', command: 'node tools/vision-count.mjs --json', isTheBar: true, barMet: false, total: c.total, counts: { ...c.counts }, unstated: c.unstated, line: countLine(c) };
+  return { dir, visionDoc, line: countLine(c), count };
+}
+function ladderBuilt(w, tag = 'out') {
+  const g = generateLadder({ verdictsDir: w.dir, outDir: path.join(w.dir, tag) });
+  const h = injectLadder({ pagePath: g.path, verdictsDir: w.dir, visionDoc: w.visionDoc });
+  const page = readFileSync(g.path, 'utf8');
+  const m = /<div class="hdr-line" id="hdr-line">[\s\S]*?<\/div>/.exec(page);
+  return { page, hdr: m ? m[0] : null, h, path: g.path };
+}
+
+test('web-vision: the ladder header prints the counter line beside the gate line, every number a field of its file', () => {
+  const w = visionWorld();
+  writeFileSync(path.join(w.dir, 'gate.json'), JSON.stringify(plantedGate()));
+  writeFileSync(path.join(w.dir, 'vision-count.json'), JSON.stringify(w.count));
+  const { page, hdr, h } = ladderBuilt(w);
+  assert.ok(hdr, 'the header line is on the page');
+  assert.ok(page.indexOf(hdr) < page.indexOf('</header>') && page.indexOf(hdr) > page.indexOf('<header class="top">'), 'inside the header');
+  const t = pageText(hdr).trim();
+  assert.ok(t.startsWith('gate on the build host GREEN, 7 of 8 test files, 91 assertions pass and 1 fail at 2026-09-27 09:08 UTC'), t);
+  assert.ok(t.includes('/ vision ' + w.line + ' at 2026-09-27 12:00 UTC'), 'the counter line beside the gate line: ' + t);
+  assert.ok(hdr.includes('data-src="bench/verdicts/vision-count.json:line" data-fmt="raw"'), 'the line is a traced span of the count');
+  assert.ok(hdr.includes('>' + w.line + '</span>'), 'byte for byte countLine(countVision(docs/VISION.md))');
+  const walk = walkLadder(page, w.dir);
+  assert.deepEqual(walk.bad, [], 'every number on the page walks back to a field');
+  assert.ok(walk.fields.has('bench/verdicts/vision-count.json:line') && walk.fields.has('bench/verdicts/gate.json:testsPassed'), 'the walker saw the header spans');
+  assert.equal(h.vision.fresh, true);
+  assert.ok(!page.includes(EMDASH));
+  assert.ok(!page.includes('<!-- header-line -->'), 'the marker was replaced');
+  // the walker is live on the header: bend the count after the build and the same page no longer walks
+  writeFileSync(path.join(w.dir, 'vision-count.json'), JSON.stringify({ ...w.count, line: w.count.line.replace('orders listed', 'orders counted') }));
+  assert.ok(walkLadder(page, w.dir).bad.some((b) => b.includes('vision-count.json:line')), 'a count that changed after the build is caught by the walker');
+});
+
+test('web-vision: a missing verdict file prints "not measured" in the ladder header line, never a number', () => {
+  const w = visionWorld();
+  let r = ladderBuilt(w, 'none');
+  let t = pageText(r.hdr).trim();
+  assert.equal(t, 'gate not measured / vision not measured', t);
+  assert.equal(digitCount(t), 0);
+  assert.deepEqual(walkLadder(r.page, w.dir).bad, []);
+  // only the gate on disk: the vision half alone says not measured
+  writeFileSync(path.join(w.dir, 'gate.json'), JSON.stringify(plantedGate()));
+  r = ladderBuilt(w, 'gate-only');
+  t = pageText(r.hdr).trim();
+  assert.ok(t.endsWith('/ vision not measured') && t.startsWith('gate on the build host GREEN'), t);
+  // the control: both files on disk and the header carries digits, so the zero above measured the missing files
+  writeFileSync(path.join(w.dir, 'vision-count.json'), JSON.stringify(w.count));
+  r = ladderBuilt(w, 'both');
+  assert.ok(digitCount(pageText(r.hdr)) > 0);
+  // a count whose line is not its counts is not measured, not printed
+  writeFileSync(path.join(w.dir, 'vision-count.json'), JSON.stringify({ ...w.count, total: w.count.total + 3 }));
+  r = ladderBuilt(w, 'bent');
+  assert.ok(pageText(r.hdr).trim().endsWith('/ vision not measured'), pageText(r.hdr));
+});
+
+test('web-vision: a stale count is named in the header line, and an em dash in a verdict never reaches the page', () => {
+  const w = visionWorld();
+  const moved = { ...w.count, counts: { ...w.count.counts, MET: w.count.counts.MET + 1, PARTIAL: w.count.counts.PARTIAL - 1 } };
+  moved.line = countLine({ total: moved.total, counts: moved.counts, unstated: moved.unstated });
+  writeFileSync(path.join(w.dir, 'vision-count.json'), JSON.stringify(moved));
+  writeFileSync(path.join(w.dir, 'gate.json'), JSON.stringify(plantedGate({ verdict: 'RED' + EMDASH + 'two files' })));
+  const { page, hdr, h } = ladderBuilt(w);
+  const t = pageText(hdr);
+  assert.ok(t.includes('vision ' + moved.line) && t.includes('stale: docs/VISION.md now counts another line'), t);
+  assert.equal(h.vision.fresh, false);
+  assert.ok(t.includes('gate on the build host RED, two files'), 'the em dash printed as a comma: ' + t);
+  assert.ok(!page.includes(EMDASH), 'no em dash on the page');
+  assert.deepEqual(walkLadder(page, w.dir).bad, [], 'the comma form is the field under raw, so it still walks');
+});
+
+test('web-vision: the ladder built from bench/verdicts on disk carries the counter line when the count is fresh', { skip: !onDisk('vision-count.json') }, () => {
+  const w = visionWorld();
+  const g = generateLadder({ verdictsDir: VERDICTS, outDir: path.join(w.dir, 'real') });
+  injectLadder({ pagePath: g.path, verdictsDir: VERDICTS, visionDoc: w.visionDoc });
+  const page = readFileSync(g.path, 'utf8');
+  const hdr = /<div class="hdr-line" id="hdr-line">[\s\S]*?<\/div>/.exec(page)[0];
+  const real = readJson(VERDICTS, 'vision-count.json');
+  if (real.line === w.line) assert.ok(pageText(hdr).includes('vision ' + w.line) && !pageText(hdr).includes('stale'), 'fresh: ' + pageText(hdr));
+  else assert.ok(pageText(hdr).includes('stale: docs/VISION.md now counts another line'), 'stale: ' + pageText(hdr));
+  assert.deepEqual(walkLadder(page, VERDICTS).bad, [], 'every number on the real page walks back to a field');
+  assert.ok(!page.includes(EMDASH));
+});
+
+test('web-vision: a ladder template without the header marker fails the build rather than shipping without the line', () => {
+  const w = visionWorld();
+  const tpl = path.join(w.dir, 'ladder.html');
+  writeFileSync(tpl, readFileSync(path.join(ROOT, 'web', 'src', 'ladder.html'), 'utf8').replace('<!-- header-line -->', ''));
+  const g = generateLadder({ verdictsDir: w.dir, template: tpl, outDir: path.join(w.dir, 'nomark') });
+  assert.throws(() => injectLadder({ pagePath: g.path, verdictsDir: w.dir, visionDoc: w.visionDoc }), /no <!-- header-line --> marker/);
 });

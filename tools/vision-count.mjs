@@ -12,6 +12,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const STATUS_WORDS = Object.freeze(['MET', 'PARTIAL', 'OPEN', 'FROZEN']);
@@ -70,6 +71,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       at: new Date().toISOString(), command: 'node tools/vision-count.mjs --json', node: process.version, isTheBar: true,
       barMet: c.total > 0 && c.counts.MET === c.total,
       total: c.total, counts: c.counts, unstated: c.unstated, line, typedAgrees: typed === line,
+      // the document this count was made from, by its bytes: web/build.mjs says on dilation.dev whether the page's count
+      // is of the document as it stands at build time (board 24b, item web-vision)
+      source: 'docs/VISION.md', sourceBytes: Buffer.byteLength(md), sourceSha256: createHash('sha256').update(md).digest('hex'),
       split: { development: 'docs/VISION.md section 3 (his orders, read from MANUAL.md section A)', heldOut: 'none', why: 'a count of orders and their status words has no held-out data; the bar is every order MET', contaminated: false },
       statement: 'docs/VISION.md lists ' + c.total + ' of his orders as plans. ' + line + ' The project is over when every order is MET and not before (his 2026-09-26 20:20 EDT order); barMet is ' + (c.counts.MET === c.total) + '.',
     };
