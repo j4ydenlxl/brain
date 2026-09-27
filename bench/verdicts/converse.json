@@ -1,0 +1,956 @@
+{
+  "at": "2026-09-27T14:07:09.999Z",
+  "command": "node bench/converse.mjs --heldout bench/converse-heldout-1.jsonl",
+  "node": "v24.15.0",
+  "isTheBar": true,
+  "barMet": true,
+  "met": {
+    "heldOutCarried": true,
+    "falsePositivesZero": true,
+    "heldOutReadable": true
+  },
+  "bar": {
+    "heldOutCarriedAtLeast": 0.9,
+    "falsePositivesPerNegativeSet": 0,
+    "heldOutUnreadableLines": 0,
+    "rule": "held-out turns carried >= 90 percent AND false positives 0 on every negative set that ran AND every held-out line readable"
+  },
+  "statement": "The native conversation region was graded on 67 held-out turns from bench/converse-heldout-1.jsonl, a file its builder never read, and carried 67 of them against a bar of 90 percent; on 7 negative sets (spoken-arithmetic 0 of 100, spoken-arithmetic-words 0 of 100, knowledge-questions 0 of 600, gsm8k-questions 0 of 100, answer-questions 0 of 40, development-non-turns 0 of 33, held-out-non-turns 0 of 38) it answered 0 prompts that were not conversational turns, against a bar of zero on every set. The control put the unknown word \"apples\" into every carried turn and the region carried 0 of 119 of those, which is what a grammar that refuses unknown words rather than matching keywords should do. The model was off and no network or memory was read; the median turn took 1300 ns inside converse(), measured by performance.now. The bar is met.",
+  "split": {
+    "development": {
+      "turns": 52,
+      "nonTurns": 33,
+      "what": "the prompts in this file and in test/converse.test.mjs, on the screen while the grammar was written"
+    },
+    "heldOut": {
+      "file": "bench/converse-heldout-1.jsonl",
+      "decidedBy": "bench/converse-heldout-1.jsonl",
+      "turns": 67,
+      "nonTurns": 38,
+      "unreadable": 0,
+      "writtenBy": "verify plane, board 25 item converse-cover (first verify); the builder never read this file",
+      "writtenAt": "2026-09-27T10:06:46-04:00",
+      "provenance": "the header line of the file",
+      "contaminated": false,
+      "reason": "the builder never read it"
+    },
+    "rule": "a fix pass may generalise the grammar but never add a held-out prompt form by form; the next verify writes a second held-out file, and split.heldOut.file names which file decided"
+  },
+  "control": {
+    "what": "every carried turn with the out-of-vocabulary word \"apples\" put after its first word; a grammar that refuses unknown words carries none",
+    "n": 119,
+    "carried": 0,
+    "rows": [],
+    "inBar": false
+  },
+  "heldOut": {
+    "n": 67,
+    "carried": 67,
+    "rate": 1,
+    "misses": [],
+    "kindNamed": 59,
+    "kindAgree": 55,
+    "unreadable": [],
+    "rows": [
+      {
+        "line": 2,
+        "prompt": "hi!",
+        "kind": "greeting",
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 3,
+        "prompt": "Hello there",
+        "kind": "greeting",
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 4,
+        "prompt": "hiya",
+        "kind": "greeting",
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 5,
+        "prompt": "howdy",
+        "kind": "greeting",
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 6,
+        "prompt": "sup",
+        "kind": null,
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 7,
+        "prompt": "good afternoon",
+        "kind": "greeting",
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 8,
+        "prompt": "good evening!",
+        "kind": "greeting",
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 9,
+        "prompt": "hey hey",
+        "kind": "greeting",
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 10,
+        "prompt": "hello friend",
+        "kind": "greeting",
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 11,
+        "prompt": "HELLO",
+        "kind": "greeting",
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 12,
+        "prompt": "Hey!!",
+        "kind": "greeting",
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 13,
+        "prompt": "hi :)",
+        "kind": "greeting",
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 14,
+        "prompt": "morning",
+        "kind": "greeting",
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 15,
+        "prompt": "nice to meet you",
+        "kind": null,
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 16,
+        "prompt": "hello?",
+        "kind": null,
+        "got": "greeting",
+        "carried": true
+      },
+      {
+        "line": 17,
+        "prompt": "How are you doing?",
+        "kind": "wellbeing",
+        "got": "wellbeing",
+        "carried": true
+      },
+      {
+        "line": 18,
+        "prompt": "how's it going",
+        "kind": "wellbeing",
+        "got": "wellbeing",
+        "carried": true
+      },
+      {
+        "line": 19,
+        "prompt": "how are u",
+        "kind": "wellbeing",
+        "got": "wellbeing",
+        "carried": true
+      },
+      {
+        "line": 20,
+        "prompt": "how are you today?",
+        "kind": "wellbeing",
+        "got": "wellbeing",
+        "carried": true
+      },
+      {
+        "line": 21,
+        "prompt": "you good?",
+        "kind": "wellbeing",
+        "got": "wellbeing",
+        "carried": true
+      },
+      {
+        "line": 22,
+        "prompt": "what's going on",
+        "kind": "wellbeing",
+        "got": "wellbeing",
+        "carried": true
+      },
+      {
+        "line": 23,
+        "prompt": "what are you?",
+        "kind": null,
+        "got": "identity",
+        "carried": true
+      },
+      {
+        "line": 24,
+        "prompt": "who are u",
+        "kind": "identity",
+        "got": "identity",
+        "carried": true
+      },
+      {
+        "line": 25,
+        "prompt": "Who am I talking to?",
+        "kind": "identity",
+        "got": "name",
+        "carried": true
+      },
+      {
+        "line": 26,
+        "prompt": "what's your name?",
+        "kind": "name",
+        "got": "name",
+        "carried": true
+      },
+      {
+        "line": 27,
+        "prompt": "do you have a name",
+        "kind": "name",
+        "got": "name",
+        "carried": true
+      },
+      {
+        "line": 28,
+        "prompt": "what should I call you",
+        "kind": "name",
+        "got": "name",
+        "carried": true
+      },
+      {
+        "line": 29,
+        "prompt": "what are you able to do?",
+        "kind": "ability",
+        "got": "ability",
+        "carried": true
+      },
+      {
+        "line": 30,
+        "prompt": "what do you do",
+        "kind": "ability",
+        "got": "ability",
+        "carried": true
+      },
+      {
+        "line": 31,
+        "prompt": "can you help me?",
+        "kind": "ability",
+        "got": "ability",
+        "carried": true
+      },
+      {
+        "line": 32,
+        "prompt": "how can you help me",
+        "kind": "ability",
+        "got": "ability",
+        "carried": true
+      },
+      {
+        "line": 33,
+        "prompt": "thank you!",
+        "kind": "thanks",
+        "got": "thanks",
+        "carried": true
+      },
+      {
+        "line": 34,
+        "prompt": "thanks a lot",
+        "kind": "thanks",
+        "got": "thanks",
+        "carried": true
+      },
+      {
+        "line": 35,
+        "prompt": "ty",
+        "kind": "thanks",
+        "got": "thanks",
+        "carried": true
+      },
+      {
+        "line": 36,
+        "prompt": "thank you so much",
+        "kind": "thanks",
+        "got": "thanks",
+        "carried": true
+      },
+      {
+        "line": 37,
+        "prompt": "bye!",
+        "kind": "farewell",
+        "got": "farewell",
+        "carried": true
+      },
+      {
+        "line": 38,
+        "prompt": "goodbye",
+        "kind": "farewell",
+        "got": "farewell",
+        "carried": true
+      },
+      {
+        "line": 39,
+        "prompt": "see you later",
+        "kind": "farewell",
+        "got": "farewell",
+        "carried": true
+      },
+      {
+        "line": 40,
+        "prompt": "cya",
+        "kind": "farewell",
+        "got": "farewell",
+        "carried": true
+      },
+      {
+        "line": 41,
+        "prompt": "gotta go",
+        "kind": "farewell",
+        "got": "farewell",
+        "carried": true
+      },
+      {
+        "line": 42,
+        "prompt": "ok",
+        "kind": "ack",
+        "got": "ack",
+        "carried": true
+      },
+      {
+        "line": 43,
+        "prompt": "cool",
+        "kind": "ack",
+        "got": "ack",
+        "carried": true
+      },
+      {
+        "line": 44,
+        "prompt": "nice",
+        "kind": "ack",
+        "got": "ack",
+        "carried": true
+      },
+      {
+        "line": 45,
+        "prompt": "got it",
+        "kind": "ack",
+        "got": "ack",
+        "carried": true
+      },
+      {
+        "line": 46,
+        "prompt": "lol",
+        "kind": null,
+        "got": "ack",
+        "carried": true
+      },
+      {
+        "line": 47,
+        "prompt": "who built you?",
+        "kind": "origin",
+        "got": "origin",
+        "carried": true
+      },
+      {
+        "line": 48,
+        "prompt": "who created you",
+        "kind": "origin",
+        "got": "origin",
+        "carried": true
+      },
+      {
+        "line": 49,
+        "prompt": "where are you from",
+        "kind": null,
+        "got": "origin",
+        "carried": true
+      },
+      {
+        "line": 50,
+        "prompt": "are you a robot?",
+        "kind": "nature",
+        "got": "identity",
+        "carried": true
+      },
+      {
+        "line": 51,
+        "prompt": "are you an AI",
+        "kind": "nature",
+        "got": "identity",
+        "carried": true
+      },
+      {
+        "line": 52,
+        "prompt": "are you human?",
+        "kind": "nature",
+        "got": "identity",
+        "carried": true
+      },
+      {
+        "line": 53,
+        "prompt": "are you real",
+        "kind": "nature",
+        "got": "nature",
+        "carried": true
+      },
+      {
+        "line": 54,
+        "prompt": "you there?",
+        "kind": "presence",
+        "got": "presence",
+        "carried": true
+      },
+      {
+        "line": 55,
+        "prompt": "anyone there?",
+        "kind": "presence",
+        "got": "presence",
+        "carried": true
+      },
+      {
+        "line": 56,
+        "prompt": "hi, who are you?",
+        "kind": "greeting",
+        "got": "greeting+identity",
+        "carried": true
+      },
+      {
+        "line": 57,
+        "prompt": "hey, what's your name",
+        "kind": "greeting",
+        "got": "greeting+name",
+        "carried": true
+      },
+      {
+        "line": 58,
+        "prompt": "hello! how are you?",
+        "kind": "greeting",
+        "got": "greeting+wellbeing",
+        "carried": true
+      },
+      {
+        "line": 59,
+        "prompt": "thanks! goodbye",
+        "kind": "thanks",
+        "got": "thanks+farewell",
+        "carried": true
+      },
+      {
+        "line": 60,
+        "prompt": "I'm fine, thanks",
+        "kind": null,
+        "got": "ack+thanks",
+        "carried": true
+      },
+      {
+        "line": 61,
+        "prompt": "doing well, how about you?",
+        "kind": "wellbeing",
+        "got": "ack+wellbeing",
+        "carried": true
+      },
+      {
+        "line": 62,
+        "prompt": "hey, thanks",
+        "kind": "thanks",
+        "got": "greeting+thanks",
+        "carried": true
+      },
+      {
+        "line": 63,
+        "prompt": "how old r u",
+        "kind": "age",
+        "got": "age",
+        "carried": true
+      },
+      {
+        "line": 64,
+        "prompt": "when were you made",
+        "kind": null,
+        "got": "age",
+        "carried": true
+      },
+      {
+        "line": 65,
+        "prompt": "what are you for",
+        "kind": "purpose",
+        "got": "purpose",
+        "carried": true
+      },
+      {
+        "line": 66,
+        "prompt": "why do you exist",
+        "kind": "purpose",
+        "got": "purpose",
+        "carried": true
+      },
+      {
+        "line": 67,
+        "prompt": "tell me about you",
+        "kind": "self",
+        "got": "self",
+        "carried": true
+      },
+      {
+        "line": 68,
+        "prompt": "introduce yourself",
+        "kind": "self",
+        "got": "self",
+        "carried": true
+      }
+    ]
+  },
+  "negatives": [
+    {
+      "name": "spoken-arithmetic",
+      "source": "the generator of bench/spoken.mjs, seed spoken/1, first 100 draws",
+      "n": 100,
+      "falsePositives": 0,
+      "rows": []
+    },
+    {
+      "name": "spoken-arithmetic-words",
+      "source": "the same 100 draws, every operand written in words",
+      "n": 100,
+      "falsePositives": 0,
+      "rows": []
+    },
+    {
+      "name": "knowledge-questions",
+      "source": "what is / who is / tell me about each of the 200 titles in bench/verdicts/knowledge.json rows",
+      "n": 600,
+      "falsePositives": 0,
+      "rows": []
+    },
+    {
+      "name": "gsm8k-questions",
+      "source": "the first 100 questions of bench/fixtures/public/gsm8k/test.jsonl",
+      "n": 100,
+      "falsePositives": 0,
+      "rows": []
+    },
+    {
+      "name": "answer-questions",
+      "source": "the 40 questions of bench/fixtures/answer-questions.json",
+      "n": 40,
+      "falsePositives": 0,
+      "rows": []
+    },
+    {
+      "name": "development-non-turns",
+      "source": "the non-turns in this file (written with the grammar)",
+      "n": 33,
+      "falsePositives": 0,
+      "rows": []
+    },
+    {
+      "name": "held-out-non-turns",
+      "source": "the lines of bench/converse-heldout-1.jsonl whose turn is false",
+      "n": 38,
+      "falsePositives": 0,
+      "rows": []
+    }
+  ],
+  "skipped": [],
+  "development": [
+    {
+      "prompt": "hi",
+      "expect": "greeting",
+      "got": "greeting",
+      "ok": true
+    },
+    {
+      "prompt": "how are you?",
+      "expect": "wellbeing",
+      "got": "wellbeing",
+      "ok": true
+    },
+    {
+      "prompt": "Who are you?",
+      "expect": "identity",
+      "got": "identity",
+      "ok": true
+    },
+    {
+      "prompt": "what's your name",
+      "expect": "name",
+      "got": "name",
+      "ok": true
+    },
+    {
+      "prompt": "what can you do",
+      "expect": "ability",
+      "got": "ability",
+      "ok": true
+    },
+    {
+      "prompt": "thanks!",
+      "expect": "thanks",
+      "got": "thanks",
+      "ok": true
+    },
+    {
+      "prompt": "ok",
+      "expect": "ack",
+      "got": "ack",
+      "ok": true
+    },
+    {
+      "prompt": "bye",
+      "expect": "farewell",
+      "got": "farewell",
+      "ok": true
+    },
+    {
+      "prompt": "who made you?",
+      "expect": "origin",
+      "got": "origin",
+      "ok": true
+    },
+    {
+      "prompt": "can you hear me?",
+      "expect": "presence",
+      "got": "presence",
+      "ok": true
+    },
+    {
+      "prompt": "tell me about yourself",
+      "expect": "self",
+      "got": "self",
+      "ok": true
+    },
+    {
+      "prompt": "are you conscious?",
+      "expect": "nature",
+      "got": "nature",
+      "ok": true
+    },
+    {
+      "prompt": "how old are you?",
+      "expect": "age",
+      "got": "age",
+      "ok": true
+    },
+    {
+      "prompt": "where do you run?",
+      "expect": "place",
+      "got": "place",
+      "ok": true
+    },
+    {
+      "prompt": "what is your purpose?",
+      "expect": "purpose",
+      "got": "purpose",
+      "ok": true
+    },
+    {
+      "prompt": "tell me a joke",
+      "expect": "uncarried",
+      "got": "uncarried",
+      "ok": true
+    },
+    {
+      "prompt": "you are cool",
+      "expect": "praise",
+      "got": "praise",
+      "ok": true
+    },
+    {
+      "prompt": "that is wrong",
+      "expect": "rebuke",
+      "got": "rebuke",
+      "ok": true
+    },
+    {
+      "prompt": "can I ask you something?",
+      "expect": "invite",
+      "got": "invite",
+      "ok": true
+    },
+    {
+      "prompt": "do you remember me?",
+      "expect": "recall",
+      "got": "recall",
+      "ok": true
+    },
+    {
+      "prompt": "my name is Sam",
+      "expect": "intro",
+      "got": "intro",
+      "ok": true
+    },
+    {
+      "prompt": "what's your favorite color?",
+      "expect": "preference",
+      "got": "preference",
+      "ok": true
+    },
+    {
+      "prompt": "hey",
+      "expect": "greeting",
+      "got": "greeting",
+      "ok": true
+    },
+    {
+      "prompt": "Hey",
+      "expect": "greeting",
+      "got": "greeting",
+      "ok": true
+    },
+    {
+      "prompt": "hey there",
+      "expect": "greeting",
+      "got": "greeting",
+      "ok": true
+    },
+    {
+      "prompt": "yo",
+      "expect": "greeting",
+      "got": "greeting",
+      "ok": true
+    },
+    {
+      "prompt": "what's up",
+      "expect": "wellbeing",
+      "got": "wellbeing",
+      "ok": true
+    },
+    {
+      "prompt": "hey, how are you",
+      "expect": "greeting+wellbeing",
+      "got": "greeting+wellbeing",
+      "ok": true
+    },
+    {
+      "prompt": "hi who are you",
+      "expect": "greeting+identity",
+      "got": "greeting+identity",
+      "ok": true
+    },
+    {
+      "prompt": "hello, what can you do?",
+      "expect": "greeting+ability",
+      "got": "greeting+ability",
+      "ok": true
+    },
+    {
+      "prompt": "thanks, bye",
+      "expect": "thanks+farewell",
+      "got": "thanks+farewell",
+      "ok": true
+    },
+    {
+      "prompt": "hi, how are you, what can you do",
+      "expect": "greeting+wellbeing+ability",
+      "got": "greeting+wellbeing+ability",
+      "ok": true
+    },
+    {
+      "prompt": "i'm good, and you?",
+      "expect": "ack+wellbeing",
+      "got": "ack+wellbeing",
+      "ok": true
+    },
+    {
+      "prompt": "heyyy",
+      "expect": "greeting",
+      "got": "greeting",
+      "ok": true
+    },
+    {
+      "prompt": "how r u",
+      "expect": "wellbeing",
+      "got": "wellbeing",
+      "ok": true
+    },
+    {
+      "prompt": "thx",
+      "expect": "thanks",
+      "got": "thanks",
+      "ok": true
+    },
+    {
+      "prompt": "wassup",
+      "expect": "wellbeing",
+      "got": "wellbeing",
+      "ok": true
+    },
+    {
+      "prompt": "u there?",
+      "expect": "presence",
+      "got": "presence",
+      "ok": true
+    },
+    {
+      "prompt": "wut is ur name",
+      "expect": "name",
+      "got": "name",
+      "ok": true
+    },
+    {
+      "prompt": "are you there",
+      "expect": "presence",
+      "got": "presence",
+      "ok": true
+    },
+    {
+      "prompt": "are you alive",
+      "expect": "nature",
+      "got": "nature",
+      "ok": true
+    },
+    {
+      "prompt": "who made you",
+      "expect": "origin",
+      "got": "origin",
+      "ok": true
+    },
+    {
+      "prompt": "how old are you",
+      "expect": "age",
+      "got": "age",
+      "ok": true
+    },
+    {
+      "prompt": "where do you run",
+      "expect": "place",
+      "got": "place",
+      "ok": true
+    },
+    {
+      "prompt": "what is your purpose",
+      "expect": "purpose",
+      "got": "purpose",
+      "ok": true
+    },
+    {
+      "prompt": "tell me a joke",
+      "expect": "uncarried",
+      "got": "uncarried",
+      "ok": true
+    },
+    {
+      "prompt": "write a poem",
+      "expect": "uncarried",
+      "got": "uncarried",
+      "ok": true
+    },
+    {
+      "prompt": "tell me about yourself",
+      "expect": "self",
+      "got": "self",
+      "ok": true
+    },
+    {
+      "prompt": "are you conscious?",
+      "expect": "nature",
+      "got": "nature",
+      "ok": true
+    },
+    {
+      "prompt": "can you hear me",
+      "expect": "presence",
+      "got": "presence",
+      "ok": true
+    },
+    {
+      "prompt": "good morning",
+      "expect": "greeting",
+      "got": "greeting",
+      "ok": true
+    },
+    {
+      "prompt": "good night",
+      "expect": "farewell",
+      "got": "farewell",
+      "ok": true
+    }
+  ],
+  "region": {
+    "kinds": [
+      "greeting",
+      "wellbeing",
+      "identity",
+      "name",
+      "ability",
+      "thanks",
+      "ack",
+      "farewell",
+      "origin",
+      "presence",
+      "self",
+      "nature",
+      "age",
+      "place",
+      "purpose",
+      "uncarried",
+      "praise",
+      "rebuke",
+      "invite",
+      "recall",
+      "intro",
+      "preference"
+    ],
+    "maxWords": 10,
+    "maxChars": 80,
+    "model": "off",
+    "network": "none",
+    "memory": "not read"
+  },
+  "timing": {
+    "turns": {
+      "n": 10400,
+      "medianNs": 1300,
+      "p95Ns": 5000,
+      "maxNs": 189300
+    },
+    "nonTurns": {
+      "n": 660,
+      "medianNs": 2400,
+      "p95Ns": 3900
+    }
+  },
+  "wallMs": 76,
+  "bytesWritten": "one verdict file, under 1 MB",
+  "printed": [
+    "converse bar: node bench/converse.mjs --heldout bench/converse-heldout-1.jsonl (model off, no network, no memory)",
+    "development turns: carried with the expected kind 52 of 52",
+    "negative spoken-arithmetic: false positives 0 of 100",
+    "negative spoken-arithmetic-words: false positives 0 of 100",
+    "negative knowledge-questions: false positives 0 of 600",
+    "negative gsm8k-questions: false positives 0 of 100",
+    "negative answer-questions: false positives 0 of 40",
+    "negative development-non-turns: false positives 0 of 33",
+    "negative held-out-non-turns: false positives 0 of 38",
+    "held-out turns (bench/converse-heldout-1.jsonl): carried 67 of 67 (100.0%, bar >= 90%)",
+    "held-out kind named by the file and carried: the region read the same kind on 55 of 59 (recorded, not graded)",
+    "held-out lines unreadable 0",
+    "held-out written by verify plane, board 25 item converse-cover (first verify); the builder never read this file at 2026-09-27T10:06:46-04:00 (the header line of the file)",
+    "control (\"apples\" after the first word of every carried turn): carried 0 of 119 (a grammar that refuses unknown words carries 0)",
+    "timing: turn median 1300 ns, p95 5000 ns over 10400; non-turn median 2400 ns, p95 3900 ns over 660",
+    "BAR MET: held-out turns carried 67 of 67 (bar >= 90%), false positives 0 across 7 negative sets (bar 0 on every set), unreadable held-out lines 0 (bar 0), 76 ms"
+  ]
+}

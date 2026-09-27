@@ -1,0 +1,457 @@
+{
+  "at": "2026-09-27T14:04:24.657Z",
+  "command": "node bench/converse.mjs",
+  "node": "v24.15.0",
+  "isTheBar": false,
+  "barMet": false,
+  "met": {
+    "heldOutCarried": null,
+    "falsePositivesZero": true,
+    "heldOutReadable": null
+  },
+  "bar": {
+    "heldOutCarriedAtLeast": 0.9,
+    "falsePositivesPerNegativeSet": 0,
+    "heldOutUnreadableLines": 0,
+    "rule": "held-out turns carried >= 90 percent AND false positives 0 on every negative set that ran AND every held-out line readable"
+  },
+  "statement": "This is a partial run with no held-out file, so it is not the bar: the region carried 52 of its 52 development turns with the expected kind and answered 0 of the prompts in 6 negative sets (spoken-arithmetic 0 of 100, spoken-arithmetic-words 0 of 100, knowledge-questions 0 of 600, gsm8k-questions 0 of 100, answer-questions 0 of 40, development-non-turns 0 of 33). The control put the unknown word \"apples\" into every carried development turn and the region carried 0 of 52. The model was off and no network or memory was read; the median turn took 1300 ns inside converse(). The bar is run by the verify plane with --heldout on a file the builder never read.",
+  "split": {
+    "development": {
+      "turns": 52,
+      "nonTurns": 33,
+      "what": "the prompts in this file and in test/converse.test.mjs, on the screen while the grammar was written"
+    },
+    "heldOut": {
+      "file": null,
+      "what": "no --heldout given: this run is partial and decides nothing"
+    },
+    "rule": "a fix pass may generalise the grammar but never add a held-out prompt form by form; the next verify writes a second held-out file, and split.heldOut.file names which file decided"
+  },
+  "control": {
+    "what": "every carried turn with the out-of-vocabulary word \"apples\" put after its first word; a grammar that refuses unknown words carries none",
+    "n": 52,
+    "carried": 0,
+    "rows": [],
+    "inBar": false
+  },
+  "heldOut": null,
+  "negatives": [
+    {
+      "name": "spoken-arithmetic",
+      "source": "the generator of bench/spoken.mjs, seed spoken/1, first 100 draws",
+      "n": 100,
+      "falsePositives": 0,
+      "rows": []
+    },
+    {
+      "name": "spoken-arithmetic-words",
+      "source": "the same 100 draws, every operand written in words",
+      "n": 100,
+      "falsePositives": 0,
+      "rows": []
+    },
+    {
+      "name": "knowledge-questions",
+      "source": "what is / who is / tell me about each of the 200 titles in bench/verdicts/knowledge.json rows",
+      "n": 600,
+      "falsePositives": 0,
+      "rows": []
+    },
+    {
+      "name": "gsm8k-questions",
+      "source": "the first 100 questions of bench/fixtures/public/gsm8k/test.jsonl",
+      "n": 100,
+      "falsePositives": 0,
+      "rows": []
+    },
+    {
+      "name": "answer-questions",
+      "source": "the 40 questions of bench/fixtures/answer-questions.json",
+      "n": 40,
+      "falsePositives": 0,
+      "rows": []
+    },
+    {
+      "name": "development-non-turns",
+      "source": "the non-turns in this file (written with the grammar)",
+      "n": 33,
+      "falsePositives": 0,
+      "rows": []
+    }
+  ],
+  "skipped": [],
+  "development": [
+    {
+      "prompt": "hi",
+      "expect": "greeting",
+      "got": "greeting",
+      "ok": true
+    },
+    {
+      "prompt": "how are you?",
+      "expect": "wellbeing",
+      "got": "wellbeing",
+      "ok": true
+    },
+    {
+      "prompt": "Who are you?",
+      "expect": "identity",
+      "got": "identity",
+      "ok": true
+    },
+    {
+      "prompt": "what's your name",
+      "expect": "name",
+      "got": "name",
+      "ok": true
+    },
+    {
+      "prompt": "what can you do",
+      "expect": "ability",
+      "got": "ability",
+      "ok": true
+    },
+    {
+      "prompt": "thanks!",
+      "expect": "thanks",
+      "got": "thanks",
+      "ok": true
+    },
+    {
+      "prompt": "ok",
+      "expect": "ack",
+      "got": "ack",
+      "ok": true
+    },
+    {
+      "prompt": "bye",
+      "expect": "farewell",
+      "got": "farewell",
+      "ok": true
+    },
+    {
+      "prompt": "who made you?",
+      "expect": "origin",
+      "got": "origin",
+      "ok": true
+    },
+    {
+      "prompt": "can you hear me?",
+      "expect": "presence",
+      "got": "presence",
+      "ok": true
+    },
+    {
+      "prompt": "tell me about yourself",
+      "expect": "self",
+      "got": "self",
+      "ok": true
+    },
+    {
+      "prompt": "are you conscious?",
+      "expect": "nature",
+      "got": "nature",
+      "ok": true
+    },
+    {
+      "prompt": "how old are you?",
+      "expect": "age",
+      "got": "age",
+      "ok": true
+    },
+    {
+      "prompt": "where do you run?",
+      "expect": "place",
+      "got": "place",
+      "ok": true
+    },
+    {
+      "prompt": "what is your purpose?",
+      "expect": "purpose",
+      "got": "purpose",
+      "ok": true
+    },
+    {
+      "prompt": "tell me a joke",
+      "expect": "uncarried",
+      "got": "uncarried",
+      "ok": true
+    },
+    {
+      "prompt": "you are cool",
+      "expect": "praise",
+      "got": "praise",
+      "ok": true
+    },
+    {
+      "prompt": "that is wrong",
+      "expect": "rebuke",
+      "got": "rebuke",
+      "ok": true
+    },
+    {
+      "prompt": "can I ask you something?",
+      "expect": "invite",
+      "got": "invite",
+      "ok": true
+    },
+    {
+      "prompt": "do you remember me?",
+      "expect": "recall",
+      "got": "recall",
+      "ok": true
+    },
+    {
+      "prompt": "my name is Sam",
+      "expect": "intro",
+      "got": "intro",
+      "ok": true
+    },
+    {
+      "prompt": "what's your favorite color?",
+      "expect": "preference",
+      "got": "preference",
+      "ok": true
+    },
+    {
+      "prompt": "hey",
+      "expect": "greeting",
+      "got": "greeting",
+      "ok": true
+    },
+    {
+      "prompt": "Hey",
+      "expect": "greeting",
+      "got": "greeting",
+      "ok": true
+    },
+    {
+      "prompt": "hey there",
+      "expect": "greeting",
+      "got": "greeting",
+      "ok": true
+    },
+    {
+      "prompt": "yo",
+      "expect": "greeting",
+      "got": "greeting",
+      "ok": true
+    },
+    {
+      "prompt": "what's up",
+      "expect": "wellbeing",
+      "got": "wellbeing",
+      "ok": true
+    },
+    {
+      "prompt": "hey, how are you",
+      "expect": "greeting+wellbeing",
+      "got": "greeting+wellbeing",
+      "ok": true
+    },
+    {
+      "prompt": "hi who are you",
+      "expect": "greeting+identity",
+      "got": "greeting+identity",
+      "ok": true
+    },
+    {
+      "prompt": "hello, what can you do?",
+      "expect": "greeting+ability",
+      "got": "greeting+ability",
+      "ok": true
+    },
+    {
+      "prompt": "thanks, bye",
+      "expect": "thanks+farewell",
+      "got": "thanks+farewell",
+      "ok": true
+    },
+    {
+      "prompt": "hi, how are you, what can you do",
+      "expect": "greeting+wellbeing+ability",
+      "got": "greeting+wellbeing+ability",
+      "ok": true
+    },
+    {
+      "prompt": "i'm good, and you?",
+      "expect": "ack+wellbeing",
+      "got": "ack+wellbeing",
+      "ok": true
+    },
+    {
+      "prompt": "heyyy",
+      "expect": "greeting",
+      "got": "greeting",
+      "ok": true
+    },
+    {
+      "prompt": "how r u",
+      "expect": "wellbeing",
+      "got": "wellbeing",
+      "ok": true
+    },
+    {
+      "prompt": "thx",
+      "expect": "thanks",
+      "got": "thanks",
+      "ok": true
+    },
+    {
+      "prompt": "wassup",
+      "expect": "wellbeing",
+      "got": "wellbeing",
+      "ok": true
+    },
+    {
+      "prompt": "u there?",
+      "expect": "presence",
+      "got": "presence",
+      "ok": true
+    },
+    {
+      "prompt": "wut is ur name",
+      "expect": "name",
+      "got": "name",
+      "ok": true
+    },
+    {
+      "prompt": "are you there",
+      "expect": "presence",
+      "got": "presence",
+      "ok": true
+    },
+    {
+      "prompt": "are you alive",
+      "expect": "nature",
+      "got": "nature",
+      "ok": true
+    },
+    {
+      "prompt": "who made you",
+      "expect": "origin",
+      "got": "origin",
+      "ok": true
+    },
+    {
+      "prompt": "how old are you",
+      "expect": "age",
+      "got": "age",
+      "ok": true
+    },
+    {
+      "prompt": "where do you run",
+      "expect": "place",
+      "got": "place",
+      "ok": true
+    },
+    {
+      "prompt": "what is your purpose",
+      "expect": "purpose",
+      "got": "purpose",
+      "ok": true
+    },
+    {
+      "prompt": "tell me a joke",
+      "expect": "uncarried",
+      "got": "uncarried",
+      "ok": true
+    },
+    {
+      "prompt": "write a poem",
+      "expect": "uncarried",
+      "got": "uncarried",
+      "ok": true
+    },
+    {
+      "prompt": "tell me about yourself",
+      "expect": "self",
+      "got": "self",
+      "ok": true
+    },
+    {
+      "prompt": "are you conscious?",
+      "expect": "nature",
+      "got": "nature",
+      "ok": true
+    },
+    {
+      "prompt": "can you hear me",
+      "expect": "presence",
+      "got": "presence",
+      "ok": true
+    },
+    {
+      "prompt": "good morning",
+      "expect": "greeting",
+      "got": "greeting",
+      "ok": true
+    },
+    {
+      "prompt": "good night",
+      "expect": "farewell",
+      "got": "farewell",
+      "ok": true
+    }
+  ],
+  "region": {
+    "kinds": [
+      "greeting",
+      "wellbeing",
+      "identity",
+      "name",
+      "ability",
+      "thanks",
+      "ack",
+      "farewell",
+      "origin",
+      "presence",
+      "self",
+      "nature",
+      "age",
+      "place",
+      "purpose",
+      "uncarried",
+      "praise",
+      "rebuke",
+      "invite",
+      "recall",
+      "intro",
+      "preference"
+    ],
+    "maxWords": 10,
+    "maxChars": 80,
+    "model": "off",
+    "network": "none",
+    "memory": "not read"
+  },
+  "timing": {
+    "turns": {
+      "n": 10400,
+      "medianNs": 1300,
+      "p95Ns": 5600,
+      "maxNs": 184900
+    },
+    "nonTurns": {
+      "n": 660,
+      "medianNs": 1500,
+      "p95Ns": 2300
+    }
+  },
+  "wallMs": 42,
+  "bytesWritten": "one verdict file, under 1 MB",
+  "printed": [
+    "converse bar: node bench/converse.mjs (model off, no network, no memory)",
+    "development turns: carried with the expected kind 52 of 52",
+    "negative spoken-arithmetic: false positives 0 of 100",
+    "negative spoken-arithmetic-words: false positives 0 of 100",
+    "negative knowledge-questions: false positives 0 of 600",
+    "negative gsm8k-questions: false positives 0 of 100",
+    "negative answer-questions: false positives 0 of 40",
+    "negative development-non-turns: false positives 0 of 33",
+    "control (\"apples\" after the first word of every carried turn): carried 0 of 52 (a grammar that refuses unknown words carries 0)",
+    "timing: turn median 1300 ns, p95 5600 ns over 10400; non-turn median 1500 ns, p95 2300 ns over 660",
+    "PARTIAL (no --heldout, isTheBar false): development 52 of 52, false positives 0 across 6 negative sets, 42 ms"
+  ]
+}

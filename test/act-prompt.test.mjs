@@ -30,6 +30,7 @@ import {
   AGREEMENT, ASK_EVENT, DO_EVENT, SURFACE,
   argvsIn, ask, doPrompt, encodePrompt, keywords, memoryAnswer, plan, promptHash, recall, renderRecall,
   resetAgreement, scrubSecrets, splitArgv, systemFor, urlsIn,
+  FALLTHROUGH_HEAD, FALLTHROUGH_TRY,
 } from '../act/prompt.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -204,6 +205,21 @@ test('ask with provider null answers from memory alone, and the answer cites the
   const empty = await ask(brain, 'what is the airspeed of a laden swallow', { provider: 'null' });
   assert.equal(empty.provenance.memoryHits, 0);
   assert.match(empty.text, /nothing in memory matches/);
+  // Board 25, item ask-fallthrough: the miss is a reply for a person. The first line says what the
+  // organism does carry, the old line survives as the second line, the third names carried prompts,
+  // and every field but the text is what it was (test/ask-fallthrough.test.mjs pins the rest).
+  const [first, second, third, ...rest] = empty.text.split('\n');
+  assert.equal(first, FALLTHROUGH_HEAD);
+  assert.ok(first.endsWith('.') && first.length < 240 && !/nothing in memory/.test(first), first);
+  assert.equal(second, 'nothing in memory matches airspeed, laden, swallow.');
+  assert.equal(second, empty.memory, 'answer.memory is the old line');
+  assert.equal(third, FALLTHROUGH_TRY);
+  assert.deepEqual(rest, []);
+  assert.equal(empty.from, 'memory');
+  assert.equal(empty.route, 'direct');
+  assert.equal(empty.provenance.answer, 'memory');
+  assert.equal(empty.provenance.llm.provider, 'null');
+  assert.equal(empty.provenance.llm.fellBack, null);
 });
 
 test('ask against a fake ollama answers with the model text, scrubbed, and reaches it once', async (t) => {

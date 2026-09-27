@@ -38,6 +38,37 @@ summary { cursor: pointer; color: var(--dim); letter-spacing: 0.16em; text-trans
 textarea { width: 100%; min-height: 320px; margin-top: 10px; background: var(--glass); color: var(--ink);
   border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font: inherit; resize: vertical; }
 footer { margin-top: 40px; color: var(--dim); border-top: 1px solid var(--line); padding-top: 12px; }
+/* the two measured blocks (web/build.mjs fills them from bench/verdicts at build time; none of their numbers is typed) */
+section.block { margin: 22px 0 0; padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--glass); }
+section.block h2 { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; margin: 0 0 10px; color: var(--dim); }
+.count-line { font-size: 18px; line-height: 1.45; margin: 0 0 12px; color: #fff; text-shadow: 0 0 18px rgba(127,176,255,0.28); overflow-wrap: anywhere; }
+.stack { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: rgba(150,180,255,0.08); margin: 0 0 12px; }
+.stack span { display: block; height: 100%; }
+.s-met { background: var(--accent); }
+.s-partial { background: var(--warm); }
+.s-open { background: rgba(150,180,255,0.3); }
+.s-frozen { background: #3a4260; }
+.s-unstated { background: #ff6b6b; }
+ul.words { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0 0 12px; }
+ul.words li { border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; }
+ul.words b { color: #fff; font-weight: 600; margin-right: 7px; }
+ul.words .k { letter-spacing: 0.14em; }
+ul.words .why { color: var(--dim); margin-left: 7px; }
+.over { margin: 0 0 8px; font-size: 13px; }
+.src { color: var(--dim); margin: 6px 0 0; overflow-wrap: anywhere; }
+.stale { color: var(--warm); border-left: 2px solid rgba(255,178,127,0.55); padding: 2px 0 2px 10px; margin: 8px 0 0; overflow-wrap: anywhere; }
+.nm { color: var(--dim); font-style: italic; }
+.tiles { display: flex; flex-wrap: wrap; gap: 10px; margin: 4px 0 12px; }
+.tile { flex: 1 1 200px; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; }
+.tile .lbl { color: var(--dim); letter-spacing: 0.14em; text-transform: uppercase; font-size: 10px; }
+.tile .val { font-size: 16px; color: #fff; margin-top: 2px; }
+.tile .sub { color: var(--dim); margin-top: 2px; }
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table.live { border-collapse: collapse; width: 100%; margin: 8px 0; }
+table.live th { color: var(--dim); font-weight: 400; text-align: left; border-bottom: 1px solid var(--line); padding: 4px 12px 4px 0; white-space: nowrap; }
+table.live td { padding: 4px 12px 4px 0; vertical-align: top; border-bottom: 1px solid rgba(150,180,255,0.05); overflow-wrap: anywhere; }
+table.live .n { text-align: right; white-space: nowrap; }
+@media (max-width: 640px) { .count-line { font-size: 15px; } section.block { padding: 13px 13px; } }
 </style>
 </head>
 <body>
@@ -49,6 +80,8 @@ footer { margin-top: 40px; color: var(--dim); border-top: 1px solid var(--line);
 <p class="meta">The portfolio, in paragraphs. It is the file <code>docs/PORTFOLIO.md</code> rendered at build time, so
 this page is the current one: every deploy regenerates it, and the sentences that carry counts are rewritten by
 <code>tools/portfolio-gate.mjs</code> after each green gate. Copy it as markdown or as plain text; the raw file is served next to this page.</p>
+<section class="block" id="vision" aria-labelledby="vision-h"><h2 id="vision-h">The vision, counted</h2><p class="count-line" id="vision-line">40 orders listed. MET: 16. PARTIAL: 21. OPEN: 2. FROZEN: 1.</p><div class="stack" role="img" aria-label="40 orders listed. MET: 16. PARTIAL: 21. OPEN: 2. FROZEN: 1."><span class="s-met" style="width:40.000%"></span><span class="s-partial" style="width:52.500%"></span><span class="s-open" style="width:5.000%"></span><span class="s-frozen" style="width:2.500%"></span></div><ul class="words"><li><b>16</b><span class="k">MET</span><span class="why">a verdict file with barMet true</span></li><li><b>21</b><span class="k">PARTIAL</span><span class="why">a printed number under the bar</span></li><li><b>2</b><span class="k">OPEN</span><span class="why">no bar run yet</span></li><li><b>1</b><span class="k">FROZEN</span><span class="why">his own later order stopped it</span></li></ul><p class="over">The project is over when MET equals the total and not before: MET is 16 of 40, so it is not over.</p><p class="src">Counted at 2026-09-27T13:42:40.485Z by <code>node tools/vision-count.mjs --json</code> from docs/VISION.md, where every order he gave is a numbered plan ending in a status word; read from bench/verdicts/vision-count.json when this page was built.</p><p class="src">docs/VISION.md counts this line when this page was built, byte for byte the document that was counted.</p></section>
+<section class="block" id="live" aria-labelledby="live-h"><h2 id="live-h">Live</h2><div class="tiles"><div class="tile"><div class="lbl">in the tab, no request</div><div class="val">8203 to 181250 ns</div><div class="sub">per ask, over 6 prompts answered in the page</div></div><div class="tile"><div class="lbl">on the server</div><div class="val">770 µs</div><div class="sub">the arithmetic prompt on host iad1; median 352 µs over 17 rapid asks</div></div><div class="tile"><div class="lbl">round trip</div><div class="val">158 ms</div><div class="sub">the same ask, browser to server and back; median 85.1 ms over the rapid asks</div></div></div><p class="over"><a href="https://dilation.dev/ask">https://dilation.dev/ask</a> asked at 2026-09-27T01:06:59.317Z by <code>node bench/site-ask.mjs --url https://dilation.dev/ask</code> (node v24.21.0) in Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36. Bar met: true, 13 of 13 checks true; model calls 0.</p><p class="src">The file carries no GitHub run id.</p><div class="scroll"><table class="live"><tr><th>asked in the tab</th><th>answer</th><th>route</th><th class="n">ns per ask</th></tr><tr><td>what is 17 times 23</td><td>391</td><td>exact</td><td class="n">15625</td></tr><tr><td>2 to the power of 100</td><td>1267650600228229401496703205376</td><td>exact</td><td class="n">31250</td></tr><tr><td>15 percent of 200</td><td>30</td><td>exact</td><td class="n">10938</td></tr><tr><td>the square root of 144</td><td>12</td><td>exact</td><td class="n">8203</td></tr><tr><td>subtract 3 from 10</td><td>7</td><td>exact</td><td class="n">14062</td></tr><tr><td>Natalia sold clips to 48 of her friends in April, and then she sold h...</td><td>72</td><td>exact</td><td class="n">181250</td></tr></table></div><div class="scroll"><table class="live"><tr><th>asked of the server</th><th>what came back</th><th class="n">server</th><th class="n">round trip</th></tr><tr><td>the arithmetic prompt</td><td>status 200, route direct, from exact on host iad1</td><td class="n">770 µs</td><td class="n">158 ms</td></tr><tr><td>a prompt no cell answers</td><td>status 200, route direct, from memory on host iad1</td><td class="n">901 µs</td><td class="n">152.6 ms</td></tr><tr><td>write a poem about the sea</td><td>the tab refused it; 1 POST to the server, route direct, provider null</td><td class="n">1166 µs</td><td class="n">106 ms</td></tr><tr><td>30 rapid repeats of the arithmetic prompt</td><td>statuses 200 x17, 429 x13</td><td class="n">230 / 352 / 717 µs</td><td class="n">79.2 / 85.1 / 109.6 ms</td></tr></table></div><p class="src">Rapid rows are min / median / max.</p><p class="src">Read from bench/verdicts/site-ask.json when this page was built.</p></section>
 <div class="tools">
   <button id="copy-md" type="button">copy markdown</button>
   <button id="copy-text" type="button">copy plain text</button>
@@ -140,7 +173,7 @@ What it is for. An organism that runs, remembers, predicts, simulates and acts t
 What is public, and what is not. His domain publishes the findings page and the brain scene, both built from verdict files, and nothing else: the source tree, the notes, the ledger and the soak state stay on his machine, and the deploy directory ships no source and no environment file (the live site answers not found for both). The code carries a rights notice in LICENSE at the root: all rights reserved, no licence to copy, modify, distribute or train on any of it. The ledger and the verdict files carry their own timestamps and the commands that wrote them, so the priority of every idea here is dated by a file a command wrote, not by a claim.
 </textarea>
 </details>
-<footer>generated 2026-09-27T01:29:32.610Z from docs/PORTFOLIO.md; gate as the document quotes it: GREEN on 98 test files with 1,239 assertions</footer>
+<footer>generated 2026-09-27T14:22:47.605Z from docs/PORTFOLIO.md; gate as the document quotes it: GREEN on 98 test files with 1,239 assertions</footer>
 </div>
 <script>
 (function () {

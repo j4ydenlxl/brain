@@ -36,6 +36,7 @@ import { execSync, spawn, spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { solve } from '../act/solve.mjs';
+import { converse } from '../act/converse.mjs';
 import { EXAMPLES } from '../web/ask.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -50,6 +51,25 @@ const LONG = 'x'.repeat(2001);
 const RAPID = 30;
 const LIVE_HOSTS = ['dilation.dev', 'ask.dilation.dev'];
 const SECRETS = ['sk-', 'sk_', 'Bearer ', 'BRAIN_LLM_KEY='];
+// Board 25 (item tab-converse, his 2026-09-27 09:28 EDT "Yeah but i said hey to it and it said it couldnt
+// respond"): the tab asks the conversation region (act/converse.mjs) first, so "hey" (a chip) and "hey, how
+// are you" (typed) must be TAB answers, route direct, provenance native, zero requests, equal to converse()
+// run here in node on the same prompt (computed, never typed). "tell me a joke" is recorded with the rule
+// that its answer's first line does not start with "nothing in memory matches"; it depends on items
+// converse-cover or ask-fallthrough being deployed, so it is a row and not a rule of the bar.
+const HEY = 'hey';
+const COMPOUND = 'hey, how are you';
+const JOKE = 'tell me a joke';
+const PROMPTS = EXAMPLES.concat([COMPOUND, JOKE].filter((q) => !EXAMPLES.includes(q)));
+const IN_BAR = (q) => q !== JOKE;
+/** What the page must print for q, in the tab's order: the conversation region, then the exact reader, then the server. */
+function expected(q) {
+  const c = converse(q);
+  if (c) return { from: 'converse', answer: c.answer, kind: c.kind, route: 'direct', provenance: 'native' };
+  const s = solve(q);
+  if (s) return { from: 'solve', answer: s.answer, method: s.method, route: 'exact', provenance: 'exact' };
+  return { from: 'server', answer: null, route: 'refused', provenance: 'none' };
+}
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function playwright() {
@@ -127,7 +147,7 @@ async function main() {
   page.on('request', (r) => { requests.push({ method: r.method(), url: r.url() }); });
   const browserUA = await page.evaluate(() => navigator.userAgent);
   const rows = [];
-  for (const q of EXAMPLES) {
+  for (const q of PROMPTS) {
     const n0 = await page.locator('#term .entry:not(#hello)').count();
     const r0 = requests.length;
     await page.fill('#q', q);
@@ -146,9 +166,11 @@ async function main() {
     });
     const made = requests.slice(r0);
     const cli = solve(q);
-    const parity = (cli ? cli.answer : null) === got.answer;
-    rows.push({ prompt: q, answer: got.answer, route: got.route, provenance: got.provenance, nsPerAsk: got.ns, cli: cli ? cli.answer : null, cliMethod: cli ? cli.method : null, parity, requests: made, server: got.server, lines: got.text.split('\n').slice(0, 14) });
-    say((got.answer !== null ? 'TAB ANSWERED ' + got.answer : 'TAB REFUSED') + '  route ' + got.route + '  provenance ' + got.provenance + (got.ns !== null ? '  ' + got.ns + ' ns per ask' : '') + '  cli ' + (cli ? cli.answer : 'null') + (parity ? '' : '  PARITY MISSED') + '  requests ' + made.length
+    const want = expected(q);
+    const parity = want.answer === got.answer;
+    const firstLine = got.answer !== null ? String(got.answer).split('\n')[0] : got.server ? (String(got.server.text || '').split('\n').find((l) => l.trim()) || '').trim() : null;
+    rows.push({ prompt: q, answer: got.answer, route: got.route, provenance: got.provenance, nsPerAsk: got.ns, cli: cli ? cli.answer : null, cliMethod: cli ? cli.method : null, expected: want, parity, inBar: IN_BAR(q), firstLine, requests: made, server: got.server, lines: got.text.split('\n').slice(0, 14) });
+    say((got.answer !== null ? 'TAB ANSWERED ' + String(got.answer).slice(0, 60) : 'TAB REFUSED') + '  route ' + got.route + '  provenance ' + got.provenance + (got.ns !== null ? '  ' + got.ns + ' ns per ask' : '') + '  expected ' + want.from + ' ' + (want.answer === null ? 'null' : String(want.answer).slice(0, 40)) + (parity ? '' : '  PARITY MISSED') + (IN_BAR(q) ? '' : '  (a row, not a rule)') + '  requests ' + made.length
       + (got.server ? '  SERVER ' + got.server.status + ' route ' + got.server.route + ' provenance ' + got.server.provenance + ' model ' + got.server.provider + ' ' + got.server.serverUs + ' us on the server, round trip ' + got.server.rttMs + ' ms' : '') + '  :: ' + q.slice(0, 60));
   }
   await browser.close();
@@ -179,12 +201,19 @@ async function main() {
   const secretHits = SECRETS.map((s) => ({ s, n: all.reduce((k, r) => k + (String(r.raw || '').split(s).length - 1), 0) }));
   const r17 = rows.find((r) => r.prompt === EXACT);
   const novel = rows.find((r) => r.prompt === NOVEL);
-  const tabAnswered = rows.filter((r) => r.answer !== null);
-  const refused = rows.filter((r) => r.answer === null);
+  const barRows = rows.filter((r) => r.inBar);
+  const tabAnswered = barRows.filter((r) => r.answer !== null);
+  const refused = barRows.filter((r) => r.answer === null);
+  const nativeTab = (r) => !!r && r.expected.from === 'converse' && r.answer === r.expected.answer && r.route === 'direct' && r.provenance === 'native' && r.requests.length === 0 && Number.isFinite(r.nsPerAsk);
+  const heyRow = rows.find((r) => r.prompt === HEY), compoundRow = rows.find((r) => r.prompt === COMPOUND), jokeRow = rows.find((r) => r.prompt === JOKE);
+  const joke = jokeRow ? { prompt: JOKE, firstLine: jokeRow.firstLine, answeredIn: jokeRow.answer !== null ? 'tab' : jokeRow.server ? 'server' : 'nowhere', ok: typeof jokeRow.firstLine === 'string' && jokeRow.firstLine.length > 0 && !/^nothing in memory matches/.test(jokeRow.firstLine),
+    dependsOn: 'items converse-cover (act/converse.mjs, the uncarried kind, in the deployed page and on the server) or ask-fallthrough (act/prompt.mjs, the memory-miss end) being deployed; recorded as a row, never a rule of this bar' } : null;
   const met = {
     exact391: !!r17 && r17.answer === '391' && r17.provenance === 'exact' && Number.isFinite(r17.nsPerAsk),
     novelRoutePrinted: !!novel && novel.answer === null && novel.route === 'refused' && !!novel.server && novel.server.status === 200 && !!novel.server.route && /route/.test(novel.server.text),
-    parity: rows.every((r) => r.parity),
+    heyInTheTab: nativeTab(heyRow),
+    compoundInTheTab: nativeTab(compoundRow),
+    parity: barRows.every((r) => r.parity),
     tabNoRequest: tabAnswered.every((r) => r.requests.length === 0),
     refusedOnePost: refused.length > 0 && refused.every((r) => r.requests.length === 1 && r.requests[0].method === 'POST' && r.requests[0].url === base + '/api/ask'),
     noPageErrors: errors.length === 0,
@@ -198,7 +227,8 @@ async function main() {
   };
   const barMet = Object.values(met).every(Boolean);
   const ns = tabAnswered.map((r) => r.nsPerAsk).sort((a, b) => a - b);
-  say(`BAR ${barMet ? 'MET' : 'MISSED'}${live ? '' : staticOnly ? ' (CONTROL: server half off, local page)' : ' (local page, not the live site)'}: tab 17 times 23 -> ${r17 ? r17.answer : 'none'} provenance ${r17 ? r17.provenance : 'none'} at ${r17 ? r17.nsPerAsk : 'none'} ns per ask; novel question tab ${novel ? novel.route : 'none'}, server ${novel && novel.server ? novel.server.status + ' route ' + novel.server.route + ' provenance ' + novel.server.provenance + ' model ' + novel.server.provider : 'none'}; tab answered ${tabAnswered.length}/${rows.length}; cli parity ${rows.filter((r) => r.parity).length}/${rows.length}; tab requests ${tabAnswered.reduce((k, r) => k + r.requests.length, 0)}; refused prompts ${refused.length} with ${refused.reduce((k, r) => k + r.requests.length, 0)} POSTs; page errors ${errors.length}; server 391 ${met.serverExact391 ? 'yes' : 'no'} serverUs ${e.serverUs}; 413 ${server.long.status}; 429 ${first429 >= 0 ? 'at #' + (first429 + 1) : 'none'}; secrets ${secretHits.reduce((k, x) => k + x.n, 0)}; cold start ${cold.coldStartMs} ms warm ${cold.warmMs} ms; met ${Object.values(met).filter(Boolean).length}/${Object.keys(met).length}`);
+  say('HEY ' + (heyRow ? 'route ' + heyRow.route + ' provenance ' + heyRow.provenance + ' requests ' + heyRow.requests.length + ' ' + heyRow.nsPerAsk + ' ns per ask parity ' + heyRow.parity : 'not asked') + '; "' + COMPOUND + '" ' + (compoundRow ? 'route ' + compoundRow.route + ' provenance ' + compoundRow.provenance + ' requests ' + compoundRow.requests.length + ' parity ' + compoundRow.parity : 'not asked') + '; "' + JOKE + '" first line ' + JSON.stringify(joke ? joke.firstLine : null) + ' in the ' + (joke ? joke.answeredIn : 'nowhere') + ' -> ' + (joke ? joke.ok : 'n/a') + ' (a row, not a rule)');
+  say(`BAR ${barMet ? 'MET' : 'MISSED'}${live ? '' : staticOnly ? ' (CONTROL: server half off, local page)' : ' (local page, not the live site)'}: tab 17 times 23 -> ${r17 ? r17.answer : 'none'} provenance ${r17 ? r17.provenance : 'none'} at ${r17 ? r17.nsPerAsk : 'none'} ns per ask; hey in the tab ${met.heyInTheTab}; novel question tab ${novel ? novel.route : 'none'}, server ${novel && novel.server ? novel.server.status + ' route ' + novel.server.route + ' provenance ' + novel.server.provenance + ' model ' + novel.server.provider : 'none'}; tab answered ${tabAnswered.length}/${barRows.length}; parity ${barRows.filter((r) => r.parity).length}/${barRows.length}; tab requests ${tabAnswered.reduce((k, r) => k + r.requests.length, 0)}; refused prompts ${refused.length} with ${refused.reduce((k, r) => k + r.requests.length, 0)} POSTs; page errors ${errors.length}; server 391 ${met.serverExact391 ? 'yes' : 'no'} serverUs ${e.serverUs}; 413 ${server.long.status}; 429 ${first429 >= 0 ? 'at #' + (first429 + 1) : 'none'}; secrets ${secretHits.reduce((k, x) => k + x.n, 0)}; cold start ${cold.coldStartMs} ms warm ${cold.warmMs} ms; met ${Object.values(met).filter(Boolean).length}/${Object.keys(met).length}`);
   const manifest = JSON.parse(fs.readFileSync(path.join(DIST, 'organism', 'manifest.json'), 'utf8'));
   const failed = Object.entries(met).filter(([, v]) => !v).map(([k]) => k);
   const out = {
@@ -206,10 +236,11 @@ async function main() {
     isTheBar: live && !staticOnly, barMet, met, url, origin: base, browser: browserUA, control: staticOnly,
     modelCalls: n.llm && n.llm.provider === 'env' && n.llm.ok ? 1 : 0,
     split: {
-      what: 'no learning happens here: the tab prompts are the page examples (web/ask.mjs EXAMPLES), graded against act/solve.mjs in node; the server prompts are the two the brief names plus a 2001 character cap probe and ' + RAPID + ' rapid repeats of the first; none is a held-out set',
-      development: EXAMPLES.slice().concat([EXACT, NOVEL, '2001 x characters (the 413 probe)']), heldOut: [], contaminated: false,
+      what: 'no learning happens here: the tab prompts are the page examples (web/ask.mjs EXAMPLES) plus "' + COMPOUND + '" and "' + JOKE + '", each graded against what the tab order computes in node (act/converse.mjs converse() first, then act/solve.mjs solve()); the server prompts are the two the brief names plus a 2001 character cap probe and ' + RAPID + ' rapid repeats of the first; none is a held-out set',
+      development: PROMPTS.slice().concat([EXACT, NOVEL, '2001 x characters (the 413 probe)']), heldOut: [], contaminated: false,
     },
-    statement: 'The prompt box on ' + url + ' answered in the browser tab with the organism exact reader (' + manifest.files.map((f) => f.file + ' sha256 ' + f.sha256.slice(0, 12)).join(', ') + '), ' + tabAnswered.length + ' of ' + rows.length + ' examples with no request; ' + rows.filter((r) => r.parity).length + ' of ' + rows.length + ' page results equal act/solve.mjs solve() on the same prompt' + (rows.every((r) => r.parity) ? '' : ' (differs: ' + rows.filter((r) => !r.parity).map((r) => JSON.stringify(r.prompt.slice(0, 40)) + ' page ' + r.answer + ' cli ' + r.cli).join('; ') + ')') + '; the ' + refused.length + ' prompt(s) the tab refused made ' + refused.reduce((k, r) => k + r.requests.length, 0) + ' POST(s) to ' + base + '/api/ask and the page printed the server route (' + (novel && novel.server ? novel.server.route + ', provenance ' + novel.server.provenance + ', model ' + novel.server.provider : 'none') + '). On the server, "' + EXACT + '" answered ' + (e.exact ? e.exact.answer : 'none') + ' with provenance ' + (e.provenance ? e.provenance.answer : 'none') + ' in ' + e.serverUs + ' us on host ' + e.host + '; "' + NOVEL + '" answered with route ' + n.route + ' and llm ' + (n.llm ? n.llm.provider + ' (' + (n.llm.reason || 'ok') + ')' : 'none') + '; a 2001 character prompt got ' + server.long.status + '; ' + RAPID + ' rapid POSTs got ' + JSON.stringify(statuses) + '. The knowledge store on the server host: ' + (e.knowledge ? (e.knowledge.ready ? 'ready' : 'absent (' + e.knowledge.why + ')') : 'unknown') + ', so the knowledge tier answered nothing there. Cold start ' + cold.coldStartMs + ' ms and warm ' + cold.warmMs + ' ms were measured in ' + cold.where + '. ' + (barMet ? 'Every rule met.' : 'Rules missed: ' + failed.join(', ') + '.'),
+    joke,
+    statement: 'The prompt box on ' + url + ' answered in the browser tab with the organism modules it copies byte for byte (' + manifest.files.map((f) => f.file + ' sha256 ' + f.sha256.slice(0, 12)).join(', ') + '), ' + tabAnswered.length + ' of ' + barRows.length + ' graded prompts with no request; ' + barRows.filter((r) => r.parity).length + ' of ' + barRows.length + ' page results equal what the tab order computes in node on the same prompt (the conversation region first, then act/solve.mjs)' + (barRows.every((r) => r.parity) ? '' : ' (differs: ' + barRows.filter((r) => !r.parity).map((r) => JSON.stringify(r.prompt.slice(0, 40)) + ' page ' + JSON.stringify(r.answer === null ? null : String(r.answer).slice(0, 40)) + ' expected ' + r.expected.from + ' ' + JSON.stringify(r.expected.answer === null ? null : String(r.expected.answer).slice(0, 40))).join('; ') + ')') + '. "' + HEY + '" ' + (heyRow ? (met.heyInTheTab ? 'was answered in the tab by the conversation region (route direct, provenance native, no request, ' + heyRow.nsPerAsk + ' ns per ask on this device)' : 'was NOT answered in the tab by the conversation region (route ' + heyRow.route + ', ' + heyRow.requests.length + ' request(s)); the page deployed there predates board 25 item tab-converse') : 'was not asked') + ', and "' + COMPOUND + '" ' + (met.compoundInTheTab ? 'was too' : 'was not (it holds once the page carrying the compound turns of act/converse.mjs is deployed)') + '. "' + JOKE + '" is a row, not a rule: its first line ' + (joke && joke.ok ? 'does not start with "nothing in memory matches"' : 'is ' + JSON.stringify(joke ? joke.firstLine : null)) + ', which depends on ' + (joke ? joke.dependsOn : 'nothing asked') + '. The ' + refused.length + ' prompt(s) the tab refused made ' + refused.reduce((k, r) => k + r.requests.length, 0) + ' POST(s) to ' + base + '/api/ask and the page printed the server route (' + (novel && novel.server ? novel.server.route + ', provenance ' + novel.server.provenance + ', model ' + novel.server.provider : 'none') + '). On the server, "' + EXACT + '" answered ' + (e.exact ? e.exact.answer : 'none') + ' with provenance ' + (e.provenance ? e.provenance.answer : 'none') + ' in ' + e.serverUs + ' us on host ' + e.host + '; "' + NOVEL + '" answered with route ' + n.route + ' and llm ' + (n.llm ? n.llm.provider + ' (' + (n.llm.reason || 'ok') + ')' : 'none') + '; a 2001 character prompt got ' + server.long.status + '; ' + RAPID + ' rapid POSTs got ' + JSON.stringify(statuses) + '. The knowledge store on the server host: ' + (e.knowledge ? (e.knowledge.ready ? 'ready' : 'absent (' + e.knowledge.why + ')') : 'unknown') + ', so the knowledge tier answered nothing there. Cold start ' + cold.coldStartMs + ' ms and warm ' + cold.warmMs + ' ms were measured in ' + cold.where + '. ' + (barMet ? 'Every rule met.' : 'Rules missed: ' + failed.join(', ') + '.'),
     coldStartMs: cold.coldStartMs, warmMs: cold.warmMs, coldStart: cold,
     requestsAfterLoad: requests.length, pageErrors: errors, organism: manifest.files, rows,
     serverRows: {
