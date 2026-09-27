@@ -1,0 +1,174 @@
+{
+  "at": "2026-09-27T00:59:05.194Z",
+  "startedAt": "2026-09-27T00:58:29.486Z",
+  "command": "node bench/shell-windows.mjs",
+  "barCommand": "node --test test/act-shell.test.mjs",
+  "node": "v24.15.0",
+  "platform": "win32",
+  "release": "10.0.26200",
+  "cpus": 32,
+  "isTheBar": true,
+  "barMet": true,
+  "bar": "node --test test/act-shell.test.mjs prints fail 0 (exit 0, nothing cancelled, every test passed or skipped), on both runs",
+  "model": "off: no model, no socket, no network",
+  "runs": [
+    {
+      "label": "bar run 1",
+      "exitCode": 0,
+      "signal": null,
+      "wallMs": 12050.643,
+      "tally": {
+        "tests": 28,
+        "suites": 0,
+        "pass": 27,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 1,
+        "todo": 0,
+        "duration_ms": 11999.8817
+      },
+      "failing": [],
+      "diagnostics": {
+        "treeKill": {
+          "aliveDuring": true,
+          "aliveAfter": false,
+          "bytesBefore": 15,
+          "bytesAfter": 15,
+          "killedBy": "taskkill",
+          "code": null,
+          "signal": "SIGKILL",
+          "forcedStatus": 1,
+          "taskkillEnded": 2,
+          "descendantsNamed": 2
+        },
+        "control": {
+          "code": null,
+          "signal": "SIGKILL",
+          "aliveAfter": true,
+          "bytesBefore": 3,
+          "bytesAfter": 8
+        },
+        "greatGrandchild": {
+          "before": 20,
+          "after": 20,
+          "grandchildBefore": 20,
+          "grandchildAfter": 20
+        }
+      },
+      "run": 1
+    },
+    {
+      "label": "bar run 2",
+      "exitCode": 0,
+      "signal": null,
+      "wallMs": 11855.817,
+      "tally": {
+        "tests": 28,
+        "suites": 0,
+        "pass": 27,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 1,
+        "todo": 0,
+        "duration_ms": 11809.191
+      },
+      "failing": [],
+      "diagnostics": {
+        "treeKill": {
+          "aliveDuring": true,
+          "aliveAfter": false,
+          "bytesBefore": 15,
+          "bytesAfter": 15,
+          "killedBy": "taskkill",
+          "code": null,
+          "signal": "SIGKILL",
+          "forcedStatus": 1,
+          "taskkillEnded": 2,
+          "descendantsNamed": 2
+        },
+        "control": {
+          "code": null,
+          "signal": "SIGKILL",
+          "aliveAfter": true,
+          "bytesBefore": 4,
+          "bytesAfter": 8
+        },
+        "greatGrandchild": {
+          "before": 19,
+          "after": 19,
+          "grandchildBefore": 20,
+          "grandchildAfter": 20
+        }
+      },
+      "run": 2
+    }
+  ],
+  "mutant": {
+    "label": "mutant run (forced-exit record off)",
+    "exitCode": 1,
+    "signal": null,
+    "wallMs": 11798.258,
+    "tally": {
+      "tests": 28,
+      "suites": 0,
+      "pass": 24,
+      "fail": 3,
+      "cancelled": 0,
+      "skipped": 1,
+      "todo": 0,
+      "duration_ms": 11713.5674
+    },
+    "failing": [
+      "a timeout on a child with 0 descendants still kills it and reports the timeout",
+      "win32: the timeout kill ends a detached grandchild whose pid was alive during the run, and records the forced exit as a kill",
+      "a closeShell kill leaves no exit code on the answer: a forced exit is never reported as the program own"
+    ],
+    "diagnostics": {
+      "treeKill": {
+        "aliveDuring": true,
+        "aliveAfter": false,
+        "bytesBefore": 15,
+        "bytesAfter": 15,
+        "killedBy": "taskkill",
+        "code": 1,
+        "signal": null,
+        "taskkillEnded": 2,
+        "descendantsNamed": 2
+      },
+      "control": {
+        "code": null,
+        "signal": "SIGKILL",
+        "aliveAfter": true,
+        "bytesBefore": 3,
+        "bytesAfter": 8
+      },
+      "greatGrandchild": {
+        "before": 19,
+        "after": 19,
+        "grandchildBefore": 20,
+        "grandchildAfter": 20
+      }
+    },
+    "applied": true,
+    "mutation": "const forced = WIN && rawSignal == null && FORCED.has(child);  ->  const forced = false;",
+    "killed": true
+  },
+  "control": {
+    "name": "win32 control: a plain child.kill, the kill without /T, leaves the same detached grandchild alive",
+    "what": "the same parent and detached grandchild as the tree kill case, killed with node child.kill alone (TerminateProcess on the parent only); node records that kill as code null and SIGKILL, the record the taskkill path now matches",
+    "measured": {
+      "code": null,
+      "signal": "SIGKILL",
+      "aliveAfter": true,
+      "bytesBefore": 3,
+      "bytesAfter": 8
+    }
+  },
+  "split": {
+    "development": "test/act-shell.test.mjs: 23 cases that existed before this item (one of them the failing case) plus 5 added by it; the fix was written against the failing case and the added cases",
+    "heldOut": "none",
+    "why": "a behaviour test of process kills on one host, with no data to hold out: every case spawns real processes and asserts what the operating system reports",
+    "contaminated": false
+  },
+  "statement": "On this Windows PC the shell hand that runs a command must kill the command and everything it started when its time is up, and say honestly that it did. Before this change the hand did kill the whole tree, but it wrote the kill down as if the program had finished on its own with exit code 1, so one of its tests failed. The fix records a kill it performed as a kill. The test file ran twice: 27 passed, 0 failed, 1 skipped of 28, then 27 passed, 0 failed, 1 skipped of 28. In the added case a grandchild process that detached itself was alive while the command ran and gone after the kill; in the control, where only the parent is killed the ordinary way, the same kind of grandchild was still alive and still writing, which is why the whole tree kill exists. With the fix switched off in memory the same tests showed 3 failures, so the bar can see the defect. There is no held-out data: this is a behaviour test of one machine, not a model."
+}

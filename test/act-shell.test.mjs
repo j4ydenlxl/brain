@@ -8,6 +8,7 @@
 //   a 5 MB stdout is capped, measured against the bytes the child actually produced.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -16,7 +17,7 @@ import { Brain } from '../core/brain.mjs';
 import { attachWorld, closeWorld } from '../world/index.mjs';
 import {
   allowArgv, allowCwd, childEnv, closeShell, denyAll, descendants, loadShellPolicy, normalizeShellPolicy, parseProcStat,
-  registerShellKind, runArgv, shellActuator, tightenTo,
+  registerShellKind, taskkillReport, runArgv, shellActuator, tightenTo,
   BASE_ENV_NAMES, PROPOSAL_OP, SHELL_CELL_KIND, SHELL_SIGNAL_KIND,
 } from '../act/shell.mjs';
 
@@ -502,4 +503,147 @@ test('descendants walks a planted /proc: every ppid chain from the root, deepest
   assert.equal(d.some((x) => x.pid === process.pid || x.pid === 1 || x.pid === ROOTPID), false, 'never the root, this process or pid 1');
   assert.deepEqual(descendants(700004, proc), [], 'a leaf has 0 descendants');
   assert.equal(descendants(ROOTPID, path.join(dir, 'missing')), null, 'an unreadable /proc answers null, which is the group kill fallback');
+});
+
+// ================================================================== the win32 tree kill
+// board 23 builder, shell-windows. On this Windows host the case above ("a timeout on a child
+// with 0 descendants") failed with "a killed child has no exit code, 1 !== null": taskkill /F
+// ends a process with TerminateProcess(h, 1) from outside libuv, so node's close event carried
+// exit code 1 and no signal, the same record a program that chose exit(1) leaves. act/shell.mjs
+// now records a taskkill it ran as the kill it was (code null, SIGKILL, forcedStatus 1). These
+// cases assert the condition the defect needs directly: a detached grandchild whose pid is
+// alive DURING the run and dead AFTER it, the control where a plain kill leaves that same pid
+// alive, a real exit 1 that must keep its code, and taskkill's own lines on every row kind.
+
+const isAlive = (pid) => { try { process.kill(pid, 0); return true; } catch { return false; } };
+async function until(fn, ms, step = 20) {
+  const end = Date.now() + ms;
+  while (Date.now() < end) { if (fn()) return true; await wait(step); }
+  return fn();
+}
+const readPid = (f) => { try { const n = Number(readFileSync(f, 'utf8')); return n > 0 ? n : null; } catch { return null; } };
+// A detached grandchild that writes its own pid, then appends a byte every 100 ms forever.
+function detachedTree(dir) {
+  const marker = path.join(dir, 'grandchild.log'), pidFile = path.join(dir, 'grandchild.pid');
+  const grand = 'const fs=require("fs");fs.writeFileSync(' + J(pidFile) + ',String(process.pid));setInterval(()=>{try{fs.appendFileSync(' + J(marker) + ',"x")}catch(e){}},100);';
+  const parent = 'const cp=require("child_process");const c=cp.spawn(process.execPath,["-e",' + J(grand) + '],{stdio:"ignore",detached:true});c.unref();process.stdout.write("pid "+c.pid+"\\n");setInterval(()=>{},1000);';
+  return { marker, pidFile, parent };
+}
+const NOT_WIN = process.platform !== 'win32' ? 'taskkill is the win32 kill; posix is proven by the /proc cases above' : false;
+
+test('a program that chooses exit 1 keeps its code 1: the forced kill record never masks a real exit', async (t) => {
+  const dir = newTmpDir(t);
+  const res = await runArgv([NODE, '-e', 'process.exit(1)'], { cwd: dir, policy: nodeOnly([dir]), timeoutMs: 10000 });
+  assert.equal(res.timedOut, false, 'nothing timed out');
+  assert.equal(res.killedBy, null, 'nothing was killed');
+  assert.equal(res.code, 1, 'the exit code the program chose comes back as itself');
+  assert.equal(res.signal, null, 'no signal is invented for a real exit');
+  assert.equal(res.forcedStatus, undefined, 'no forced status on a run nobody killed');
+  assert.equal(res.reason, 'exit 1', 'the reason is the exit: ' + res.reason);
+});
+
+test('win32: the timeout kill ends a detached grandchild whose pid was alive during the run, and records the forced exit as a kill', { skip: NOT_WIN }, async (t) => {
+  const dir = newTmpDir(t);
+  const { marker, pidFile, parent } = detachedTree(dir);
+  let res, gpid, aliveDuring, dead, a, b;
+  try {
+    const run = runArgv([NODE, '-e', parent], { cwd: dir, policy: nodeOnly([dir]), timeoutMs: 1500 });
+    // The condition the defect needs, read while the run is still in flight: the grandchild exists.
+    await until(() => readPid(pidFile) != null, 1400);
+    gpid = readPid(pidFile);
+    aliveDuring = gpid != null && isAlive(gpid);
+    res = await run;
+    dead = gpid != null && await until(() => !isAlive(gpid), 2000);
+    a = sizeOf(marker);
+    await wait(500);
+    b = sizeOf(marker);
+  } finally {
+    // A survivor (the defect) is ended here, measured first, so a regression leaks no process
+    // and the tmp dir it would hold open can still be removed.
+    const p = gpid || readPid(pidFile);
+    if (p && isAlive(p)) { try { process.kill(p); } catch { /* gone */ } await until(() => !isAlive(p), 3000); await wait(100); }
+  }
+  t.diagnostic('win32 tree kill: grandchild alive during ' + aliveDuring + ', alive after ' + !dead + ', bytes ' + a + ' then ' + b + ', killedBy ' + res.killedBy + ', code ' + res.code + ', signal ' + res.signal + ', forcedStatus ' + res.forcedStatus + ', taskkill ended ' + (res.tree && res.tree.killed) + ' of ' + (res.tree && res.tree.found) + ' descendants');
+
+  assert.ok(gpid != null, 'the grandchild wrote its pid, so this case is about a real process');
+  assert.equal(aliveDuring, true, 'the grandchild was alive while the run was in flight');
+  assert.equal(res.timedOut, true, 'the run reports the timeout');
+  assert.equal(res.killedBy, 'taskkill', 'taskkill /T /F did the kill: ' + res.killedBy);
+  assert.equal(res.code, null, 'a killed child has no exit code');
+  assert.equal(res.signal, 'SIGKILL', 'the kill is recorded as one, the way node records its own child.kill');
+  assert.equal(res.forcedStatus, 1, 'the raw status TerminateProcess wrote is kept: ' + res.forcedStatus);
+  assert.match(String(res.reason), /killed by the 1500ms timeout$/, 'the reason names the timeout and no failure note: ' + res.reason);
+  assert.ok(res.tree && res.tree.by === 'taskkill' && res.tree.killed >= 1 && res.tree.killed === res.tree.found, 'taskkill ended every descendant it named: ' + J(res.tree));
+  assert.equal(dead, true, 'the detached grandchild pid is not alive after the kill: a live one is the defect');
+  assert.equal(b, a, 'and it stopped writing (' + a + ' then ' + b + ' bytes)');
+});
+
+test('win32 control: a plain child.kill, the kill without /T, leaves the same detached grandchild alive', { skip: NOT_WIN }, async (t) => {
+  const dir = newTmpDir(t);
+  const { marker, pidFile, parent } = detachedTree(dir);
+  const child = spawn(NODE, ['-e', parent], { cwd: dir, stdio: ['ignore', 'pipe', 'ignore'], windowsHide: true });
+  const closed = new Promise((r) => child.on('close', (code, sig) => r({ code, signal: sig })));
+  let res, gpid, a, b, aliveAfter;
+  try {
+    await until(() => readPid(pidFile) != null, 3000);
+    gpid = readPid(pidFile);
+    assert.ok(gpid != null && isAlive(gpid), 'the grandchild is alive before the kill');
+    child.kill('SIGKILL');
+    res = await closed;
+    await wait(400);
+    a = sizeOf(marker);
+    await wait(500);
+    b = sizeOf(marker);
+    aliveAfter = isAlive(gpid);
+  } finally {
+    // The survivor is this case's own measurement, so this case ends it, and waits for it to be
+    // gone before the tmp dir it holds open is removed.
+    try { child.kill('SIGKILL'); } catch { /* gone */ }
+    const p = gpid || readPid(pidFile);
+    if (p && isAlive(p)) { try { process.kill(p); } catch { /* gone */ } await until(() => !isAlive(p), 3000); await wait(100); }
+  }
+  t.diagnostic('win32 control: plain kill, code ' + res.code + ', signal ' + res.signal + ', grandchild alive after ' + aliveAfter + ', bytes ' + a + ' then ' + b);
+  assert.equal(res.code, null, 'node records its own kill with no exit code');
+  assert.equal(res.signal, 'SIGKILL', 'and as SIGKILL, which is the record the taskkill path now matches');
+  assert.equal(aliveAfter, true, 'the detached grandchild outlived a kill of its parent alone, which is why the tree kill exists');
+  assert.ok(b > a, 'and it kept writing (' + a + ' then ' + b + ' bytes)');
+});
+
+test('a closeShell kill leaves no exit code on the answer: a forced exit is never reported as the program own', async (t) => {
+  const dir = newTmpDir(t);
+  const { brain, cell } = newBrain(t, { dir });
+  brain.inject('w.shell', 'motor', { kind: 'event', data: { kind: SHELL_SIGNAL_KIND, argv: [NODE, '-e', 'setTimeout(()=>{},15000)'], cwd: dir } });
+  await pump(brain, () => cell.state.running > 0, { rounds: 100, ms: 5 });
+  assert.equal(cell.state.running, 1, 'a child is really in flight');
+  assert.equal(closeShell(brain), 1, 'closeShell closed the one shell cell');
+  assert.equal(await pump(brain, () => cell.state.ran > 0, { rounds: 300, ms: 10 }), true, 'the run settled after the close');
+  const answers = harvest(brain).filter((e) => e.ok !== undefined);
+  assert.equal(answers.length, 1, 'one answer crossed: ' + J(answers));
+  assert.equal(answers[0].ok, false, 'a killed child is not an ok run');
+  assert.equal(answers[0].code, null, 'a killed child has no exit code: ' + answers[0].code);
+});
+
+test('taskkillReport reads taskkill lines by the first pid on each, on every row kind, in any language', () => {
+  const ROOTPID = 43300;
+  // All ended (the lines this host printed, descendants first and the root last).
+  const all = taskkillReport(ROOTPID, { status: 0, stdout: 'SUCCESS: The process with PID 5728 (child process of PID 43300) has been terminated.\r\nSUCCESS: The process with PID 45524 (child process of PID 43300) has been terminated.\r\nSUCCESS: The process with PID 43300 (child process of PID 9460) has been terminated.\r\n', stderr: '' });
+  assert.deepEqual(all, { by: 'taskkill', proc: false, found: 2, killed: 2, rounds: 1, rootKilled: true, status: 0, note: null }, 'two descendants and the root: ' + J(all));
+  // A descendant refused, the root ended.
+  const part = taskkillReport(ROOTPID, { status: 255, stdout: 'SUCCESS: The process with PID 43300 (child process of PID 9460) has been terminated.\n', stderr: 'ERROR: The process with PID 777 (child process of PID 43300) could not be terminated.\nReason: Access is denied.\n' });
+  assert.equal(part.rootKilled, true, 'the root was ended');
+  assert.equal(part.found, 1, 'one descendant was named');
+  assert.equal(part.killed, 0, 'and it was not ended');
+  assert.match(part.note, /exited 255 with 1 descendants not ended/, 'the note says a descendant may have survived: ' + part.note);
+  // The root already gone: nothing ended, nothing forced.
+  const gone = taskkillReport(ROOTPID, { status: 128, stdout: '', stderr: 'ERROR: The process "43300" not found.\n' });
+  assert.equal(gone.rootKilled, false, 'a root taskkill did not find was not ended by it');
+  assert.equal(gone.found, 0, 'the root is never counted as its own descendant');
+  // taskkill missing from PATH.
+  const missing = taskkillReport(ROOTPID, { status: null, stdout: '', stderr: '', error: Object.assign(new Error('spawnSync taskkill ENOENT'), { code: 'ENOENT' }) });
+  assert.equal(missing.rootKilled, false, 'no taskkill, no forced kill');
+  assert.match(missing.note, /could not start \(ENOENT\)/, 'the note names why: ' + missing.note);
+  // A localized taskkill names the pid first too.
+  const de = taskkillReport(ROOTPID, { status: 0, stdout: 'ERFOLGREICH: Der Prozess mit PID 5728 (untergeordneter Prozess von PID 43300) wurde beendet.\nERFOLGREICH: Der Prozess mit PID 43300 (untergeordneter Prozess von PID 9460) wurde beendet.\n', stderr: '' });
+  assert.equal(de.killed, 1, 'one descendant ended, read without matching any English text');
+  assert.equal(de.rootKilled, true, 'and the root');
 });

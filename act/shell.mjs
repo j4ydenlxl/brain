@@ -19,6 +19,12 @@
 //      leaves nothing behind. A platform without /proc falls back to the process group kill
 //      and says so in res.reason, because a group kill alone misses a detached grandchild.
 //      (the /proc walk: board 17 builder (the organism's item), shell-linux)
+//      On win32 the kill is recorded as the kill it was: taskkill /F ends every process with
+//      TerminateProcess(h, 1) from outside libuv, so node reports exit code 1 and no signal,
+//      the same status a program that chose exit(1) leaves. The runner knows it did the kill,
+//      so the result says code null and signal SIGKILL, exactly what node writes for its own
+//      child.kill (also TerminateProcess(h, 1)), and forcedStatus keeps the raw 1.
+//      (board 23 builder, shell-windows)
 //   6. every run is one ledger event carrying argv, the exit code and the milliseconds.
 //   7. the environment is a small base plus only the variable NAMES the caller asked for.
 //      A value is never read into a log, and opts.env with values in it is refused: this
@@ -328,20 +334,64 @@ export function killPosixTree(rootPid, procRoot = PROC_ROOT) {
   return report;
 }
 
+// ------------------------------------------------ the win32 tree kill (board 23 builder, shell-windows)
+// Why a plain kill is not enough here: libuv puts every child it spawns in one job object with
+// JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE, EXCEPT a child spawned detached, which it creates outside
+// the job (UV_PROCESS_DETACHED skips AssignProcessToJobObject). So a grandchild the child spawned
+// detached is in no job the child's death closes, and child.kill (TerminateProcess on the child
+// alone) leaves it running: measured on this host, see notes/shell.md. taskkill /T walks the
+// parent links and ends the descendants first and the child last (its SUCCESS lines come out in
+// that order). But taskkill ends the child from OUTSIDE libuv, so node never learns it was a
+// kill: the close event carries exit code 1 (TerminateProcess(h, 1), the status taskkill /F
+// writes) and signal null. FORCED holds the children this module ended that way, so the runner
+// records the exit as the kill it was and not as a program that chose exit(1).
+const FORCED = new WeakSet();
+
+/**
+ * What one taskkill /T /F run did, read from its own lines. Every line names the pid it ended
+ * (stdout) or could not end (stderr) as its FIRST number, in every language taskkill speaks, so
+ * no message text is matched.
+ * @param {number} rootPid
+ * @param {{status:number|null, stdout?:string, stderr?:string, error?:Error}} r a spawnSync result
+ * @returns {{by:string, proc:boolean, found:number, killed:number, rounds:number, rootKilled:boolean, status:number|null, note:string|null}}
+ */
+export function taskkillReport(rootPid, r) {
+  const firstPid = (line) => { const m = /\d+/.exec(line); return m ? Number(m[0]) : null; };
+  const lines = (s) => String(s || '').split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
+  const ended = lines(r && r.stdout).map(firstPid).filter((p) => p != null);
+  const refused = lines(r && r.stderr).map(firstPid).filter((p) => p != null);
+  const root = Number(rootPid);
+  const endedKids = new Set(ended.filter((p) => p !== root));
+  const allKids = new Set([...endedKids, ...refused.filter((p) => p !== root)]);
+  const status = r && Number.isInteger(r.status) ? r.status : null;
+  const rootKilled = ended.includes(root);
+  let note = null;
+  if (r && r.error) note = 'taskkill could not start (' + String(r.error.code || r.error.message) + '): the child alone was killed, a descendant may have survived';
+  else if (status !== 0) note = 'taskkill /T /F exited ' + status + ' with ' + (allKids.size - endedKids.size) + ' descendants not ended, so a descendant may have survived';
+  return { by: 'taskkill', proc: false, found: allKids.size, killed: endedKids.size, rounds: 1, rootKilled, status, note };
+}
+
 /**
  * Kill a child and everything it spawned. On win32 the only reliable way to reach a
  * grandchild is taskkill with /T, because a windows process has no process group the
  * parent can signal. On posix the /proc walk above takes the whole descendant tree down,
  * detached grandchildren included; without /proc, the process group.
  * @param {object} child  a ChildProcess
- * @param {{procRoot?: string, report?: object}} [opts] report is filled with the posix walk's counts
+ * @param {{procRoot?: string, report?: object}} [opts] report is filled with the walk's counts
+ *   (posix) or the taskkill run's counts (win32)
  * @returns {string} how it was killed
  */
 export function killTree(child, opts = {}) {
   if (!child || child.pid == null) return 'none';
   if (WIN) {
     const r = spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { windowsHide: true, encoding: 'utf8' });
+    const t = taskkillReport(child.pid, r);
+    if (opts && opts.report && typeof opts.report === 'object') Object.assign(opts.report, t);
+    // status 0 means taskkill ended the /PID it was given, whatever its lines say.
+    if (t.rootKilled || r.status === 0) FORCED.add(child);
     if (r.status === 0) return 'taskkill';
+    if (t.rootKilled) return 'taskkill-partial';
+    // taskkill did not end the child: libuv's own kill does, and node then records the signal itself.
     try { child.kill('SIGKILL'); } catch { /* already gone */ }
     return 'taskkill-failed';
   }
@@ -404,11 +454,17 @@ export function runArgv(argv, opts = {}) {
     const killOpts = { procRoot: opts.procRoot || PROC_ROOT, report: tree };
     const cell = opts.cell || null;
     const closer = cell ? retain(cell, () => { killTree(child, killOpts); }) : null;
-    const settle = (code, signal, thrown) => {
+    const settle = (rawCode, rawSignal, thrown) => {
       if (settled) return;
       settled = true;
       clearTimeout(timer); if (hardTimer) clearTimeout(hardTimer);
       if (cell && closer) release(cell, closer);
+      // win32 only: a child this module ended with taskkill /F closes with exit code 1 and no
+      // signal, which node cannot tell from a program that chose exit(1). It was a kill, so it
+      // is recorded as one, the way node records its own child.kill; the raw status is kept.
+      const forced = WIN && rawSignal == null && FORCED.has(child);
+      const code = forced ? null : rawCode;
+      const signal = forced ? 'SIGKILL' : rawSignal;
       const res = {
         ok: thrown == null && !timedOut && code === 0,
         code: code ?? null,
@@ -418,6 +474,7 @@ export function runArgv(argv, opts = {}) {
         seen: out.seen + err.seen, kept: out.bytes + err.bytes, maxBytes,
         argv: list, cwd,
         signal: signal ?? null, timedOut, killedBy, refused: false,
+        ...(forced ? { forcedStatus: rawCode ?? null } : {}),
         tree: tree.by ? { by: tree.by, proc: tree.proc, found: tree.found, killed: tree.killed, rounds: tree.rounds } : null,
         reason: thrown != null ? thrown : (timedOut ? 'killed by the ' + timeoutMs + 'ms timeout' + (tree.note ? '; ' + tree.note : '') : (code === 0 ? null : 'exit ' + code)),
       };

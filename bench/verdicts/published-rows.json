@@ -1,0 +1,256 @@
+{
+  "at": "2026-09-27T00:54:26.138Z",
+  "item": "published-rows",
+  "board": 23,
+  "command": "node test/published-rows-bar.mjs (launched as node tools/budget.mjs --ram-mb 4000 --disk-mb 64 --dir <scratch> --record <scratch>/budget.json -- node --max-old-space-size=4000 test/published-rows-bar.mjs)",
+  "node": "v24.15.0",
+  "isTheBar": true,
+  "barMet": false,
+  "bar": "every row of research/published.json passes rowProblems, the mutant control is rejected in full, node --test test/published.test.mjs is green, and GPT-4o and Claude Opus 5.5 each have a published row on GSM8K and on HumanEval that bench/public.mjs publishedFor returns (the item bar as written)",
+  "notMetBecause": [
+    "Claude Opus 5.5 gsm8k: no published row (omitted in notes/published.md: not found published where looked, so not typed)",
+    "Claude Opus 5.5 humaneval: no published row (omitted in notes/published.md: not found published where looked, so not typed)"
+  ],
+  "split": {
+    "development": "the rows themselves, read from the web on 2026-09-26 and appended to research/published.json",
+    "heldOut": "none",
+    "why": "this item measures citations, not a model: there is no accuracy of ours to hold data out for. The check is run on every row, the 33 rows written by earlier boards as well as the 7 added here, and against mutants of both kinds",
+    "contaminated": false
+  },
+  "control": {
+    "name": "mutants of real rows through rowProblems",
+    "rejected": 12,
+    "of": 12,
+    "mutants": [
+      {
+        "name": "url removed (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
+        "rejected": true
+      },
+      {
+        "name": "score 101 (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
+        "rejected": true
+      },
+      {
+        "name": "score as a string (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
+        "rejected": true
+      },
+      {
+        "name": "date removed (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
+        "rejected": true
+      },
+      {
+        "name": "url removed (Human Panel)",
+        "rejected": true
+      },
+      {
+        "name": "score 101 (Human Panel)",
+        "rejected": true
+      },
+      {
+        "name": "score as a string (Human Panel)",
+        "rejected": true
+      },
+      {
+        "name": "date removed (Human Panel)",
+        "rejected": true
+      },
+      {
+        "name": "printed changed (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
+        "rejected": true
+      },
+      {
+        "name": "quote padded to 15 words (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
+        "rejected": true
+      },
+      {
+        "name": "quote without the value (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
+        "rejected": true
+      },
+      {
+        "name": "model removed (GPT-4o (measured by Meta in the Llama 3 paper, Table 2))",
+        "rejected": true
+      }
+    ]
+  },
+  "tests": {
+    "command": "node --test test/published.test.mjs",
+    "tests": 11,
+    "pass": 11,
+    "fail": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cancelled": 0,
+    "exit": 0
+  },
+  "rows": {
+    "total": 40,
+    "added": 7,
+    "clean": 40,
+    "bad": []
+  },
+  "required": [
+    {
+      "model": "GPT-4o",
+      "benchmark": "gsm8k",
+      "rows": 1,
+      "viaPublishedFor": 1,
+      "omitted": false
+    },
+    {
+      "model": "GPT-4o",
+      "benchmark": "humaneval",
+      "rows": 3,
+      "viaPublishedFor": 3,
+      "omitted": false
+    },
+    {
+      "model": "Claude Opus 5.5",
+      "benchmark": "gsm8k",
+      "rows": 0,
+      "viaPublishedFor": 0,
+      "omitted": true
+    },
+    {
+      "model": "Claude Opus 5.5",
+      "benchmark": "humaneval",
+      "rows": 0,
+      "viaPublishedFor": 0,
+      "omitted": true
+    }
+  ],
+  "pairs": [
+    {
+      "model": "GPT-4o",
+      "benchmark": "gsm8k",
+      "rows": [
+        {
+          "system": "GPT-4o (measured by Meta in the Llama 3 paper, Table 2)",
+          "score": 96.1,
+          "metric": "8-shot, CoT (the row label as printed)",
+          "source": "https://arxiv.org/html/2407.21783v3 (The Llama 3 Herd of Models, Table 2)",
+          "readAt": "2026-09-26 20:45 EDT"
+        }
+      ],
+      "omitted": null
+    },
+    {
+      "model": "GPT-4o",
+      "benchmark": "humaneval",
+      "rows": [
+        {
+          "system": "gpt-4o-2024-11-20",
+          "score": 90.2,
+          "metric": "pass@1",
+          "source": "https://github.com/openai/simple-evals (README table)",
+          "readAt": "2026-09-18 09:10 EDT"
+        },
+        {
+          "system": "GPT-4o (measured by Meta in the Llama 3 paper, Table 2)",
+          "score": 90.2,
+          "metric": "0-shot (the row label as printed)",
+          "source": "https://arxiv.org/html/2407.21783v3 (The Llama 3 Herd of Models, Table 2)",
+          "readAt": "2026-09-26 20:45 EDT"
+        },
+        {
+          "system": "gpt-4o-2024-05-13",
+          "score": 91,
+          "metric": "as the simple-evals README prints it, prompt column assistant",
+          "source": "https://github.com/openai/simple-evals (README table, read from https://raw.githubusercontent.com/openai/simple-evals/main/README.md)",
+          "readAt": "2026-09-26 20:47 EDT"
+        }
+      ],
+      "omitted": null
+    },
+    {
+      "model": "GPT-4o",
+      "benchmark": "arc-agi-1",
+      "rows": [
+        {
+          "system": "GPT-4o (gpt-4o-2024-11-20, Base LLM)",
+          "score": 4.5,
+          "metric": "ARC-AGI-1 Semi-Private set, one score per model, printed as a fraction in the leaderboard data file",
+          "source": "https://arcprize.org/leaderboard (its data file https://arcprize.org/media/data/leaderboard/v1.json, generatedAt 2026-09-24T19:22:50.580Z)",
+          "readAt": "2026-09-26 20:46 EDT"
+        }
+      ],
+      "omitted": null
+    },
+    {
+      "model": "Claude Opus 5.5",
+      "benchmark": "gsm8k",
+      "rows": [],
+      "omitted": {
+        "looked": "looked: https://www.anthropic.com/claude-opus-5-5 (announcement, Sep 22 2026, curl: 0 matches for gsm8k, control grep finds SWE-bench or Terminal-Bench 2 times) ; https://www-cdn.anthropic.com/fc1b44717c85dc068bc6ba5024219938094694bd/Claude%20Opus%205.5%20System%20Card.pdf (pdftotext, 0 matches for gsm8k, control grep finds SWE-bench 11 times) ; https://www.sonarsource.com/blog/claude-opus-5-5-an-evaluation/ (no GSM8K) ; WebSearch \"Opus 5.5\" \"GSM8K\" OR \"HumanEval\" score"
+      }
+    },
+    {
+      "model": "Claude Opus 5.5",
+      "benchmark": "humaneval",
+      "rows": [],
+      "omitted": {
+        "looked": "looked: https://www.anthropic.com/claude-opus-5-5 (0 matches for humaneval) ; https://www-cdn.anthropic.com/fc1b44717c85dc068bc6ba5024219938094694bd/Claude%20Opus%205.5%20System%20Card.pdf (0 matches for humaneval) ; https://www.sonarsource.com/blog/claude-opus-5-5-an-evaluation/ (its 87.7% pass rate is HumanEval AND MBPP together, 544 tasks, in Java: not a HumanEval number) ; https://pricepertoken.com/leaderboards/benchmark/humaneval (no Opus 5.5 row)"
+      }
+    },
+    {
+      "model": "Claude Opus 5.5",
+      "benchmark": "arc-agi-1",
+      "rows": [
+        {
+          "system": "Claude Opus 5.5 (High)",
+          "score": 98.5,
+          "metric": "ARC-AGI-1 Semi-Private set, high reasoning effort, verified",
+          "source": "https://arcprize.org/results/anthropic-claude-opus-5-5",
+          "readAt": "2026-09-26 20:46 EDT"
+        },
+        {
+          "system": "Claude Opus 5.5 (Max)",
+          "score": 97.5,
+          "metric": "ARC-AGI-1 Semi-Private set, max reasoning effort, verified",
+          "source": "https://arcprize.org/results/anthropic-claude-opus-5-5",
+          "readAt": "2026-09-26 20:46 EDT"
+        }
+      ],
+      "omitted": null
+    },
+    {
+      "model": "Claude Fable 5.1",
+      "benchmark": "gsm8k",
+      "rows": [],
+      "omitted": {
+        "looked": "looked: https://www.anthropic.com/claude-fable-and-mythos-5-1 (0 matches) ; https://www-cdn.anthropic.com/0339e6a7c5c7b87f5c07798616dc32c215d14235/Claude%20Fable%205.1%20&%20Claude%20Mythos%205.1%20System%20Card.pdf (0 matches for gsm8k, control grep finds ARC-AGI 10 times and SWE-bench or Terminal-Bench 24 times) ; WebSearch \"Fable 5.1\" \"GSM8K\" OR \"HumanEval\" score"
+      }
+    },
+    {
+      "model": "Claude Fable 5.1",
+      "benchmark": "humaneval",
+      "rows": [],
+      "omitted": {
+        "looked": "looked: https://www.anthropic.com/claude-fable-and-mythos-5-1 (0 matches) ; https://www-cdn.anthropic.com/0339e6a7c5c7b87f5c07798616dc32c215d14235/Claude%20Fable%205.1%20&%20Claude%20Mythos%205.1%20System%20Card.pdf (0 matches for humaneval)"
+      }
+    },
+    {
+      "model": "Claude Fable 5.1",
+      "benchmark": "arc-agi-1",
+      "rows": [
+        {
+          "system": "Claude Fable 5.1 (Max)",
+          "score": 97.5,
+          "metric": null,
+          "source": "https://arcprize.org/leaderboard",
+          "readAt": "2026-09-18 08:49 EDT"
+        },
+        {
+          "system": "Claude Fable 5.1 (Max), Anthropic system card",
+          "score": 97.5,
+          "metric": "ARC-AGI-1 semi-private set, max effort, as reported by the ARC Prize Foundation",
+          "source": "https://www-cdn.anthropic.com/0339e6a7c5c7b87f5c07798616dc32c215d14235/Claude%20Fable%205.1%20&%20Claude%20Mythos%205.1%20System%20Card.pdf (section 8.16, Figure 8.16.A)",
+          "readAt": "2026-09-26 20:48 EDT"
+        }
+      ],
+      "omitted": null
+    }
+  ],
+  "modelCalls": 0,
+  "ms": 239,
+  "statement": "research/published.json holds 40 cited rows, 7 of them added on 2026-09-26 with a source URL, the date read, the metric variant, the value exactly as printed and a quote under 15 words; 40 of 40 rows pass the row check and 12 of 12 deliberately broken copies of real rows are rejected by it. Of the four pairs the item named (GPT-4o and Claude Opus 5.5, each on GSM8K and HumanEval) 2 have a published row that bench/public.mjs publishedFor returns: GPT-4o gsm8k, GPT-4o humaneval. Claude Opus 5.5 gsm8k and Claude Opus 5.5 humaneval were not found published (the vendor announcement and system card were read and name neither benchmark), so no number was typed and the bar as written is not met. Both endpoints do have a row on ARC-AGI-1: GPT-4o 4.5 percent and Claude Opus 5.5 98.5 percent on the ARC Prize semi-private set, which is not the public evaluation set this tree runs. Pairs with no published row: Claude Opus 5.5 gsm8k, Claude Opus 5.5 humaneval, Claude Fable 5.1 gsm8k, Claude Fable 5.1 humaneval. No model was called and no set was re-run."
+}
