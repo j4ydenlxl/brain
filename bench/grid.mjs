@@ -18,11 +18,32 @@
 // 17 percent on the evaluation set) is copied from bench/verdicts/public-arc.json, where it
 // was read from the web with its citation.
 //
-// What it writes: bench/verdicts/grid.json (training) or grid-evaluation.json (evaluation)
-// with isTheBar true, ONLY when every task of the split ran; a --limit or --ids run writes the
-// same name with -partial and isTheBar false.
+// What it writes: bench/verdicts/grid.json (training) or grid-evaluation.json (evaluation), or
+// bench/verdicts/grid-<tag>.json with --tag <tag>, so the command field a verdict carries writes
+// the file it sits in again; a --limit or --ids run writes the same name with -partial.
+//
+// Board 26, item grid-split (the gate's CONTAMINATION row; his 2026-09-26 21:03 "close, no lies"):
+//   isTheBar   true only for a whole EVALUATION run that is neither a repeat nor a control: the
+//              ARC bar is on the evaluation split. A training run is in sample (the vocabulary was
+//              written against it), so it names no bar, and isTheBar is false with the reason.
+//   bar        the best frontier row held to one answer among the published rows of
+//              bench/verdicts/public-arc.json (the rule of bench/ladder.mjs frontierRowOf, which
+//              reads the same rows); barMet is a top-level boolean: isTheBar, and the solved
+//              percent reaches the bar's score on every scored task and on the clean ones.
+//   split      development: the training ids the vocabulary was written against; heldOut: the
+//              evaluation ids scored; contaminated is DECIDED FROM DATA: every train and test pair
+//              of each scored task is compared by sha256 with every pair of the development tasks,
+//              and a scored task sharing a pair makes it the reason (with the ids), else false.
+//              A reason also puts contaminated true at the top level and says so in the statement.
+//   --fixed-vocab       THE CONTROL: the search without the fallback phase (what GRID_FIXED_VOCAB=1
+//                       did, carried by the command now); needs --tag; isTheBar false.
+//   --repeat-of <file>  a repeat of a bar run: isTheBar false, repeatOf names the bar file, and the
+//                       two are paired by task id (the run to run noise); needs --tag.
+//   --control <file>    the control verdict this run is paired with by task id (solved, gained,
+//                       lost, the last step of each gained program), named in the verdict.
 import { Worker } from 'node:worker_threads';
-import { readFileSync, readdirSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import os from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -33,9 +54,30 @@ const VERDICTS = path.join(ROOT, 'bench', 'verdicts');
 
 // board 19 builder: the split each grid verdict was measured on (the gate's CONTAMINATION row needs an
 // object; the ARC split's own name moved to arcSplit beside it).
-/** What a grid run developed on and what it graded: pure, from the ARC split, the library flag, the fold and the corpus. */
+// Board 26 (item grid-split): the ids on both sides and the contamination decided from data, when the
+// bench passes them (developmentIds, heldOutIds, duplicates from overlapOf, pairsCompared).
+/** What a grid run developed on and what it graded: pure, from the ARC split, the library flag, the fold, the corpus and the ids. */
 export function splitFor(opts = {}) {
   const arc = opts.arcSplit === 'evaluation' ? 'evaluation' : 'training';
+  const devIds = Array.isArray(opts.developmentIds) ? opts.developmentIds.slice() : null;
+  const heldIds = Array.isArray(opts.heldOutIds) ? opts.heldOutIds.slice() : null;
+  const dups = Array.isArray(opts.duplicates) ? opts.duplicates.map((d) => ({ id: d.id, of: Array.isArray(d.of) ? d.of.slice() : [], pairs: d.pairs, ofPairs: d.ofPairs, whole: d.whole === true })) : null;
+  const withIds = (side, ids) => (ids ? { ...side, n: ids.length, ids } : side);
+  if (!opts.library && arc === 'evaluation' && dups) {
+    const development = withIds({ what: 'the ARC-AGI-1 training split: the vocabulary of capability/grid-dsl.mjs was written against it', arcSplit: 'training' }, devIds);
+    const heldOut = withIds({ what: 'the ARC-AGI-1 evaluation split, every task scored; nothing in capability/grid-dsl.mjs was tuned on it (this bench header)', arcSplit: 'evaluation' }, heldIds);
+    const decidedFrom = {
+      what: 'every train and test pair of each scored task compared, by the sha256 of its input and output grids, with every train and test pair of the development tasks',
+      pairsCompared: typeof opts.pairsCompared === 'object' && opts.pairsCompared ? { ...opts.pairsCompared } : null,
+      scoredTasksSharingAPair: dups.length,
+      duplicates: dups,
+    };
+    const named = dups.map((d) => d.id + (d.whole ? ' is pair for pair identical to training ' : ' shares ' + d.pairs + ' of its ' + d.ofPairs + ' pairs with training ') + d.of.join(' and ')).join('; ');
+    const contaminated = dups.length
+      ? dups.length + ' of the ' + (heldIds ? heldIds.length : 'scored') + ' scored evaluation tasks ' + (dups.length === 1 ? 'shares' : 'share') + ' a pair with a development task (' + named + '), so ' + (dups.length === 1 ? 'its' : 'their') + ' score is in sample; the other scored tasks share no train or test pair with the development tasks'
+      : false;
+    return { development, heldOut, contaminated, decidedFrom };
+  }
   if (opts.library && opts.devFold) {
     const graded = opts.devFold === 'even' ? 'odd' : 'even';
     return {
@@ -55,10 +97,77 @@ export function splitFor(opts = {}) {
     };
   }
   return {
-    development,
+    development: withIds(development, devIds),
     heldOut: { what: 'none: this run grades the training split itself', n: 0 },
     contaminated: 'the training split is the one the vocabulary was written against, so this run is in sample',
   };
+}
+
+// ---------------------------------------------------------------- Board 26, item grid-split
+const sha = (x) => createHash('sha256').update(JSON.stringify(x)).digest('hex');
+/**
+ * The scored tasks that share a train or test pair with a development task, from the task files:
+ * [{ id, of: [development ids], pairs, ofPairs, whole }] (whole: every pair of the task is a
+ * development pair of one task), and how many pairs were compared on each side.
+ */
+export function overlapOf(scored, development) {
+  const load = (t) => t.json || JSON.parse(readFileSync(t.file, 'utf8'));
+  const pairsOf = (j) => [...(j.train || []), ...(j.test || [])];
+  const devPairs = new Map();
+  let devN = 0, scoredN = 0;
+  for (const t of development) {
+    for (const p of pairsOf(load(t))) {
+      devN++;
+      const k = sha([p.input, p.output]);
+      if (!devPairs.has(k)) devPairs.set(k, new Set());
+      devPairs.get(k).add(t.id);
+    }
+  }
+  const duplicates = [];
+  for (const t of scored) {
+    const ps = pairsOf(load(t));
+    scoredN += ps.length;
+    const hits = ps.map((p) => devPairs.get(sha([p.input, p.output])) || null);
+    const n = hits.filter(Boolean).length;
+    if (!n) continue;
+    const of = [...new Set(hits.filter(Boolean).flatMap((s) => [...s]))].sort();
+    const whole = n === ps.length && of.some((d) => hits.every((s) => s && s.has(d)));
+    duplicates.push({ id: t.id, of, pairs: n, ofPairs: ps.length, whole });
+  }
+  return { duplicates, pairsCompared: { scored: scoredN, development: devN } };
+}
+
+/** The bar a whole evaluation run is held to: the best frontier row held to one answer (bench/ladder.mjs frontierRowOf's rule). */
+export function frontierBar(published) {
+  const single = (m) => !m || /@1\b/.test(m) || !/@\d/.test(m);
+  const rows = (Array.isArray(published) ? published : []).filter((r) => r && typeof r.score === 'number' && /^frontier/i.test(r.class || '') && single(r.metric));
+  const best = rows.sort((a, b) => b.score - a.score)[0];
+  return best ? { system: best.system, score: best.score, unit: best.unit || 'percent', class: best.class, source: best.source || null, readAt: best.readAt || null } : null;
+}
+
+/** The verdict file a plain run writes (without .json): the tag names it, else the split. */
+export function verdictNameFor(cfg, complete) {
+  const stem = cfg.tag ? 'grid-' + cfg.tag : cfg.split === 'training' ? 'grid' : 'grid-evaluation';
+  return stem + (complete ? '' : '-partial');
+}
+
+/** A training verdict with a split OBJECT in the shape capability/grid-library.mjs corpusFromVerdict reads (the ARC split's name). */
+export function corpusShape(v) {
+  if (v && v.split && typeof v.split === 'object' && !Array.isArray(v.split) && typeof v.arcSplit === 'string') return { ...v, split: v.arcSplit };
+  return v;
+}
+
+/** Two verdicts of the same tasks paired by id: solved on each side, gained and lost, and the last step of each gained program. */
+export function pairRows(rows, other) {
+  const mine = new Map(rows.map((r) => [r.id, r]));
+  const theirs = new Map((other.rows || []).map((r) => [r.id, r]));
+  const same = mine.size === theirs.size && [...mine.keys()].every((id) => theirs.has(id));
+  if (!same) throw new Error('bench/grid.mjs: the paired verdict graded different tasks (' + theirs.size + ' against ' + mine.size + ')');
+  const gained = [...mine.values()].filter((r) => r.solved && !theirs.get(r.id).solved).map((r) => r.id).sort();
+  const lost = [...mine.values()].filter((r) => !r.solved && theirs.get(r.id).solved).map((r) => r.id).sort();
+  const lastStepOfGained = {};
+  for (const id of gained) { const n = mine.get(id).names || []; const k = n.length ? n[n.length - 1] : 'none'; lastStepOfGained[k] = (lastStepOfGained[k] || 0) + 1; }
+  return { solved: [...mine.values()].filter((r) => r.solved).length, otherSolved: [...theirs.values()].filter((r) => r.solved).length, gained, lost, lastStepOfGained };
 }
 
 export function parseArgs(argv) {
@@ -87,11 +196,18 @@ export function parseArgs(argv) {
     else if (k === '--min-free-mb') { a.minFreeMb = Number(v); i++; }
     else if (k === '--tag') { a.tag = String(v); i++; }
     else if (k === '--only-unsolved') { a.onlyUnsolved = String(v); i++; }
+    // Board 26 flags (item grid-split): the control arm, a repeat of a bar run, the control it is paired with
+    else if (k === '--fixed-vocab') a.fixedVocab = true;
+    else if (k === '--repeat-of') { a.repeatOf = String(v); i++; }
+    else if (k === '--control') { a.control = String(v); i++; }
     else throw new Error('bench/grid.mjs: unknown argument ' + k);
   }
   if (a.split !== 'training' && a.split !== 'evaluation') throw new Error('bench/grid.mjs: --split must be training or evaluation');
   if (!(a.budgetMs > 0) || !(a.workers >= 1) || !(a.maxDepth >= 1)) throw new Error('bench/grid.mjs: bad budget, workers or depth');
-  if (!a.library && (a.attempts !== undefined || a.arms || a.corpus || a.devFold || a.tag || a.onlyUnsolved)) throw new Error('bench/grid.mjs: --attempts, --arms, --corpus, --dev-fold, --tag and --only-unsolved belong to --library');
+  if (!a.library && (a.attempts !== undefined || a.arms || a.corpus || a.devFold || a.onlyUnsolved)) throw new Error('bench/grid.mjs: --attempts, --arms, --corpus, --dev-fold and --only-unsolved belong to --library');
+  if (a.library && (a.fixedVocab || a.repeatOf || a.control)) throw new Error('bench/grid.mjs: --fixed-vocab, --repeat-of and --control belong to the plain run, not --library');
+  if (a.tag !== undefined && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(a.tag)) throw new Error('bench/grid.mjs: --tag is lower case letters and digits joined by single dashes');
+  if ((a.fixedVocab || a.repeatOf) && !a.tag) throw new Error('bench/grid.mjs: --fixed-vocab and --repeat-of need --tag, so a control or a repeat never writes over grid.json or grid-evaluation.json');
   if (a.attempts !== undefined && !(a.attempts === 1 || a.attempts === 2)) throw new Error('bench/grid.mjs: --attempts is 1 or 2 (ARC grades two tries per test input)');
   if (a.devFold !== undefined && !(a.devFold === 'even' || a.devFold === 'odd')) throw new Error('bench/grid.mjs: --dev-fold is even or odd');
   if (a.devFold && a.split !== 'training') throw new Error('bench/grid.mjs: --dev-fold runs on the training split');
@@ -106,7 +222,7 @@ const WORKER_SRC = [
   'parentPort.on("message", (msg) => {',
   '  const t0 = performance.now();',
   '  try {',
-  '    const r = solveArcTask(msg.task, { budgetMs: workerData.budgetMs, maxDepth: workerData.maxDepth, library, attempts: workerData.attempts || 1 });',
+  '    const r = solveArcTask(msg.task, { budgetMs: workerData.budgetMs, maxDepth: workerData.maxDepth, library, attempts: workerData.attempts || 1, ...(workerData.fallback === false ? { fallback: false } : {}) });',
   '    parentPort.postMessage({ type: "done", id: msg.id, wallMs: performance.now() - t0, r: { status: r.status, solved: r.solved, solvedFirst: r.solvedFirst, names: r.names, depth: r.depth, attempts: r.attempts, attemptRight: r.attemptRight, firstMs: r.firstMs, searched: r.searched, states: r.states, rejected: r.rejected, ms: r.ms, cells: r.cells, vocabulary: r.vocabulary } });',
   '  } catch (e) {',
   '    parentPort.postMessage({ type: "done", id: msg.id, wallMs: performance.now() - t0, r: { status: "error", solved: false, error: String(e && e.message || e) } });',
@@ -117,7 +233,7 @@ const WORKER_SRC = [
 function spawn(cfg) {
   return new Worker(WORKER_SRC, {
     eval: true,
-    workerData: { searchUrl: pathToFileURL(path.join(ROOT, 'capability', 'grid-search.mjs')).href, budgetMs: cfg.budgetMs, maxDepth: cfg.maxDepth, library: cfg.libraryJson || null, libraryUrl: pathToFileURL(path.join(ROOT, 'capability', 'grid-library.mjs')).href, attempts: cfg.attempts || 1 },
+    workerData: { searchUrl: pathToFileURL(path.join(ROOT, 'capability', 'grid-search.mjs')).href, budgetMs: cfg.budgetMs, maxDepth: cfg.maxDepth, library: cfg.libraryJson || null, libraryUrl: pathToFileURL(path.join(ROOT, 'capability', 'grid-library.mjs')).href, attempts: cfg.attempts || 1, fallback: cfg.fixedVocab ? false : undefined },
     resourceLimits: { maxOldGenerationSizeMb: 1536, maxYoungGenerationSizeMb: 64, stackSizeMb: 8 },
   });
 }
@@ -147,17 +263,19 @@ export function loadSplit(split) {
   return readdirSync(dir).filter((f) => f.endsWith('.json')).sort().map((f) => ({ id: f.replace(/\.json$/, ''), file: path.join(dir, f) }));
 }
 
+function publishedArc() {
+  try { const j = JSON.parse(readFileSync(path.join(VERDICTS, 'public-arc.json'), 'utf8')); return Array.isArray(j.published) ? j.published : []; } catch { return []; }
+}
 function icecuberRow() {
-  try {
-    const j = JSON.parse(readFileSync(path.join(VERDICTS, 'public-arc.json'), 'utf8'));
-    const row = (j.published || []).find((r) => /icecuber/i.test(r.system));
-    return row ? { ...row, copiedFrom: 'bench/verdicts/public-arc.json' } : null;
-  } catch { return null; }
+  const row = publishedArc().find((r) => /icecuber/i.test(r.system));
+  return row ? { ...row, copiedFrom: 'bench/verdicts/public-arc.json' } : null;
 }
 
 const r2 = (x) => Math.round(x * 100) / 100;
 
 export async function runGridBench(cfg) {
+  if (cfg.write !== false && process.env.GRID_FIXED_VOCAB === '1' && !cfg.fixedVocab) throw new Error('bench/grid.mjs: GRID_FIXED_VOCAB=1 is set but the command does not carry it; run the control with --fixed-vocab --tag <name> so its verdict names what ran');
+  if (cfg.write !== false) checkPairedFiles(cfg);
   let list = cfg.taskList || loadSplit(cfg.split);
   const of = list.length;
   if (cfg.ids) list = list.filter((t) => cfg.ids.includes(t.id));
@@ -166,7 +284,7 @@ export async function runGridBench(cfg) {
   const hardMs = cfg.budgetMs + cfg.graceMs;
   if (!cfg.quiet) {
     console.log('ARC-AGI-1 ' + cfg.split + ', ' + list.length + ' of ' + of + ' tasks, budget ' + cfg.budgetMs + ' ms per task, depth ' + cfg.maxDepth + ', ' + cfg.workers + ' workers');
-    console.log('capability/grid-search.mjs over capability/grid-dsl.mjs, answers run as grid.dsl cells and graded by grid.dsl.match cells. NO MODEL. ' + ((cfg.attempts || 1) === 2 ? 'TWO attempts per task (ARC grades two tries per test input).' : 'ONE attempt per task.') + (cfg.label ? ' Arm: ' + cfg.label + (cfg.libraryJson ? ' (learned library, ' + cfg.libraryJson.macros.length + ' macros)' : ' (no library)') + '.' : ''));
+    console.log('capability/grid-search.mjs over capability/grid-dsl.mjs, answers run as grid.dsl cells and graded by grid.dsl.match cells. NO MODEL. ' + ((cfg.attempts || 1) === 2 ? 'TWO attempts per task (ARC grades two tries per test input).' : 'ONE attempt per task.') + (cfg.label ? ' Arm: ' + cfg.label + (cfg.libraryJson ? ' (learned library, ' + cfg.libraryJson.macros.length + ' macros)' : ' (no library)') + '.' : '') + (cfg.fixedVocab ? ' CONTROL ARM: --fixed-vocab, the fallback phase is off.' : ''));
   }
   const t0 = performance.now();
   const rows = new Array(list.length);
@@ -222,34 +340,112 @@ export async function runGridBench(cfg) {
   console.log('vocabulary ' + vocabulary + ' primitives and learners; most used in solutions: ' + topOps.map(([n, c]) => n + ' ' + c).join(', '));
   if (ice) console.log('published no-model row: ' + ice.system + ' ' + ice.score + ' percent on the ARC-AGI-1 evaluation set (' + ice.source + ', copied from bench/verdicts/public-arc.json)');
 
-  const name = (cfg.split === 'training' ? 'grid' : 'grid-evaluation') + (complete ? '' : '-partial');
-  const command = 'node bench/grid.mjs ' + process.argv.slice(2).join(' ');
+  const name = verdictNameFor(cfg, complete);
+  const command = ('node bench/grid.mjs ' + process.argv.slice(2).join(' ')).trim();
+  const fileRel = 'bench/verdicts/' + name + '.json';
+
+  // the split, decided from data (Board 26, item grid-split)
+  const evaluation = cfg.split === 'evaluation';
+  const devList = loadSplit('training');
+  const overlap = evaluation ? overlapOf(list, devList) : null;
+  const split = splitFor(evaluation
+    ? { arcSplit: 'evaluation', developmentIds: devList.map((t) => t.id), heldOutIds: list.map((t) => t.id), duplicates: overlap.duplicates, pairsCompared: overlap.pairsCompared }
+    : { arcSplit: 'training', developmentIds: devList.map((t) => t.id) });
+  const reason = typeof split.contaminated === 'string' ? split.contaminated : null;
+  const dirty = new Set(overlap ? overlap.duplicates.map((d) => d.id) : []);
+  const cleanRows = rows.filter((r) => !dirty.has(r.id));
+  const clean = evaluation ? { what: 'the scored tasks that share no train or test pair with a development task', n: cleanRows.length, solved: cleanRows.filter((r) => r.solved).length, pct: cleanRows.length ? r2((100 * cleanRows.filter((r) => r.solved).length) / cleanRows.length) : null, left: [...dirty].sort() } : null;
+
+  // the bar, one isTheBar per bar, and barMet as a top-level boolean
+  const bar = evaluation ? frontierBar(publishedArc()) : null;
+  const notTheBarBecause = [];
+  if (!complete) notTheBarBecause.push('a --limit or --ids run grades part of the split');
+  if (!evaluation) notTheBarBecause.push('the training split is in sample (the vocabulary was written against it), so no published row is a bar for it; the ARC bar is on the evaluation split');
+  if (cfg.fixedVocab) notTheBarBecause.push('a control arm (--fixed-vocab): the search without the fallback phase');
+  if (cfg.repeatOf) notTheBarBecause.push('a repeat of ' + cfg.repeatOf + ', which is the bar file');
+  if (evaluation && !bar) notTheBarBecause.push('no frontier row in bench/verdicts/public-arc.json to hold it to');
+  const isTheBar = notTheBarBecause.length === 0;
+  const barMet = isTheBar && !!bar && pct >= bar.score && (!clean || (clean.pct !== null && clean.pct >= bar.score));
+
+  // the control and the repeat, paired by task id
+  const pairWith = (rel) => { const v = JSON.parse(readFileSync(path.resolve(ROOT, rel), 'utf8')); return { v, p: pairRows(rows, v) }; };
+  let control = null, repeat = null;
+  if (cfg.control) {
+    const { v, p } = pairWith(cfg.control);
+    control = { file: cfg.control, command: v.command || null, at: v.at || null, arm: 'the search without the fallback phase (--fixed-vocab)', workers: v.workers ?? null, solved: p.otherSolved, thisRun: p.solved, gained: p.gained, lost: p.lost, lastStepOfGained: p.lastStepOfGained };
+  }
+  if (cfg.repeatOf) {
+    const { v, p } = pairWith(cfg.repeatOf);
+    repeat = { file: cfg.repeatOf, command: v.command || null, at: v.at || null, barRunSolved: p.otherSolved, thisRun: p.solved, gained: p.gained, lost: p.lost, flips: p.gained.length + p.lost.length };
+  }
+
+  console.log('split: development ' + (split.development.n ?? 'n/a') + ' training ids, held out ' + (split.heldOut.n ?? 0) + (evaluation ? ' evaluation ids' : ''));
+  if (overlap) console.log('pairs compared by sha256: scored ' + overlap.pairsCompared.scored + ', development ' + overlap.pairsCompared.development + '; scored tasks sharing a pair with a development task ' + overlap.duplicates.length + (overlap.duplicates.length ? ' (' + overlap.duplicates.map((d) => d.id + ' ' + d.pairs + ' of ' + d.ofPairs + ' pairs, training ' + d.of.join(' and ') + (d.whole ? ', whole task' : '')).join('; ') + ')' : ''));
+  console.log('contaminated: ' + (reason || 'false'));
+  if (clean) console.log('clean (tasks sharing no pair with a development task): solved ' + clean.solved + ' of ' + clean.n + ' = ' + clean.pct + ' percent');
+  if (bar) console.log('bar: ' + bar.system + ' ' + bar.score + ' percent (the ARC Prize leaderboard row, read ' + bar.readAt + ': the best frontier row held to one answer in bench/verdicts/public-arc.json)');
+  if (control) console.log('control ' + control.file + ': this run ' + control.thisRun + ', control ' + control.solved + ', gained ' + control.gained.length + ', lost ' + control.lost.length + '; last step of the gained programs ' + JSON.stringify(control.lastStepOfGained) + (control.lost.length ? '; lost ' + control.lost.join(', ') : ''));
+  if (repeat) console.log('repeat of ' + repeat.file + ': this run ' + repeat.thisRun + ', bar run ' + repeat.barRunSolved + ', gained ' + repeat.gained.length + ', lost ' + repeat.lost.length + (repeat.flips ? ' (' + repeat.gained.concat(repeat.lost).join(', ') + ')' : ''));
+  console.log('isTheBar ' + isTheBar + (isTheBar ? '' : ' (' + notTheBarBecause.join('; ') + ')') + ', barMet ' + barMet + (bar && isTheBar ? ' (' + pct + (barMet ? ' >= ' : ' < ') + bar.score + ')' : ''));
+
   const verdict = {
     at: new Date().toISOString(),
-    command: command.trim(),
+    command,
     node: process.version,
-    isTheBar: complete,
-    split: splitFor({ arcSplit: cfg.split }),
+    file: fileRel,
+    isTheBar,
+    barMet,
+    bar: bar ? { ...bar, copiedFrom: 'bench/verdicts/public-arc.json', rule: 'the best frontier row held to one answer (bench/ladder.mjs frontierRowOf); met when the solved percent reaches its score on every scored task and on the clean ones' } : null,
+    split,
+    ...(reason ? { contaminated: true } : {}),
     arcSplit: cfg.split,
-    heldOut: cfg.split === 'evaluation',
+    heldOut: evaluation,
     n: rows.length, of, solved, pct,
+    clean,
     meanMs, meanSolvedMs, wallSeconds: r2(wallMs / 1000),
     exhausted, timedOut, foundButWrong: foundWrong, errors, killedAtHardDeadline: killed,
     depthHistogram, topOps: Object.fromEntries(topOps),
     budgetMs: cfg.budgetMs, maxDepth: cfg.maxDepth, workers: cfg.workers, vocabulary,
+    controlArm: !!cfg.fixedVocab,
+    fallbackPhase: cfg.fixedVocab ? 'off (--fixed-vocab, the control)' : 'on',
+    control, repeatOf: cfg.repeatOf || null, repeat,
+    notTheBarBecause,
     attemptsPerTask: 1, attemptsAllowedByArc: 2, model: null,
     published: ice ? [ice] : [],
-    statement: 'On the ARC-AGI-1 ' + cfg.split + ' split the grid program search solved ' + solved + ' of ' + rows.length + ' tasks (' + pct + ' percent) with one attempt per task, no model and a ' + cfg.budgetMs + ' ms wall clock budget per task, mean ' + meanMs + ' ms per task. '
+    statement: 'On the ARC-AGI-1 ' + cfg.split + ' split the grid program search' + (cfg.fixedVocab ? ' without its fallback phase (the control arm)' : '') + ' solved ' + solved + ' of ' + rows.length + ' tasks (' + pct + ' percent) with one attempt per task, no model and a ' + cfg.budgetMs + ' ms wall clock budget per task, mean ' + meanMs + ' ms per task. '
       + exhausted + ' exhausted the vocabulary, ' + timedOut + ' ran out of clock, ' + foundWrong + ' found a program that fit every train pair and missed a test output. Every solved answer is what a chain of grid.dsl cells emitted after grid.dsl.match cells confirmed every train pair. '
-      + (cfg.split === 'training' ? 'This is the TRAINING split, which the vocabulary was written against, so it is not comparable to the published row; ' : 'This is the held out EVALUATION split; ')
-      + (ice ? 'the published no-model row is ' + ice.system + ' at ' + ice.score + ' percent on the evaluation split.' : 'no published row was found in public-arc.json.'),
+      + (evaluation ? 'This is the held out EVALUATION split; ' : 'This is the TRAINING split, which the vocabulary was written against, so it is not comparable to the published row; ')
+      + (ice ? 'the published no-model row is ' + ice.system + ' at ' + ice.score + ' percent on the evaluation split. ' : 'no published row was found in public-arc.json. ')
+      + (clean ? 'Of the scored tasks, ' + clean.n + ' share no train or test pair with a development task, and on those it solved ' + clean.solved + ' (' + clean.pct + ' percent). ' : '')
+      + (reason ? 'Contaminated: ' + reason + '. ' : evaluation ? 'Not contaminated, decided from data: no scored task shares a train or test pair with a development task. ' : '')
+      + (control ? 'Paired by task id with the control ' + control.file + ' (' + control.solved + ' solved), this run gained ' + control.gained.length + ' and lost ' + control.lost.length + '. ' : '')
+      + (repeat ? 'Paired with the bar run ' + repeat.file + ' (' + repeat.barRunSolved + ' solved), this repeat gained ' + repeat.gained.length + ' and lost ' + repeat.lost.length + ', the run to run noise. ' : '')
+      + (isTheBar ? 'The bar is ' + bar.system + ' at ' + bar.score + ' percent (the ARC Prize leaderboard, copied from bench/verdicts/public-arc.json), and it is ' + (barMet ? 'MET' : 'NOT MET') + '.' : 'This file is not the bar: ' + notTheBarBecause.join('; ') + '.'),
     rows,
   };
   mkdirSync(VERDICTS, { recursive: true });
   const file = path.join(VERDICTS, name + '.json');
   writeFileSync(file, JSON.stringify(verdict, null, 1) + '\n');
-  console.log('wrote ' + path.relative(ROOT, file).replace(/\\/g, '/') + (complete ? ' (isTheBar true)' : ' (partial, isTheBar false)'));
+  console.log('wrote ' + fileRel + ' (isTheBar ' + isTheBar + ', barMet ' + barMet + ')');
   return verdict;
+}
+
+/** Before a run: a control or a repeat file must exist and grade the same split at the same clock and depth. */
+export function checkPairedFiles(cfg) {
+  const read = (rel, what) => {
+    const abs = path.resolve(ROOT, rel);
+    if (!existsSync(abs)) throw new Error('bench/grid.mjs: ' + what + ' ' + rel + ' is not on disk');
+    const v = JSON.parse(readFileSync(abs, 'utf8'));
+    const arc = typeof v.split === 'string' ? v.split : v.arcSplit;
+    if (arc !== cfg.split || v.budgetMs !== cfg.budgetMs || v.maxDepth !== cfg.maxDepth) throw new Error('bench/grid.mjs: ' + what + ' ' + rel + ' graded split ' + arc + ' at ' + v.budgetMs + ' ms depth ' + v.maxDepth + ', not ' + cfg.split + ' at ' + cfg.budgetMs + ' ms depth ' + cfg.maxDepth);
+    return v;
+  };
+  if (cfg.control) { const v = read(cfg.control, '--control'); if (v.controlArm !== true) throw new Error('bench/grid.mjs: --control ' + cfg.control + ' is not a control arm (its verdict has no controlArm true)'); }
+  if (cfg.repeatOf) {
+    const v = read(cfg.repeatOf, '--repeat-of');
+    if (v.isTheBar !== true) throw new Error('bench/grid.mjs: --repeat-of ' + cfg.repeatOf + ' is not a bar file (isTheBar ' + v.isTheBar + ')');
+    if (path.resolve(ROOT, cfg.repeatOf) === path.join(VERDICTS, verdictNameFor(cfg, true) + '.json')) throw new Error('bench/grid.mjs: a repeat cannot write over the bar file it repeats');
+  }
 }
 
 // ---------------------------------------------------------------- one arm of the library bar
@@ -340,7 +536,8 @@ export async function runLibraryBar(cfg) {
     console.log('only the ' + taskList.length + ' tasks ' + cfg.onlyUnsolved + ' left unsolved');
   }
   if (cfg.split === 'training' && !cfg.devFold) console.log('NOTE: the training split with a library learned from the training split is an IN SAMPLE run (a corpus harvest), not a measurement of transfer.');
-  const corpus = mergeCorpora(...corpusFiles.map((f) => corpusFromVerdict(JSON.parse(readFileSync(path.resolve(ROOT, f), 'utf8')), { keep })));
+  // corpusShape: a training verdict whose split is an object (Board 26) names its ARC split in arcSplit
+  const corpus = mergeCorpora(...corpusFiles.map((f) => corpusFromVerdict(corpusShape(JSON.parse(readFileSync(path.resolve(ROOT, f), 'utf8'))), { keep })));
   const lopts = {};
   for (const k of ['topN', 'alpha', 'alphaFrac', 'minNet', 'minTasks', 'share']) if (cfg[k] !== undefined) lopts[k] = cfg[k];
   const lib = learnLibrary(corpus, lopts);

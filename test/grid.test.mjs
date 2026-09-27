@@ -265,3 +265,222 @@ test('the cell rule header comment names the feature counts the arrays hold', as
   assert.equal(CELL_COLOR_FEATURES.length + CELL_OTHER_FEATURES.length, CELL_FEATURES.length);
   assert.ok(!/descriptions out of 58\b/.test(src), 'the stale count is back');
 });
+
+// ---------------------------------------------------------------- Board 26, item grid-split
+// The gate's CONTAMINATION row and the ladder-arc verify plane: a grid verdict names its split as an
+// object (development: the training ids, heldOut: the evaluation ids scored, contaminated decided
+// from data), carries barMet as a top-level boolean against the bar it names, and its command field
+// writes the file it sits in again. One bar, one isTheBar: the repeat and the controls are not the
+// bar. Each claim below has a control that must fail it. No model, no socket; nothing is written in
+// the real tree (temp directories only).
+const G26 = () => import('../bench/grid.mjs');
+const GATE26 = () => import('../bench/gate.mjs');
+const VERDICTS26 = new URL('../bench/verdicts/', import.meta.url);
+const FIX26 = new URL('../bench/fixtures/public/arc-agi-1/', import.meta.url);
+async function read26(name) {
+  const { readFileSync } = await import('node:fs');
+  return JSON.parse(readFileSync(new URL(name, VERDICTS26), 'utf8'));
+}
+/** The plain-path grid verdicts this item wrote or re-ran: the population the checks below grade. */
+const PLAIN26 = ['grid.json', 'grid-local-evaluation.json', 'grid-local-evaluation-repeat.json', 'grid-local-training.json', 'grid-split-evaluation-control.json', 'grid-split-training-control.json'];
+/** What is wrong with one plain-path grid verdict, as sentences (empty when nothing is). */
+async function problems26(name, v) {
+  const G = await G26();
+  const { splitShapeOf } = await GATE26();
+  const out = [];
+  if (typeof v.barMet !== 'boolean') out.push('barMet is not a boolean');
+  if (typeof v.isTheBar !== 'boolean') out.push('isTheBar is not a boolean');
+  if (splitShapeOf(v) !== 'object') out.push('split is not an object (' + splitShapeOf(v) + ')');
+  if (typeof v.command !== 'string' || !v.command.startsWith('node bench/grid.mjs ')) out.push('command is not a bench/grid.mjs command');
+  else {
+    const cfg = G.parseArgs(v.command.slice('node bench/grid.mjs '.length).split(' ').filter(Boolean));
+    const complete = !cfg.limit && !cfg.ids;
+    if (G.verdictNameFor(cfg, complete) + '.json' !== name) out.push('the command writes ' + G.verdictNameFor(cfg, complete) + '.json, not ' + name);
+  }
+  if (v.file !== 'bench/verdicts/' + name) out.push('file field ' + v.file);
+  if (v.isTheBar === false && v.barMet !== false) out.push('a file that is not the bar claims barMet');
+  if (v.split && typeof v.split.contaminated === 'string' && (v.contaminated !== true || !/contaminat/i.test(v.statement || ''))) out.push('a contamination reason with no top-level mark or no word in the statement');
+  return out;
+}
+
+test('Board 26: the evaluation bar verdict carries barMet as a boolean and a split object accepted by splitShapeOf, and its command writes it', async () => {
+  const { splitShapeOf, contaminationRecords, contaminationRow } = await GATE26();
+  const { mkdtempSync, writeFileSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const path = await import('node:path');
+  const v = await read26('grid-local-evaluation.json');
+  assert.equal(typeof v.barMet, 'boolean');
+  assert.equal(v.isTheBar, true);
+  assert.equal(splitShapeOf(v), 'object');
+  assert.deepEqual(await problems26('grid-local-evaluation.json', v), []);
+  // the gate's own row over this file alone is GREEN; the CONTROL (the split as the string a dataset
+  // name used to be) is RED and names the file
+  const dir = mkdtempSync(path.join(tmpdir(), 'grid26-'));
+  try {
+    writeFileSync(path.join(dir, 'grid-local-evaluation.json'), JSON.stringify(v));
+    const green = contaminationRow(contaminationRecords(dir));
+    assert.equal(green.ok, true, green.line);
+    assert.equal(green.counts.withSplit, 1);
+    writeFileSync(path.join(dir, 'grid-local-evaluation.json'), JSON.stringify({ ...v, split: 'evaluation' }));
+    const red = contaminationRow(contaminationRecords(dir));
+    assert.equal(red.ok, false);
+    assert.match(red.line, /grid-local-evaluation\.json \(string "evaluation"\)/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+  // the two sides: every scored id is held out, every development id is a training id, none in both
+  assert.equal(v.split.heldOut.ids.length, v.n);
+  assert.deepEqual([...v.split.heldOut.ids].sort(), v.rows.map((r) => r.id).sort());
+  assert.equal(v.split.development.ids.length, 400);
+  const dev = new Set(v.split.development.ids);
+  assert.equal(v.split.heldOut.ids.filter((id) => dev.has(id)).length, 0, 'an id on both sides');
+  // barMet recomputed from the file's own fields: the bar, the percent and the clean percent
+  assert.ok(v.bar && typeof v.bar.score === 'number', 'the bar is named');
+  assert.equal(v.barMet, v.isTheBar && v.pct >= v.bar.score && v.clean.pct >= v.bar.score);
+  const dirty = new Set(v.split.decidedFrom.duplicates.map((d) => d.id));
+  const cleanRows = v.rows.filter((r) => !dirty.has(r.id));
+  assert.equal(v.clean.n, cleanRows.length);
+  assert.equal(v.clean.solved, cleanRows.filter((r) => r.solved).length);
+  // a CONTROL for the problems check: the file with barMet taken out, and with the command it carried before
+  const { barMet, ...noBar } = v;
+  assert.equal(typeof barMet, 'boolean');
+  assert.ok((await problems26('grid-local-evaluation.json', noBar)).includes('barMet is not a boolean'));
+  assert.ok((await problems26('grid-local-evaluation.json', { ...v, command: 'node bench/grid.mjs --split evaluation --budget-ms 3000 --workers 4' })).some((p) => /writes grid-evaluation\.json/.test(p)), 'the old command wrote grid-evaluation.json');
+});
+
+test('Board 26: the bar is the frontier row bench/ladder.mjs holds the ARC set to, read from the same published rows', async () => {
+  const G = await G26();
+  const { frontierRowOf, publishedRowsOf } = await import('../bench/ladder.mjs');
+  const pub = await read26('public-arc.json');
+  const mine = G.frontierBar(pub.published);
+  const ladder = frontierRowOf(publishedRowsOf([{ file: 'bench/verdicts/public-arc.json', v: pub }]));
+  assert.ok(mine && ladder);
+  assert.equal(mine.system, ladder.system);
+  assert.equal(mine.score, ladder.score);
+  const v = await read26('grid-local-evaluation.json');
+  assert.equal(v.bar.system, mine.system);
+  assert.equal(v.bar.score, mine.score);
+  // control: a human row or a pass@2 row above it is never the bar
+  const planted = G.frontierBar([...pub.published, { system: 'people', score: 100, class: 'human' }, { system: 'two tries', score: 99.9, class: 'frontier reasoning', metric: 'pass@2' }]);
+  assert.equal(planted.system, mine.system);
+});
+
+test('Board 26: one bar, one isTheBar; the repeat names the bar file, the controls are control arms, and every plain grid verdict names its own file', async () => {
+  const { existsSync } = await import('node:fs');
+  const G = await G26();
+  const all = [];
+  for (const name of PLAIN26) {
+    assert.ok(existsSync(new URL(name, VERDICTS26)), name + ' is on disk');
+    const v = await read26(name);
+    assert.deepEqual(await problems26(name, v), [], name);
+    all.push({ name, v });
+  }
+  const evalBars = all.filter((x) => x.v.arcSplit === 'evaluation' && x.v.isTheBar === true).map((x) => x.name);
+  assert.deepEqual(evalBars, ['grid-local-evaluation.json'], 'one isTheBar for the evaluation bar');
+  for (const x of all.filter((y) => y.v.arcSplit === 'training')) assert.equal(x.v.isTheBar, false, x.name + ': the training split names no bar');
+  const bar = all.find((x) => x.name === 'grid-local-evaluation.json').v;
+  const rep = all.find((x) => x.name === 'grid-local-evaluation-repeat.json').v;
+  assert.equal(rep.repeatOf, 'bench/verdicts/grid-local-evaluation.json');
+  assert.equal(rep.repeat.barRunSolved, bar.solved);
+  const again = G.pairRows(rep.rows, bar);
+  assert.deepEqual([again.gained, again.lost], [rep.repeat.gained, rep.repeat.lost], 'the repeat pairing is recomputed from the rows');
+  for (const name of ['grid-split-evaluation-control.json', 'grid-split-training-control.json']) {
+    const c = all.find((x) => x.name === name).v;
+    assert.equal(c.controlArm, true, name);
+    assert.equal(c.isTheBar, false, name);
+  }
+  // the bar and the training run name their control, and the pairing is what their rows give
+  for (const [treat, ctl] of [['grid-local-evaluation.json', 'grid-split-evaluation-control.json'], ['grid-local-training.json', 'grid-split-training-control.json']]) {
+    const t = all.find((x) => x.name === treat).v, c = all.find((x) => x.name === ctl).v;
+    assert.equal(t.control.file, 'bench/verdicts/' + ctl);
+    assert.equal(t.control.solved, c.solved);
+    const p = G.pairRows(t.rows, c);
+    assert.deepEqual([p.gained, p.lost], [t.control.gained, t.control.lost], treat);
+  }
+  // control for the uniqueness check: the repeat as it was before this item (isTheBar true) makes two
+  const before = all.map((x) => (x.name === 'grid-local-evaluation-repeat.json' ? { ...x, v: { ...x.v, isTheBar: true } } : x));
+  assert.equal(before.filter((x) => x.v.arcSplit === 'evaluation' && x.v.isTheBar === true).length, 2);
+});
+
+test('Board 26: contamination is decided from data: the overlap finds a planted duplicate and passes a clean set', async () => {
+  const G = await G26();
+  const grid = (n) => [[n, n], [n, 0]];
+  const dev = [
+    { id: 'd1', json: { train: [{ input: grid(1), output: grid(2) }], test: [{ input: grid(3), output: grid(4) }] } },
+    { id: 'd2', json: { train: [{ input: grid(5), output: grid(6) }], test: [{ input: grid(7), output: grid(8) }] } },
+  ];
+  const scored = [
+    { id: 'same', json: JSON.parse(JSON.stringify(dev[0].json)) },
+    { id: 'onepair', json: { train: [{ input: grid(5), output: grid(6) }], test: [{ input: grid(9), output: grid(9) }] } },
+    { id: 'clean', json: { train: [{ input: grid(1), output: grid(3) }], test: [{ input: grid(2), output: grid(4) }] } },
+  ];
+  const o = G.overlapOf(scored, dev);
+  assert.deepEqual(o.duplicates, [{ id: 'same', of: ['d1'], pairs: 2, ofPairs: 2, whole: true }, { id: 'onepair', of: ['d2'], pairs: 1, ofPairs: 2, whole: false }]);
+  assert.deepEqual(o.pairsCompared, { scored: 6, development: 4 });
+  const s = G.splitFor({ arcSplit: 'evaluation', developmentIds: ['d1', 'd2'], heldOutIds: scored.map((t) => t.id), duplicates: o.duplicates, pairsCompared: o.pairsCompared });
+  assert.equal(typeof s.contaminated, 'string');
+  assert.match(s.contaminated, /same is pair for pair identical to training d1/);
+  assert.match(s.contaminated, /onepair shares 1 of its 2 pairs with training d2/);
+  // control: the clean task alone gives contaminated false, with the data it was decided from
+  const c = G.overlapOf([scored[2]], dev);
+  const sc = G.splitFor({ arcSplit: 'evaluation', developmentIds: ['d1', 'd2'], heldOutIds: ['clean'], duplicates: c.duplicates, pairsCompared: c.pairsCompared });
+  assert.equal(sc.contaminated, false);
+  assert.equal(sc.decidedFrom.scoredTasksSharingAPair, 0);
+  // the real split: recomputed from the fixtures when they are on disk (never committed)
+  const { existsSync } = await import('node:fs');
+  if (!existsSync(FIX26)) return;
+  const v = await read26('grid-local-evaluation.json');
+  const real = G.overlapOf(G.loadSplit('evaluation'), G.loadSplit('training'));
+  assert.deepEqual(real.duplicates, v.split.decidedFrom.duplicates);
+  assert.deepEqual(real.pairsCompared, v.split.decidedFrom.pairsCompared);
+});
+
+test('Board 26: a tag names the file, a control or a repeat needs one, and GRID_FIXED_VOCAB without --fixed-vocab is refused', async () => {
+  const G = await G26();
+  assert.equal(G.verdictNameFor(G.parseArgs(['--split', 'evaluation', '--tag', 'local-evaluation']), true), 'grid-local-evaluation');
+  assert.equal(G.verdictNameFor(G.parseArgs(['--split', 'evaluation']), true), 'grid-evaluation');
+  assert.equal(G.verdictNameFor(G.parseArgs(['--split', 'training']), true), 'grid');
+  assert.equal(G.verdictNameFor(G.parseArgs(['--split', 'training', '--tag', 'x']), false), 'grid-x-partial');
+  assert.throws(() => G.parseArgs(['--fixed-vocab']), /need --tag/);
+  assert.throws(() => G.parseArgs(['--repeat-of', 'bench/verdicts/grid-local-evaluation.json']), /need --tag/);
+  assert.throws(() => G.parseArgs(['--tag', 'Bad_Tag']), /--tag is lower case/);
+  assert.throws(() => G.parseArgs(['--library', '--fixed-vocab', '--tag', 'x']), /belong to the plain run/);
+  // the paired files are checked before a single task runs
+  assert.throws(() => G.checkPairedFiles(G.parseArgs(['--split', 'evaluation', '--tag', 'x', '--control', 'bench/verdicts/grid-local-evaluation.json'])), /not a control arm/);
+  assert.throws(() => G.checkPairedFiles(G.parseArgs(['--split', 'evaluation', '--tag', 'x', '--repeat-of', 'bench/verdicts/grid-split-evaluation-control.json'])), /not a bar file/);
+  assert.throws(() => G.checkPairedFiles(G.parseArgs(['--split', 'training', '--tag', 'x', '--control', 'bench/verdicts/grid-split-evaluation-control.json'])), /graded split evaluation/);
+  assert.throws(() => G.checkPairedFiles(G.parseArgs(['--split', 'evaluation', '--tag', 'local-evaluation', '--repeat-of', 'bench/verdicts/grid-local-evaluation.json'])), /cannot write over the bar file/);
+  G.checkPairedFiles(G.parseArgs(['--split', 'evaluation', '--tag', 'x', '--control', 'bench/verdicts/grid-split-evaluation-control.json', '--repeat-of', 'bench/verdicts/grid-local-evaluation.json']));
+  const before = process.env.GRID_FIXED_VOCAB;
+  process.env.GRID_FIXED_VOCAB = '1';
+  try {
+    await assert.rejects(G.runGridBench({ ...G.parseArgs(['--split', 'evaluation', '--tag', 'x']), quiet: true }), /does not carry it/);
+  } finally {
+    if (before === undefined) delete process.env.GRID_FIXED_VOCAB; else process.env.GRID_FIXED_VOCAB = before;
+  }
+});
+
+test('Board 26: a training verdict with a split object still feeds the library, and an evaluation one is still refused', async () => {
+  const G = await G26();
+  const { corpusFromVerdict } = await import('../capability/grid-library.mjs');
+  const v = await read26('grid.json');
+  assert.equal(typeof v.split, 'object');
+  assert.throws(() => corpusFromVerdict(v), /TRAINING split only/, 'the library alone refuses the object split (why corpusShape exists)');
+  const rows = corpusFromVerdict(G.corpusShape(v));
+  assert.equal(rows.length, v.rows.filter((r) => r.solved).length);
+  const e = await read26('grid-local-evaluation.json');
+  assert.throws(() => corpusFromVerdict(G.corpusShape(e)), /TRAINING split only/, 'control: the held out split never reaches a library');
+  const old = { split: 'training', rows: [] };
+  assert.equal(G.corpusShape(old), old);
+});
+
+test('Board 26: the fallback comment in capability/grid-search.mjs quotes only the line its named command printed', async () => {
+  const { readFileSync } = await import('node:fs');
+  const src = readFileSync(new URL('../capability/grid-search.mjs', import.meta.url), 'utf8');
+  const i = src.indexOf('THE FALLBACK PHASE (searchWithFallback)');
+  assert.ok(i >= 0);
+  const block = src.slice(i, src.indexOf('\n    let tried', i));
+  assert.ok(!/\b169\b|\b171\b/.test(block), 'the variants no command reproduces are back: ' + block);
+  const m = block.match(/solved (\d+) of (\d+) = ([\d.]+) percent[\s\S]*?(bench\/verdicts\/[\w.-]+\.json)/);
+  assert.ok(m, 'the comment names a printed line and its verdict file: ' + block);
+  const v = await read26(m[4].slice('bench/verdicts/'.length));
+  assert.deepEqual([Number(m[1]), Number(m[2]), Number(m[3])], [v.solved, v.n, v.pct]);
+});

@@ -343,7 +343,11 @@ function searchCore(task, o, earlier, resume = null) {
   if (o.fallbackPrefixes) {
     // THE FALLBACK PHASE (searchWithFallback): the fallback learners on the given prefixes, pairs of
     // descriptions on every prefix first, then triples on every prefix (input first), until the clock
-    // runs out (Board 23: triples on the input alone solved 169 of 400 training tasks, on every prefix 171)
+    // runs out. Measured (Board 26): `node bench/grid.mjs --split training --budget-ms 3000 --workers 4
+    // --tag local-training --control bench/verdicts/grid-split-training-control.json` printed
+    // "solved 166 of 400 = 41.5 percent, one attempt per task" (bench/verdicts/grid-local-training.json).
+    // Its control, run with --fixed-vocab --tag split-training-control (this phase off), printed
+    // "solved 144 of 400 = 36 percent"; the other variants tried in Board 23 were not rerun (notes/grid.md).
     let tried = 0;
     const done = (status) => { const r = finish(status); r.fallbackTried = tried; return r; };
     for (const pass of [{ maxK: 2 }, { maxK: 3 }]) {

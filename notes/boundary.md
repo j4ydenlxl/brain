@@ -105,3 +105,84 @@ calls were made.
 - Gate BOUNDARY row computed alone with the gate's own live scan: GREEN, 80 against 80 listed.
 - Coupling: the five new lines are true only while board 24a's plateau files exist. If those files do
   not land with this change, the four entries go stale and the test-plateau driver has no file: red.
+
+## Measured (board 26, item boundary-statement, verdict at 2026-09-27T18:38:30.242Z, Node v24.15.0, model off)
+
+- Read first: the header, bar(), summarize(), loadProbe() and the probe's record rule of tools/boundary-audit.mjs,
+  bench/verdicts/boundary.json (keys, touched, tests, statement), this note, bench/gate.mjs boundaryRow and
+  self/gaps.mjs (its parser reads the "unlisted N, stale N, over cap N" line, left unchanged). No published
+  method applies (a statement template), so no web page was read.
+- The four open defects, as found: the statement said "1318 message records" (res.probe.measured, never
+  printed and not a verdict field; the verdict's own summary.messages read 1631, a different measure: the
+  probe writes a record for a site's first 32 messages per thread, then powers of two, a larger message or a
+  new wasm view, while messages sums the per-thread counts); "16777216 byte cap" (verdict.cap, never printed);
+  "Touched tests: test/boundary.test.mjs 12/12" while verdict.touched was [] (testsOf always adds this tool's
+  own test). Plateau: generations/plateau.mjs and test/plateau.test.mjs are tracked since 54ed113; git status
+  --short prints " M" for both (board 24a's working tree edits), so the four plateau ALLOWLIST entries and the
+  test-plateau driver no longer depend on untracked files.
+- Fix: statementOf(verdict) builds the statement from the verdict object alone and records the field path of
+  every number in order; bar() keeps every line it prints (verdict.printed), prints the cap, the record count,
+  the message count and the fixed count, adds summary.kinds, probe.measured and why to the verdict, and runs
+  auditStatement: each number token must equal its field and appear in a printed line, and no touched claim
+  may stand when touched is []. A failed audit sets barMet false. The touched clause is omitted when touched
+  is empty; the re-run tests are labelled "Tests re-run by the bar".
+- test/boundary.test.mjs: two cases added (14 cases). One parses the real verdict's statement with its own
+  regex and holds each of its numbers to its field and to a printed line; one plants a verdict with other
+  counts (4242 records, cap 65536, 3 drivers, no before run, a skipped test, a touched file, barMet false) and
+  holds its statement to the planted fields, with three controls: a literal "1318 message records" appended is
+  unsourced, a field changed after the statement was built is unsourced, a touched claim with touched [] is
+  caught. Both new cases failed on the board 23 verdict (first bar pass, tally 11 of 14) and pass after it.
+- First bar pass: barMet false with unexercised 2 and orphan sites 2: bench/grid.mjs was being edited by
+  another builder during the run (scan read lines 120 and 141, the probe measured 160 and 183). Waited for a
+  240 s quiet window across the 24 boundary files (572 s), then re-ran.
+- Second bar (the verdict's command wrapped in budget.mjs --ram-mb 4000 --disk-mb 200 --dir bench/verdicts):
+  80 boundaries, 31 drivers, 1660 message records, 2193 messages, probe 78, literal 2, unexercised 0, orphan
+  sites 0, over cap 0, cap 16777216 printed, allowlist 80 listed, unlisted 3, stale 3; statement 35 numbers,
+  unsourced 0, unprinted 0, touched claim false; test/boundary.test.mjs 13 of 14; isTheBar true, barMet false;
+  wall 155.66 s, peak 1351.8 MB (outer), 1111.3 MB (inner); boundary file mtimes unchanged across the run.
+- barMet false is the tree, not the statement: the unlisted and stale pairs are bench/imagine.mjs:145 and :157
+  (board 24a, not allowlisted here by order) and bench/grid.mjs:236 workerData, whose expression another
+  builder changed in its uncommitted edit; the one failing case is GATE, naming those three sites.
+
+## Measured (board 26, item boundary-statement, fix pass, verdict at 2026-09-27T18:52:05.356Z, Node v24.15.0, model off)
+
+- Read first: the verify plane's findings, bar(), aggregate(), summarize(), probeRun() and scanTree() of
+  tools/boundary-audit.mjs, bench/gate.mjs boundaryRow and its isMain guard, self/gaps.mjs (the boundary
+  parser reads "unlisted N, stale N, over cap N", unchanged), the tools/budget.mjs flags. Published way read:
+  Bazel's "input dependency was modified during execution" check, which confirms a change against the file's
+  content digest, not a metadata proxy such as mtime (web search, one page of results).
+- Why the race recurs: board 23 (generations/plateau.mjs) and board 26 (bench/grid.mjs, then bench/imagine.mjs)
+  each had a builder edit a scanned file while the bar ran; the scan read one set of lines, the probe
+  another, and the bar printed orphan sites with no cause. Fix: scanTree(root, { fingerprint }) records the
+  sha1 of every file it reads; bar() hashes the tree at its static scan and again after the probe;
+  stillTreeOf names the moved files, those holding a boundary, and the tree orphan sites inside them. It is
+  printed ("still tree: ..."), stored as verdict.stillTree, quoted in the statement from its fields, and a
+  moved file holding a boundary adds a why reason (barMet false).
+- BAR_COMMAND: the space before its quote restored, and it now carries the board budget (--ram-mb 4000,
+  --max-old-space-size=4000, disk cap 2000 MB on state/boundary, wait for 16384 MB free). The bar was run by
+  exactly that command, with no outer wrapper, so the verdict command is the command that ran.
+- bench/grid.mjs:236 workerData: another builder added `fallback: cfg.fixedVocab ? false : undefined`, so its
+  key moved (~420d5966c479 to ~a2d36b3f2cff). Its ALLOWLIST entry re-measured by the probe (drivers grid,
+  grid-poison, grid-url): copied 0, wire 11533. The bench/imagine.mjs entries are left to the orchestrator.
+- test/boundary.test.mjs: two cases added (16 cases). The still tree on a planted tree: a line inserted above a
+  boundary moves its scanned line from 2 to 3; an edited, an added and a removed file are moved; only moved
+  files holding a boundary are the race; one orphan in a moved file counted; controls: a second scan and an
+  mtime-only re-stamp move nothing, and the same edits with no boundary are moved but not the race. The bar
+  command case: one space between words, budget.mjs first, RAM cap at most 4000, disk cap on state/boundary,
+  heap no larger than the RAM cap, verdict.command equals BAR_COMMAND, the printed still tree line and the
+  statement match verdict.stillTree, why names the race exactly when a boundary file moved, and a planted
+  moved tree gets its own statement.
+- First bar (BAR_COMMAND): 82 boundaries, still tree 538 files, changed 1 (tools/organism-census.mjs),
+  holding a boundary 0; unexercised 8 (all bench/imagine.mjs, mid edit); allowlist unlisted 6, stale 4;
+  wall 123.44 s, peak 1127.1 MB.
+- Second bar (BAR_COMMAND, after the grid entry): 82 boundaries in 24 files, 31 drivers, 1714 message
+  records, 2247 messages (the count moves run to run: drivers are timed tests), probe 79, literal 2,
+  unexercised 1 (bench/imagine.mjs:237), orphan sites 0, over cap 0; still tree 538 files, changed 5
+  (bench/imagine.mjs, bench/site-ask.mjs, test/census-static.test.mjs, test/census.test.mjs,
+  test/dead-share-all.test.mjs), holding a boundary 1 (bench/imagine.mjs, mtime 14:53:40 EDT inside the
+  run); allowlist 80 listed, unlisted 5, stale 3, all bench/imagine.mjs; statement 39 numbers, unsourced 0,
+  unprinted 0; test/boundary.test.mjs 15 of 16 (GATE, bench/imagine.mjs only); isTheBar true, barMet false;
+  wall 140.63 s, peak 1181.8 MB.
+- barMet false is bench/imagine.mjs alone (board 24a still editing it; its ALLOWLIST entries are the
+  orchestrator's). After it lands: --print-allowlist the imagine rows into ALLOWLIST, re-run BAR_COMMAND in a
+  window where the still tree line reads holding a boundary 0.

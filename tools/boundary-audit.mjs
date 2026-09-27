@@ -13,7 +13,7 @@
 //   node tools/boundary-audit.mjs --drivers                    the drivers the probe runs
 //   node tools/boundary-audit.mjs --probe [--label L] [--only a,b]   drivers under the probe, into state/boundary/L
 //   node tools/boundary-audit.mjs --print-allowlist [--label L]      the ALLOWLIST block that probe run measured
-//   node tools/boundary-audit.mjs --bar                        static + allowlist + probe + touched tests: bench/verdicts/boundary.json
+//   node tools/boundary-audit.mjs --bar                        static + allowlist + probe + its own and the touched files tests + a statement built from the verdict and audited against it: bench/verdicts/boundary.json
 //
 // The same file is the probe. Loaded through NODE_OPTIONS=--require with
 // BRAIN_BOUNDARY_PROBE_DIR set (--require reaches every worker thread; --import does not), it
@@ -359,8 +359,12 @@ function keyed(list) {
 
 const SKIP_DIRS = new Set(['node_modules', 'organism', 'state', 'docs']);
 const SKIP_REL = new Set(['bench/fixtures', 'bench/verdicts']);
-/** Every boundary under `root` (the brain by default): .mjs, .cjs and .js files, generated trees skipped. */
-export function scanTree(root = ROOT) {
+/**
+ * Every boundary under `root` (the brain by default): .mjs, .cjs and .js files, generated trees skipped.
+ * opts.fingerprint, a Map, receives every file read: repo relative path to the sha1 of the text scanned.
+ */
+export function scanTree(root = ROOT, opts = {}) {
+  const fp = opts && opts.fingerprint instanceof Map ? opts.fingerprint : null;
   const found = [];
   const walk = (dir) => {
     let ents;
@@ -372,11 +376,31 @@ export function scanTree(root = ROOT) {
       if (!e.isFile() || !/\.(mjs|cjs|js)$/.test(e.name)) continue;
       let src;
       try { src = fs.readFileSync(abs, 'utf8'); } catch { continue; }
+      if (fp) fp.set(rel, crypto.createHash('sha1').update(src).digest('hex'));
       for (const b of scanSource(rel, src)) found.push(b);
     }
   };
   walk(root);
   return keyed(found);
+}
+
+// board 26 boundary-statement fix pass: twice a builder edited a scanned file while the bar ran (board 23:
+// generations/plateau.mjs; board 26: bench/imagine.mjs), the scan read one set of lines, the probe measured
+// another, and the bar printed orphan sites with no word of why. The bar now hashes every file it scans at
+// the static scan and again after the probe (content digests, as Bazel checks an input "modified during
+// execution" against its digest rather than its mtime) and names a moved file that holds a boundary.
+/**
+ * The tree between two scans: files hashed at the first, which changed, were added or removed (moved),
+ * which of those hold a boundary in either scan (boundaryMoved: their lines and the probe's may not join),
+ * and how many tree orphan sites ("kind file:line") sit in a moved file.
+ */
+export function stillTreeOf(before, after, scanBefore = [], scanAfter = [], orphans = []) {
+  const moved = [...new Set([...before.keys(), ...after.keys()])].filter((f) => before.get(f) !== after.get(f)).sort();
+  const holding = new Set([...scanBefore, ...scanAfter].map((b) => b.file));
+  const movedSet = new Set(moved);
+  const siteFile = (site) => { const m = /^\S+ (.+):\d+$/.exec(String(site)); return m ? m[1] : null; };
+  const orphansInMoved = orphans.filter((o) => movedSet.has(siteFile(o.site))).length;
+  return { files: before.size, moved, boundaryMoved: moved.filter((f) => holding.has(f)), orphansInMoved };
 }
 
 /** found against an allowlist: unlisted boundaries fail the gate; stale entries and over cap bytes are reported. */
@@ -989,14 +1013,23 @@ function testsOf(files) {
   return [...out].sort();
 }
 
-async function bar(say) {
+async function bar(sayOut) {
+  // board 26 boundary-statement: every line bar() itself prints is kept, and the statement may quote only
+  // a number that is a verdict field AND appears in these lines (auditStatement); driver lines are not kept
+  const printed = [];
+  const say = (s) => { printed.push(String(s)); sayOut(s); };
   const at = new Date().toISOString();
-  const statics = scanTree();
+  const fpStart = new Map();
+  const statics = scanTree(ROOT, { fingerprint: fpStart });
   const allow = checkAllowlist(statics);
   const cal = calibrate();
-  say('boundary bar: ' + statics.length + ' boundaries in ' + new Set(statics.map((b) => b.file)).size + ' files (' + ['postMessage', 'workerData', 'send', 'structuredClone'].map((k) => k + ' ' + statics.filter((b) => b.kind === k).length).join(', ') + ')');
+  const kindCounts = Object.fromEntries(STATEMENT_KINDS.map((k) => [k, statics.filter((b) => b.kind === k).length]));
+  say('boundary bar: ' + statics.length + ' boundaries in ' + new Set(statics.map((b) => b.file)).size + ' files (' + STATEMENT_KINDS.map((k) => k + ' ' + kindCounts[k]).join(', ') + ')');
+  say('cap: a message whose copied buffers reach ' + CAP_BYTES + ' bytes (CAP_BYTES) fails the bar');
   say('calibrate: an ' + cal.viewBytes + ' byte view on a ' + cal.heapBytes + ' byte buffer: walker ' + cal.predicted + ' B, the clone delivered ' + cal.received + ' B; shared ' + cal.predictedShared + ' B, arrived shared ' + cal.sharedArrived + '; wire estimate ' + cal.wireEstimate + ' B vs v8.serialize ' + cal.wireSerialized + ' B (ratio ' + cal.wireRatio + ')');
-  const res = await probeRun('after', null, say);
+  const res = await probeRun('after', null, sayOut);
+  const fpEnd = new Map();
+  const still = stillTreeOf(fpStart, fpEnd, statics, scanTree(ROOT, { fingerprint: fpEnd }), res.orphans);
   const beforeFile = path.join(ROOT, 'bench', 'verdicts', 'boundary-before.json');
   const before = fs.existsSync(beforeFile) ? JSON.parse(fs.readFileSync(beforeFile, 'utf8')) : null;
   const beforeRows = before ? before.rows : [];
@@ -1023,12 +1056,15 @@ async function bar(say) {
     return { key: r.key, file: r.file, line: r.line, kind: r.kind, where: r.where, expr: r.expr, transfer: r.transfer, how: r.how, messages: r.messages, beforeBytes: b ? b.copied : null, beforeWire: b ? b.bytes : null, beforeWasmViews: b ? b.wasmViews : null, afterBytes: r.copied, afterWire: r.bytes, afterWasmViews: r.wasmViews, underCap: passAfter, wireUnderCap: r.bytes !== null && r.bytes < CAP_BYTES, fixed: failedBefore && passAfter, worstDriver: r.worstDriver, drivers: r.drivers };
   });
   const sum = res.summary;
+  say('probe after: ' + res.drivers.length + ' drivers, ' + res.probe.boots + ' threads and processes booted, ' + res.probe.measured + ' message records written (the first 32 messages of a site on each thread, then every power of two, any larger one and any new wasm view), ' + sum.messages + ' messages counted at the boundaries they came from');
   const beforeSum = before ? before.summary : null;
   const lg = (x, k) => (x ? x[k] + ' B at ' + x.file + ':' + x.line : 'none');
   say('before: over cap ' + (beforeSum ? beforeSum.overCap : 'n/a') + ', rows with a wasm view ' + (beforeSum ? beforeSum.wasmViewRows : 'n/a') + ', largest copied ' + lg(beforeSum && beforeSum.largest, 'copied') + ', over cap on the wire ' + (beforeSum ? beforeSum.overCapWire : 'n/a'));
   say('after: over cap ' + sum.overCap + ', rows with a wasm view ' + sum.wasmViewRows + ', unexercised ' + sum.unexercised + ', measured by probe ' + sum.probe + ', by literal ' + sum.literal + ', orphan sites ' + sum.orphans + ', largest copied ' + lg(sum.largest, 'copied'));
   say('the wire (strings included, reported, not the cap measure): over cap ' + sum.overCapWire + ', largest ' + lg(sum.largestWire, 'bytes') + (sum.largestWire ? ' via ' + sum.largestWire.driver : ''));
+  say('still tree: ' + still.files + ' source files hashed at the static scan and again after the probe, changed ' + still.moved.length + (still.moved.length ? ' (' + still.moved.join(', ') + ')' : '') + ', holding a boundary ' + still.boundaryMoved.length + ', orphan sites in them ' + still.orphansInMoved);
   const fixedRows = table.filter((r) => r.fixed);
+  say('fixed: ' + fixedRows.length + ' boundaries (over the cap or carrying a wasm view before, neither after)');
   for (const r of fixedRows) say('fixed: ' + r.file + ':' + r.line + ' ' + r.kind + ' copied ' + r.beforeBytes + ' B (wasm views ' + r.beforeWasmViews + ') to ' + r.afterBytes + ' B (wasm views ' + r.afterWasmViews + ')');
   printRows(res.rows.filter((r) => r.how === 'unexercised' || r.copied >= CAP_BYTES || r.bytes >= CAP_BYTES || r.wasmViews > 0), say);
   say('allowlist: ' + ALLOWLIST.length + ' listed, unlisted ' + allow.unlisted.length + ', stale ' + allow.stale.length + ', over cap ' + allow.overCap.length);
@@ -1036,7 +1072,7 @@ async function bar(say) {
   // the touched files' tests, run plainly (no probe)
   const tests = [];
   for (const t of testsOf(TOUCHED)) {
-    if (!(await waitFreeRam(16384, say))) { tests.push({ test: t, skipped: 'free RAM' }); continue; }
+    if (!(await waitFreeRam(16384, sayOut))) { tests.push({ test: t, skipped: 'free RAM' }); continue; }
     const log = path.join(ROOT, 'state', 'boundary', 'after', 'logs', 'touched-' + path.basename(t) + '.log');
     const r = await runNode(['--test', '--test-concurrency=1', '--test-reporter=tap', t], ENV, log, 600000);
     const tal = tapTallies(fs.readFileSync(log, 'utf8'));
@@ -1046,17 +1082,27 @@ async function bar(say) {
   const leaks = res.drivers.flatMap((d) => d.jailLeaks || []);
   const incomplete = res.drivers.filter((d) => d.skipped || d.timedOut);
   const testsPass = tests.every((t) => t.code === 0 && t.fail === 0 && !t.skipped);
-  const barMet = sum.overCap === 0 && sum.wasmViewRows === 0 && sum.unexercised === 0 && sum.orphans === 0 && allow.unlisted.length === 0 && allow.stale.length === 0 && allow.overCap.length === 0 && testsPass && leaks.length === 0 && cal.received === cal.predicted;
+  const why = [];
+  if (sum.overCap) why.push('a boundary copied the cap or more');
+  if (sum.wasmViewRows) why.push('a boundary carried a view on a wasm heap');
+  if (sum.unexercised) why.push('a boundary was not measured');
+  if (sum.orphans) why.push('a measured site matched no boundary');
+  if (still.boundaryMoved.length) why.push('a file holding a boundary changed while the bar ran, so its scanned lines and the probe lines may not join');
+  if (allow.unlisted.length) why.push('a boundary is missing from the allowlist');
+  if (allow.stale.length) why.push('an allowlist entry names a boundary the scan no longer finds');
+  if (allow.overCap.length) why.push('an allowlist entry is over the cap');
+  if (!testsPass) why.push('a test the bar re-ran did not pass');
+  if (leaks.length) why.push('a jailed driver wrote outside its jail');
+  if (cal.received !== cal.predicted) why.push('the walker disagreed with the clone on the calibration sample');
   const isTheBar = incomplete.length === 0;
-  const kinds = ['postMessage', 'workerData', 'send', 'structuredClone'].map((k) => statics.filter((b) => b.kind === k).length + ' ' + k).join(', ');
-  const statement = 'tools/boundary-audit.mjs found ' + statics.length + ' boundaries by static scan (' + kinds + ') and ran ' + res.drivers.length + ' drivers under the preload probe, which wrote ' + res.probe.measured + ' message records; '
-    + sum.probe + ' boundaries were measured live, ' + sum.literal + ' from their literal value, ' + sum.unexercised + ' not at all. Before the fix '
-    + (beforeSum ? beforeSum.overCap + ' boundaries carried a message whose copied buffers reached the ' + CAP_BYTES + ' byte cap and ' + beforeSum.wasmViewRows + ' carried a view on a wasm heap' + (beforeSum.largest ? ' (largest copied ' + beforeSum.largest.copied + ' bytes at ' + beforeSum.largest.file + ':' + beforeSum.largest.line + ')' : '') : 'no before run was recorded')
-    + '; after it ' + sum.overCap + ' and ' + sum.wasmViewRows + (sum.largest ? ', the largest copied ' + sum.largest.copied + ' bytes at ' + sum.largest.file + ':' + sum.largest.line : '') + '. Fixed: ' + fixedRows.length
-    + '. On the wire (strings included; reported, not the cap measure) ' + sum.overCapWire + ' boundaries reached the cap' + (sum.largestWire ? ', the largest ' + sum.largestWire.bytes + ' bytes at ' + sum.largestWire.file + ':' + sum.largestWire.line + ' via driver ' + sum.largestWire.driver : '') + ', and the wire estimate read ' + cal.wireRatio + ' of v8.serialize on a sample'
-    + '. The allowlist lists ' + ALLOWLIST.length + ' boundaries (unlisted ' + allow.unlisted.length + ', stale ' + allow.stale.length + '). Touched tests: ' + tests.map((t) => t.test + ' ' + t.pass + '/' + t.tests).join(', ')
-    + '. calibrate: the clone delivered ' + cal.received + ' bytes for an ' + cal.viewBytes + ' byte view, the walker said ' + cal.predicted + '.';
-  const verdict = { at, command: BAR_COMMAND, node: process.version, isTheBar, barMet, statement, split: splitFor({ boundaries: statics.length, drivers: res.drivers.length }), cap: CAP_BYTES, calibrate: cal, summary: { static: statics.length, ...sum, fixed: fixedRows.length, before: beforeSum }, allowlist: { listed: ALLOWLIST.length, unlisted: allow.unlisted.map((b) => b.key), stale: allow.stale.map((a) => a.key), overCap: allow.overCap.map((a) => a.key) }, touched: TOUCHED, tests, drivers: res.drivers, jailLeaks: leaks, incomplete: incomplete.map((d) => d.name), probeErrors: res.probe.errors, orphans: res.orphans, table };
+  const verdict = { at, command: BAR_COMMAND, node: process.version, isTheBar, barMet: why.length === 0, statement: '', statementFields: null, statementAudit: null, why, split: splitFor({ boundaries: statics.length, drivers: res.drivers.length }), cap: CAP_BYTES, calibrate: cal, stillTree: still, summary: { static: statics.length, kinds: kindCounts, ...sum, fixed: fixedRows.length, before: beforeSum }, probe: { measured: res.probe.measured, boots: res.probe.boots }, allowlist: { listed: ALLOWLIST.length, unlisted: allow.unlisted.map((b) => b.key), stale: allow.stale.map((a) => a.key), overCap: allow.overCap.map((a) => a.key) }, touched: TOUCHED, tests, printed, drivers: res.drivers, jailLeaks: leaks, incomplete: incomplete.map((d) => d.name), probeErrors: res.probe.errors, orphans: res.orphans, table };
+  // the statement is built from the verdict object alone, then audited against the verdict and the printed lines
+  let st = statementOf(verdict);
+  let audit = auditStatement(verdict, st.text, st, printed);
+  if (!audit.ok) { why.push('the statement quoted a number that is not a verdict field or was not printed'); verdict.barMet = false; st = statementOf(verdict); audit = auditStatement(verdict, st.text, st, printed); }
+  Object.assign(verdict, { statement: st.text, statementFields: { numbers: st.numbers, texts: st.texts }, statementAudit: { numbers: audit.numbers, unsourced: audit.unsourced, unprinted: audit.unprinted, touchedClaim: audit.touchedClaim } });
+  say('statement: ' + audit.numbers + ' numbers quoted, each read from a verdict field: unsourced ' + audit.unsourced.length + ', unprinted ' + audit.unprinted.length + ', touched claim ' + audit.touchedClaim);
+  const barMet = verdict.barMet;
   const out = path.join(ROOT, 'bench', 'verdicts', isTheBar ? 'boundary.json' : 'boundary-partial.json');
   fs.writeFileSync(out, JSON.stringify(verdict, null, 1) + '\n');
   say('barMet ' + barMet + ' (isTheBar ' + isTheBar + '); verdict ' + toPosix(path.relative(ROOT, out)));
@@ -1111,7 +1157,86 @@ export function splitFor(opts = {}) {
   };
 }
 
-export const BAR_COMMAND = 'node tools/budget.mjs --ram-mb 6000 --disk-mb 2000 --dir state/boundary --record state/boundary/budget-bar.json --wait-free-ram-mb 16384 -- node --max-old-space-size=6000 tools/boundary-audit.mjs --bar';
+// board 26 boundary-statement: the statement quoted a record count, the cap and a "touched tests" claim
+// that --bar never printed or that disagreed with the verdict (touched was []). Now every number in it is
+// read from the verdict by path, in order, and the bar audits that each one is also in a printed line.
+export const STATEMENT_KINDS = ['postMessage', 'workerData', 'send', 'structuredClone'];
+/** A number token: digits (and a decimal part) not glued to a word, a dot or a dash (v8, grid2, a-3 are not numbers). */
+export const NUMBER_TOKEN = /(?<![A-Za-z0-9_.\-])\d+(?:\.\d+)?(?![A-Za-z0-9_])/g;
+const fieldAt = (v, p) => p.split('.').reduce((o, k) => (o === null || o === undefined ? undefined : o[k]), v);
+
+/** The verdict statement, built from the verdict object alone: { text, numbers: [field paths in order], texts: [field paths] }. */
+export function statementOf(v) {
+  const numbers = [], texts = [];
+  const n = (p) => {
+    const x = fieldAt(v, p);
+    if (typeof x !== 'number' || !Number.isFinite(x)) throw new Error('statementOf: ' + p + ' is ' + JSON.stringify(x) + ', not a number in the verdict');
+    numbers.push(p);
+    return String(x);
+  };
+  const s = (p) => {
+    const x = fieldAt(v, p);
+    if (typeof x !== 'string') throw new Error('statementOf: ' + p + ' is ' + JSON.stringify(x) + ', not a string in the verdict');
+    texts.push(p);
+    return x;
+  };
+  const at = (p) => s(p + '.file') + ':' + n(p + '.line');
+  const S = v.summary || {};
+  let t = 'tools/boundary-audit.mjs found ' + n('summary.static') + ' boundaries by static scan (' + STATEMENT_KINDS.map((k) => n('summary.kinds.' + k) + ' ' + k).join(', ') + ') and ran '
+    + n('drivers.length') + ' drivers under the preload probe, which wrote ' + n('probe.measured') + ' message records (a busy site is sampled, so records are fewer than messages) and counted '
+    + n('summary.messages') + ' messages at the boundaries they came from; ' + n('summary.probe') + ' boundaries were measured live, ' + n('summary.literal') + ' from their literal value, '
+    + n('summary.unexercised') + ' not at all, and ' + n('summary.orphans') + ' measured sites matched no boundary. The cap is ' + n('cap') + ' copied bytes in one message. ';
+  if (v.stillTree) t += 'The tree was hashed at the static scan and again after the probe: ' + n('stillTree.files') + ' source files, ' + n('stillTree.moved.length') + ' changed while the bar ran, '
+    + n('stillTree.boundaryMoved.length') + ' of them holding a boundary, with ' + n('stillTree.orphansInMoved') + ' orphan sites in them. ';
+  if (S.before) {
+    t += 'Before the fix ' + n('summary.before.overCap') + ' boundaries reached it and ' + n('summary.before.wasmViewRows') + ' carried a view on a wasm heap'
+      + (S.before.largest ? ' (largest copied ' + n('summary.before.largest.copied') + ' bytes at ' + at('summary.before.largest') + ')' : '') + '; after it ';
+  } else t += 'No before run was recorded; now ';
+  t += n('summary.overCap') + ' and ' + n('summary.wasmViewRows') + (S.largest ? ', the largest copied ' + n('summary.largest.copied') + ' bytes at ' + at('summary.largest') : '') + '. Fixed: ' + n('summary.fixed') + '. ';
+  t += 'On the wire (strings included; reported, not the cap measure) ' + n('summary.overCapWire') + ' boundaries reached the cap'
+    + (S.largestWire ? ', the largest ' + n('summary.largestWire.bytes') + ' bytes at ' + at('summary.largestWire') + ' via driver ' + s('summary.largestWire.driver') : '')
+    + ', and the wire estimate read ' + n('calibrate.wireRatio') + ' of v8.serialize on a sample. ';
+  t += 'The allowlist lists ' + n('allowlist.listed') + ' boundaries (unlisted ' + n('allowlist.unlisted.length') + ', stale ' + n('allowlist.stale.length') + ', over cap ' + n('allowlist.overCap.length') + '). ';
+  if (Array.isArray(v.touched) && v.touched.length) t += 'Touched files: ' + v.touched.map((_, i) => s('touched.' + i)).join(', ') + '. ';
+  const tests = Array.isArray(v.tests) ? v.tests : [];
+  if (tests.length) t += 'Tests re-run by the bar: ' + tests.map((x, i) => s('tests.' + i + '.test') + (x.skipped ? ' skipped (' + s('tests.' + i + '.skipped') + ')' : ' ' + n('tests.' + i + '.pass') + ' of ' + n('tests.' + i + '.tests') + ' pass')).join(', ') + '. ';
+  t += 'calibrate: the clone delivered ' + n('calibrate.received') + ' bytes for an ' + n('calibrate.viewBytes') + ' byte view, the walker said ' + n('calibrate.predicted') + '. ';
+  const why = Array.isArray(v.why) ? v.why : [];
+  t += v.barMet ? 'The bar is met.' : 'The bar is not met: ' + (why.length ? why.map((_, i) => s('why.' + i)).join('; ') : 'no reason recorded') + '.';
+  return { text: t, numbers, texts };
+}
+
+/** The number tokens of a statement, the values of its text fields (paths, names) blanked first. */
+export function statementNumbers(text, textValues = []) {
+  let t = String(text);
+  for (const x of [...textValues].sort((a, b) => b.length - a.length)) if (x) t = t.split(x).join(' ');
+  return t.match(NUMBER_TOKEN) || [];
+}
+
+/**
+ * Every number the statement quotes, held to the verdict: the i-th token must equal the field at the i-th
+ * recorded path (unsourced otherwise, and a token with no path is unsourced), must appear as a token in a
+ * line the bar printed (unprinted otherwise), and a statement may not claim touched tests when touched is [].
+ */
+export function auditStatement(v, text = v.statement, fields = v.statementFields, printed = v.printed) {
+  const paths = (fields && fields.numbers) || [];
+  const textValues = ((fields && fields.texts) || []).map((p) => fieldAt(v, p)).filter((x) => typeof x === 'string');
+  const tokens = statementNumbers(text, textValues);
+  const unsourced = [];
+  tokens.forEach((tok, i) => {
+    const p = paths[i];
+    const x = p === undefined ? undefined : fieldAt(v, p);
+    if (typeof x !== 'number' || String(x) !== tok) unsourced.push(tok + (p === undefined ? ' (no field)' : ' (' + p + ' is ' + JSON.stringify(x) + ')'));
+  });
+  for (const p of paths.slice(tokens.length)) unsourced.push('(no token for ' + p + ')');
+  const said = new Set((printed || []).flatMap((l) => String(l).match(NUMBER_TOKEN) || []));
+  const unprinted = tokens.filter((tok) => !said.has(tok));
+  const touchedClaim = !(Array.isArray(v.touched) && v.touched.length) && /touched/i.test(String(text));
+  return { numbers: tokens.length, unsourced, unprinted, touchedClaim, ok: unsourced.length === 0 && unprinted.length === 0 && !touchedClaim };
+}
+
+/** The command the bar is run by, exactly (board 26 BUDGETS: a 4000 MB RAM cap and heap, a disk cap on the dir it writes). */
+export const BAR_COMMAND = 'node tools/budget.mjs --ram-mb 4000 --disk-mb 2000 --dir state/boundary --record state/boundary/budget-bar.json --wait-free-ram-mb 16384 -- node --max-old-space-size=4000 tools/boundary-audit.mjs --bar';
 /** The files this item changed at their crossing lines; their tests are re-run by --bar. */
 export const TOUCHED = [];
 /** A fixed boundary's key changes with its expression: after key to before key. */
@@ -1130,7 +1255,7 @@ export const ALLOWLIST = [
   { key: "bench/cloud-host.mjs|send|{op:'stop'}", bytes: 0, wire: 13, how: "literal" },
   { key: "bench/cloud.mjs|send|{op:'stop'}", bytes: 0, wire: 13, how: "literal" },
   { key: "bench/grid.mjs|postMessage|{id,task}", bytes: 0, wire: 20622, how: "probe" },
-  { key: "bench/grid.mjs|workerData|{searchUrl:pathToFileURL(path.join(ROOT,'capability','grid-search.mjs')).href,budgetMs:cfg.budgetMs,~420d5966c479", bytes: 0, wire: 11519, how: "probe" },
+  { key: "bench/grid.mjs|workerData|{searchUrl:pathToFileURL(path.join(ROOT,'capability','grid-search.mjs')).href,budgetMs:cfg.budgetMs,~a2d36b3f2cff", bytes: 0, wire: 11533, how: "probe" },
   { key: "bench/grid.mjs|postMessage|worker-source:{type:\"ready\",macros:library?library.macros.length:0}", bytes: 0, wire: 39, how: "probe" },
   { key: "bench/grid.mjs|postMessage|worker-source:{type:\"bootFailed\",error:String(e&&e.stack||e)}", bytes: 0, wire: 781, how: "probe" },
   { key: "bench/grid.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,solved:r.solved,solvedFirst:r.~72a687c3165e", bytes: 0, wire: 423, how: "probe" },

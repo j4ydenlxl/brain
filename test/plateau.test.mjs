@@ -7,9 +7,14 @@ import {
   plateauOf, rowAt, gainAfter, stats, compactRows, compareArm, chooseCombination, barVerdict,
   matrixToWire, matrixFromWire, RESTART,
   SPLIT, runSeeds, splitSeedStrings, retiredSeedStrings, searchedGaps, spearman, archiveHeldout,
-  describePlane, gridPlane, LMAX, COVER_DEFAULTS,
+  describePlane, gridPlane, LMAX, COVER_DEFAULTS, sourceClosure, rerunLedger, rerunWords,
+  BUDGET, plateauGenOf, searchedGapsGen, searchDigest, repeatOf, statementNumbers,
 } from '../generations/plateau.mjs';
-import { EvalMatrix, MatrixElites } from '../generations/velocity.mjs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { EvalMatrix, MatrixElites, syntheticMatrix } from '../generations/velocity.mjs';
 
 const counter = (step = 0.5) => { let t = 0; return () => (t += step); };
 const small = (seed, extra = {}) => coverPlane({ seed, families: 48, components: 256, tasksPerDraw: 64, draws: 2, ...extra });
@@ -390,4 +395,280 @@ test('describePlane: every number is read off the built plane and the cap passed
   assert.throws(() => describePlane(p, 0), /length cap/);
   assert.throws(() => describePlane({ ...p, kind: 'other' }, 12), /unknown plane kind/);
   assert.throws(() => describePlane({ ...p, options: {} }, 12), /family count/);
+});
+
+// ---------------------------------------------------------------- the build and the re-run ledger (board 24A, fix pass)
+test('sourceClosure: static, bare, multi-line, export-from and dynamic imports are followed; a file nobody imports is not hashed; a missing one is listed', () => {
+  const dir = mkdtempSync(path.join(os.tmpdir(), 'plateau-closure-'));
+  try {
+    const w = (r, t) => { mkdirSync(path.dirname(path.join(dir, r)), { recursive: true }); writeFileSync(path.join(dir, r), t); };
+    w('a.mjs', "import os from 'node:os';\nimport { b } from './b.mjs';\nimport './sub/c.mjs';\nimport {\n  q,\n  r\n} from './m.mjs';\n");
+    w('b.mjs', "export const b = 1;\nexport async function f() { return import('./d.mjs'); }\nexport async function g() { return import(\"./gone.mjs\"); }\n");
+    w('sub/c.mjs', "export { x } from '../e.mjs';\n");
+    w('d.mjs', 'export const d = 1;\n'); w('e.mjs', 'export const x = 1;\n'); w('m.mjs', 'export const q = 1, r = 2;\n');
+    w('z.mjs', 'export const z = 1;\n');
+    const c = sourceClosure([path.join(dir, 'a.mjs')], dir);
+    assert.deepEqual(c.files, ['a.mjs', 'b.mjs', 'd.mjs', 'e.mjs', 'm.mjs', 'sub/c.mjs']);
+    assert.deepEqual(c.missing, ['gone.mjs']);
+    assert.match(c.hash, /^[0-9a-f]{64}$/);
+    assert.equal(sourceClosure([path.join(dir, 'a.mjs')], dir).hash, c.hash, 'the same bytes hash the same');
+    w('z.mjs', 'export const z = 2;\n');
+    assert.equal(sourceClosure([path.join(dir, 'a.mjs')], dir).hash, c.hash, 'a file nobody imports changes no build');
+    w('e.mjs', 'export const x = 2;\n');
+    const c2 = sourceClosure([path.join(dir, 'a.mjs')], dir);
+    assert.notEqual(c2.hash, c.hash, 'a file two imports deep changes the build');
+    w('gone.mjs', 'export {};\n');
+    const c3 = sourceClosure([path.join(dir, 'a.mjs')], dir);
+    assert.deepEqual(c3.missing, []);
+    assert.notEqual(c3.hash, c2.hash, 'a missing file that appears changes the build');
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+  // the bench itself: the closure reaches the loop, the engine, the grid tasks and the worker's dynamic import
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const b = sourceClosure([path.join(root, 'bench', 'plateau.mjs')], root);
+  for (const need of ['bench/plateau.mjs', 'generations/plateau.mjs', 'generations/velocity.mjs', 'generations/years.mjs', 'generations/planes.mjs', 'tasks/grid.mjs', 'core/rng.mjs']) assert.ok(b.files.includes(need), need + ' is loaded by the bench and must be in its build');
+  assert.ok(!b.files.some((x) => x.startsWith('state/') || x.startsWith('test/')), 'no runtime state and no test file is part of the build');
+});
+
+const ledgerEntry = (at, build, o = {}) => ({
+  at, build, barMet: o.barMet ?? false, combination: o.combination ?? 'transfer',
+  per: {
+    grid: { beats: o.gb ?? false, later: o.gl ?? false, diff: o.gd ?? -1, controlFinal: o.gc ?? 119, armFinal: o.ga ?? 118, controlPlateauS: o.gp ?? 25, armPlateauS: o.gq ?? 5 },
+    synthetic: { beats: false, later: o.sl ?? false, diff: -1.4, controlFinal: o.sc ?? 217.8, armFinal: 216.4, controlPlateauS: o.sp ?? 37, armPlateauS: o.sq ?? 43.6 },
+  },
+});
+
+test('rerunLedger: carries only the same build, keeps a repeated at once, counts every boolean and ranges every number; one run is not a spread', () => {
+  // one run, nothing before it: not measured, a range of one value
+  const one = rerunLedger(null, ledgerEntry('t3', 'H'));
+  assert.equal(one.n, 1); assert.equal(one.measured, false); assert.equal(one.droppedOtherBuild, 0);
+  assert.deepEqual(one.per.grid.range.controlFinal, { n: 1, min: 119, max: 119, sd: 0 });
+  // three earlier entries of build H (one repeated), one of build K, one junk row
+  const prev = [
+    ledgerEntry('t1', 'H', { sl: true, sc: 225, sp: 70.9, gc: 119.2 }),
+    ledgerEntry('t1', 'H', { sl: true, sc: 225, sp: 70.9, gc: 119.2 }),
+    ledgerEntry('t2', 'H', { sl: false, sc: 224.4, sp: 52.95, gc: 119 }),
+    ledgerEntry('t0', 'K', { barMet: true, gb: true, gl: true, sl: true, gc: 1000 }),
+    null,
+  ];
+  const L = rerunLedger(prev, ledgerEntry('t3', 'H', { sl: true, sc: 225, sp: 37, gc: 119.2, combination: 'novelty' }));
+  assert.equal(L.n, 3); assert.equal(L.measured, true);
+  assert.equal(L.droppedOtherBuild, 1); assert.equal(L.droppedDuplicate, 1);
+  assert.deepEqual(L.runs.map((r) => r.at), ['t1', 't2', 't3']);
+  assert.equal(L.barMetTrue, 0, 'the other build met the bar and is not counted');
+  assert.deepEqual(L.combinations, { transfer: 2, novelty: 1 });
+  assert.equal(L.per.synthetic.trueCount.later, 2, 'the flip the verify plane saw is counted, 2 of 3');
+  assert.equal(L.per.synthetic.trueCount.beats, 0);
+  assert.equal(L.per.grid.trueCount.later, 0);
+  assert.equal(L.per.grid.range.controlFinal.min, 119); assert.equal(L.per.grid.range.controlFinal.max, 119.2);
+  assert.equal(L.per.synthetic.range.controlPlateauS.min, 37); assert.equal(L.per.synthetic.range.controlPlateauS.max, 70.9);
+  assert.ok(L.per.synthetic.range.controlFinal.sd > 0);
+  // the run's own at is never carried twice, even when the verdict on disk already holds it
+  assert.equal(rerunLedger([ledgerEntry('t3', 'H')], ledgerEntry('t3', 'H')).n, 1);
+  assert.throws(() => rerunLedger([], { at: 't', per: {} }), /needs at, build and per/);
+});
+
+test('rerunWords: one run says NOT measured and names no range; more runs name the counts and ranges the ledger holds', () => {
+  const w1 = rerunWords(rerunLedger([ledgerEntry('t0', 'K')], ledgerEntry('t1', 'abcdef0123456789ffff')), { files: 91 });
+  assert.match(w1, /first bar run of this build \(sha256 abcdef0123456789, 91 source files\)/);
+  assert.match(w1, /not measured/);
+  assert.match(w1, /1 earlier run\(s\) of other builds were dropped/);
+  assert.ok(!/beat the noise in|plateaued later in/.test(w1), 'one run names no spread');
+  const L = rerunLedger([ledgerEntry('t1', 'H', { sl: true, sp: 70.9 }), ledgerEntry('t2', 'H', { sp: 52.95 })], ledgerEntry('t3', 'H', { sl: true, sp: 37 }));
+  const w = rerunWords(L);
+  assert.match(w, /bar run 3 of this build/);
+  assert.match(w, /the bar was met in 0/);
+  assert.match(w, /the singles chose transfer 3 \(runs per combination\)/);
+  assert.match(w, /grid beat the noise in 0 and plateaued later in 0 \(control final 119\.00, combination final 118\.00, control plateau 25\.00 s, combination plateau 5\.00 s\)/);
+  assert.match(w, /synthetic beat the noise in 0 and plateaued later in 2 \(control final 217\.80, combination final 216\.40, control plateau 37\.00\.\.70\.90 s, combination plateau 43\.60 s\)/);
+  assert.ok(!/not measured/.test(w));
+});
+
+// ---------------------------------------------------------------- the generation budget and the repeat (board 26, item plateau-repeat)
+// a PLANTED small plane (velocity.mjs syntheticMatrix: the optimum is 8 planted components), its held-out side another planted world of the same shape
+const plantedPlane = (seed) => {
+  const shape = { tasks: 64, planted: 8, decoys: 56, decoyFit: 12, decoyRight: 4 };
+  return { searched: syntheticMatrix({ seed, ...shape }).matrix, fresh: syntheticMatrix({ seed: seed + ':fresh', ...shape }).matrix };
+};
+const stripWall = (rows) => rows.map(({ tMs, ...rest }) => rest);
+
+test('generation budget: two searches at one seed on a planted small plane draw the same search and the same plateau generations, whatever the clock; a wall budget does not', () => {
+  const planes = { a: plantedPlane('t/planted'), b: small('t/g2') };
+  const budget = { generations: 900, rowEveryGens: 10, restartGens: 60 };
+  for (const arm of [ARMS.control, ARMS.novelty, ARMS.transfer, ARMS.restart, { novelty: true, transfer: true, restart: true }]) {
+    const x = runArm({ planes, arm, seed: 's', ...budget, clock: counter(0.5), lmax: LM });
+    const y = runArm({ planes, arm, seed: 's', ...budget, clock: counter(7.3), lmax: LM });
+    for (const k of ['a', 'b']) {
+      const px = x.planes[k], py = y.planes[k];
+      assert.equal(px.generations, 900, armName(arm) + ' ' + k + ' ran exactly the budget');
+      assert.equal(py.generations, 900);
+      assert.ok(px.plateauGen && Number.isInteger(px.plateauGen.atGen));
+      assert.equal(px.plateauGen.atGen, py.plateauGen.atGen, armName(arm) + ' ' + k + ': the plateau generation is the same on both runs');
+      assert.equal(px.searchedPlateauGen.atGen, py.searchedPlateauGen.atGen);
+      assert.deepEqual(stripWall(px.rows), stripWall(py.rows), armName(arm) + ' ' + k + ': every row but its wall time');
+      assert.deepEqual(px.restartLog.map((r) => r.gen), py.restartLog.map((r) => r.gen));
+      assert.deepEqual(px.transfer, py.transfer);
+      // the two clocks did differ, or the equalities above show nothing
+      assert.notDeepEqual(px.rows.map((r) => r.tMs), py.rows.map((r) => r.tMs));
+    }
+    assert.equal(searchDigest([x]), searchDigest([y]), armName(arm));
+    assert.equal(x.budget.kind, 'generations');
+    assert.deepEqual({ generations: x.budget.generations, rowEveryGens: x.budget.rowEveryGens, restartGens: x.budget.restartGens }, budget);
+  }
+  // the restart clock counts generations: the restart arm fired on the planted plane and at a whole number of generations
+  const r = runArm({ planes, arm: ARMS.restart, seed: 's', ...budget, clock: counter(0.5), lmax: LM });
+  assert.ok(r.planes.a.restarts + r.planes.b.restarts >= 1, 'a restart fired, so the generation restart clock was exercised');
+  // the CONTROL of this test: the same arm under a WALL budget with the two clocks draws two different searches
+  const wx = runArm({ planes, arm: ARMS.restart, seed: 's', wallMs: 450, clock: counter(0.5), lmax: LM, restartMs: 30 });
+  const wy = runArm({ planes, arm: ARMS.restart, seed: 's', wallMs: 450, clock: counter(7.3), lmax: LM, restartMs: 30 });
+  assert.notEqual(wx.planes.a.generations, wy.planes.a.generations);
+  assert.notEqual(searchDigest([wx]), searchDigest([wy]));
+  assert.equal(wx.budget.kind, 'wall');
+});
+
+test('generation budget: the restart fires after restartGens flat, never loses the best, and changes nothing before it first fires', () => {
+  const planes = { a: small('t/rg') };
+  const ctl = runArm({ planes, arm: ARMS.control, seed: 's', generations: 1500, rowEveryGens: 5, restartGens: 40, clock: counter(), lmax: LM });
+  const rst = runArm({ planes, arm: ARMS.restart, seed: 's', generations: 1500, rowEveryGens: 5, restartGens: 40, clock: counter(), lmax: LM });
+  const r = rst.planes.a;
+  assert.ok(r.restarts >= 2, 'restarts ' + r.restarts);
+  assert.equal(ctl.planes.a.restarts, 0);
+  for (let i = 1; i < r.rows.length; i++) assert.ok(r.rows[i].objective >= r.rows[i - 1].objective, 'the searched best fell at row ' + i);
+  const first = r.restartLog[0];
+  assert.ok(first.gen >= 40, 'the first restart waited restartGens generations at least');
+  const before = (rows) => rows.filter((x) => x.gen < first.gen);
+  assert.deepEqual(stripWall(before(r.rows)), stripWall(before(ctl.planes.a.rows)));
+  assert.ok(before(r.rows).length >= 2);
+  // a restartGens longer than the run never fires
+  const never = runArm({ planes, arm: ARMS.restart, seed: 's', generations: 300, rowEveryGens: 5, restartGens: 301, clock: counter(), lmax: LM });
+  assert.equal(never.planes.a.restarts, 0);
+  // the defaults: rows and restart from BUDGET and RESTART.restartShare
+  const d = runArm({ planes, arm: ARMS.control, seed: 's', generations: 2000, clock: counter(), lmax: LM, diagnostic: false });
+  assert.equal(d.budget.restartGens, Math.round(2000 * RESTART.restartShare));
+  assert.equal(d.budget.rowEveryGens, Math.max(1, Math.round(2000 * BUDGET.rowEveryGens / BUDGET.generations)));
+  assert.ok(Number.isInteger(BUDGET.generations) && BUDGET.generations > 0);
+});
+
+test('runArm budgets: a generation budget or a wall budget, never both, and a generation budget is a whole number', () => {
+  const planes = { a: small('t/v') };
+  assert.throws(() => runArm({ planes, seed: 's', generations: 10, wallMs: 100 }), /not both/);
+  assert.throws(() => runArm({ planes, seed: 's', generations: 0 }), /whole number above 0/);
+  assert.throws(() => runArm({ planes, seed: 's', generations: 10.5 }), /whole number above 0/);
+  assert.throws(() => runArm({ planes, seed: 's' }), /wall budget|generation budget/);
+  assert.throws(() => runArm({ planes, seed: 's', generations: 10, rowEveryGens: 0.5 }), /whole numbers/);
+});
+
+test('runJobs: two worker-thread runs of one seed under a generation budget come back with the same search digest and plateau generations', async () => {
+  const p = plantedPlane('t/wpl'), q = small('t/wq');
+  const wire = { a: { searched: matrixToWire(p.searched), fresh: matrixToWire(p.fresh) }, b: { searched: matrixToWire(q.searched), fresh: matrixToWire(q.fresh) } };
+  const job = (arm) => ({ planes: wire, arm, seed: 'w', generations: 700, rowEveryGens: 7, restartGens: 50, lmax: LM });
+  const one = await runJobs([job(ARMS.control), job(ARMS.transfer), job(ARMS.restart)]);
+  const two = await runJobs([job(ARMS.restart), job(ARMS.control), job(ARMS.transfer)]);
+  const byArm = (rs) => Object.fromEntries(rs.map((r) => [r.arm, r]));
+  const A = byArm(one), B = byArm(two);
+  assert.equal(searchDigest(one), searchDigest(two));
+  for (const arm of ['control', 'transfer', 'restart']) for (const k of ['a', 'b']) {
+    assert.equal(A[arm].planes[k].plateauGen.atGen, B[arm].planes[k].plateauGen.atGen, arm + ' ' + k);
+    assert.equal(A[arm].planes[k].generations, 700);
+  }
+  // the digest sees a different search: another seed changes it
+  const other = await runJobs([{ ...job(ARMS.control), seed: 'w2' }]);
+  assert.notEqual(searchDigest([other[0]]), searchDigest([A.control]));
+});
+
+test('plateauGenOf and searchedGapsGen read the generation of the plateauOf row and the gaps in generations', () => {
+  const rows = [3, 5, 5, 4, 6, 6, 5].map((h, i) => ({ tMs: i * 100 + 7, heldout: h, gen: i * 10, objective: [1, 2, 2, 2, 3, 3, 3][i] }));
+  assert.deepEqual(plateauGenOf(rows, 'heldout'), { atGen: 40, atMs: 407, score: 6 });
+  assert.equal(plateauGenOf(rows, 'heldout').atMs, plateauOf(rows, 'heldout').atMs, 'the same row as plateauOf');
+  assert.equal(plateauGenOf([], 'heldout'), null);
+  const g = searchedGapsGen(rows);
+  assert.equal(g.rises, 2); assert.equal(g.lastRiseGen, 40);
+  assert.deepEqual(g.gaps, [{ gens: 30, fromGen: 10 }]);
+  assert.equal(rowAt(rows, 25, 'gen').gen, 20);
+  assert.equal(gainAfter(rows, 25, 'heldout', 'gen').fromGen, 20);
+});
+
+test('compareArm on the generation axis: later is read in generations even when the wall seconds say the opposite', () => {
+  const run = (seed, arm, series, gens, times) => {
+    const rows = series.map((h, i) => ({ tMs: times[i], gen: gens[i], heldout: h, searched: 0 }));
+    return { seed, arm, planes: { g: { rows, final: rows[rows.length - 1], plateau: plateauOf(rows), plateauGen: plateauGenOf(rows), organismYears: rows[rows.length - 1].gen } } };
+  };
+  // control plateaus at generation 200 (second 4.0); the arm at generation 300 but, running faster, at second 1.5
+  const ctl = [run('s1', 'control', [1, 2, 3, 3], [0, 100, 200, 300], [0, 2000, 4000, 6000])];
+  const arm = [run('s1', 'transfer', [1, 2, 3, 4], [0, 100, 200, 300], [0, 500, 1000, 1500])];
+  const gen = compareArm(ctl, arm, 'g', { axis: 'gen' });
+  const wall = compareArm(ctl, arm, 'g');
+  assert.equal(gen.axis, 'gen'); assert.equal(wall.axis, 'tMs');
+  assert.equal(gen.controlPlateauGen.mean, 200); assert.equal(gen.armPlateauGen.mean, 300);
+  assert.equal(gen.plateauLater, true, 'later by generations');
+  assert.equal(wall.plateauLater, false, 'earlier by wall seconds');
+  assert.equal(gen.controlPlateauMs.mean, 4000); assert.equal(gen.armPlateauMs.mean, 1500);
+  // the arm's gain after the control's plateau is read at the control's plateau GENERATION
+  assert.equal(gen.rows[0].armAfter.fromGen, 200); assert.equal(gen.rows[0].armAfter.gained, 1);
+  assert.throws(() => compareArm(ctl, arm, 'g', { axis: 'years' }), /axis/);
+});
+
+const repEntry = (at, o = {}) => ({
+  at, build: 'B', barMet: false, combination: 'transfer', digest: o.digest ?? 'd1',
+  per: {
+    grid: { beats: false, later: o.gl ?? false, diff: o.gd ?? -1.2, noise: o.gn ?? 3.16, controlFinal: 119, armFinal: 118, controlPlateauS: o.gcs ?? 25, armPlateauS: o.gas ?? 5, controlPlateauGen: o.gcg ?? 40000, armPlateauGen: o.gag ?? 9000 },
+    synthetic: { beats: false, later: true, diff: o.sd ?? -1.4, noise: o.sn ?? 7.05, controlFinal: 217.8, armFinal: 216.4, controlPlateauS: o.scs ?? 37, armPlateauS: 43.6, controlPlateauGen: 70000, armPlateauGen: 80000 },
+  },
+});
+
+test('repeatOf: both runs per plane, the largest move of the difference, and under the noise only with two runs and a move under the smallest noise on every plane', () => {
+  // one run: nothing is measured and nothing is under the noise
+  const one = repeatOf(rerunLedger(null, repEntry('t1')));
+  assert.equal(one.n, 1); assert.equal(one.measured, false); assert.equal(one.underNoise, false);
+  assert.equal(one.largestMove, 0);
+  // two identical runs (the same search): every move is 0, under the noise
+  const same = repeatOf(rerunLedger([repEntry('t1')], repEntry('t2', { gcs: 31.5, scs: 40 })));
+  assert.equal(same.n, 2); assert.equal(same.measured, true); assert.equal(same.underNoise, true); assert.equal(same.sameSearch, true);
+  assert.equal(same.largestMove, 0);
+  assert.deepEqual(same.per.grid.runs.map((r) => r.at), ['t1', 't2']);
+  assert.equal(same.per.grid.plateauSMove.control, 6.5, 'the plateau second moved while the search did not');
+  assert.equal(same.per.grid.plateauGenMove.control, 0);
+  // the verify plane's case: the difference moved, on synthetic by more than its smaller noise
+  const moved = repeatOf(rerunLedger([repEntry('t1', { sd: -1.4, sn: 7.05 })], repEntry('t2', { sd: 6.0, sn: 7.53, digest: 'd2' })));
+  assert.equal(moved.largestMovePlane, 'synthetic');
+  assert.ok(Math.abs(moved.largestMove - 7.4) < 1e-9);
+  assert.equal(moved.per.synthetic.noiseMin, 7.05);
+  assert.equal(moved.per.synthetic.moveUnderNoise, false);
+  assert.equal(moved.per.grid.moveUnderNoise, true);
+  assert.equal(moved.underNoise, false, 'one plane over its noise fails the repeat');
+  assert.equal(moved.sameSearch, false);
+  // a move exactly at the noise is not under it; a zero noise admits no move at all
+  const edge = repeatOf(rerunLedger([repEntry('t1', { gd: 0 })], repEntry('t2', { gd: 3.16 })));
+  assert.equal(edge.per.grid.moveUnderNoise, false);
+  const zero = repeatOf(rerunLedger([repEntry('t1', { gn: 0 })], repEntry('t2', { gn: 0 })));
+  assert.equal(zero.per.grid.moveUnderNoise, false);
+  // a run with no digest makes sameSearch unknown, not true
+  const nod = repeatOf(rerunLedger([{ ...repEntry('t1'), digest: undefined }], repEntry('t2')));
+  assert.equal(nod.sameSearch, null);
+});
+
+test('statementNumbers: a number the statement names and no printed line holds is named; digits inside a hash or a seed name are not numbers', () => {
+  const printed = '[plateau] rows every 200 generations, seeds tune-1,tune-2; sha256 6cd01d8e69419bd8\n[bar] grid: transfer minus control -1.20 against noise 3.16; 241,675 generations';
+  const ok = statementNumbers('Rows every 200 generations; minus control 1.20 against 3.16 over 241,675 generations (sha256 6cd01d8e69419bd8, tune-1).', printed);
+  assert.deepEqual(ok.missing, []);
+  assert.deepEqual(ok.numbers, ['200', '1.20', '3.16', '241,675', '1']);
+  const bad = statementNumbers('the held-out score read every 0.1 s, noise 3.2.', printed);
+  assert.deepEqual(bad.missing, ['0.1', '3.2'], 'the verify plane\'s case: 0.1 s where the run printed 100 ms');
+  assert.deepEqual(statementNumbers('no numbers here.', printed), { numbers: [], missing: [] });
+  // a range names both ends; an end no line printed is missing
+  const r = statementNumbers('control plateau 3.16..241,675 s and 1.20..9.99 s.', printed);
+  assert.deepEqual(r.numbers, ['3.16', '241,675', '1.20', '9.99']);
+  assert.deepEqual(r.missing, ['9.99']);
+});
+
+test('BUDGET: the default generation count is the median of the five control counts it names, per plane, and the row cadence keeps the wall run\'s row count to a whole hundred', () => {
+  const med = (xs) => { const s = [...xs].sort((a, b) => a - b); return s[(s.length - 1) / 2]; };
+  const d = BUDGET.derivedFrom;
+  for (const k of ['grid', 'synthetic']) {
+    assert.equal(d.controlGenerations[k].length, 5);
+    assert.equal(med(d.controlGenerations[k]), BUDGET.generations, k);
+  }
+  const rows = (d.wallS * 1000) / d.rowEveryMs;
+  assert.equal(BUDGET.rowEveryGens, Math.round(BUDGET.generations / rows / 100) * 100);
+  assert.ok(Number.isInteger(BUDGET.generations) && Number.isInteger(BUDGET.rowEveryGens));
+  assert.match(d.verdictAt, /^\d{4}-\d\d-\d\dT/);
 });

@@ -949,7 +949,54 @@ export function makeModelAuthor(opts = {}) {
 // ================================================================ preserve evidence (Board 10)
 const PRESERVE_SEALED = new WeakSet();
 export function isPreserveSealed(v) { return typeof v === 'object' && v !== null && PRESERVE_SEALED.has(v); }
-const slimRun = (t) => (t ? { exit: t.exit, pass: t.pass, fail: t.fail, total: t.total, ms: t.ms, timedOut: t.timedOut, failures: t.failures } : null);
+const slimRun = (t) => (t ? { exit: t.exit, pass: t.pass, fail: t.fail, total: t.total, ms: t.ms, timedOut: t.timedOut, failures: t.failures, timing: t.timing ?? null } : null);
+
+// Board 26 (autopilot-flake): A TIME THAT ENDS AT THE PROCESS EXIT, NOT AT ITS PIPE'S EOF.
+// spawnSync over pipes returns when the LAST holder of the child's stdout and stderr closes them,
+// not when the child exits. On Windows every CreateProcess with inherited handles takes every
+// handle of this process that is inheritable at that moment, so a child spawned by ANOTHER thread
+// of this process (a worker's spawnSync, the main thread's spawn) while this child's pipe ends are
+// being handed over keeps a copy of them until it exits (libuv issue 1490, "win process spawn: race
+// condition in inheriting handles"). Measured on 2026-09-27: a patched test that ran in about 90 ms
+// read 1586 to 1593 ms, the life of the neighbour's 1500 ms child that held its pipe, in 4 of 10 runs
+// of test/autopilot.test.mjs, and its "faster" patch was refused. The same trap can make a no-op
+// patch look faster when the BEFORE run is the one stretched. So the faster wall writes the child's
+// output to a file (no pipe, no EOF to wait for) and its time ends when the process exits. A
+// neighbour that inherits the file handle holds nothing this run waits on.
+export function runToExit(cmd, args, { cwd, env = cleanEnv(), timeoutMs = DEFAULT_TIMEOUT_MS } = {}) {
+  const out = path.join(tmpdir(), 'brain-run-' + process.pid + '-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10) + '.out');
+  const fd = openSync(out, 'wx');
+  const t0 = Date.now();
+  let r;
+  try { r = spawnSync(cmd, args, { cwd, env, timeout: timeoutMs, stdio: ['ignore', fd, fd], windowsHide: true }); } finally { closeSync(fd); }
+  const ms = Date.now() - t0;
+  let text = '';
+  try { text = readFileSync(out, 'utf8'); } finally { try { rmSync(out, { force: true }); } catch { /* a temp file that will not go is not a verdict */ } }
+  return { status: r.status, signal: r.signal, error: r.error || null, ms, text, timing: 'exit' };
+}
+
+/** self/code.mjs runTest (the same command, environment and parse), timed by runToExit. */
+export function runTestToExit(cwd, testRel, timeoutMs = DEFAULT_TIMEOUT_MS) {
+  const r = runToExit(process.execPath, ['--test', '--test-reporter=tap', testRel], { cwd, env: cleanEnv(), timeoutMs });
+  const out = r.text;
+  const n = (label) => { const m = out.match(new RegExp('^# ' + label + ' (\\d+)$', 'm')); return m ? Number(m[1]) : null; };
+  const failures = [];
+  const re = /^not ok (\d+) - (.+)$/gm;
+  let m;
+  while ((m = re.exec(out)) !== null) {
+    const rest = out.slice(m.index + m[0].length, m.index + m[0].length + 4000);
+    let err = '';
+    const block = rest.match(/\n\s*error: \|-\n([\s\S]*?)\n\s*(?:code|name|expected|actual|operator|stack|failureType|\.\.\.)[:\s]/);
+    if (block) err = block[1].split('\n').map((l) => l.trim()).filter(Boolean).join(' ');
+    else { const one = rest.match(/\n\s*error: '([^']*)'/); if (one) err = one[1]; }
+    failures.push({ name: m[2].trim(), error: err.slice(0, 400) });
+  }
+  return {
+    exit: r.status, timedOut: r.error?.code === 'ETIMEDOUT' || r.signal === 'SIGTERM',
+    pass: n('pass'), fail: n('fail'), total: n('tests'),
+    failures: failures.slice(0, 8), ms: r.ms, timing: r.timing,
+  };
+}
 
 /**
  * THE EVIDENCE FOR A CHANGE THAT MUST CHANGE NOTHING (a prune) or only the time (faster): on a
@@ -972,10 +1019,10 @@ export function verifyPreserve({ file, patch, test, root = ROOT, timeoutMs = DEF
   const dir = mkdtempSync(path.join(tmpdir(), 'brain-autopilot-'));
   try {
     cpSync(root, dir, { recursive: true, filter: (src) => { const rel = path.relative(root, src); return !rel || !COPY_SKIP.includes(rel.split(path.sep)[0]); } });
-    const before = runTest(dir, tf.rel, timeoutMs);
+    const before = runTestToExit(dir, tf.rel, timeoutMs);
     if (before.exit !== 0) return fail('the test does not pass before the patch, so it cannot show that the patch preserved anything', { before: slimRun(before) });
     writeFileSync(path.join(dir, f.rel), patched.text);
-    const after = runTest(dir, tf.rel, timeoutMs);
+    const after = runTestToExit(dir, tf.rel, timeoutMs);
     const passesAfter = after.exit === 0;
     const fastEnough = !faster || after.ms <= before.ms * ratio;
     const ok = passesAfter && fastEnough;
@@ -1005,6 +1052,7 @@ function verificationSummary(v) {
     ok: v.ok, mode: v.mode || 'fix', failsBefore: v.failsBefore, passesBefore: v.passesBefore ?? null, passesAfter: v.passesAfter,
     beforeFail: v.before?.fail ?? null, beforePass: v.before?.pass ?? null, beforeTotal: v.before?.total ?? null, beforeMs: v.before?.ms ?? null,
     afterPass: v.after?.pass ?? null, afterTotal: v.after?.total ?? null, afterMs: v.after?.ms ?? null, ms: v.ms ?? null,
+    timing: v.after?.timing ?? v.before?.timing ?? null,
   };
 }
 const gateSummary = (g) => (g ? { cmd: g.cmd, exit: g.exit, timedOut: g.timedOut, summary: g.summary, red: g.red, ms: g.ms, hash: gateHash(g) } : null);

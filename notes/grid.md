@@ -82,15 +82,19 @@ size, then triples, and hands the search back where it stopped when nothing fits
 `GRID_FIXED_VOCAB=1` (or `fallback: false`), which runs the search as it was.
 
 Development records from the build (TRAINING split, the builder's runs of
-`bench/grid.mjs --split training --budget-ms 3000 --workers 4`; the two variants not kept are
-not in the code, so these rows cannot be rerun):
+`bench/grid.mjs --split training --budget-ms 3000 --workers 4`). The build's runs left no verdict
+on disk, so their numbers are a record, not a measurement: every build row below is marked "not
+rerun". Board 26 reran the two rows the code still holds (the control and the kept variant) with
+commands that write the file they name; the two variants not kept are not in the code and cannot
+be rerun, so each carries the reruns of the control beside it (145 in the Board 23 fix pass, 144
+in Board 26):
 
-| run | solved of 400 | percent | timed out | found but wrong |
+| run | build record (not rerun) | control rerun beside it | rerun, Board 23 fix pass | rerun, Board 26: solved of 400, percent, timed out, found but wrong |
 |---|---|---|---|---|
-| control, GRID_FIXED_VOCAB=1 | 148 | 37 | 235 | 17 |
-| cell rule, triples on the input only | 169 | 42.25 | 193 | 38 |
-| cell rule, triples on every prefix (kept) | 171 | 42.75 | 190 | 39 |
-| cell rule, depth 2 prefixes too (not kept) | 169 | 42.25 | 184 | 47 |
+| control, the fallback off (`--fixed-vocab`, was `GRID_FIXED_VOCAB=1`) | 148, not rerun | (this row) | 145 | 144, 36, 241, 15 (`bench/verdicts/grid-split-training-control.json`) |
+| cell rule, triples on every prefix (kept) | 171, not rerun | 145 / 144 | 168 | 166, 41.5, 197, 37 (`bench/verdicts/grid-local-training.json`) |
+| cell rule, triples on the input only (not kept) | 169, not rerun | 145 / 144 | not rerun | not rerun (not in the code) |
+| cell rule, depth 2 prefixes too (not kept) | 169, not rerun | 145 / 144 | not rerun | not rerun (not in the code) |
 
 #### Fix pass (Board 23): every number below is a line a command printed
 
@@ -111,6 +115,10 @@ identical: 3 of 3"; sha256 printed by `sha256sum`):
 | `bench/verdicts/grid-local-evaluation.json` (the bar run) | grid-evaluation.json | b2775d7aa8a695f2f1a235331e8b2568a3742e9218353434983f15ed9d2346a9 |
 | `bench/verdicts/grid-local-evaluation-repeat.json` | grid-evaluation.json | 9a96c771d62a845ae094ce730ee4a0d345db5045df970336a99f4d3340cee75f |
 | `bench/verdicts/grid-local-training.json` | grid.json | 9af1c835de485210c680e195ce4db413cf10694876d726c5f83bf3c240e3c77d |
+
+Board 26 rewrote these three files through `bench/grid.mjs` itself (`--tag` now names the file, so
+nothing is copied): the sha256 above belong to the Board 23 files, which git history holds; the
+new ones, and the two controls this paragraph could not carry, are in the Board 26 section below.
 
 The two control verdicts were NOT copied in: their `command` field cannot carry the
 environment flag, so rerunning it would give the treatment, not the control. Their printed
@@ -157,6 +165,119 @@ The comment in `capability/grid-dsl.mjs` above CELL_COLOR_FEATURES said "out of 
 print 29, 44 and 73 (`node -e` over the module). It now names 73, 29 and 44, and
 `test/grid.test.mjs` reads the three numbers out of the comment and compares them to the arrays
 (a copy of the comment with 58 put back fails it).
+
+### Board 26, item grid-split: the bench names its split, its bar and its own file
+
+What landed, in `bench/grid.mjs` (model off, no socket):
+
+- A split OBJECT on every verdict: `development` (the training ids searched, listed), `heldOut`
+  (the evaluation ids scored, listed; `none` with why on a training run), and `contaminated`:
+  false, or the reason, decided from data by `overlapOf`, which hashes (sha256) every input with
+  its output, train and test pairs, of every scored task and of every development task and names
+  each scored task that shares a pair, with `decidedFrom` carrying the counts.
+- A top level boolean `barMet` against the bar it names. The bar is `frontierBar` over the
+  published rows of `bench/verdicts/public-arc.json`, the rule `bench/ladder.mjs` `frontierRowOf`
+  holds the ARC set to (the best frontier row held to one answer): Gemini 3.1 Pro (Preview) 98.
+- `--tag` names the file (`grid-<tag>.json`), so every `command` field reruns into the file it
+  sits in. `--fixed-vocab` is the control arm in the command itself (`GRID_FIXED_VOCAB=1` without
+  it is refused when the bench writes). `--control` and `--repeat-of` pair the run by task id and
+  refuse a file graded on other tasks, at another budget or depth, or a control that is not a
+  control arm.
+- One bar, one isTheBar: `isTheBar` is true only for a complete evaluation run that is neither a
+  control nor a repeat; a repeat carries `isTheBar` false and `repeatOf` naming the bar file; a
+  training run is in sample (the vocabulary was written against it) and carries `isTheBar` false.
+- `corpusShape` hands the library the ARC split's name (`arcSplit`) now that `split` is an object.
+
+#### Measured (Board 26)
+
+Read before building: `bench/gate.mjs` (`contaminationRow`, `splitShapeOf`, the Board 13 rule),
+`tools/split-stamp.mjs` (it has no row for `grid.json` and refuses a split the file's own run
+could write, so `grid.json` was RERUN, not stamped: the rerun took 363.60 s, under the 15 minute
+limit), `test/contamination-split.test.mjs`, `bench/ladder.mjs` (`frontierRowOf`) and
+`capability/grid-library.mjs` (`corpusFromVerdict`). One web search, "ARC-AGI-1 evaluation task
+070dd51e duplicate of training task 40853293": its results named the ARC Prize 2024 Technical
+Report (arXiv 2412.04604) and Test-time Adaptation of Tiny Recursive Models (arXiv 2511.02886),
+and neither named this pair, so the duplicate below rests on the hash comparison alone.
+
+Contamination, measured before the split was written (`node -e` over the two fixture sets):
+"id overlap 0", "whole task overlap 1" (evaluation 070dd51e is training 40853293, all 3 pairs),
+"eval pairs identical to a training pair 3", and "eval test inputs seen in training grids 2 eval
+test outputs seen in training grids 4 tasks 5". A single grid met in both sets is not counted:
+the search is never handed a training grid, only a whole pair would hand it an answer. The bench
+itself printed, on every evaluation run:
+"pairs compared by sha256: scored 1782, development 1718; scored tasks sharing a pair with a development task 1 (070dd51e 3 of 3 pairs, training 40853293, whole task)".
+So `contaminated` is not false: the split, the top level and the statement say so, and every
+evaluation verdict also carries `clean`, the score over the 399 tasks that share no pair.
+
+The six runs, one at a time, each launched as
+`node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir bench/verdicts -- node --max-old-space-size=4000 bench/grid.mjs <args>`
+after free RAM was read (35790, 35391, 34808, 33725, 35633 and 35324 MB); the args are each
+file's own `command` field:
+
+| file | args after `bench/grid.mjs` | solved of 400 | percent | clean, of 399 | timed out | found but wrong | isTheBar | barMet | BUDGET wall s, peak ram MB |
+|---|---|---|---|---|---|---|---|---|---|
+| `grid-split-evaluation-control.json` | `--split evaluation --budget-ms 3000 --workers 4 --fixed-vocab --tag split-evaluation-control` | 71 | 17.75 | 70, 17.54 | 322 | 6 | false | false | 251.55, 1752.0 |
+| `grid-local-evaluation.json` (the bar) | `--split evaluation --budget-ms 3000 --workers 4 --tag local-evaluation --control bench/verdicts/grid-split-evaluation-control.json` | 85 | 21.25 | 84, 21.05 | 288 | 26 | true | false | 243.96, 1830.8 |
+| `grid-local-evaluation-repeat.json` | `--split evaluation --budget-ms 3000 --workers 4 --tag local-evaluation-repeat --repeat-of bench/verdicts/grid-local-evaluation.json --control bench/verdicts/grid-split-evaluation-control.json` | 85 | 21.25 | 84, 21.05 | 287 | 27 | false | false | 243.84, 2058.6 |
+| `grid-split-training-control.json` | `--split training --budget-ms 3000 --workers 4 --fixed-vocab --tag split-training-control` | 144 | 36 | in sample | 241 | 15 | false | false | 190.95, 1900.0 |
+| `grid-local-training.json` | `--split training --budget-ms 3000 --workers 4 --tag local-training --control bench/verdicts/grid-split-training-control.json` | 166 | 41.5 | in sample | 197 | 37 | false | false | 182.93, 1766.0 |
+| `grid.json` | `--split training --budget-ms 3000 --workers 2` | 167 | 41.75 | in sample | 195 | 38 | false | false | 363.60, 1183.2 |
+
+Each file is under 180 KB (`ls` printed 167116 to 178874 bytes) and the bench's directory peaked
+at 51.3MB, so no run wrote over 100 MB. sha256 (`sha256sum`): `grid-local-evaluation.json`
+e3edaaa985000e0fd51d0aa5274ef8b14e6a2b0d407816772b548a06e1dc1643,
+`grid-local-evaluation-repeat.json` 0537b9e624e615ee17f3bac3e52f74ad20f935062f1e23e24547f3698526b823,
+`grid-local-training.json` fe75148ef32badfaab8b42e7902ecf0f8be8ebb45387bbe0c5724837a31eee00,
+`grid.json` 047808a18a73ef4de11eac67314c5a0b190e17f5183ad1614374d4834598e3b6.
+
+Paired by task id, printed by the bench:
+
+- the bar run against its control: "control bench/verdicts/grid-split-evaluation-control.json: this run 85, control 71, gained 15, lost 1; last step of the gained programs {"cellRule":15}; lost ca8f78db"
+- the repeat against the bar run: "repeat of bench/verdicts/grid-local-evaluation.json: this run 85, bar run 85, gained 0, lost 0"
+- training against its control: "control bench/verdicts/grid-split-training-control.json: this run 166, control 144, gained 22, lost 0; last step of the gained programs {"cellRule":22}"
+- the bar: "isTheBar true, barMet false (21.25 < 98)"
+
+The bar, Gemini 3.1 Pro (Preview) at 98, is NOT met: 21.25 (85 of 400), and 21.05 on the 399
+clean tasks. The control is the same search with the fallback phase off (`--fixed-vocab`).
+Training moved from 168 (Board 23 fix pass) to 166 at 4 workers and 167 at 2 workers, and the
+two evaluation arms of this board agree to the task, so run to run noise is a task or two.
+
+The bar command, `node bench/gate.mjs --contamination`, printed (exit 0):
+
+```
+CONTAMINATION GREEN: bar files (isTheBar true) 82 of 263 verdict files, with a split object 82, contaminated and labelled 15 (autopilot-board10.json, brief.json, census-prune.json, census.json, compress-board10.json, compress.json, daemon.json, grid-local-evaluation.json, math.json, public-launch.json, recall.json, senses.json, synth.json, unsplit-bars.json, web-ladder.json), contaminated and unlabelled 0, with no split 0, split not an object 0
+```
+
+Other items were writing verdict files while this ran, so the file count moves between runs
+(241 verdict files on the first run, 263 on this one); the row stayed GREEN on both. The row adds its CAUSES clause only when a cause exists; none is printed, and
+`node --input-type=module -e` over `contaminationRow(contaminationRecords('bench/verdicts'))`
+printed "ok true, causes 0, splitNotObject 0, unlabelled 0": CAUSES (0), GREEN. The baseline
+cause, "1 bar file(s) whose split is not an object: grid.json (string "training")", is gone:
+`grid.json` now carries a split object and is not a bar file.
+
+Tests: `node --test test/grid.test.mjs test/gate-contamination.test.mjs` printed
+"ℹ tests 23", "ℹ pass 23", "ℹ fail 0".
+Neighbours, one file at a time: `test/contamination-split.test.mjs` "tests 15, pass 15, fail 0",
+`test/unsplit-bars.test.mjs` "tests 6, pass 6, fail 0", `test/grid-library.test.mjs` "tests 8,
+pass 8, fail 0", `test/ladder.test.mjs` "tests 29, pass 29, fail 0".
+
+The comment in `capability/grid-search.mjs` above the fallback phase named 169 and 171, which no
+command in the tree printed. It now quotes the line `bench/verdicts/grid-local-training.json`'s
+command printed, "solved 166 of 400 = 41.5 percent", and its control's 144, and
+`test/grid.test.mjs` reads the numbers out of the comment and compares them to the named file.
+
+Open (Board 26, not this item's files):
+
+- `capability/grid-library.mjs` `corpusFromVerdict` refuses an object split (on the new
+  `grid.json` it printed "grid-library: a library is learned from the TRAINING split only; refused
+  a verdict of split [object Object]"). `bench/grid.mjs --library` goes through `corpusShape`;
+  `tools/boundary-audit.mjs` (its grid driver) and `self/operators.mjs` (`recombinations`) do not.
+  The fix is one line there: accept `arcSplit` 'training' when `split` is an object.
+- `bench/imagine.mjs` draws its population from the timeouts of `grid.json`; the rerun has 195
+  timeouts (`node -e` over its rows), not the count its header names.
+- `bench/verdicts/grid-evaluation.json` (the ladder's file, the old writer) still carries
+  `isTheBar` true with `contaminated` false, though it scored 070dd51e; its row moves only when
+  the orchestrator reruns the ladder's own command.
 
 ## Open
 

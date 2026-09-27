@@ -16,12 +16,14 @@
 //      (notes/plateau.md, the probe), so it cannot show a gain.
 //
 //   2. THE PLATEAU, EXACTLY. runArm() runs both planes in one loop, one generation of each in
-//      turn, for a fixed wall budget, and writes a row per plane every rowEveryMs (100 ms): the
-//      organism-years (one generation of the whole population is one organism-year, the
-//      declaration of generations/years.mjs), the searched objective of the best library, and that
-//      library's score on the plane's held-out draw. plateauOf() reads the plateau second off the
-//      rows: the time of the last row whose score is above the row before it (after it the score
-//      never rises again).
+//      turn, for a GENERATION budget (BUDGET: the bar; the same seed draws the same search) or a
+//      wall budget (a partial run), and writes a row per plane every rowEveryGens generations (or
+//      every rowEveryMs of wall): the wall time, the organism-years (one generation of the whole
+//      population is one organism-year, the declaration of generations/years.mjs), the searched
+//      objective of the best library, and that library's score on the plane's held-out draw.
+//      plateauOf() reads the plateau second off the rows and plateauGenOf() the plateau
+//      generation: the last row whose score is above the row before it (after it the score never
+//      rises again).
 //
 //   3. THREE INTERVENTIONS, each a switch on the same loop, so the control is the loop with all
 //      three off:
@@ -44,6 +46,9 @@
 //      generalizes better than the pick, and whether a held-out-free pick (the best worst-draw
 //      count) finds it. SPLIT names the tuning, held-out, smoke and retired seed namespaces.
 import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';
+import { readFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import path from 'node:path';
 import { RNG } from '../core/rng.mjs';
 import { EvalMatrix, MatrixElites, buildGridDraws, buildGridMatrix, drawSeeds, stackDraws, popcnt, DEFAULT_BINS } from './velocity.mjs';
 import { YEAR, yearsArithmetic } from './years.mjs';
@@ -56,13 +61,41 @@ export const ENGINE = Object.freeze({ popSize: 64, directed: 0.75, mutationRate:
 /** The length caps: grid 64 (the cap binds; see the header), cover 48 (binds: see notes). */
 export const LMAX = Object.freeze({ grid: 64, synthetic: 48 });
 /**
- * The restart schedule's defaults: stagnation seconds (bench/plateau.mjs --restart-s) and how many
- * distant cells seed the new engine. 12 s sits inside the gaps the CONTROL left between two rises
- * of its searched objective in a 60 s development run on the tuning seeds (notes/plateau.md,
- * Measured: the longest gaps were 30.3, 2.5 and 10.9 s on grid and 10.0, 10.7 and 14.4 s on
- * synthetic, tune-1..3): a shorter N fires inside gaps the control climbs out of by itself.
+ * The restart schedule's defaults. Under the GENERATION budget (the bar, BUDGET below) the running
+ * engine is replaced after restartShare of the budget's generations without a rise of its own
+ * searched best (bench/plateau.mjs --restart-gens overrides it); under a wall budget (a --wall-s
+ * partial run) after restartMs of wall (--restart-s). restartShare is the share restartMs held of
+ * the wall that the wall-budget bar ran, so the two schedules ask for the same fraction of a run.
+ * The evidence for N is the gaps the CONTROL leaves between two rises of its searched objective (a
+ * shorter N fires inside gaps the control climbs out of by itself): the bar prints them per seed
+ * (its [a <plane> <seed>] lines) and the verdict on disk holds them (measure.<plane>.searchedGaps),
+ * so this comment quotes none of them. carry: how many distant cells seed the new engine.
  */
-export const RESTART = Object.freeze({ restartMs: 12000, carry: 16 });
+export const RESTART = Object.freeze({ restartMs: 12000, restartShare: 0.1, carry: 16 });
+/**
+ * THE GENERATION BUDGET of the bar (board 26, item plateau-repeat). A wall budget cuts a run by the
+ * clock, so on a shared machine a re-run of the same seed draws a different search (the verify plane
+ * re-ran the wall-budget bar and the synthetic plateau comparison flipped). Under this budget every
+ * arm runs exactly `generations` generations of each plane (the planes are interleaved one
+ * generation each, so both get the same count), writes a row every `rowEveryGens` generations, and
+ * its restart clock counts generations: the same seed draws the same search whatever else the
+ * machine is doing. Wall time is printed, never budgeted.
+ * The default is the median of the control's generations per plane over the five tuning seeds of
+ * the wall-budget bar run whose verdict was committed (derivedFrom: its at, its commit, the path the
+ * five counts were read at and the counts themselves, so every bar verdict carries them on disk; a
+ * test checks the median). rowEveryGens keeps about the row count of that run: it wrote a row per
+ * rowEveryMs of its wall per run (derivedFrom.wallS, derivedFrom.rowEveryMs), so the median over
+ * that row count, rounded to a whole hundred.
+ */
+export const BUDGET = Object.freeze({
+  generations: 241675,
+  rowEveryGens: 200,
+  derivedFrom: Object.freeze({
+    verdictAt: '2026-09-27T14:29:17.487Z', commit: '54ed113', read: 'git show 54ed113:bench/verdicts/plateau.json, runs.tune[arm control].planes.{grid,synthetic}.generations',
+    controlGenerations: Object.freeze({ grid: Object.freeze([241675, 243867, 239221, 238353, 274926]), synthetic: Object.freeze([241675, 243867, 239221, 238353, 274926]) }),
+    wallS: 120, rowEveryMs: 100,
+  }),
+});
 /**
  * THE SPLIT. The tuning side (development) and the held-out side are separate namespaces of run
  * seeds and plane seeds. The held-out side is 'heldout': a 3 s smoke run of an earlier build
@@ -305,7 +338,7 @@ export function probeCell(engine, buf, n, out, claims) {
 
 // ---------------------------------------------------------------- 2. one plane inside an arm
 class PlaneRun {
-  constructor(key, plane, { seed, lmax, novelty, restart, restartMs, restartCarry, engine }) {
+  constructor(key, plane, { seed, lmax, novelty, restart, restartMs, restartGens = null, restartCarry, engine }) {
     this.key = key;
     this.searched = plane.searched;
     this.fresh = plane.fresh;
@@ -313,6 +346,8 @@ class PlaneRun {
     this.lmax = lmax;
     this.restartOn = !!restart;
     this.restartMs = restartMs;
+    // under a generation budget the restart clock counts generations (restartGens), never wall
+    this.restartGens = restartGens;
     this.restartCarry = restartCarry;
     this.descriptor = novelty ? behaviourDescriptor(this.searched, { bins: engine.bins }) : null;
     this.engineOpts = { ...engine, lmax, descriptor: this.descriptor };
@@ -320,9 +355,9 @@ class PlaneRun {
     this.engine = new MatrixElites(this.searched, { ...this.engineOpts, seed: seed + ':' + key + ':e0' });
     this.gens = 0; this.retiredEvals = 0; this.carried = 0; this.restarts = [];
     this.hof = null; this.heldout = 0; this.hofChanges = 0;
-    this.engRef = -Infinity; this.engRiseMs = 0;
+    this.engRef = -Infinity; this.engRiseMs = 0; this.engRiseGen = 0;
     this.transfer = { tried: 0, matched: 0, accepted: 0, evals: 0 };
-    this.rows = []; this.lastRowAt = -Infinity;
+    this.rows = []; this.lastRowAt = -Infinity; this.lastRowGen = -Infinity;
     this.tmpA = new Int32Array(Math.max(lmax, 256)); this.tmpB = new Int32Array(Math.max(lmax, 256)); this.claims = new Uint8Array(Math.max(lmax, 256));
   }
 
@@ -340,17 +375,18 @@ class PlaneRun {
 
   step() { this.engine.step(); this.gens++; this.updateHof(); }
 
-  /** RESTART: the running engine's own best has not risen for restartMs. */
+  /** RESTART: the running engine's own best has not risen for restartGens generations (a generation budget) or restartMs of wall. */
   maybeRestart(t) {
     const e = this.engine;
-    if (e.bestFit > this.engRef) { this.engRef = e.bestFit; this.engRiseMs = t; }
-    if (!this.restartOn || t - this.engRiseMs < this.restartMs || !this.hof) return false;
+    if (e.bestFit > this.engRef) { this.engRef = e.bestFit; this.engRiseMs = t; this.engRiseGen = this.gens; }
+    if (!this.restartOn || !this.hof) return false;
+    if (this.restartGens !== null ? this.gens - this.engRiseGen < this.restartGens : t - this.engRiseMs < this.restartMs) return false;
     const { genomes, distances } = distantElites(e, this.hof.solved, this.restartCarry);
     this.retiredEvals += e.evals;
     this.carried += genomes.length;
     this.engineIndex++;
     this.engine = new MatrixElites(this.searched, { ...this.engineOpts, seed: this.seed + ':' + this.key + ':e' + this.engineIndex, carry: genomes });
-    this.engRef = -Infinity; this.engRiseMs = t;
+    this.engRef = -Infinity; this.engRiseMs = t; this.engRiseGen = this.gens;
     const meanD = distances.length ? distances.reduce((a, b) => a + b, 0) / distances.length : 0;
     this.restarts.push({ atMs: t, gen: this.gens, carried: genomes.length, meanDistance: meanD, hofCount: this.hof.count });
     return true;
@@ -389,10 +425,11 @@ class PlaneRun {
     };
   }
 
+  /** A row every rowEveryGens generations under a generation budget (so the rows are a function of the seed), else every rowEveryMs of wall. */
   maybeRow(t, force = false) {
-    if (!force && t - this.lastRowAt < this.rowEveryMs) return;
+    if (!force && (this.rowEveryGens ? this.gens - this.lastRowGen < this.rowEveryGens : t - this.lastRowAt < this.rowEveryMs)) return;
     this.rows.push(this.row(t));
-    this.lastRowAt = t;
+    this.lastRowAt = t; this.lastRowGen = this.gens;
   }
 }
 
@@ -411,21 +448,37 @@ export function armName(sw) {
 }
 
 /**
- * ONE ARM: both planes, one generation of each in turn, for `wallMs` of wall. Returns per plane
- * its rows (every rowEveryMs), organism-years, evaluations, restarts and transfer counts.
+ * ONE ARM: both planes, one generation of each in turn, for a GENERATION budget (`generations` of
+ * each plane: the bar) or a wall budget (`wallMs`: a partial run). Returns per plane its rows,
+ * organism-years, evaluations, restarts and transfer counts, and the wall the arm took.
+ * Under a generation budget every decision and every row is a function of the seed and the planes:
+ * rows every rowEveryGens generations, the restart clock in generations (restartGens), the loop
+ * ended by the count. The clock is read only to stamp rows (tMs) and the arm's wall, so two runs of
+ * one seed return the same rows whatever the clock does (test/plateau.test.mjs hands two clocks).
  * @param {object} p { planes: { key: { searched, fresh } }, arm: { novelty, transfer, restart }, seed,
- *   wallMs, rowEveryMs, lmax: { key: n }, restartMs, restartCarry, transferPerGen, clock, diagnostic }
+ *   generations, rowEveryGens, restartGens | wallMs, rowEveryMs, restartMs; lmax: { key: n },
+ *   restartCarry, transferPerGen, clock, diagnostic }
+ *   generations: the budget (a whole number); rowEveryGens defaults to BUDGET's share of it, restartGens
+ *   to RESTART.restartShare of it. Pass generations or wallMs, never both.
  *   clock: a function returning milliseconds (default the monotonic clock); a test hands it a counter.
  *   diagnostic: false skips archiveHeldout after the loop (archive is then null); a test compares the two.
  */
-export function runArm({ planes, arm = ARMS.control, seed, wallMs, rowEveryMs = 100, lmax = LMAX, restartMs = RESTART.restartMs, restartCarry = RESTART.carry, transferPerGen = TRANSFER.perGeneration, engine = ENGINE, clock = null, diagnostic = true } = {}) {
-  if (!(wallMs > 0)) throw new Error('runArm: a wall budget (wallMs > 0) is required');
+export function runArm({ planes, arm = ARMS.control, seed, wallMs = null, generations = null, rowEveryMs = 100, rowEveryGens = null, lmax = LMAX, restartMs = RESTART.restartMs, restartGens = null, restartCarry = RESTART.carry, transferPerGen = TRANSFER.perGeneration, engine = ENGINE, clock = null, diagnostic = true } = {}) {
+  const byGen = generations !== null && generations !== undefined;
+  if (byGen) {
+    if (!(Number.isInteger(generations) && generations > 0)) throw new Error('runArm: a generation budget must be a whole number above 0');
+    if (wallMs !== null && wallMs !== undefined) throw new Error('runArm: pass a generation budget or a wall budget, not both');
+  } else if (!(wallMs > 0)) throw new Error('runArm: a wall budget (wallMs > 0) or a generation budget (generations) is required');
   if (!seed) throw new Error('runArm: a seed is required');
+  const rowGens = byGen ? (rowEveryGens ?? Math.max(1, Math.round(generations * BUDGET.rowEveryGens / BUDGET.generations))) : null;
+  const rGens = byGen ? (restartGens ?? Math.max(1, Math.round(generations * RESTART.restartShare))) : null;
+  if (byGen && !(Number.isInteger(rowGens) && rowGens >= 1 && Number.isInteger(rGens) && rGens >= 1)) throw new Error('runArm: rowEveryGens and restartGens must be whole numbers of at least 1');
   const keys = Object.keys(planes);
   const hr = typeof clock === 'function' ? clock : () => Number(process.hrtime.bigint()) / 1e6;
   const runs = keys.map((k) => {
-    const r = new PlaneRun(k, planes[k], { seed, lmax: lmax[k] ?? 64, novelty: arm.novelty, restart: arm.restart, restartMs, restartCarry, engine: { ...ENGINE, ...engine } });
+    const r = new PlaneRun(k, planes[k], { seed, lmax: lmax[k] ?? 64, novelty: arm.novelty, restart: arm.restart, restartMs, restartGens: rGens, restartCarry, engine: { ...ENGINE, ...engine } });
     r.rowEveryMs = rowEveryMs;
+    r.rowEveryGens = rowGens;
     return r;
   });
   const rng = new RNG(seed + ':transfer');
@@ -442,7 +495,7 @@ export function runArm({ planes, arm = ARMS.control, seed, wallMs, rowEveryMs = 
       if (r.gens === 1) r.maybeRow(t, true); else r.maybeRow(t);
     }
     endT = el();
-    if (endT >= wallMs) break;
+    if (byGen ? runs.every((r) => r.gens >= generations) : endT >= wallMs) break;
   }
   const out = {};
   for (const r of runs) {
@@ -457,11 +510,14 @@ export function runArm({ planes, arm = ARMS.control, seed, wallMs, rowEveryMs = 
       restarts: r.restarts.length, restartLog: r.restarts.slice(0, 64), transfer: { ...r.transfer },
       final: r.rows[r.rows.length - 1], best: r.hof ? { count: r.hof.count, len: r.hof.len, fitness: r.hof.fitness } : null,
       plateau: plateauOf(r.rows, 'heldout'), searchedPlateau: plateauOf(r.rows, 'objective'),
+      plateauGen: plateauGenOf(r.rows, 'heldout'), searchedPlateauGen: plateauGenOf(r.rows, 'objective'),
       archive, searchedGaps: (() => { const x = searchedGaps(r.rows); return { rises: x.rises, lastRiseMs: x.lastRiseMs, longest: x.gaps.slice(0, 8) }; })(),
+      searchedGapsGen: (() => { const x = searchedGapsGen(r.rows); return { rises: x.rises, lastRiseGen: x.lastRiseGen, longest: x.gaps.slice(0, 8) }; })(),
       rows: r.rows,
     };
   }
-  return { arm: armName(arm), switches: { ...arm }, seed, wallMs: endT, rowEveryMs, restartMs, restartCarry, transferPerGen, planes: out };
+  const budget = byGen ? { kind: 'generations', generations, rowEveryGens: rowGens, restartGens: rGens } : { kind: 'wall', wallMs, rowEveryMs, restartMs };
+  return { arm: armName(arm), switches: { ...arm }, seed, budget, wallMs: endT, rowEveryMs: byGen ? null : rowEveryMs, rowEveryGens: rowGens, restartMs: byGen ? null : restartMs, restartGens: rGens, restartCarry, transferPerGen, planes: out };
 }
 
 /**
@@ -542,6 +598,38 @@ export function plateauOf(rows, key = 'heldout') {
 }
 
 /**
+ * THE PLATEAU GENERATION: the generation (organism-years, the declared x axis) of the same row
+ * plateauOf() reads, with its wall time and score. Under a generation budget the rows are a function
+ * of the seed, so this is repeatable where the plateau second is not. Pure.
+ * @param {Array<object>} rows @param {string} key @returns {{ atGen: number, atMs: number, score: number }|null}
+ */
+export function plateauGenOf(rows, key = 'heldout') {
+  if (!rows || !rows.length) return null;
+  let at = 0;
+  for (let i = 1; i < rows.length; i++) if (rows[i][key] > rows[i - 1][key]) at = i;
+  return { atGen: rows[at].gen, atMs: rows[at].tMs, score: rows[at][key] };
+}
+
+/**
+ * searchedGaps() in generations: the gaps between consecutive rises of the searched objective,
+ * longest first (the evidence for restartGens). Pure.
+ * @param {Array<object>} rows @returns {{ rises: number, lastRiseGen: number|null, gaps: Array<{ gens: number, fromGen: number }> }}
+ */
+export function searchedGapsGen(rows) {
+  let last = null, rises = 0;
+  const gaps = [];
+  for (let i = 1; i < rows.length; i++) {
+    if (rows[i].objective > rows[i - 1].objective) {
+      rises++;
+      if (last !== null) gaps.push({ gens: rows[i].gen - last, fromGen: last });
+      last = rows[i].gen;
+    }
+  }
+  gaps.sort((x, y) => y.gens - x.gens || x.fromGen - y.fromGen);
+  return { rises, lastRiseGen: last, gaps };
+}
+
+/**
  * The gaps between consecutive rises of the SEARCHED objective (the restart schedule's evidence: a
  * restart N shorter than the gaps a run climbs out of by itself fires inside them). Longest first.
  * @param {Array<object>} rows @returns {{ rises: number, lastRiseMs: number|null, gaps: Array<{ ms: number, fromMs: number }> }}
@@ -560,10 +648,10 @@ export function searchedGaps(rows) {
   return { rises, lastRiseMs: last, gaps };
 }
 
-/** The last row at or before tMs (the first row when none is). Pure. */
-export function rowAt(rows, tMs) {
+/** The last row at or before t on the axis ('tMs', the default, or 'gen'); the first row when none is. Pure. */
+export function rowAt(rows, t, axis = 'tMs') {
   let r = rows[0];
-  for (const x of rows) { if (x.tMs <= tMs) r = x; else break; }
+  for (const x of rows) { if (x[axis] <= t) r = x; else break; }
   return r;
 }
 
@@ -571,10 +659,10 @@ export function rowAt(rows, tMs) {
  * The score gained AFTER tauMs, per million organism-years spent after it. Pure.
  * @returns {{ from: number, to: number, gained: number, years: number, perMillion: number|null }}
  */
-export function gainAfter(rows, tauMs, key = 'heldout') {
-  const a = rowAt(rows, tauMs), b = rows[rows.length - 1];
+export function gainAfter(rows, tau, key = 'heldout', axis = 'tMs') {
+  const a = rowAt(rows, tau, axis), b = rows[rows.length - 1];
   const gained = b[key] - a[key], years = b.gen - a.gen;
-  return { fromMs: a.tMs, from: a[key], to: b[key], gained, years, perMillion: years > 0 ? gained / (years / 1e6) : null };
+  return { fromMs: a.tMs, fromGen: a.gen, from: a[key], to: b[key], gained, years, perMillion: years > 0 ? gained / (years / 1e6) : null };
 }
 
 /** n, mean, sample sd (0 below two values), min, max. Pure. */
@@ -604,22 +692,30 @@ export function compactRows(rows) {
 
 /**
  * One arm against the control, per plane, on the seeds both ran (paired by seed). The control's
- * plateau second of each seed is the tau the arm's post-plateau gain is read after.
+ * plateau of each seed is the tau the arm's post-plateau gain is read after. axis 'tMs' (the
+ * default, a wall-budget run) reads the plateau SECOND and says later by seconds; axis 'gen' (a
+ * generation-budget run) reads the plateau GENERATION and says later by generations, and the
+ * plateau seconds are carried beside it as printed wall.
  * @param {object[]} controlRuns runArm results @param {object[]} armRuns @param {string} key plane
+ * @param {{ axis?: 'tMs'|'gen' }} [o]
  */
-export function compareArm(controlRuns, armRuns, key) {
+export function compareArm(controlRuns, armRuns, key, { axis = 'tMs' } = {}) {
+  if (axis !== 'tMs' && axis !== 'gen') throw new Error('compareArm: axis is tMs or gen');
+  const genOf = (p) => (p.plateauGen ? p.plateauGen.atGen : null);
   const bySeed = new Map(controlRuns.map((r) => [r.seed, r]));
   const rows = [];
   for (const a of armRuns) {
     const c = bySeed.get(a.seed);
     if (!c) continue;
     const cp = c.planes[key], ap = a.planes[key];
-    const tau = cp.plateau.atMs;
+    const tau = axis === 'gen' ? genOf(cp) : cp.plateau.atMs;
+    if (axis === 'gen' && tau === null) throw new Error('compareArm: axis gen needs plateauGen on the control run');
     rows.push({
       seed: a.seed,
       controlFinal: cp.final.heldout, armFinal: ap.final.heldout, diff: ap.final.heldout - cp.final.heldout,
-      controlPlateauMs: tau, armPlateauMs: ap.plateau.atMs,
-      controlAfter: gainAfter(cp.rows, tau), armAfter: gainAfter(ap.rows, tau),
+      controlPlateauMs: cp.plateau.atMs, armPlateauMs: ap.plateau.atMs,
+      controlPlateauGen: genOf(cp), armPlateauGen: genOf(ap),
+      controlAfter: gainAfter(cp.rows, tau, 'heldout', axis), armAfter: gainAfter(ap.rows, tau, 'heldout', axis),
       controlSearched: cp.final.searched, armSearched: ap.final.searched,
       controlYears: cp.organismYears, armYears: ap.organismYears,
     });
@@ -631,8 +727,10 @@ export function compareArm(controlRuns, armRuns, key) {
     plane: key, seeds: rows.map((r) => r.seed), n: rows.length,
     controlFinal: control, armFinal: armF, diff: s((r) => r.diff), noise,
     beatsByMoreThanNoise: rows.length > 0 && (armF.mean - control.mean) > noise,
+    axis,
     controlPlateauMs: s((r) => r.controlPlateauMs), armPlateauMs: s((r) => r.armPlateauMs),
-    plateauLater: rows.length > 0 && s((r) => r.armPlateauMs).mean > s((r) => r.controlPlateauMs).mean,
+    controlPlateauGen: s((r) => r.controlPlateauGen), armPlateauGen: s((r) => r.armPlateauGen),
+    plateauLater: rows.length > 0 && (axis === 'gen' ? s((r) => r.armPlateauGen).mean > s((r) => r.controlPlateauGen).mean : s((r) => r.armPlateauMs).mean > s((r) => r.controlPlateauMs).mean),
     controlPerMillionAfter: s((r) => r.controlAfter.perMillion), armPerMillionAfter: s((r) => r.armAfter.perMillion),
     armGainedAfter: s((r) => r.armAfter.gained), controlGainedAfter: s((r) => r.controlAfter.gained),
     controlSearched: s((r) => r.controlSearched), armSearched: s((r) => r.armSearched),
@@ -678,6 +776,187 @@ export function barVerdict(byPlane) {
   }));
   const met = planes.length > 0 && planes.every((p) => per[p].beats && per[p].later);
   return { met, per };
+}
+
+// ---------------------------------------------------------------- the build and the re-run ledger
+// A bar run is cut by the wall clock on a shared machine, so a re-run of the same code moves its
+// numbers (the verify plane re-ran the bar and got a different synthetic plateau comparison). These
+// helpers turn "a re-run moves the numbers" from a sentence into a measurement: sourceClosure()
+// names the build a run measured, and rerunLedger() carries every bar run of that build forward.
+const IMPORT_RE = /(?:\bimport\s*(?:[^'"()]*?\bfrom\s*)?|\bexport\s+[^'"()]*?\bfrom\s*|\bimport\s*\(\s*)(['"])(\.{1,2}\/[^'"]+)\1/g;
+
+/**
+ * THE BUILD: every file reachable from the entry files through relative static imports, bare
+ * side-effect imports, export-from and string-literal dynamic import(), hashed with sha256 over each
+ * path (relative to root, forward slashes) and its bytes, in path order. Two bar runs are runs of one
+ * build only when the hashes are equal, so another builder editing any file the bench loads (the grid
+ * DSL under tasks/grid.mjs, say) starts a new build. A specifier whose file does not exist is listed
+ * in missing and hashed by name only. Reads files; writes nothing.
+ * @param {string[]} entries absolute or cwd-relative entry files @param {string} root the tree root
+ * @returns {{ files: string[], missing: string[], hash: string }}
+ */
+export function sourceClosure(entries, root) {
+  const seen = new Set(), missing = new Set();
+  const stack = entries.map((e) => path.resolve(e));
+  const rel = (f) => path.relative(root, f).split(path.sep).join('/');
+  while (stack.length) {
+    const f = stack.pop();
+    if (seen.has(f) || missing.has(rel(f))) continue;
+    if (!existsSync(f)) { missing.add(rel(f)); continue; }
+    seen.add(f);
+    const text = readFileSync(f, 'utf8');
+    for (const m of text.matchAll(IMPORT_RE)) stack.push(path.resolve(path.dirname(f), m[2]));
+  }
+  const files = [...seen].map(rel).sort();
+  const h = createHash('sha256');
+  for (const r of files) { h.update(r + '\0'); h.update(readFileSync(path.join(root, r))); h.update('\0'); }
+  const miss = [...missing].sort();
+  for (const r of miss) h.update('missing:' + r + '\0');
+  return { files, missing: miss, hash: h.digest('hex') };
+}
+
+/**
+ * THE RE-RUN LEDGER of the bar. A bar run carries forward the entries of the verdict it replaces
+ * that share its build (entries of other builds are dropped and counted; an entry whose at repeats
+ * is kept once), appends its own, and reports: for every boolean field of a plane, in how many runs
+ * it came out true; for every numeric field, its min, max and sample sd across the runs; how many
+ * runs met the bar and which combinations the singles chose. measured is false below two runs, and
+ * then nothing here is a spread. Pure.
+ * @param {object[]|null} previous the reruns.runs array of the verdict on disk, or null
+ * @param {object} entry this run: { at, build, barMet, combination, per: { plane: { field: number|boolean } } }
+ */
+export function rerunLedger(previous, entry) {
+  if (!entry || !entry.build || !entry.at || !entry.per) throw new Error('rerunLedger: an entry needs at, build and per');
+  const prev = Array.isArray(previous) ? previous.filter((r) => r && typeof r === 'object') : [];
+  const byAt = new Map();
+  let otherBuild = 0;
+  for (const r of prev) {
+    if (r.build !== entry.build) { otherBuild++; continue; }
+    if (r.at !== entry.at && !byAt.has(r.at)) byAt.set(r.at, r);
+  }
+  const runs = [...byAt.values(), entry];
+  const per = {};
+  for (const p of Object.keys(entry.per)) {
+    const rs = runs.filter((r) => r.per && r.per[p]);
+    const out = { n: rs.length, trueCount: {}, range: {} };
+    for (const [k, v] of Object.entries(entry.per[p])) {
+      if (typeof v === 'boolean') out.trueCount[k] = rs.filter((r) => r.per[p][k] === true).length;
+      else if (typeof v === 'number') { const st = stats(rs.map((r) => r.per[p][k])); out.range[k] = { n: st.n, min: st.min, max: st.max, sd: st.sd }; }
+    }
+    per[p] = out;
+  }
+  const combinations = {};
+  for (const r of runs) combinations[r.combination] = (combinations[r.combination] || 0) + 1;
+  return {
+    build: entry.build, n: runs.length, measured: runs.length >= 2,
+    droppedOtherBuild: otherBuild, droppedDuplicate: prev.length - otherBuild - byAt.size,
+    barMetTrue: runs.filter((r) => r.barMet === true).length, combinations, per, runs,
+  };
+}
+
+/**
+ * The ledger in words for the verdict's statement. Below two runs it says the spread is NOT measured
+ * and names no spread; from two runs on it names, per plane, in how many runs the combination beat
+ * the noise and plateaued later, and the range of the control's and the combination's final score
+ * and plateau second on the held-out seeds. Pure.
+ * @param {object} ledger rerunLedger() @param {{ files?: number, planes?: string[] }} [o]
+ */
+export function rerunWords(ledger, { files, planes = Object.keys(ledger.per) } = {}) {
+  const b = ledger.build.slice(0, 16) + (files ? ', ' + files + ' source files' : '');
+  if (!ledger.measured) return 'This is the first bar run of this build (sha256 ' + b + ') on disk, so the re-run spread is not measured in this verdict' + (ledger.droppedOtherBuild ? ' (' + ledger.droppedOtherBuild + ' earlier run(s) of other builds were dropped)' : '') + '.';
+  const r = (x, d) => (x.min === x.max ? x.min.toFixed(d) : x.min.toFixed(d) + '..' + x.max.toFixed(d));
+  const pl = planes.map((p) => {
+    const x = ledger.per[p];
+    return p + ' beat the noise in ' + x.trueCount.beats + ' and plateaued later in ' + x.trueCount.later + ' (control final ' + r(x.range.controlFinal, 2) + ', combination final ' + r(x.range.armFinal, 2) + ', control plateau ' + r(x.range.controlPlateauS, 2) + ' s, combination plateau ' + r(x.range.armPlateauS, 2) + ' s)';
+  });
+  const combos = Object.entries(ledger.combinations).map(([k, v]) => k + ' ' + v).join(', ');
+  return 'This verdict is bar run ' + ledger.n + ' of this build (sha256 ' + b + '); across those ' + ledger.n + ' runs the bar was met in ' + ledger.barMetTrue + ', the singles chose ' + combos + ' (runs per combination), and on the held-out seeds ' + pl.join('; ') + '.';
+}
+
+// ---------------------------------------------------------------- the repeat (board 26, item plateau-repeat)
+// The bar is now run twice back to back under the generation budget. The second run carries the first
+// through rerunLedger (same build only) and repeatOf() measures how far the bar's own numbers moved
+// between the runs. barMet needs that move to be under the seed noise on every plane.
+
+/**
+ * A fingerprint of the SEARCH a set of arm runs drew: sha256 over every run (sorted by seed, then
+ * arm) and every plane (sorted), of each row's generation, evaluations, searched objective, searched
+ * count, length and held-out score (never its wall time), the restart log's generations and the
+ * transfer counts. Two runs of one build under one generation budget draw the same search exactly
+ * when their digests are equal; a wall-budget run is not expected to. Pure.
+ * @param {object[]} runs runArm results @returns {string} hex
+ */
+export function searchDigest(runs) {
+  const h = createHash('sha256');
+  const order = [...runs].sort((a, b) => (a.seed < b.seed ? -1 : a.seed > b.seed ? 1 : a.arm < b.arm ? -1 : a.arm > b.arm ? 1 : 0));
+  for (const r of order) {
+    h.update(r.seed + '|' + r.arm + '\n');
+    for (const k of Object.keys(r.planes).sort()) {
+      const p = r.planes[k];
+      h.update(k + ':' + p.generations + ':' + p.evals + ':' + JSON.stringify(p.transfer) + ':' + JSON.stringify((p.restartLog || []).map((x) => [x.gen, x.carried, x.hofCount])) + '\n');
+      for (const x of p.rows) h.update(x.gen + ',' + x.evals + ',' + x.objective + ',' + x.searched + ',' + x.len + ',' + x.heldout + ';');
+      h.update('\n');
+    }
+  }
+  return h.digest('hex');
+}
+
+/**
+ * THE REPEAT: the bar runs of one build that the ledger carries (the bar command run back to back),
+ * per plane each run's combination-minus-control difference, seed noise, and plateau (control and
+ * combination, as a generation and as the wall second it fell on), and the MOVE between runs (max
+ * minus min over the runs). largestMove is the largest move of the difference over the planes and
+ * underNoise is true only when at least two runs are carried and, on every plane, the difference
+ * moved by less than the smallest noise any run printed there. sameSearch says whether every run
+ * carried the same search digest (null when a run carried none). Pure.
+ * @param {object} ledger rerunLedger() @param {string[]} [planes]
+ */
+export function repeatOf(ledger, planes = Object.keys(ledger.per)) {
+  const runs = ledger.runs;
+  const measured = runs.length >= 2;
+  const mv = (xs) => { const v = xs.filter((x) => Number.isFinite(x)); return v.length ? Math.max(...v) - Math.min(...v) : null; };
+  const per = {};
+  let largestMove = null, largestMovePlane = null, underNoise = measured && planes.length > 0;
+  for (const p of planes) {
+    const rs = runs.filter((r) => r.per && r.per[p]);
+    const col = (k) => rs.map((r) => r.per[p][k]);
+    const noises = col('noise').filter((x) => Number.isFinite(x));
+    const noiseMin = noises.length ? Math.min(...noises) : null;
+    const diffMove = mv(col('diff'));
+    const moveUnderNoise = rs.length >= 2 && diffMove !== null && noiseMin !== null && diffMove < noiseMin;
+    per[p] = {
+      n: rs.length,
+      runs: rs.map((r) => ({ at: r.at, diff: r.per[p].diff, noise: r.per[p].noise, beats: r.per[p].beats, later: r.per[p].later, controlPlateauS: r.per[p].controlPlateauS, armPlateauS: r.per[p].armPlateauS, controlPlateauGen: r.per[p].controlPlateauGen ?? null, armPlateauGen: r.per[p].armPlateauGen ?? null })),
+      diffMove, noiseMin, moveUnderNoise,
+      plateauSMove: { control: mv(col('controlPlateauS')), arm: mv(col('armPlateauS')) },
+      plateauGenMove: { control: mv(col('controlPlateauGen')), arm: mv(col('armPlateauGen')) },
+    };
+    if (diffMove !== null && (largestMove === null || diffMove > largestMove)) { largestMove = diffMove; largestMovePlane = p; }
+    underNoise = underNoise && moveUnderNoise;
+  }
+  const digests = runs.map((r) => r.digest ?? null);
+  const sameSearch = digests.some((d) => d === null) ? null : digests.every((d) => d === digests[0]);
+  return {
+    rule: 'the bar command run back to back on one build; the move of a number is its max minus its min over the runs; barMet needs at least two runs and, on every plane, a move of the combination-minus-control difference under the smallest seed noise any run printed there',
+    n: runs.length, measured, ats: runs.map((r) => r.at), per, largestMove, largestMovePlane, underNoise, sameSearch, digests,
+  };
+}
+
+/**
+ * Every number a statement names and whether each appears in the printed text (the lines the run
+ * printed before the statement was built). A number is a run of digits (with thousands commas and
+ * one decimal part) not glued to a letter, a digit or a dot on either side, so the digits inside a
+ * hash or a seed name like tune-1 count only as what they print; the two ends of a range (a..b) are
+ * two numbers. Pure.
+ * @param {string} statement @param {string} printed @returns {{ numbers: string[], missing: string[] }}
+ */
+export function statementNumbers(statement, printed) {
+  const re = /(?<![A-Za-z0-9.])\d[\d,]*(?:\.\d+)?(?![A-Za-z0-9])/g;
+  const clean = (x) => x.replace(/,+$/, '');
+  const norm = (t) => String(t).replace(/\.\.+/g, ' .. ');
+  const inPrinted = new Set((norm(printed).match(re) || []).map(clean));
+  const numbers = [...new Set((norm(statement).match(re) || []).map(clean))];
+  return { numbers, missing: numbers.filter((x) => !inPrinted.has(x)) };
 }
 
 // ---------------------------------------------------------------- the worker boundary

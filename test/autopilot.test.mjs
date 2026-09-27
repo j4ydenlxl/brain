@@ -46,6 +46,10 @@
 //  29. the daemon's self-code step options (daemon/run.mjs) and the gaps counters (daemon/health.mjs)
 //  30. --grade-soak keeps every number and line of the file it replaces
 //
+// Board 26 (autopilot-flake):
+//  31. the faster wall times a run to its process exit: a grandchild holding a copy of its stdout
+//      (the condition of the 4-in-10 flake of test 15) stretches a pipe read and never that time
+//
 // No test here asks a real model: the author is a function, and a fake one stands in for the
 // model cell. bench/autopilot.mjs asks the real one.
 //
@@ -83,6 +87,7 @@ import { computeShare, isoWeek, main as authorshipMain } from '../tools/authorsh
 import * as P from './autopilot-plant.mjs';
 import { runSoak, runFromCli, soakConfig, soakFile, STOP_REL } from '../self/autopilot.mjs';
 import { gradeSoak, regradeSoak, parseExitFile, soakLogs, readSoakTranscript, findProofSoak } from '../self/autopilot.mjs';
+import { runToExit } from '../self/autopilot.mjs';
 import { plantInto, plantGaps } from './operators-plant.mjs';
 
 const TMP = mkdtempSync(path.join(tmpdir(), 'brain-autopilot-test-'));
@@ -643,7 +648,7 @@ test('the real gate program: a red tree keeps a fix with no regression, reverts 
 test('a slow green test is KEPT only when the patch keeps it green AND makes it at least 20 percent faster', async () => {
   const { same, runs: [r, r2] } = await slowRuns();
   const d = r.decisions[0];
-  assert.deepEqual([d.decision, d.source, d.evidence, d.verification.mode], ['kept', 'slow', 'faster', 'faster']);
+  assert.deepEqual([d.decision, d.source, d.evidence, d.verification.mode], ['kept', 'slow', 'faster', 'faster'], d.wall + ': ' + d.reason + ' ' + JSON.stringify(d.verification));
   assert.ok(d.verification.afterMs <= 0.8 * d.verification.beforeMs, d.verification.beforeMs + ' ms -> ' + d.verification.afterMs + ' ms');
   assert.deepEqual([r2.decisions[0].decision, r2.decisions[0].wall], ['refused', 'evidence']);
   assert.match(r2.decisions[0].reason, /not faster enough/);
@@ -999,6 +1004,32 @@ test('bench/autopilot.mjs --grade-soak keeps every number and line of the file i
   assert.deepEqual(baselineKept(prev, next), { total: 4, kept: 4, missing: [] });
   const lost = baselineKept(prev, { ...next, totals: { attempts: 150 } });
   assert.deepEqual(lost, { total: 4, kept: 3, missing: ['totals.attempts = 43'] });
+});
+
+// Board 26 (autopilot-flake): the slow test above failed 4 of 10 runs (bench/verdicts/autopilot-flake.json):
+// its patched run took 1586 to 1593 ms where it takes about 90, because the other slow worker's
+// 1500 ms child inherited this child's stdout pipe (Windows hands every inheritable handle to a
+// child spawned by any thread at that moment; libuv issue 1490) and spawnSync waits for the last
+// holder of the pipe. The condition that flake needs, built on purpose instead of raced for: a
+// grandchild that keeps a copy of the child's stdout for HOLD_MS after the child exits. Its cwd is
+// ROOT, never TMP: a live process's cwd cannot be deleted on Windows, and TMP must go in test.after.
+test('the faster wall times a run to its own exit: a process holding a copy of its stdout stretches a pipe read, never the time the wall judges', { timeout: 60_000 }, async () => {
+  const HOLD_MS = 3000;
+  const holder = "require('node:child_process').spawn(process.execPath, ['-e', 'setTimeout(() => {}, " + HOLD_MS + ")'], { stdio: 'inherit', detached: true, windowsHide: true }).unref();";
+  // the control: read over a pipe, the run ends only when the grandchild lets go of it
+  const t0 = Date.now();
+  const piped = await spawnAsync(process.execPath, ['-e', holder], { cwd: ROOT, env: process.env, timeout: 30_000 });
+  const pipedMs = Date.now() - t0;
+  assert.equal(piped.status, 0, piped.stderr);
+  assert.ok(pipedMs >= HOLD_MS, 'the condition: a pipe read waits for the holder, ' + pipedMs + ' ms');
+  // the wall's runner: the same program, timed to the process exit
+  const r = runToExit(process.execPath, ['-e', holder], { cwd: ROOT, env: process.env, timeoutMs: 30_000 });
+  assert.equal(r.status, 0, r.text);
+  assert.equal(r.timing, 'exit');
+  assert.ok(r.ms < HOLD_MS, 'the time ends at the exit, not at the holder: ' + r.ms + ' ms');
+  // and it is the runner the faster wall used for both slow candidates (the kept one and the refused one)
+  const { runs: [s1, s2] } = await slowRuns();
+  assert.deepEqual([s1.decisions[0].verification.timing, s2.decisions[0].verification.timing], ['exit', 'exit']);
 });
 
 }); // the soak suite (Board 17)
