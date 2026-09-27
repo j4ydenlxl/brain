@@ -406,6 +406,12 @@ Followed by a 125-row prompt-to-idea map written by another model from this sect
 
 (Recorded before any answer. The answer to the second question comes only from printed verdicts: the generations loop, the plateau bar, the rung, and whether any file prints a level against time. The ideas are answered as ideas, nothing built.)
 
+### His words, verbatim (2026-09-27, arrived after the 15:20 EDT answer; the session usage limit cut the work until 19:10 EDT; recorded at the clock read 2026-09-27 19:12:17 EDT)
+
+> So close but so far— it should be able to be fronteir level
+
+(Recorded before any answer. "So close but so far" is the counter of docs/VISION.md section 4; "it should be able to be fronteir level" is order 4. Answered from the rung and the boards that finished during the cut.)
+
 ## §B. OBJECTIVES + PROGRESS (mine; terse; updated only after re-reading §A)
 
 Rules for this section (P9, his 2026-09-23 order on cache reads): objectives are his WHAT in order; STATE is the whole live picture in under 40 lines and is rewritten whole at every checkpoint; the full history is `brain/docs/LOG.md` (append-only, one line per checkpoint, never read in full at session start; the hook prints its last 3 lines). Numbers live in bench/verdicts and docs/NUMBERS.md, not here. Every fact I need survives on disk, none of it needs my context.
