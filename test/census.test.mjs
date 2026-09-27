@@ -1012,3 +1012,61 @@ describe('dead-share bar: the pre-registered held-out judgement (test/dead-share
     assert.deepEqual([j.safe, j.lowered, j.underCap, j.zero], [true, true, false, false]);
   });
 });
+
+// Board 27 dead-share-all: the horizon step withholds, from the census the prune reads, the edges in
+// flight at its end and the cells the hosted problems chose that never ran; the step lands only when
+// nothing measured inside the census moved, the roles each suite found no cell for included.
+describe('dead-share-all: the horizon step', () => {
+  let E, v0;
+  before(async () => {
+    E = await import('../genome/emit.mjs');
+    v0 = JSON.parse(readFileSync(verdictFile, 'utf8'));
+  });
+
+  test('seedCellIds reads the cells of a seed from its files in load order', async () => {
+    const ids = E.seedCellIds(seedDir);
+    const { brain } = await loadFrom(seedDir);
+    assert.equal(ids.length, brain.cells.length);
+    assert.deepEqual(ids, brain.cells.map((c) => c.id));
+  });
+
+  test('hostedNeverRan names a chosen cell only when its run bit is clear, and withheldAtHorizon drops it and the in flight set', () => {
+    const ids = E.seedCellIds(seedDir);
+    const hosted = [...v0.tasks.algebra.cells, ...v0.tasks.sequence.cells];
+    assert.ok(hosted.length > 0, 'the tiny census hosted no problem');
+    // the census as written: every chosen cell ran (the hosted problems inject into it)
+    assert.deepEqual(E.hostedNeverRan(v0, ids), []);
+    // plant: clear the run bit of the first chosen cell
+    const idx = ids.indexOf(hosted[0]);
+    const cells = readLiveBits(v0.live.cells);
+    const planted = { ...v0, live: { ...v0.live, cells: liveBits(cells.n, (i) => i !== idx && cells.has(i)) } };
+    assert.deepEqual(E.hostedNeverRan(planted, ids), [hosted[0]]);
+    const d = E.withheldAtHorizon(planted, 'x.json', [hosted[0]]);
+    assert.equal(d.isTheBar, false);
+    assert.equal(d.live.inFlight, undefined);
+    assert.equal(d.live.cells, planted.live.cells);
+    assert.ok(!d.tasks.algebra.cells.includes(hosted[0]) && !d.tasks.sequence.cells.includes(hosted[0]));
+    assert.equal(d.tasks.algebra.cells.length + d.tasks.sequence.cells.length, hosted.filter((x) => x !== hosted[0]).length);
+    assert.deepEqual(d.derived.withheld, { inFlight: v0.live.inFlight.count, of: v0.live.inFlight.n, hostedNeverRan: [hosted[0]] });
+    // nothing to withhold: the census as written with only its in flight set taken out
+    const same = E.withheldAtHorizon(v0, 'x.json');
+    assert.deepEqual(same.tasks, v0.tasks);
+    // a census that names a cell the seed does not declare is refused
+    assert.throws(() => E.hostedNeverRan({ ...v0, tasks: { algebra: { cells: ['no.such.cell'] } } }, ids), /does not declare/);
+    assert.throws(() => E.hostedNeverRan(v0, ids.slice(1)), /covers/);
+  });
+
+  test('horizonMoved names every number inside the census that moved, the roles with no cell included', () => {
+    assert.deepEqual(E.horizonMoved(v0, v0), []);
+    const names = E.horizonWork(v0).map(([n]) => n);
+    for (const n of ['drive delivered', 'run signals', 'cells ran', 'edges delivered', 'mail dropped', 'hosted score', 'algebra roles with no cell', 'sequence roles with no cell']) assert.ok(names.includes(n), n);
+    const lostRole = { ...v0, tasks: { ...v0.tasks, algebra: { ...v0.tasks.algebra, missingRoles: [...v0.tasks.algebra.missingRoles, 'planted'] } } };
+    const moved = E.horizonMoved(v0, lostRole);
+    assert.equal(moved.length, 1, moved.join('; '));
+    assert.match(moved[0], /^algebra roles with no cell /);
+    const fewer = { ...v0, cells: { ...v0.cells, ran: v0.cells.ran - 1 } };
+    assert.deepEqual(E.horizonMoved(v0, fewer).map((x) => x.split(' ').slice(0, 2).join(' ')), ['cells ran']);
+    // a number missing on either side is moved, never equal
+    assert.ok(E.horizonMoved(v0, { ...v0, dormant: undefined }).some((x) => x.startsWith('mail dropped')));
+  });
+});

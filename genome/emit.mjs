@@ -14,7 +14,7 @@
 // Weights and delays are exact. Connectome.w and .conf are Float32Array, and f32() prints
 // the shortest decimal that Math.fround reads back to the identical float32, so loading the
 // emitted source reproduces the connectome bit for bit and the content hash agrees.
-import { mkdirSync, writeFileSync, rmSync, renameSync, existsSync, readFileSync, openSync, readSync, closeSync, readdirSync, statSync } from 'node:fs';
+import { mkdirSync, writeFileSync, rmSync, renameSync, existsSync, readFileSync, openSync, readSync, closeSync, readdirSync, statSync, cpSync } from 'node:fs';
 import { StringDecoder } from 'node:string_decoder';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -846,6 +846,8 @@ function applyWireHistory(brain, argv, seedDir, say) {
 // ---------------------------------------------------------------- the dead-share chain (Board 23 fix pass)
 //   node genome/emit.mjs --dead-share organism/<seed> [--ticks 200] [--tag dead-share]
 //                        [--verdict-dir bench/verdicts] [--max-rounds 8] [--wire-history a.json,b.json]
+//                        [--max-passes 4] [--keep-in-flight] [--json <file>]
+//   node genome/emit.mjs --dead-share --all [--max-cells 1000] [--skip a,b] [same options]
 // The whole rule as one command, so a seed is never left half done and a seed emitted again is fixed
 // the same way: census it; wire it in place by that census and census it again, until a round wires
 // nothing (the fixed point); prune it in place by the last census; census the pruned seed. Each step
@@ -853,6 +855,29 @@ function applyWireHistory(brain, argv, seedDir, say) {
 // read it); each census is written to the verdict dir as census-<seed>-<tag>-c<i>-partial.json and
 // checked against the seed's manifest hash; each round is recorded in the seed's manifest
 // (genome.wired.rounds, genome.pruned.rounds).
+//
+// THE HORIZON STEP (Board 27 dead-share-all). On 12 of the 18 seeds board 23 held out, the chain
+// stopped above 0 (0.000918 to 0.007389), and every dead line left was an edge the prune keeps
+// because a signal was still in flight on it when the census ended: its source fires only in the last
+// hosted problems and the edge's delay lands the signal after the census's last tick, so inside the
+// census it never delivers (one seed also kept one event cell only as the end of such an edge). A 13th,
+// organism/gen-0-5-4-2-4, kept one cell no census saw run: the hosted problems chose it for a role
+// (tasks/host.mjs nameCells), no problem of the census used that role, and the prune protects every
+// cell the problems chose. When the last census still has a dead share above 0 and in flight edges
+// or chosen cells that never ran, the chain writes that census again with both withheld
+// (census-<seed>-<tag>-c<i>-horizon-partial.json, `derived` naming the file it came from), prunes the
+// seed by it, and censuses the result. The step lands only
+// if nothing measured inside the horizon moved: the drive's and the whole run's runs, signals and
+// deliveries, the cells that ran and fired, the edges that delivered, the mail dropped, the hosted
+// score, algebra and sequence, and the roles each suite found no cell for, must all equal the census
+// before it; otherwise the seed is put back from a copy taken before the step and the chain is not
+// OK. What the step gives up is named: the mail those edges would deliver after the census's last
+// tick, and each chosen cell it dropped. --keep-in-flight turns it off.
+//
+// THE PASSES. A prune also drops the edges that held a monomorphic claim on an in port (genome/wire.mjs),
+// so a seed that was at the wire's fixed point before a prune may have a legal donor after it. The
+// chain therefore repeats wire, prune and horizon until a pass changes nothing (--max-passes, default
+// 4): a landed seed is the chain's own fixed point, and a second run over it changes nothing.
 
 const EMITTER = fileURLToPath(import.meta.url);
 function childEnv() {
@@ -874,15 +899,98 @@ export function censusRow(v, file) {
 }
 
 /**
- * Wire a seed to its fixed point and prune it, in place, each step a child process.
- * @param {string} seedDir
- * @param {{ ticks?, tag?, verdictDir?, maxRounds?, wireHistory?: string[], heapMb?, say?, timeoutMs? }} [opts]
- * @returns {{ seed, ticks, first, last, rounds, fixedPoint, steps, censusFiles, ok, checks }}
+ * What a census measured inside its horizon, the numbers the horizon step must leave unchanged: the
+ * work of the drive and of the whole run (hosted problems included), what ran, fired and delivered,
+ * the mail dropped, and the hosted answers. Declared counts and lines are not in it: they are what
+ * the step changes.
+ * @param {object} v a census verdict
+ * @returns {Array<[string, number|null]>}
  */
-export function deadShareChain(seedDir, { ticks = 200, tag = 'dead-share', verdictDir = path.join(BRAIN_ROOT, 'bench', 'verdicts'), maxRounds = 8, wireHistory: history = null, heapMb = 4000, say = () => {}, timeoutMs = 10 * 60_000 } = {}) {
+export function horizonWork(v) {
+  const t = v.totals || {}, d = t.drive || {}, a = t.all || {}, k = v.tasks || null;
+  return [
+    ['drive runs', d.runs], ['drive signals', d.signals], ['drive delivered', d.delivered],
+    ['run runs', a.runs], ['run signals', a.signals], ['run delivered', a.delivered],
+    ['cells ran', v.cells && v.cells.ran], ['cells fired', v.cells && v.cells.fired], ['edges delivered', v.edges && v.edges.delivered],
+    ['mail dropped', v.dormant ? v.dormant.mailDropped : null],
+    ['hosted score', k ? k.score : null], ['algebra correct', k ? k.algebra.correct : null], ['sequence correct', k ? k.sequence.correct : null],
+    ['algebra roles with no cell', k && Array.isArray(k.algebra.missingRoles) ? k.algebra.missingRoles.join('|') : null],
+    ['sequence roles with no cell', k && Array.isArray(k.sequence.missingRoles) ? k.sequence.missingRoles.join('|') : null],
+  ].map(([n, x]) => [n, x === undefined ? null : x]);
+}
+/** The names of the numbers of horizonWork that differ between two censuses (a number missing on either side differs). */
+export function horizonMoved(before, after) {
+  const a = horizonWork(before), b = new Map(horizonWork(after));
+  return a.filter(([n, x]) => x === null || b.get(n) === null || b.get(n) !== x).map(([n, x]) => n + ' ' + x + ' -> ' + b.get(n));
+}
+/**
+ * The cell ids of an emitted seed in load order (index i is cell i), read from its cells files as text:
+ * nothing is imported, so a seed rewritten in place is read as it is on disk.
+ * @param {string} dir @returns {string[]}
+ */
+export function seedCellIds(dir) {
+  const m = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8'));
+  const ids = [];
+  for (const f of m.files || []) {
+    if (!/^cells-/.test(f.path)) continue;
+    for (const line of readFileSync(path.join(dir, f.path), 'utf8').split('\n')) if (line.startsWith('c(')) ids.push(declArgs(line, 'c(')[0]);
+  }
+  return ids;
+}
+/**
+ * The cells the hosted problems chose (census.tasks.<suite>.cells) that never ran in that census.
+ * @param {object} v a census verdict @param {string[]} ids the seed's cell ids by index
+ * @returns {string[]}
+ */
+export function hostedNeverRan(v, ids) {
+  if (!v.live || !v.live.cells) return [];
+  const ran = readLiveBits(v.live.cells);
+  if (ran.n !== ids.length) throw new Error('horizon: the census covers ' + ran.n + ' cells, the seed declares ' + ids.length);
+  const idx = new Map(ids.map((id, i) => [id, i]));
+  const out = [];
+  for (const suite of ['algebra', 'sequence']) for (const id of (v.tasks && v.tasks[suite] && v.tasks[suite].cells) || []) {
+    const i = idx.get(id);
+    if (i === undefined) throw new Error('horizon: the census hosted a problem on ' + id + ', which the seed does not declare');
+    if (!ran.has(i) && !out.includes(id)) out.push(id);
+  }
+  return out;
+}
+/**
+ * The census the horizon prune reads: the census as it was written, with two things withheld. Its in
+ * flight set, so the prune keeps an edge only when it delivered (or is protected) and drops one whose
+ * signal was still in flight at the census's last tick. And, from the cells the hosted problems chose,
+ * the ones that never ran (the prune protects every chosen cell), so the prune drops a chosen cell no
+ * problem of the census used.
+ * @param {object} v a census verdict @param {string} from its file, as recorded
+ * @param {string[]} [never] hostedNeverRan(v, ids)
+ */
+export function withheldAtHorizon(v, from, never = []) {
+  if (!v.live) throw new Error('horizon: ' + from + ' carries no liveness');
+  const { inFlight = null, ...live } = v.live;
+  const drop = new Set(never);
+  const tasks = v.tasks ? Object.fromEntries(Object.entries(v.tasks).map(([k, x]) => [k, x && typeof x === 'object' && Array.isArray(x.cells) ? { ...x, cells: x.cells.filter((id) => !drop.has(id)) } : x])) : v.tasks;
+  return {
+    ...v, isTheBar: false, live, tasks,
+    derived: {
+      from, withheld: { inFlight: inFlight ? inFlight.count : 0, of: inFlight ? inFlight.n : null, hostedNeverRan: [...drop] },
+      rule: 'the census ' + from + ' with two things withheld: its in flight set (an edge kept only because a signal was still in flight on it when that census ended delivered nothing inside the census) and, from the cells its hosted problems chose, the ones that never ran in it; the prune that reads this file keeps neither',
+      by: 'genome/emit.mjs deadShareChain, the horizon step (Board 27 dead-share-all)',
+    },
+  };
+}
+
+/**
+ * Wire a seed to its fixed point and prune it, in place, each step a child process; then, when in
+ * flight edges are all that is left dead, the horizon step; repeated until a pass changes nothing.
+ * @param {string} seedDir
+ * @param {{ ticks?, tag?, verdictDir?, maxRounds?, maxPasses?, horizon?: boolean, wireHistory?: string[], heapMb?, say?, timeoutMs? }} [opts]
+ * @returns {{ seed, ticks, first, last, rounds, passes, fixedPoint, settled, horizon, deadShareZero, steps, censusFiles, derivedFiles, ok, checks }}
+ */
+export function deadShareChain(seedDir, { ticks = 200, tag = 'dead-share', verdictDir = path.join(BRAIN_ROOT, 'bench', 'verdicts'), maxRounds = 8, maxPasses = 4, horizon = true, wireHistory: history = null, heapMb = 4000, say = () => {}, timeoutMs = 10 * 60_000 } = {}) {
   const seed = path.resolve(BRAIN_ROOT, seedDir), name = path.basename(seed), vdir = path.resolve(BRAIN_ROOT, verdictDir);
   if (!existsSync(path.join(seed, 'manifest.json'))) throw new Error('dead-share: no manifest.json in ' + seed);
   if (!/^[a-z0-9-]+$/i.test(tag)) throw new Error('dead-share: the tag ' + tag + ' is not letters, digits and dashes (the census would rename its file)');
+  mkdirSync(vdir, { recursive: true });
   const env = childEnv();
   const run = (args, what) => {
     const r = spawnSync(process.execPath, ['--max-old-space-size=' + heapMb, ...args], { cwd: BRAIN_ROOT, encoding: 'utf8', timeout: timeoutMs, maxBuffer: 64 << 20, env, windowsHide: true });
@@ -891,8 +999,10 @@ export function deadShareChain(seedDir, { ticks = 200, tag = 'dead-share', verdi
     return printed;
   };
   const manifest = () => JSON.parse(readFileSync(path.join(seed, 'manifest.json'), 'utf8'));
-  const steps = [], censusFiles = [];
-  const census = (i) => {
+  const steps = [], censusFiles = [], derivedFiles = [];
+  let ci = 0;
+  const census = () => {
+    const i = ci++;
     const t = tag + '-c' + i;
     run([path.join(BRAIN_ROOT, 'tools', 'organism-census.mjs'), '--seed', seed, '--ticks', String(ticks), '--no-knockout', '--tag', t, '--verdict-dir', vdir], 'census ' + t);
     const file = path.join(vdir, 'census-' + name + '-' + t + '-partial.json');
@@ -902,72 +1012,154 @@ export function deadShareChain(seedDir, { ticks = 200, tag = 'dead-share', verdi
     const row = censusRow(v, file);
     steps.push({ step: 'census', i, ...row });
     censusFiles.push(row.file);
-    say('  census c' + i + ': lines ' + row.lines + ', load bearing ' + row.loadBearing + ', dead share ' + row.deadShare + '; cells ' + row.cells.declared + ' (ran ' + row.cells.ran + ', fired ' + row.cells.fired + '), edges ' + row.edges.declared + ' (delivered ' + row.edges.delivered + '); hosted score ' + row.score + '; drive delivered ' + (row.drive && row.drive.delivered) + ' (' + row.file + ')');
+    say('  census c' + i + ': lines ' + row.lines + ', load bearing ' + row.loadBearing + ', dead share ' + row.deadShare + '; cells ' + row.cells.declared + ' (ran ' + row.cells.ran + ', fired ' + row.cells.fired + '), edges ' + row.edges.declared + ' (delivered ' + row.edges.delivered + ', in flight at the end ' + (v.edges.inFlightAtEnd ?? 'n/a') + '); hosted score ' + row.score + '; drive delivered ' + (row.drive && row.drive.delivered) + ' (' + row.file + ')');
     return { file, row, v };
   };
   // what a prune by a census would drop: a cell that never ran, an edge that neither delivered nor was
   // in flight at the end (a protected one is kept too, so this can only overcount what would go)
+  // (a cell the hosted problems chose is protected by the prune, so one that never ran is not counted:
+  // a prune called for it alone drops nothing and only adds a round to the seed's record)
   const droppable = (v) => {
     const cells = readLiveBits(v.live.cells), edges = readLiveBits(v.live.edges), inFlight = v.live.inFlight ? readLiveBits(v.live.inFlight) : null;
-    let n = cells.n - cells.count;
+    let n = cells.n - cells.count - hostedNeverRan(v, seedCellIds(seed)).length;
     for (let e = 0; e < edges.n; e++) if (!edges.has(e) && !(inFlight && inFlight.has(e))) n++;
     return n;
   };
   const hist = history && history.length ? ['--wire-history', history.join(',')] : [];
+  const hz = { ran: 0, landed: 0, reverted: 0, withheld: 0, hostedNeverRan: [], cellsDropped: 0, edgesDropped: 0, moved: [] };
+  // the horizon step on the seed as census c measured it; returns the census after it, or null
+  const horizonStep = (c) => {
+    const inFlight = c.v.live && c.v.live.inFlight ? c.v.live.inFlight.count : 0;
+    const never = hostedNeverRan(c.v, seedCellIds(seed));
+    if (!(c.row.deadShare > 0) || (inFlight === 0 && never.length === 0)) return null;
+    hz.ran++;
+    const derived = c.file.replace(/-partial\.json$/, '-horizon-partial.json');
+    writeFileSync(derived, JSON.stringify(withheldAtHorizon(c.v, toPosix(path.relative(BRAIN_ROOT, c.file)), never), null, 2) + '\n');
+    derivedFiles.push(toPosix(path.relative(BRAIN_ROOT, derived)));
+    // a copy of the seed as it is, beside it (a dot name: the gate and the census skip it), so a step
+    // that moved anything inside the horizon is put back
+    const backup = path.join(path.dirname(seed), '.' + name + '.horizon-backup');
+    rmSync(backup, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
+    cpSync(seed, backup, { recursive: true });
+    try {
+      run([EMITTER, '--prune', derived, '--seed', seed, '--out', seed, '--name', name, ...hist], 'horizon prune');
+      const p = manifest().genome.pruned;
+      const h = census();
+      const moved = horizonMoved(c.v, h.v);
+      if (moved.length === 0) {
+        hz.landed++; hz.withheld += inFlight; hz.hostedNeverRan.push(...never); hz.cellsDropped += p.cells.before - p.cells.after; hz.edgesDropped += p.edges.before - p.edges.after;
+        steps.push({ step: 'horizon', withheldInFlight: inFlight, withheldHostedNeverRan: never, cells: p.cells, edges: p.edges, derived: toPosix(path.relative(BRAIN_ROOT, derived)), changedNothingInside: true });
+        say('  horizon: withheld ' + inFlight + ' in flight edges and ' + never.length + ' chosen cells that never ran' + (never.length ? ' (' + never.join(', ') + ')' : '') + '; cells ' + p.cells.before + ' -> ' + p.cells.after + ', edges ' + p.edges.before + ' -> ' + p.edges.after + '; nothing inside the horizon moved (' + horizonWork(h.v).map(([n, x]) => n + ' ' + x).join(', ') + ')');
+        rmSync(backup, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
+        return h;
+      }
+      // put the seed back as census c measured it
+      rmSync(seed, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
+      retrying(() => renameSync(backup, seed));
+      hz.reverted++; hz.moved.push(...moved);
+      steps.push({ step: 'horizon', withheldInFlight: inFlight, withheldHostedNeverRan: never, reverted: true, moved });
+      say('  horizon: REVERTED, the step moved ' + moved.join('; ') + '; the seed is put back as ' + c.row.file + ' measured it');
+      return null;
+    } finally {
+      if (existsSync(backup) && existsSync(seed)) rmSync(backup, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
+    }
+  };
   say('dead-share ' + toPosix(path.relative(BRAIN_ROOT, seed)) + ' at ' + ticks + ' ticks, censuses to ' + toPosix(path.relative(BRAIN_ROOT, vdir)) + ' tagged ' + tag);
-  let c = census(0);
+  let c = census();
   const first = c.row;
-  let rounds = 0, fixedPoint = false;
-  for (let r = 1; r <= maxRounds; r++) {
-    const h0 = manifest().hash;
-    const printed = run([EMITTER, '--wire', c.file, '--seed', seed, '--out', seed, '--name', name, ...hist], 'wire round ' + r);
-    for (const line of printed) if (line.trimStart().startsWith('history ')) say(line);
-    const m = manifest();
-    if (m.hash === h0) { fixedPoint = true; steps.push({ step: 'wire', round: r, portsWired: 0, fixedPoint: true }); say('  wire r' + r + ': nothing to wire, the fixed point'); break; }
-    const w = m.genome.wired;
-    steps.push({ step: 'wire', round: r, portsWired: w.portsWired, edgesBefore: w.edgesBefore, edgesAfter: w.edgesAfter, portsNoDonor: w.portsNoDonor, clockSkipped: w.clockSkipped });
-    say('  wire r' + r + ': wired ' + w.portsWired + ' ports, edges ' + w.edgesBefore + ' -> ' + w.edgesAfter + ' (no legal donor ' + w.portsNoDonor + ', clock skipped ' + w.clockSkipped + ')');
-    rounds++;
-    c = census(r);
+  let rounds = 0, fixedPoint = false, passes = 0, settled = false;
+  for (let pass = 1; pass <= maxPasses; pass++) {
+    passes = pass;
+    let changed = false, passRounds = 0;
+    fixedPoint = false;
+    for (let r = 1; r <= maxRounds; r++) {
+      const h0 = manifest().hash;
+      const printed = run([EMITTER, '--wire', c.file, '--seed', seed, '--out', seed, '--name', name, ...hist], 'wire round ' + r);
+      for (const line of printed) if (line.trimStart().startsWith('history ')) say(line);
+      const m = manifest();
+      if (m.hash === h0) { fixedPoint = true; steps.push({ step: 'wire', pass, round: r, portsWired: 0, fixedPoint: true }); say('  wire p' + pass + ' r' + r + ': nothing to wire, the fixed point'); break; }
+      const w = m.genome.wired;
+      steps.push({ step: 'wire', pass, round: r, portsWired: w.portsWired, cellsWired: w.cellsWired, edgesBefore: w.edgesBefore, edgesAfter: w.edgesAfter, portsNoDonor: w.portsNoDonor, clockSkipped: w.clockSkipped });
+      say('  wire p' + pass + ' r' + r + ': wired ' + w.portsWired + ' ports, edges ' + w.edgesBefore + ' -> ' + w.edgesAfter + ' (no legal donor ' + w.portsNoDonor + ', clock skipped ' + w.clockSkipped + ')');
+      rounds++; passRounds++; changed = true;
+      c = census();
+    }
+    // a seed whose last census leaves nothing for the prune to drop and that wired nothing is left as it
+    // is (a prune would only add a round to its record; rebuilt history, if any, the wire step wrote)
+    const drop = droppable(c.v);
+    if (drop > 0 || passRounds > 0) {
+      run([EMITTER, '--prune', c.file, '--seed', seed, '--out', seed, '--name', name, ...hist], 'prune');
+      const p = manifest().genome.pruned;
+      steps.push({ step: 'prune', pass, cells: p.cells, edges: p.edges });
+      say('  prune p' + pass + ': cells ' + p.cells.before + ' -> ' + p.cells.after + ', edges ' + p.edges.before + ' -> ' + p.edges.after + ' (never delivered ' + p.edges.neverDelivered + ')');
+      changed = true;
+      c = census();
+    } else {
+      steps.push({ step: 'prune', pass, skipped: 'the last census leaves nothing to drop (every cell ran, every edge delivered or was in flight at the end) and no round wired anything' });
+      say('  prune p' + pass + ': nothing to drop and nothing wired; the seed is left as it is');
+    }
+    if (horizon) { const h = horizonStep(c); if (h) { c = h; changed = true; } }
+    if (!changed) { settled = true; break; }
   }
-  // a seed whose last census leaves nothing for the prune to drop and that wired nothing is left as it
-  // is (a prune would only add a round to its record; rebuilt history, if any, the wire step wrote)
-  let last = c.row;
-  const drop = droppable(c.v);
-  if (drop > 0 || rounds > 0) {
-    run([EMITTER, '--prune', c.file, '--seed', seed, '--out', seed, '--name', name, ...hist], 'prune');
-    const p = manifest().genome.pruned;
-    steps.push({ step: 'prune', cells: p.cells, edges: p.edges });
-    say('  prune: cells ' + p.cells.before + ' -> ' + p.cells.after + ', edges ' + p.edges.before + ' -> ' + p.edges.after + ' (never delivered ' + p.edges.neverDelivered + ')');
-    last = census(rounds + 1).row;
-  } else {
-    steps.push({ step: 'prune', skipped: 'the last census leaves nothing to drop (every cell ran, every edge delivered or was in flight at the end) and no round wired anything' });
-    say('  prune: nothing to drop and nothing wired; the seed is left as it is');
-  }
+  const last = c.row;
   // the chain's own checks; what dead share is enough (0 for one seed, the gate's cap for another)
   // is the caller's bar, so deadShareZero is reported and not required
   const checks = {
-    fixedPoint,
+    fixedPoint, settled,
     deadShareDidNotRise: first.deadShare !== null && last.deadShare !== null && last.deadShare <= first.deadShare,
     hostedScoreDidNotFall: first.score !== null && last.score !== null && last.score >= first.score,
     algebraDidNotFall: last.algebra >= first.algebra, sequenceDidNotFall: last.sequence >= first.sequence,
+    ...(hz.ran ? { horizonChangedNothingInside: hz.reverted === 0 } : {}),
   };
   const ok = Object.values(checks).every(Boolean);
   const deadShareZero = last.deadShare === 0;
-  say('  dead share ' + first.deadShare + ' -> ' + last.deadShare + ', lines ' + first.lines + ' -> ' + last.lines + ', hosted score ' + first.score + ' -> ' + last.score + ', wire rounds ' + rounds + (fixedPoint ? ' to the fixed point' : ' (max rounds reached before the fixed point)') + ': ' + (ok ? 'OK' : 'NOT MET (' + Object.entries(checks).filter(([, v]) => !v).map(([k]) => k).join(', ') + ')'));
-  return { seed: toPosix(path.relative(BRAIN_ROOT, seed)), ticks, first, last, rounds, fixedPoint, deadShareZero, steps, censusFiles, checks, ok };
+  say('  dead share ' + first.deadShare + ' -> ' + last.deadShare + ', lines ' + first.lines + ' -> ' + last.lines + ', hosted score ' + first.score + ' -> ' + last.score + ', wire rounds ' + rounds + (fixedPoint ? ' to the fixed point' : ' (max rounds reached before the fixed point)') + ', passes ' + passes + (settled ? ' (the last changed nothing)' : ' (max passes reached, still changing)') + ', horizon ' + (hz.ran ? 'withheld ' + hz.withheld + ' in flight edges and ' + hz.hostedNeverRan.length + ' chosen cells that never ran, dropped ' + hz.edgesDropped + ' edges and ' + hz.cellsDropped + ' cells' + (hz.reverted ? ', reverted ' + hz.reverted : '') : 'not needed') + ': ' + (ok ? 'OK' : 'NOT MET (' + Object.entries(checks).filter(([, v]) => !v).map(([k]) => k).join(', ') + ')'));
+  return { seed: toPosix(path.relative(BRAIN_ROOT, seed)), ticks, first, last, rounds, passes, fixedPoint, settled, horizon: hz, deadShareZero, steps, censusFiles, derivedFiles, checks, ok };
+}
+
+/**
+ * The chain over every seed under a root (default organism/), one seed at a time, in name order. A
+ * seed is skipped by name when its manifest declares more than maxCells cells (the census bar's
+ * --max-cells) or when it is named in skip; nothing of a skipped seed is loaded.
+ * @param {{ root?, maxCells?, skip?: string[], say?, ...chainOpts }} [opts]
+ * @returns {{ rows: Array<object>, skipped: Array<{ seed, why }>, ok: boolean }}
+ */
+export function deadShareAll({ root = path.join(BRAIN_ROOT, 'organism'), maxCells = 1000, skip = [], say = () => {}, ...opts } = {}) {
+  const rows = [], skipped = [];
+  for (const d of readdirSync(root).sort()) {
+    const dir = path.join(root, d);
+    if (d.startsWith('.') || !existsSync(path.join(dir, 'index.mjs')) || !existsSync(path.join(dir, 'manifest.json'))) continue;
+    const seedName = toPosix(path.relative(BRAIN_ROOT, dir));
+    if (skip.includes(d) || skip.includes(seedName)) { skipped.push({ seed: seedName, why: 'named in --skip' }); say('skip ' + d + ': named in --skip'); continue; }
+    const cells = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8')).counts.cells;
+    if (cells > maxCells) { skipped.push({ seed: seedName, why: 'cells ' + cells + ' over --max-cells ' + maxCells }); say('skip ' + d + ': ' + cells + ' cells is over --max-cells ' + maxCells); continue; }
+    const t0 = Date.now();
+    try { rows.push({ ...deadShareChain(dir, { say, ...opts }), wallS: (Date.now() - t0) / 1000 }); } catch (err) { rows.push({ seed: seedName, error: err.message, ok: false, wallS: (Date.now() - t0) / 1000 }); say('  ' + seedName + ': ' + err.message); }
+  }
+  const zero = rows.filter((r) => r.deadShareZero).length;
+  say('dead-share --all: ' + rows.length + ' seeds chained, ' + rows.filter((r) => r.ok).length + ' OK, ' + zero + ' at dead share 0; skipped ' + skipped.length + (skipped.length ? ' (' + skipped.map((s) => s.seed + ': ' + s.why).join('; ') + ')' : ''));
+  return { rows, skipped, ok: rows.length > 0 && rows.every((r) => r.ok) };
 }
 
 export function deadShareMain(argv) {
   const opt = (k, d) => { const i = argv.indexOf('--' + k); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : d; };
-  const seedDir = opt('dead-share', '');
-  if (!seedDir) throw new Error('dead-share: name the seed (--dead-share organism/<seed>)');
   const say = argv.includes('--quiet') ? () => {} : (s) => process.stdout.write(s + '\n');
   const hist = opt('wire-history', '');
-  return deadShareChain(seedDir, {
+  const common = {
     ticks: Number(opt('ticks', 200)), tag: opt('tag', 'dead-share'), verdictDir: opt('verdict-dir', path.join(BRAIN_ROOT, 'bench', 'verdicts')),
-    maxRounds: Number(opt('max-rounds', 8)), wireHistory: hist ? hist.split(',') : null, say,
-  });
+    maxRounds: Number(opt('max-rounds', 8)), maxPasses: Number(opt('max-passes', 4)), horizon: !argv.includes('--keep-in-flight'), say,
+  };
+  if (argv.includes('--all')) {
+    if (hist) throw new Error('dead-share --all: --wire-history names one seed\'s censuses; give it with --dead-share organism/<seed>');
+    return deadShareAll({ ...common, maxCells: Number(opt('max-cells', 1000)), skip: String(opt('skip', '')).split(',').filter(Boolean) });
+  }
+  const seedDir = opt('dead-share', '');
+  if (!seedDir) throw new Error('dead-share: name the seed (--dead-share organism/<seed>) or --all');
+  const r = deadShareChain(seedDir, { ...common, wireHistory: hist ? hist.split(',') : null });
+  // --json <file>: the chain's whole result, for a caller that ran it as a child (bench/dead-share-all.mjs)
+  const json = opt('json', '');
+  if (json) { mkdirSync(path.dirname(path.resolve(BRAIN_ROOT, json)), { recursive: true }); writeFileSync(path.resolve(BRAIN_ROOT, json), JSON.stringify(r, null, 2) + '\n'); }
+  return r;
 }
 
 // ---------------------------------------------------------------- streaming (MANUAL P8, Board 12)

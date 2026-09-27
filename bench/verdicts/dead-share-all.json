@@ -1,0 +1,1342 @@
+{
+  "bench": "dead-share-all",
+  "at": "2026-09-27T19:07:15.389Z",
+  "command": "node tools/budget.mjs --ram-mb 4000 --disk-mb 400 --dir bench/verdicts -- node --max-old-space-size=4000 bench/dead-share-all.mjs",
+  "node": "v24.15.0",
+  "isTheBar": true,
+  "barMet": true,
+  "item": {
+    "board": 27,
+    "item": "dead-share-all",
+    "rule": "MANUAL P8: every counted seed under organism/ at dead share 0 (load bearing lines equal loaded lines)",
+    "landing": "one call per seed from bench/dead-share-all.mjs (genome/emit.mjs --dead-share organism/<seed>, a child under tools/budget.mjs); not genome/emit.mjs --dead-share --all"
+  },
+  "criteria": {
+    "censusAllBarMet": true,
+    "everyCountedSeedInTheTable": true,
+    "everyRowAtZeroInItsOwnCensus": true,
+    "everyRowAtZeroInTheBar": true,
+    "everyLandingOK": true,
+    "noRowRose": true,
+    "gateRowGreen": true
+  },
+  "split": {
+    "heldOut": "none",
+    "reason": "a census of the tree's own seeds: the claim is that each seed on disk, run, reads every loaded line load bearing; nothing is fitted on one seed and scored on another, so there is nothing to hold out. The rule itself was held out once already: Board 23 ran the chain on copies of the seeds it had not built on (bench/verdicts/dead-share.json heldOut)."
+  },
+  "control": {
+    "before": {
+      "file": "bench/verdicts/dead-share-all/census-all-before.json",
+      "at": "2026-09-27T14:42:52.617Z",
+      "command": "node --max-old-space-size=4000 tools/organism-census.mjs --all --ticks 200 --max-cells 1000",
+      "statement": "Census of 20 seeds under organism/ at 200 ticks each (4 skipped as over --max-cells): 2696 of 2922 declared cells ran and 4526 of 14655 declared edges delivered; 10168 of 20523 loaded lines are load bearing. Not the bar: the bar is organism/gen-0 at 200 ticks and organism/scale-52000 at 20.",
+      "totals": {
+        "seeds": 20,
+        "skipped": 4,
+        "cells": {
+          "declared": 2922,
+          "ran": 2696
+        },
+        "edges": {
+          "declared": 14655,
+          "delivered": 4526
+        },
+        "lines": {
+          "loaded": 20523,
+          "loadBearing": 10168
+        },
+        "deadShare": 0.504556,
+        "atZero": 1
+      },
+      "note": "the census of the same seeds before any landing of this item; every row's before is its row there, and each landing's first census is checked against it (chain.firstCensusMatchesBefore)"
+    },
+    "clone": {
+      "cited": "bench/verdicts/dead-share.json",
+      "at": "2026-09-27T14:43:55.931Z",
+      "barMet": true,
+      "clone": {
+        "sourceHash": "dc84e3d733a8732f109b370694c078d56a19cec9a21d41c4d8c879824ee4a9e3",
+        "copyHash": "dc84e3d733a8732f109b370694c078d56a19cec9a21d41c4d8c879824ee4a9e3",
+        "rounds": 0,
+        "fixedPoint": true,
+        "pruneSkipped": true,
+        "deadShare": [
+          0,
+          0
+        ],
+        "hashAfter": "dc84e3d733a8732f109b370694c078d56a19cec9a21d41c4d8c879824ee4a9e3",
+        "met": true
+      },
+      "note": "the clone control of test/dead-share-bar.mjs (a seed emitted again from its own load is the same seed, and the chain over it changes nothing), cited and not re-run"
+    }
+  },
+  "bar": {
+    "command": "node tools/budget.mjs --ram-mb 4000 --disk-mb 400 --dir bench/verdicts -- node --max-old-space-size=4000 tools/organism-census.mjs --all --ticks 200 --max-cells 1000",
+    "file": "bench/verdicts/census-all.json",
+    "at": "2026-09-27T19:07:14.802Z",
+    "barMet": true,
+    "statement": "Census of 20 seeds under organism/ at 200 ticks each: on 20 of 20 counted seeds load bearing lines equal loaded lines (dead share 0). Counted: gen-0-2-3-1-3, gen-0-3-3-2-4, gen-0-3-4-2-4, gen-0-4-4-2-4, gen-0-5-3-2-4, gen-0-5-3-3-4, gen-0-5-4-1-4, gen-0-5-4-2-4, gen-0-5-5-2-4, gen-0-6-4-2-4, gen-1-4-3-2-4, gen-1-4-3-3-4, gen-1-4-4-1-4, gen-1-4-4-2-4, gen-1-5-3-1-3, gen-1-5-3-1-4, gen-1-5-4-2-4, gen-1-6-4-1-4, gen-2-0-4-1-4, gen-2-4-3-3-4. Skipped (4): gen-0 (cells 40000 over --max-cells 1000), gen-0-pruned (cells 37533 over --max-cells 1000), scale-52000 (cells 416000 over --max-cells 1000), scale-52000-pruned (cells 411858 over --max-cells 1000). Totals over the counted seeds: 2858 of 2858 declared cells ran, 6839 of 6839 declared edges delivered, 16459 of 16459 loaded lines load bearing. The bar is met: barMet is true only when every counted seed is at dead share 0.",
+    "budget": "BUDGET done exit 0: wall 5.58 s, peak ram 364.9MB, peak dir 53.5MB, cpu 4.78 s, 3 samples",
+    "wallS": 6.168
+  },
+  "totals": {
+    "before": {
+      "seeds": 20,
+      "skipped": 4,
+      "cells": {
+        "declared": 2922,
+        "ran": 2696
+      },
+      "edges": {
+        "declared": 14655,
+        "delivered": 4526
+      },
+      "lines": {
+        "loaded": 20523,
+        "loadBearing": 10168
+      },
+      "deadShare": 0.504556,
+      "atZero": 1
+    },
+    "after": {
+      "seeds": 20,
+      "skipped": 4,
+      "cells": {
+        "declared": 2858,
+        "ran": 2858
+      },
+      "edges": {
+        "declared": 6839,
+        "delivered": 6839
+      },
+      "lines": {
+        "loaded": 16459,
+        "loadBearing": 16459
+      },
+      "deadShare": 0,
+      "atZero": 20
+    }
+  },
+  "table": [
+    {
+      "seed": "organism/gen-0-2-3-1-3",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-0-2-3-1-3.json)",
+      "lines": {
+        "before": 913,
+        "after": 765
+      },
+      "loadBearing": {
+        "before": 342,
+        "after": 765
+      },
+      "deadShare": {
+        "before": 0.625411,
+        "after": 0
+      },
+      "cellsWired": 21,
+      "cellsPruned": 3,
+      "edgesPruned": 449,
+      "cells": {
+        "ran": 141,
+        "declared": 141
+      },
+      "edges": {
+        "delivered": 190,
+        "declared": 190
+      },
+      "wallS": {
+        "landing": 4.262,
+        "census": 1.225,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 3,
+        "passes": 3,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 1,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 1,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.083334,
+          0.083334
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-0-2-3-1-3-dead-share-all-gen-0-2-3-1-3-partial.json",
+        "at": "2026-09-27T19:06:55.130Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 765,
+        "loadBearing": 765,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-0-3-3-2-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-0-3-3-2-4.json)",
+      "lines": {
+        "before": 772,
+        "after": 655
+      },
+      "loadBearing": {
+        "before": 397,
+        "after": 655
+      },
+      "deadShare": {
+        "before": 0.485751,
+        "after": 0
+      },
+      "cellsWired": 14,
+      "cellsPruned": 1,
+      "edgesPruned": 320,
+      "cells": {
+        "ran": 113,
+        "declared": 113
+      },
+      "edges": {
+        "delivered": 232,
+        "declared": 232
+      },
+      "wallS": {
+        "landing": 3.099,
+        "census": 1.325,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 1,
+        "passes": 2,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 1,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 1,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.166666,
+          0.166666
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-0-3-3-2-4-dead-share-all-gen-0-3-3-2-4-partial.json",
+        "at": "2026-09-27T19:06:55.235Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 655,
+        "loadBearing": 655,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-0-3-4-2-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-0-3-4-2-4.json)",
+      "lines": {
+        "before": 905,
+        "after": 777
+      },
+      "loadBearing": {
+        "before": 413,
+        "after": 777
+      },
+      "deadShare": {
+        "before": 0.543646,
+        "after": 0
+      },
+      "cellsWired": 35,
+      "cellsPruned": 1,
+      "edgesPruned": 361,
+      "cells": {
+        "ran": 173,
+        "declared": 173
+      },
+      "edges": {
+        "delivered": 284,
+        "declared": 284
+      },
+      "wallS": {
+        "landing": 3.341,
+        "census": 1.382,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 1,
+        "passes": 2,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 2,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 2,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.166666,
+          0.166666
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-0-3-4-2-4-dead-share-all-gen-0-3-4-2-4-partial.json",
+        "at": "2026-09-27T19:06:56.543Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 777,
+        "loadBearing": 777,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-0-4-4-2-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-0-4-4-2-4.json)",
+      "lines": {
+        "before": 524,
+        "after": 483
+      },
+      "loadBearing": {
+        "before": 249,
+        "after": 483
+      },
+      "deadShare": {
+        "before": 0.524809,
+        "after": 0
+      },
+      "cellsWired": 6,
+      "cellsPruned": 2,
+      "edgesPruned": 236,
+      "cells": {
+        "ran": 64,
+        "declared": 64
+      },
+      "edges": {
+        "delivered": 106,
+        "declared": 106
+      },
+      "wallS": {
+        "landing": 2.572,
+        "census": 1.212,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 1,
+        "passes": 2,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 2,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 2,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.138889,
+          0.138889
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-0-4-4-2-4-dead-share-all-gen-0-4-4-2-4-partial.json",
+        "at": "2026-09-27T19:06:56.456Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 483,
+        "loadBearing": 483,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-0-5-3-2-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-0-5-3-2-4.json)",
+      "lines": {
+        "before": 704,
+        "after": 644
+      },
+      "loadBearing": {
+        "before": 325,
+        "after": 644
+      },
+      "deadShare": {
+        "before": 0.538352,
+        "after": 0
+      },
+      "cellsWired": 21,
+      "cellsPruned": 2,
+      "edgesPruned": 338,
+      "cells": {
+        "ran": 124,
+        "declared": 124
+      },
+      "edges": {
+        "delivered": 116,
+        "declared": 116
+      },
+      "wallS": {
+        "landing": 3.419,
+        "census": 1.237,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 2,
+        "passes": 3,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 1,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 1,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.305555,
+          0.305555
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-0-5-3-2-4-dead-share-all-gen-0-5-3-2-4-partial.json",
+        "at": "2026-09-27T19:06:57.641Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 644,
+        "loadBearing": 644,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-0-5-3-3-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-0-5-3-3-4.json)",
+      "lines": {
+        "before": 1236,
+        "after": 1135
+      },
+      "loadBearing": {
+        "before": 745,
+        "after": 1135
+      },
+      "deadShare": {
+        "before": 0.397249,
+        "after": 0
+      },
+      "cellsWired": 28,
+      "cellsPruned": 3,
+      "edgesPruned": 318,
+      "cells": {
+        "ran": 157,
+        "declared": 157
+      },
+      "edges": {
+        "delivered": 655,
+        "declared": 655
+      },
+      "wallS": {
+        "landing": 5.364,
+        "census": 2.015,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 1,
+        "passes": 2,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 1,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 1,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.416666,
+          0.416666
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-0-5-3-3-4-dead-share-all-gen-0-5-3-3-4-partial.json",
+        "at": "2026-09-27T19:06:58.545Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 1135,
+        "loadBearing": 1135,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-0-5-4-1-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-0-5-4-1-4.json)",
+      "lines": {
+        "before": 838,
+        "after": 685
+      },
+      "loadBearing": {
+        "before": 363,
+        "after": 685
+      },
+      "deadShare": {
+        "before": 0.566826,
+        "after": 0
+      },
+      "cellsWired": 37,
+      "cellsPruned": 0,
+      "edgesPruned": 341,
+      "cells": {
+        "ran": 160,
+        "declared": 160
+      },
+      "edges": {
+        "delivered": 249,
+        "declared": 249
+      },
+      "wallS": {
+        "landing": 2.656,
+        "census": 1.458,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 1,
+        "passes": 2,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 0,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 0,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.305555,
+          0.305555
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-0-5-4-1-4-dead-share-all-gen-0-5-4-1-4-partial.json",
+        "at": "2026-09-27T19:06:59.144Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 685,
+        "loadBearing": 685,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-0-5-4-2-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-0-5-4-2-4.json)",
+      "lines": {
+        "before": 1912,
+        "after": 1020
+      },
+      "loadBearing": {
+        "before": 713,
+        "after": 1020
+      },
+      "deadShare": {
+        "before": 0.627092,
+        "after": 0
+      },
+      "cellsWired": 21,
+      "cellsPruned": 1,
+      "edgesPruned": 1103,
+      "cells": {
+        "ran": 227,
+        "declared": 227
+      },
+      "edges": {
+        "delivered": 464,
+        "declared": 464
+      },
+      "wallS": {
+        "landing": 3.052,
+        "census": 1.333,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 1,
+        "passes": 2,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 5,
+          "withheldHostedNeverRan": [
+            "co.0012.1"
+          ],
+          "edgesDropped": 5,
+          "cellsDropped": 1,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.138889,
+          0.138889
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-0-5-4-2-4-dead-share-all-gen-0-5-4-2-4-partial.json",
+        "at": "2026-09-27T19:06:59.877Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 1020,
+        "loadBearing": 1020,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-0-5-5-2-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-0-5-5-2-4.json)",
+      "lines": {
+        "before": 986,
+        "after": 785
+      },
+      "loadBearing": {
+        "before": 411,
+        "after": 785
+      },
+      "deadShare": {
+        "before": 0.583164,
+        "after": 0
+      },
+      "cellsWired": 21,
+      "cellsPruned": 0,
+      "edgesPruned": 439,
+      "cells": {
+        "ran": 110,
+        "declared": 110
+      },
+      "edges": {
+        "delivered": 338,
+        "declared": 338
+      },
+      "wallS": {
+        "landing": 3.887,
+        "census": 1.377,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 2,
+        "passes": 3,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 0,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 0,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0,
+          0
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-0-5-5-2-4-dead-share-all-gen-0-5-5-2-4-partial.json",
+        "at": "2026-09-27T19:07:00.554Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 785,
+        "loadBearing": 785,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-0-6-4-2-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-0-6-4-2-4.json)",
+      "lines": {
+        "before": 1265,
+        "after": 746
+      },
+      "loadBearing": {
+        "before": 445,
+        "after": 746
+      },
+      "deadShare": {
+        "before": 0.648221,
+        "after": 0
+      },
+      "cellsWired": 17,
+      "cellsPruned": 8,
+      "edgesPruned": 715,
+      "cells": {
+        "ran": 120,
+        "declared": 120
+      },
+      "edges": {
+        "delivered": 303,
+        "declared": 303
+      },
+      "wallS": {
+        "landing": 2.967,
+        "census": 1.238,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 1,
+        "passes": 2,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 3,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 3,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.083334,
+          0.083334
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-0-6-4-2-4-dead-share-all-gen-0-6-4-2-4-partial.json",
+        "at": "2026-09-27T19:07:01.110Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 746,
+        "loadBearing": 746,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-1-4-3-2-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-1-4-3-2-4.json)",
+      "lines": {
+        "before": 398,
+        "after": 433
+      },
+      "loadBearing": {
+        "before": 234,
+        "after": 433
+      },
+      "deadShare": {
+        "before": 0.41206,
+        "after": 0
+      },
+      "cellsWired": 15,
+      "cellsPruned": 2,
+      "edgesPruned": 123,
+      "cells": {
+        "ran": 64,
+        "declared": 64
+      },
+      "edges": {
+        "delivered": 103,
+        "declared": 103
+      },
+      "wallS": {
+        "landing": 2.035,
+        "census": 1.032,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 1,
+        "passes": 2,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 0,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 0,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.138889,
+          0.138889
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-1-4-3-2-4-dead-share-all-gen-1-4-3-2-4-partial.json",
+        "at": "2026-09-27T19:07:01.699Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 433,
+        "loadBearing": 433,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-1-4-3-3-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-1-4-3-3-4.json)",
+      "lines": {
+        "before": 1454,
+        "after": 1292
+      },
+      "loadBearing": {
+        "before": 880,
+        "after": 1292
+      },
+      "deadShare": {
+        "before": 0.394773,
+        "after": 0
+      },
+      "cellsWired": 40,
+      "cellsPruned": 3,
+      "edgesPruned": 349,
+      "cells": {
+        "ran": 189,
+        "declared": 189
+      },
+      "edges": {
+        "delivered": 827,
+        "declared": 827
+      },
+      "wallS": {
+        "landing": 4.562,
+        "census": 2.241,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 1,
+        "passes": 2,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 0,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 0,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.444445,
+          0.444445
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-1-4-3-3-4-dead-share-all-gen-1-4-3-3-4-partial.json",
+        "at": "2026-09-27T19:07:03.319Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 1292,
+        "loadBearing": 1292,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-1-4-4-1-4",
+      "landedBy": "Board 23 (bench/verdicts/dead-share.json), not landed again",
+      "lines": {
+        "before": 1299,
+        "after": 1299
+      },
+      "loadBearing": {
+        "before": 1299,
+        "after": 1299
+      },
+      "deadShare": {
+        "before": 0,
+        "after": 0
+      },
+      "cellsWired": null,
+      "cellsPruned": null,
+      "edgesPruned": null,
+      "cells": {
+        "ran": 254,
+        "declared": 254
+      },
+      "edges": {
+        "delivered": 701,
+        "declared": 701
+      },
+      "wallS": {
+        "landing": null,
+        "census": 1.845,
+        "landingRun": null
+      },
+      "chain": null,
+      "census": {
+        "file": "bench/verdicts/census-gen-1-4-4-1-4-dead-share-all-gen-1-4-4-1-4-partial.json",
+        "at": "2026-09-27T19:07:03.421Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 1299,
+        "loadBearing": 1299,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-1-4-4-2-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-1-4-4-2-4.json)",
+      "lines": {
+        "before": 1497,
+        "after": 853
+      },
+      "loadBearing": {
+        "before": 576,
+        "after": 853
+      },
+      "deadShare": {
+        "before": 0.61523,
+        "after": 0
+      },
+      "cellsWired": 15,
+      "cellsPruned": 8,
+      "edgesPruned": 838,
+      "cells": {
+        "ran": 120,
+        "declared": 120
+      },
+      "edges": {
+        "delivered": 410,
+        "declared": 410
+      },
+      "wallS": {
+        "landing": 3.276,
+        "census": 1.323,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 1,
+        "passes": 2,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 6,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 6,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.305555,
+          0.305555
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-1-4-4-2-4-dead-share-all-gen-1-4-4-2-4-partial.json",
+        "at": "2026-09-27T19:07:04.675Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 853,
+        "loadBearing": 853,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-1-5-3-1-3",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-1-5-3-1-3.json)",
+      "lines": {
+        "before": 1207,
+        "after": 879
+      },
+      "loadBearing": {
+        "before": 470,
+        "after": 879
+      },
+      "deadShare": {
+        "before": 0.610605,
+        "after": 0
+      },
+      "cellsWired": 30,
+      "cellsPruned": 9,
+      "edgesPruned": 612,
+      "cells": {
+        "ran": 186,
+        "declared": 186
+      },
+      "edges": {
+        "delivered": 266,
+        "declared": 266
+      },
+      "wallS": {
+        "landing": 4.622,
+        "census": 1.395,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 2,
+        "passes": 3,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 1,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 1,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.388889,
+          0.388889
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-1-5-3-1-3-dead-share-all-gen-1-5-3-1-3-partial.json",
+        "at": "2026-09-27T19:07:04.836Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 879,
+        "loadBearing": 879,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-1-5-3-1-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-1-5-3-1-4.json)",
+      "lines": {
+        "before": 704,
+        "after": 667
+      },
+      "loadBearing": {
+        "before": 346,
+        "after": 667
+      },
+      "deadShare": {
+        "before": 0.508523,
+        "after": 0
+      },
+      "cellsWired": 29,
+      "cellsPruned": 1,
+      "edgesPruned": 270,
+      "cells": {
+        "ran": 125,
+        "declared": 125
+      },
+      "edges": {
+        "delivered": 209,
+        "declared": 209
+      },
+      "wallS": {
+        "landing": 2.75,
+        "census": 1.229,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 1,
+        "passes": 2,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 4,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 4,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.194444,
+          0.194444
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-1-5-3-1-4-dead-share-all-gen-1-5-3-1-4-partial.json",
+        "at": "2026-09-27T19:07:05.886Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 667,
+        "loadBearing": 667,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-1-5-4-2-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-1-5-4-2-4.json)",
+      "lines": {
+        "before": 1258,
+        "after": 867
+      },
+      "loadBearing": {
+        "before": 559,
+        "after": 867
+      },
+      "deadShare": {
+        "before": 0.555644,
+        "after": 0
+      },
+      "cellsWired": 12,
+      "cellsPruned": 8,
+      "edgesPruned": 653,
+      "cells": {
+        "ran": 120,
+        "declared": 120
+      },
+      "edges": {
+        "delivered": 353,
+        "declared": 353
+      },
+      "wallS": {
+        "landing": 4.321,
+        "census": 1.269,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 2,
+        "passes": 3,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 3,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 3,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.472222,
+          0.472222
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-1-5-4-2-4-dead-share-all-gen-1-5-4-2-4-partial.json",
+        "at": "2026-09-27T19:07:06.108Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 867,
+        "loadBearing": 867,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-1-6-4-1-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-1-6-4-1-4.json)",
+      "lines": {
+        "before": 905,
+        "after": 829
+      },
+      "loadBearing": {
+        "before": 381,
+        "after": 829
+      },
+      "deadShare": {
+        "before": 0.579006,
+        "after": 0
+      },
+      "cellsWired": 36,
+      "cellsPruned": 4,
+      "edgesPruned": 363,
+      "cells": {
+        "ran": 170,
+        "declared": 170
+      },
+      "edges": {
+        "delivered": 291,
+        "declared": 291
+      },
+      "wallS": {
+        "landing": 4.681,
+        "census": 1.222,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 3,
+        "passes": 3,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 0,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 0,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.305555,
+          0.305555
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-1-6-4-1-4-dead-share-all-gen-1-6-4-1-4-partial.json",
+        "at": "2026-09-27T19:07:07.143Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 829,
+        "loadBearing": 829,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-2-0-4-1-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-2-0-4-1-4.json)",
+      "lines": {
+        "before": 510,
+        "after": 516
+      },
+      "loadBearing": {
+        "before": 253,
+        "after": 516
+      },
+      "deadShare": {
+        "before": 0.503922,
+        "after": 0
+      },
+      "cellsWired": 16,
+      "cellsPruned": 4,
+      "edgesPruned": 221,
+      "cells": {
+        "ran": 83,
+        "declared": 83
+      },
+      "edges": {
+        "delivered": 89,
+        "declared": 89
+      },
+      "wallS": {
+        "landing": 3.07,
+        "census": 0.89,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 2,
+        "passes": 3,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 0,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 0,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.222222,
+          0.222222
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-2-0-4-1-4-dead-share-all-gen-2-0-4-1-4-partial.json",
+        "at": "2026-09-27T19:07:07.110Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 516,
+        "loadBearing": 516,
+        "deadShare": 0
+      }
+    },
+    {
+      "seed": "organism/gen-2-4-3-3-4",
+      "landedBy": "this item (bench/verdicts/dead-share-all/chain-gen-2-4-3-3-4.json)",
+      "lines": {
+        "before": 1236,
+        "after": 1129
+      },
+      "loadBearing": {
+        "before": 767,
+        "after": 1129
+      },
+      "deadShare": {
+        "before": 0.37945,
+        "after": 0
+      },
+      "cellsWired": 30,
+      "cellsPruned": 4,
+      "edgesPruned": 322,
+      "cells": {
+        "ran": 158,
+        "declared": 158
+      },
+      "edges": {
+        "delivered": 653,
+        "declared": 653
+      },
+      "wallS": {
+        "landing": 5.32,
+        "census": 1.654,
+        "landingRun": "an earlier run of this bench (bench/verdicts/dead-share-all.json at 2026-09-27T18:56:35.467Z)"
+      },
+      "chain": {
+        "ok": true,
+        "rounds": 1,
+        "passes": 2,
+        "settled": true,
+        "horizon": {
+          "withheldInFlight": 1,
+          "withheldHostedNeverRan": [],
+          "edgesDropped": 1,
+          "cellsDropped": 0,
+          "reverted": 0
+        },
+        "firstCensusMatchesBefore": true,
+        "hostedScore": [
+          0.472222,
+          0.472222
+        ]
+      },
+      "census": {
+        "file": "bench/verdicts/census-gen-2-4-3-3-4-dead-share-all-gen-2-4-3-3-4-partial.json",
+        "at": "2026-09-27T19:07:08.677Z",
+        "hashIsTheSeed": true
+      },
+      "bar": {
+        "loaded": 1129,
+        "loadBearing": 1129,
+        "deadShare": 0
+      }
+    }
+  ],
+  "skipped": [
+    {
+      "seed": "organism/gen-0",
+      "cells": 40000,
+      "why": "40000 cells, over --max-cells 1000; the landing plus a census does not fit 15 minutes under the 4000 MB cap: its census alone under the 4000 MB cap was killed by the budget (ram 4002.742 MB over 4000) after 102.762 s, peak ram 4002.742 MB (bench/verdicts/dead-share-all/fit-gen-0.json)"
+    },
+    {
+      "seed": "organism/gen-0-pruned",
+      "cells": 37533,
+      "why": "37533 cells, over --max-cells 1000; the landing plus a census does not fit 15 minutes under the 4000 MB cap: its census alone under the 4000 MB cap was killed by the budget (ram 4032.699 MB over 4000) after 102.808 s, peak ram 4032.699 MB (bench/verdicts/dead-share-all/fit-gen-0-pruned.json)"
+    },
+    {
+      "seed": "organism/scale-52000",
+      "cells": 416000,
+      "why": "never loaded (the board's order: organism/scale-52000 is never loaded), 416000 cells"
+    },
+    {
+      "seed": "organism/scale-52000-pruned",
+      "cells": 411858,
+      "why": "never loaded (the board's order: organism/scale-52000 is never loaded), 411858 cells"
+    }
+  ],
+  "barSkipped": [
+    "organism/gen-0",
+    "organism/gen-0-pruned",
+    "organism/scale-52000",
+    "organism/scale-52000-pruned"
+  ],
+  "gate": {
+    "ok": true,
+    "line": "LOAD-BEARING GREEN: 24 of 24 emitted seeds under organism/ have a census on disk that still describes them (24 by manifest hash, 0 written after the manifest last changed; 24 from a bar census, 0 from a narrow run); dead share (1 - load-bearing lines / loaded lines) from 0.00% (gen-0-2-3-1-3) to 46.49% (gen-0); the daemon loads 0 of 24: the 137 modules its entries daemon/run.mjs, bin/serve.mjs, daemon/multiply.mjs can import (3 of 3 entries in this tree), read by the audit lexer (tools/boundary-audit.mjs lex), name no seed by path, and the 8 checkpoint metas under the state directories (kind none 2, whole 6) name no seed, so the 10 percent cap binds no seed; every seed: gen-0 46.49% (census.json), gen-0-2-3-1-3 0.00% (census-all.json), gen-0-3-3-2-4 0.00% (census-all.json), gen-0-3-4-2-4 0.00% (census-all.json), gen-0-4-4-2-4 0.00% (census-all.json), gen-0-5-3-2-4 0.00% (census-all.json), gen-0-5-3-3-4 0.00% (census-all.json), gen-0-5-4-1-4 0.00% (census-all.json), gen-0-5-4-2-4 0.00% (census-all.json), gen-0-5-5-2-4 0.00% (census-all.json), gen-0-6-4-2-4 0.00% (census-all.json), gen-0-pruned 0.00% (census-prune.json), gen-1-4-3-2-4 0.00% (census-all.json), gen-1-4-3-3-4 0.00% (census-all.json), gen-1-4-4-1-4 0.00% (census-all.json), gen-1-4-4-2-4 0.00% (census-all.json), gen-1-5-3-1-3 0.00% (census-all.json), gen-1-5-3-1-4 0.00% (census-all.json), gen-1-5-4-2-4 0.00% (census-all.json), gen-1-6-4-1-4 0.00% (census-all.json), gen-2-0-4-1-4 0.00% (census-all.json), gen-2-4-3-3-4 0.00% (census-all.json), scale-52000 0.55% (census-scale-static.json, static: a lower bound on the dead share), scale-52000-pruned 0.00% (census-scale-pruned.json, static: a lower bound on the dead share)"
+  },
+  "wroteMB": 1.71,
+  "over100MB": false,
+  "statement": "Every counted seed under organism/ at dead share 0: 20 of 20 counted seeds read load bearing lines equal to loaded lines in their own census (tools/organism-census.mjs --seed at 200 ticks, --no-knockout) and 20 of 20 in the bar census (census-all.json, barMet true). 19 were landed in place by this item, one call per seed from this bench (genome/emit.mjs --dead-share: census, wire to the fixed point, prune, the horizon step, repeated until a pass changes nothing), 19 of them OK by the chain's own checks (0 landed by this run, 19 by an earlier run of this bench and not landed again because the seed's manifest hash is the one its chain ended on, 0 of those with the child's exit recorded in a land-<seed>.json sidecar); organism/gen-1-4-4-1-4 was landed by Board 23 and censused again here. Totals over the counted seeds: before (bench/verdicts/dead-share-all/census-all-before.json, census-all at 2026-09-27T14:42:52.617Z) 10168 of 20523 loaded lines load bearing, 2696 of 2922 cells ran, 4526 of 14655 edges delivered; after 16459 of 16459, 2858 of 2858, 6839 of 6839. Skipped by name: organism/gen-0 (40000 cells), organism/gen-0-pruned (37533 cells), organism/scale-52000 (416000 cells), organism/scale-52000-pruned (411858 cells). Split: none held out (a census of the tree's own seeds). Controls: the before census, and the clone control of test/dead-share-bar.mjs cited from bench/verdicts/dead-share.json (at 2026-09-27T14:43:55.931Z, not re-run). The gate LOAD-BEARING row is GREEN. The bar is met."
+}

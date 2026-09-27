@@ -610,3 +610,46 @@ flight at the end, and what is hosted.
 - The chain's children run without NODE_OPTIONS, so a mutant loaded through the mutants file's
   hook reaches only the code the suite runs in its own process. The wire at the fixed point is
   tested in process as well for that reason.
+
+## Board 27, Every seed (dead-share-all): MET
+
+The order (MANUAL P8, his words): "make sure the 5 million organism lines u wrote arent empty code". The item: every counted seed under organism/ at dead share 0 (load bearing lines equal loaded lines), MODEL OFF.
+
+**Route.** One call per seed from `bench/dead-share-all.mjs` (a child `node genome/emit.mjs --dead-share organism/<seed> --json ...` under `tools/budget.mjs`, one at a time), not `genome/emit.mjs --dead-share --all`: the bench needs each landing's own record (`bench/verdicts/dead-share-all/chain-<seed>.json`) and its own wall, and a child per seed keeps one seed's heap from carrying into the next. Each landing is followed by that seed's own census (`tools/organism-census.mjs --seed organism/<seed> --ticks 200 --no-knockout --tag dead-share-all-<seed>`), at most two at a time; then the bar census `--all --ticks 200 --max-cells 1000`, then the gate LOAD-BEARING row built from `bench/gate.mjs`'s exports (the whole gate is never run). A re-run does not land a seed again whose manifest hash is the one its OK chain ended on; the row names the run that landed it (`wallS.landingRun`).
+
+**What was new.** Board 23's chain (census, wire to the fixed point, prune) left in-flight edges dead on most seeds: an edge whose delay outlasts the census's 200 ticks is "used" but never delivers. The horizon step withholds those edges in a derived census (`*-horizon-partial.json`, isTheBar false), prunes by it, and keeps the result only if nothing inside the census moved (`horizonMoved` empty: cells ran, edges delivered, hosted score, algebra and sequence correct, and now the roles a task could not fill); otherwise it restores the backup copy. On organism/gen-0-5-4-2-4 that was not enough: a cell the task host chose for a role that no census problem uses never ran, and the prune protects every chosen cell. The step now also withholds a chosen cell that never ran (`hostedNeverRan`, checked against the seed's own `c(` lines), and the missing-role check proves another cell took the role without changing any census number.
+
+**Measured** (bench/verdicts/dead-share-all.json, isTheBar true, barMet true; every number below is from that file or from the bar's printed statement):
+
+| seed | lines before -> after | load bearing before -> after | dead share before | cells wired | cells pruned | in flight withheld |
+|---|---|---|---|---|---|---|
+| gen-0-2-3-1-3 | 913 -> 765 | 342 -> 765 | 0.625411 | 21 | 3 | 1 |
+| gen-0-3-3-2-4 | 772 -> 655 | 397 -> 655 | 0.485751 | 14 | 1 | 1 |
+| gen-0-3-4-2-4 | 905 -> 777 | 413 -> 777 | 0.543646 | 35 | 1 | 2 |
+| gen-0-4-4-2-4 | 524 -> 483 | 249 -> 483 | 0.524809 | 6 | 2 | 2 |
+| gen-0-5-3-2-4 | 704 -> 644 | 325 -> 644 | 0.538352 | 21 | 2 | 1 |
+| gen-0-5-3-3-4 | 1236 -> 1135 | 745 -> 1135 | 0.397249 | 28 | 3 | 1 |
+| gen-0-5-4-1-4 | 838 -> 685 | 363 -> 685 | 0.566826 | 37 | 0 | 0 |
+| gen-0-5-4-2-4 | 1912 -> 1020 | 713 -> 1020 | 0.627092 | 21 | 1 | 5, and co.0012.1 (chosen, never ran) |
+| gen-0-5-5-2-4 | 986 -> 785 | 411 -> 785 | 0.583164 | 21 | 0 | 0 |
+| gen-0-6-4-2-4 | 1265 -> 746 | 445 -> 746 | 0.648221 | 17 | 8 | 3 |
+| gen-1-4-3-2-4 | 398 -> 433 | 234 -> 433 | 0.41206 | 15 | 2 | 0 |
+| gen-1-4-3-3-4 | 1454 -> 1292 | 880 -> 1292 | 0.394773 | 40 | 3 | 0 |
+| gen-1-4-4-1-4 | 1299 -> 1299 | 1299 -> 1299 | 0 | (Board 23) | (Board 23) | (Board 23) |
+| gen-1-4-4-2-4 | 1497 -> 853 | 576 -> 853 | 0.61523 | 15 | 8 | 6 |
+| gen-1-5-3-1-3 | 1207 -> 879 | 470 -> 879 | 0.610605 | 30 | 9 | 1 |
+| gen-1-5-3-1-4 | 704 -> 667 | 346 -> 667 | 0.508523 | 29 | 1 | 4 |
+| gen-1-5-4-2-4 | 1258 -> 867 | 559 -> 867 | 0.555644 | 12 | 8 | 3 |
+| gen-1-6-4-1-4 | 905 -> 829 | 381 -> 829 | 0.579006 | 36 | 4 | 0 |
+| gen-2-0-4-1-4 | 510 -> 516 | 253 -> 516 | 0.503922 | 16 | 4 | 0 |
+| gen-2-4-3-3-4 | 1236 -> 1129 | 767 -> 1129 | 0.37945 | 30 | 4 | 1 |
+
+Totals over the 20 counted seeds: before (census-all at 2026-09-27T14:42:52.617Z, copied to `bench/verdicts/dead-share-all/census-all-before.json`) 10168 of 20523 loaded lines load bearing, 2696 of 2922 cells ran, 4526 of 14655 edges delivered, 1 seed at 0; after 16459 of 16459, 2858 of 2858, 6839 of 6839, 20 at 0. The hosted score of every landed seed is the same after as before (chain.hostedScore). Two seeds grew (gen-1-4-3-2-4, gen-2-0-4-1-4): wiring added lines that then carried load.
+
+**Skipped by name.** organism/scale-52000 and organism/scale-52000-pruned are never loaded (the board's order). organism/gen-0 (40000 cells) and organism/gen-0-pruned (37533 cells): the census alone, the landing's first step, was killed by the budget at the 4000 MB cap (gen-0 peak 4002.742 MB after 102.762 s; gen-0-pruned peak 4032.699 MB after 102.808 s; `bench/verdicts/dead-share-all/fit-*.json`), so the landing plus a census cannot fit 15 minutes under the cap. They stay open.
+
+**The emitter.** `generations/epochs.mjs` lands each seed right after `emitElite` writes it (default on when the emit directory is the tree's organism/, off elsewhere, a function may stand in). `test/dead-share-all.test.mjs` proves on planted small seeds that the landing runs once per emit and each emitted seed comes out at dead share 0 in an in-process census at 200 ticks, with a control that does not land and stays above 0.
+
+**Controls.** The before census (every row's before is its row there; each landing's first census is checked against it). The clone control of `test/dead-share-bar.mjs`, cited from `bench/verdicts/dead-share.json` and not re-run. The planted-seed control in `test/dead-share-all.test.mjs`: the same seed with the horizon step off stays above 0 with the planted edge in flight.
+
+**Read before building.** Board 23's notes above and its chain in `genome/emit.mjs`; the census header in `tools/organism-census.mjs`; `tasks/host.mjs` (nameCells, how a role gets its cell); `tasks/algebra.mjs` (ALGEBRA_ROLES); the pruning literature on keeping only what the measured forward pass uses: Structurally Prune Anything (arXiv 2406.01072) and PMC11695354.

@@ -282,3 +282,46 @@ describe('prune by a static census', () => {
     assert.equal(JSON.parse(readFileSync(path.join(out, 'manifest.json'), 'utf8')).hash, res.hash);
   });
 });
+
+// Board 27 dead-share-all: tools/organism-census.mjs --all writes isTheBar true and a top-level barMet
+// from its own rows, true only when every counted seed reads load bearing lines equal to loaded lines.
+describe('census --all: the bar (censusAllVerdict)', () => {
+  let censusAllVerdict;
+  before(async () => { ({ censusAllVerdict } = await import('../tools/organism-census.mjs')); });
+  const row = (name, loaded, loadBearing) => ({ seed: 'organism/' + name, cells: { declared: 10, ran: 9 }, edges: { declared: 20, delivered: 18 }, lines: { loaded, loadBearing } });
+  const skip = (name) => ({ seed: 'organism/' + name, skipped: 'cells 40000 over --max-cells 1000' });
+
+  test('every counted seed at dead share 0: barMet true, the statement names the counted and the skipped seeds', () => {
+    const v = censusAllVerdict([row('a', 100, 100), skip('big'), row('b', 50, 50)], { ticks: 200, command: 'c', at: 'T' });
+    assert.equal(v.isTheBar, true);
+    assert.equal(v.barMet, true);
+    assert.deepEqual(v.counted, ['organism/a', 'organism/b']);
+    assert.deepEqual(v.skipped, [{ seed: 'organism/big', why: 'cells 40000 over --max-cells 1000' }]);
+    assert.equal(v.split.heldOut, 'none');
+    assert.ok(v.split.reason.length > 0);
+    assert.match(v.statement, /on 2 of 2 counted seeds load bearing lines equal loaded lines/);
+    assert.match(v.statement, /Counted: a, b\./);
+    assert.match(v.statement, /Skipped \(1\): big \(cells 40000 over --max-cells 1000\)/);
+    assert.deepEqual(v.totals.lines, { loaded: 150, loadBearing: 150 });
+    assert.equal(v.at, 'T');
+  });
+
+  test('one seed above 0 fails the bar and is named with its dead share', () => {
+    const v = censusAllVerdict([row('a', 100, 100), row('b', 1000, 999)], { ticks: 200, command: 'c' });
+    assert.equal(v.barMet, false);
+    assert.match(v.statement, /on 1 of 2 counted seeds/);
+    assert.match(v.statement, /above 0: b 0\.001 \(999 of 1000\)/);
+    assert.match(v.statement, /NOT met/);
+  });
+
+  test('a census that counted no seed meets nothing', () => {
+    const v = censusAllVerdict([skip('big'), skip('bigger')], { ticks: 200, command: 'c' });
+    assert.equal(v.barMet, false);
+    assert.deepEqual(v.counted, []);
+    assert.match(v.statement, /Counted: none/);
+    const empty = censusAllVerdict([], { ticks: 200, command: 'c' });
+    assert.equal(empty.barMet, false);
+    // a seed with no loaded line is not at dead share 0 (0 of 0 is not equality of anything)
+    assert.equal(censusAllVerdict([row('z', 0, 0)], { ticks: 200, command: 'c' }).barMet, false);
+  });
+});

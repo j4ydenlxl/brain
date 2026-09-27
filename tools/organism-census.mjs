@@ -49,7 +49,9 @@
 //
 // Verdicts: organism/gen-0 writes bench/verdicts/census.json, any other seed
 // census-<name>.json, isTheBar true. A run with --partial, --no-knockout or --tasks off writes
-// <that name>-partial.json with isTheBar false. --all writes census-all.json, isTheBar false.
+// <that name>-partial.json with isTheBar false. --all writes census-all.json, isTheBar true (Board 27
+// dead-share-all): its top-level barMet is true only when every seed it counted has load bearing lines
+// equal to loaded lines (dead share 0), and its statement names the seeds it counted and skipped.
 //
 // --progress N prints (and records in the verdict) the process memory every N ticks of every
 // arm, drive and tasks alike, plus the hypervector heap's slots in use and fallbacks. On
@@ -1842,6 +1844,31 @@ export function sampledVerdictOf(r, { command, staticVerdict = null, staticFile 
 }
 
 // ---------------------------------------------------------------- CLI
+/**
+ * The verdict of --all (Board 27 dead-share-all): isTheBar true, and a top-level barMet that is true
+ * only when every seed it counted reads load bearing lines equal to loaded lines (dead share 0). A
+ * census that counted no seed meets nothing. The statement names the seeds counted and skipped.
+ * @param {object[]} rows one per seed under organism/: a census row, or { seed, skipped }
+ * @param {{ ticks: number, command: string, at?: string }} o
+ */
+export function censusAllVerdict(rows, { ticks, command, at = new Date().toISOString() }) {
+  const done = rows.filter((x) => !x.skipped), skippedRows = rows.filter((x) => x.skipped);
+  const sum = (f) => done.reduce((a, x) => a + f(x), 0);
+  const name = (x) => x.seed.replace(/^organism\//, '');
+  const equal = done.filter((x) => x.lines.loaded > 0 && x.lines.loadBearing === x.lines.loaded), above = done.filter((x) => !equal.includes(x));
+  const barMet = done.length > 0 && above.length === 0;
+  const share = (x) => (x.lines.loaded > 0 ? Math.round((1 - x.lines.loadBearing / x.lines.loaded) * 1e6) / 1e6 : null);
+  return {
+    bench: 'census-all', at, command, node: process.version, isTheBar: true, barMet, ticks,
+    statement: 'Census of ' + done.length + ' seeds under organism/ at ' + ticks + ' ticks each: on ' + equal.length + ' of ' + done.length + ' counted seeds load bearing lines equal loaded lines (dead share 0)' + (above.length ? '; above 0: ' + above.map((x) => name(x) + ' ' + share(x) + ' (' + x.lines.loadBearing + ' of ' + x.lines.loaded + ')').join(', ') : '') + '. Counted: ' + (done.length ? done.map(name).join(', ') : 'none') + '. Skipped (' + skippedRows.length + '): ' + (skippedRows.length ? skippedRows.map((x) => name(x) + ' (' + x.skipped + ')').join(', ') : 'none') + '. Totals over the counted seeds: ' + sum((x) => x.cells.ran) + ' of ' + sum((x) => x.cells.declared) + ' declared cells ran, ' + sum((x) => x.edges.delivered) + ' of ' + sum((x) => x.edges.declared) + ' declared edges delivered, ' + sum((x) => x.lines.loadBearing) + ' of ' + sum((x) => x.lines.loaded) + ' loaded lines load bearing. The bar is ' + (barMet ? 'met' : 'NOT met') + ': barMet is true only when every counted seed is at dead share 0' + (done.length ? '' : ', and a census that counted no seed meets nothing') + '.',
+    split: { heldOut: 'none', reason: 'a census of the tree\'s own seeds: the claim is about these seeds as they are on disk (every loaded line of each is load bearing when that seed is run), not a rule expected to hold on seeds it was not fitted to, so there is nothing to hold out; each row is measured on its own seed, and no number is carried from one seed to another' },
+    control: 'none inside this run; bench/verdicts/dead-share-all.json sets these rows against the census of the same seeds before the landing',
+    counted: done.map((x) => x.seed), skipped: skippedRows.map((x) => ({ seed: x.seed, why: x.skipped })),
+    totals: { seeds: done.length, equal: equal.length, cells: { declared: sum((x) => x.cells.declared), ran: sum((x) => x.cells.ran) }, edges: { declared: sum((x) => x.edges.declared), delivered: sum((x) => x.edges.delivered) }, lines: { loaded: sum((x) => x.lines.loaded), loadBearing: sum((x) => x.lines.loadBearing) } },
+    seeds: rows,
+  };
+}
+
 async function main(argv) {
   const opt = (k, d) => { const i = argv.indexOf('--' + k); return i >= 0 && argv[i + 1] !== undefined && !argv[i + 1].startsWith('--') ? argv[i + 1] : d; };
   const has = (k) => argv.includes('--' + k);
@@ -1971,15 +1998,11 @@ async function main(argv) {
       const est = estimateWhole(dir, ratioOf(ratioFrom));
       if (est.refuse) { console.log('skip ' + d + ': ' + refusalText(est)); rows.push({ seed: 'organism/' + d, skipped: 'estimated ' + est.estimateMB + ' MB, over half of physical memory' }); continue; }
       const r = await censusSeed(dir, { ticks, tasks, knockout, knockoutSeed, knockoutTasks, kernels });
-      rows.push({ seed: 'organism/' + d, cells: r.full.cells, edges: r.full.edges, kinds: { present: r.full.kinds.present, ran: r.full.kinds.ran }, lines: { loaded: r.lines.loaded, declarations: r.lines.declarations, live: r.lines.liveDeclarations, loadBearing: r.lines.loadBearing }, tasks: r.full.tasks && r.full.tasks.score, knockoutDelta: r.knockouts.map((k) => ({ role: k.role, file: k.file, delta: k.delta })) });
+      const deadShare = r.lines.loaded > 0 ? Math.round((1 - r.lines.loadBearing / r.lines.loaded) * 1e6) / 1e6 : null;
+      rows.push({ seed: 'organism/' + d, manifestHash: r.live.manifestHash, cells: r.full.cells, edges: r.full.edges, kinds: { present: r.full.kinds.present, ran: r.full.kinds.ran }, lines: { loaded: r.lines.loaded, declarations: r.lines.declarations, live: r.lines.liveDeclarations, loadBearing: r.lines.loadBearing }, deadShare, tasks: r.full.tasks && r.full.tasks.score, knockoutDelta: r.knockouts.map((k) => ({ role: k.role, file: k.file, delta: k.delta })) });
+      console.log('seed organism/' + d + ': load bearing ' + r.lines.loadBearing + ' of ' + r.lines.loaded + ' loaded lines, dead share ' + deadShare + (r.lines.loadBearing === r.lines.loaded ? ' (equal)' : ' (NOT equal)'));
     }
-    const done = rows.filter((x) => !x.skipped);
-    const sum = (f) => done.reduce((a, x) => a + f(x), 0);
-    const v = {
-      bench: 'census-all', at: new Date().toISOString(), command, node: process.version, isTheBar: false, ticks,
-      statement: 'Census of ' + done.length + ' seeds under organism/ at ' + ticks + ' ticks each (' + (rows.length - done.length) + ' skipped as over --max-cells): ' + sum((x) => x.cells.ran) + ' of ' + sum((x) => x.cells.declared) + ' declared cells ran and ' + sum((x) => x.edges.delivered) + ' of ' + sum((x) => x.edges.declared) + ' declared edges delivered; ' + sum((x) => x.lines.loadBearing) + ' of ' + sum((x) => x.lines.loaded) + ' loaded lines are load bearing. Not the bar: the bar is organism/gen-0 at 200 ticks and organism/scale-52000 at 20.',
-      seeds: rows,
-    };
+    const v = censusAllVerdict(rows, { ticks, command });
     const file = path.join(outDir, 'census-all.json');
     writeFileSync(file, JSON.stringify(v, null, 2) + '\n');
     console.log(v.statement);

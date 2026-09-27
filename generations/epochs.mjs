@@ -25,7 +25,7 @@ import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { RNG } from '../core/rng.mjs';
-import { emitOrganism } from '../genome/emit.mjs';
+import { emitOrganism, deadShareChain } from '../genome/emit.mjs';
 import {
   defaultOrganismGenome, randomOrganismGenome, cloneOrganismGenome,
   organismGenomeToJSON, organismGenomeFromJSON,
@@ -160,13 +160,17 @@ export class Epochs {
    * @param {number} [opts.mutationRate] expected mutation operators applied per child
    * @param {boolean} [opts.emit] emit every elite that enters the archive as source
    * @param {number} [opts.emitLimit] stop emitting after this many elites
+   * @param {boolean|Function|null} [opts.deadShare] land each emitted seed at its dead share (genome/emit.mjs
+   *   deadShareChain, Board 27 dead-share-all) right after it is written; null (the default) lands only
+   *   when the emit directory is the tree's organism/, a function is called in place of the chain
+   * @param {string} [opts.deadShareDir] where the landing's censuses go, default bench/verdicts/dead-share-all/epochs
    * @param {object} [opts.scale] the box random generation zero genomes are drawn from
    */
   constructor({
     seed = 'epochs', popSize = 12, ticks = 160, windows = 4,
     checkpointEvery = 10, dir = null, secondsPerTick = DEFAULT_SECONDS_PER_TICK,
     crossoverRate = 0.35, mutationRate = 2, suites = true,
-    emit = false, emitLimit = 20, emitDir = null, releaseOrganisms = false,
+    emit = false, emitLimit = 20, emitDir = null, releaseOrganisms = false, deadShare = null, deadShareDir = null,
     scale = { majors: [16, 48], subcellsPerMajor: [3, 6], edgesPerCell: [4, 10], localWindow: [2, 8] },
   } = {}) {
     this.seed = String(seed);
@@ -187,6 +191,12 @@ export class Epochs {
     this.releaseOrganisms = releaseOrganisms;
     this.emit = emit;
     this.emitLimit = emitLimit;
+    // A seed the tree counts (organism/) is landed at its dead share the moment it is written, so no
+    // emitted seed waits for a later pass to stop being empty code; a seed emitted anywhere else is
+    // left as the genome built it unless the caller asks.
+    this.deadShare = deadShare === null ? this.emitDir === path.join(BRAIN_ROOT, 'organism') : deadShare;
+    this.deadShareDir = deadShareDir ? path.resolve(deadShareDir) : path.join(BRAIN_ROOT, 'bench', 'verdicts', 'dead-share-all', 'epochs');
+    this.landings = 0;
     this.scale = scale;
     this.rng = new RNG(this.seed + ':epochs');
     this.archive = new OrganismArchive();
@@ -365,6 +375,23 @@ export class Epochs {
       this.lastError = 'emit ' + name + ': ' + String(err && err.message ? err.message : err);
       return null;
     }
+    // the dead-share landing, once per seed written: wire, prune and census in place until the seed's
+    // own census counts every loaded line load bearing (or the chain says why not)
+    let landing = null;
+    if (this.deadShare) {
+      const t1 = process.hrtime.bigint();
+      this.landings++;
+      try {
+        const land = typeof this.deadShare === 'function' ? this.deadShare : deadShareChain;
+        const r = land(out.dir, { ticks: 200, tag: 'epochs', verdictDir: this.deadShareDir });
+        landing = { ok: r.ok, deadShare: { before: r.first.deadShare, after: r.last.deadShare }, lines: { before: r.first.lines, after: r.last.lines }, rounds: r.rounds, passes: r.passes, census: r.censusFiles[r.censusFiles.length - 1] };
+      } catch (err) {
+        this.stats.errors++;
+        this.lastError = 'dead-share ' + name + ': ' + String(err && err.message ? err.message : err);
+        landing = { ok: false, error: this.lastError };
+      }
+      landing.ms = Number(process.hrtime.bigint() - t1) / 1e6;
+    }
     this.stats.emitMs += Number(process.hrtime.bigint() - t0) / 1e6;
     this.archive.stats.emitted++;
     const rec = {
@@ -373,6 +400,13 @@ export class Epochs {
       lines: out.lines, files: out.files.length + 1,
       cells: out.counts.cells, edges: out.counts.edges, hash: out.hash,
     };
+    if (landing) {
+      // the record is the seed on disk after the landing, counted the way countEmittedLines counts it
+      const m = JSON.parse(readFileSync(path.join(out.dir, 'manifest.json'), 'utf8'));
+      let lines = 0, files = 0;
+      for (const fn of readdirSync(out.dir)) { lines += readFileSync(path.join(out.dir, fn), 'utf8').split('\n').length; files++; }
+      Object.assign(rec, { lines, files, cells: m.counts.cells, edges: m.counts.edges, hash: m.hash, deadShare: landing });
+    }
     // A re-emitted slot replaces its own record, so the line total is the tree on disk and
     // not a running sum of everything ever written to the same directory.
     const prev = this.emissions.findIndex((e) => e.key === rec.key && e.gen === rec.gen);

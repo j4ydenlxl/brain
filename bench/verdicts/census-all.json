@@ -1,11 +1,73 @@
 {
   "bench": "census-all",
-  "at": "2026-09-27T14:42:52.617Z",
+  "at": "2026-09-27T19:07:14.802Z",
   "command": "node --max-old-space-size=4000 tools/organism-census.mjs --all --ticks 200 --max-cells 1000",
   "node": "v24.15.0",
-  "isTheBar": false,
+  "isTheBar": true,
+  "barMet": true,
   "ticks": 200,
-  "statement": "Census of 20 seeds under organism/ at 200 ticks each (4 skipped as over --max-cells): 2696 of 2922 declared cells ran and 4526 of 14655 declared edges delivered; 10168 of 20523 loaded lines are load bearing. Not the bar: the bar is organism/gen-0 at 200 ticks and organism/scale-52000 at 20.",
+  "statement": "Census of 20 seeds under organism/ at 200 ticks each: on 20 of 20 counted seeds load bearing lines equal loaded lines (dead share 0). Counted: gen-0-2-3-1-3, gen-0-3-3-2-4, gen-0-3-4-2-4, gen-0-4-4-2-4, gen-0-5-3-2-4, gen-0-5-3-3-4, gen-0-5-4-1-4, gen-0-5-4-2-4, gen-0-5-5-2-4, gen-0-6-4-2-4, gen-1-4-3-2-4, gen-1-4-3-3-4, gen-1-4-4-1-4, gen-1-4-4-2-4, gen-1-5-3-1-3, gen-1-5-3-1-4, gen-1-5-4-2-4, gen-1-6-4-1-4, gen-2-0-4-1-4, gen-2-4-3-3-4. Skipped (4): gen-0 (cells 40000 over --max-cells 1000), gen-0-pruned (cells 37533 over --max-cells 1000), scale-52000 (cells 416000 over --max-cells 1000), scale-52000-pruned (cells 411858 over --max-cells 1000). Totals over the counted seeds: 2858 of 2858 declared cells ran, 6839 of 6839 declared edges delivered, 16459 of 16459 loaded lines load bearing. The bar is met: barMet is true only when every counted seed is at dead share 0.",
+  "split": {
+    "heldOut": "none",
+    "reason": "a census of the tree's own seeds: the claim is about these seeds as they are on disk (every loaded line of each is load bearing when that seed is run), not a rule expected to hold on seeds it was not fitted to, so there is nothing to hold out; each row is measured on its own seed, and no number is carried from one seed to another"
+  },
+  "control": "none inside this run; bench/verdicts/dead-share-all.json sets these rows against the census of the same seeds before the landing",
+  "counted": [
+    "organism/gen-0-2-3-1-3",
+    "organism/gen-0-3-3-2-4",
+    "organism/gen-0-3-4-2-4",
+    "organism/gen-0-4-4-2-4",
+    "organism/gen-0-5-3-2-4",
+    "organism/gen-0-5-3-3-4",
+    "organism/gen-0-5-4-1-4",
+    "organism/gen-0-5-4-2-4",
+    "organism/gen-0-5-5-2-4",
+    "organism/gen-0-6-4-2-4",
+    "organism/gen-1-4-3-2-4",
+    "organism/gen-1-4-3-3-4",
+    "organism/gen-1-4-4-1-4",
+    "organism/gen-1-4-4-2-4",
+    "organism/gen-1-5-3-1-3",
+    "organism/gen-1-5-3-1-4",
+    "organism/gen-1-5-4-2-4",
+    "organism/gen-1-6-4-1-4",
+    "organism/gen-2-0-4-1-4",
+    "organism/gen-2-4-3-3-4"
+  ],
+  "skipped": [
+    {
+      "seed": "organism/gen-0",
+      "why": "cells 40000 over --max-cells 1000"
+    },
+    {
+      "seed": "organism/gen-0-pruned",
+      "why": "cells 37533 over --max-cells 1000"
+    },
+    {
+      "seed": "organism/scale-52000",
+      "why": "cells 416000 over --max-cells 1000"
+    },
+    {
+      "seed": "organism/scale-52000-pruned",
+      "why": "cells 411858 over --max-cells 1000"
+    }
+  ],
+  "totals": {
+    "seeds": 20,
+    "equal": 20,
+    "cells": {
+      "declared": 2858,
+      "ran": 2858
+    },
+    "edges": {
+      "declared": 6839,
+      "delivered": 6839
+    },
+    "lines": {
+      "loaded": 16459,
+      "loadBearing": 16459
+    }
+  },
   "seeds": [
     {
       "seed": "organism/gen-0",
@@ -13,48 +75,50 @@
     },
     {
       "seed": "organism/gen-0-2-3-1-3",
+      "manifestHash": "114de0e01e183d4e93a7cb781df9b051ccccf02a37b48cb0d1ee6caeb789a656",
       "cells": {
-        "declared": 144,
-        "ran": 126,
-        "ranDrive": 125,
+        "declared": 141,
+        "ran": 141,
+        "ranDrive": 140,
         "ranOnlyInTasks": 1,
-        "fired": 13,
+        "fired": 37,
         "errored": 0,
-        "neverRan": 18,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 18,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 617,
-        "delivered": 64,
-        "deliveredDrive": 60,
-        "notDelivered": 553,
-        "srcNeverFired": 552,
+        "declared": 190,
+        "delivered": 190,
+        "deliveredDrive": 186,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
         "srcFiredOtherPort": 0,
-        "inFlightAtEnd": 1
+        "inFlightAtEnd": 0
       },
       "kinds": {
         "present": 40,
-        "ran": 39
+        "ran": 40
       },
       "lines": {
-        "loaded": 913,
-        "declarations": 816,
-        "live": 245,
-        "loadBearing": 342
+        "loaded": 765,
+        "declarations": 386,
+        "live": 386,
+        "loadBearing": 765
       },
+      "deadShare": 0,
       "tasks": 0.083334,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -916,
-            "driveSignals": -577,
-            "driveDelivered": -3858,
-            "cellsRan": -6,
-            "edgesDelivered": -64,
+            "driveRuns": -3485,
+            "driveSignals": -4798,
+            "driveDelivered": -21873,
+            "cellsRan": -21,
+            "edgesDelivered": -190,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -64,11 +128,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -4020,
-            "driveSignals": -982,
-            "driveDelivered": -3858,
-            "cellsRan": -126,
-            "edgesDelivered": -64,
+            "driveRuns": -6589,
+            "driveSignals": -5203,
+            "driveDelivered": -21873,
+            "cellsRan": -141,
+            "edgesDelivered": -190,
             "taskScore": -0.083334,
             "algebraCorrect": -6,
             "sequenceCorrect": 0
@@ -78,48 +142,50 @@
     },
     {
       "seed": "organism/gen-0-3-3-2-4",
+      "manifestHash": "5f59e4e14a81a3f0c2e9238f13d8013416d11e9b98cd2c2b5731e783198a854b",
       "cells": {
-        "declared": 114,
-        "ran": 112,
-        "ranDrive": 111,
+        "declared": 113,
+        "ran": 113,
+        "ranDrive": 112,
         "ranOnlyInTasks": 1,
-        "fired": 32,
+        "fired": 46,
         "errored": 0,
-        "neverRan": 2,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 2,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 535,
-        "delivered": 162,
-        "deliveredDrive": 151,
-        "notDelivered": 373,
-        "srcNeverFired": 367,
-        "srcFiredOtherPort": 5,
-        "inFlightAtEnd": 1
+        "declared": 232,
+        "delivered": 232,
+        "deliveredDrive": 220,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
+        "srcFiredOtherPort": 0,
+        "inFlightAtEnd": 0
       },
       "kinds": {
         "present": 35,
         "ran": 35
       },
       "lines": {
-        "loaded": 772,
-        "declarations": 675,
-        "live": 300,
-        "loadBearing": 397
+        "loaded": 655,
+        "declarations": 371,
+        "live": 371,
+        "loadBearing": 655
       },
+      "deadShare": 0,
       "tasks": 0.166666,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -1959,
-            "driveSignals": -4318,
-            "driveDelivered": -20042,
-            "cellsRan": -11,
-            "edgesDelivered": -162,
+            "driveRuns": -2180,
+            "driveSignals": -6758,
+            "driveDelivered": -31133,
+            "cellsRan": -12,
+            "edgesDelivered": -232,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -129,11 +195,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -8825,
-            "driveSignals": -4723,
-            "driveDelivered": -20042,
-            "cellsRan": -112,
-            "edgesDelivered": -162,
+            "driveRuns": -9046,
+            "driveSignals": -7163,
+            "driveDelivered": -31133,
+            "cellsRan": -113,
+            "edgesDelivered": -232,
             "taskScore": -0.166666,
             "algebraCorrect": -12,
             "sequenceCorrect": 0
@@ -143,48 +209,50 @@
     },
     {
       "seed": "organism/gen-0-3-4-2-4",
+      "manifestHash": "a2237da799cf009be6615312174a1c029cfdce92e5b2ac3ff4e4b88b408d151a",
       "cells": {
-        "declared": 174,
-        "ran": 159,
-        "ranDrive": 158,
-        "ranOnlyInTasks": 1,
-        "fired": 30,
+        "declared": 173,
+        "ran": 173,
+        "ranDrive": 171,
+        "ranOnlyInTasks": 2,
+        "fired": 62,
         "errored": 0,
-        "neverRan": 15,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 15,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 598,
-        "delivered": 121,
-        "deliveredDrive": 112,
-        "notDelivered": 477,
-        "srcNeverFired": 470,
-        "srcFiredOtherPort": 5,
-        "inFlightAtEnd": 2
+        "declared": 284,
+        "delivered": 284,
+        "deliveredDrive": 269,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
+        "srcFiredOtherPort": 0,
+        "inFlightAtEnd": 0
       },
       "kinds": {
         "present": 42,
-        "ran": 41
+        "ran": 42
       },
       "lines": {
-        "loaded": 905,
-        "declarations": 808,
-        "live": 316,
-        "loadBearing": 413
+        "loaded": 777,
+        "declarations": 493,
+        "live": 493,
+        "loadBearing": 777
       },
+      "deadShare": 0,
       "tasks": 0.166666,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -1903,
-            "driveSignals": -3629,
-            "driveDelivered": -11331,
-            "cellsRan": -11,
-            "edgesDelivered": -121,
+            "driveRuns": -4125,
+            "driveSignals": -9671,
+            "driveDelivered": -34754,
+            "cellsRan": -25,
+            "edgesDelivered": -284,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -194,11 +262,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -8616,
-            "driveSignals": -4035,
-            "driveDelivered": -11331,
-            "cellsRan": -159,
-            "edgesDelivered": -121,
+            "driveRuns": -10838,
+            "driveSignals": -10077,
+            "driveDelivered": -34754,
+            "cellsRan": -173,
+            "edgesDelivered": -284,
             "taskScore": -0.166666,
             "algebraCorrect": -12,
             "sequenceCorrect": 0
@@ -208,48 +276,50 @@
     },
     {
       "seed": "organism/gen-0-4-4-2-4",
+      "manifestHash": "1e9b5b77088d23c1632900ee1c13438d998083447167ee112d56e6d12ac88773",
       "cells": {
-        "declared": 66,
-        "ran": 60,
-        "ranDrive": 59,
+        "declared": 64,
+        "ran": 64,
+        "ranDrive": 63,
         "ranOnlyInTasks": 1,
-        "fired": 16,
+        "fired": 22,
         "errored": 0,
-        "neverRan": 6,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 6,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 332,
-        "delivered": 63,
-        "deliveredDrive": 57,
-        "notDelivered": 269,
-        "srcNeverFired": 256,
-        "srcFiredOtherPort": 11,
-        "inFlightAtEnd": 2
+        "declared": 106,
+        "delivered": 106,
+        "deliveredDrive": 100,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
+        "srcFiredOtherPort": 0,
+        "inFlightAtEnd": 0
       },
       "kinds": {
         "present": 29,
         "ran": 29
       },
       "lines": {
-        "loaded": 524,
-        "declarations": 427,
-        "live": 152,
-        "loadBearing": 249
+        "loaded": 483,
+        "declarations": 199,
+        "live": 199,
+        "loadBearing": 483
       },
+      "deadShare": 0,
       "tasks": 0.138889,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -847,
-            "driveSignals": -1296,
-            "driveDelivered": -5640,
-            "cellsRan": -6,
-            "edgesDelivered": -63,
+            "driveRuns": -1555,
+            "driveSignals": -2374,
+            "driveDelivered": -12570,
+            "cellsRan": -10,
+            "edgesDelivered": -106,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -259,11 +329,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -3686,
-            "driveSignals": -1499,
-            "driveDelivered": -5640,
-            "cellsRan": -60,
-            "edgesDelivered": -63,
+            "driveRuns": -4394,
+            "driveSignals": -2577,
+            "driveDelivered": -12570,
+            "cellsRan": -64,
+            "edgesDelivered": -106,
             "taskScore": -0.138889,
             "algebraCorrect": -10,
             "sequenceCorrect": 0
@@ -273,48 +343,50 @@
     },
     {
       "seed": "organism/gen-0-5-3-2-4",
+      "manifestHash": "505e1499efee5f3d442391e2d37cd644cbc9ea3ba20a664b364ac3395b289d3a",
       "cells": {
-        "declared": 126,
-        "ran": 116,
-        "ranDrive": 116,
+        "declared": 124,
+        "ran": 124,
+        "ranDrive": 124,
         "ranOnlyInTasks": 0,
-        "fired": 21,
+        "fired": 32,
         "errored": 0,
-        "neverRan": 10,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 10,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 432,
-        "delivered": 63,
-        "deliveredDrive": 59,
-        "notDelivered": 369,
-        "srcNeverFired": 364,
-        "srcFiredOtherPort": 4,
-        "inFlightAtEnd": 1
+        "declared": 116,
+        "delivered": 116,
+        "deliveredDrive": 105,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
+        "srcFiredOtherPort": 0,
+        "inFlightAtEnd": 0
       },
       "kinds": {
-        "present": 36,
+        "present": 35,
         "ran": 35
       },
       "lines": {
-        "loaded": 704,
-        "declarations": 607,
-        "live": 228,
-        "loadBearing": 325
+        "loaded": 644,
+        "declarations": 289,
+        "live": 289,
+        "loadBearing": 644
       },
+      "deadShare": 0,
       "tasks": 0.305555,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -1150,
-            "driveSignals": -2173,
-            "driveDelivered": -7303,
-            "cellsRan": -6,
-            "edgesDelivered": -63,
+            "driveRuns": -2489,
+            "driveSignals": -4028,
+            "driveDelivered": -15481,
+            "cellsRan": -14,
+            "edgesDelivered": -116,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -324,11 +396,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -7030,
-            "driveSignals": -2778,
-            "driveDelivered": -7303,
-            "cellsRan": -116,
-            "edgesDelivered": -63,
+            "driveRuns": -8369,
+            "driveSignals": -4633,
+            "driveDelivered": -15481,
+            "cellsRan": -124,
+            "edgesDelivered": -116,
             "taskScore": -0.305555,
             "algebraCorrect": -22,
             "sequenceCorrect": 0
@@ -338,48 +410,50 @@
     },
     {
       "seed": "organism/gen-0-5-3-3-4",
+      "manifestHash": "4b83b0cedc996e5864838092e11f2b5c3a1644eaff8c38696bcc86bebcd470b7",
       "cells": {
-        "declared": 160,
-        "ran": 148,
-        "ranDrive": 147,
+        "declared": 157,
+        "ran": 157,
+        "ranDrive": 156,
         "ranOnlyInTasks": 1,
-        "fired": 80,
+        "fired": 107,
         "errored": 0,
-        "neverRan": 12,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 12,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 940,
-        "delivered": 461,
-        "deliveredDrive": 439,
-        "notDelivered": 479,
-        "srcNeverFired": 440,
-        "srcFiredOtherPort": 38,
-        "inFlightAtEnd": 1
+        "declared": 655,
+        "delivered": 655,
+        "deliveredDrive": 633,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
+        "srcFiredOtherPort": 0,
+        "inFlightAtEnd": 0
       },
       "kinds": {
-        "present": 47,
+        "present": 46,
         "ran": 46
       },
       "lines": {
-        "loaded": 1236,
-        "declarations": 1139,
-        "live": 648,
-        "loadBearing": 745
+        "loaded": 1135,
+        "declarations": 851,
+        "live": 851,
+        "loadBearing": 1135
       },
+      "deadShare": 0,
       "tasks": 0.416666,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -15591,
-            "driveSignals": -13412,
-            "driveDelivered": -67773,
-            "cellsRan": -87,
-            "edgesDelivered": -461,
+            "driveRuns": -17252,
+            "driveSignals": -18636,
+            "driveDelivered": -101694,
+            "cellsRan": -96,
+            "edgesDelivered": -655,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -389,11 +463,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -19231,
-            "driveSignals": -14018,
-            "driveDelivered": -67773,
-            "cellsRan": -148,
-            "edgesDelivered": -461,
+            "driveRuns": -20892,
+            "driveSignals": -19242,
+            "driveDelivered": -101694,
+            "cellsRan": -157,
+            "edgesDelivered": -655,
             "taskScore": -0.416666,
             "algebraCorrect": -30,
             "sequenceCorrect": 0
@@ -403,24 +477,25 @@
     },
     {
       "seed": "organism/gen-0-5-4-1-4",
+      "manifestHash": "ca4814fa1d8a217c6a5a91d4052e0ff0e7e32edbcd36be21bbaea87c12a69590",
       "cells": {
         "declared": 160,
-        "ran": 148,
-        "ranDrive": 148,
+        "ran": 160,
+        "ranDrive": 160,
         "ranOnlyInTasks": 0,
-        "fired": 21,
+        "fired": 55,
         "errored": 0,
-        "neverRan": 12,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 12,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 542,
-        "delivered": 79,
-        "deliveredDrive": 76,
-        "notDelivered": 463,
-        "srcNeverFired": 463,
+        "declared": 249,
+        "delivered": 249,
+        "deliveredDrive": 246,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
         "srcFiredOtherPort": 0,
         "inFlightAtEnd": 0
       },
@@ -429,22 +504,23 @@
         "ran": 40
       },
       "lines": {
-        "loaded": 838,
-        "declarations": 741,
-        "live": 266,
-        "loadBearing": 363
+        "loaded": 685,
+        "declarations": 448,
+        "live": 448,
+        "loadBearing": 685
       },
+      "deadShare": 0,
       "tasks": 0.305555,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -648,
-            "driveSignals": -1045,
-            "driveDelivered": -5757,
-            "cellsRan": -7,
-            "edgesDelivered": -79,
+            "driveRuns": -2846,
+            "driveSignals": -7388,
+            "driveDelivered": -34885,
+            "cellsRan": -19,
+            "edgesDelivered": -249,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -454,11 +530,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -7753,
-            "driveSignals": -1652,
-            "driveDelivered": -5757,
-            "cellsRan": -148,
-            "edgesDelivered": -79,
+            "driveRuns": -9951,
+            "driveSignals": -7995,
+            "driveDelivered": -34885,
+            "cellsRan": -160,
+            "edgesDelivered": -249,
             "taskScore": -0.305555,
             "algebraCorrect": -22,
             "sequenceCorrect": 0
@@ -468,48 +544,50 @@
     },
     {
       "seed": "organism/gen-0-5-4-2-4",
+      "manifestHash": "a1f3119a41bbf22626774c2879c9963ce50b41dc3416084f6ff37605aaae8baf",
       "cells": {
-        "declared": 228,
-        "ran": 216,
-        "ranDrive": 213,
-        "ranOnlyInTasks": 3,
-        "fired": 54,
+        "declared": 227,
+        "ran": 227,
+        "ranDrive": 225,
+        "ranOnlyInTasks": 2,
+        "fired": 71,
         "errored": 0,
-        "neverRan": 12,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 12,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 1542,
-        "delivered": 355,
-        "deliveredDrive": 334,
-        "notDelivered": 1187,
-        "srcNeverFired": 1157,
-        "srcFiredOtherPort": 23,
-        "inFlightAtEnd": 7
+        "declared": 464,
+        "delivered": 464,
+        "deliveredDrive": 442,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
+        "srcFiredOtherPort": 0,
+        "inFlightAtEnd": 0
       },
       "kinds": {
         "present": 42,
         "ran": 42
       },
       "lines": {
-        "loaded": 1912,
-        "declarations": 1815,
-        "live": 616,
-        "loadBearing": 713
+        "loaded": 1020,
+        "declarations": 736,
+        "live": 736,
+        "loadBearing": 1020
       },
+      "deadShare": 0,
       "tasks": 0.138889,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -2649,
-            "driveSignals": -5125,
-            "driveDelivered": -29532,
-            "cellsRan": -25,
-            "edgesDelivered": -355,
+            "driveRuns": -4101,
+            "driveSignals": -7689,
+            "driveDelivered": -41789,
+            "cellsRan": -36,
+            "edgesDelivered": -464,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -519,11 +597,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -9007,
-            "driveSignals": -5739,
-            "driveDelivered": -29532,
-            "cellsRan": -216,
-            "edgesDelivered": -355,
+            "driveRuns": -10459,
+            "driveSignals": -8303,
+            "driveDelivered": -41789,
+            "cellsRan": -227,
+            "edgesDelivered": -464,
             "taskScore": -0.138889,
             "algebraCorrect": -10,
             "sequenceCorrect": 0
@@ -533,48 +611,50 @@
     },
     {
       "seed": "organism/gen-0-5-5-2-4",
+      "manifestHash": "385140d1883fdc1601fd472d850db62d3d8924b8f501c37b4ff1eb784087de27",
       "cells": {
         "declared": 110,
-        "ran": 104,
-        "ranDrive": 104,
+        "ran": 110,
+        "ranDrive": 110,
         "ranOnlyInTasks": 0,
-        "fired": 24,
+        "fired": 44,
         "errored": 0,
-        "neverRan": 6,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 6,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 750,
-        "delivered": 181,
-        "deliveredDrive": 181,
-        "notDelivered": 569,
-        "srcNeverFired": 562,
-        "srcFiredOtherPort": 7,
+        "declared": 338,
+        "delivered": 338,
+        "deliveredDrive": 338,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
+        "srcFiredOtherPort": 0,
         "inFlightAtEnd": 0
       },
       "kinds": {
         "present": 43,
-        "ran": 41
+        "ran": 43
       },
       "lines": {
-        "loaded": 986,
-        "declarations": 889,
-        "live": 314,
-        "loadBearing": 411
+        "loaded": 785,
+        "declarations": 477,
+        "live": 477,
+        "loadBearing": 785
       },
+      "deadShare": 0,
       "tasks": 0,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -1571,
-            "driveSignals": -2718,
-            "driveDelivered": -20926,
-            "cellsRan": -9,
-            "edgesDelivered": -181,
+            "driveRuns": -2697,
+            "driveSignals": -6607,
+            "driveDelivered": -46652,
+            "cellsRan": -15,
+            "edgesDelivered": -338,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -584,11 +664,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -8034,
-            "driveSignals": -3523,
-            "driveDelivered": -20926,
-            "cellsRan": -104,
-            "edgesDelivered": -181,
+            "driveRuns": -9160,
+            "driveSignals": -7412,
+            "driveDelivered": -46652,
+            "cellsRan": -110,
+            "edgesDelivered": -338,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -598,48 +678,50 @@
     },
     {
       "seed": "organism/gen-0-6-4-2-4",
+      "manifestHash": "70fb76c58cd7de33401639d88d6cc3630cc420040c1dd7c05235d69321e9ea2d",
       "cells": {
-        "declared": 128,
-        "ran": 111,
-        "ranDrive": 111,
+        "declared": 120,
+        "ran": 120,
+        "ranDrive": 120,
         "ranOnlyInTasks": 0,
-        "fired": 28,
+        "fired": 38,
         "errored": 0,
-        "neverRan": 17,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 17,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 1001,
-        "delivered": 198,
-        "deliveredDrive": 192,
-        "notDelivered": 803,
-        "srcNeverFired": 786,
-        "srcFiredOtherPort": 14,
-        "inFlightAtEnd": 3
+        "declared": 303,
+        "delivered": 303,
+        "deliveredDrive": 297,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
+        "srcFiredOtherPort": 0,
+        "inFlightAtEnd": 0
       },
       "kinds": {
-        "present": 40,
+        "present": 39,
         "ran": 39
       },
       "lines": {
-        "loaded": 1265,
-        "declarations": 1168,
-        "live": 348,
-        "loadBearing": 445
+        "loaded": 746,
+        "declarations": 462,
+        "live": 462,
+        "loadBearing": 746
       },
+      "deadShare": 0,
       "tasks": 0.083334,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -2021,
-            "driveSignals": -3104,
-            "driveDelivered": -20653,
-            "cellsRan": -15,
-            "edgesDelivered": -198,
+            "driveRuns": -3648,
+            "driveSignals": -4903,
+            "driveDelivered": -37215,
+            "cellsRan": -24,
+            "edgesDelivered": -303,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -649,11 +731,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -9281,
-            "driveSignals": -3711,
-            "driveDelivered": -20653,
-            "cellsRan": -111,
-            "edgesDelivered": -198,
+            "driveRuns": -10908,
+            "driveSignals": -5510,
+            "driveDelivered": -37215,
+            "cellsRan": -120,
+            "edgesDelivered": -303,
             "taskScore": -0.083334,
             "algebraCorrect": -6,
             "sequenceCorrect": 0
@@ -667,48 +749,50 @@
     },
     {
       "seed": "organism/gen-1-4-3-2-4",
+      "manifestHash": "e777a9d616b0bd6adf3b2db74584b25f97b6abe8caeb354bf88730af689d8300",
       "cells": {
-        "declared": 66,
-        "ran": 62,
-        "ranDrive": 61,
-        "ranOnlyInTasks": 1,
-        "fired": 14,
+        "declared": 64,
+        "ran": 64,
+        "ranDrive": 62,
+        "ranOnlyInTasks": 2,
+        "fired": 25,
         "errored": 0,
-        "neverRan": 4,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 4,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 206,
-        "delivered": 46,
-        "deliveredDrive": 40,
-        "notDelivered": 160,
-        "srcNeverFired": 158,
-        "srcFiredOtherPort": 2,
+        "declared": 103,
+        "delivered": 103,
+        "deliveredDrive": 87,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
+        "srcFiredOtherPort": 0,
         "inFlightAtEnd": 0
       },
       "kinds": {
-        "present": 24,
+        "present": 23,
         "ran": 23
       },
       "lines": {
-        "loaded": 398,
-        "declarations": 301,
-        "live": 137,
-        "loadBearing": 234
+        "loaded": 433,
+        "declarations": 196,
+        "live": 196,
+        "loadBearing": 433
       },
+      "deadShare": 0,
       "tasks": 0.138889,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -848,
-            "driveSignals": -986,
-            "driveDelivered": -3721,
-            "cellsRan": -4,
-            "edgesDelivered": -46,
+            "driveRuns": -1025,
+            "driveSignals": -1833,
+            "driveDelivered": -7359,
+            "cellsRan": -6,
+            "edgesDelivered": -103,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -718,11 +802,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -5481,
-            "driveSignals": -1189,
-            "driveDelivered": -3721,
-            "cellsRan": -62,
-            "edgesDelivered": -46,
+            "driveRuns": -5658,
+            "driveSignals": -2036,
+            "driveDelivered": -7359,
+            "cellsRan": -64,
+            "edgesDelivered": -103,
             "taskScore": -0.138889,
             "algebraCorrect": -10,
             "sequenceCorrect": 0
@@ -732,48 +816,50 @@
     },
     {
       "seed": "organism/gen-1-4-3-3-4",
+      "manifestHash": "3a5467aa4b3735b2f3c702a7e715555f77c3bac91f02cc4d5ad02e2523121b8e",
       "cells": {
-        "declared": 192,
-        "ran": 175,
-        "ranDrive": 171,
-        "ranOnlyInTasks": 4,
-        "fired": 94,
+        "declared": 189,
+        "ran": 189,
+        "ranDrive": 188,
+        "ranOnlyInTasks": 1,
+        "fired": 132,
         "errored": 0,
-        "neverRan": 17,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 17,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 1126,
-        "delivered": 569,
-        "deliveredDrive": 533,
-        "notDelivered": 557,
-        "srcNeverFired": 523,
-        "srcFiredOtherPort": 34,
+        "declared": 827,
+        "delivered": 827,
+        "deliveredDrive": 793,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
+        "srcFiredOtherPort": 0,
         "inFlightAtEnd": 0
       },
       "kinds": {
-        "present": 47,
-        "ran": 45
+        "present": 46,
+        "ran": 46
       },
       "lines": {
-        "loaded": 1454,
-        "declarations": 1357,
-        "live": 783,
-        "loadBearing": 880
+        "loaded": 1292,
+        "declarations": 1055,
+        "live": 1055,
+        "loadBearing": 1292
       },
+      "deadShare": 0,
       "tasks": 0.444445,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -16420,
-            "driveSignals": -15544,
-            "driveDelivered": -81777,
-            "cellsRan": -95,
-            "edgesDelivered": -569,
+            "driveRuns": -19498,
+            "driveSignals": -22350,
+            "driveDelivered": -126942,
+            "cellsRan": -109,
+            "edgesDelivered": -827,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -783,11 +869,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -22466,
-            "driveSignals": -16352,
-            "driveDelivered": -81777,
-            "cellsRan": -175,
-            "edgesDelivered": -569,
+            "driveRuns": -25544,
+            "driveSignals": -23158,
+            "driveDelivered": -126942,
+            "cellsRan": -189,
+            "edgesDelivered": -827,
             "taskScore": -0.444445,
             "algebraCorrect": -32,
             "sequenceCorrect": 0
@@ -797,6 +883,7 @@
     },
     {
       "seed": "organism/gen-1-4-4-1-4",
+      "manifestHash": "dc84e3d733a8732f109b370694c078d56a19cec9a21d41c4d8c879824ee4a9e3",
       "cells": {
         "declared": 254,
         "ran": 254,
@@ -828,6 +915,7 @@
         "live": 1013,
         "loadBearing": 1299
       },
+      "deadShare": 0,
       "tasks": 0.083334,
       "knockoutDelta": [
         {
@@ -862,48 +950,50 @@
     },
     {
       "seed": "organism/gen-1-4-4-2-4",
+      "manifestHash": "86e804a8e3d84282c00cd34bef3ac81624570965ba9fd52fb29f120c2e687099",
       "cells": {
-        "declared": 128,
-        "ran": 117,
-        "ranDrive": 117,
-        "ranOnlyInTasks": 0,
-        "fired": 34,
+        "declared": 120,
+        "ran": 120,
+        "ranDrive": 118,
+        "ranOnlyInTasks": 2,
+        "fired": 43,
         "errored": 0,
-        "neverRan": 11,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 11,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 1233,
-        "delivered": 323,
-        "deliveredDrive": 302,
-        "notDelivered": 910,
-        "srcNeverFired": 908,
+        "declared": 410,
+        "delivered": 410,
+        "deliveredDrive": 349,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
         "srcFiredOtherPort": 0,
-        "inFlightAtEnd": 2
+        "inFlightAtEnd": 0
       },
       "kinds": {
         "present": 40,
         "ran": 40
       },
       "lines": {
-        "loaded": 1497,
-        "declarations": 1400,
-        "live": 479,
-        "loadBearing": 576
+        "loaded": 853,
+        "declarations": 569,
+        "live": 569,
+        "loadBearing": 853
       },
+      "deadShare": 0,
       "tasks": 0.305555,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -3312,
-            "driveSignals": -4764,
-            "driveDelivered": -40139,
-            "cellsRan": -19,
-            "edgesDelivered": -323,
+            "driveRuns": -3508,
+            "driveSignals": -5765,
+            "driveDelivered": -47216,
+            "cellsRan": -22,
+            "edgesDelivered": -410,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -913,11 +1003,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -10972,
-            "driveSignals": -4973,
-            "driveDelivered": -40139,
-            "cellsRan": -117,
-            "edgesDelivered": -323,
+            "driveRuns": -11168,
+            "driveSignals": -5974,
+            "driveDelivered": -47216,
+            "cellsRan": -120,
+            "edgesDelivered": -410,
             "taskScore": -0.305555,
             "algebraCorrect": -22,
             "sequenceCorrect": 0
@@ -927,48 +1017,50 @@
     },
     {
       "seed": "organism/gen-1-5-3-1-3",
+      "manifestHash": "dfbff979f1c2d0c4c5a07ae0e9de9c8c812bc0253ac4e59ffbfac2beff3ae238",
       "cells": {
-        "declared": 195,
-        "ran": 172,
-        "ranDrive": 170,
+        "declared": 186,
+        "ran": 186,
+        "ranDrive": 184,
         "ranOnlyInTasks": 2,
-        "fired": 28,
+        "fired": 51,
         "errored": 0,
-        "neverRan": 23,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 23,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 843,
-        "delivered": 129,
-        "deliveredDrive": 120,
-        "notDelivered": 714,
-        "srcNeverFired": 710,
-        "srcFiredOtherPort": 3,
-        "inFlightAtEnd": 1
+        "declared": 266,
+        "delivered": 266,
+        "deliveredDrive": 256,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
+        "srcFiredOtherPort": 0,
+        "inFlightAtEnd": 0
       },
       "kinds": {
         "present": 40,
         "ran": 40
       },
       "lines": {
-        "loaded": 1207,
-        "declarations": 1110,
-        "live": 373,
-        "loadBearing": 470
+        "loaded": 879,
+        "declarations": 524,
+        "live": 524,
+        "loadBearing": 879
       },
+      "deadShare": 0,
       "tasks": 0.388889,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -2416,
-            "driveSignals": -2729,
-            "driveDelivered": -12156,
-            "cellsRan": -16,
-            "edgesDelivered": -129,
+            "driveRuns": -4708,
+            "driveSignals": -7048,
+            "driveDelivered": -33819,
+            "cellsRan": -30,
+            "edgesDelivered": -266,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -978,11 +1070,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -8937,
-            "driveSignals": -3333,
-            "driveDelivered": -12156,
-            "cellsRan": -172,
-            "edgesDelivered": -129,
+            "driveRuns": -11229,
+            "driveSignals": -7652,
+            "driveDelivered": -33819,
+            "cellsRan": -186,
+            "edgesDelivered": -266,
             "taskScore": -0.388889,
             "algebraCorrect": -28,
             "sequenceCorrect": 0
@@ -992,48 +1084,50 @@
     },
     {
       "seed": "organism/gen-1-5-3-1-4",
+      "manifestHash": "343285c8209324b29a393146d3ff1a5c9671cc46e7c270621a1627ca9f3399bf",
       "cells": {
-        "declared": 126,
-        "ran": 119,
-        "ranDrive": 117,
+        "declared": 125,
+        "ran": 125,
+        "ranDrive": 123,
         "ranOnlyInTasks": 2,
-        "fired": 23,
+        "fired": 46,
         "errored": 0,
-        "neverRan": 7,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 7,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 432,
-        "delivered": 81,
-        "deliveredDrive": 74,
-        "notDelivered": 351,
-        "srcNeverFired": 349,
+        "declared": 209,
+        "delivered": 209,
+        "deliveredDrive": 176,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
         "srcFiredOtherPort": 0,
-        "inFlightAtEnd": 2
+        "inFlightAtEnd": 0
       },
       "kinds": {
-        "present": 36,
+        "present": 35,
         "ran": 35
       },
       "lines": {
-        "loaded": 704,
-        "declarations": 607,
-        "live": 249,
-        "loadBearing": 346
+        "loaded": 667,
+        "declarations": 383,
+        "live": 383,
+        "loadBearing": 667
       },
+      "deadShare": 0,
       "tasks": 0.194444,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -761,
-            "driveSignals": -1164,
-            "driveDelivered": -4767,
-            "cellsRan": -9,
-            "edgesDelivered": -81,
+            "driveRuns": -2180,
+            "driveSignals": -3940,
+            "driveDelivered": -17824,
+            "cellsRan": -15,
+            "edgesDelivered": -209,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -1043,11 +1137,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -8231,
-            "driveSignals": -1768,
-            "driveDelivered": -4767,
-            "cellsRan": -119,
-            "edgesDelivered": -81,
+            "driveRuns": -9650,
+            "driveSignals": -4544,
+            "driveDelivered": -17824,
+            "cellsRan": -125,
+            "edgesDelivered": -209,
             "taskScore": -0.194444,
             "algebraCorrect": -14,
             "sequenceCorrect": 0
@@ -1057,48 +1151,50 @@
     },
     {
       "seed": "organism/gen-1-5-4-2-4",
+      "manifestHash": "46a4b70134bd733b5b40bc9c79c179ce736099d8620561d86c454c53fc7e3b6a",
       "cells": {
-        "declared": 128,
-        "ran": 118,
-        "ranDrive": 114,
-        "ranOnlyInTasks": 4,
-        "fired": 39,
+        "declared": 120,
+        "ran": 120,
+        "ranDrive": 117,
+        "ranOnlyInTasks": 3,
+        "fired": 46,
         "errored": 0,
-        "neverRan": 10,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 10,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 994,
-        "delivered": 305,
-        "deliveredDrive": 261,
-        "notDelivered": 689,
-        "srcNeverFired": 686,
+        "declared": 353,
+        "delivered": 353,
+        "deliveredDrive": 299,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
         "srcFiredOtherPort": 0,
-        "inFlightAtEnd": 3
+        "inFlightAtEnd": 0
       },
       "kinds": {
-        "present": 42,
+        "present": 41,
         "ran": 41
       },
       "lines": {
-        "loaded": 1258,
-        "declarations": 1161,
-        "live": 462,
-        "loadBearing": 559
+        "loaded": 867,
+        "declarations": 512,
+        "live": 512,
+        "loadBearing": 867
       },
+      "deadShare": 0,
       "tasks": 0.472222,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -4290,
-            "driveSignals": -4738,
-            "driveDelivered": -30882,
-            "cellsRan": -28,
-            "edgesDelivered": -305,
+            "driveRuns": -5152,
+            "driveSignals": -6096,
+            "driveDelivered": -37968,
+            "cellsRan": -30,
+            "edgesDelivered": -353,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -1108,11 +1204,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -12137,
-            "driveSignals": -5143,
-            "driveDelivered": -30882,
-            "cellsRan": -118,
-            "edgesDelivered": -305,
+            "driveRuns": -12999,
+            "driveSignals": -6501,
+            "driveDelivered": -37968,
+            "cellsRan": -120,
+            "edgesDelivered": -353,
             "taskScore": -0.472222,
             "algebraCorrect": -34,
             "sequenceCorrect": 0
@@ -1122,25 +1218,26 @@
     },
     {
       "seed": "organism/gen-1-6-4-1-4",
+      "manifestHash": "904994b073062361a944101764057044700333c9b2edb98ca516a73e90cec482",
       "cells": {
-        "declared": 174,
-        "ran": 149,
-        "ranDrive": 148,
+        "declared": 170,
+        "ran": 170,
+        "ranDrive": 169,
         "ranOnlyInTasks": 1,
-        "fired": 25,
+        "fired": 64,
         "errored": 0,
-        "neverRan": 25,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 25,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 598,
-        "delivered": 99,
-        "deliveredDrive": 91,
-        "notDelivered": 499,
-        "srcNeverFired": 493,
-        "srcFiredOtherPort": 6,
+        "declared": 291,
+        "delivered": 291,
+        "deliveredDrive": 283,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
+        "srcFiredOtherPort": 0,
         "inFlightAtEnd": 0
       },
       "kinds": {
@@ -1148,22 +1245,23 @@
         "ran": 42
       },
       "lines": {
-        "loaded": 905,
-        "declarations": 808,
-        "live": 284,
-        "loadBearing": 381
+        "loaded": 829,
+        "declarations": 497,
+        "live": 497,
+        "loadBearing": 829
       },
+      "deadShare": 0,
       "tasks": 0.305555,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -1949,
-            "driveSignals": -2979,
-            "driveDelivered": -8317,
-            "cellsRan": -13,
-            "edgesDelivered": -99,
+            "driveRuns": -4871,
+            "driveSignals": -9629,
+            "driveDelivered": -33207,
+            "cellsRan": -34,
+            "edgesDelivered": -291,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -1173,11 +1271,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -7656,
-            "driveSignals": -3384,
-            "driveDelivered": -8317,
-            "cellsRan": -149,
-            "edgesDelivered": -99,
+            "driveRuns": -10578,
+            "driveSignals": -10034,
+            "driveDelivered": -33207,
+            "cellsRan": -170,
+            "edgesDelivered": -291,
             "taskScore": -0.305555,
             "algebraCorrect": -22,
             "sequenceCorrect": 0
@@ -1187,48 +1285,50 @@
     },
     {
       "seed": "organism/gen-2-0-4-1-4",
+      "manifestHash": "e45a2bf554db14a2aae78390414c86515b75cddca5ac4f02de2e363e929b7880",
       "cells": {
-        "declared": 87,
-        "ran": 81,
-        "ranDrive": 80,
+        "declared": 83,
+        "ran": 83,
+        "ranDrive": 82,
         "ranOnlyInTasks": 1,
-        "fired": 10,
+        "fired": 21,
         "errored": 0,
-        "neverRan": 6,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 6,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 290,
-        "delivered": 39,
-        "deliveredDrive": 35,
-        "notDelivered": 251,
-        "srcNeverFired": 251,
+        "declared": 89,
+        "delivered": 89,
+        "deliveredDrive": 80,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
         "srcFiredOtherPort": 0,
         "inFlightAtEnd": 0
       },
       "kinds": {
-        "present": 31,
-        "ran": 28
+        "present": 29,
+        "ran": 29
       },
       "lines": {
-        "loaded": 510,
-        "declarations": 413,
-        "live": 156,
-        "loadBearing": 253
+        "loaded": 516,
+        "declarations": 208,
+        "live": 208,
+        "loadBearing": 516
       },
+      "deadShare": 0,
       "tasks": 0.222222,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -204,
-            "driveSignals": -31,
-            "driveDelivered": -1020,
-            "cellsRan": -4,
-            "edgesDelivered": -39,
+            "driveRuns": -259,
+            "driveSignals": -279,
+            "driveDelivered": -1458,
+            "cellsRan": -6,
+            "edgesDelivered": -89,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -1238,11 +1338,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -3862,
-            "driveSignals": -235,
-            "driveDelivered": -1020,
-            "cellsRan": -81,
-            "edgesDelivered": -39,
+            "driveRuns": -3917,
+            "driveSignals": -483,
+            "driveDelivered": -1458,
+            "cellsRan": -83,
+            "edgesDelivered": -89,
             "taskScore": -0.222222,
             "algebraCorrect": -16,
             "sequenceCorrect": 0
@@ -1252,48 +1352,50 @@
     },
     {
       "seed": "organism/gen-2-4-3-3-4",
+      "manifestHash": "9dd289be6c40bc248a49c9ba3c937a141a73bb7ad0696c047e047ad8496734b5",
       "cells": {
-        "declared": 162,
-        "ran": 149,
-        "ranDrive": 146,
-        "ranOnlyInTasks": 3,
-        "fired": 81,
+        "declared": 158,
+        "ran": 158,
+        "ranDrive": 156,
+        "ranOnlyInTasks": 2,
+        "fired": 107,
         "errored": 0,
-        "neverRan": 13,
+        "neverRan": 0,
         "neverRanBudget": 0,
-        "neverRanEventNoMail": 13,
+        "neverRanEventNoMail": 0,
         "neverRanOther": 0
       },
       "edges": {
-        "declared": 943,
-        "delivered": 487,
-        "deliveredDrive": 455,
-        "notDelivered": 456,
-        "srcNeverFired": 436,
-        "srcFiredOtherPort": 19,
-        "inFlightAtEnd": 1
+        "declared": 653,
+        "delivered": 653,
+        "deliveredDrive": 604,
+        "notDelivered": 0,
+        "srcNeverFired": 0,
+        "srcFiredOtherPort": 0,
+        "inFlightAtEnd": 0
       },
       "kinds": {
-        "present": 47,
-        "ran": 44
+        "present": 46,
+        "ran": 46
       },
       "lines": {
-        "loaded": 1236,
-        "declarations": 1139,
-        "live": 670,
-        "loadBearing": 767
+        "loaded": 1129,
+        "declarations": 845,
+        "live": 845,
+        "loadBearing": 1129
       },
+      "deadShare": 0,
       "tasks": 0.472222,
       "knockoutDelta": [
         {
           "role": "seeded",
           "file": "edges-000.mjs",
           "delta": {
-            "driveRuns": -13846,
-            "driveSignals": -12740,
-            "driveDelivered": -68293,
-            "cellsRan": -84,
-            "edgesDelivered": -487,
+            "driveRuns": -15772,
+            "driveSignals": -16709,
+            "driveDelivered": -92128,
+            "cellsRan": -93,
+            "edgesDelivered": -653,
             "taskScore": 0,
             "algebraCorrect": 0,
             "sequenceCorrect": 0
@@ -1303,11 +1405,11 @@
           "role": "tasks",
           "file": "cells-000.mjs",
           "delta": {
-            "driveRuns": -18085,
-            "driveSignals": -13545,
-            "driveDelivered": -68293,
-            "cellsRan": -149,
-            "edgesDelivered": -487,
+            "driveRuns": -20011,
+            "driveSignals": -17514,
+            "driveDelivered": -92128,
+            "cellsRan": -158,
+            "edgesDelivered": -653,
             "taskScore": -0.472222,
             "algebraCorrect": -34,
             "sequenceCorrect": 0
