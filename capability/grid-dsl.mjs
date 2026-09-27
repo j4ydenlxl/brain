@@ -1382,6 +1382,193 @@ learner('extendTo', 2, (states, wanted, tests) => {
   return { w: W, h: H };
 }, (g, p) => periodicExtend(g, p.w, p.h), 'the wallpaper of the grid continued to the one output size every train pair shares');
 
+// ---------------------------------------------------------------- THE CELL RULE (Board 23, item ladder-arc)
+// localRule reads ONE description of a cell and maps it to one absolute colour. The cell rule
+// reads a KEY made of one to three descriptions out of 73, CELL_FEATURES (29 colour valued: the cell's own
+// colour, its eight neighbours, the first colour along each of eight rays, the nearer of two
+// rays, the mirror images of the cell, the grid's top and rare colours, the colour round an
+// enclosed hole; 44 others: counts, colour sets of the neighbourhood, row and column, parities,
+// the border, enclosure, the object the cell belongs to (size, rank, largest, smallest, hole,
+// border, box, shape, place in its box), and colour ABSTRACT relations: is that neighbour or
+// ray background, my own colour, or another colour). Each key maps to a TARGET: an absolute
+// colour, or a reference to a colour valued description (keep my colour, take the colour the
+// ray to the right meets, take the mirror image's colour), so a rule read off colours 1 and 2
+// can paint colour 7 on a test grid. The rule taken: the cheapest set of descriptions that is
+// consistent on every train cell and has seen every key a test cell presents, ties to the one
+// with the fewest keys (the most general table). Measured on the TRAINING split only while it
+// was built (notes/grid.md, Board 23). It is NOT one of LEARNERS: the uniform cost search never
+// tries it at a state; capability/grid-search.mjs runs it as a FALLBACK phase near the end of a
+// task's clock, on the input and on the depth 1 states whose sizes match the train outputs, so
+// it can only answer a task the search had not answered by then.
+const CR_ABS = Object.freeze(['nR', 'nL', 'nD', 'nU', 'rR', 'rL', 'rD', 'rU', 'nearH', 'nearV', 'near4', 'mH', 'mV', 'mR', 'mT']);
+export const CELL_COLOR_FEATURES = Object.freeze(['c', 'nR', 'nL', 'nD', 'nU', 'nDR', 'nDL', 'nUR', 'nUL', 'rR', 'rL', 'rD', 'rU', 'rDR', 'rDL', 'rUR', 'rUL', 'mH', 'mV', 'mR', 'mT', 'topC', 'rareC', 'objC', 'bgC', 'nearH', 'nearV', 'near4', 'encC']);
+export const CELL_OTHER_FEATURES = Object.freeze(['n4c', 'n8c', 'n8set', 'n4set', 'rowSet', 'colSet', 'xm2', 'ym2', 'px2', 'px3', 'border', 'enc', 'objSize', 'objSizeM', 'objLargest', 'objSmallest', 'objHole', 'objTouch', 'objW', 'objH', 'objShape', 'colorCount', 'colorRank', 'inBox', 'betweenH', 'betweenV', 'rel0', 'relE', 'objRank', ...CR_ABS.map((f) => f + '?')]);
+export const CELL_FEATURES = Object.freeze(CELL_COLOR_FEATURES.concat(CELL_OTHER_FEATURES));
+const CR_COST = Object.freeze(Object.fromEntries(CELL_FEATURES.map((f) => [f, ['rel0', 'relE', 'objShape', 'rowSet', 'colSet', 'n8set', 'colorCount', 'px3', 'objW', 'objH', 'objSize', 'objSizeM', 'mT', 'mR'].includes(f) ? 2 : 1])));
+const CR_OFF = 16;                 // every description value v is coded as v + CR_OFF, in [0, 2^20)
+const CR_SPAN = 1048576;
+function hash20(s) { let a = 0x811c9dc5; for (let i = 0; i < s.length; i++) a = Math.imul(a ^ s.charCodeAt(i), 16777619); return (a >>> 0) % (CR_SPAN - 64); }
+
+/** Every description of every cell of a grid: { name: Int32Array(w * h) }, cached on the grid. */
+export function cellFeatures(g) {
+  if (g._cf) return g._cf;
+  const { w, h, cells } = g; const n = w * h;
+  const F = {}; for (const f of CELL_FEATURES) F[f] = new Int32Array(n);
+  const at = (x, y) => (x < 0 || y < 0 || x >= w || y >= h ? -1 : cells[y * w + x]);
+  const counts = colorCounts(g);
+  const fg = byFreq(g, true);
+  const topC = uniqueTop(fg) ?? -1, rareC = uniqueBottom(fg) ?? -1;
+  const all = byFreq(g, false);
+  const bgC = all[0][0];
+  const rank = new Map(all.map(([c], i) => [c, i]));
+  const reach = reachFromBorder(g, (v) => v === BG);
+  const c8 = components(g, 'c8'), m8 = components(g, 'm8');
+  const objOf = new Int32Array(n).fill(-1), mOf = new Int32Array(n).fill(-1);
+  c8.forEach((o, k) => { for (const i of o.idx) objOf[i] = k; });
+  m8.forEach((o, k) => { for (const i of o.idx) mOf[i] = k; });
+  let maxS = 0, minS = Infinity; for (const o of c8) { if (o.size > maxS) maxS = o.size; if (o.size < minS) minS = o.size; }
+  const nMax = c8.filter((o) => o.size === maxS).length, nMin = c8.filter((o) => o.size === minS).length;
+  const ranks = [...new Set(c8.map((o) => o.size))].sort((a, b) => b - a); const rankOf = new Map(ranks.map((v, i) => [v, i]));
+  const oInfo = c8.map((o) => ({ ow: o.x1 - o.x0 + 1, oh: o.y1 - o.y0 + 1, shape: hash20(objShapeKey(g, o)), hole: hasHole(g, o) ? 1 : 0, touch: touchesBorder(g, o) ? 1 : 0 }));
+  // the colour round each enclosed background region: one colour, or -2 when several touch it
+  const encC = new Int32Array(n).fill(-1);
+  { const lab = new Uint8Array(n); for (let s0 = 0; s0 < n; s0++) {
+    if (cells[s0] !== BG || reach[s0] || lab[s0]) continue;
+    const q = [s0], mem = []; lab[s0] = 1; let col = -1;
+    while (q.length) { const i = q.pop(); mem.push(i); const x = i % w, y = (i / w) | 0; for (const [dx, dy] of N4) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue; const j = ny * w + nx; const v = cells[j]; if (v === BG) { if (!lab[j]) { lab[j] = 1; q.push(j); } } else col = col === -1 ? v : col === v ? v : -2; } }
+    for (const i of mem) encC[i] = col;
+  } }
+  const inBox = new Uint8Array(n);
+  for (const o of m8) for (let y = o.y0; y <= o.y1; y++) for (let x = o.x0; x <= o.x1; x++) inBox[y * w + x] = 1;
+  const rowSet = new Int32Array(h), colSet = new Int32Array(w);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const v = cells[y * w + x]; if (v !== BG && v < 16) { rowSet[y] |= 1 << v; colSet[x] |= 1 << v; } }
+  const dist = (x, y, dx, dy) => { let nx = x + dx, ny = y + dy, d = 1; while (nx >= 0 && ny >= 0 && nx < w && ny < h) { const u = cells[ny * w + nx]; if (u !== BG) return [d, u]; nx += dx; ny += dy; d++; } return [99, -1]; };
+  const nearer = (a, b) => (a[0] < b[0] ? a[1] : b[0] < a[0] ? b[1] : a[1] === b[1] ? a[1] : -3);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = y * w + x, v = cells[i];
+    F.c[i] = v;
+    F.nR[i] = at(x + 1, y); F.nL[i] = at(x - 1, y); F.nD[i] = at(x, y + 1); F.nU[i] = at(x, y - 1);
+    F.nDR[i] = at(x + 1, y + 1); F.nDL[i] = at(x - 1, y + 1); F.nUR[i] = at(x + 1, y - 1); F.nUL[i] = at(x - 1, y - 1);
+    const R = dist(x, y, 1, 0), L = dist(x, y, -1, 0), D = dist(x, y, 0, 1), U = dist(x, y, 0, -1);
+    F.rR[i] = R[1]; F.rL[i] = L[1]; F.rD[i] = D[1]; F.rU[i] = U[1];
+    F.rDR[i] = rayColor(g, x, y, 1, 1); F.rDL[i] = rayColor(g, x, y, -1, 1); F.rUR[i] = rayColor(g, x, y, 1, -1); F.rUL[i] = rayColor(g, x, y, -1, -1);
+    F.mH[i] = cells[y * w + (w - 1 - x)]; F.mV[i] = cells[(h - 1 - y) * w + x]; F.mR[i] = cells[(h - 1 - y) * w + (w - 1 - x)]; F.mT[i] = w === h ? cells[x * w + y] : -1;
+    F.topC[i] = topC; F.rareC[i] = rareC; F.bgC[i] = bgC;
+    F.objC[i] = mOf[i] >= 0 ? m8[mOf[i]].color : -1;
+    F.nearH[i] = nearer(R, L); F.nearV[i] = nearer(D, U);
+    { const s4 = [R, L, D, U].sort((p, q) => p[0] - q[0]); F.near4[i] = s4[0][0] === 99 ? -1 : s4.filter((p) => p[0] === s4[0][0]).every((p) => p[1] === s4[0][1]) ? s4[0][1] : -3; }
+    F.encC[i] = encC[i];
+    let c4 = 0, c8n = 0, s8 = 0, s4b = 0;
+    for (let k = 0; k < 8; k++) { const u = at(x + N8[k][0], y + N8[k][1]); if (u > 0) { c8n++; if (u < 16) s8 |= 1 << u; if (k < 4) { c4++; if (u < 16) s4b |= 1 << u; } } }
+    F.n4c[i] = c4; F.n8c[i] = c8n; F.n8set[i] = s8; F.n4set[i] = s4b;
+    F.rowSet[i] = rowSet[y]; F.colSet[i] = colSet[x];
+    F.xm2[i] = x % 2; F.ym2[i] = y % 2; F.px2[i] = (x % 2) * 2 + (y % 2); F.px3[i] = (x % 3) * 3 + (y % 3);
+    F.border[i] = x === 0 || y === 0 || x === w - 1 || y === h - 1 ? 1 : 0;
+    F.enc[i] = v === BG && !reach[i] ? 1 : 0;
+    const k = objOf[i];
+    if (k >= 0) {
+      const o = c8[k], I = oInfo[k];
+      F.objSize[i] = o.size; F.objLargest[i] = o.size === maxS ? (nMax === 1 ? 2 : 1) : 0; F.objSmallest[i] = o.size === minS ? (nMin === 1 ? 2 : 1) : 0;
+      F.objHole[i] = I.hole; F.objTouch[i] = I.touch; F.objW[i] = I.ow; F.objH[i] = I.oh; F.objShape[i] = I.shape;
+      F.rel0[i] = (x - o.x0) * 32 + (y - o.y0); F.relE[i] = (o.x1 - x) * 32 + (o.y1 - y); F.objRank[i] = rankOf.get(o.size);
+    } else { F.objLargest[i] = -1; F.objSmallest[i] = -1; F.objHole[i] = -1; F.objTouch[i] = -1; F.objShape[i] = -1; F.rel0[i] = -1; F.relE[i] = -1; F.objRank[i] = -1; }
+    F.objSizeM[i] = mOf[i] >= 0 ? m8[mOf[i]].size : 0;
+    F.colorCount[i] = counts.get(v); F.colorRank[i] = rank.get(v);
+    F.inBox[i] = inBox[i];
+    F.betweenH[i] = R[1] === L[1] ? R[1] : -2; F.betweenV[i] = D[1] === U[1] ? D[1] : -2;
+    for (const f of CR_ABS) { const u = F[f][i]; F[f + '?'][i] = u < 0 ? u : u === BG ? 0 : u === v ? 1 : 2; }
+  }
+  Object.defineProperty(g, '_cf', { value: F, enumerable: false });
+  return F;
+}
+
+const CR_SETS = (() => {
+  const names = CELL_FEATURES, cost = (S) => S.reduce((s, f) => s + CR_COST[f], 0);
+  const one = [], three = [];
+  for (let a = 0; a < names.length; a++) { one.push([names[a]]); for (let b = a + 1; b < names.length; b++) one.push([names[a], names[b]]); }
+  for (let a = 0; a < names.length; a++) for (let b = a + 1; b < names.length; b++) for (let c = b + 1; c < names.length; c++) {
+    const S = [names[a], names[b], names[c]];
+    if (cost(S) <= 3) three.push(S);   // triples of the plain (cost 1) descriptions only
+  }
+  const byCost = (p, q) => cost(p) - cost(q) || p.length - q.length;
+  const wrap = (list) => Object.freeze(list.sort(byCost).map((S) => Object.freeze({ S: Object.freeze(S), cost: cost(S) })));
+  return { upTo2: wrap(one.slice()), upTo3: wrap(one.concat(three)) };
+})();
+const crKey = (cols, i) => {
+  if (cols.length === 1) return cols[0][i] + CR_OFF;
+  if (cols.length === 2) return (cols[0][i] + CR_OFF) * CR_SPAN + cols[1][i] + CR_OFF;
+  let s = ''; for (let k = 0; k < cols.length; k++) s += cols[k][i] + ','; return s;
+};
+const NC = CELL_COLOR_FEATURES.length;
+
+/**
+ * Learn a cell rule from grids of the train outputs' sizes. Returns params { S, table } or null.
+ * opts.maxK is 2 (pairs) or 3 (plus triples of plain descriptions); opts.deadline (performance.now)
+ * stops the scan between two sets.
+ */
+export function learnCellRule(states, wanted, tests, opts = {}) {
+  const maxK = opts.maxK ?? 2, deadline = opts.deadline ?? Infinity;
+  if (!states.length || states.length !== wanted.length) return null;
+  for (let d = 0; d < states.length; d++) if (states[d].w !== wanted[d].w || states[d].h !== wanted[d].h) return null;
+  let changes = 0;
+  for (let d = 0; d < states.length; d++) for (let i = 0; i < states[d].cells.length; i++) if (states[d].cells[i] !== wanted[d].cells[i]) changes++;
+  if (!changes) return null;
+  const FS = states.map(cellFeatures), FT = tests.map(cellFeatures);
+  // per train cell: the colour valued descriptions that equal the wanted colour (bit k)
+  const eq = states.map((s, d) => {
+    const m = new Int32Array(s.cells.length), out = wanted[d].cells;
+    for (let k = 0; k < NC; k++) { const col = FS[d][CELL_COLOR_FEATURES[k]]; for (let i = 0; i < m.length; i++) if (col[i] === out[i]) m[i] |= 1 << k; }
+    return m;
+  });
+  const sets = maxK >= 3 ? CR_SETS.upTo3 : CR_SETS.upTo2;
+  let best = null, scanned = 0;
+  for (const { S, cost } of sets) {
+    if (best && cost > best.cost) break;
+    if ((++scanned & 31) === 0 && performance.now() > deadline) break;
+    const table = new Map();
+    let ok = true;
+    for (let d = 0; d < states.length && ok; d++) {
+      const cols = S.map((f) => FS[d][f]), out = wanted[d].cells, e = eq[d], n = out.length;
+      for (let i = 0; i < n; i++) {
+        const key = crKey(cols, i);
+        const t = table.get(key);
+        if (t === undefined) table.set(key, [out[i], e[i]]);
+        else { if (t[0] !== out[i]) t[0] = -9; t[1] &= e[i]; if (t[0] === -9 && t[1] === 0) { ok = false; break; } }
+      }
+    }
+    if (!ok) continue;
+    let covered = true;
+    for (let t = 0; t < tests.length && covered; t++) { const cols = S.map((f) => FT[t][f]); for (let i = 0; i < tests[t].cells.length; i++) if (!table.has(crKey(cols, i))) { covered = false; break; } }
+    if (!covered) continue;
+    if (!best || table.size < best.table.size) best = { S, cost, table };
+  }
+  if (!best) return null;
+  const table = {};
+  // target: >= 0 an absolute colour; < 0 the colour valued description -1 - t (-1: keep my colour)
+  for (const [k, [abs, refs]] of best.table) table[String(k)] = refs & 1 ? -1 : abs !== -9 ? abs : -1 - (31 - Math.clz32(refs & -refs));
+  return { S: best.S.slice(), table };
+}
+/** Run a learned cell rule on one grid; null when a cell presents a key the rule never saw. */
+export function applyCellRule(g, p) {
+  const F = cellFeatures(g), cols = p.S.map((f) => F[f]);
+  const o = grid(g.w, g.h);
+  for (let i = 0; i < o.cells.length; i++) {
+    const t = p.table[String(crKey(cols, i))];
+    if (t === undefined) return null;
+    const v = t >= 0 ? t : F[CELL_COLOR_FEATURES[-1 - t]][i];
+    if (v < 0) return null;
+    o.cells[i] = v;
+  }
+  return o;
+}
+/** The fallback learners grid-search.mjs runs near the end of a task's clock (not in LEARNERS). */
+export const FALLBACK_LEARNERS = [];
+{
+  const l = Object.freeze({ name: 'cellRule', from: 'grid', to: 'grid', cost: 3, learn: learnCellRule, apply: applyCellRule, doc: 'every cell rewritten by a table from a key of up to three descriptions of it, each key painting an absolute colour or a colour the cell sees, read off the train pairs', learned: true, fallback: true });
+  if (BY_NAME.has(l.name)) throw new Error('grid-dsl: duplicate primitive ' + l.name);
+  FALLBACK_LEARNERS.push(l); BY_NAME.set(l.name, l);
+}
+
 export function byName(name) { return BY_NAME.get(name) || null; }
 export const VOCABULARY_SIZE = PRIMS.length + LEARNERS.length;
 

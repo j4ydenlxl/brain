@@ -28,7 +28,7 @@
 //      candidate is rejected and the search goes on.
 //   7. When every train pair changes its input, a program that hands a test input back
 //      unchanged has not found the task's rule on that input. Rejected, the search goes on.
-import { PRIMS, LEARNERS, applyStep, hashValue, sameGrid, isAnswerGrid, fromRows, toRows } from './grid-dsl.mjs';
+import { PRIMS, LEARNERS, FALLBACK_LEARNERS, applyStep, hashValue, sameGrid, isAnswerGrid, fromRows, toRows } from './grid-dsl.mjs';
 import { Brain } from '../core/brain.mjs';
 
 export const SEARCH_DEFAULTS = Object.freeze({
@@ -154,6 +154,7 @@ export function gradeInCells(steps, train, tests, brain = buildSearchBrain()) {
 export function searchGrid(task, opts = {}) {
   const o = { ...SEARCH_DEFAULTS, ...opts };
   const lib = o.library || null;
+  if (!lib && fallbackOn(o)) return searchWithFallback(task, o);
   if (lib && lib.share > 0 && lib.share < 1) {
     const t0 = now(), end = t0 + o.budgetMs;
     const a = searchCore(task, { ...o, library: null, deadline: t0 + o.budgetMs * (1 - lib.share), hardDeadline: end, t0, keepState: true }, []);
@@ -168,6 +169,59 @@ export function searchGrid(task, opts = {}) {
     return { ...b, searched: a.searched + b.searched, states: b.states, rejected: a.rejected + b.rejected, cells: a.cells + b.cells, popped: b.popped, poppedHand: a.popped, poppedMacrosOnly: b.poppedMacrosOnly, phases: { hand: a.ms, learned: Math.round((b.ms - a.ms) * 100) / 100 } };
   }
   return searchCore(task, o, []);
+}
+
+// ---------------------------------------------------------------- the fallback phase (Board 23, item ladder-arc)
+// THE CLOCK, measured: the uniform cost search finds almost every answer it will find early (on
+// the TRAINING split, bench/verdicts/grid.json, 8 of 164 programs came after 1500 ms and 1 after
+// 2500 ms). So the last `share` of a task's clock goes, when the search has not answered by then,
+// to the FALLBACK learners of grid-dsl.mjs (the cell rule), tried on the task's input and then on
+// every depth 1 state the search made whose train grids have the train outputs' sizes, cheapest
+// first (pairs of descriptions), then on the same states with triples. A fallback answer is taken
+// exactly the way the search takes one: every train pair through match cells, the test through
+// cells, no placeholder colour, no test input handed back unchanged. When the fallback finds
+// nothing and clock is left, the search RESUMES where it stopped (the handoff of the library's
+// portfolio: its seen states and its frontier), so the fallback costs the search only the clock
+// the fallback used. THE CONTROL: GRID_FIXED_VOCAB=1 in the environment (or opts.fallback false)
+// runs the search exactly as it was before this phase existed.
+export const FALLBACK_DEFAULTS = Object.freeze({
+  share: 0.25,        // the part of the clock kept for the fallback when the search has not answered
+  maxPrefixes: 256,   // depth 1 states kept for it
+});
+/** True when the fallback phase runs: not under the control flag, not switched off by opts. */
+export function fallbackOn(o = {}) {
+  return o.fallback !== false && process.env.GRID_FIXED_VOCAB !== '1' && FALLBACK_LEARNERS.length > 0;
+}
+function searchWithFallback(task, o) {
+  const t0 = now(), end = t0 + o.budgetMs;
+  const share = typeof o.fallbackShare === 'number' ? o.fallbackShare : FALLBACK_DEFAULTS.share;
+  const want = Math.max(1, Math.floor(o.attempts || 1));
+  const collect = [];
+  const a = searchCore(task, { ...o, deadline: t0 + o.budgetMs * (1 - share), hardDeadline: end, t0, keepState: true, collect, maxCollect: o.maxPrefixes ?? FALLBACK_DEFAULTS.maxPrefixes }, []);
+  const handoff = a.handoff;
+  delete a.handoff;
+  a.attempts.forEach((h) => { h.phase = 'search'; });
+  if (a.attempts.length >= want) return { ...a, phases: { search: a.ms, fallback: 0, resumed: 0 } };
+  const tests = task.test.map((t) => t.input || t);
+  const root = { vals: task.train.map((p) => p.input).concat(tests), steps: [], cost: 0 };
+  const prefixes = [root].concat(collect.sort((x, y) => x.cost - y.cost));
+  const b = searchCore(task, { ...o, deadline: end, hardDeadline: end, t0, fallbackPrefixes: prefixes }, a.attempts);
+  delete b.handoff;
+  b.attempts.forEach((h) => { if (!h.phase) h.phase = 'fallback'; });
+  const tFallback = Math.round((b.ms - a.ms) * 100) / 100;
+  const merged = (last, status, resumed) => ({
+    ...last, status: last.attempts.length ? 'found' : status,
+    searched: a.searched + b.searched + (resumed ? last.searched : 0), rejected: a.rejected + b.rejected + (resumed ? last.rejected : 0),
+    cells: a.cells + b.cells + (resumed ? last.cells : 0), states: resumed ? last.states : a.states,
+    popped: resumed ? a.popped.map((x, k) => (x || 0) + (last.popped[k] || 0)).concat(last.popped.slice(a.popped.length)) : a.popped, fallbackTried: b.fallbackTried,
+    phases: { search: a.ms, fallback: tFallback, resumed: resumed ? Math.round((last.ms - b.ms) * 100) / 100 : 0 },
+  });
+  if (b.attempts.length >= want || a.status === 'exhausted' || now() >= end) return merged(b, a.status === 'exhausted' ? 'exhausted' : 'timeout', false);
+  // the fallback found nothing and clock is left: the search goes on where it stopped
+  const c = searchCore(task, { ...o, deadline: end, t0 }, b.attempts, handoff);
+  delete c.handoff;
+  c.attempts.forEach((h) => { if (!h.phase) h.phase = 'search'; });
+  return merged(c, c.status, true);
 }
 
 // One search over one vocabulary, until opts.deadline (absolute, performance.now()) or budgetMs.
@@ -286,6 +340,31 @@ function searchCore(task, o, earlier, resume = null) {
     return null;
   };
 
+  if (o.fallbackPrefixes) {
+    // THE FALLBACK PHASE (searchWithFallback): the fallback learners on the given prefixes, pairs of
+    // descriptions on every prefix first, then triples on every prefix (input first), until the clock
+    // runs out (Board 23: triples on the input alone solved 169 of 400 training tasks, on every prefix 171)
+    let tried = 0;
+    const done = (status) => { const r = finish(status); r.fallbackTried = tried; return r; };
+    for (const pass of [{ maxK: 2 }, { maxK: 3 }]) {
+      for (const pre of o.fallbackPrefixes) {
+        const tr = pre.vals.slice(0, nTrain), te = pre.vals.slice(nTrain);
+        for (const L of FALLBACK_LEARNERS) {
+          if (now() > hard) return done('timeout');
+          searched++; tried++;
+          let params = null;
+          try { params = L.learn(tr, wanted, te, { maxK: pass.maxK, deadline: hard }); } catch { params = null; }
+          if (!params) continue;
+          const step = { op: L.name, learned: params };
+          let fits = true;
+          for (let i = 0; i < nTrain; i++) { const g = applyStep(step, tr[i]); if (!g || !sameGrid(g, wanted[i])) { fits = false; break; } }
+          if (!fits) continue;
+          if (take(pre.steps.concat([step]), te.map((g) => applyStep(step, g)))) return done('found');
+        }
+      }
+    }
+    return done('exhausted');
+  }
   if (resume) {
     // THE HANDOFF: every handed over state is re-costed under this vocabulary's costs; the
     // frontier keeps its own order within a cost, and, when there are macros, each expanded state
@@ -333,6 +412,8 @@ function searchCore(task, o, earlier, resume = null) {
       const child = { vals, type: p.to, steps: s.steps.concat([{ op: p.name }]), depth, cost: s.cost + p.cost };
       if (child.type === 'grid') {
         if (terminals(child, fastL, true)) return finish('found');
+        // the fallback phase's prefixes: depth 1 grids of the train outputs' sizes
+        if (o.collect && depth === 1 && o.collect.length < (o.maxCollect || 0) && vals.slice(0, nTrain).every((g, i) => g.w === wanted[i].w && g.h === wanted[i].h)) o.collect.push({ vals, steps: child.steps, cost: child.cost });
       }
       if (depth < o.maxDepth) push(child);
     }

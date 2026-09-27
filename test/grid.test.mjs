@@ -10,8 +10,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   PRIMS, LEARNERS, VOCABULARY_SIZE, fromRows, toRows, isGrid, isAnswerGrid, applyStep, byName, P, MAX_SIDE,
+  learnCellRule, applyCellRule, FALLBACK_LEARNERS,
 } from '../capability/grid-dsl.mjs';
-import { searchGrid, gradeInCells, buildSearchBrain, runInCells, taskFromArc } from '../capability/grid-search.mjs';
+import { searchGrid, gradeInCells, buildSearchBrain, runInCells, taskFromArc, fallbackOn } from '../capability/grid-search.mjs';
 import { solve, METHODS } from '../act/solve.mjs';
 
 const BANK = [
@@ -189,4 +190,78 @@ test('act/solve falls through from the depth 3 search to the wide vocabulary, wi
   assert.equal(got.method, 'exact.grid');
   assert.equal(got.answer, '000|000|111');
   assert.ok(got.steps.some((s) => s.includes('depth 4')), got.steps.join(' / '));
+});
+
+// Board 23, item ladder-arc: the cell rule and the fallback phase. The rule below (a cell whose
+// right neighbour has another colour turns 5) is not reachable by the search in 1200 ms, and the
+// test input uses colours no train pair shows, so only a colour-abstract description answers it.
+function cellRuleTask() {
+  let seed = 11;
+  const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+  const grid = (w, h, cols) => Array.from({ length: h }, () => Array.from({ length: w }, () => cols[Math.floor(rnd() * cols.length)]));
+  const rule = (g) => g.map((r) => r.map((c, x) => (x + 1 < r.length && r[x + 1] !== c ? 5 : c)));
+  const ins = [grid(6, 5, [1, 2, 3]), grid(5, 6, [1, 2, 3]), grid(6, 6, [1, 2, 3]), grid(5, 5, [4, 6, 7])];
+  return { train: ins.slice(0, 3).map((r) => ({ input: r, output: rule(r) })), test: [{ input: ins[3], output: rule(ins[3]) }] };
+}
+
+test('the cell rule reads a colour-abstract description off the train pairs, answers unseen colours, and refuses noise', () => {
+  const json = cellRuleTask();
+  const p = learnCellRule(json.train.map((t) => fromRows(t.input)), json.train.map((t) => fromRows(t.output)), [fromRows(json.test[0].input)]);
+  assert.ok(p, 'no rule learned');
+  assert.deepEqual(p.S, ['nR?']);
+  assert.deepEqual(toRows(applyCellRule(fromRows(json.test[0].input), p)), json.test[0].output);
+  let seed = 5;
+  const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+  const noise = () => fromRows(Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => Math.floor(rnd() * 10))));
+  assert.equal(learnCellRule([noise(), noise()], [noise(), noise()], [noise()]), null, 'a rule for noise is a guess');
+  assert.ok(byName('cellRule'), 'the fallback learner is addressable by name');
+  assert.ok(FALLBACK_LEARNERS.some((L) => L.name === 'cellRule'));
+  assert.ok(!LEARNERS.some((L) => L.name === 'cellRule'), 'the fallback learner is not in the main vocabulary');
+});
+
+test('the fallback phase answers what the search cannot, and GRID_FIXED_VOCAB=1 is the control that turns it off', () => {
+  const json = cellRuleTask();
+  const on = searchGrid(taskFromArc(json), { budgetMs: 1200 });
+  assert.equal(on.status, 'found');
+  assert.deepEqual(on.names, ['cellRule']);
+  assert.deepEqual(toRows(on.outputs[0]), json.test[0].output);
+  assert.ok(on.phases.search >= 1200 * 0.75 - 50, 'the search kept its share of the clock: ' + JSON.stringify(on.phases));
+  assert.ok(on.cells > 0, 'the answer came through cells');
+  const off = searchGrid(taskFromArc(json), { budgetMs: 1200, fallback: false });
+  assert.equal(off.outputs, null);
+  assert.equal(off.phases, undefined);
+  const before = process.env.GRID_FIXED_VOCAB;
+  process.env.GRID_FIXED_VOCAB = '1';
+  try {
+    assert.equal(fallbackOn({}), false);
+    const ctl = searchGrid(taskFromArc(json), { budgetMs: 1200 });
+    assert.equal(ctl.outputs, null, 'the control must not see the cell rule');
+  } finally {
+    if (before === undefined) delete process.env.GRID_FIXED_VOCAB; else process.env.GRID_FIXED_VOCAB = before;
+  }
+  assert.equal(fallbackOn({}), true);
+  // an answer the search finds early is never preempted by the fallback
+  const easy = { train: [{ input: [[1, 2, 3]], output: [[3, 2, 1]] }, { input: [[4, 0], [5, 6]], output: [[0, 4], [6, 5]] }], test: [{ input: [[7, 8]] }] };
+  const e = searchGrid(taskFromArc(easy), { budgetMs: 1200 });
+  assert.equal(e.status, 'found');
+  assert.equal(e.phases.fallback, 0);
+  assert.ok(!e.names.includes('cellRule'), e.names.join(' > '));
+});
+
+// Board 23 fix pass: the cell rule's header comment said "out of 58" while CELL_FEATURES held 73,
+// so a reader of the code got a number no command prints. The counts in that comment are now read
+// against the arrays themselves; the test fails if the comment or the arrays move alone.
+test('the cell rule header comment names the feature counts the arrays hold', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { CELL_FEATURES, CELL_COLOR_FEATURES, CELL_OTHER_FEATURES } = await import('../capability/grid-dsl.mjs');
+  const src = readFileSync(new URL('../capability/grid-dsl.mjs', import.meta.url), 'utf8');
+  const all = src.match(/descriptions out of (\d+), CELL_FEATURES \((\d+) colour valued/);
+  const other = src.match(/enclosed hole; (\d+) others:/);
+  assert.ok(all, 'the comment naming the total and the colour valued count is missing');
+  assert.ok(other, 'the comment naming the other count is missing');
+  assert.equal(Number(all[1]), CELL_FEATURES.length, 'total in the comment');
+  assert.equal(Number(all[2]), CELL_COLOR_FEATURES.length, 'colour valued count in the comment');
+  assert.equal(Number(other[1]), CELL_OTHER_FEATURES.length, 'other count in the comment');
+  assert.equal(CELL_COLOR_FEATURES.length + CELL_OTHER_FEATURES.length, CELL_FEATURES.length);
+  assert.ok(!/descriptions out of 58\b/.test(src), 'the stale count is back');
 });

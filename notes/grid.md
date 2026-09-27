@@ -64,6 +64,100 @@ published no-model row (Icecuber 17 percent) is on the evaluation split, which i
 and is the orchestrator's run: `node bench/grid.mjs --split evaluation --budget-ms 3000` writes
 `bench/verdicts/grid-evaluation.json`.
 
+### Board 23, item ladder-arc: the cell rule fallback
+
+The failure cause read first: of the 400 evaluation tasks the existing verdict counted 323 timed
+out and 1 exhausted, so the clock, not a wrong answer, is the most frequent cause. Read before
+building: the Icecuber write-up (depth limited search over a hand written function set, pieces
+stacked greedily); a greedy piece stacker was prototyped in scratch and not kept.
+
+What landed: `cellRule` in `capability/grid-dsl.mjs`, a lookup table from 1 to 3 of the 73
+descriptions in CELL_FEATURES (29 colour valued, 44 others: own colour, neighbours, rays,
+mirrors, object facts, and colour-abstract relations such as "my right neighbour has another
+colour") to an absolute colour or to a described colour, chosen as the cheapest set that is
+consistent on every train cell and covers every test key. `capability/grid-search.mjs` runs it
+as a FALLBACK phase, not as a vocabulary word: when the search has no answer at 75 percent of
+the clock it tries pairs of descriptions on the input and on every depth 1 state of the output
+size, then triples, and hands the search back where it stopped when nothing fits. The CONTROL is
+`GRID_FIXED_VOCAB=1` (or `fallback: false`), which runs the search as it was.
+
+Development records from the build (TRAINING split, the builder's runs of
+`bench/grid.mjs --split training --budget-ms 3000 --workers 4`; the two variants not kept are
+not in the code, so these rows cannot be rerun):
+
+| run | solved of 400 | percent | timed out | found but wrong |
+|---|---|---|---|---|
+| control, GRID_FIXED_VOCAB=1 | 148 | 37 | 235 | 17 |
+| cell rule, triples on the input only | 169 | 42.25 | 193 | 38 |
+| cell rule, triples on every prefix (kept) | 171 | 42.75 | 190 | 39 |
+| cell rule, depth 2 prefixes too (not kept) | 169 | 42.25 | 184 | 47 |
+
+#### Fix pass (Board 23): every number below is a line a command printed
+
+The first landing's verdicts were edited after the bench wrote them (fields added, the command
+and the statement rewritten, a Wilson interval and a sign test typed in from a pass no command
+recorded). Those seven files were deleted. The runs below were made again, each on a scratch
+copy of the tree (`core/`, `capability/`, `tasks/`, `bench/grid.mjs`, the ARC fixtures,
+`bench/verdicts/public-arc.json`; `cmp` printed the four code files identical to the tree),
+each launched as
+`node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir <copy> -- node --max-old-space-size=4000 bench/grid.mjs --split <split> --budget-ms 3000 --workers 4`,
+one at a time, the control with `GRID_FIXED_VOCAB=1` in the environment. The bench's plain
+path has no `--tag`, so it names its file `grid-evaluation.json` or `grid.json`; the treatment
+files were copied BYTE FOR BYTE into this tree under `grid-local-*` (`cmp` printed "byte
+identical: 3 of 3"; sha256 printed by `sha256sum`):
+
+| file here | the bench's own name in the copy | sha256 |
+|---|---|---|
+| `bench/verdicts/grid-local-evaluation.json` (the bar run) | grid-evaluation.json | b2775d7aa8a695f2f1a235331e8b2568a3742e9218353434983f15ed9d2346a9 |
+| `bench/verdicts/grid-local-evaluation-repeat.json` | grid-evaluation.json | 9a96c771d62a845ae094ce730ee4a0d345db5045df970336a99f4d3340cee75f |
+| `bench/verdicts/grid-local-training.json` | grid.json | 9af1c835de485210c680e195ce4db413cf10694876d726c5f83bf3c240e3c77d |
+
+The two control verdicts were NOT copied in: their `command` field cannot carry the
+environment flag, so rerunning it would give the treatment, not the control. Their printed
+lines are here instead. The plain path also writes no `barMet` and no control field (the bench
+is not this item's file), so the control is named in this note.
+
+| split, arm | solved of 400 | percent | mean ms per task | timed out | found but wrong | exhausted |
+|---|---|---|---|---|---|---|
+| evaluation, cell rule (bar run) | 85 | 21.25 | 2412.54 | 286 | 28 | 1 |
+| evaluation, cell rule, repeat | 86 | 21.5 | 2407.99 | 286 | 27 | 1 |
+| evaluation, control GRID_FIXED_VOCAB=1 | 70 | 17.5 | 2498.62 | 323 | 6 | 1 |
+| training, cell rule | 168 | 42 | 1792.59 | 193 | 39 | 0 |
+| training, control GRID_FIXED_VOCAB=1 | 145 | 36.25 | 1887.49 | 240 | 15 | 0 |
+
+Budget lines (evaluation bar run): `BUDGET done exit 0: wall 242.94 s, peak ram 1722.0MB, peak dir
+4.6MB`. Most used in the bar run's solutions: `cellRule 15, localRule 13, colormap 11`.
+
+Paired by task id, printed by a 12 line script (`pair.cjs <treatment> <control>`, in the
+scratch copy, since deleted: it reads both verdicts' rows, refuses two verdicts that graded
+different tasks, and prints solved, gained, lost and the last step of each gained program):
+
+- evaluation bar run against the control: `treatment 85, control 70, gained 16, lost 1`; last
+  step of the gained programs `{"cellRule":15,"dedupeBoth":1}`; lost `ca8f78db`.
+- evaluation repeat against the control: `treatment 86, control 70, gained 16, lost 0`.
+- evaluation repeat against the bar run: `treatment 86, control 85, gained 1, lost 0`; the one
+  task is `ca8f78db`, so run to run noise here is one task.
+- training against its control: `treatment 168, control 145, gained 24, lost 1`; last step
+  `{"cellRule":22,"cropBBoxMajority":1,"up2":1}`; lost `d8c310e9`.
+
+Why ca8f78db was lost once, read before and after: the control found `periodicFill` at 2418.23
+ms under four busy workers; the treatment's search stops at 75 percent of the clock (2250 ms)
+and the fallback spent the rest, so it timed out at 3000.29 ms. Alone on the machine the same
+task is found at 1127 and 1171 ms with the fallback on (phases printed `{"search":1126.53,
+"fallback":0,"resumed":0}`), and the repeat run solved it. A search answer that arrives after 75
+percent of the clock under load is the price of the fallback phase.
+
+The bar, Gemini 3.1 Pro (Preview) at 98 percent, is NOT met: 21.25 (bar run) against 98. Found
+but wrong rose from 6 to 28: with one attempt a wrong answer costs nothing a timeout did not, but
+with two attempts the fallback would spend one on a guess. The ladder reads
+`bench/verdicts/grid-evaluation.json` (70 of 400 on disk), which this item does not write; its
+row moves only when the orchestrator reruns the ladder's own command.
+
+The comment in `capability/grid-dsl.mjs` above CELL_COLOR_FEATURES said "out of 58"; the arrays
+print 29, 44 and 73 (`node -e` over the module). It now names 73, 29 and 44, and
+`test/grid.test.mjs` reads the three numbers out of the comment and compares them to the arrays
+(a copy of the comment with 58 put back fails it).
+
 ## Open
 
 - Found but wrong is the overfit count: a learned last step that fits every train pair and
