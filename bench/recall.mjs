@@ -48,12 +48,23 @@ import { buildQuestions, extractAnswer, gradeAnswer } from './answer.mjs';
 import { DRAW_SEED, drawHeldout } from './knowledge.mjs';
 
 // board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
-/** What the recall bar developed on and what it graded: pure, from the two set sizes. */
+// board 23 builder (item contamination-split): contaminated is decided from the run: the leak check's
+// count (null when it did not run, never read as clean) and whether a knowledge bar verdict on disk
+// grades the same draw seed (priorGrade, read by the caller from bench/verdicts/knowledge.json).
+/** What the recall bar developed on and what it graded: pure, from the set sizes, the leak count and the prior grade. */
 export function splitFor(opts = {}) {
+  const leaks = Number.isInteger(opts.leaks) ? opts.leaks : null;
+  const prior = opts.priorGrade && typeof opts.priorGrade === 'object' ? { file: String(opts.priorGrade.file), drawSeed: String(opts.priorGrade.drawSeed) } : null;
   return {
     development: { what: 'the confidence floor chosen by --tune on the held-out records OUTSIDE the bar\'s draw; the bench/answer.mjs algebra and sequence suites' },
-    heldOut: { what: 'the wiki questions: bench/knowledge.mjs drawHeldout (its DRAW_SEED), first sentences hidden from the ingest; the suite questions are a no-regression check with no held-out set', wiki: opts.n ?? null, suitePerSuite: opts.perSuite ?? null },
-    contaminated: 'the wiki draw is the same 200 questions the knowledge bar graded before this tier was built, so their results were on disk while it was developed',
+    heldOut: { what: 'the wiki questions: bench/knowledge.mjs drawHeldout (its DRAW_SEED), first sentences hidden from the ingest; the suite questions are a no-regression check with no held-out set', wiki: opts.n ?? null, suitePerSuite: opts.perSuite ?? null, drawSeed: opts.drawSeed ?? null, leaks, gradedBefore: prior },
+    contaminated: leaks === null
+      ? 'the leak check did not run, so the drawn questions are not known to be absent from the store'
+      : leaks > 0
+        ? leaks + ' hidden sentences of the drawn articles were found in the store the tier reads'
+        : prior
+          ? 'the wiki draw (seed ' + prior.drawSeed + ') is the one ' + prior.file + ' grades, so its results were on disk while this tier was developed'
+          : false,
   };
 }
 
@@ -70,6 +81,14 @@ const r4 = (x) => Math.round(x * 1e4) / 1e4;
 const nowUs = () => process.hrtime.bigint();
 const since = (t0) => Number(process.hrtime.bigint() - t0) / 1e3;
 const peakMb = () => r1(process.resourceUsage().maxRSS / 1024);
+
+/** The knowledge bar verdict on disk when it grades the same draw seed (board 23, the split's data), else null. */
+function priorGradeOf(seed) {
+  try {
+    const k = JSON.parse(fs.readFileSync(path.join(VERDICTS, 'knowledge.json'), 'utf8'));
+    return k && k.heldout && k.heldout.drawSeed === seed ? { file: 'bench/verdicts/knowledge.json', drawSeed: seed } : null;
+  } catch { return null; }
+}
 
 // ------------------------------------------------------------------ the grader
 const ABSTAIN_RE = /^nothing in memory matches/i;
@@ -218,8 +237,8 @@ async function bar(cfg) {
   const w = S.wiki, s = S.suite;
   const statement = `On ${wiki.length} held-out Simple English Wikipedia questions (the knowledge bar's own draw, first sentences hidden from the ingest) and ${suite.length} algebra and sequence questions, the ask path of act/prompt.mjs was run on one bare brain with the knowledge tier on and off, interleaved per question, the model cell on provider ${cfg.provider}. With the tier on, ${w.on.native} of ${w.on.n} wiki questions (${pct(w.on.nativeShare)}) were answered natively, without reaching a model cell, against ${w.off.native} (${pct(w.off.nativeShare)}) with it off; wiki accuracy was ${pct(w.on.accuracy)} on and ${pct(w.off.accuracy)} off, the native answers took a mean ${w.on.nativeMeanUs === null ? 'n/a' : w.on.nativeMeanUs} microseconds, and the model cell was called ${w.on.modelCalls} times on and ${w.off.modelCalls} off. On the suite the tier changed nothing it could: accuracy ${pct(s.on.accuracy)} on and ${pct(s.off.accuracy)} off, ${s.on.native} and ${s.off.native} native, ${s.on.modelCalls} and ${s.off.modelCalls} model calls. The confidence floor was ${cfg.floor ?? KNOWLEDGE.floor}, chosen on the ${pool - wiki.length} held-out records outside this draw. ${leaks} hidden sentences were found in the store. The bar ${barMet ? 'is met' : 'is not met'}.`;
   const verdict = {
-    at, command: cfg.command, node: process.version, isTheBar: full, barMet, statement,
-    split: splitFor({ n: cfg.n, perSuite: cfg.perSuite }),
+    at, command: cfg.command, node: process.version, isTheBar: full, barMet, contaminated: null, statement,
+    split: splitFor({ n: cfg.n, perSuite: cfg.perSuite, drawSeed: DRAW_SEED, leaks, priorGrade: priorGradeOf(DRAW_SEED) }),
     bar: 'the native share on the wiki questions rises with the tier on, and the suite accuracy does not fall',
     checks,
     config: { n: cfg.n, perSuite: cfg.perSuite, store: path.relative(path.join(HERE, '..'), cfg.store), floor: cfg.floor ?? KNOWLEDGE.floor, floorShipped: KNOWLEDGE.floor, pool: KNOWLEDGE.pool, provider: cfg.provider, model: cfg.provider === 'ollama' ? cfg.model : null, drawSeed: DRAW_SEED, route: 'direct', interleaved: 'even questions tier on first, odd questions tier off first' },
@@ -236,6 +255,11 @@ async function bar(cfg) {
     heldoutPool: pool,
     printed: lines,
   };
+  // board 23 builder (item contamination-split, fix pass): the gate counts contaminated only when it is
+  // true, so a reason in the split is marked at the top level and said in the statement
+  verdict.contaminated = typeof verdict.split.contaminated === 'string';
+  if (verdict.contaminated) verdict.statement += ' Contaminated: ' + verdict.split.contaminated + '.';
+  say(`split: contaminated ${verdict.contaminated ? verdict.split.contaminated : 'false'}`);
   fs.mkdirSync(VERDICTS, { recursive: true });
   const file = path.join(VERDICTS, full ? 'recall.json' : 'recall-partial.json');
   fs.writeFileSync(file, JSON.stringify(verdict, null, 2) + '\n');

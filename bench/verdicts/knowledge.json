@@ -1,9 +1,177 @@
 {
- "at": "2026-09-23T21:53:15.853Z",
- "command": "node bench/knowledge.mjs",
+ "at": "2026-09-27T13:42:48.550Z",
+ "command": "node bench/knowledge.mjs --store C:/Users/ybmic/AppData/Local/Temp/claude/C--Users-ybmic-Downloads-claudeskillsvideo-to-website/f305380b-0480-49b0-97e2-42df3fa7eb30/scratchpad/board23/contamination-split/kstore/store",
  "node": "v24.15.0",
  "isTheBar": true,
- "statement": "The knowledge tier ingested the whole Simple English Wikipedia dump (284749 articles) at 3950.7 articles/s with a bz2 reader written for it, holding 284454 articles (breadth 0.9990) as 1911943 facts at 1365 disk and 407 memory bytes per article. On 200 held-out first sentences drawn by seed, asked \"What is <title>?\", its first answer held the hidden key noun's head 62.5% of the time and one of its first five 78.5%, against 9.0% and 13.0% for the title alone, at a mean 8.79 ms per query over 284749 articles. Of the organism's memory kinds asked to hold the same title keys, knowledge held at this scale; semantic and assoc stop at their 4096 capacity and episodic at 65536. The bar is met.",
+ "barMet": true,
+ "contaminated": false,
+ "statement": "The knowledge tier ingested the whole Simple English Wikipedia dump (284749 articles) at 2821.5 articles/s with a bz2 reader written for it, holding 284454 articles (breadth 0.9990) as 1911943 facts at 1365 disk and 407 memory bytes per article. On 200 held-out first sentences drawn by seed, asked \"What is <title>?\", its first answer held the hidden key noun's head 62.5% of the time and one of its first five 78.5%, against 9.0% and 13.0% for the title alone, at a mean 5.18 ms per query over 284749 articles. Of the organism's memory kinds asked to hold the same title keys, knowledge held at this scale; semantic and assoc stop at their 4096 capacity and episodic at 65536. The store graded was written by this run to ../../../AppData/Local/Temp/claude/C--Users-ybmic-Downloads-claudeskillsvideo-to-website/f305380b-0480-49b0-97e2-42df3fa7eb30/scratchpad/board23/contamination-split/kstore/store, so the shared store other benches read was never rewritten under them, and its 13 files and 388459374 bytes hash the same as bench/fixtures/wiki/store. The bar is met.",
+ "split": {
+  "development": {
+   "what": "the ingested dump: every article tools/ingest-wiki.mjs streamed into the knowledge tier, with the marked first sentences left out"
+  },
+  "heldOut": {
+   "what": "the first sentences a seeded title mark hid from the ingest (notes/knowledge.md held-out rule), drawn by seed and never ingested",
+   "n": 200,
+   "seed": "knowledge-draw-2026-09-23",
+   "leaks": 0,
+   "leakCheck": "counted by the run"
+  },
+  "contaminated": false
+ },
+ "store": {
+  "dir": "../../../AppData/Local/Temp/claude/C--Users-ybmic-Downloads-claudeskillsvideo-to-website/f305380b-0480-49b0-97e2-42df3fa7eb30/scratchpad/board23/contamination-split/kstore/store",
+  "isDefault": false,
+  "writtenByThisRun": true,
+  "fingerprint": {
+   "sha256": "0753204409d1430933f59db1d54f8082265155af0d572203d2f016f127bd6805",
+   "files": 13,
+   "bytes": 388459374,
+   "perFile": [
+    {
+     "name": "articles.bin",
+     "bytes": 3416988,
+     "sha256": "bd013a3115cf3cb0d77eb228846d33c77f2de630a2052a556d22611f7d83c62e"
+    },
+    {
+     "name": "catdir.bin",
+     "bytes": 1167856,
+     "sha256": "6d7bc1fd3a404cb76978dc26be0e793e8e1668735fb24f45737a3569f924398f"
+    },
+    {
+     "name": "catheads.txt",
+     "bytes": 3159134,
+     "sha256": "9f7a85a34cf89eb7e2414fbc0735eac1262ffc63977c2099e7ef2a2b57fdff30"
+    },
+    {
+     "name": "dict.bin",
+     "bytes": 6747280,
+     "sha256": "f249b3ae0e3049364c3a166ea6f47ccfbaf5051c12a7dda9c41bb3401b58ece7"
+    },
+    {
+     "name": "heldout.jsonl",
+     "bytes": 133786,
+     "sha256": "40581f08c08a84bdb40c1034d1e7dc2381beb4e4a6b2a927921bd8473a18fb0c"
+    },
+    {
+     "name": "items.bin",
+     "bytes": 17573536,
+     "sha256": "9afa151a4c678d0efaf6e5ab1f20d0bece5beab9cc4a5d6a738cd9cb99699cae"
+    },
+    {
+     "name": "meta.json",
+     "bytes": 1396,
+     "sha256": "c14e6c933ad8c8d78784b85ccb681c522d5b44f6549e17361f520574da2c1799"
+    },
+    {
+     "name": "postings.bin",
+     "bytes": 64952644,
+     "sha256": "a0f3b9b82a7154807b02db2844bb9157d8b279d77c3221083f67657e91521e87"
+    },
+    {
+     "name": "records.bin",
+     "bytes": 204470158,
+     "sha256": "e29454bfa130d5de80d65192ac46872b289d2e2a7c5c01fb7f59ce5f72fd888c"
+    },
+    {
+     "name": "sigs.bin",
+     "bytes": 70294144,
+     "sha256": "627ceffc6820c1a5c866af8f9356ed615d62feaed9d3138c7bb810513c2d9a91"
+    },
+    {
+     "name": "tbands.bin",
+     "bytes": 11209152,
+     "sha256": "ba971b729e5dc9b6ba821e6e0415aa3b9b0397e4e0c0f045f58ff41cee1c52d8"
+    },
+    {
+     "name": "thash.bin",
+     "bytes": 1138996,
+     "sha256": "445f121d6e8baec94990dbdb6b68ed938db42e3b87b806410dff01e3d1c36b14"
+    },
+    {
+     "name": "ttable.bin",
+     "bytes": 4194304,
+     "sha256": "332dcfe41a7b7b565520785d09bc47a3959fd4361378d98309ed5289f630f6ac"
+    }
+   ]
+  },
+  "default": {
+   "dir": "bench/fixtures/wiki/store",
+   "fingerprint": {
+    "sha256": "0753204409d1430933f59db1d54f8082265155af0d572203d2f016f127bd6805",
+    "files": 13,
+    "bytes": 388459374,
+    "perFile": [
+     {
+      "name": "articles.bin",
+      "bytes": 3416988,
+      "sha256": "bd013a3115cf3cb0d77eb228846d33c77f2de630a2052a556d22611f7d83c62e"
+     },
+     {
+      "name": "catdir.bin",
+      "bytes": 1167856,
+      "sha256": "6d7bc1fd3a404cb76978dc26be0e793e8e1668735fb24f45737a3569f924398f"
+     },
+     {
+      "name": "catheads.txt",
+      "bytes": 3159134,
+      "sha256": "9f7a85a34cf89eb7e2414fbc0735eac1262ffc63977c2099e7ef2a2b57fdff30"
+     },
+     {
+      "name": "dict.bin",
+      "bytes": 6747280,
+      "sha256": "f249b3ae0e3049364c3a166ea6f47ccfbaf5051c12a7dda9c41bb3401b58ece7"
+     },
+     {
+      "name": "heldout.jsonl",
+      "bytes": 133786,
+      "sha256": "40581f08c08a84bdb40c1034d1e7dc2381beb4e4a6b2a927921bd8473a18fb0c"
+     },
+     {
+      "name": "items.bin",
+      "bytes": 17573536,
+      "sha256": "9afa151a4c678d0efaf6e5ab1f20d0bece5beab9cc4a5d6a738cd9cb99699cae"
+     },
+     {
+      "name": "meta.json",
+      "bytes": 1396,
+      "sha256": "c14e6c933ad8c8d78784b85ccb681c522d5b44f6549e17361f520574da2c1799"
+     },
+     {
+      "name": "postings.bin",
+      "bytes": 64952644,
+      "sha256": "a0f3b9b82a7154807b02db2844bb9157d8b279d77c3221083f67657e91521e87"
+     },
+     {
+      "name": "records.bin",
+      "bytes": 204470158,
+      "sha256": "e29454bfa130d5de80d65192ac46872b289d2e2a7c5c01fb7f59ce5f72fd888c"
+     },
+     {
+      "name": "sigs.bin",
+      "bytes": 70294144,
+      "sha256": "627ceffc6820c1a5c866af8f9356ed615d62feaed9d3138c7bb810513c2d9a91"
+     },
+     {
+      "name": "tbands.bin",
+      "bytes": 11209152,
+      "sha256": "ba971b729e5dc9b6ba821e6e0415aa3b9b0397e4e0c0f045f58ff41cee1c52d8"
+     },
+     {
+      "name": "thash.bin",
+      "bytes": 1138996,
+      "sha256": "445f121d6e8baec94990dbdb6b68ed938db42e3b87b806410dff01e3d1c36b14"
+     },
+     {
+      "name": "ttable.bin",
+      "bytes": 4194304,
+      "sha256": "332dcfe41a7b7b565520785d09bc47a3959fd4361378d98309ed5289f630f6ac"
+     }
+    ]
+   }
+  },
+  "sameAsDefault": true
+ },
  "bar": {
   "n": 200,
   "msPerQuery": 50,
@@ -31,8 +199,8 @@
  "ingest": {
   "complete": true,
   "limit": null,
-  "seconds": 72.0764129,
-  "articlesPerSecond": 3950.654431083654,
+  "seconds": 100.9205858,
+  "articlesPerSecond": 2821.515528698011,
   "counts": {
    "pages": 560605,
    "ns0": 399730,
@@ -75,8 +243,8 @@
    "truncated": 0,
    "categoriesWithPrior": 72991
   },
-  "fullDumpArithmetic": "the whole dump ingested in 1.20 min, under the 40 min cap",
-  "peakRssMB": 1647.33984375
+  "fullDumpArithmetic": "the whole dump ingested in 1.68 min, under the 40 min cap",
+  "peakRssMB": 1747.80078125
  },
  "breadth": {
   "held": 284454,
@@ -105,7 +273,7 @@
    },
    "bytesPerArticle": 1365.1563767779676
   },
-  "residentOpen": 124529024
+  "residentOpen": 67099872
  },
  "heldout": {
   "rule": "seeded title mark (hash32(seed + NUL + title) % every == 0); first sentence hidden when it is about the title and has a key noun phrase; graded on the head noun, plural folded",
@@ -121,10 +289,10 @@
   "null1": 0.09,
   "null5": 0.13,
   "answered": 0.995,
-  "meanMs": 8.793543,
-  "p50Ms": 7.0382,
-  "p95Ms": 18.1821,
-  "maxMs": 24.316,
+  "meanMs": 5.1756720000000005,
+  "p50Ms": 4.1733,
+  "p95Ms": 11.4833,
+  "maxMs": 22.8245,
   "leaksExcluded": 0,
   "provenance": [
    "memory"
@@ -137,34 +305,34 @@
     "queries": 50,
     "tiers": {
      "semantic": {
-      "capacity": 4096,
+      "capacity": 15416,
       "held": 1024,
       "recall1": 1,
-      "msPerQuery": 0.49906,
-      "msInsert": 115.243,
+      "msPerQuery": 0.7838720000000001,
+      "msInsert": 143.7542,
       "bytesPerKey": 8192
      },
      "assoc": {
       "capacity": 4096,
       "held": 1024,
       "recall1": 1,
-      "msPerQuery": 0.719606,
-      "msInsert": 1.9943,
+      "msPerQuery": 1.300938,
+      "msInsert": 4.7924,
       "bytesPerKey": 8192
      },
      "episodic": {
       "capacity": 65536,
       "held": 1024,
       "recall1": 1,
-      "msPerQuery": 0.088298,
-      "msInsert": 3.7012,
+      "msPerQuery": 0.12412000000000001,
+      "msInsert": 5.1964,
       "bytesPerKey": 8192
      },
      "knowledge": {
       "capacity": null,
       "held": 284749,
       "recall1": 1,
-      "msPerQuery": 9.946848,
+      "msPerQuery": 7.296032,
       "msInsert": null,
       "bytesPerKey": 32
      }
@@ -175,34 +343,34 @@
     "queries": 50,
     "tiers": {
      "semantic": {
-      "capacity": 4096,
+      "capacity": 15416,
       "held": 4096,
       "recall1": 1,
-      "msPerQuery": 6.349888,
-      "msInsert": 518.3392,
+      "msPerQuery": 9.456038,
+      "msInsert": 631.4277,
       "bytesPerKey": 8192
      },
      "assoc": {
       "capacity": 4096,
       "held": 4096,
       "recall1": 1,
-      "msPerQuery": 3.911282,
-      "msInsert": 12.17,
+      "msPerQuery": 6.553128,
+      "msInsert": 18.1407,
       "bytesPerKey": 8192
      },
      "episodic": {
       "capacity": 65536,
       "held": 4096,
       "recall1": 1,
-      "msPerQuery": 0.119422,
-      "msInsert": 15.1549,
+      "msPerQuery": 0.253468,
+      "msInsert": 32.0858,
       "bytesPerKey": 8192
      },
      "knowledge": {
       "capacity": null,
       "held": 284749,
       "recall1": 1,
-      "msPerQuery": 11.951538000000001,
+      "msPerQuery": 5.742208000000001,
       "msInsert": null,
       "bytesPerKey": 32
      }
@@ -213,34 +381,34 @@
     "queries": 50,
     "tiers": {
      "semantic": {
-      "capacity": 4096,
-      "held": 4096,
-      "recall1": 0.26,
-      "msPerQuery": 42.15289,
-      "msInsert": 4496.7139,
+      "capacity": 15416,
+      "held": 15416,
+      "recall1": 0.94,
+      "msPerQuery": 48.239431999999994,
+      "msInsert": 3312.3439,
       "bytesPerKey": 8192
      },
      "assoc": {
       "capacity": 4096,
       "held": 4096,
       "recall1": 0.26,
-      "msPerQuery": 3.850188,
-      "msInsert": 57.8047,
+      "msPerQuery": 7.000922,
+      "msInsert": 98.1331,
       "bytesPerKey": 8192
      },
      "episodic": {
       "capacity": 65536,
       "held": 16384,
       "recall1": 0.98,
-      "msPerQuery": 0.330916,
-      "msInsert": 72.5161,
+      "msPerQuery": 0.41995600000000005,
+      "msInsert": 132.9024,
       "bytesPerKey": 8192
      },
      "knowledge": {
       "capacity": null,
       "held": 284749,
       "recall1": 1,
-      "msPerQuery": 11.70154,
+      "msPerQuery": 4.45451,
       "msInsert": null,
       "bytesPerKey": 32
      }
@@ -251,10 +419,10 @@
   "verdict": {
    "semantic": {
     "holds": false,
-    "capacity": 4096,
-    "heldOfN": "4096/16384",
-    "recall1": 0.26,
-    "msAtA": 2930.418279934082,
+    "capacity": 15416,
+    "heldOfN": "15416/16384",
+    "recall1": 0.94,
+    "msAtA": 891.0307487394913,
     "keyBytesAtA": 2332663808
    },
    "assoc": {
@@ -262,7 +430,7 @@
     "capacity": 4096,
     "heldOfN": "4096/16384",
     "recall1": 0.26,
-    "msAtA": 267.660445022461,
+    "msAtA": 486.6956881293945,
     "keyBytesAtA": 2332663808
    },
    "episodic": {
@@ -270,7 +438,7 @@
     "capacity": 65536,
     "heldOfN": "16384/16384",
     "recall1": 0.98,
-    "msAtA": 5.751220708251953,
+    "msAtA": 7.298709170166017,
     "keyBytesAtA": 2332663808
    },
    "knowledge": {
@@ -278,7 +446,7 @@
     "capacity": null,
     "heldOfN": "284749/16384",
     "recall1": 1,
-    "msAtA": 11.70154,
+    "msAtA": 4.45451,
     "keyBytesAtA": 9111968
    }
   }
@@ -295,7 +463,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 14.486
+   "ms": 11.483
   },
   {
    "title": "Glendale, Arizona",
@@ -308,7 +476,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 16.394
+   "ms": 12.62
   },
   {
    "title": "Marquay, Pas-de-Calais",
@@ -321,7 +489,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.824
+   "ms": 2.431
   },
   {
    "title": "Mont-Saint-Martin, Aisne",
@@ -334,7 +502,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.075
+   "ms": 2.795
   },
   {
    "title": "Jón Jósep Snæbjörnsson",
@@ -347,7 +515,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 18.68
+   "ms": 14.245
   },
   {
    "title": "Irving Gerstein",
@@ -360,7 +528,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 11.091
+   "ms": 8.146
   },
   {
    "title": "Ahome",
@@ -373,7 +541,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.753
+   "ms": 2.697
   },
   {
    "title": "Kendrick Lamar",
@@ -386,7 +554,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 15.703
+   "ms": 12.454
   },
   {
    "title": "List of Manitoba general elections",
@@ -399,7 +567,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 7.506
+   "ms": 4.986
   },
   {
    "title": "The Killers Are Our Guests",
@@ -412,7 +580,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.616
+   "ms": 4.476
   },
   {
    "title": "Ali Shamkhani",
@@ -425,7 +593,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 8.639
+   "ms": 8.708
   },
   {
    "title": "Bégadan",
@@ -438,7 +606,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 2.881
+   "ms": 3.013
   },
   {
    "title": "Microsoft Office 2024",
@@ -451,7 +619,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 12.452
+   "ms": 12.039
   },
   {
    "title": "Giovanni Corrieri",
@@ -464,7 +632,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.309
+   "ms": 2.977
   },
   {
    "title": "Danila Yurov",
@@ -477,7 +645,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 6.783
+   "ms": 4.446
   },
   {
    "title": "Charlottesville, Virginia",
@@ -490,7 +658,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 12.46
+   "ms": 6.936
   },
   {
    "title": "Surques",
@@ -503,7 +671,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 2.648
+   "ms": 1.323
   },
   {
    "title": "Hadiya Khalaf Abbas",
@@ -516,7 +684,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.994
+   "ms": 5.843
   },
   {
    "title": "Area studies",
@@ -529,7 +697,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 16.013
+   "ms": 10.303
   },
   {
    "title": "Harrah, Oklahoma",
@@ -542,7 +710,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.288
+   "ms": 1.639
   },
   {
    "title": "Tumaba",
@@ -555,7 +723,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 5.513
+   "ms": 3.128
   },
   {
    "title": "BBC 6 Music",
@@ -568,7 +736,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.022
+   "ms": 3.405
   },
   {
    "title": "Izates II",
@@ -581,7 +749,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 10.471
+   "ms": 8.477
   },
   {
    "title": "Keio University",
@@ -594,7 +762,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 16.575
+   "ms": 10.613
   },
   {
    "title": "The Sea of Monsters",
@@ -607,7 +775,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 19.157
+   "ms": 8.595
   },
   {
    "title": "Bergères",
@@ -620,7 +788,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 5.913
+   "ms": 3.482
   },
   {
    "title": "Sodium arsenite",
@@ -633,7 +801,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.348
+   "ms": 1.873
   },
   {
    "title": "Unterlunkhofen",
@@ -646,7 +814,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 2.283
+   "ms": 1.361
   },
   {
    "title": "Mi pecado",
@@ -659,7 +827,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.747
+   "ms": 2.464
   },
   {
    "title": "Boidae",
@@ -672,7 +840,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 5.2
+   "ms": 3.149
   },
   {
    "title": "John Lundvik",
@@ -685,7 +853,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.975
+   "ms": 4.1
   },
   {
    "title": "Sophie Reynolds",
@@ -698,7 +866,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 8.344
+   "ms": 5.364
   },
   {
    "title": "Ka",
@@ -711,7 +879,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 16.269
+   "ms": 11.272
   },
   {
    "title": "John Dall",
@@ -724,7 +892,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 7.835
+   "ms": 4.484
   },
   {
    "title": "Blame It on the Rain",
@@ -737,7 +905,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 14.403
+   "ms": 8.396
   },
   {
    "title": "Surrender (1987 movie)",
@@ -750,7 +918,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 5.082
+   "ms": 3.235
   },
   {
    "title": "Prince of Asturias",
@@ -763,7 +931,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 15.613
+   "ms": 11.453
   },
   {
    "title": "Andrea Feldman",
@@ -776,7 +944,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 12.922
+   "ms": 8.481
   },
   {
    "title": "Going Inside a Storm",
@@ -789,7 +957,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.677
+   "ms": 4.282
   },
   {
    "title": "Mendrisio District",
@@ -802,7 +970,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 9.4
+   "ms": 6.291
   },
   {
    "title": "Antithesis",
@@ -815,7 +983,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 8.401
+   "ms": 5.258
   },
   {
    "title": "Arc",
@@ -828,7 +996,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 16.26
+   "ms": 7.757
   },
   {
    "title": "List of Nutri Ventures – The Quest for the 7 Kingdoms episodes",
@@ -841,7 +1009,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 2.984
+   "ms": 1.974
   },
   {
    "title": "Naseeruddin Shah",
@@ -854,7 +1022,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 9.239
+   "ms": 6.708
   },
   {
    "title": "Farley, Missouri",
@@ -867,7 +1035,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 23.078
+   "ms": 17.991
   },
   {
    "title": "Ennio Fantastichini",
@@ -880,7 +1048,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.347
+   "ms": 3.106
   },
   {
    "title": "National Medal of Science",
@@ -893,7 +1061,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 14.15
+   "ms": 8.802
   },
   {
    "title": "Bono",
@@ -906,7 +1074,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 18.939
+   "ms": 10.3
   },
   {
    "title": "UEFA Euro 2024 final",
@@ -919,7 +1087,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 15.1
+   "ms": 5.446
   },
   {
    "title": "Marine Corps Base Quantico",
@@ -932,7 +1100,7 @@
    "r5": false,
    "n1": false,
    "n5": true,
-   "ms": 4.607
+   "ms": 2.107
   },
   {
    "title": "Rudi Glöckner",
@@ -945,7 +1113,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.979
+   "ms": 2.836
   },
   {
    "title": "San Jose State Spartans",
@@ -958,7 +1126,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 7.128
+   "ms": 2.502
   },
   {
    "title": "The King of Fighters (movie)",
@@ -971,7 +1139,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 7.8
+   "ms": 3.084
   },
   {
    "title": "Muldrow, Oklahoma",
@@ -984,7 +1152,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.53
+   "ms": 1.56
   },
   {
    "title": "Secretary of State for Health and Social Care",
@@ -997,7 +1165,7 @@
    "r5": true,
    "n1": false,
    "n5": true,
-   "ms": 9.815
+   "ms": 3.854
   },
   {
    "title": "Magog, Quebec",
@@ -1010,7 +1178,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 5.083
+   "ms": 2.25
   },
   {
    "title": "Leapmotor B03X",
@@ -1023,7 +1191,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 5.787
+   "ms": 3.292
   },
   {
    "title": "Pentti Linkola",
@@ -1036,7 +1204,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 6.86
+   "ms": 3.108
   },
   {
    "title": "Faboideae",
@@ -1049,7 +1217,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 13.115
+   "ms": 4.803
   },
   {
    "title": "It Happened One Night",
@@ -1062,7 +1230,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 23.917
+   "ms": 8.98
   },
   {
    "title": "BBC Sports Personality of the Year Lifetime Achievement Award",
@@ -1075,7 +1243,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 24.316
+   "ms": 12.673
   },
   {
    "title": "Glenwood, Alabama",
@@ -1088,7 +1256,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.979
+   "ms": 1.684
   },
   {
    "title": "Cathy Come Home",
@@ -1101,7 +1269,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 9.942
+   "ms": 3.187
   },
   {
    "title": "Jean Thissen",
@@ -1114,7 +1282,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 22.14
+   "ms": 16.285
   },
   {
    "title": "Islesboro, Maine",
@@ -1127,7 +1295,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 11.804
+   "ms": 5.871
   },
   {
    "title": "Cauby Peixoto",
@@ -1140,7 +1308,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 10.727
+   "ms": 4.678
   },
   {
    "title": "Lego Batman 2: DC Super Heroes",
@@ -1153,7 +1321,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 5.855
+   "ms": 2.324
   },
   {
    "title": "Tim Pool",
@@ -1166,7 +1334,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 14.537
+   "ms": 5.327
   },
   {
    "title": "Wardell, Missouri",
@@ -1179,7 +1347,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 8.307
+   "ms": 3.558
   },
   {
    "title": "Xis",
@@ -1192,7 +1360,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.853
+   "ms": 2.322
   },
   {
    "title": "Barbon",
@@ -1205,7 +1373,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.036
+   "ms": 2.828
   },
   {
    "title": "G minor",
@@ -1218,7 +1386,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 8.728
+   "ms": 7.952
   },
   {
    "title": "Derby Playhouse",
@@ -1231,7 +1399,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 11.964
+   "ms": 8.271
   },
   {
    "title": "East Lynne (1931 movie)",
@@ -1244,7 +1412,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 16.004
+   "ms": 11.098
   },
   {
    "title": "Escalante, Utah",
@@ -1257,7 +1425,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.744
+   "ms": 3.856
   },
   {
    "title": "Jackie Jackson",
@@ -1270,7 +1438,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 14.248
+   "ms": 7.914
   },
   {
    "title": "Long Thanh International Airport",
@@ -1283,7 +1451,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 17.896
+   "ms": 10.657
   },
   {
    "title": "Ximen metro station",
@@ -1296,7 +1464,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 5.527
+   "ms": 3.168
   },
   {
    "title": "Siezbüttel",
@@ -1309,7 +1477,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 2.882
+   "ms": 1.291
   },
   {
    "title": "Nuevo Casas Grandes Municipality",
@@ -1322,7 +1490,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 2.629
+   "ms": 1.655
   },
   {
    "title": "William Riker",
@@ -1335,7 +1503,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.874
+   "ms": 4.389
   },
   {
    "title": "Speed Force",
@@ -1348,7 +1516,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 15.827
+   "ms": 9.345
   },
   {
    "title": "Govinda Prasad Kalauni",
@@ -1361,7 +1529,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 12.351
+   "ms": 7.393
   },
   {
    "title": "Taoyuan City",
@@ -1374,7 +1542,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 9.073
+   "ms": 6.782
   },
   {
    "title": "Parker County, Texas",
@@ -1387,7 +1555,7 @@
    "r5": true,
    "n1": false,
    "n5": true,
-   "ms": 6.315
+   "ms": 5.031
   },
   {
    "title": "Mental image",
@@ -1400,7 +1568,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 11.641
+   "ms": 6.63
   },
   {
    "title": "Roach's mouse-tailed dormouse",
@@ -1413,7 +1581,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 13.249
+   "ms": 8.302
   },
   {
    "title": "Mary Baker Eddy",
@@ -1426,7 +1594,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 3.859
+   "ms": 2.474
   },
   {
    "title": "Corona Australis",
@@ -1439,7 +1607,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 15.738
+   "ms": 10.274
   },
   {
    "title": "Penal colony",
@@ -1452,7 +1620,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 11.598
+   "ms": 6.601
   },
   {
    "title": "U.S. Route 25",
@@ -1465,7 +1633,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 8.366
+   "ms": 4.471
   },
   {
    "title": "Decentralization",
@@ -1478,7 +1646,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 8.137
+   "ms": 4.095
   },
   {
    "title": "Ezekiel Hart",
@@ -1491,7 +1659,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 7.401
+   "ms": 4.784
   },
   {
    "title": "Galician Institute of Aquaculture Training",
@@ -1504,7 +1672,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 9.955
+   "ms": 6.357
   },
   {
    "title": "Coinbase",
@@ -1517,7 +1685,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.06
+   "ms": 2.025
   },
   {
    "title": "Windows Phone 8.1",
@@ -1530,7 +1698,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 13.287
+   "ms": 6.649
   },
   {
    "title": "Dendropsophus rhea",
@@ -1543,7 +1711,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 14.252
+   "ms": 7.472
   },
   {
    "title": "Grammelot",
@@ -1556,7 +1724,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 4.08
+   "ms": 2.135
   },
   {
    "title": "Erinaceidae",
@@ -1569,7 +1737,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 5.402
+   "ms": 2.858
   },
   {
    "title": "Huo Qubing",
@@ -1582,7 +1750,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 5.714
+   "ms": 2.453
   },
   {
    "title": "The Victors (movie)",
@@ -1595,7 +1763,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 11.131
+   "ms": 5.819
   },
   {
    "title": "Pardon",
@@ -1608,7 +1776,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 18.711
+   "ms": 6.545
   },
   {
    "title": "Forever Your Girl (song)",
@@ -1621,7 +1789,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 5.406
+   "ms": 4.679
   },
   {
    "title": "Michael Robinson (footballer)",
@@ -1634,7 +1802,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 5.475
+   "ms": 2.604
   },
   {
    "title": "Yreka, California",
@@ -1647,7 +1815,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.78
+   "ms": 3.63
   },
   {
    "title": "Quonset hut",
@@ -1660,7 +1828,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 7.038
+   "ms": 4.111
   },
   {
    "title": "Rogers County, Oklahoma",
@@ -1673,7 +1841,7 @@
    "r5": true,
    "n1": false,
    "n5": true,
-   "ms": 3.679
+   "ms": 2.575
   },
   {
    "title": "Gamemaster",
@@ -1686,7 +1854,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 12.637
+   "ms": 5.71
   },
   {
    "title": "Rök runestone",
@@ -1699,7 +1867,7 @@
    "r5": false,
    "n1": true,
    "n5": true,
-   "ms": 5.769
+   "ms": 4.196
   },
   {
    "title": "Curtido",
@@ -1712,7 +1880,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 4.012
+   "ms": 2.794
   },
   {
    "title": "Jaworzno",
@@ -1725,7 +1893,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.767
+   "ms": 2.772
   },
   {
    "title": "Sartrouville",
@@ -1738,7 +1906,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 2.842
+   "ms": 1.821
   },
   {
    "title": "Ortenberg, Baden-Württemberg",
@@ -1751,7 +1919,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 10.954
+   "ms": 8.911
   },
   {
    "title": "Paulo Wanchope",
@@ -1764,7 +1932,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 12.213
+   "ms": 8.569
   },
   {
    "title": "Kat Bjelland",
@@ -1777,7 +1945,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.861
+   "ms": 2.763
   },
   {
    "title": "Clifford Olson",
@@ -1790,7 +1958,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 12.032
+   "ms": 5.792
   },
   {
    "title": "Baja California Sur",
@@ -1803,7 +1971,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 11.663
+   "ms": 6.685
   },
   {
    "title": "Antônio Carlos Zago",
@@ -1816,7 +1984,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.469
+   "ms": 2.655
   },
   {
    "title": "Rounding",
@@ -1829,7 +1997,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 14.04
+   "ms": 8.663
   },
   {
    "title": "Jacaranda mimosifolia",
@@ -1842,7 +2010,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 3.316
+   "ms": 2.416
   },
   {
    "title": "ISO 3166-2:SK",
@@ -1855,7 +2023,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 10.611
+   "ms": 4.488
   },
   {
    "title": "Rajaraja Chola I",
@@ -1868,7 +2036,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.21
+   "ms": 3.053
   },
   {
    "title": "Lockdown (2000 movie)",
@@ -1881,7 +2049,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 19.055
+   "ms": 10.482
   },
   {
    "title": "Mark LaVarre",
@@ -1894,7 +2062,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 14.734
+   "ms": 21.719
   },
   {
    "title": "Eochaid of Scotland",
@@ -1907,7 +2075,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 12.333
+   "ms": 5.939
   },
   {
    "title": "Gujarat",
@@ -1920,7 +2088,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 11.566
+   "ms": 7.455
   },
   {
    "title": "Amyloplast",
@@ -1933,7 +2101,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 2.569
+   "ms": 1.421
   },
   {
    "title": "Lake Victoria",
@@ -1946,7 +2114,7 @@
    "r5": true,
    "n1": false,
    "n5": true,
-   "ms": 11.971
+   "ms": 5.613
   },
   {
    "title": "György Baló",
@@ -1959,7 +2127,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.012
+   "ms": 1.621
   },
   {
    "title": "Wilburton, Oklahoma",
@@ -1972,7 +2140,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 5.056
+   "ms": 2.86
   },
   {
    "title": "Ceropegia elegans",
@@ -1985,7 +2153,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 11.29
+   "ms": 5.288
   },
   {
    "title": "Hyla orientalis",
@@ -1998,7 +2166,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 8.818
+   "ms": 5.52
   },
   {
    "title": "The Return of Saint Luke",
@@ -2011,7 +2179,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 7.085
+   "ms": 4.043
   },
   {
    "title": "Running Water (song)",
@@ -2024,7 +2192,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 13.513
+   "ms": 6.656
   },
   {
    "title": "International Union of Railways",
@@ -2037,7 +2205,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.422
+   "ms": 3.123
   },
   {
    "title": "Roberto Digón",
@@ -2050,7 +2218,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.309
+   "ms": 3.015
   },
   {
    "title": "Wayne, Michigan",
@@ -2063,7 +2231,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 10.656
+   "ms": 4.173
   },
   {
    "title": "Polyxena of Hesse-Rotenburg",
@@ -2076,7 +2244,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.5
+   "ms": 2.427
   },
   {
    "title": "Birkir Már Sævarsson",
@@ -2089,7 +2257,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.394
+   "ms": 1.47
   },
   {
    "title": "Ibarra, Ecuador",
@@ -2102,7 +2270,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 5.936
+   "ms": 2.499
   },
   {
    "title": "Jos Vandeloo",
@@ -2115,7 +2283,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 7.006
+   "ms": 4.334
   },
   {
    "title": "Evan Lysacek",
@@ -2128,7 +2296,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.634
+   "ms": 2.473
   },
   {
    "title": "Krásná Hora",
@@ -2141,7 +2309,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.788
+   "ms": 2.755
   },
   {
    "title": "Vittoria Bogo Deledda",
@@ -2154,7 +2322,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 2.704
+   "ms": 1.378
   },
   {
    "title": "Eagar, Arizona",
@@ -2167,7 +2335,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 9.469
+   "ms": 6.486
   },
   {
    "title": "Gary Eck",
@@ -2180,7 +2348,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 5.741
+   "ms": 2.683
   },
   {
    "title": "Garabit Viaduct",
@@ -2193,7 +2361,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 5.103
+   "ms": 4.48
   },
   {
    "title": "Mendenhall Springs, California",
@@ -2206,7 +2374,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.974
+   "ms": 4.547
   },
   {
    "title": "Bogo, Cebu",
@@ -2219,7 +2387,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.934
+   "ms": 2.75
   },
   {
    "title": "Willem Aantjes",
@@ -2232,7 +2400,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 5.213
+   "ms": 3.268
   },
   {
    "title": "Orange County, North Carolina",
@@ -2245,7 +2413,7 @@
    "r5": true,
    "n1": false,
    "n5": true,
-   "ms": 8.479
+   "ms": 3.285
   },
   {
    "title": "Paul Sand",
@@ -2258,7 +2426,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 12.132
+   "ms": 5.832
   },
   {
    "title": "Epigastric artery",
@@ -2271,7 +2439,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 8.622
+   "ms": 4.936
   },
   {
    "title": "Cape Horn",
@@ -2284,7 +2452,7 @@
    "r5": true,
    "n1": false,
    "n5": true,
-   "ms": 13.225
+   "ms": 6.545
   },
   {
    "title": "Ivor Grattan-Guinness",
@@ -2297,7 +2465,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.284
+   "ms": 2.6
   },
   {
    "title": "Stephen P. Cohen",
@@ -2310,7 +2478,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.839
+   "ms": 2.646
   },
   {
    "title": "Fabiola Yáñez",
@@ -2323,7 +2491,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 10.961
+   "ms": 6.202
   },
   {
    "title": "David Reed (American football)",
@@ -2336,7 +2504,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 17.128
+   "ms": 6.815
   },
   {
    "title": "Aging in cats",
@@ -2349,7 +2517,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 18.182
+   "ms": 8.498
   },
   {
    "title": "Sames, Pyrénées-Atlantiques",
@@ -2362,7 +2530,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.519
+   "ms": 2.062
   },
   {
    "title": "Faure Gnassingbé",
@@ -2375,7 +2543,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.33
+   "ms": 3.885
   },
   {
    "title": "Steeple",
@@ -2388,7 +2556,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 18.111
+   "ms": 11.986
   },
   {
    "title": "Niklas Bäckström",
@@ -2401,7 +2569,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 9.216
+   "ms": 4.199
   },
   {
    "title": "Vosselaar",
@@ -2414,7 +2582,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 2.814
+   "ms": 1.907
   },
   {
    "title": "Amy Logan",
@@ -2427,7 +2595,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 5.619
+   "ms": 2.741
   },
   {
    "title": "Rives, Missouri",
@@ -2440,7 +2608,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 11.584
+   "ms": 6.687
   },
   {
    "title": "Allobates bacurau",
@@ -2453,7 +2621,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 10.187
+   "ms": 5.004
   },
   {
    "title": "Karkkila",
@@ -2466,7 +2634,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 5.059
+   "ms": 3.453
   },
   {
    "title": "Gekisou Sentai Carranger",
@@ -2479,7 +2647,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.98
+   "ms": 3.619
   },
   {
    "title": "Parvicursor",
@@ -2492,7 +2660,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.059
+   "ms": 2.551
   },
   {
    "title": "Dori Friend",
@@ -2505,7 +2673,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.101
+   "ms": 3.147
   },
   {
    "title": "Beyond the Gates",
@@ -2518,7 +2686,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.476
+   "ms": 2.567
   },
   {
    "title": "Santa Bárbara, Honduras",
@@ -2531,7 +2699,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 12.192
+   "ms": 6.514
   },
   {
    "title": "Cypripedium reginae",
@@ -2544,7 +2712,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 4.922
+   "ms": 2.515
   },
   {
    "title": "Tuscumbia, Missouri",
@@ -2557,7 +2725,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.757
+   "ms": 2.355
   },
   {
    "title": "Joseph Cotten",
@@ -2570,7 +2738,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 12.902
+   "ms": 5.916
   },
   {
    "title": "Kangxi Emperor",
@@ -2583,7 +2751,7 @@
    "r5": true,
    "n1": true,
    "n5": true,
-   "ms": 18.485
+   "ms": 8.191
   },
   {
    "title": "Paw Patrol season 9",
@@ -2596,7 +2764,7 @@
    "r5": true,
    "n1": false,
    "n5": true,
-   "ms": 3.162
+   "ms": 2.145
   },
   {
    "title": "Bruno Maderna",
@@ -2609,7 +2777,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.668
+   "ms": 2.386
   },
   {
    "title": "Eustis, Nebraska",
@@ -2622,7 +2790,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 7.356
+   "ms": 4.685
   },
   {
    "title": "Eric Lindros",
@@ -2635,7 +2803,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.665
+   "ms": 2.382
   },
   {
    "title": "Spencer Bohren",
@@ -2648,7 +2816,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 4.157
+   "ms": 2.905
   },
   {
    "title": "Luigi Radice",
@@ -2661,7 +2829,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.826
+   "ms": 2.651
   },
   {
    "title": "Karl Kroeber",
@@ -2674,7 +2842,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 11.943
+   "ms": 5.238
   },
   {
    "title": "Hal Roach",
@@ -2687,7 +2855,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 5.511
+   "ms": 3.177
   },
   {
    "title": "Cave, Missouri",
@@ -2700,7 +2868,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 2.535
+   "ms": 1.348
   },
   {
    "title": "Pocklington",
@@ -2713,7 +2881,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 3.253
+   "ms": 2.131
   },
   {
    "title": "Audio description",
@@ -2726,7 +2894,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 3.871
+   "ms": 2.039
   },
   {
    "title": "Gubbio",
@@ -2739,7 +2907,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.207
+   "ms": 2.512
   },
   {
    "title": "Ebensfeld",
@@ -2752,7 +2920,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 2.288
+   "ms": 1.136
   },
   {
    "title": "Klaus, Vorarlberg",
@@ -2765,7 +2933,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 13.967
+   "ms": 5.343
   },
   {
    "title": "Premier of Manitoba",
@@ -2778,7 +2946,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 6.837
+   "ms": 2.547
   },
   {
    "title": "The Phantom of Liberty",
@@ -2791,7 +2959,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 7.423
+   "ms": 3.466
   },
   {
    "title": "British Rail Class 01",
@@ -2804,7 +2972,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 8.686
+   "ms": 3.234
   },
   {
    "title": "1704",
@@ -2817,7 +2985,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 17.513
+   "ms": 8.791
   },
   {
    "title": "Lynda Thomas",
@@ -2830,7 +2998,7 @@
    "r5": false,
    "n1": false,
    "n5": false,
-   "ms": 14.819
+   "ms": 6.763
   },
   {
    "title": "John E. Sununu",
@@ -2843,7 +3011,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 9.468
+   "ms": 4.456
   },
   {
    "title": "Leo Belgicus",
@@ -2856,7 +3024,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 4.449
+   "ms": 2.723
   },
   {
    "title": "Female",
@@ -2869,7 +3037,7 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 15.091
+   "ms": 22.825
   },
   {
    "title": "Brownstown, Illinois",
@@ -2882,27 +3050,29 @@
    "r5": true,
    "n1": false,
    "n5": false,
-   "ms": 2.684
+   "ms": 1.56
   }
  ],
  "printed": [
-  "knowledge bar: node bench/knowledge.mjs",
-  "dump bench\\fixtures\\wiki\\simplewiki-latest-pages-articles-multistream.xml.bz2 (385846687 bytes), store bench\\fixtures\\wiki\\store, the whole dump, held-out every 400 by seed knowledge-heldout-2026-09-23",
-  "ingest: 284749 articles read (the whole dump) in 72.1 s, 3950.7 articles/s; bz2 385846687 bytes in, 1696517417 out, 5609 streams, 4 workers",
+  "knowledge bar: node bench/knowledge.mjs --store C:/Users/ybmic/AppData/Local/Temp/claude/C--Users-ybmic-Downloads-claudeskillsvideo-to-website/f305380b-0480-49b0-97e2-42df3fa7eb30/scratchpad/board23/contamination-split/kstore/store",
+  "dump bench\\fixtures\\wiki\\simplewiki-latest-pages-articles-multistream.xml.bz2 (385846687 bytes), store ..\\..\\..\\AppData\\Local\\Temp\\claude\\C--Users-ybmic-Downloads-claudeskillsvideo-to-website\\f305380b-0480-49b0-97e2-42df3fa7eb30\\scratchpad\\board23\\contamination-split\\kstore\\store, the whole dump, held-out every 400 by seed knowledge-heldout-2026-09-23",
+  "ingest: 284749 articles read (the whole dump) in 100.9 s, 2821.5 articles/s; bz2 385846687 bytes in, 1696517417 out, 5609 streams, 4 workers",
   "held: 284454 articles with at least one fact, 295 empty, 114981 redirects skipped; 1911943 facts + 284749 title items; breadth 284454/284749 = 0.9990",
-  "bytes: 1365 disk bytes/article (388324192 total), 407 memory bytes/article (115742256 resident); ingest peak RSS 1647 MB",
-  "full dump: the whole dump ingested in 1.20 min, under the 40 min cap",
+  "bytes: 1365 disk bytes/article (388324192 total), 407 memory bytes/article (115742256 resident); ingest peak RSS 1748 MB",
+  "full dump: the whole dump ingested in 1.68 min, under the 40 min cap",
   "held-out: 628 first sentences hidden (101 marked articles had no key noun phrase about their title)",
   "draw: 200 of 628 held-out facts by seed knowledge-draw-2026-09-23",
   "recall@1 tier 62.5% vs null (title alone) 9.0%; recall@5 tier 78.5% vs null 13.0%; answered 99.5%; provenance memory",
-  "ms per query: mean 8.79, p50 7.04, p95 18.18, max 24.32 at 284749 articles (2196692 items); hidden sentences found in memory and excluded: 0",
+  "ms per query: mean 5.18, p50 4.17, p95 11.48, max 22.82 at 284749 articles (2196692 items); hidden sentences found in memory and excluded: 0",
   "  e.g. \"What is Glendale, Arizona?\" gold \"city\" -> \"cities\" [categories of \"Glendale, Arizona\", memory] r@1",
   "  e.g. \"What is Marquay, Pas-de-Calais?\" gold \"commune\" -> \"communes\" [categories of \"Marquay, Pas-de-Calais\", memory] r@1",
   "  e.g. \"What is Ali Shamkhani?\" gold \"iranian naval officer\" -> \"politician\" [category.prior of \"Ali Shamkhani\", memory] miss",
-  "tier probe N=1024: semantic held 1024 r@1 1.00 0.50 ms/q; assoc held 1024 r@1 1.00 0.72 ms/q; episodic held 1024 r@1 1.00 0.09 ms/q; knowledge held 284749 r@1 1.00 9.95 ms/q",
-  "tier probe N=4096: semantic held 4096 r@1 1.00 6.35 ms/q; assoc held 4096 r@1 1.00 3.91 ms/q; episodic held 4096 r@1 1.00 0.12 ms/q; knowledge held 284749 r@1 1.00 11.95 ms/q",
-  "tier probe N=16384: semantic held 4096 r@1 0.26 42.15 ms/q; assoc held 4096 r@1 0.26 3.85 ms/q; episodic held 16384 r@1 0.98 0.33 ms/q; knowledge held 284749 r@1 1.00 11.70 ms/q",
-  "holds at 284749 articles: semantic no (capacity 4096, 2930.42 ms/q scaled, 2224.6 MB of keys); assoc no (capacity 4096, 267.66 ms/q scaled, 2224.6 MB of keys); episodic no (capacity 65536, 5.75 ms/q scaled, 2224.6 MB of keys); knowledge HOLDS (capacity disk, 11.70 ms/q scaled, 8.7 MB of keys)",
-  "bar: ingestedTheDump yes, drew200 yes, beatsNullAt1 yes, beatsNullAt5 yes, under50ms yes -> MET"
+  "tier probe N=1024: semantic held 1024 r@1 1.00 0.78 ms/q; assoc held 1024 r@1 1.00 1.30 ms/q; episodic held 1024 r@1 1.00 0.12 ms/q; knowledge held 284749 r@1 1.00 7.30 ms/q",
+  "tier probe N=4096: semantic held 4096 r@1 1.00 9.46 ms/q; assoc held 4096 r@1 1.00 6.55 ms/q; episodic held 4096 r@1 1.00 0.25 ms/q; knowledge held 284749 r@1 1.00 5.74 ms/q",
+  "tier probe N=16384: semantic held 15416 r@1 0.94 48.24 ms/q; assoc held 4096 r@1 0.26 7.00 ms/q; episodic held 16384 r@1 0.98 0.42 ms/q; knowledge held 284749 r@1 1.00 4.45 ms/q",
+  "holds at 284749 articles: semantic no (capacity 15416, 891.03 ms/q scaled, 2224.6 MB of keys); assoc no (capacity 4096, 486.70 ms/q scaled, 2224.6 MB of keys); episodic no (capacity 65536, 7.30 ms/q scaled, 2224.6 MB of keys); knowledge HOLDS (capacity disk, 4.45 ms/q scaled, 8.7 MB of keys)",
+  "store: this run wrote ../../../AppData/Local/Temp/claude/C--Users-ybmic-Downloads-claudeskillsvideo-to-website/f305380b-0480-49b0-97e2-42df3fa7eb30/scratchpad/board23/contamination-split/kstore/store from the dump, 13 files, 388459374 bytes, sha256 0753204409d1430933f59db1d54f8082265155af0d572203d2f016f127bd6805; the default store bench/fixtures/wiki/store is 13 files, 388459374 bytes, sha256 0753204409d1430933f59db1d54f8082265155af0d572203d2f016f127bd6805: the same bytes",
+  "bar: ingestedTheDump yes, drew200 yes, beatsNullAt1 yes, beatsNullAt5 yes, under50ms yes -> MET",
+  "split: contaminated false (hidden sentences found in the store: 0)"
  ]
 }

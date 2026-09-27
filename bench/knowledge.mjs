@@ -15,6 +15,7 @@
 // its answers are the question's own words, last first. Mean ms per query is the recall time.
 // The tier probe asks the organism's other memory kinds to hold the same title keys through their
 // public APIs at growing counts and prints which of them holds at the ingested size.
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -24,13 +25,56 @@ import { ingest, DUMP_PATH, STORE_DIR } from '../tools/ingest-wiki.mjs';
 import { KnowledgeStore, HELDOUT_DEFAULTS, normText, titleWords, answerMatches, keyVector, SIG_BITS } from '../memory/knowledge.mjs';
 
 // board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
-/** What the knowledge bar developed on and what it graded: pure, from the draw size and seed. */
+// board 23 builder (item contamination-split): contaminated is decided from the grade's own leak
+// count (gradeOne counts a hidden sentence the store returns, and excludes it from the answer):
+// a count above 0 is the reason. Board 23 fix pass: when the caller passes the count (main() always
+// does), null means the leak check gave no count, and an unmeasured count is never read as clean
+// (heldOut.leaks says null and contaminated says why). A call that passes no count at all (the board 19
+// planted case) states the construction rule: the ingest never writes a marked first sentence, so
+// contaminated false, and heldOut.leakCheck says no count was passed.
+/** What the knowledge bar developed on and what it graded: pure, from the draw size, the seed and the leak count. */
 export function splitFor(opts = {}) {
+  const passed = 'leaks' in opts;
+  const leaks = Number.isInteger(opts.leaks) ? opts.leaks : null;
   return {
     development: { what: 'the ingested dump: every article tools/ingest-wiki.mjs streamed into the knowledge tier, with the marked first sentences left out' },
-    heldOut: { what: 'the first sentences a seeded title mark hid from the ingest (notes/knowledge.md held-out rule), drawn by seed and never ingested', n: opts.n ?? null, seed: opts.seed ?? null },
-    contaminated: false,
+    heldOut: { what: 'the first sentences a seeded title mark hid from the ingest (notes/knowledge.md held-out rule), drawn by seed and never ingested', n: opts.n ?? null, seed: opts.seed ?? null, leaks, leakCheck: passed ? 'counted by the run' : 'not passed: the split states the construction rule (the ingest never writes a marked first sentence)' },
+    contaminated: !passed
+      ? false
+      : leaks === null
+        ? 'the leak check did not run, so the hidden first sentences are not known to be absent from the store'
+        : leaks > 0
+          ? leaks + ' hidden first sentences of the draw were found in the ingested store (excluded from the answers, but present)'
+          : false,
   };
+}
+
+// board 23 builder (item contamination-split, fix pass): the store a run grades is the store it wrote.
+// When --store names a directory other than the default (a scratch copy, so the shared store other
+// benches read is never rewritten under them), the verdict carries both stores' content hashes: the
+// same hash means the graded store is byte for byte bench/fixtures/wiki/store, which stays on disk.
+/** A content hash of a store directory: sha256 over each file's name, size and bytes, in name order; null when it is absent. */
+export function storeFingerprint(dir) {
+  let names;
+  try { names = fs.readdirSync(dir).filter((n) => fs.statSync(path.join(dir, n)).isFile()).sort(); } catch { return null; }
+  const all = crypto.createHash('sha256');
+  const buf = Buffer.allocUnsafe(1 << 22);
+  const files = [];
+  let bytes = 0;
+  for (const name of names) {
+    const one = crypto.createHash('sha256');
+    const fd = fs.openSync(path.join(dir, name), 'r');
+    let size = 0;
+    try {
+      let r;
+      while ((r = fs.readSync(fd, buf, 0, buf.length, size)) > 0) { one.update(buf.subarray(0, r)); size += r; }
+    } finally { fs.closeSync(fd); }
+    const sha256 = one.digest('hex');
+    all.update(name + '\0' + size + '\0' + sha256 + '\n');
+    files.push({ name, bytes: size, sha256 });
+    bytes += size;
+  }
+  return { sha256: all.digest('hex'), files: files.length, bytes, perFile: files };
 }
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -206,6 +250,16 @@ async function main() {
   const residentOpen = ks.residentBytes();
   ks.close();
 
+  // board 23 fix pass: the graded store's content hash, and the default store's when --store named another directory
+  const posix = (p) => path.relative(path.join(HERE, '..'), p).split(path.sep).join('/');
+  const defaultStore = path.resolve(STORE_DIR);
+  const isDefault = path.resolve(store) === defaultStore;
+  const fpRun = storeFingerprint(store);
+  const fpDefault = isDefault ? fpRun : storeFingerprint(defaultStore);
+  const sameAsDefault = fpRun && fpDefault ? fpRun.sha256 === fpDefault.sha256 : null;
+  const storeRec = { dir: posix(store), isDefault, writtenByThisRun: true, fingerprint: fpRun, default: { dir: posix(defaultStore), fingerprint: isDefault ? 'the same directory' : fpDefault }, sameAsDefault };
+  say(`store: this run wrote ${storeRec.dir} from the dump, ${fpRun ? fpRun.files + ' files, ' + fpRun.bytes + ' bytes, sha256 ' + fpRun.sha256 : 'absent'}; ${isDefault ? 'it is the default store' : 'the default store ' + storeRec.default.dir + ' is ' + (fpDefault ? fpDefault.files + ' files, ' + fpDefault.bytes + ' bytes, sha256 ' + fpDefault.sha256 : 'absent') + ': ' + (sameAsDefault ? 'the same bytes' : 'NOT the same bytes')}`);
+
   const full = r.complete;
   const checks = {
     ingestedTheDump: full,
@@ -218,10 +272,11 @@ async function main() {
   say(`bar: ${Object.entries(checks).map(([k, v]) => `${k} ${v ? 'yes' : 'NO'}`).join(', ')} -> ${barMet ? 'MET' : 'NOT MET'}`);
 
   const holds = tp ? Object.entries(tp.verdict).filter(([, v]) => v.holds).map(([k]) => k) : [];
-  const statement = `The knowledge tier ingested ${full ? 'the whole' : 'the first ' + c.articles + ' articles of the'} Simple English Wikipedia dump (${c.articles} articles${full ? '' : ', ' + fullArithmetic}) at ${(c.articles / r.seconds).toFixed(1)} articles/s with a bz2 reader written for it, holding ${c.held} articles (breadth ${(c.held / c.articles).toFixed(4)}) as ${r.facts} facts at ${r.disk.bytesPerArticle.toFixed(0)} disk and ${r.memory.bytesPerArticle.toFixed(0)} memory bytes per article. On ${g.n} held-out first sentences drawn by seed, asked "What is <title>?", its first answer held the hidden key noun's head ${pct(g.recall1)} of the time and one of its first five ${pct(g.recall5)}, against ${pct(g.null1)} and ${pct(g.null5)} for the title alone, at a mean ${g.meanMs.toFixed(2)} ms per query over ${ks.A} articles. ${tp ? 'Of the organism\'s memory kinds asked to hold the same title keys, ' + (holds.length ? holds.join(' and ') + ' held at this scale' : 'none held') + '; semantic and assoc stop at their 4096 capacity and episodic at 65536.' : ''} The bar ${barMet ? 'is met' : 'is not met'}.`;
+  const statement = `The knowledge tier ingested ${full ? 'the whole' : 'the first ' + c.articles + ' articles of the'} Simple English Wikipedia dump (${c.articles} articles${full ? '' : ', ' + fullArithmetic}) at ${(c.articles / r.seconds).toFixed(1)} articles/s with a bz2 reader written for it, holding ${c.held} articles (breadth ${(c.held / c.articles).toFixed(4)}) as ${r.facts} facts at ${r.disk.bytesPerArticle.toFixed(0)} disk and ${r.memory.bytesPerArticle.toFixed(0)} memory bytes per article. On ${g.n} held-out first sentences drawn by seed, asked "What is <title>?", its first answer held the hidden key noun's head ${pct(g.recall1)} of the time and one of its first five ${pct(g.recall5)}, against ${pct(g.null1)} and ${pct(g.null5)} for the title alone, at a mean ${g.meanMs.toFixed(2)} ms per query over ${ks.A} articles. ${tp ? 'Of the organism\'s memory kinds asked to hold the same title keys, ' + (holds.length ? holds.join(' and ') + ' held at this scale' : 'none held') + '; semantic and assoc stop at their 4096 capacity and episodic at 65536.' : ''} ${isDefault ? 'The store graded is the default store.' : 'The store graded was written by this run to ' + storeRec.dir + ', so the shared store other benches read was never rewritten under them, and its ' + (fpRun ? fpRun.files + ' files and ' + fpRun.bytes + ' bytes' : 'content') + (sameAsDefault ? ' hash the same as ' : ' do NOT hash the same as ') + storeRec.default.dir + '.'} The bar ${barMet ? 'is met' : 'is not met'}.`;
   const verdict = {
-    at, command, node: process.version, isTheBar: full, statement,
-    split: splitFor({ n: g.n, seed: DRAW_SEED }),
+    at, command, node: process.version, isTheBar: full, barMet, contaminated: null, statement,
+    split: splitFor({ n: g.n, seed: DRAW_SEED, leaks: g.leaks }),
+    store: storeRec,
     bar: { ...BAR, checks, met: barMet },
     machine: { platform: process.platform, cpus: os.cpus().length, totalMemMB: Math.round(os.totalmem() / 1048576) },
     dump: { file: path.basename(dump), bytes: fs.statSync(dump).size, source: 'https://dumps.wikimedia.org/simplewiki/latest/' + path.basename(dump), licence: 'CC BY-SA 4.0' },
@@ -234,6 +289,10 @@ async function main() {
     rows: g.rows.map((x) => ({ title: x.title, gold: x.gold, head: x.head, answer: x.answer, from: x.answerTitle, kind: x.answerKind, r1: x.r1, r5: x.r5, n1: x.n1, n5: x.n5, ms: Number(x.ms.toFixed(3)) })),
     printed: lines,
   };
+  // board 23 fix pass: the gate counts contaminated only when it is true, so a reason in the split is marked at the top level and said in the statement
+  verdict.contaminated = typeof verdict.split.contaminated === 'string';
+  if (verdict.contaminated) verdict.statement += ' Contaminated: ' + verdict.split.contaminated + '.';
+  say(`split: contaminated ${verdict.contaminated ? verdict.split.contaminated : 'false'} (hidden sentences found in the store: ${g.leaks})`);
   fs.mkdirSync(VERDICTS, { recursive: true });
   const file = path.join(VERDICTS, full ? 'knowledge.json' : 'knowledge-partial.json');
   fs.writeFileSync(file, JSON.stringify(verdict, null, 1) + '\n');

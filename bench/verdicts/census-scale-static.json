@@ -1,11 +1,22 @@
 {
   "bench": "census",
   "mode": "static",
-  "at": "2026-09-24T14:28:52.198Z",
-  "command": "node --max-old-space-size=6000 tools/organism-census.mjs --static --seed organism/scale-52000",
+  "at": "2026-09-27T13:34:29.301Z",
+  "command": "node --max-old-space-size=4000 tools/organism-census.mjs --static --seed organism/scale-52000",
   "node": "v24.15.0",
   "isTheBar": true,
-  "statement": "The static census walked all 88 files of organism/scale-52000 (5126010 physical lines, 5125448 by the manifest count) line by line without loading the organism, in 10.3 s at a peak working set of 445.4 MB; its streamed content hash equals the manifest hash and 0 edges are illegal. By the static rule (a cell is live when a path of edges reaches it from one of the 141319 periodic cells or 7 hosted problem cells, an edge when its source is live, a region or circuit when it holds a live cell; 6 closure passes) 411858 of 416000 cells (99.00 percent) and 4632748 of 4656829 edges (99.48 percent) are live; 4142 cells are dead (4125 with no edge in, 17 fed only by dead cells). Load bearing = 5096613 live declarations + 1174 structure lines = 5097787 of 5126010 lines (99.45 percent; 5097225 of 5125448 by the manifest count), with 28223 dead declarations. The static rule is an upper bound: reachable is not ran, and at a 16 tick horizon only 406881 cells could run at all.",
+  "statement": "The static census walked all 88 files of organism/scale-52000 (5126010 physical lines, 5125448 by the manifest count) line by line without loading the organism, in 18.0 s at a peak working set of 446.2 MB; its streamed content hash equals the manifest hash and 0 edges are illegal. By the static rule (a cell is live when a path of edges reaches it from one of the 141319 periodic cells or 7 hosted problem cells, an edge when its source is live, a region or circuit when it holds a live cell; 6 closure passes) 411858 of 416000 cells (99.00 percent) and 4632748 of 4656829 edges (99.48 percent) are live; 4142 cells are dead (4125 with no edge in, 17 fed only by dead cells). Load bearing = 5096613 live declarations + 1174 structure lines = 5097787 of 5126010 lines (99.45 percent; 5097225 of 5125448 by the manifest count), with 28223 dead declarations. The static rule is an upper bound: reachable is not ran, and at a 16 tick horizon only 406881 cells could run at all.",
+  "split": {
+    "development": {
+      "what": "the seed it describes: every emitted line is walked and nothing is loaded",
+      "seed": "organism/scale-52000"
+    },
+    "heldOut": {
+      "what": "none: a census is a measurement of one seed, and the liveness it writes (the prune input) comes from the same drive and tasks it reports",
+      "n": 0
+    },
+    "contaminated": "no held-out set: the static census describes the same lines it walks"
+  },
   "seed": "organism/scale-52000",
   "rule": "a cell is live when a path of edges reaches it from a periodic cell (due at tick 0 whatever its input) or from a cell the hosted algebra and sequence problems inject into; an edge is live when its source is live (then both ends are); a region or circuit is live when it holds a live cell. Nothing is run: this is an upper bound on what runs.",
   "whole": true,
@@ -805,14 +816,14 @@
     }
   ],
   "memoryMB": {
-    "peakRssSampled": 440.2,
-    "processPeakWorkingSet": 445.4
+    "peakRssSampled": 439,
+    "processPeakWorkingSet": 446.2
   },
   "ms": {
-    "cells": 1537,
-    "edges": 8460,
-    "closure": 191,
-    "wall": 10313
+    "cells": 2518,
+    "edges": 14807,
+    "closure": 477,
+    "wall": 18004
   },
   "live": {
     "manifestHash": "a5dd71bb96767e51debd41ed46b178584255c5275de34ccac5c5ebba644e6075",

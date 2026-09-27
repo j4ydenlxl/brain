@@ -1,23 +1,41 @@
 {
   "name": "daemon",
-  "at": "2026-09-24T02:51:04.223Z",
+  "at": "2026-09-27T13:53:31.285Z",
   "command": "node bench/daemon.mjs",
   "execArgv": [
-    "--max-old-space-size=4096"
+    "--max-old-space-size=4000"
   ],
   "node": "v24.15.0",
   "isTheBar": true,
-  "barMet": true,
+  "barMet": false,
   "met": {
     "phaseAWall": true,
     "ledgerUnder1MbPer1000": true,
     "summaryMode": true,
-    "everyStepKind": true,
+    "everyStepKind": false,
     "rulerReproducible": true,
     "phaseBWall": true,
     "rotationHeld": true
   },
-  "statement": "The 12-major organism (10,000 substrate units) was built fresh and run by daemon/run.mjs with the loop on for 363.886 s of wall time under the caps: 57,000 ticks at 157 ticks per second, ledger=summary, 59 checkpoints (2,210,319,784 bytes written, the last 69,681,560). Steps run: generations 121, dream 290, spawn 186, ingest 169, self-code 2. The summary ledger wrote at most 4,014 bytes per 1000 ticks over any checkpoint step and 2,903 over the whole run, against a bar of 1 MB. On 725 suite questions (algebra, sequence, grid, 1000 each) the exact path answered 724 at the start and 724 at the end, and the organism's own spawned cells carried 0 at the start and 724 at the end: improvement per wall second 0 (exact) and 0.002777 (carried) as a fraction of the suite, recomputed identically from ruler.jsonl alone. The plateau signal ended in mode growth with 11 switches and fired coordinates carried.grid, generations.best. Resumed for 120.004 s with ledger=full and a 50 MB budget, the ledger wrote 1,364,996,500 bytes, rotated 52 times, and its two segments never held more than 52,428,792 bytes against a budget of 52,428,800. Peak resident set 2439 MB. Every part of the bar was met.",
+  "contaminated": true,
+  "statement": "The 12-major organism (10,000 substrate units) was built fresh and run by daemon/run.mjs with the loop on for 360.003 s of wall time under the caps: 39,635 ticks at 110 ticks per second, ledger=summary, 41 checkpoints (609,100,992 bytes written, the last 26,857,904). Steps run: generations 82, dream 202, spawn 139, ingest 120, self-code 0, self-code refused 2 (the last refusal, from the ledger file: rss 1377 MB + need 0 MB (not measured yet; the start is bounded by its cap) = 1377 MB, over the floor 380 MB). The summary ledger wrote at most 3,729 bytes per 1000 ticks over any checkpoint step and 2,956 over the whole run, against a bar of 1 MB. On 725 suite questions (algebra 360, sequence 205, grid 160, at most 1000 per suite) the exact path answered 724 at the start and 724 at the end, and the organism's own spawned cells carried 0 at the start and 724 at the end: improvement per wall second 0 (exact) and 0.00277 (carried) as a fraction of the suite, recomputed identically from ruler.jsonl alone. The plateau signal ended in mode generations with 8 switches and fired coordinates none. Resumed for 120.009 s with ledger=full and a 50 MB budget, the ledger wrote 834,989,573 bytes, rotated 31 times, and its two segments never held more than 52,428,750 bytes against a budget of 52,428,800. Peak resident set 1781 MB. Not met: everyStepKind. Contaminated: no held-out set: the improvement is scored on the suites the loop spawns cells for (algebra, sequence, grid).",
+  "split": {
+    "development": {
+      "what": "the internal suites daemon/run.mjs makeSuiteRuler draws from bench/answer.mjs (algebra, sequence, grid); the loop spawn step asks the suite questions the last ruler found no held cell for",
+      "suites": [
+        "algebra",
+        "sequence",
+        "grid"
+      ],
+      "tasksPerSuite": 1000,
+      "seed": "whole"
+    },
+    "heldOut": {
+      "what": "none: the start and end suite scores are read on the same suites the loop grows its cells on; the ledger, checkpoint and rotation parts of the bar are measurements of the run, not a graded set",
+      "n": 0
+    },
+    "contaminated": "no held-out set: the improvement is scored on the suites the loop spawns cells for (algebra, sequence, grid)"
+  },
   "bar": {
     "wall": 360,
     "fullWall": 120,
@@ -42,154 +60,158 @@
     "quick": false
   },
   "phaseA": {
-    "wallS": 363.886,
+    "wallS": 360.003,
     "stoppedBy": "wall",
-    "ticks": 57000,
-    "ticksPerSec": 157,
+    "ticks": 39635,
+    "ticksPerSec": 110,
     "steps": {
-      "generations": 121,
-      "dream": 290,
-      "spawn": 186,
-      "ingest": 169,
-      "self-code": 2
+      "generations": 82,
+      "dream": 202,
+      "spawn": 139,
+      "ingest": 120,
+      "self-code": 0
     },
     "refused": {
       "generations": 0,
       "dream": 0,
       "spawn": 0,
       "ingest": 0,
-      "self-code": 0
-    },
-    "stepMs": {
-      "generations": 13620.737,
-      "dream": 4733.937,
-      "spawn": 4545.209,
-      "ingest": 2817.22,
-      "self-code": 80.188
-    },
-    "stepRowsOnDisk": {
-      "dream": 290,
-      "spawn": 186,
-      "generations": 121,
-      "ingest": 169,
       "self-code": 2
     },
-    "periods": 290,
+    "stepMs": {
+      "generations": 18480.914,
+      "dream": 3967.228,
+      "spawn": 5142.394,
+      "ingest": 2309.25,
+      "self-code": 0
+    },
+    "stepRowsOnDisk": {
+      "dream": 202,
+      "spawn": 139,
+      "generations": 82,
+      "ingest": 120,
+      "self-code refused": 2
+    },
+    "periods": 202,
     "skippedForAsk": 0,
     "dream": {
       "every": 200,
-      "dreamed": 290,
+      "dreamed": 202,
       "skipped": 0,
       "why": {},
-      "ownAsks": 186
+      "ownAsks": 139
     },
     "spawn": {
-      "carried": 186,
+      "carried": 139,
       "declined": 0,
       "correct": 139,
       "grew": 273,
       "kept": 272
     },
     "ingest": {
-      "cursor": 5408,
-      "added": 5408,
+      "cursor": 3840,
+      "added": 3840,
       "of": 284749,
       "reason": null
     },
     "selfCode": {
       "every": 20000,
       "dry": true,
-      "last": {
-        "t": 40207,
-        "ok": true,
-        "result": {
-          "ok": true,
-          "reason": null,
-          "dry": true,
-          "candidates": 56,
-          "counts": {
-            "candidates": 56,
-            "kept": 0,
-            "reverted": 0,
-            "refused": 56,
-            "wouldApply": 0,
-            "recovered": 0,
-            "revertFailed": 0,
-            "proposed": 0,
-            "modelCalls": 0
-          },
-          "sources": [
-            "gate",
-            "notes",
-            "slow",
-            "mutants"
-          ],
-          "author": false,
-          "exitCode": 0,
-          "ledgerFile": null
-        },
-        "error": null
-      },
+      "last": null,
       "errors": []
     },
+    "selfCodeRefusals": [
+      {
+        "t": 20009,
+        "refused": "floor",
+        "why": "rss 1084 MB + need 0 MB (not measured yet; the start is bounded by its cap) = 1084 MB, over the floor 380 MB"
+      },
+      {
+        "t": 40201,
+        "refused": "floor",
+        "why": "rss 1377 MB + need 0 MB (not measured yet; the start is bounded by its cap) = 1377 MB, over the floor 380 MB"
+      }
+    ],
+    "selfCodeFit": {
+      "floorMb": 380,
+      "floorFrom": "default",
+      "starts": 0,
+      "refusals": 2,
+      "needMb": 0,
+      "needFrom": "not measured yet; the start is bounded by its cap",
+      "lastRefusal": {
+        "t": 40201,
+        "rssMb": 1377,
+        "needMb": 0,
+        "needFrom": "not measured yet; the start is bounded by its cap",
+        "floorMb": 380,
+        "why": "rss 1377 MB + need 0 MB (not measured yet; the start is bounded by its cap) = 1377 MB, over the floor 380 MB"
+      }
+    },
     "generations": {
-      "steps": 121,
+      "steps": 82,
       "best": {
         "id": "og-g1-3",
         "key": "3-3-2-4",
-        "fitness": 0.582847
+        "fitness": 0.580623
       },
       "promotions": 2,
       "errors": []
     },
     "ledger": {
       "mode": "summary",
-      "bytesWritten": 166062,
-      "fileBytes": 166062,
-      "per1000Max": 4014,
-      "per1000Median": 3158,
-      "per1000Whole": 2903,
-      "rows": 943
+      "bytesWritten": 117616,
+      "fileBytes": 117616,
+      "per1000Max": 3729,
+      "per1000Median": 3194,
+      "per1000Whole": 2956,
+      "rows": 668
     },
     "checkpoints": {
-      "count": 59,
+      "count": 41,
       "errors": 0,
-      "bytesTotal": 2210319784,
-      "bytesLast": 69681560
+      "bytesTotal": 609100992,
+      "bytesLast": 26857904
     },
     "suites": {
       "start": {
         "algebra": {
           "n": 360,
           "exact": 360,
-          "carried": 0
+          "carried": 0,
+          "reach": 360
         },
         "sequence": {
           "n": 205,
           "exact": 205,
-          "carried": 0
+          "carried": 0,
+          "reach": 205
         },
         "grid": {
           "n": 160,
           "exact": 159,
-          "carried": 0
+          "carried": 0,
+          "reach": 159
         }
       },
       "end": {
         "algebra": {
           "n": 360,
           "exact": 360,
-          "carried": 360
+          "carried": 360,
+          "reach": 360
         },
         "sequence": {
           "n": 205,
           "exact": 205,
-          "carried": 205
+          "carried": 205,
+          "reach": 205
         },
         "grid": {
           "n": 160,
           "exact": 159,
-          "carried": 159
+          "carried": 159,
+          "reach": 159
         }
       },
       "startTotal": {
@@ -205,101 +227,88 @@
     },
     "perWallSecond": {
       "fromK": 0,
-      "toK": 57,
-      "seconds": 359.629,
-      "ticks": 57000,
+      "toK": 40,
+      "seconds": 360.473,
+      "ticks": 39635,
       "exact": 0,
-      "carried": 0.002777,
+      "carried": 0.00277,
       "exactDelta": 0,
       "carriedDelta": 0.998621,
-      "ledgerBytes": 165481,
-      "ledgerBytesPer1000Ticks": 2903
+      "ledgerBytes": 117152,
+      "ledgerBytesPer1000Ticks": 2956
     },
-    "rulerRows": 58,
-    "rulerMs": 6465.854,
+    "rulerRows": 41,
+    "rulerMs": 6036.909,
     "plateau": {
-      "mode": "growth",
-      "arm": 5,
+      "mode": "generations",
+      "arm": 4,
       "patience": 3,
       "epsilon": 1e-9,
-      "growthSince": 54,
-      "fired": [
-        "carried.grid",
-        "generations.best"
-      ],
+      "growthSince": null,
+      "fired": [],
       "coords": {
-        "carried.grid": {
-          "fired": true,
-          "firedAt": 54,
-          "ref": 0.99375,
-          "lastImprovement": 51,
-          "observed": 7
-        },
-        "generations.best": {
-          "fired": true,
-          "firedAt": 54,
-          "ref": 0.582847,
-          "lastImprovement": 51,
-          "observed": 7
-        },
         "carried.sequence": {
           "ceiling": true,
-          "since": 57
+          "since": 40
         },
         "carried.algebra": {
           "ceiling": true,
-          "since": 57
+          "since": 40
+        },
+        "carried.grid": {
+          "ceiling": true,
+          "since": 40
         }
       },
-      "switchCount": 11,
+      "switchCount": 8,
       "switches": [
         {
+          "k": 4,
+          "t": 4104,
+          "to": "growth",
+          "why": "carried.algebra, generations.best stopped moving (3 checkpoints within 1e-9)"
+        },
+        {
+          "k": 10,
+          "t": 10282,
+          "to": "generations",
+          "why": "growth ran 6 checkpoints; rulers re-armed"
+        },
+        {
+          "k": 14,
+          "t": 14429,
+          "to": "growth",
+          "why": "carried.algebra, generations.best stopped moving (3 checkpoints within 1e-9)"
+        },
+        {
           "k": 20,
-          "t": 20639,
+          "t": 20656,
           "to": "generations",
           "why": "growth ran 6 checkpoints; rulers re-armed"
         },
         {
           "k": 24,
-          "t": 24786,
+          "t": 24814,
           "to": "growth",
           "why": "carried.algebra, generations.best stopped moving (3 checkpoints within 1e-9)"
         },
         {
           "k": 30,
-          "t": 31018,
+          "t": 30917,
           "to": "generations",
           "why": "growth ran 6 checkpoints; rulers re-armed"
         },
         {
           "k": 34,
-          "t": 35061,
+          "t": 34917,
           "to": "growth",
-          "why": "carried.grid, generations.best stopped moving (3 checkpoints within 1e-9)"
+          "why": "generations.best stopped moving (3 checkpoints within 1e-9)"
         },
         {
           "k": 40,
-          "t": 41097,
+          "t": 40552,
           "to": "generations",
           "why": "growth ran 6 checkpoints; rulers re-armed"
-        },
-        {
-          "k": 44,
-          "t": 45121,
-          "to": "growth",
-          "why": "carried.grid, generations.best stopped moving (3 checkpoints within 1e-9)"
-        },
-        {
-          "k": 50,
-          "t": 51157,
-          "to": "generations",
-          "why": "growth ran 6 checkpoints; rulers re-armed"
-        },
-        {
-          "k": 54,
-          "t": 55181,
-          "to": "growth",
-          "why": "carried.grid, generations.best stopped moving (3 checkpoints within 1e-9)"
         }
       ]
     },
@@ -311,41 +320,41 @@
     "errors": []
   },
   "phaseB": {
-    "wallS": 120.004,
+    "wallS": 120.009,
     "stoppedBy": "wall",
-    "ticks": 13596,
-    "ticksPerSec": 113,
-    "resumedAt": 58199,
+    "ticks": 8370,
+    "ticksPerSec": 70,
+    "resumedAt": 40552,
     "ledger": {
       "mode": "full",
       "budgetMb": 50,
       "budgetFrom": "the ledgerBudgetMb option",
       "budgetBytes": 52428800,
-      "bytesWritten": 1364996500,
-      "linesWritten": 6636836,
-      "rotations": 52,
+      "bytesWritten": 834989573,
+      "linesWritten": 4059448,
+      "rotations": 31,
       "rotateErrors": 0,
-      "maxDiskBytes": 52428792,
-      "endLive": 2018642,
-      "endPrev": 26214129,
-      "endSum": 28232771,
+      "maxDiskBytes": 52428750,
+      "endLive": 22464253,
+      "endPrev": 26214312,
+      "endSum": 48678565,
       "poll": {
-        "samples": 577,
-        "maxLive": 26187509,
-        "maxPrev": 26214399,
-        "maxSum": 52401799
+        "samples": 583,
+        "maxLive": 26211964,
+        "maxPrev": 26214398,
+        "maxSum": 52426259
       },
-      "per1000Median": 100417720
+      "per1000Median": 99762136
     },
     "steps": {
-      "generations": 28,
-      "dream": 69,
-      "spawn": 14,
-      "ingest": 41,
+      "generations": 20,
+      "dream": 42,
+      "spawn": 0,
+      "ingest": 22,
       "self-code": 0
     },
-    "checkpoints": 14,
-    "rulerRows": 15,
+    "checkpoints": 9,
+    "rulerRows": 10,
     "suitesEnd": {
       "n": 725,
       "exact": 724,
@@ -353,14 +362,14 @@
     },
     "errors": []
   },
-  "peakRssMb": 2439,
-  "peakRssSampledMb": 2335,
+  "peakRssMb": 1781,
+  "peakRssSampledMb": 1772,
   "machine": {
     "platform": "win32",
     "cpus": 32,
     "totalMemMB": 65370,
-    "freeMemMB": 45786
+    "freeMemMB": 34141
   },
-  "totalWallS": 497.751,
+  "totalWallS": 501.421,
   "note": "notes/daemon.md"
 }

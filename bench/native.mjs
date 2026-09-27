@@ -49,12 +49,32 @@ import { fileURLToPath } from 'node:url';
 import { isMainThread } from 'node:worker_threads';
 
 // board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
+// board 23 builder (item contamination-split): contaminated is decided from the run's own control.
+// The direct table is filled by asking the tier every title, the drawn ones among them
+// (drawnInTable); the control table leaves the drawn titles out (drawnInControl). When the drawn
+// questions sat in the table AND the table's recall@1 differs from the control's, having asked
+// them at fill time moved the score, and that is the reason; when the two agree it did not.
+// Board 23 fix pass: an unmeasured number is never read as clean. When the caller passes the fill
+// counts (bar() always does), drawnInTable unknown, or the drawn in the table and either score unknown,
+// means the control could not decide, and that is the reason. A call that passes no fill count at all
+// (the board 19 planted case) states the construction rule: the drawn first sentences were never
+// ingested, so contaminated false, and heldOut.control says the control was not passed.
 /** What the native bar developed on and what it graded: pure; the words match this bench's own rulers field. */
 export function splitFor(opts = {}) {
+  const num = (x) => (Number.isFinite(x) ? x : null);
+  const passed = 'drawnInTable' in opts;
+  const inTable = num(opts.drawnInTable), inControl = num(opts.drawnInControl);
+  const table = num(opts.tableRecallAt1), control = num(opts.controlRecallAt1);
+  const moved = inTable !== null && inTable > 0 && table !== null && control !== null && table !== control;
+  const undecided = passed && (inTable === null || (inTable > 0 && (table === null || control === null)));
   return {
     development: { what: 'the confidence floor 0.2 chosen by bench/recall.mjs --tune on the held-out records outside the draw; the where and when locator, the factual shapes and the direct keys developed on titles of articles that are not held out' },
-    heldOut: { what: 'the held-out records bench/knowledge.mjs draws by seed, whose first sentences were never ingested (the same records bench/recall.mjs graded); plus the bench/answer.mjs suite questions, which are a no-regression check, not a held-out set', wiki: opts.wiki ?? null, seed: opts.seed ?? null },
-    contaminated: false,
+    heldOut: { what: 'the held-out records bench/knowledge.mjs draws by seed, whose first sentences were never ingested (the same records bench/recall.mjs graded); plus the bench/answer.mjs suite questions, which are a no-regression check, not a held-out set', wiki: opts.wiki ?? null, seed: opts.seed ?? null, drawnInTable: inTable, drawnInControl: inControl, tableRecallAt1: table, controlRecallAt1: control, control: passed ? 'passed by the run' : 'not passed: the split states the construction rule (the drawn first sentences were never ingested)' },
+    contaminated: undecided
+      ? 'the control was not measured (drawn in the table ' + inTable + ', table recall@1 ' + table + ', control recall@1 ' + control + '), so the drawn questions asked at fill time are not known to have moved nothing'
+      : moved
+        ? 'the direct table was filled by asking the tier ' + inTable + ' of the drawn questions, and it scored ' + table + ' at recall@1 against ' + control + ' for the control table that leaves them out'
+        : false,
   };
 }
 
@@ -479,8 +499,8 @@ async function bar(command) {
     + `The semantic tier is now bounded by a declared ${r1(semLine.budgetBytes / 1048576)} MB byte budget, room for ${semLine.capacity} named keys, instead of 4,096 keys.`;
   const file = path.join(VERDICTS, narrow ? 'native-partial.json' : 'native.json');
   const verdict = {
-    at, command, node: process.version, isTheBar: !narrow, barMet, met, statement,
-    split: splitFor({ wiki: BAR.wiki, seed: DRAW_SEED }),
+    at, command, node: process.version, isTheBar: !narrow, barMet, met, contaminated: null, statement,
+    split: splitFor({ wiki: BAR.wiki, seed: DRAW_SEED, drawnInTable: inFull, drawnInControl: inControl, tableRecallAt1: S.direct.recallAt1, controlRecallAt1: S.control.recallAt1 }),
     rulers: {
       bar: `the ${BAR.wiki} held-out records bench/knowledge.mjs draws by seed ${DRAW_SEED} (their first sentences never ingested), and the ${suiteOff.n} suite questions of bench/answer.mjs buildQuestions`,
       development: 'the confidence floor 0.2 was chosen by bench/recall.mjs --tune on the 428 held-out records outside the draw; the where and when locator, the factual shapes and the direct keys were developed on titles that are not held out and on the suite; the draw was read only by bench/native.mjs --before and by this run',
@@ -494,6 +514,11 @@ async function bar(command) {
     rows: arms.direct.map((x, i) => ({ title: x.title, ok: x.ok, provenance: x.provenance, us: r1(x.us), lookupNs: x.lookupNs, tier: arms.tier[i].provenance, tierOk: arms.tier[i].ok, control: arms.control[i].provenance })),
     peakRssMb: peak, printed: lines,
   };
+  // board 23 builder (item contamination-split, fix pass): the gate counts contaminated only when it is
+  // true, so a reason in the split is marked at the top level and said in the statement
+  verdict.contaminated = typeof verdict.split.contaminated === 'string';
+  if (verdict.contaminated) verdict.statement += ' Contaminated: ' + verdict.split.contaminated + '.';
+  say(`split: drawn in the table ${inFull}, in the control ${inControl}, recall@1 table ${S.direct.recallAt1} control ${S.control.recallAt1}; contaminated ${verdict.contaminated ? verdict.split.contaminated : 'false'}`);
   fs.mkdirSync(VERDICTS, { recursive: true });
   fs.writeFileSync(file, JSON.stringify(verdict, null, 2) + '\n');
   console.log(`wrote ${rel(file)}`);

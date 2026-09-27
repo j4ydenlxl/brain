@@ -211,14 +211,22 @@ async function main() {
   const fired = rows.filter((r) => r.fired && r.recognised === r.samples).length;
   const met = !crashed && rows.length === RECEPTOR_NAMES.length && fired === rows.length && actuation.worldActProposals === 0 && actuation.gateProposed === 0 && actuation.motorEdges === 0;
   const wallMs = r3(performance.now() - t0);
+  // board 23 builder (item contamination-split, fix pass): barMet is the top-level boolean every bar
+  // file carries (the same value as met); contaminated is filled from the split below
+  const live = rows.filter((r) => r.present && r.samples > 0 && r.hardwareSamples === r.samples);
   const verdict = {
     at: new Date().toISOString(), command, node: process.version, platform: process.platform + ' ' + process.arch,
-    isTheBar: complete && !crashed, met, samplesPerSense: samples, stdinTTY: tty, keysMs, wallMs,
+    isTheBar: complete && !crashed, barMet: met, met, contaminated: null, samplesPerSense: samples, stdinTTY: tty, keysMs, wallMs,
     rows: rows.map(({ features, ...r }) => ({ ...r, features: features.map(slimFeatures) })),
     actuation, handles, crashed,
     statement: statementOf(rows, actuation, samples, met, wallMs, crashed),
-    split: splitFor({ senses: rows.map((r) => r.sense), hardware: rows.filter((r) => r.present).map((r) => r.sense) }),
+    split: splitFor({ senses: rows.map((r) => r.sense), hardware: live.map((r) => r.sense), liveSamples: live.reduce((n, r) => n + r.hardwareSamples, 0) }),
   };
+  // board 23 builder (item contamination-split, fix pass): the gate counts contaminated only when it is
+  // true, so a reason in the split is marked at the top level and said in the statement
+  verdict.contaminated = typeof verdict.split.contaminated === 'string';
+  if (verdict.contaminated) verdict.statement += ' Contaminated: ' + verdict.split.contaminated + '.';
+  console.log('split: held out ' + verdict.split.heldOut.n + ' senses read live (' + (verdict.split.heldOut.liveHardware.join(', ') || 'none') + ') on ' + verdict.split.heldOut.samples + ' live samples; contaminated ' + (verdict.contaminated ? verdict.split.contaminated : 'false'));
   if (!complete || crashed) verdict.partialBecause = crashed ? 'the run crashed' : (only.length !== RECEPTOR_NAMES.length ? '--only ' + only.join(',') : '--source ' + sourceArg);
   mkdirSync(VERDICTS, { recursive: true });
   const out = crashed && complete ? path.join(VERDICTS, 'senses-partial.json') : file;
@@ -229,14 +237,24 @@ async function main() {
 }
 
 // board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
-/** What the senses bar developed on and what it graded: pure, from the sense names and the ones with hardware. */
+// board 23 builder (item contamination-split): contaminated is decided from the run's rows: a sense
+// read live from its hardware is graded on a sample no development step saw; a sense that read its
+// fixture or table is graded on development data, and the reason names those senses.
+// Board 23 fix pass: heldOut.n counts the senses read live (the bar grades a sense: its cell fired and
+// named its modality on every sample), and heldOut.samples counts the live samples they were graded on.
+/** What the senses bar developed on and what it graded: pure, from the sense names, the ones with hardware and their live sample count. */
 export function splitFor(opts = {}) {
   const senses = Array.isArray(opts.senses) ? opts.senses.slice() : [];
   const hardware = Array.isArray(opts.hardware) ? opts.hardware.slice() : [];
+  const fromFixture = senses.filter((x) => !hardware.includes(x));
   return {
     development: { what: 'the five receptors, their encoders and the fixtures and descriptor tables this bench writes (--write-fixtures); the perception cells were written to name these modalities', senses },
-    heldOut: { what: 'none: a sense with hardware reads a fresh live sample, but the bar grades whether its perception cell names its own modality, the thing the encoders were written for; a sense without hardware reads its development fixture', liveHardware: hardware, n: 0 },
-    contaminated: 'no held-out set: every graded percept comes from a receptor and fixture this bench was developed on',
+    heldOut: { what: 'the senses read live: a sense whose hardware the probe found is graded on samples captured during this run, which no development step saw (n counts those senses, samples counts their live samples); a sense without hardware reads its development fixture or table and is not held out', liveHardware: hardware, fromFixture, n: hardware.length, samples: Number.isInteger(opts.liveSamples) ? opts.liveSamples : null },
+    contaminated: senses.length === 0
+      ? 'no sense was graded, so nothing was held out'
+      : fromFixture.length
+        ? fromFixture.length + ' of ' + senses.length + ' senses (' + fromFixture.join(', ') + ') were graded on the fixture or table this bench was developed on, not on a live sample'
+        : false,
   };
 }
 

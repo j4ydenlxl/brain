@@ -46,10 +46,14 @@ if (!process.execArgv.some((a) => a.startsWith('--max-old-space-size'))) {
 // board 19 builder: the split the bar was measured on (the gate's CONTAMINATION row needs an object).
 /** What the daemon bar developed on and what it graded: pure, from the run's suite options. */
 export function splitFor(opts = {}) {
+  // board 23 builder (item contamination-split): the reason names the suites the run scored, from its ruler
+  const suites = Array.isArray(opts.suites) ? opts.suites.slice() : [];
   return {
-    development: { what: 'the internal suites daemon/run.mjs makeSuiteRuler draws from bench/answer.mjs (algebra, sequence, grid); the loop spawn step asks the suite questions the last ruler found no held cell for', suites: Array.isArray(opts.suites) ? opts.suites.slice() : [], tasksPerSuite: opts.tasks ?? null, seed: opts.seed ?? null },
+    development: { what: 'the internal suites daemon/run.mjs makeSuiteRuler draws from bench/answer.mjs (algebra, sequence, grid); the loop spawn step asks the suite questions the last ruler found no held cell for', suites, tasksPerSuite: opts.tasks ?? null, seed: opts.seed ?? null },
     heldOut: { what: 'none: the start and end suite scores are read on the same suites the loop grows its cells on; the ledger, checkpoint and rotation parts of the bar are measurements of the run, not a graded set', n: 0 },
-    contaminated: 'no held-out set: the improvement is scored on the suites the loop spawns cells for',
+    contaminated: suites.length
+      ? 'no held-out set: the improvement is scored on the suites the loop spawns cells for (' + suites.join(', ') + ')'
+      : 'no suite was scored, so nothing was held out',
   };
 }
 
@@ -117,6 +121,13 @@ async function main() {
     const ledgerRows = readJsonl(path.join(a.dir, 'ledger', 'ledger.jsonl'));
     const stepRows = {};
     for (const r of ledgerRows) if (r.type === 'daemon.step') { const k = r.kind + (r.refused ? ' refused' : ''); stepRows[k] = (stepRows[k] || 0) + 1; }
+    // board 23 builder (item contamination-split, fix pass): why each self-code step was refused, read
+    // from the ledger file on disk (daemon/run.mjs notes every refusal with its reason), and the floor
+    // it was held to, so a red everyStepKind names its cause in the verdict and not only on stdout
+    const selfCodeRefusals = ledgerRows.filter((r) => r.type === 'daemon.step' && r.kind === 'self-code' && r.refused)
+      .map((r) => ({ t: r.t, refused: r.refused, why: r.why ?? r.reason ?? (r.refused === 'bench' ? 'a bench is running (pid ' + r.flagPid + ')' : null) }));
+    const fitSelf = a.fit && a.fit.selfCode ? a.fit.selfCode : null;
+    const selfCodeFit = a.fit ? { floorMb: a.fit.floorMb ?? null, floorFrom: a.fit.floorFrom ?? null, starts: fitSelf ? fitSelf.starts : null, refusals: fitSelf ? fitSelf.refusals : null, needMb: fitSelf ? fitSelf.needMb : null, needFrom: fitSelf ? fitSelf.needFrom : null, lastRefusal: fitSelf ? fitSelf.lastRefusal : null } : null;
     const first = a.ruler.first, last = a.ruler.last;
     const wholeLedger = last.done > first.done ? Math.round((last.bytes.ledgerWritten - first.bytes.ledgerWritten) / (last.done - first.done) * 1000) : null;
     const fileAfterA = sizeOf(path.join(a.dir, 'ledger', 'ledger.jsonl'));
@@ -131,6 +142,7 @@ async function main() {
       wallS: r3(a.runner.wallMs / 1000), stoppedBy: a.runner.reason, ticks: a.runner.done, ticksPerSec: tps,
       steps: a.loop.steps, refused: a.loop.refused, stepMs: a.loop.stepMs, stepRowsOnDisk: stepRows, periods: a.loop.periods, skippedForAsk: a.loop.skippedForAsk,
       dream: a.loop.dream, spawn: a.loop.spawn, ingest: a.loop.ingest, selfCode: { every: a.loop.selfCode.every, dry: a.loop.selfCode.dry, last: a.loop.selfCode.last, errors: a.loop.selfCode.errors },
+      selfCodeRefusals, selfCodeFit,
       generations: { steps: a.generations.steps, best: a.generations.best, promotions: a.generations.promotions.length, errors: a.generations.errors },
       ledger: { mode: a.ledger.mode, bytesWritten: a.ledger.bytesWritten, fileBytes: fileAfterA, per1000Max: per1000.length ? Math.max(...per1000) : null, per1000Median: median(per1000), per1000Whole: wholeLedger, rows: ledgerRows.length },
       checkpoints: { count: a.checkpoints, errors: a.checkpointErrors, bytesTotal: a.checkpointBytes.total, bytesLast: a.checkpointBytes.last },
@@ -145,6 +157,7 @@ async function main() {
     say('[A] step rows in the ledger file: ' + JSON.stringify(stepRows));
     say('[A] step wall ms: ' + JSON.stringify(A.stepMs) + ' | dream cycles ' + JSON.stringify(A.dream) + ' | spawn carried ' + A.spawn.carried + ' grew ' + A.spawn.grew + ' | ingest added ' + A.ingest.added + ' | generations promotions ' + A.generations.promotions);
     say('[A] self-code: ' + (A.selfCode.last ? JSON.stringify(A.selfCode.last).slice(0, 300) : 'none') + (A.selfCode.errors.length ? ' errors ' + A.selfCode.errors.join(' | ') : ''));
+    say('[A] self-code refusals in the ledger file: ' + selfCodeRefusals.length + (selfCodeRefusals.length ? ' [' + selfCodeRefusals.map((x) => 't=' + x.t + ' ' + x.refused + ': ' + x.why).join('; ') + ']' : '') + '; floor ' + (selfCodeFit ? selfCodeFit.floorMb + ' MB from ' + selfCodeFit.floorFrom + ', starts ' + selfCodeFit.starts + ', need ' + selfCodeFit.needMb + ' MB (' + selfCodeFit.needFrom + ')' : 'not reported'));
     say('[A] ledger ' + A.ledger.mode + ': ' + fmt(A.ledger.bytesWritten) + ' B written, file ' + fmt(A.ledger.fileBytes) + ' B, ' + A.ledger.rows + ' rows; per 1000 ticks: max ' + fmt(A.ledger.per1000Max) + ' B, median ' + fmt(A.ledger.per1000Median) + ' B, whole run ' + fmt(A.ledger.per1000Whole) + ' B (bar < ' + fmt(MB) + ' B)');
     say('[A] checkpoints ' + A.checkpoints.count + ' (errors ' + A.checkpoints.errors + '): ' + fmt(A.checkpoints.bytesTotal) + ' B written in total, last ' + fmt(A.checkpoints.bytesLast) + ' B');
     for (const s of D.SUITES) say('[A] ' + s + ': exact ' + first.scores[s].exact + '/' + first.scores[s].n + ' -> ' + last.scores[s].exact + '/' + last.scores[s].n + ', carried by its own cells ' + first.scores[s].carried + '/' + first.scores[s].n + ' -> ' + last.scores[s].carried + '/' + last.scores[s].n);
@@ -196,9 +209,10 @@ async function main() {
     const barMet = Object.values(met).every(Boolean);
     const isTheBar = !narrow;
     const pw = A.perWallSecond || {};
+    const lastWhy = A.selfCodeRefusals.length ? A.selfCodeRefusals[A.selfCodeRefusals.length - 1].why : null;
     const statement = 'The 12-major organism (' + fmt(o.units) + ' substrate units) was built fresh and run by daemon/run.mjs with the loop on for ' + A.wallS + ' s of wall time under the caps: '
       + fmt(A.ticks) + ' ticks at ' + tps + ' ticks per second, ledger=summary, ' + A.checkpoints.count + ' checkpoints (' + fmt(A.checkpoints.bytesTotal) + ' bytes written, the last ' + fmt(A.checkpoints.bytesLast) + '). '
-      + 'Steps run: ' + D.STEP_KINDS.map((k) => k + ' ' + A.steps[k]).join(', ') + (A.refused['self-code'] ? ', self-code refused ' + A.refused['self-code'] : '') + '. '
+      + 'Steps run: ' + D.STEP_KINDS.map((k) => k + ' ' + A.steps[k]).join(', ') + (A.refused['self-code'] ? ', self-code refused ' + A.refused['self-code'] + (lastWhy ? ' (the last refusal, from the ledger file: ' + lastWhy + ')' : '') : '') + '. '
       + 'The summary ledger wrote at most ' + fmt(A.ledger.per1000Max) + ' bytes per 1000 ticks over any checkpoint step and ' + fmt(A.ledger.per1000Whole) + ' over the whole run, against a bar of 1 MB. '
       + 'On ' + last.total.n + ' suite questions (algebra ' + last.scores.algebra.n + ', sequence ' + last.scores.sequence.n + ', grid ' + last.scores.grid.n + ', at most ' + o.tasks + ' per suite) the exact path answered ' + first.total.exact + ' at the start and ' + last.total.exact + ' at the end, and the organism\'s own spawned cells carried ' + first.total.carried + ' at the start and ' + last.total.carried + ' at the end: '
       + 'improvement per wall second ' + pw.exact + ' (exact) and ' + pw.carried + ' (carried) as a fraction of the suite, recomputed ' + (ratesEqual ? 'identically' : 'DIFFERENTLY') + ' from ruler.jsonl alone. '
@@ -207,7 +221,7 @@ async function main() {
       + 'Peak resident set ' + maxRssMb + ' MB. ' + (barMet ? 'Every part of the bar was met.' : 'Not met: ' + Object.entries(met).filter(([, v]) => !v).map(([k]) => k).join(', ') + '.');
     verdict = {
       name: 'daemon', at: new Date().toISOString(), command: ['node', 'bench/daemon.mjs', ...argv].join(' '), execArgv: process.execArgv, node: process.version,
-      isTheBar, barMet, met, statement,
+      isTheBar, barMet, met, contaminated: null, statement,
       split: splitFor({ tasks: o.tasks, seed: o.seed, suites: Object.keys(last.scores || {}) }),
       bar: { ...BAR, ledgerPer1000TicksBytes: MB }, run: { ...o },
       phaseA: A, phaseB: B, peakRssMb: maxRssMb, peakRssSampledMb: peakSampledMb,
@@ -215,6 +229,10 @@ async function main() {
       totalWallS: r3((Date.now() - t0) / 1000),
       note: 'notes/daemon.md',
     };
+    // board 23 fix pass: the gate counts contaminated only when it is true, so a reason in the split is marked at the top level and said in the statement
+    verdict.contaminated = typeof verdict.split.contaminated === 'string';
+    if (verdict.contaminated) verdict.statement += ' Contaminated: ' + verdict.split.contaminated + '.';
+    say('[split] contaminated ' + (verdict.contaminated ? verdict.split.contaminated : 'false'));
     say('');
     say('[bar] ' + (barMet ? 'MET' : 'NOT MET') + ': ' + Object.entries(met).map(([k, v]) => k + ' ' + (v ? 'yes' : 'NO')).join(', '));
   } catch (e) {

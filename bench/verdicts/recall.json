@@ -1,10 +1,28 @@
 {
-  "at": "2026-09-24T02:11:18.763Z",
+  "at": "2026-09-27T13:35:17.140Z",
   "command": "node bench/recall.mjs",
   "node": "v24.15.0",
   "isTheBar": true,
   "barMet": true,
-  "statement": "On 200 held-out Simple English Wikipedia questions (the knowledge bar's own draw, first sentences hidden from the ingest) and 200 algebra and sequence questions, the ask path of act/prompt.mjs was run on one bare brain with the knowledge tier on and off, interleaved per question, the model cell on provider null. With the tier on, 176 of 200 wiki questions (88.0%) were answered natively, without reaching a model cell, against 0 (0.0%) with it off; wiki accuracy was 61.0% on and 0.0% off, the native answers took a mean 9262.6 microseconds, and the model cell was called 24 times on and 200 off. On the suite the tier changed nothing it could: accuracy 100.0% on and 100.0% off, 200 and 200 native, 0 and 0 model calls. The confidence floor was 0.2, chosen on the 428 held-out records outside this draw. 0 hidden sentences were found in the store. The bar is met.",
+  "contaminated": true,
+  "statement": "On 200 held-out Simple English Wikipedia questions (the knowledge bar's own draw, first sentences hidden from the ingest) and 200 algebra and sequence questions, the ask path of act/prompt.mjs was run on one bare brain with the knowledge tier on and off, interleaved per question, the model cell on provider null. With the tier on, 176 of 200 wiki questions (88.0%) were answered natively, without reaching a model cell, against 0 (0.0%) with it off; wiki accuracy was 61.0% on and 0.0% off, the native answers took a mean 5736.8 microseconds, and the model cell was called 24 times on and 200 off. On the suite the tier changed nothing it could: accuracy 100.0% on and 100.0% off, 200 and 200 native, 0 and 0 model calls. The confidence floor was 0.2, chosen on the 428 held-out records outside this draw. 0 hidden sentences were found in the store. The bar is met. Contaminated: the wiki draw (seed knowledge-draw-2026-09-23) is the one bench/verdicts/knowledge.json grades, so its results were on disk while this tier was developed.",
+  "split": {
+    "development": {
+      "what": "the confidence floor chosen by --tune on the held-out records OUTSIDE the bar's draw; the bench/answer.mjs algebra and sequence suites"
+    },
+    "heldOut": {
+      "what": "the wiki questions: bench/knowledge.mjs drawHeldout (its DRAW_SEED), first sentences hidden from the ingest; the suite questions are a no-regression check with no held-out set",
+      "wiki": 200,
+      "suitePerSuite": 100,
+      "drawSeed": "knowledge-draw-2026-09-23",
+      "leaks": 0,
+      "gradedBefore": {
+        "file": "bench/verdicts/knowledge.json",
+        "drawSeed": "knowledge-draw-2026-09-23"
+      }
+    },
+    "contaminated": "the wiki draw (seed knowledge-draw-2026-09-23) is the one bench/verdicts/knowledge.json grades, so its results were on disk while this tier was developed"
+  },
   "bar": "the native share on the wiki questions rises with the tier on, and the suite accuracy does not fall",
   "checks": {
     "drewWiki": true,
@@ -41,9 +59,9 @@
       "correct": 122,
       "accuracy": 0.61,
       "nativeCorrect": 122,
-      "nativeMeanUs": 9262.6,
-      "nativeP50Us": 7698.6,
-      "nativeP95Us": 18779.3,
+      "nativeMeanUs": 5736.8,
+      "nativeP50Us": 4421.7,
+      "nativeP95Us": 12465.9,
       "modelCalls": 24,
       "abstained": 24,
       "byProvenance": {
@@ -82,9 +100,9 @@
       "correct": 200,
       "accuracy": 1,
       "nativeCorrect": 200,
-      "nativeMeanUs": 998.8,
-      "nativeP50Us": 950,
-      "nativeP95Us": 1465.3,
+      "nativeMeanUs": 110,
+      "nativeP50Us": 68.4,
+      "nativeP95Us": 330.3,
       "modelCalls": 0,
       "abstained": 0,
       "byProvenance": {
@@ -101,9 +119,9 @@
       "correct": 200,
       "accuracy": 1,
       "nativeCorrect": 200,
-      "nativeMeanUs": 1022.4,
-      "nativeP50Us": 978.3,
-      "nativeP95Us": 1400.1,
+      "nativeMeanUs": 188.8,
+      "nativeP50Us": 128.5,
+      "nativeP95Us": 482.1,
       "modelCalls": 0,
       "abstained": 0,
       "byProvenance": {
@@ -121,26 +139,27 @@
     "answered": 176,
     "below": 24
   },
-  "warmUpUs": 71058.4,
+  "warmUpUs": 31784.8,
   "leaks": 0,
-  "runSeconds": 2.3,
-  "peakRssMb": 347.1,
+  "runSeconds": 1.3,
+  "peakRssMb": 223.7,
   "heldoutPool": 628,
   "printed": [
     "recall bar: node bench/recall.mjs",
     "store bench\\fixtures\\wiki\\store: a finished ingest",
     "wiki: 200 of 628 held-out questions drawn by seed knowledge-draw-2026-09-23 (the knowledge bar's draw); suite: 200 (algebra 100, sequence 100) from bench/answer.mjs buildQuestions",
     "floor 0.2 (KNOWLEDGE.floor as shipped), model cell provider null (offline: no socket, calls counted)",
-    "warm-up (not counted): store opened 1 time(s), first definitional ask 71058.4 us",
+    "warm-up (not counted): store opened 1 time(s), first definitional ask 31784.8 us",
     "leak check: 0 hidden sentences of the 200 drawn articles found in the store",
-    "wiki  tier on : native 176/200 (88.0%), accuracy 122/200 (61.0%), native correct 122/176, native mean 9262.6 us (p50 7698.6, p95 18779.3), model calls 24, abstained 24, provenance {\"memory\":200}",
+    "wiki  tier on : native 176/200 (88.0%), accuracy 122/200 (61.0%), native correct 122/176, native mean 5736.8 us (p50 4421.7, p95 12465.9), model calls 24, abstained 24, provenance {\"memory\":200}",
     "wiki  tier off: native 0/200 (0.0%), accuracy 0/200 (0.0%), native correct 0/0, native mean n/a (none native), model calls 200, abstained 200, provenance {\"memory\":200}",
-    "suite tier on : native 200/200 (100.0%), accuracy 200/200 (100.0%), native correct 200/200, native mean 998.8 us (p50 950, p95 1465.3), model calls 0, provenance {\"exact\":200}",
-    "suite tier off: native 200/200 (100.0%), accuracy 200/200 (100.0%), native correct 200/200, native mean 1022.4 us (p50 978.3, p95 1400.1), model calls 0, provenance {\"exact\":200}",
+    "suite tier on : native 200/200 (100.0%), accuracy 200/200 (100.0%), native correct 200/200, native mean 110 us (p50 68.4, p95 330.3), model calls 0, provenance {\"exact\":200}",
+    "suite tier off: native 200/200 (100.0%), accuracy 200/200 (100.0%), native correct 200/200, native mean 188.8 us (p50 128.5, p95 482.1), model calls 0, provenance {\"exact\":200}",
     "knowledge tier during the run: asked 200, answered at or above the floor 176, below 24, opens 0",
     "wiki with the tier on: 176 answered by the tier (122 correct), 24 fell through to the model cell",
-    "run: 400 questions x 2 arms in 2.3 s; peak rss 347.1 MB",
+    "run: 400 questions x 2 arms in 1.3 s; peak rss 223.7 MB",
     "checks: drewWiki yes, drewSuite yes, wikiNativeRises yes, suiteAccuracyHolds yes, noLeaks yes",
-    "bar MET"
+    "bar MET",
+    "split: contaminated the wiki draw (seed knowledge-draw-2026-09-23) is the one bench/verdicts/knowledge.json grades, so its results were on disk while this tier was developed"
   ]
 }
