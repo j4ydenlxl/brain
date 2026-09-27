@@ -1,0 +1,981 @@
+{
+  "bench": "dead-share",
+  "at": "2026-09-27T14:43:55.931Z",
+  "command": "node tools/budget.mjs --ram-mb 4000 --disk-mb 400 --dir <scratch> -- node --max-old-space-size=4000 test/dead-share-bar.mjs --scratch <scratch>",
+  "node": "v24.15.0",
+  "isTheBar": true,
+  "barMet": true,
+  "item": {
+    "board": 23,
+    "item": "dead-share",
+    "gap": "dead:organism/gen-1-4-4-1-4",
+    "ledger": 0.71436,
+    "bar": 0,
+    "gateCap": 0.1,
+    "emitter": "genome/emit.mjs --dead-share (deadShareChain: census, wire to the fixed point, prune, census; each step a child process)"
+  },
+  "criteria": {
+    "barMet": "the development seed row at dead share 0 and the seed on disk; the provenance; the clone; and every held-out seed safe",
+    "safe": "the copy has the seed hash and its first census reads the lines the bar read; the chain reached its fixed point, dead share did not rise, hosted score, algebra and sequence did not fall; the two runs landed the same organism",
+    "reportedNotRequired": "held-out seeds lowered, under the gate cap 0.1, at 0"
+  },
+  "control": "before: the r0 census of this seed (bench/verdicts/census-gen-1-4-4-1-4-dead-share-r0-partial.json); knockout: the bar census left out edges-000.mjs; clone: the seed emitted again from its own load, and the emitter over it",
+  "split": {
+    "development": "organism/gen-1-4-4-1-4 at 200 ticks: the wire and prune rules were built and landed on it (censuses r0 to r3), and its 1200 tick arm was read while building",
+    "heldOut": "18 seeds under organism/ the bar censused (organism/gen-0-3-3-2-4, organism/gen-0-3-4-2-4, organism/gen-0-4-4-2-4, organism/gen-0-5-3-2-4, organism/gen-0-5-3-3-4, organism/gen-0-5-4-1-4, organism/gen-0-5-4-2-4, organism/gen-0-5-5-2-4, organism/gen-0-6-4-2-4, organism/gen-1-4-3-2-4, organism/gen-1-4-3-3-4, organism/gen-1-4-4-2-4, organism/gen-1-5-3-1-3, organism/gen-1-5-3-1-4, organism/gen-1-5-4-2-4, organism/gen-1-6-4-1-4, organism/gen-2-0-4-1-4, organism/gen-2-4-3-3-4): no chain ran on any of them while the rule was built; each is chained on two scratch copies here for the first time, the criteria fixed before the run",
+    "contaminated": "organism/gen-0-2-3-1-3: a chain trial ran on a copy of it while the rule was built; reported, not counted"
+  },
+  "bar": {
+    "command": "node tools/budget.mjs --ram-mb 4000 --disk-mb 400 --dir bench/verdicts -- node --max-old-space-size=4000 tools/organism-census.mjs --all --ticks 200 --max-cells 1000",
+    "exit": 0,
+    "wallS": 2.886,
+    "censusAllAt": "2026-09-27T14:42:52.617Z",
+    "fresh": true,
+    "printed": [
+      "skip gen-0: 40000 cells is over --max-cells 1000",
+      "skip gen-0-pruned: 37533 cells is over --max-cells 1000",
+      "skip scale-52000: 416000 cells is over --max-cells 1000",
+      "skip scale-52000-pruned: 411858 cells is over --max-cells 1000",
+      "Census of 20 seeds under organism/ at 200 ticks each (4 skipped as over --max-cells): 2696 of 2922 declared cells ran and 4526 of 14655 declared edges delivered; 10168 of 20523 loaded lines are load bearing. Not the bar: the bar is organism/gen-0 at 200 ticks and organism/scale-52000 at 20.",
+      "wrote bench/verdicts/census-all.json",
+      "BUDGET done exit 0: wall 2.43 s, peak ram 345.4MB, peak dir 50.3MB, cpu 2.70 s, 2 samples, record state/budget/last.json"
+    ]
+  },
+  "dev": {
+    "seed": "organism/gen-1-4-4-1-4",
+    "hash": "dc84e3d733a8732f109b370694c078d56a19cec9a21d41c4d8c879824ee4a9e3",
+    "deadShare": 0,
+    "lines": {
+      "loaded": 1299,
+      "declarations": 1013,
+      "live": 1013,
+      "loadBearing": 1299
+    },
+    "cells": {
+      "declared": 254,
+      "ran": 254,
+      "ranDrive": 254,
+      "ranOnlyInTasks": 0,
+      "fired": 103,
+      "errored": 0,
+      "neverRan": 0,
+      "neverRanBudget": 0,
+      "neverRanEventNoMail": 0,
+      "neverRanOther": 0
+    },
+    "edges": {
+      "declared": 701,
+      "delivered": 701,
+      "deliveredDrive": 696,
+      "notDelivered": 0,
+      "srcNeverFired": 0,
+      "srcFiredOtherPort": 0,
+      "inFlightAtEnd": 0
+    },
+    "tasks": 0.083334,
+    "onDisk": {
+      "cells": 254,
+      "edges": 701,
+      "censusRuler": 1299
+    },
+    "rowIsTheSeedOnDisk": true,
+    "met": true
+  },
+  "before": {
+    "file": "bench/verdicts/census-gen-1-4-4-1-4-dead-share-r0-partial.json",
+    "at": "2026-09-27T01:03:54.229Z",
+    "hash": "f3c731c4dbb8a3931a88c4c37b99d3bb97b0a7cdab92ba8eb8840d3324f2b9cc",
+    "lines": {
+      "loaded": 1929,
+      "loadBearing": 551
+    },
+    "deadShare": 0.71436,
+    "ledger": 0.71436,
+    "isTheLedger": true
+  },
+  "knockout": {
+    "file": "edges-000.mjs",
+    "from": "the bar census (census-all.json, role seeded)",
+    "edgeFiles": [
+      "edges-000.mjs"
+    ],
+    "delta": {
+      "driveRuns": -8297,
+      "driveSignals": -18412,
+      "driveDelivered": -101113,
+      "cellsRan": -47,
+      "edgesDelivered": -701,
+      "taskScore": 0,
+      "algebraCorrect": 0,
+      "sequenceCorrect": 0
+    },
+    "allEdges": true
+  },
+  "provenance": {
+    "rounds": [
+      {
+        "fromHash": "f3c731c4dbb8a3931a88c4c37b99d3bb97b0a7cdab92ba8eb8840d3324f2b9cc",
+        "toHash": "8124a68016dd223bfbc856c629b2aecd3174c90ed88269fa18ce5317598cbaa0",
+        "edgesBefore": 1519,
+        "edgesAfter": 1591,
+        "portsWired": 72,
+        "keptByPrune": {
+          "census": "bench/verdicts/census-gen-1-4-4-1-4-dead-share-r2-partial.json",
+          "delivered": 72,
+          "inFlightOnly": 0
+        },
+        "reconstructed": true,
+        "census": "bench/verdicts/census-gen-1-4-4-1-4-dead-share-r0-partial.json"
+      },
+      {
+        "fromHash": "8124a68016dd223bfbc856c629b2aecd3174c90ed88269fa18ce5317598cbaa0",
+        "toHash": "44b0cb8c317dc4f48937e0de26faeba714268a54aa8072b5c7174ed9468857aa",
+        "edgesBefore": 1591,
+        "edgesAfter": 1621,
+        "portsWired": 30,
+        "keptByPrune": {
+          "census": "bench/verdicts/census-gen-1-4-4-1-4-dead-share-r2-partial.json",
+          "delivered": 30,
+          "inFlightOnly": 0
+        },
+        "reconstructed": true,
+        "census": "bench/verdicts/census-gen-1-4-4-1-4-dead-share-r1-partial.json"
+      },
+      {
+        "fromHash": "44b0cb8c317dc4f48937e0de26faeba714268a54aa8072b5c7174ed9468857aa",
+        "toHash": null,
+        "edgesBefore": 1621,
+        "edgesAfter": 1621,
+        "portsWired": 0,
+        "keptByPrune": null,
+        "reconstructed": false,
+        "census": "bench/verdicts/census-gen-1-4-4-1-4-dead-share-r2-partial.json"
+      },
+      {
+        "fromHash": "dc84e3d733a8732f109b370694c078d56a19cec9a21d41c4d8c879824ee4a9e3",
+        "toHash": null,
+        "edgesBefore": 701,
+        "edgesAfter": 701,
+        "portsWired": 0,
+        "keptByPrune": null,
+        "reconstructed": false,
+        "census": "bench/verdicts/census-gen-1-4-4-1-4-dead-share-land-c0-partial.json"
+      }
+    ],
+    "pruned": {
+      "fromHash": "44b0cb8c317dc4f48937e0de26faeba714268a54aa8072b5c7174ed9468857aa",
+      "census": "bench/verdicts/census-gen-1-4-4-1-4-dead-share-r2-partial.json",
+      "cells": {
+        "before": 255,
+        "after": 254
+      },
+      "edges": {
+        "before": 1621,
+        "after": 701,
+        "neverDelivered": 920,
+        "orphaned": 0
+      }
+    },
+    "met": true
+  },
+  "clone": {
+    "sourceHash": "dc84e3d733a8732f109b370694c078d56a19cec9a21d41c4d8c879824ee4a9e3",
+    "copyHash": "dc84e3d733a8732f109b370694c078d56a19cec9a21d41c4d8c879824ee4a9e3",
+    "rounds": 0,
+    "fixedPoint": true,
+    "pruneSkipped": true,
+    "deadShare": [
+      0,
+      0
+    ],
+    "hashAfter": "dc84e3d733a8732f109b370694c078d56a19cec9a21d41c4d8c879824ee4a9e3",
+    "met": true
+  },
+  "longHorizon": {
+    "note": "a development measurement: the 1200 tick arm was read on this seed while the rule was built",
+    "arms": {
+      "200": {
+        "ticks": 200,
+        "lastTickBound": 315,
+        "periods": {
+          "1": 64,
+          "1000": 44,
+          "60000": 47,
+          "3600000": 51,
+          "event": 48
+        },
+        "cellsFired": 103,
+        "cellsWithNoRunAfterTick0": 142,
+        "edgesIntoThem": 307,
+        "cellsTheyReach": 106,
+        "period1000": {
+          "cells": 44,
+          "runs": 44,
+          "fired": 4,
+          "edgesInto": 99
+        },
+        "mailDropped": 60729,
+        "driveDelivered": 136050,
+        "score": 0.083334
+      },
+      "1200": {
+        "ticks": 1200,
+        "lastTickBound": 1315,
+        "periods": {
+          "1": 64,
+          "1000": 44,
+          "60000": 47,
+          "3600000": 51,
+          "event": 48
+        },
+        "cellsFired": 125,
+        "cellsWithNoRunAfterTick0": 98,
+        "edgesIntoThem": 208,
+        "cellsTheyReach": 74,
+        "period1000": {
+          "cells": 44,
+          "runs": 88,
+          "fired": 25,
+          "edgesInto": 99
+        },
+        "mailDropped": 253167,
+        "driveDelivered": 754069,
+        "score": 0.083334
+      }
+    }
+  },
+  "heldOut": {
+    "seeds": 18,
+    "safe": 18,
+    "lowered": 18,
+    "underCap": 18,
+    "zero": 6,
+    "deterministic": 18,
+    "allSafe": true,
+    "afterRange": [
+      0,
+      0.007389
+    ],
+    "beforeRange": [
+      0.37945,
+      0.648221
+    ],
+    "rows": [
+      {
+        "seed": "organism/gen-0-3-3-2-4",
+        "safe": true,
+        "why": [],
+        "before": 0.485751,
+        "after": 0.001642,
+        "lowered": true,
+        "underCap": true,
+        "zero": false,
+        "rounds": 1,
+        "lines": [
+          772,
+          609
+        ],
+        "score": [
+          0.166666,
+          0.166666
+        ],
+        "algebra": [
+          12,
+          12
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          535,
+          233
+        ],
+        "cells": [
+          114,
+          113
+        ],
+        "deterministic": true,
+        "hash": "771981ddfed1d8772b2ccda6adf840282da433115381eb594bc246c3628490bc"
+      },
+      {
+        "seed": "organism/gen-0-3-4-2-4",
+        "safe": true,
+        "why": [],
+        "before": 0.543646,
+        "after": 0.002732,
+        "lowered": true,
+        "underCap": true,
+        "zero": false,
+        "rounds": 1,
+        "lines": [
+          905,
+          732
+        ],
+        "score": [
+          0.166666,
+          0.166666
+        ],
+        "algebra": [
+          12,
+          12
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          598,
+          286
+        ],
+        "cells": [
+          174,
+          173
+        ],
+        "deterministic": true,
+        "hash": "3d6d22a0cae73946b709d30fffd42494e0b060b7a683f843f484ed12e0475db2"
+      },
+      {
+        "seed": "organism/gen-0-4-4-2-4",
+        "safe": true,
+        "why": [],
+        "before": 0.524809,
+        "after": 0.004566,
+        "lowered": true,
+        "underCap": true,
+        "zero": false,
+        "rounds": 1,
+        "lines": [
+          524,
+          438
+        ],
+        "score": [
+          0.138889,
+          0.138889
+        ],
+        "algebra": [
+          10,
+          10
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          332,
+          108
+        ],
+        "cells": [
+          66,
+          64
+        ],
+        "deterministic": true,
+        "hash": "f47251933c467587367a93855ad5febf3bd0e007d52efbc30859b4924100f014"
+      },
+      {
+        "seed": "organism/gen-0-5-3-2-4",
+        "safe": true,
+        "why": [],
+        "before": 0.538352,
+        "after": 0.001905,
+        "lowered": true,
+        "underCap": true,
+        "zero": false,
+        "rounds": 1,
+        "lines": [
+          704,
+          525
+        ],
+        "score": [
+          0.305555,
+          0.305555
+        ],
+        "algebra": [
+          22,
+          22
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          432,
+          115
+        ],
+        "cells": [
+          126,
+          124
+        ],
+        "deterministic": true,
+        "hash": "25b435dcc69d538348a5ec539283bced653ebb8d28388a7a2c76f4ddc66b05aa"
+      },
+      {
+        "seed": "organism/gen-0-5-3-3-4",
+        "safe": true,
+        "why": [],
+        "before": 0.397249,
+        "after": 0.000918,
+        "lowered": true,
+        "underCap": true,
+        "zero": false,
+        "rounds": 1,
+        "lines": [
+          1236,
+          1089
+        ],
+        "score": [
+          0.416666,
+          0.416666
+        ],
+        "algebra": [
+          30,
+          30
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          940,
+          656
+        ],
+        "cells": [
+          160,
+          157
+        ],
+        "deterministic": true,
+        "hash": "4db577456ef56ffdfa4f8a1319e716ff8e5af269d522b40cde96cb41a285f064"
+      },
+      {
+        "seed": "organism/gen-0-5-4-1-4",
+        "safe": true,
+        "why": [],
+        "before": 0.566826,
+        "after": 0,
+        "lowered": true,
+        "underCap": true,
+        "zero": true,
+        "rounds": 1,
+        "lines": [
+          838,
+          685
+        ],
+        "score": [
+          0.305555,
+          0.305555
+        ],
+        "algebra": [
+          22,
+          22
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          542,
+          249
+        ],
+        "cells": [
+          160,
+          160
+        ],
+        "deterministic": true,
+        "hash": "ca4814fa1d8a217c6a5a91d4052e0ff0e7e32edbcd36be21bbaea87c12a69590"
+      },
+      {
+        "seed": "organism/gen-0-5-4-2-4",
+        "safe": true,
+        "why": [],
+        "before": 0.627092,
+        "after": 0.006129,
+        "lowered": true,
+        "underCap": true,
+        "zero": false,
+        "rounds": 1,
+        "lines": [
+          1912,
+          979
+        ],
+        "score": [
+          0.138889,
+          0.138889
+        ],
+        "algebra": [
+          10,
+          10
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          1542,
+          469
+        ],
+        "cells": [
+          228,
+          228
+        ],
+        "deterministic": true,
+        "hash": "c6ece0b03b469477945c743c66df4a88e37da8ed19492a9c7f2f0c615fe736ba"
+      },
+      {
+        "seed": "organism/gen-0-5-5-2-4",
+        "safe": true,
+        "why": [],
+        "before": 0.583164,
+        "after": 0,
+        "lowered": true,
+        "underCap": true,
+        "zero": true,
+        "rounds": 1,
+        "lines": [
+          986,
+          713
+        ],
+        "score": [
+          0,
+          0
+        ],
+        "algebra": [
+          0,
+          0
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          750,
+          337
+        ],
+        "cells": [
+          110,
+          110
+        ],
+        "deterministic": true,
+        "hash": "d1d8be01b31ecdf784b4766e248f6711e3c0bffb03e8f380a49159fd0ddedaf3"
+      },
+      {
+        "seed": "organism/gen-0-6-4-2-4",
+        "safe": true,
+        "why": [],
+        "before": 0.648221,
+        "after": 0.004274,
+        "lowered": true,
+        "underCap": true,
+        "zero": false,
+        "rounds": 1,
+        "lines": [
+          1265,
+          702
+        ],
+        "score": [
+          0.083334,
+          0.083334
+        ],
+        "algebra": [
+          6,
+          6
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          1001,
+          306
+        ],
+        "cells": [
+          128,
+          120
+        ],
+        "deterministic": true,
+        "hash": "6b2eb42ff3c1f0f487f4a79b8da4ace71348adc66dcf36464d7626c213adf891"
+      },
+      {
+        "seed": "organism/gen-1-4-3-2-4",
+        "safe": true,
+        "why": [],
+        "before": 0.41206,
+        "after": 0,
+        "lowered": true,
+        "underCap": true,
+        "zero": true,
+        "rounds": 1,
+        "lines": [
+          398,
+          433
+        ],
+        "score": [
+          0.138889,
+          0.138889
+        ],
+        "algebra": [
+          10,
+          10
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          206,
+          103
+        ],
+        "cells": [
+          66,
+          64
+        ],
+        "deterministic": true,
+        "hash": "e777a9d616b0bd6adf3b2db74584b25f97b6abe8caeb354bf88730af689d8300"
+      },
+      {
+        "seed": "organism/gen-1-4-3-3-4",
+        "safe": true,
+        "why": [],
+        "before": 0.394773,
+        "after": 0,
+        "lowered": true,
+        "underCap": true,
+        "zero": true,
+        "rounds": 1,
+        "lines": [
+          1454,
+          1292
+        ],
+        "score": [
+          0.444445,
+          0.444445
+        ],
+        "algebra": [
+          32,
+          32
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          1126,
+          827
+        ],
+        "cells": [
+          192,
+          189
+        ],
+        "deterministic": true,
+        "hash": "3a5467aa4b3735b2f3c702a7e715555f77c3bac91f02cc4d5ad02e2523121b8e"
+      },
+      {
+        "seed": "organism/gen-1-4-4-2-4",
+        "safe": true,
+        "why": [],
+        "before": 0.61523,
+        "after": 0.007389,
+        "lowered": true,
+        "underCap": true,
+        "zero": false,
+        "rounds": 1,
+        "lines": [
+          1497,
+          812
+        ],
+        "score": [
+          0.305555,
+          0.305555
+        ],
+        "algebra": [
+          22,
+          22
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          1233,
+          416
+        ],
+        "cells": [
+          128,
+          120
+        ],
+        "deterministic": true,
+        "hash": "40b9cb3e47548c0ba18fd14a4176e745d40296006ffdb914985faad48121720b"
+      },
+      {
+        "seed": "organism/gen-1-5-3-1-3",
+        "safe": true,
+        "why": [],
+        "before": 0.610605,
+        "after": 0.001314,
+        "lowered": true,
+        "underCap": true,
+        "zero": false,
+        "rounds": 1,
+        "lines": [
+          1207,
+          761
+        ],
+        "score": [
+          0.388889,
+          0.388889
+        ],
+        "algebra": [
+          28,
+          28
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          843,
+          266
+        ],
+        "cells": [
+          195,
+          186
+        ],
+        "deterministic": true,
+        "hash": "7d4f2456187d0d47796af32fc36b04a2b50942c6e655c652d8c74fefe987b427"
+      },
+      {
+        "seed": "organism/gen-1-5-3-1-4",
+        "safe": true,
+        "why": [],
+        "before": 0.508523,
+        "after": 0.00641,
+        "lowered": true,
+        "underCap": true,
+        "zero": false,
+        "rounds": 1,
+        "lines": [
+          704,
+          624
+        ],
+        "score": [
+          0.194444,
+          0.194444
+        ],
+        "algebra": [
+          14,
+          14
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          432,
+          213
+        ],
+        "cells": [
+          126,
+          125
+        ],
+        "deterministic": true,
+        "hash": "66fb02042a41e11aa143db8e707e7100edf75545b7873d84b94179d8a70b07b8"
+      },
+      {
+        "seed": "organism/gen-1-5-4-2-4",
+        "safe": true,
+        "why": [],
+        "before": 0.555644,
+        "after": 0.003995,
+        "lowered": true,
+        "underCap": true,
+        "zero": false,
+        "rounds": 1,
+        "lines": [
+          1258,
+          751
+        ],
+        "score": [
+          0.472222,
+          0.472222
+        ],
+        "algebra": [
+          34,
+          34
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          994,
+          355
+        ],
+        "cells": [
+          128,
+          120
+        ],
+        "deterministic": true,
+        "hash": "5365eb1941d964914d9ddd31dc75c536fe26476bd8904a839b19b792210bafd5"
+      },
+      {
+        "seed": "organism/gen-1-6-4-1-4",
+        "safe": true,
+        "why": [],
+        "before": 0.579006,
+        "after": 0,
+        "lowered": true,
+        "underCap": true,
+        "zero": true,
+        "rounds": 2,
+        "lines": [
+          905,
+          757
+        ],
+        "score": [
+          0.305555,
+          0.305555
+        ],
+        "algebra": [
+          22,
+          22
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          598,
+          290
+        ],
+        "cells": [
+          174,
+          170
+        ],
+        "deterministic": true,
+        "hash": "03fe4fb6dc9ffb370153bb5db628fe25ebd2caf890fe732b8f37a95facac36be"
+      },
+      {
+        "seed": "organism/gen-2-0-4-1-4",
+        "safe": true,
+        "why": [],
+        "before": 0.503922,
+        "after": 0,
+        "lowered": true,
+        "underCap": true,
+        "zero": true,
+        "rounds": 1,
+        "lines": [
+          510,
+          443
+        ],
+        "score": [
+          0.222222,
+          0.222222
+        ],
+        "algebra": [
+          16,
+          16
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          290,
+          87
+        ],
+        "cells": [
+          87,
+          83
+        ],
+        "deterministic": true,
+        "hash": "0253a28ca483f487349be2638aa01988bcaa6db09ecc33fa723f7f5716aafaa5"
+      },
+      {
+        "seed": "organism/gen-2-4-3-3-4",
+        "safe": true,
+        "why": [],
+        "before": 0.37945,
+        "after": 0.000923,
+        "lowered": true,
+        "underCap": true,
+        "zero": false,
+        "rounds": 1,
+        "lines": [
+          1236,
+          1083
+        ],
+        "score": [
+          0.472222,
+          0.472222
+        ],
+        "algebra": [
+          34,
+          34
+        ],
+        "sequence": [
+          0,
+          0
+        ],
+        "edges": [
+          943,
+          654
+        ],
+        "cells": [
+          162,
+          158
+        ],
+        "deterministic": true,
+        "hash": "51452f37850917796cbfca1a9232aba59d1e2d92f2bdf463fa4c7be821340e0d"
+      }
+    ]
+  },
+  "contaminated": [
+    {
+      "seed": "organism/gen-0-2-3-1-3",
+      "safe": true,
+      "why": [],
+      "before": 0.625411,
+      "after": 0.001546,
+      "lowered": true,
+      "underCap": true,
+      "zero": false,
+      "rounds": 2,
+      "lines": [
+        913,
+        647
+      ],
+      "score": [
+        0.083334,
+        0.083334
+      ],
+      "algebra": [
+        6,
+        6
+      ],
+      "sequence": [
+        0,
+        0
+      ],
+      "edges": [
+        617,
+        190
+      ],
+      "cells": [
+        144,
+        141
+      ],
+      "deterministic": true,
+      "hash": "24a4da8986a182f51b9aeec0c89c09a303a7f59fcd84dbf77493769f70f91c28",
+      "contaminated": "a chain trial ran on a copy of it while the rule was built"
+    }
+  ],
+  "wroteMB": 3.20465,
+  "over100MB": false,
+  "notCovered": [
+    "generations/epochs.mjs emitElite (and bench/epochs.mjs) never runs the chain: an epochs run that emits organism/gen-1-4-4-1-4 again writes the unwired, unpruned seed; the chain must run after it (genome/emit.mjs --dead-share)",
+    "organism/* is gitignored (.gitignore organism/*): the landed seed is on this disk only; a clone of the repository has no organism/gen-1-4-4-1-4 until an epochs run and the chain write it",
+    "dead share 0 is at the census horizon: edges into cells whose clock has no run after tick 0 inside it count as delivered though no run reads that mail inside the horizon (LONG HORIZON above)",
+    "the edges carry drive work, not the hosted score (CONTROL knockout above)"
+  ],
+  "statement": "The board bar command (tools/organism-census.mjs --all at 200 ticks) ran again and organism/gen-1-4-4-1-4 reads dead share 0: 1299 of 1299 loaded lines load bearing, 254 of 254 cells ran and 701 of 701 edges delivered, on the seed as it is on disk, against 0.71436 before the item (bench/verdicts/census-gen-1-4-4-1-4-dead-share-r0-partial.json). The seed was written by the emitter genome/emit.mjs (wire to the fixed point, then prune by the census), never by hand; its manifest now records both wire rounds (72 and 30 edges, rebuilt from the censuses between them) and the prune, and a copy of it is the emitter's fixed point. Leaving out every edge (edges-000.mjs) takes 101113 drive deliveries and 47 cells' runs away and moves the hosted score by 0: the edges carry drive work, not the hosted score. Dead share 0 is a horizon measurement: at 200 ticks (last tick 315) 307 edges deliver into 106 cells with no run after tick 0 and count as delivered though no run reads that mail inside the horizon (60729 items dropped); at 1200 ticks (last tick 1315) that is 208 edges into 74 cells, because the 44 cells on a 1000 tick clock (99 edges into them) run again at tick 1000 and 25 of them fire by then, against 4 at 200 ticks; the prune keeps those edges. Held out, the same emitter on copies of the 18 other seeds the bar censused: 18 safe (fixed point, no score, algebra or sequence fall, the same organism twice), 18 lowered, 18 under the gate cap 0.1, 6 at 0 (dead share 0.37945 to 0.648221 before, 0 to 0.007389 after). The bar is met."
+}

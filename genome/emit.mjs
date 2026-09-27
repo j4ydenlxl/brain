@@ -14,7 +14,7 @@
 // Weights and delays are exact. Connectome.w and .conf are Float32Array, and f32() prints
 // the shortest decimal that Math.fround reads back to the identical float32, so loading the
 // emitted source reproduces the connectome bit for bit and the content hash agrees.
-import { mkdirSync, writeFileSync, rmSync, existsSync, readFileSync, openSync, readSync, closeSync, readdirSync, statSync } from 'node:fs';
+import { mkdirSync, writeFileSync, rmSync, renameSync, existsSync, readFileSync, openSync, readSync, closeSync, readdirSync, statSync } from 'node:fs';
 import { StringDecoder } from 'node:string_decoder';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -301,19 +301,239 @@ export function pruneBrain(brain, live, { name = null, note = null, protect = nu
     edges: { delivered: edgesDelivered, inFlightOnly: edgesInFlightOnly, protectedOnly: edgesProtectedOnly, inFlightRecorded: !!live.inFlight },
     protect: { cells: protCells.reduce((a, b) => a + b, 0), edges: protEdges.reduce((a, b) => a + b, 0), why: (protect && protect.why) || [] },
   };
-  out.genome = {
-    ...genome, name: outName,
-    pruned: {
-      from: brain.name, fromHash: hash ?? null,
-      cells: { before: nC, after: out.cells.length },
-      edges: { before: k.n, after: out.connectome.n, neverDelivered: edgesDead, orphaned: 0 },
-      kept,
-      regionsDropped, circuitsDropped, wiring: { added: wiringOut.added, duplicates: wiringOut.duplicates, illegal: wiringOut.illegal },
-      ...(note ? { census: note } : {}),
-    },
+  // the latest round at the top (what the last prune did, where the census reads it), every round
+  // kept in order under rounds: a prune of a pruned seed used to drop the record of the first one
+  const round = {
+    from: brain.name, fromHash: hash ?? null,
+    cells: { before: nC, after: out.cells.length },
+    edges: { before: k.n, after: out.connectome.n, neverDelivered: edgesDead, orphaned: 0 },
+    kept,
+    regionsDropped, circuitsDropped, wiring: { added: wiringOut.added, duplicates: wiringOut.duplicates, illegal: wiringOut.illegal },
+    ...(note ? { census: note } : {}),
   };
+  const prior = priorPrune ? (Array.isArray(priorPrune.rounds) ? priorPrune.rounds : [(({ rounds, ...r }) => r)(priorPrune)]) : [];
+  out.genome = { ...genome, name: outName, pruned: { ...round, rounds: [...prior, round] } };
   return { brain: out, dropped, kept };
 }
+
+// ---------------------------------------------------------------- wire before prune (MANUAL P8, Board 23)
+//
+// "the emitter prunes what never runs or wires it so it runs". A prune alone deletes a line; it
+// does not make one important. So before the prune, the emitter WIRES: a census names every
+// port that delivered (a cell fired on it and an edge carried the signal inside the horizon),
+// and every in port no delivered edge reached. A silent cell (no out edge of it delivered) that
+// can still read mail inside the horizon, with an in port nothing reached, gets ONE edge from a
+// port that delivered and that the in port legally accepts: the same subset rule and the same
+// monomorphic claim the builder and the loader enforce (genome/wire.mjs), the donor edge's own
+// weight, delay and confidence (so the new edge arrives when a delivered one did), and the donor
+// nearest in the organism (same circuit, then same region, then any; then the nearest index).
+// The published shape is prune and regrow (SET, Mocanu et al. 2018) after an activation census
+// (Network Trimming, Hu et al. 2016): regrow where a live source can reach, prune the rest.
+//
+// What is never wired: a cell the hosted problems ran on (its answers are read through a tap,
+// and extra mail would change them), a cell that already delivered (it works; its inputs are
+// left alone), and a periodic cell whose next run after tick 0 is past the horizon (mail it
+// gets is never read). The rule adds edges only; no declaration is changed or removed, so the
+// wired seed's first n edges are the original n in the original order. The census of the wired
+// seed is what the prune then reads: whatever still never runs or delivers is what nothing
+// reaches, and it goes.
+
+/**
+ * Wire every silent cell's unreached in ports from ports that delivered.
+ * @param {object} brain a freshly loaded organism (never ticked); edges are appended to it
+ * @param {{ cells: {n, has}, edges: {n, has} }} live readers from readLiveBits
+ * @param {{ horizon: number, protect?: Iterable<number>, note?: object }} opts horizon is the
+ *   census's last tick bound (census.dormant.lastTickBound); protect the hosted cell indexes
+ * @returns {{ brain, wired: Array<object>, counts: object }}
+ */
+export function wireBrain(brain, live, { horizon, protect = [], note = null } = {}) {
+  const k = brain.connectome, nC = brain.cells.length, nE = k.n;
+  if (!live || !live.cells || !live.edges) throw new Error('wire: need { cells, edges } liveness');
+  if (live.cells.n !== nC) throw new Error('wire: liveness covers ' + live.cells.n + ' cells, the brain has ' + nC);
+  if (live.edges.n !== nE) throw new Error('wire: liveness covers ' + live.edges.n + ' edges, the brain has ' + nE);
+  if (!(Number.isInteger(horizon) && horizon > 0)) throw new Error('wire: need the census horizon (its last tick bound), got ' + horizon);
+  const prot = new Uint8Array(nC);
+  for (const i of protect) { if (!(i >= 0 && i < nC)) throw new Error('wire: protected cell ' + i + ' is out of range'); prot[i] = 1; }
+  // what delivered: per cell, whether any out edge delivered; per in port, whether any edge into it did;
+  // the donor ports (cell, out port) with the first delivered edge on each; the claim of every in port
+  const delivers = new Uint8Array(nC), reached = new Set(), donorEdge = new Map(), claim = new Map(), have = new Set();
+  const portKeyOf = (c, sp) => { const o = c.ports.out[sp]; const key = [...o.kinds].sort().join('|'); return o.kinds.length > 1 ? key + '#' + c.idx : key; };
+  for (let e = 0; e < nE; e++) {
+    const s = k.src[e], d = k.dst[e], sp = k.srcPort[e], dp = k.dstPort[e];
+    have.add(s + ':' + d + ':' + sp + ':' + dp);
+    const ck = d + ':' + dp;
+    if (!claim.has(ck)) claim.set(ck, portKeyOf(brain.cells[s], sp));
+    if (!live.edges.has(e)) continue;
+    delivers[s] = 1; reached.add(ck);
+    const dk = s + ':' + sp;
+    if (!donorEdge.has(dk)) donorEdge.set(dk, e);
+  }
+  const donors = [...donorEdge.entries()].map(([dk, e]) => { const [s, sp] = dk.split(':').map(Number); return { s, sp, e, cell: brain.cells[s], key: portKeyOf(brain.cells[s], sp) }; });
+  const readsMail = (c) => readsMailWithin(c, horizon);
+  const counts = { cells: nC, silent: 0, silentCanRead: 0, protectedSkipped: 0, clockSkipped: 0, portsUnreached: 0, portsWired: 0, portsNoDonor: 0, cellsWired: 0, cellsNeverRanWired: 0, donors: donors.length, edgesBefore: nE, edgesAfter: nE };
+  const wired = [];
+  const wiring = new Wiring(brain, { reserve: nE + nC, strict: true });
+  for (let i = 0; i < nC; i++) {
+    if (delivers[i]) continue;
+    counts.silent++;
+    const c = brain.cells[i];
+    if (prot[i]) { counts.protectedSkipped++; continue; }
+    if (!readsMail(c)) { counts.clockSkipped++; continue; }
+    counts.silentCanRead++;
+    let any = false;
+    for (let dp = 0; dp < c.ports.in.length; dp++) {
+      if (reached.has(i + ':' + dp)) continue;
+      counts.portsUnreached++;
+      const inPort = c.ports.in[dp], owner = claim.get(i + ':' + dp);
+      let best = null, bestRank = null;
+      for (const d of donors) {
+        if (d.s === i) continue;
+        if (!d.cell.ports.out[d.sp].kinds.every((x) => inPort.kinds.includes(x))) continue;
+        if (owner !== undefined && owner !== d.key) continue;
+        if (have.has(d.s + ':' + i + ':' + d.sp + ':' + dp)) continue;
+        const near = d.cell.circuit === c.circuit && d.cell.region === c.region ? 0 : d.cell.region === c.region ? 1 : 2;
+        const rank = [near, Math.abs(d.s - i), d.s, d.sp];
+        if (bestRank === null || lexLess(rank, bestRank)) { best = d; bestRank = rank; }
+      }
+      if (!best) { counts.portsNoDonor++; continue; }
+      const e = best.e;
+      const w = k.w[e], delay = k.delay[e], conf = k.conf[e];
+      const id = wiring.add(best.s, i, best.sp, dp, { w, delay, conf });
+      if (id < 0) throw new Error('wire: the edge ' + best.cell.id + '.' + best.sp + ' to ' + c.id + '.' + dp + ' was refused');
+      have.add(best.s + ':' + i + ':' + best.sp + ':' + dp);
+      claim.set(i + ':' + dp, best.key);
+      counts.portsWired++; any = true;
+      wired.push({ src: best.cell.id, dst: c.id, srcPort: best.sp, dstPort: dp, kind: c.kind, from: best.cell.kind, near: ['circuit', 'region', 'organism'][bestRank[0]], donorEdge: e, dstRan: live.cells.has(i) });
+    }
+    if (any) { counts.cellsWired++; if (!live.cells.has(i)) counts.cellsNeverRanWired++; }
+  }
+  wiring.finish();
+  counts.edgesAfter = k.n;
+  const { loaded, hash, wiring: loadWiring, ...genome } = brain.genome || {};
+  // the latest round at the top (what the last wire did), every round kept in order under rounds
+  const round = { from: brain.name, fromHash: hash ?? null, horizon, ...counts, ...(note ? { census: note } : {}) };
+  const prior = genome.wired ? (Array.isArray(genome.wired.rounds) ? genome.wired.rounds : [(({ rounds, ...r }) => r)(genome.wired)]) : [];
+  brain.genome = { ...genome, wired: { ...round, rounds: [...prior, round] } };
+  return { brain, wired, counts };
+}
+/**
+ * Load the seed a census names, refusing before any import when its manifest hash is not the one
+ * the census was taken on. With checkContent (the wire always; a prune that rewrites the seed in
+ * place), the loaded content is also verified against its own manifest: a seed replaced in place
+ * earlier in the same process is served its old parts files from the import cache, and emitting
+ * over the seed from that stale copy would land content its census never measured.
+ * @param {string} who @param {string} seedDir @param {object} census @param {{ checkContent: boolean }} opts
+ */
+async function loadCensusSeed(who, seedDir, census, { checkContent }) {
+  const { loadFrom, verify, readManifest } = await import('./load.mjs');
+  const m = readManifest(seedDir);
+  if (census.live.manifestHash !== m.hash) throw new Error(who + ': the census was taken on organism hash ' + census.live.manifestHash + ', ' + seedDir + ' has ' + m.hash);
+  const stale = ' (a seed rewritten in place earlier in this process is served from the import cache: run each step in its own process)';
+  let loaded;
+  try { loaded = await loadFrom(seedDir); } catch (err) { if (!checkContent) throw err; throw new Error(who + ': ' + seedDir + ' did not load: ' + err.message + stale); }
+  if (checkContent) {
+    const v = verify(loaded.brain, loaded.manifest);
+    if (!v.ok) throw new Error(who + ': ' + seedDir + ' loaded content its manifest does not describe: ' + v.errors[0] + stale);
+  }
+  return loaded;
+}
+function lexLess(a, b) { for (let j = 0; j < a.length; j++) if (a[j] !== b[j]) return a[j] < b[j]; return false; }
+
+/**
+ * Whether a cell reads its mail inside a census horizon: an event cell runs when mail arrives, a
+ * periodic cell runs at every multiple of its period, so one whose period is past the horizon runs
+ * at tick 0 only and never reads what is delivered to it after that inside the census.
+ * @param {object} c a cell @param {number} horizon the census's last tick bound
+ */
+export function readsMailWithin(c, horizon) {
+  const p = c.policy.period;
+  return p === 'event' || (typeof p === 'number' && p >= 1 && p <= horizon);
+}
+
+// Two line rulers, never mixed in one print (Board 23 dead-share fix pass). THE MANIFEST COUNT is
+// manifest.json's counts.lines as written to disk: every emitted file but manifest.json (the ruler
+// pruneStaticMain prints and pruneOnCopy reads). THE CENSUS RULER is every file of the seed with
+// manifest.json included, counted as tools/organism-census.mjs counts lines present and as the gate
+// divides by (text.split('\n').length per file). emitOrganism's res.lines is the census ruler.
+/** Physical lines of every file in a directory, manifest.json included (the census ruler). */
+export function censusLinesOf(dir) {
+  let n = 0;
+  for (const f of readdirSync(dir)) { const p = path.join(dir, f); if (statSync(p).isFile()) n += readFileSync(p, 'utf8').split('\n').length; }
+  return n;
+}
+/** The manifest count on disk: counts.lines of dir/manifest.json (every emitted file but manifest.json). */
+export function manifestLinesOf(dir) {
+  const m = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8'));
+  if (!(m.counts && Number.isInteger(m.counts.lines))) throw new Error('lines: ' + dir + '/manifest.json carries no counts.lines');
+  return m.counts.lines;
+}
+
+/**
+ * The directory to emit into, and how to land it. Emitting over the seed being read (the prune or
+ * the wire of a seed in place) writes a sibling staging directory at the same depth (so index.mjs
+ * imports genome/load.mjs by the same relative path), reads it back from there (a module already
+ * imported from the seed's own path would be served from the import cache), then replaces the seed.
+ *
+ * The replacement never deletes the seed before its successor is in place (Board 23 dead-share fix
+ * pass: the first version removed the seed, then renamed the staging over it, so a rename refused by
+ * Windows left no seed at all). The seed steps aside first (renamed to a sibling .<name>.emit-replaced,
+ * nothing deleted), the staging is renamed into its place, and only then is the old seed removed. A
+ * refused second rename puts the seed back and removes the staging. Windows refuses a rename with
+ * EPERM, EACCES or EBUSY while another process (the search indexer, an antivirus scan) still holds a
+ * file of the directory open for a moment after it was written; the same rename a moment later goes
+ * through. graceful-fs (npm's fs wrapper) retries a rename on exactly those codes on win32 with a
+ * growing backoff, and so does this (retrying below). fsOps replaces the fs calls, for the tests.
+ * @param {string} outDir @param {string} seedDir
+ * @param {{ rename?: Function, rm?: Function, exists?: Function, sleep?: Function }} [fsOps]
+ */
+export function emitTarget(outDir, seedDir, fsOps = {}) {
+  const { rename = renameSync, rm = rmSync, exists = existsSync, sleep = sleepSync } = fsOps;
+  if (!samePath(outDir, seedDir)) return { dir: outDir, inPlace: false, land: () => outDir, discard: () => {} };
+  const parent = path.dirname(outDir), base = path.basename(outDir);
+  const staging = path.join(parent, '.' + base + '.emit-staging');
+  const replaced = path.join(parent, '.' + base + '.emit-replaced');
+  const remove = (p) => rm(p, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
+  const again = (fn) => retrying(fn, { sleep });
+  // what a run that died half way left: a staging never landed, a replaced seed never removed (the
+  // seed itself is at outDir: it was just read from there)
+  if (exists(staging)) remove(staging);
+  if (exists(replaced)) remove(replaced);
+  return {
+    dir: staging, inPlace: true, staging, replaced,
+    land: () => {
+      again(() => rename(outDir, replaced));
+      try { again(() => rename(staging, outDir)); } catch (err) {
+        try { again(() => rename(replaced, outDir)); } catch (err2) {
+          throw new Error('emit: ' + staging + ' could not take the place of ' + outDir + ' (' + err.code + '), and the seed could not be put back (' + err2.code + '): the seed is intact at ' + replaced);
+        }
+        remove(staging);
+        throw new Error('emit: ' + staging + ' could not take the place of ' + outDir + ' (' + (err.code || err.message) + '); the seed is left as it was');
+      }
+      remove(replaced);
+      return outDir;
+    },
+    discard: () => remove(staging),
+  };
+}
+
+// The codes Windows answers a rename with while another process holds a file of the directory open,
+// and the retry graceful-fs gives them: a growing wait, capped, then the error is thrown after all.
+const TRANSIENT_RENAME = new Set(['EPERM', 'EACCES', 'EBUSY']);
+/**
+ * Call fn, again after a growing wait while it throws a transient rename error.
+ * @param {() => any} fn @param {{ tries?: number, firstMs?: number, maxMs?: number, sleep?: (ms:number)=>void }} [opts]
+ */
+export function retrying(fn, { tries = 12, firstMs = 20, maxMs = 1000, sleep = sleepSync } = {}) {
+  let wait = firstMs;
+  for (let t = 1; ; t++) {
+    try { return fn(); } catch (err) {
+      if (t >= tries || !TRANSIENT_RENAME.has(err && err.code)) throw err;
+      sleep(wait);
+      wait = Math.min(maxMs, wait * 2);
+    }
+  }
+}
+function sleepSync(ms) { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms); }
 
 /**
  * The declarations of each emitted file, as index ranges in load order: cells files in the
@@ -387,14 +607,17 @@ export async function pruneMain(argv) {
   await import('../cells/all.mjs');
   const { loadFrom, verify } = await import('./load.mjs');
   const t0 = Date.now();
-  const { brain, manifest } = await loadFrom(seedDir);
-  if (census.live.manifestHash !== manifest.hash) throw new Error('prune: the census was taken on organism hash ' + census.live.manifestHash + ', ' + seedDir + ' has ' + manifest.hash);
+  const { brain, manifest } = await loadCensusSeed('prune', seedDir, census, { checkContent: samePath(outDir, seedDir) });
+  // the seed's census ruler is read now: a prune in place replaces the directory before the print
+  const censusBefore = censusLinesOf(seedDir);
+  applyWireHistory(brain, argv, seedDir, say);
   const cells = readLiveBits(census.live.cells), edges = readLiveBits(census.live.edges);
   const inFlight = census.live.inFlight ? readLiveBits(census.live.inFlight) : null;
   const protect = protectedByCensus(census, brain, seedDir, manifest);
   const { brain: pruned, dropped, kept } = pruneBrain(brain, { cells, edges, inFlight }, { name, protect, note: { file: toPosix(path.relative(BRAIN_ROOT, censusFile)), at: census.at, ticks: census.ticks, phases: census.live.phases } });
-  const res = emitOrganism(pruned, { dir: outDir });
-  const back = await loadFrom(outDir);
+  const target = emitTarget(outDir, seedDir);
+  const res = emitOrganism(pruned, { dir: target.dir });
+  const back = await loadFrom(target.dir);
   const v = verify(back.brain, back.manifest);
   const wantCells = pruned.cells.length, wantEdges = pruned.connectome.n;
   // the invariant, checked on the reloaded copy: every cell that ran and every edge that
@@ -405,20 +628,347 @@ export async function pruneMain(argv) {
   const bk = back.brain.connectome, sk = brain.connectome, have = new Set();
   for (let e = 0; e < bk.n; e++) have.add(back.brain.cells[bk.src[e]].id + '>' + back.brain.cells[bk.dst[e]].id + ':' + bk.srcPort[e] + ':' + bk.dstPort[e]);
   for (let e = 0; e < sk.n; e++) if ((edges.has(e) || (inFlight && inFlight.has(e))) && !have.has(brain.cells[sk.src[e]].id + '>' + brain.cells[sk.dst[e]].id + ':' + sk.srcPort[e] + ':' + sk.dstPort[e])) lostEdges++;
+  // one ruler per print: before and after both the manifest count (the manifest.json on disk, which
+  // leaves out its own lines), and both the census ruler (every file, manifest.json included);
+  // res.lines is the census ruler of the copy, so it is never set against the seed's manifest count
   const linesBefore = manifest.counts && manifest.counts.lines;
+  const linesAfter = back.manifest.counts && back.manifest.counts.lines;
+  const lines = { before: linesBefore, after: linesAfter, removed: linesBefore - linesAfter, ruler: 'manifest count: every emitted file but manifest.json', census: { before: censusBefore, after: res.lines, removed: censusBefore - res.lines, ruler: 'every file of the seed, manifest.json included (tools/organism-census.mjs lines present)' } };
+  // what the census calls delivered but no cell reads inside its horizon: a kept edge into a cell
+  // whose period is past the horizon (it runs at tick 0 only). Kept by the rule (it delivered), and
+  // counted, because such an edge is load bearing by the census's rule and not shown read by it.
+  const horizon = census.dormant && census.dormant.lastTickBound;
+  let unread = null;
+  if (Number.isInteger(horizon)) {
+    const pk = pruned.connectome, into = new Set();
+    let n = 0;
+    for (let e = 0; e < pk.n; e++) if (!readsMailWithin(pruned.cells[pk.dst[e]], horizon)) { n++; into.add(pk.dst[e]); }
+    let slow = 0;
+    for (const c of pruned.cells) if (!readsMailWithin(c, horizon)) slow++;
+    unread = { horizon, keptEdges: pk.n, edges: n, cells: into.size, cellsNoRunAfterTick0: slow };
+  }
   const ok = v.ok && back.brain.cells.length === wantCells && bk.n === wantEdges && lostCells === 0 && lostEdges === 0;
+  // in place, the seed is replaced only by a copy that round tripped; otherwise the staging goes
+  if (ok) res.dir = target.land(); else target.discard();
   say('prune ' + toPosix(path.relative(BRAIN_ROOT, seedDir)) + ' by ' + toPosix(path.relative(BRAIN_ROOT, censusFile)) + ' (census at ' + census.at + ', ' + census.ticks + ' ticks)');
-  say('  lines ' + linesBefore + ' -> ' + res.lines + ' (manifest count, the gate way): ' + (linesBefore - res.lines) + ' lines removed, ' + (100 * (linesBefore - res.lines) / linesBefore).toFixed(2) + '% of the seed');
+  say('  lines ' + lines.before + ' -> ' + lines.after + ' (manifest count: every emitted file but manifest.json): ' + lines.removed + ' removed, ' + (100 * lines.removed / lines.before).toFixed(2) + '% of the seed');
+  say('  lines ' + lines.census.before + ' -> ' + lines.census.after + ' (census ruler: every file, manifest.json included): ' + lines.census.removed + ' removed');
   say('  cells ' + brain.cells.length + ' -> ' + pruned.cells.length + ': kept ' + kept.cells.ran + ' that ran, ' + kept.cells.protectedOnly + ' protected that never ran, ' + kept.cells.endpointOnly + ' that never ran but are an endpoint of a kept edge; dropped ' + dropped.cells);
   say('  edges ' + brain.connectome.n + ' -> ' + pruned.connectome.n + ': kept ' + kept.edges.delivered + ' that delivered, ' + kept.edges.inFlightOnly + ' in flight at the end' + (kept.edges.inFlightRecorded ? '' : ' (this census recorded no in flight set)') + ', ' + kept.edges.protectedOnly + ' protected; dropped ' + dropped.edgesNeverDelivered + ' that never delivered');
   for (const w of protect.why) say('  protect    ' + w);
+  if (unread) say('  unread     ' + unread.edges + ' of ' + unread.keptEdges + ' kept edges deliver into ' + unread.cells + ' cells with no run after tick 0 inside horizon tick ' + unread.horizon + ' (' + unread.cellsNoRunAfterTick0 + ' kept cells are on such a clock): the census counts them delivered; no cell reads that mail inside the census');
   say('  regions dropped ' + dropped.regions + ', circuits dropped ' + dropped.circuits);
-  say('  emitted ' + toPosix(path.relative(BRAIN_ROOT, res.dir)) + ': ' + (res.files.length + 1) + ' files, ' + res.lines + ' lines (manifest count, the gate way), ' + res.bytes + ' bytes before the manifest');
+  say('  emitted ' + toPosix(path.relative(BRAIN_ROOT, res.dir)) + ': ' + (res.files.length + 1) + ' files, ' + lines.after + ' lines by the manifest count, ' + lines.census.after + ' on the census ruler, ' + res.bytes + ' bytes before the manifest');
   say('  round trip: loaded ' + back.brain.cells.length + ' cells and ' + bk.n + ' edges (expected ' + wantCells + ' and ' + wantEdges + '), verify ' + (v.ok ? 'ok' : 'FAILED: ' + v.errors.join('; ')) + ', hash ' + v.hash.slice(0, 16) + '; of what ran or delivered, ' + lostCells + ' cells and ' + lostEdges + ' edges are missing from the copy');
   say('  ' + (ok ? 'ROUND TRIP OK' : 'ROUND TRIP FAILED') + ' in ' + ((Date.now() - t0) / 1000).toFixed(1) + ' s');
-  return { ok, dir: res.dir, dropped, kept, protect, lines: { before: linesBefore, after: res.lines }, cells: back.brain.cells.length, edges: bk.n, expected: { cells: wantCells, edges: wantEdges }, lost: { cells: lostCells, edges: lostEdges }, verify: v };
+  return { ok, dir: res.dir, dropped, kept, protect, lines, unread, cells: back.brain.cells.length, edges: bk.n, expected: { cells: wantCells, edges: wantEdges }, lost: { cells: lostCells, edges: lostEdges }, verify: v };
 }
 
+//   node genome/emit.mjs --wire bench/verdicts/census-<seed>.json [--seed organism/<seed>]
+//                        [--out dir] [--name <seed>]
+// Loads the seed the census was taken on (refusing one whose manifest hash differs), wires every
+// silent cell's unreached in ports from ports that delivered (wireBrain above), writes the wired
+// seed (default bench/verdicts/.census/<name>-wired; --out equal to --seed rewrites the seed in
+// place, through emitTarget), loads it back, verifies it, and checks that every original cell and
+// every original edge is still declared, in the original order, ahead of the wired ones. The wired
+// seed is then censused, and --prune by that census removes what still never runs.
+export async function wireMain(argv) {
+  const opt = (k, d) => { const i = argv.indexOf('--' + k); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : d; };
+  const censusFile = path.resolve(opt('wire', ''));
+  if (!existsSync(censusFile)) throw new Error('wire: no census file at ' + censusFile);
+  const census = JSON.parse(readFileSync(censusFile, 'utf8'));
+  if (census.mode === 'static') throw new Error('wire: ' + censusFile + ' is a static census; wiring reads what delivered, which only a dynamic census measures');
+  if (!census.live || !census.live.cells || !census.live.edges) throw new Error('wire: ' + censusFile + ' carries no liveness (a census written by tools/organism-census.mjs does)');
+  const horizon = census.dormant && census.dormant.lastTickBound;
+  if (!Number.isInteger(horizon)) throw new Error('wire: ' + censusFile + ' records no horizon (dormant.lastTickBound)');
+  const seedDir = path.resolve(BRAIN_ROOT, opt('seed', census.seed));
+  const name = opt('name', path.basename(seedDir));
+  const outDir = path.resolve(opt('out', path.join(BRAIN_ROOT, 'bench', 'verdicts', '.census', name + '-wired')));
+  const say = argv.includes('--quiet') ? () => {} : (s) => process.stdout.write(s + '\n');
+  await import('../cells/all.mjs');
+  const { loadFrom, verify } = await import('./load.mjs');
+  const t0 = Date.now();
+  const { brain, manifest } = await loadCensusSeed('wire', seedDir, census, { checkContent: true });
+  const censusBefore = censusLinesOf(seedDir);
+  const historyAdded = applyWireHistory(brain, argv, seedDir, say);
+  const cells = readLiveBits(census.live.cells), edges = readLiveBits(census.live.edges);
+  const idxOf = new Map(brain.cells.map((c, i) => [c.id, i]));
+  const hosted = [];
+  for (const suite of ['algebra', 'sequence']) for (const id of (census.tasks && census.tasks[suite] && census.tasks[suite].cells) || []) {
+    const i = idxOf.get(id);
+    if (i === undefined) throw new Error('wire: the census hosted a problem on ' + id + ', which the seed does not declare');
+    hosted.push(i);
+  }
+  const k0 = brain.connectome, nC0 = brain.cells.length, nE0 = k0.n;
+  const before = [];
+  for (let e = 0; e < nE0; e++) before.push(brain.cells[k0.src[e]].id + '>' + brain.cells[k0.dst[e]].id + ':' + k0.srcPort[e] + ':' + k0.dstPort[e]);
+  brain.name = name;
+  const { wired, counts } = wireBrain(brain, { cells, edges }, { horizon, protect: hosted, note: { file: toPosix(path.relative(BRAIN_ROOT, censusFile)), at: census.at, ticks: census.ticks, phases: census.live.phases } });
+  const head = () => {
+    say('wire ' + toPosix(path.relative(BRAIN_ROOT, seedDir)) + ' by ' + toPosix(path.relative(BRAIN_ROOT, censusFile)) + ' (census at ' + census.at + ', ' + census.ticks + ' ticks, horizon tick ' + horizon + ')');
+    say('  cells ' + counts.cells + ': silent (no out edge delivered) ' + counts.silent + ', of which hosted (never wired) ' + counts.protectedSkipped + ', on a clock with no run after tick 0 inside the horizon ' + counts.clockSkipped + ', can read mail ' + counts.silentCanRead);
+    say('  in ports no delivered edge reached, on those cells: ' + counts.portsUnreached + '; wired ' + counts.portsWired + ' from ' + counts.donors + ' ports that delivered; no legal donor ' + counts.portsNoDonor);
+    say('  cells wired ' + counts.cellsWired + ' (' + counts.cellsNeverRanWired + ' of them never ran); edges ' + counts.edgesBefore + ' -> ' + counts.edgesAfter);
+  };
+  // a round that wires nothing over the seed itself is the fixed point: the seed is left as it is
+  // (rewriting it would only add a round that wired nothing to its record), unless rebuilt wire
+  // history was added (--wire-history): then the seed is written again, the same cells and edges
+  // under a record that now holds the rounds it had lost
+  if (wired.length === 0 && samePath(outDir, seedDir) && historyAdded === 0) {
+    head();
+    say('  nothing to wire: the fixed point; ' + toPosix(path.relative(BRAIN_ROOT, seedDir)) + ' is left as it is');
+    const same = manifest.counts && manifest.counts.lines;
+    return { ok: true, unchanged: true, dir: seedDir, counts, wired, lines: { before: same, after: same, removed: 0, ruler: 'manifest count: every emitted file but manifest.json', census: { before: censusBefore, after: censusBefore, removed: 0, ruler: 'every file of the seed, manifest.json included (tools/organism-census.mjs lines present)' } }, cells: nC0, edges: nE0, moved: 0, verify: verify(brain, manifest) };
+  }
+  const target = emitTarget(outDir, seedDir);
+  const res = emitOrganism(brain, { dir: target.dir });
+  const back = await loadFrom(target.dir);
+  const v = verify(back.brain, back.manifest);
+  const bk = back.brain.connectome;
+  let moved = 0;
+  for (let e = 0; e < nE0; e++) if (e >= bk.n || back.brain.cells[bk.src[e]].id + '>' + back.brain.cells[bk.dst[e]].id + ':' + bk.srcPort[e] + ':' + bk.dstPort[e] !== before[e]) moved++;
+  const cellsSame = back.brain.cells.length === nC0;
+  const ok = v.ok && cellsSame && moved === 0 && bk.n === nE0 + wired.length;
+  // the same two rulers as the prune, never mixed: back.manifest is the manifest on disk (its count
+  // leaves out manifest.json), res.lines is every file with manifest.json
+  const before0 = manifest.counts && manifest.counts.lines, after0 = back.manifest.counts && back.manifest.counts.lines;
+  const lines = { before: before0, after: after0, removed: before0 - after0, ruler: 'manifest count: every emitted file but manifest.json', census: { before: censusBefore, after: res.lines, removed: censusBefore - res.lines, ruler: 'every file of the seed, manifest.json included (tools/organism-census.mjs lines present)' } };
+  if (ok) res.dir = target.land(); else target.discard();
+  head();
+  for (const w of wired) say('  wired      ' + w.from + ' ' + w.src + '.' + w.srcPort + ' -> ' + w.kind + ' ' + w.dst + '.' + w.dstPort + ' (' + w.near + (w.dstRan ? '' : ', the cell never ran') + ')');
+  say('  lines ' + lines.before + ' -> ' + lines.after + ' (manifest count: every emitted file but manifest.json); ' + lines.census.before + ' -> ' + lines.census.after + ' (census ruler: every file, manifest.json included)');
+  say('  emitted ' + toPosix(path.relative(BRAIN_ROOT, res.dir)) + ': ' + (res.files.length + 1) + ' files, ' + lines.after + ' lines by the manifest count, ' + lines.census.after + ' on the census ruler, ' + res.bytes + ' bytes before the manifest');
+  say('  round trip: loaded ' + back.brain.cells.length + ' cells and ' + bk.n + ' edges (expected ' + nC0 + ' and ' + (nE0 + wired.length) + '), verify ' + (v.ok ? 'ok' : 'FAILED: ' + v.errors.join('; ')) + ', hash ' + v.hash.slice(0, 16) + '; original edges out of place ' + moved);
+  say('  ' + (ok ? 'ROUND TRIP OK' : 'ROUND TRIP FAILED') + ' in ' + ((Date.now() - t0) / 1000).toFixed(1) + ' s');
+  return { ok, dir: res.dir, counts, wired, lines, cells: back.brain.cells.length, edges: bk.n, moved, verify: v };
+}
+
+
+// ---------------------------------------------------------------- wire history (Board 23 dead-share fix pass)
+//
+// organism/gen-1-4-4-1-4 was wired twice (72 edges, then 30) before the round that wired nothing,
+// and its manifest kept only that last round: wireBrain then replaced the record of the round before
+// it instead of appending (it appends now, under wired.rounds). The two rounds are rebuilt here from
+// the census verdicts taken between them, which are committed: each census records the manifest hash
+// of the seed it measured (live.manifestHash) and its declared cells and edges, so consecutive
+// censuses of one seed give each round's hash link (from, to), its edge counts before and after, and
+// the edges it wired (a wire appends only: the seed's first n edges are the original n). The census
+// the recorded prune read gives, from its liveness, how many of each round's edges delivered there
+// and so were kept. What only a wire run prints (silent cells, clock skipped, ports unreached, ports
+// with no donor, cells wired) was never written anywhere and is recorded as not recovered.
+
+/**
+ * Rebuild wire rounds from the census verdicts taken before and after each of them.
+ * @param {Array<{ file: string, v: object }>} censuses in the order they were taken; each after the
+ *   first measured the seed the wire round by the one before it wrote
+ * @param {{ seed?: string, pruned?: object }} [opts] seed: the seed path every census must name;
+ *   pruned: the recorded prune record, whose census gives how many wired edges were kept
+ * @returns {object[]} one round per consecutive pair
+ */
+export function wireHistory(censuses, { seed = null, pruned = null } = {}) {
+  if (!Array.isArray(censuses) || censuses.length < 2) throw new Error('wire history: need at least two census verdicts, got ' + (censuses ? censuses.length : 0));
+  for (const { file, v } of censuses) {
+    if (!v || !v.live || typeof v.live.manifestHash !== 'string') throw new Error('wire history: ' + file + ' records no manifest hash (live.manifestHash)');
+    if (!v.cells || !Number.isInteger(v.cells.declared) || !v.edges || !Number.isInteger(v.edges.declared)) throw new Error('wire history: ' + file + ' records no declared cells and edges');
+    if (seed !== null && v.seed !== seed) throw new Error('wire history: ' + file + ' is a census of ' + v.seed + ', not ' + seed);
+  }
+  const last = censuses[censuses.length - 1];
+  const kept = pruned && pruned.census && pruned.census.file && toPosix(pruned.census.file) === toPosix(last.file) && pruned.fromHash === last.v.live.manifestHash
+    ? { edges: readLiveBits(last.v.live.edges), inFlight: last.v.live.inFlight ? readLiveBits(last.v.live.inFlight) : null } : null;
+  const rounds = [];
+  for (let i = 0; i + 1 < censuses.length; i++) {
+    const a = censuses[i], b = censuses[i + 1];
+    if (a.v.live.manifestHash === b.v.live.manifestHash) throw new Error('wire history: ' + a.file + ' and ' + b.file + ' measured the same seed (hash ' + a.v.live.manifestHash.slice(0, 16) + '): no wire round lies between them');
+    if (!(Date.parse(b.v.at) > Date.parse(a.v.at))) throw new Error('wire history: ' + b.file + ' was not taken after ' + a.file);
+    if (b.v.cells.declared !== a.v.cells.declared) throw new Error('wire history: the cells went ' + a.v.cells.declared + ' -> ' + b.v.cells.declared + ' between ' + a.file + ' and ' + b.file + '; a wire round adds edges only');
+    if (!(b.v.edges.declared > a.v.edges.declared)) throw new Error('wire history: the edges went ' + a.v.edges.declared + ' -> ' + b.v.edges.declared + ' between ' + a.file + ' and ' + b.file + '; a wire round that wrote a new seed added edges');
+    const horizon = a.v.dormant && a.v.dormant.lastTickBound;
+    if (!Number.isInteger(horizon)) throw new Error('wire history: ' + a.file + ' records no horizon (dormant.lastTickBound)');
+    let deliveredAtPrune = null, inFlightAtPrune = null;
+    if (kept) {
+      deliveredAtPrune = 0; inFlightAtPrune = 0;
+      for (let e = a.v.edges.declared; e < b.v.edges.declared; e++) {
+        if (kept.edges.has(e)) deliveredAtPrune++;
+        else if (kept.inFlight && kept.inFlight.has(e)) inFlightAtPrune++;
+      }
+    }
+    rounds.push({
+      from: path.basename(a.v.seed), fromHash: a.v.live.manifestHash, toHash: b.v.live.manifestHash, horizon,
+      cells: a.v.cells.declared, edgesBefore: a.v.edges.declared, edgesAfter: b.v.edges.declared, portsWired: b.v.edges.declared - a.v.edges.declared,
+      ...(kept ? { keptByPrune: { census: toPosix(last.file), delivered: deliveredAtPrune, inFlightOnly: inFlightAtPrune } } : {}),
+      census: { file: toPosix(a.file), at: a.v.at, ticks: a.v.ticks, phases: a.v.live.phases },
+      after: { file: toPosix(b.file), at: b.v.at },
+      reconstructed: 'rebuilt from the census verdicts before and after the round (genome/emit.mjs wireHistory): the hashes, the edge counts and the edges wired are theirs; what only the wire run printed (silent cells, clock skipped, ports unreached, ports with no donor, cells wired) was not recorded and is not recovered',
+      notRecovered: ['silent', 'silentCanRead', 'protectedSkipped', 'clockSkipped', 'portsUnreached', 'portsNoDonor', 'cellsWired', 'cellsNeverRanWired', 'donors'],
+    });
+  }
+  return rounds;
+}
+
+/**
+ * Put rebuilt rounds ahead of a genome's recorded wire rounds, once. A round is known by the hash of
+ * the seed it wired (a wire is a function of the seed and of the census of it, and the census of one
+ * seed is the same census), so a rebuilt round whose seed a recorded round already wired is not added
+ * and a second landing changes nothing. What is added must end where the recorded rounds start.
+ * @param {object} genome a brain's genome record @param {object[]} rebuilt from wireHistory
+ * @returns {{ genome: object, added: number }}
+ */
+export function mergeWireHistory(genome, rebuilt) {
+  const w = genome && genome.wired;
+  const recorded = w ? (Array.isArray(w.rounds) ? w.rounds : [(({ rounds, ...r }) => r)(w)]) : [];
+  const have = new Set(recorded.map((r) => r.fromHash));
+  const fresh = rebuilt.filter((r) => !have.has(r.fromHash));
+  if (!fresh.length) return { genome, added: 0 };
+  const end = fresh[fresh.length - 1].toHash;
+  const firstRecorded = recorded.find((r) => !r.reconstructed && !have.has(r.toHash));
+  if (firstRecorded && firstRecorded.fromHash !== end) throw new Error('wire history: the rebuilt rounds end at ' + String(end).slice(0, 16) + ', the first recorded round starts from ' + String(firstRecorded.fromHash).slice(0, 16));
+  const rounds = [...recorded.filter((r) => r.reconstructed), ...fresh, ...recorded.filter((r) => !r.reconstructed)];
+  const top = w ? (({ rounds: _r, ...r }) => r)(w) : rounds[rounds.length - 1];
+  return { genome: { ...genome, wired: { ...top, rounds } }, added: fresh.length };
+}
+
+/** --wire-history a.json,b.json,...: rebuild the rounds between those censuses into the brain's genome. */
+function applyWireHistory(brain, argv, seedDir, say) {
+  const i = argv.indexOf('--wire-history');
+  if (i < 0) return 0;
+  const list = String(argv[i + 1] || '').split(',').filter(Boolean);
+  const censuses = list.map((f) => { const abs = path.resolve(BRAIN_ROOT, f); if (!existsSync(abs)) throw new Error('wire history: no census file at ' + abs); return { file: toPosix(path.relative(BRAIN_ROOT, abs)), v: JSON.parse(readFileSync(abs, 'utf8')) }; });
+  const g = brain.genome || {};
+  const rebuilt = wireHistory(censuses, { seed: toPosix(path.relative(BRAIN_ROOT, seedDir)), pruned: g.pruned || null });
+  const recordedN = g.wired ? (Array.isArray(g.wired.rounds) ? g.wired.rounds.length : 1) : 0;
+  const { genome, added } = mergeWireHistory(g, rebuilt);
+  brain.genome = genome;
+  for (const r of rebuilt) say('  history    wire round ' + r.fromHash.slice(0, 16) + ' -> ' + r.toHash.slice(0, 16) + ': edges ' + r.edgesBefore + ' -> ' + r.edgesAfter + ' (' + r.portsWired + ' wired' + (r.keptByPrune ? ', ' + r.keptByPrune.delivered + ' of them delivered in the census the prune read and were kept' : '') + '), rebuilt from ' + r.census.file + ' and ' + r.after.file);
+  say('  history    ' + added + ' rebuilt round' + (added === 1 ? '' : 's') + ' added ahead of the ' + recordedN + ' recorded');
+  return added;
+}
+
+// ---------------------------------------------------------------- the dead-share chain (Board 23 fix pass)
+//   node genome/emit.mjs --dead-share organism/<seed> [--ticks 200] [--tag dead-share]
+//                        [--verdict-dir bench/verdicts] [--max-rounds 8] [--wire-history a.json,b.json]
+// The whole rule as one command, so a seed is never left half done and a seed emitted again is fixed
+// the same way: census it; wire it in place by that census and census it again, until a round wires
+// nothing (the fixed point); prune it in place by the last census; census the pruned seed. Each step
+// is its own process (a seed rewritten in place is served from the import cache in the process that
+// read it); each census is written to the verdict dir as census-<seed>-<tag>-c<i>-partial.json and
+// checked against the seed's manifest hash; each round is recorded in the seed's manifest
+// (genome.wired.rounds, genome.pruned.rounds).
+
+const EMITTER = fileURLToPath(import.meta.url);
+function childEnv() {
+  const env = {};
+  for (const [k, v] of Object.entries(process.env)) if (!k.startsWith('NODE_TEST') && k !== 'NODE_OPTIONS') env[k] = v;
+  return env;
+}
+/** The numbers of one census verdict the chain compares: the dead share on the gate's ruler, and the work. */
+export function censusRow(v, file) {
+  const l = v.lines || {};
+  return {
+    file: toPosix(path.relative(BRAIN_ROOT, file)), hash: v.live && v.live.manifestHash, at: v.at, ticks: v.ticks,
+    lines: l.loaded, loadBearing: l.loadBearing, deadShare: l.loaded > 0 ? Math.round((1 - l.loadBearing / l.loaded) * 1e6) / 1e6 : null,
+    cells: { declared: v.cells.declared, ran: v.cells.ran, fired: v.cells.fired }, edges: { declared: v.edges.declared, delivered: v.edges.delivered },
+    score: v.tasks ? v.tasks.score : null, algebra: v.tasks ? v.tasks.algebra.correct : null, sequence: v.tasks ? v.tasks.sequence.correct : null,
+    drive: v.totals ? { runs: v.totals.drive.runs, signals: v.totals.drive.signals, delivered: v.totals.drive.delivered } : null,
+    dormant: v.dormant ? { lastTickBound: v.dormant.lastTickBound, cells: v.dormant.cells, mailDropped: v.dormant.mailDropped } : null,
+  };
+}
+
+/**
+ * Wire a seed to its fixed point and prune it, in place, each step a child process.
+ * @param {string} seedDir
+ * @param {{ ticks?, tag?, verdictDir?, maxRounds?, wireHistory?: string[], heapMb?, say?, timeoutMs? }} [opts]
+ * @returns {{ seed, ticks, first, last, rounds, fixedPoint, steps, censusFiles, ok, checks }}
+ */
+export function deadShareChain(seedDir, { ticks = 200, tag = 'dead-share', verdictDir = path.join(BRAIN_ROOT, 'bench', 'verdicts'), maxRounds = 8, wireHistory: history = null, heapMb = 4000, say = () => {}, timeoutMs = 10 * 60_000 } = {}) {
+  const seed = path.resolve(BRAIN_ROOT, seedDir), name = path.basename(seed), vdir = path.resolve(BRAIN_ROOT, verdictDir);
+  if (!existsSync(path.join(seed, 'manifest.json'))) throw new Error('dead-share: no manifest.json in ' + seed);
+  if (!/^[a-z0-9-]+$/i.test(tag)) throw new Error('dead-share: the tag ' + tag + ' is not letters, digits and dashes (the census would rename its file)');
+  const env = childEnv();
+  const run = (args, what) => {
+    const r = spawnSync(process.execPath, ['--max-old-space-size=' + heapMb, ...args], { cwd: BRAIN_ROOT, encoding: 'utf8', timeout: timeoutMs, maxBuffer: 64 << 20, env, windowsHide: true });
+    const printed = ((r.stdout || '') + (r.stderr || '')).split(/\r?\n/).filter(Boolean);
+    if (r.status !== 0) throw new Error('dead-share: ' + what + ' exited ' + r.status + (r.error ? ' (' + r.error.message + ')' : '') + ': ' + printed.slice(-4).join(' | '));
+    return printed;
+  };
+  const manifest = () => JSON.parse(readFileSync(path.join(seed, 'manifest.json'), 'utf8'));
+  const steps = [], censusFiles = [];
+  const census = (i) => {
+    const t = tag + '-c' + i;
+    run([path.join(BRAIN_ROOT, 'tools', 'organism-census.mjs'), '--seed', seed, '--ticks', String(ticks), '--no-knockout', '--tag', t, '--verdict-dir', vdir], 'census ' + t);
+    const file = path.join(vdir, 'census-' + name + '-' + t + '-partial.json');
+    const v = JSON.parse(readFileSync(file, 'utf8'));
+    const h = manifest().hash;
+    if (!v.live || v.live.manifestHash !== h) throw new Error('dead-share: ' + file + ' measured hash ' + (v.live && v.live.manifestHash) + ', the seed is ' + h);
+    const row = censusRow(v, file);
+    steps.push({ step: 'census', i, ...row });
+    censusFiles.push(row.file);
+    say('  census c' + i + ': lines ' + row.lines + ', load bearing ' + row.loadBearing + ', dead share ' + row.deadShare + '; cells ' + row.cells.declared + ' (ran ' + row.cells.ran + ', fired ' + row.cells.fired + '), edges ' + row.edges.declared + ' (delivered ' + row.edges.delivered + '); hosted score ' + row.score + '; drive delivered ' + (row.drive && row.drive.delivered) + ' (' + row.file + ')');
+    return { file, row, v };
+  };
+  // what a prune by a census would drop: a cell that never ran, an edge that neither delivered nor was
+  // in flight at the end (a protected one is kept too, so this can only overcount what would go)
+  const droppable = (v) => {
+    const cells = readLiveBits(v.live.cells), edges = readLiveBits(v.live.edges), inFlight = v.live.inFlight ? readLiveBits(v.live.inFlight) : null;
+    let n = cells.n - cells.count;
+    for (let e = 0; e < edges.n; e++) if (!edges.has(e) && !(inFlight && inFlight.has(e))) n++;
+    return n;
+  };
+  const hist = history && history.length ? ['--wire-history', history.join(',')] : [];
+  say('dead-share ' + toPosix(path.relative(BRAIN_ROOT, seed)) + ' at ' + ticks + ' ticks, censuses to ' + toPosix(path.relative(BRAIN_ROOT, vdir)) + ' tagged ' + tag);
+  let c = census(0);
+  const first = c.row;
+  let rounds = 0, fixedPoint = false;
+  for (let r = 1; r <= maxRounds; r++) {
+    const h0 = manifest().hash;
+    const printed = run([EMITTER, '--wire', c.file, '--seed', seed, '--out', seed, '--name', name, ...hist], 'wire round ' + r);
+    for (const line of printed) if (line.trimStart().startsWith('history ')) say(line);
+    const m = manifest();
+    if (m.hash === h0) { fixedPoint = true; steps.push({ step: 'wire', round: r, portsWired: 0, fixedPoint: true }); say('  wire r' + r + ': nothing to wire, the fixed point'); break; }
+    const w = m.genome.wired;
+    steps.push({ step: 'wire', round: r, portsWired: w.portsWired, edgesBefore: w.edgesBefore, edgesAfter: w.edgesAfter, portsNoDonor: w.portsNoDonor, clockSkipped: w.clockSkipped });
+    say('  wire r' + r + ': wired ' + w.portsWired + ' ports, edges ' + w.edgesBefore + ' -> ' + w.edgesAfter + ' (no legal donor ' + w.portsNoDonor + ', clock skipped ' + w.clockSkipped + ')');
+    rounds++;
+    c = census(r);
+  }
+  // a seed whose last census leaves nothing for the prune to drop and that wired nothing is left as it
+  // is (a prune would only add a round to its record; rebuilt history, if any, the wire step wrote)
+  let last = c.row;
+  const drop = droppable(c.v);
+  if (drop > 0 || rounds > 0) {
+    run([EMITTER, '--prune', c.file, '--seed', seed, '--out', seed, '--name', name, ...hist], 'prune');
+    const p = manifest().genome.pruned;
+    steps.push({ step: 'prune', cells: p.cells, edges: p.edges });
+    say('  prune: cells ' + p.cells.before + ' -> ' + p.cells.after + ', edges ' + p.edges.before + ' -> ' + p.edges.after + ' (never delivered ' + p.edges.neverDelivered + ')');
+    last = census(rounds + 1).row;
+  } else {
+    steps.push({ step: 'prune', skipped: 'the last census leaves nothing to drop (every cell ran, every edge delivered or was in flight at the end) and no round wired anything' });
+    say('  prune: nothing to drop and nothing wired; the seed is left as it is');
+  }
+  // the chain's own checks; what dead share is enough (0 for one seed, the gate's cap for another)
+  // is the caller's bar, so deadShareZero is reported and not required
+  const checks = {
+    fixedPoint,
+    deadShareDidNotRise: first.deadShare !== null && last.deadShare !== null && last.deadShare <= first.deadShare,
+    hostedScoreDidNotFall: first.score !== null && last.score !== null && last.score >= first.score,
+    algebraDidNotFall: last.algebra >= first.algebra, sequenceDidNotFall: last.sequence >= first.sequence,
+  };
+  const ok = Object.values(checks).every(Boolean);
+  const deadShareZero = last.deadShare === 0;
+  say('  dead share ' + first.deadShare + ' -> ' + last.deadShare + ', lines ' + first.lines + ' -> ' + last.lines + ', hosted score ' + first.score + ' -> ' + last.score + ', wire rounds ' + rounds + (fixedPoint ? ' to the fixed point' : ' (max rounds reached before the fixed point)') + ': ' + (ok ? 'OK' : 'NOT MET (' + Object.entries(checks).filter(([, v]) => !v).map(([k]) => k).join(', ') + ')'));
+  return { seed: toPosix(path.relative(BRAIN_ROOT, seed)), ticks, first, last, rounds, fixedPoint, deadShareZero, steps, censusFiles, checks, ok };
+}
+
+export function deadShareMain(argv) {
+  const opt = (k, d) => { const i = argv.indexOf('--' + k); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : d; };
+  const seedDir = opt('dead-share', '');
+  if (!seedDir) throw new Error('dead-share: name the seed (--dead-share organism/<seed>)');
+  const say = argv.includes('--quiet') ? () => {} : (s) => process.stdout.write(s + '\n');
+  const hist = opt('wire-history', '');
+  return deadShareChain(seedDir, {
+    ticks: Number(opt('ticks', 200)), tag: opt('tag', 'dead-share'), verdictDir: opt('verdict-dir', path.join(BRAIN_ROOT, 'bench', 'verdicts')),
+    maxRounds: Number(opt('max-rounds', 8)), wireHistory: hist ? hist.split(',') : null, say,
+  });
+}
 
 // ---------------------------------------------------------------- streaming (MANUAL P8, Board 12)
 //
@@ -791,5 +1341,11 @@ export function pruneOnCopy(root, seedDir, outDir, census, { heapMb = 6000, time
 // included) is initialised
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url) && process.argv.includes('--prune')) {
   const r = await pruneMain(process.argv.slice(2));
+  if (!r.ok) process.exitCode = 1;
+} else if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url) && process.argv.includes('--wire')) {
+  const r = await wireMain(process.argv.slice(2));
+  if (!r.ok) process.exitCode = 1;
+} else if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url) && process.argv.includes('--dead-share')) {
+  const r = deadShareMain(process.argv.slice(2));
   if (!r.ok) process.exitCode = 1;
 }

@@ -351,3 +351,262 @@ Next rungs:
 3. Apply the 444-line patch to the real tree, where organism/gen-0-pruned already sits at the
    same hash. That decision is the orchestrator's (request 2 above: census under the ladder
    drive first).
+
+## Board 23, dead-share: wire before prune on organism/gen-1-4-4-1-4
+
+The gap was dead:organism/gen-1-4-4-1-4. bench/verdicts/census-all.json measured its dead share at
+0.71436 (1 - loadBearing/loaded) against a bar of 0.
+
+The emitter: organism/gen-1-4-4-1-4 was written by generations/epochs.mjs emitElite, which calls
+buildFromOrganismGenome and then genome/emit.mjs emitOrganism. The rule that changed it lives in
+genome/emit.mjs:
+
+- wireBrain and wireMain (`--wire <census>`): a silent cell gets one edge per unreached in port.
+  A silent cell is one with no out edge that delivered. It qualifies only if it is not hosted and
+  can read mail inside the census horizon. Each new edge comes from a port that delivered, obeys
+  the subset rule and the monomorphic claim of genome/wire.mjs, and copies the donor edge's
+  weight, delay and confidence. It picks the nearest donor: same circuit, then same region, then
+  any.
+- pruneBrain and pruneMain (`--prune <census>`): unchanged in rule.
+- Both refuse a census taken on another manifest hash before importing anything.
+- Both land in place through a staging sibling at the same depth.
+- A zero-wire round in place leaves the seed as it is.
+- Every wire round is kept under genome.wired.rounds.
+
+No file of the seed was edited by hand.
+
+### Measured
+
+Each census ran at 200 ticks, through tools/budget.mjs --ram-mb 4000, and wrote
+bench/verdicts/census-gen-1-4-4-1-4-dead-share-rN-partial.json.
+
+- **r0, the seed as emitted.** 1929 lines loaded. Of 1832 declarations, 454 ran or delivered and
+  1378 were dead; 551 of 1929 lines were load bearing (28.56%). Cells: 226 of 255 ran and 30
+  fired. Edges: 170 of 1519 delivered. Kinds: 13 emitted. Hosted score 0.083334 (algebra 6/36,
+  sequence 0/22).
+- **Wire 1, by r0.** 225 cells were silent: 2 hosted, 133 on a clock with no run after tick 0
+  inside horizon tick 315, and 90 that can read mail. Their 109 unreached in ports got 72 edges
+  from 35 donor ports; 37 had no legal donor. 58 cells were wired (22 had never ran). Edges went
+  1519 -> 1591. 2019 lines on the census ruler, hash 8124a68016dd223b.
+- **r1.** 807 of 1904 declarations live and 1097 dead. Cells: 248 ran, 77 fired. Edges: 501 of
+  1591 delivered. Hosted score 0.083334.
+- **Wire 2, by r1.** 182 silent: 133 on a clock, 47 can read mail. 35 unreached ports got 30
+  edges from 94 donor ports; 5 had no legal donor. 26 cells were wired (6 had never ran). Edges
+  went 1591 -> 1621. 2049 lines on the census ruler, hash 44b0cb8c317dc4f4.
+- **r2.** 1013 of 1934 declarations live and 921 dead. Cells: 254 ran, 103 fired. Edges: 701 of
+  1621 delivered. Hosted score 0.083334.
+- **Wire 3, by r2: the fixed point.** 156 silent, 21 can read mail. Of 5 unreached ports, 0 were
+  wired and 5 had no legal donor. That run rewrote the manifest with its zero record before the
+  in-place no-op rule existed. So the landed manifest's genome.wired shows only this round; wires
+  1 and 2 are in the r0 and r1 verdicts and here.
+- **Prune by r2, in place.** Lines, one ruler per statement: 1965 -> 1044 on the manifest count
+  (every emitted file but manifest.json), and 2049 -> 1175 on the census ruler (every file,
+  manifest.json included), where the prune comparison printed -874. The first print, "1965 -> 1175,
+  790 removed", set a manifest count before against a census ruler after (see the fix pass). Cells
+  255 -> 254: the 254 that ran were kept and 1 was dropped. Edges 1621 -> 701: the 701 that delivered
+  were kept and 920 were dropped. The 3 hosted cells were protected. Round trip OK, hash
+  dc84e3d733a8732f.
+- **r3, the landed seed.** Of 1013 declarations, 1013 ran or delivered and 0 are dead. Load
+  bearing 1175 of 1175 (100.00%). Cells: 254 of 254 ran, 103 fired (40.55%). Edges: 701 of 701
+  delivered. Kinds: 30 emitted. Hosted score 0.083334. The drive did the same work as r2 (runs
+  21239, signals 19019, delivered 101113). The prune comparison printed "bar MET".
+- **The bar command**, `tools/organism-census.mjs --all --ticks 200 --max-cells 1000` through
+  budget.mjs, wrote bench/verdicts/census-all.json. Its gen-1-4-4-1-4 row: "lines 1175 loaded of
+  1175 present; declarations 1013, of which ran or delivered 1013 (100.00%), dead 0". The gate's
+  census pick (bench/gate.mjs censusFor) reads census-all.json at 1175 and 1175, a dead share of 0.
+
+### The control: the prune alone
+
+The control was the prune alone, from the r0 census, on a scratch copy of the same seed. On the
+census ruler, lines went 1929 -> 592 (r0 loaded 1929 of 1929; the control's census loaded 592). The
+first print, "1863 -> 592", set the seed's manifest count against the copy's census ruler. Cells
+went 255 -> 226 and edges 1519 -> 170. Its census: 592 lines loaded, 454
+declarations live, 0 dead, 30 fired, 13 kinds emitted, 15936 delivered in the drive. The hosted
+score was the same.
+
+Both routes reach a dead share of 0. They differ in what they keep:
+
+| Measure | Wire, then prune | Prune alone |
+|---|---|---|
+| Live declarations | 1013 | 454 |
+| Cells that fired | 103 | 30 |
+| Kinds emitted | 30 | 13 |
+| Delivered in the drive | 101113 | 15936 |
+
+### Tests
+
+- test/census.test.mjs printed "tests 53, suites 10, pass 53, fail 0" after fix pass 2 (35 of 35
+  before it). The build pass added 10 cases in describe('wire'); the fix pass added 4 more there and
+  4 in describe('line rulers'). The build pass's 10 cover:
+  - legality, donor and claim;
+  - the wired census;
+  - wire then prune against the prune-alone control;
+  - protect;
+  - the clock horizon;
+  - wire and prune in place;
+  - the stale import-cache refusals;
+  - rounds to a fixed point.
+- The fix pass's 8 cover: an oracle of the whole wire list (nearest donor, not lowest index); a
+  wired edge copying planted weight, delay and confidence; a planted edge that is already declared
+  and must not be declared twice; each ruler of --wire and --prune on its own line; a prune that
+  drops a declaration against one that drops nothing; the census ruler read before an in-place
+  landing; the unread count.
+- Fix pass 2 added 15 cases in describe('dead-share fix pass') and 3 in describe('dead-share bar').
+  - The landing: the order of its renames; a transient EPERM then EBUSY, waited out 20 and 40 ms; a
+    refusal every time, 12 tries, the seed as it was; ENOENT not retried; a seed that cannot be put
+    back, named; debris cleared. Also the retry codes.
+  - A prune of a pruned seed keeps both rounds.
+  - The wire history: rebuilt against the round the wire recorded, and what the prune kept against
+    an oracle of the pruned seed's edges. It refuses a non-chain, merges once, and claims what was
+    kept only from the prune of that census of that seed.
+  - The chain: its child wire agrees with the in-process one; every round is in the manifest; run
+    again it changes nothing; two copies land one hash.
+  - Lost history given to the chain, and to one wire in place, is written back once, the hash
+    unchanged.
+  - The bar's pre-registered held-out judgement (judgeHeldOut).
+- `node test/dead-share.mutants.mjs`, run through budget.mjs, printed: "mutants of the dead-share
+  rules (genome/emit.mjs wire, census seed load, line rulers, unread count, landing in place, rename
+  retry, prune record, wire history, chain): 43/43 fail at least one case of test/census.test.mjs;
+  survived 0, never ran 0". Its two controls, the suite as it is and an unmutated copy through the
+  same load hook (loaded true), each printed pass 53 of 53. The run before the in-process wire
+  case was added printed 42/43: "history added at the fixed point is not written" survived,
+  because the chain runs that wire as a child the hook does not reach. The fix pass's 23/23 (pass
+  35 of 35) and the build pass's "12 mutants" are superseded.
+- test/census-static.test.mjs printed "tests 12, pass 12, fail 0".
+- On the tiny test seed, wiring moved the hosted score from 0.42298 to 0.916667. That is not
+  explained, so no test asserts its direction.
+
+### Fix pass: the verify plane
+
+- **Two rulers, fixed at the source (genome/emit.mjs).** emitOrganism writes manifest.json before
+  it adds that file's own lines to counts.lines, so the manifest count leaves manifest.json out,
+  while the census, the gate and emitOrganism's return count every file. pruneMain and wireMain now
+  print each ruler on its own line (censusLinesOf, manifestLinesOf), and read the seed's census
+  ruler before an in-place landing replaces the directory. The prune of a scratch copy of the
+  landed seed, by that seed's own census, printed "lines 1044 -> 1044 (manifest count: every
+  emitted file but manifest.json): 0 removed, 0.00% of the seed" and "lines 1175 -> 1175 (census
+  ruler: every file, manifest.json included): 0 removed", then "ROUND TRIP OK".
+- **Unread mail, measured and not changed.** The prune now prints the kept edges whose destination
+  has no run after tick 0 inside the census horizon. On the landed seed: "unread 307 of 701 kept
+  edges deliver into 106 cells with no run after tick 0 inside horizon tick 315 (142 kept cells are
+  on such a clock)". The census counts those 307 as delivered, so its dead share of 0 includes
+  them. Its own memory line says the mail is dropped: "142 periodic cells have no due tick left
+  after their last one up to tick 315; 60729 items delivered to them were counted, then dropped".
+  The delivered rule lives in tools/organism-census.mjs, outside this item's files. Removing the
+  edges would change what the organism does after tick 315, so they stay; retiming those cells, or
+  a longer horizon, is the next rung.
+- **The landed seed, censused after the fix.** `tools/organism-census.mjs --seed
+  organism/gen-1-4-4-1-4 --ticks 200 --no-knockout --tag dead-share-fix` through budget.mjs wrote
+  bench/verdicts/census-gen-1-4-4-1-4-dead-share-fix-partial.json: "lines 1175 loaded of 1175
+  present; declarations 1013, of which ran or delivered 1013 (100.00%), dead 0". Against r2 it
+  printed "lines 2049 -> 1175 (-874)" and "bar MET".
+- **The bar command, re-run.** `tools/organism-census.mjs --all --ticks 200 --max-cells 1000`
+  wrote bench/verdicts/census-all.json with the same gen-1-4-4-1-4 row. That file carries isTheBar
+  false with no barMet and no split: --all writes a survey, and its summary printed "Not the bar:
+  the bar is organism/gen-0 at 200 ticks and organism/scale-52000 at 20." Its writer is
+  tools/organism-census.mjs, outside this item's files, so the fields stay missing here.
+
+### Fix pass 2: the seven verify findings
+
+The emitter that writes organism/gen-1-4-4-1-4 now, and the only thing that did: genome/emit.mjs
+`--dead-share organism/<seed>` (deadShareChain). It runs a census, wires in place to the fixed point
+(a round whose hash does not change), prunes by the last census when there is something to drop,
+and runs a last census. Each step is a child process, and each census is checked against the
+seed's manifest hash. Its rule for the prune is the one above: keep what delivered, what was in
+flight at the end, and what is hosted.
+
+- **The bar (finding 1).** tools/organism-census.mjs --all writes census-all.json with isTheBar
+  false, and it is not this item's file. The new test/dead-share-bar.mjs runs that command unchanged
+  and writes bench/verdicts/dead-share.json with isTheBar true, a top-level barMet, a split, the
+  control and a statement. Run through budget.mjs, it printed:
+  - "organism/gen-1-4-4-1-4: dead share 0 (1299 of 1299 lines load bearing); cells 254 of 254 ran,
+    edges 701 of 701 delivered; the row is the seed on disk true (manifest 254 cells, 701 edges,
+    census ruler 1299 lines)"
+  - "CONTROL before: ... dead share 0.71436 (551 of 1929), the ledger 0.71436: true"
+  - "HELD OUT 18 seeds: safe 18, lowered 18, under the cap 0.1 18, at 0 6, deterministic 18; dead
+    share before 0.37945 to 0.648221, after 0 to 0.007389"
+  - "BAR MET: dev true, provenance true, clone true, held out safe 18/18"
+
+  The criteria were fixed in the file before the held-out run. Held out means the 18 other seeds
+  the bar censused, chained on two scratch copies each. No chain ran on them while the rule was
+  built. organism/gen-0-2-3-1-3 had a chain trial and is reported as contaminated. Its line read
+  "0.625411 -> 0.001546 ... safe".
+- **The line count grew by the provenance.** The census ruler counts manifest.json as structure.
+  The rebuilt rounds added lines to the landed seed: the trial census (`--tag gaps`,
+  census-gen-1-4-4-1-4-gaps-partial.json) printed "lines 2049 -> 1299 (-750)", where the fix census
+  had printed 1175. The dead share is 0 on both.
+- **The report (finding 2).** The current tallies are in Tests below.
+- **The flake (finding 3).** The failure did not reproduce. Thirty back-to-back runs of
+  test/census.test.mjs, then 35 tests, each printed "pass 35 fail 0". The likely cause is finding
+  4's window, a Windows rename refused while a file of the directory is still open. The tests now
+  assert that condition directly with planted refusals, not by re-running.
+- **The land (finding 4).** emitTarget no longer removes the seed before the staging is in its
+  place:
+  - the seed is renamed aside to .<name>.emit-replaced;
+  - the staging is renamed into its place;
+  - the old seed is removed last.
+
+  A rename refused with EPERM, EACCES or EBUSY is retried (retrying: 12 tries, waits 20 ms doubling
+  to 1000 ms). This is what graceful-fs does on win32. When the second rename fails for good, the
+  seed is put back. When even that fails, the error names where the seed lies intact. Debris from a
+  run that died half way is cleared first.
+- **Provenance (finding 5).** A pruned seed's record keeps every prune under genome.pruned.rounds.
+  `--wire-history a,b,c` rebuilds lost wire rounds from the census verdicts taken between them
+  (wireHistory, mergeWireHistory). Each rebuilt round carries:
+  - the hash link, the edges wired, and how many of them the prune's census saw delivered;
+  - "reconstructed", with the counts only the wire run printed listed as notRecovered.
+
+  The landing command was `genome/emit.mjs --dead-share organism/gen-1-4-4-1-4 --tag
+  dead-share-land --wire-history <r0>,<r1>,<r2>` through budget.mjs. It printed "dead share 0 -> 0,
+  lines 1175 -> 1175, hosted score 0.083334 -> 0.083334, wire rounds 0 to the fixed point: OK" and
+  left hash dc84e3d733a8732f. The bar's provenance line read: "f3c731c4->8124a680 wired 72 (kept 72
+  delivered, 0 in flight only) rebuilt; 8124a680->44b0cb8c wired 30 (kept 30 delivered, 0 in flight
+  only) rebuilt; 44b0cb8c wired 0; dc84e3d7 wired 0; pruned from 44b0cb8c by
+  bench/verdicts/census-gen-1-4-4-1-4-dead-share-r2-partial.json: true".
+- **The clone (finding 6), partly.** A copy made by loading the seed and emitting it again has the
+  same hash. The chain over the copy changes nothing: "chain rounds 0, prune skipped true, dead share
+  0 -> 0: true". What stays open is outside this item's files:
+  - generations/epochs.mjs emitElite never runs the chain;
+  - .gitignore keeps organism/* off the repository.
+
+  So an epochs run that emits gen-1-4-4-1-4 again writes the 0.71436 seed until genome/emit.mjs
+  --dead-share runs after it.
+- **Dead 0 at a horizon (finding 7).** This was measured, and no stricter prune was made. The bar's
+  own knockout of edges-000.mjs, every edge of the seed, printed "edges delivered -701, drive
+  delivered -101113, drive runs -8297, cells ran -47, hosted score 0". The edges carry drive work,
+  not the hosted score. The long horizon printed:
+  - at 200 ticks (last tick 315): "cells with no run after tick 0 142, edges into them 307 (reaching
+    106 of them); period 1000 cells 44: runs 44, fired 4, edges into them 99; mail dropped 60729";
+  - at 1200 ticks (last tick 1315): "cells with no run after tick 0 98, edges into them 208
+    (reaching 74 of them); period 1000 cells 44: runs 88, fired 25, edges into them 99; mail dropped
+    253167".
+
+  The cells on the 1000 tick clock run again at tick 1000, and 25 of them fire by tick 1200. A
+  prune at the 315 tick horizon would cut edges into them, so the prune keeps them. The 208 edges
+  into cells on the 60000 and 3600000 tick clocks are not read by any run up to tick 1315. That is
+  unmeasured further out.
+
+### What was read
+
+- Hu et al. 2016, Network Trimming (APoZ activation census pruning), arXiv 1607.03250.
+- Mocanu et al. 2018, SET (prune and regrow).
+- graceful-fs (npm's fs wrapper), its rename on win32: it retries EPERM, EACCES and EBUSY with a
+  growing backoff (fix pass 2, the land).
+- docs/boards/board-17.js: the same item. Nothing had landed.
+- The tools/organism-census.mjs header and pruneComparison.
+- The genome/wire.mjs claim rule.
+- self/gaps.mjs deadShareGaps and bench/gate.mjs censusFor.
+
+### Caveats
+
+- The drive is idle only.
+- 133 cells run on periods of 1000, 60000 and 3600000. They run once at tick 0, so they count as
+  ran, but inside 200 ticks they never fire. Retiming them, or a longer horizon, is the next rung.
+  In the landed seed, 307 of 701 kept edges deliver into 106 such cells (the fix pass).
+- The wiring made more of the organism run. It did not answer better: the hosted score stayed
+  0.083334.
+- organism/* is gitignored. A gen-1-4-4-1-4 emitted again by generations/epochs.mjs emitElite would
+  come out unwired and unpruned until genome/emit.mjs --dead-share runs after it (fix pass 2).
+- The chain's children run without NODE_OPTIONS, so a mutant loaded through the mutants file's
+  hook reaches only the code the suite runs in its own process. The wire at the fixed point is
+  tested in process as well for that reason.
