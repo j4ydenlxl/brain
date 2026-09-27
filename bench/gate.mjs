@@ -62,8 +62,19 @@
 //             unlabelled, and every file behind a cause by name. A referee under a live autopilot
 //             lock, like the two rows above (see the block above contaminationRow).
 //
+// ONE MORE (his 2026-09-26 20:20 "I wouldnt declare the project EVER over until the vision is 100 percent
+// fulfilled" and 21:03 "after tonight 'Yes. we are close. No lies'"; docs/VISION.md order 9), printed last:
+//
+//   VISION    docs/VISION.md section 3 lists every order he gave with a status word; tools/vision-count.mjs
+//             counts them. The row prints the counter's line, rules RED when section 4 retypes a different
+//             count (the typed count can never drift from the list) or an order has no status word, and
+//             prints "reached" true only when MET equals the total. It never rules RED for an unfinished
+//             vision: the count is the report, the drift is the defect. N/A on a tree with no document
+//             or no counter (the gate copied alone into a fixture tree).
+//
 //   node bench/gate.mjs [--quiet]
 //   node bench/gate.mjs --contamination      the CONTAMINATION row alone, no test run, no gate.json
+//   node bench/gate.mjs --vision             the VISION row alone, no test run, no gate.json
 import { readdirSync, readFileSync, statSync, writeFileSync, mkdirSync, existsSync, mkdtempSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -77,10 +88,11 @@ import { spawnSync } from 'node:child_process';
 const loaded = async (spec) => { try { return { mod: await import(spec), error: null }; } catch (e) { return { mod: null, error: String((e && e.message) || e).split('\n')[0] }; } };
 const BUDGET_MOD = await loaded('../tools/budget.mjs');
 const PERSIST_MOD = await loaded('../core/persist.mjs');
+const VISION_MOD = await loaded('../tools/vision-count.mjs');
 const budget = BUDGET_MOD.mod ? BUDGET_MOD.mod.budget : null;
 const readCheckpointHeader = PERSIST_MOD.mod ? PERSIST_MOD.mod.readCheckpointHeader : null;
 /** Why a sibling could not be loaded (null when it was). */
-export const MISSING = Object.freeze({ budget: BUDGET_MOD.error, persist: PERSIST_MOD.error });
+export const MISSING = Object.freeze({ budget: BUDGET_MOD.error, persist: PERSIST_MOD.error, vision: VISION_MOD.error });
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(HERE, '..');
@@ -1012,6 +1024,39 @@ export function contaminationRow(census, { referee = { referee: false, why: 'not
   return { ok, graded: true, rules: !(referee && referee.referee), referee, counts, noSplit, splitNotObject: notObject.map((r) => ({ file: r.file, split: r.split, value: r.splitValue ?? null })), labelled, unlabelled, unread, causes, line };
 }
 
+// ---------------------------------------------------------------- VISION
+/**
+ * The VISION row: the counter's line for docs/VISION.md, RED only on drift or an unstated order.
+ * @param {{root?: string, md?: string|null, counter?: object|null}} [o] md plants the document text; counter plants the module
+ * @returns {{ok: boolean, graded: boolean, rules: boolean, line: string, count?: string, typed?: string|null, reached?: boolean, met?: number, total?: number, unstated?: number[], file: string}}
+ */
+export function visionRow({ root = ROOT, md = null, counter = VISION_MOD.mod } = {}) {
+  const file = 'docs/VISION.md';
+  if (!counter || typeof counter.countVision !== 'function') {
+    return { ok: true, graded: false, rules: false, file, line: 'VISION N/A: tools/vision-count.mjs is not beside this gate (' + (VISION_MOD.error || 'not loaded') + '), so no order was counted' };
+  }
+  let text = md;
+  if (text == null) {
+    const abs = path.join(root, 'docs', 'VISION.md');
+    if (!existsSync(abs)) return { ok: true, graded: false, rules: false, file, line: 'VISION N/A: ' + file + ' is not in this tree, so no order was counted' };
+    text = readFileSync(abs, 'utf8');
+  }
+  const c = counter.countVision(text);
+  const count = counter.countLine(c);
+  const typed = counter.typedLine(text);
+  const drift = typed !== count;
+  const unstated = c.unstated || [];
+  const ok = c.total > 0 && !drift && unstated.length === 0;
+  const met = c.counts.MET || 0;
+  const reached = c.total > 0 && met === c.total;
+  const causes = [];
+  if (c.total === 0) causes.push('section 3 lists no numbered order');
+  if (drift) causes.push('section 4 types ' + (typed ? JSON.stringify(typed) : 'no count line') + ' while the list counts ' + JSON.stringify(count) + ' (retype section 4 from node tools/vision-count.mjs)');
+  if (unstated.length) causes.push('orders with no status word: ' + unstated.join(', '));
+  const line = 'VISION ' + (ok ? 'GREEN' : 'RED') + ': ' + count + ' section 4 ' + (drift ? 'DISAGREES' : 'agrees') + '; reached ' + reached + ' (MET ' + met + ' of ' + c.total + ')' + (causes.length ? '; CAUSES (' + causes.length + '): ' + causes.join('; ') : '');
+  return { ok, graded: true, rules: true, file, line, count, typed, reached, met, total: c.total, unstated, counts: c.counts };
+}
+
 // ---------------------------------------------------------------- the gate
 async function main() {
   const args = new Set(process.argv.slice(2));
@@ -1106,13 +1151,15 @@ async function main() {
   rows.autonomy = await guarded('AUTONOMY', async () => autonomyRow({ root: ROOT, task: installTask }));
   rows.handoff = await guarded('HANDOFF', async () => handoffRow({ root: ROOT, task: installTask }));  // CONTAMINATION (Board 13): every bar file names its split; a referee while a live autopilot holds the lock
   rows.contamination = await guarded('CONTAMINATION', async () => contaminationRow(contaminationRecords(path.join(ROOT, 'bench', 'verdicts')), { referee: refereeOf(ROOT) }));
+  // VISION (his 20:20 and 21:03 of 2026-09-26): the counter's line; RED only when section 4 has drifted from the list
+  rows.vision = await guarded('VISION', async () => visionRow({ root: ROOT }));
 
   // a referee row (a live autopilot holds the lock) is printed and recorded but does not rule
   const rules = (r) => r.rules !== false;
 
   const rowsPass = rows.budget.ok && rows.compress.ok && rows.hisData.ok && rows.loadBearing.ok && rows.boundary.ok
     && (rows.autonomy.ok || !rules(rows.autonomy)) && (rows.handoff.ok || !rules(rows.handoff))
-    && (rows.contamination.ok || !rules(rows.contamination));
+    && (rows.contamination.ok || !rules(rows.contamination)) && (rows.vision.ok || !rules(rows.vision));
   const allPass = tests.every(t => t.exit === 0) && emDash.length === 0 && badImports.length === 0 && rowsPass;
   const verdict = {
     at: new Date().toISOString(), startedAt, node: process.version, command: 'node bench/gate.mjs' + (args.has('--quiet') ? ' --quiet' : ''),
@@ -1120,14 +1167,14 @@ async function main() {
     assertionsPassed: tests.reduce((a, t) => a + (t.pass || 0), 0), assertionsFailed: tests.reduce((a, t) => a + (t.fail || 0), 0),
     lines: { code: codeLines, prose: proseLines, codeFiles, generated: generatedLines, generatedFiles, byArea: counts },
     emDash, emDashCopiedSkipped, badImports, notes,
-    rows: { budget: rows.budget, compress: rows.compress, hisData: rows.hisData, loadBearing: rows.loadBearing, boundary: rows.boundary, autonomy: rows.autonomy, handoff: rows.handoff, contamination: rows.contamination },
+    rows: { budget: rows.budget, compress: rows.compress, hisData: rows.hisData, loadBearing: rows.loadBearing, boundary: rows.boundary, autonomy: rows.autonomy, handoff: rows.handoff, contamination: rows.contamination, vision: rows.vision },
     verdict: allPass ? 'GREEN' : 'RED',
   };
   const gr = (r) => (r.ok ? 'GREEN' : 'RED');
   const gr2 = (r) => (r.graded === false ? 'N/A' : gr(r) + (rules(r) ? '' : ' (referee)'));
   // the summary line is kept in gate.json too, so a verdict that pastes it pastes what was printed
   verdict.line = 'GATE ' + verdict.verdict + ': test files ' + verdict.testsPassed + '/' + verdict.testsTotal + ', assertions ' + verdict.assertionsPassed + ' pass / ' + verdict.assertionsFailed + ' fail, authored code lines ' + codeLines + ' in ' + codeFiles + ' files, prose lines ' + proseLines + ', generated organism lines ' + generatedLines + ' in ' + generatedFiles + ' files, em-dash files ' + emDash.length + ', bad imports ' + badImports.length
-    + ', budget ' + gr(rows.budget) + ', compress ' + gr(rows.compress) + ', his data ' + gr(rows.hisData) + ', load-bearing ' + gr(rows.loadBearing) + ', boundary ' + gr(rows.boundary) + ', autonomy ' + gr2(rows.autonomy) + ', handoff ' + gr2(rows.handoff) + ', contamination ' + gr2(rows.contamination);
+    + ', budget ' + gr(rows.budget) + ', compress ' + gr(rows.compress) + ', his data ' + gr(rows.hisData) + ', load-bearing ' + gr(rows.loadBearing) + ', boundary ' + gr(rows.boundary) + ', autonomy ' + gr2(rows.autonomy) + ', handoff ' + gr2(rows.handoff) + ', contamination ' + gr2(rows.contamination) + ', vision ' + gr2(rows.vision);
   mkdirSync(path.join(HERE, 'verdicts'), { recursive: true });
   writeFileSync(path.join(HERE, 'verdicts', 'gate.json'), JSON.stringify(verdict, null, 2));
   console.log('');
@@ -1139,6 +1186,7 @@ async function main() {
   console.log(rows.autonomy.line);
   console.log(rows.handoff.line);
   console.log(rows.contamination.line);
+  console.log(rows.vision.line);
 
   console.log('\n' + verdict.line);
   if (emDash.length) console.log('em-dashes in: ' + emDash.join(', '));
@@ -1151,7 +1199,11 @@ async function main() {
 const isMain = Boolean(process.argv[1]) && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 // node bench/gate.mjs --contamination: the CONTAMINATION row alone, in milliseconds, with no test run
 // and no gate.json written; the exit code is the row (1 only when it is red and rules)
-if (isMain && process.argv.includes('--contamination')) {
+if (isMain && process.argv.includes('--vision')) {
+  const r = visionRow({ root: ROOT });
+  console.log(r.line);
+  process.exitCode = r.ok || !r.rules ? 0 : 1;
+} else if (isMain && process.argv.includes('--contamination')) {
   const r = contaminationRow(contaminationRecords(path.join(ROOT, 'bench', 'verdicts')), { referee: refereeOf(ROOT) });
   console.log(r.line);
   process.exitCode = r.ok || !r.rules ? 0 : 1;
