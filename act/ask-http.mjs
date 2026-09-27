@@ -61,7 +61,11 @@ export const NOT_CONFIGURED = 'the model cell is not configured on this host: th
 export const USAGE = 'POST application/json {"prompt": "..."} to this path; the organism answers with act/prompt.mjs ask(), as `node bin/brain.mjs ask dilation "..."` does, and returns the CLI footer fields. At most ' + LIMITS.promptChars + ' chars, ' + LIMITS.ipPerMin + ' asks a minute per client.';
 
 /** True when the environment holds both names (values are not read beyond presence). */
-export const modelConfigured = (env = process.env) => Boolean(env && env[BASE_NAME] && env[KEY_NAME]);
+/** The platform token a Vercel function receives; the AI Gateway accepts it as a Bearer key when no key of ours is set. */
+export const OIDC_NAME = 'VERCEL_OIDC_TOKEN';
+/** The NAME of the variable the model cell reads its key from: ours when set, else the platform token, else ours (unconfigured). */
+export const keyNameFor = (env = process.env) => (env && env[KEY_NAME] ? KEY_NAME : env && env[OIDC_NAME] ? OIDC_NAME : KEY_NAME);
+export const modelConfigured = (env = process.env) => Boolean(env && env[BASE_NAME] && env[keyNameFor(env)]);
 
 /** A token bucket with continuous refill. take() returns 0 when a token was taken, else the ms to wait. */
 export class Bucket {
@@ -245,7 +249,7 @@ export function createHandler(o = {}) {
     const configured = modelConfigured(env);
     // the CLI's wiring: --provider env --env-base BRAIN_LLM_BASE --env-key BRAIN_LLM_KEY --model $BRAIN_LLM_MODEL
     const opts = configured
-      ? { provider: 'env', envBase: BASE_NAME, envKey: KEY_NAME, model: env[MODEL_NAME] || undefined, k: 5, events: [], timeoutMs: LIMITS.modelMs }
+      ? { provider: 'env', envBase: BASE_NAME, envKey: keyNameFor(env), model: env[MODEL_NAME] || undefined, k: 5, events: [], timeoutMs: LIMITS.modelMs }
       : { provider: 'null', k: 5, events: [] };
     const t0 = process.hrtime.bigint();
     let a;
@@ -270,7 +274,7 @@ export function createHandler(o = {}) {
       promptHash: a.promptHash, promptChars: a.promptChars, redacted: a.redacted || 0,
       cites: Array.isArray(a.cites) ? a.cites.slice(0, 5) : [],
       serverUs, host, knowledge: s.knowledge,
-      model: { configured, provider: configured ? 'env' : 'null', names: [BASE_NAME, KEY_NAME, MODEL_NAME] },
+      model: { configured, provider: configured ? 'env' : 'null', names: [BASE_NAME, KEY_NAME, MODEL_NAME], keyName: keyNameFor(env) },
     };
     return done(200, json, {}, { promptHash: a.promptHash, route: json.route, serverUs });
   }

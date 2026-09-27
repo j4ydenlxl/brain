@@ -386,6 +386,42 @@ async function wikiClass(ctx) {
 }
 
 // ------------------------------------------------------------------ the bar
+/**
+ * THE PROGRAM ARM (board 23 builder, item induce): the held-out records asked as ALONE_PROMPT(question)
+ * through the kept programs of reason/induce.mjs only (bench/verdicts/induce-programs.json, the library
+ * bench/induce.mjs built from development records), model off. It returns its own block and touches no
+ * other arm, row or field; main() writes its share beside heldOut.share.
+ * @param {{id: string, question: string, gold: any}[]} recs
+ */
+export async function programArm(recs, { ALONE_PROMPT, lastNumber, sameInteger, storeFile = path.join(VERDICTS, 'induce-programs.json') } = {}) {
+  const at = new Date().toISOString();
+  if (!fs.existsSync(storeFile)) return { measured: false, at, why: 'not measured: ' + rel(storeFile) + ' is absent (bench/induce.mjs writes it)' };
+  const I = await import('../reason/induce.mjs');
+  const text = fs.readFileSync(storeFile, 'utf8');
+  const store = JSON.parse(text);
+  // provenance overlap: a held-out id among the development records any kept program cites
+  const cited = new Set();
+  for (const lv of Object.keys(store.levels || {})) for (const list of Object.values(store.levels[lv])) for (const e of list) for (const id of e.records || []) cited.add(id);
+  const rows = [];
+  for (const r of recs) {
+    const a = I.answerFromPrograms(ALONE_PROMPT(r.question), store);
+    const got = a ? lastNumber(a.answer) : null;
+    rows.push({ id: r.id, gold: r.gold, answered: !!a, got, ok: !!a && sameInteger(got, r.gold), program: a ? a.program : null, level: a ? a.level : null, support: a ? a.support : null, ns: a ? a.ns : null });
+  }
+  const answered = count(rows, (x) => x.answered), right = count(rows, (x) => x.ok), n = rows.length;
+  const nsDist = dist(Float64Array.from(rows.filter((x) => x.answered).map((x) => x.ns)));
+  const block = {
+    measured: true, at, author: 'board 23 builder (item induce)', modelCalls: 0,
+    what: 'the held-out records asked as ALONE_PROMPT(question) through reason/induce.mjs answerFromPrograms over the kept programs only; an answer carries provenance program',
+    store: rel(storeFile), storeSha256: crypto.createHash('sha256').update(text).digest('hex'), storeAt: store.at || null,
+    n, answered, right, share: n ? r4(answered / n) : null, correctShare: n ? r4(right / n) : null, precision: answered ? r4(right / answered) : null,
+    provenanceOverlap: count(rows, (x) => cited.has(x.id)), answerNs: nsDist,
+    rows,
+  };
+  block.printed = [`program arm (reason/induce.mjs kept programs, ${rel(storeFile)} sha256 ${block.storeSha256.slice(0, 16)}): ${n} held-out records, answered ${answered} (${pct(block.share)}), right ${right} (${pct(block.correctShare)} of held out, precision ${pct(block.precision)}); held-out ids a kept program cites ${block.provenanceOverlap}; answer ${distLine(nsDist)}`];
+  return block;
+}
+
 async function main() {
   const lines = [];
   const say = (s) => { lines.push(s); console.log(s); };
@@ -502,6 +538,14 @@ async function main() {
   const heldRows = await askSet(ctx, drawn.map(recOf), 'held out');
   const held = summarize(heldRows, BAR.passes, PUB.wilson);
   setLines(say, 'held out', held, pub);
+
+  // (10) THE PROGRAM ARM (board 23 builder, item induce): the same held-out records through the kept programs of
+  // reason/induce.mjs; its share is written beside heldOut.share, and its line is printed apart from printed[]
+  const program = await programArm(drawn.map(recOf), { ALONE_PROMPT: PUB.ALONE_PROMPT, lastNumber: PUB.lastNumber, sameInteger: PUB.sameInteger });
+  if (program.measured) {
+    held.programAnswered = program.answered; held.programCorrect = program.right; held.programShare = program.share; held.programCorrectShare = program.correctShare;
+    for (const l of program.printed) console.log(l);
+  } else console.log('program arm: ' + program.why);
 
   // (9) THE CONTROL of the word class (board 18 builder): the same held-out grading, the reader unplugged then plugged,
   // two passes each, so the gain is set beside its own run-to-run noise before it is called moved
@@ -650,6 +694,7 @@ async function main() {
     heldOut: strip(held), development: { all: strip(devAll), covered: strip(devCov) },
     renumbered: { ...ren, step: renStep }, ceiling, wiki: wk, gap,
     wordControl,
+    program,
     rows: { heldOut: heldRows.map((x) => ({ id: x.id, gold: x.gold, provenance: x.provenance, cls: x.cls, got: x.got, ok: x.ok, why: x.why, sameAsOff: x.sameAsOff })), development: devRows.map((x) => ({ id: x.id, gold: x.gold, provenance: x.provenance, cls: x.cls, got: x.got, ok: x.ok, via: x.via, run: x.run, why: x.why })) },
     peakRssMb: peak, printed: lines,
   };
@@ -658,6 +703,21 @@ async function main() {
   console.log('wrote ' + rel(file));
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+/** --program-arm: the program arm alone on the held-out ids bench/verdicts/ns.json names; prints, writes nothing. */
+async function programArmOnly() {
+  const PUB = await import('./public.mjs');
+  const ns = JSON.parse(fs.readFileSync(path.join(VERDICTS, 'ns.json'), 'utf8'));
+  const byId = new Map(PUB.loadGsm8k().map((r) => [r.id, r]));
+  const ids = (ns.split && ns.split.heldOut && ns.split.heldOut.ids) || [];
+  const recs = ids.map((id) => ({ id, question: byId.get(id).question, gold: PUB.finalAnswer(byId.get(id)) }));
+  const b = await programArm(recs, { ALONE_PROMPT: PUB.ALONE_PROMPT, lastNumber: PUB.lastNumber, sameInteger: PUB.sameInteger });
+  console.log(`ns: node bench/ns.mjs --program-arm (node ${process.version}, model off: no socket is opened); the held-out ids of bench/verdicts/ns.json (${ids.length}, heldOut.share there ${ns.heldOut ? ns.heldOut.share : 'n/a'})`);
+  console.log(b.measured ? b.printed.join(String.fromCharCode(10)) : 'program arm: ' + b.why);
+  console.log('wrote nothing (the program arm is written into ns.json by a full run of this bench)');
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url) && flag('program-arm')) {
+  programArmOnly().catch((e) => { console.error(e && e.stack || e); process.exitCode = 1; });
+} else if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   main().catch((e) => { console.error(e && e.stack || e); process.exitCode = 1; });
 }

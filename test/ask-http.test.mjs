@@ -12,7 +12,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { spawn } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { createHandler, FOOTER, LIMITS, NOT_CONFIGURED } from '../act/ask-http.mjs';
+import { createHandler, FOOTER, LIMITS, NOT_CONFIGURED, modelConfigured, keyNameFor, OIDC_NAME } from '../act/ask-http.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'ask-http-test-'));
@@ -229,4 +229,15 @@ test('the Vercel shell answers through a planted req and res', async () => {
   const bad = { ...res, statusCode: 0, headers: {}, body: null };
   await fn({ method: 'POST', headers: { 'content-type': 'application/json' }, get body() { throw new Error('Invalid JSON'); }, socket: {} }, bad);
   assert.equal(bad.statusCode, 400);
+});
+
+test('the model cell is configured by NAME: our key when set, else the platform OIDC token beside our base url, never a value read here', () => {
+  assert.equal(modelConfigured({}), false);
+  assert.equal(modelConfigured({ BRAIN_LLM_BASE: 'b' }), false, 'a base url with no key is not configured');
+  assert.equal(modelConfigured({ BRAIN_LLM_BASE: 'b', BRAIN_LLM_KEY: 'k' }), true);
+  assert.equal(keyNameFor({ BRAIN_LLM_BASE: 'b', BRAIN_LLM_KEY: 'k', [OIDC_NAME]: 't' }), 'BRAIN_LLM_KEY', 'our key wins when both exist');
+  assert.equal(modelConfigured({ BRAIN_LLM_BASE: 'b', [OIDC_NAME]: 't' }), true, 'the platform token beside our base url configures the cell');
+  assert.equal(keyNameFor({ BRAIN_LLM_BASE: 'b', [OIDC_NAME]: 't' }), OIDC_NAME);
+  assert.equal(modelConfigured({ [OIDC_NAME]: 't' }), false, 'the token alone, with no base url, configures nothing');
+  assert.equal(keyNameFor({}), 'BRAIN_LLM_KEY');
 });
