@@ -46,7 +46,8 @@ test('portfolio: the real document renders whole, with every block on the page a
   for (const id of ['copy-md', 'copy-text', 'said']) assert.ok(page.includes('id="' + id + '"'), 'control ' + id);
   assert.ok(page.includes('href="PORTFOLIO.md"'), 'the raw file is linked');
   assert.ok(page.includes('href="../findings/"') && page.includes('href="../"'), 'the page links back to the site');
-  assert.match(page, /generated \d{4}-\d\d-\d\dT[^<]* from docs\/PORTFOLIO\.md; gate (GREEN|RED) at \d{4}/, 'the footer says when it was generated and what the gate said');
+  assert.match(page, /generated \d{4}-\d\d-\d\dT[^<]* from docs\/PORTFOLIO\.md; gate as the document quotes it: GREEN on [\d,]+ test files with [\d,]+ assertions/, 'the footer says when it was generated and the gate the document quotes (never the host gate)');
+  assert.ok(!/gate RED/.test(page), 'no host gate verdict on the portfolio page');
 });
 
 test('portfolio: a dropped block fails the build rather than shipping', () => {

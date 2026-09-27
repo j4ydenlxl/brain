@@ -73,7 +73,11 @@ export function generatePortfolio({ doc = DOC, template = TEMPLATE, outDir = OUT
   page = fill(page, '{{BYTES}}', String(Buffer.byteLength(md)));
   page = fill(page, '{{PARAGRAPHS}}', String(paragraphs));
   page = fill(page, '{{GENERATED}}', esc(generatedAt));
-  page = fill(page, '{{GATE}}', gate && gate.verdict && gate.at ? esc(gate.verdict + ' at ' + gate.at) : 'no verdict on disk');
+  // The footer quotes the gate the DOCUMENT quotes (tools/portfolio-gate.mjs rewrites that sentence only from a
+  // green gate), never the host's gate.json: a fresh Linux clone's red gate is the host's, not the organism's
+  // (his 2026-09-26 20:52 EDT order: the red thing off the portfolio page). The host gate stays on the handoff page.
+  const quoted = /gate is (GREEN) on ([\d,]+) test files with ([\d,]+) assertions/.exec(md);
+  page = fill(page, '{{GATE}}', quoted ? esc('as the document quotes it: ' + quoted[1] + ' on ' + quoted[2] + ' test files with ' + quoted[3] + ' assertions') : 'the document quotes no gate');
   if (page.includes('{{')) throw new Error('portfolio: a template placeholder was left unfilled');
   if (page.includes(String.fromCharCode(0x2014))) throw new Error('portfolio: an em dash reached the page');
 
