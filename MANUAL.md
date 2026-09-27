@@ -360,6 +360,12 @@ whole project done tonight. Lets goo!" (2026-09-17 22:18)
 
 (What was found on return: boards 23 and 24a had finished while the limit held; the rung's 45-minute wall had ended at 983 of 1319. Nine landings were committed with explicit paths (dead-share bar met, census-loop bar met, contamination-split one cause left, ladder-arc 21.25 against 98, plateau not met, boundary bar met, his-data bar met, published-rows 2 of 4 pairs, the verify re-runs of shell-windows, induce and web-vision), the rung was resumed, board 24a was resumed so only fix:imagine runs (its verifier found the bar flips between runs at one seed), and board 26 was written and launched for the open verify problems plus the wiring of the induced programs into ask() and the essay bar with a named judge.)
 
+### His words, verbatim (2026-09-27, arrived mid-turn after 14:36:47 EDT and before 14:37:45 EDT, the two clock reads around it)
+
+> Listen, reread my whole vision and everything i told u. What about fronteir> and it cant respond to everythng, its literallly fixed responses.... i said hey and it responded with the same thig as hi and i just said "h" and it couldnt respond. neither could it respond to complex questions. This is stupid. What do you think you are building? and you said its close to frontier. HOW? Im genuinely confused
+
+(Recorded before any answer. Order 41 in docs/VISION.md. The answer he is owed is in the transcript of this turn and in the order's status: what the live site is made of, why "h" and a complex question end in a memory miss there, where the frontier numbers were measured, and what is required for the site to answer everything.)
+
 ## §B. OBJECTIVES + PROGRESS (mine; terse; updated only after re-reading §A)
 
 Rules for this section (P9, his 2026-09-23 order on cache reads): objectives are his WHAT in order; STATE is the whole live picture in under 40 lines and is rewritten whole at every checkpoint; the full history is `brain/docs/LOG.md` (append-only, one line per checkpoint, never read in full at session start; the hook prints its last 3 lines). Numbers live in bench/verdicts and docs/NUMBERS.md, not here. Every fact I need survives on disk, none of it needs my context.
