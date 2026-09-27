@@ -1,0 +1,423 @@
+{
+  "at": "2026-09-27T01:06:59.317Z",
+  "command": "node bench/site-ask.mjs --url https://dilation.dev/ask",
+  "node": "v24.21.0",
+  "isTheBar": true,
+  "barMet": true,
+  "met": {
+    "exact391": true,
+    "novelRoutePrinted": true,
+    "parity": true,
+    "tabNoRequest": true,
+    "refusedOnePost": true,
+    "noPageErrors": true,
+    "serverExact391": true,
+    "serverNovelRoute": true,
+    "serverCap413": true,
+    "server429": true,
+    "serverGetUsage": true,
+    "optionsNoStar": true,
+    "noSecretInResponses": true
+  },
+  "url": "https://dilation.dev/ask",
+  "origin": "https://dilation.dev",
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+  "control": false,
+  "modelCalls": 0,
+  "split": {
+    "what": "no learning happens here: the tab prompts are the page examples (web/ask.mjs EXAMPLES), graded against act/solve.mjs in node; the server prompts are the two the brief names plus a 2001 character cap probe and 30 rapid repeats of the first; none is a held-out set",
+    "development": [
+      "what is 17 times 23",
+      "2 to the power of 100",
+      "15 percent of 200",
+      "the square root of 144",
+      "subtract 3 from 10",
+      "Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?",
+      "write a poem about the sea",
+      "what is 17 times 23",
+      "write a poem about the sea",
+      "2001 x characters (the 413 probe)"
+    ],
+    "heldOut": [],
+    "contaminated": false
+  },
+  "statement": "The prompt box on https://dilation.dev/ask answered in the browser tab with the organism exact reader (act/exact-read.mjs sha256 6d7e524b90a6, tasks/exact.mjs sha256 ede0ce88f1ad, act/word.mjs sha256 c2dd2fe71b77), 6 of 7 examples with no request; 7 of 7 page results equal act/solve.mjs solve() on the same prompt; the 1 prompt(s) the tab refused made 1 POST(s) to https://dilation.dev/api/ask and the page printed the server route (direct, provenance memory, model null). On the server, \"what is 17 times 23\" answered 391 with provenance exact in 770 us on host iad1; \"write a poem about the sea\" answered with route direct and llm null (the model cell is not configured on this host: the environment does not hold both BRAIN_LLM_BASE and BRAIN_LLM_KEY, so the null provider (offline, no model, no socket) stood in); a 2001 character prompt got 413; 30 rapid POSTs got {\"200\":17,\"429\":13}. The knowledge store on the server host: absent (no finished ingest at bench/fixtures/wiki/store (no readable meta.json)), so the knowledge tier answered nothing there. Cold start 68.078 ms and warm 0.419 ms were measured in a fresh node v24.21.0 child process on the bench host (linux), not the Vercel instance. Every rule met.",
+  "coldStartMs": 68.078,
+  "warmMs": 0.419,
+  "coldStart": {
+    "line": "importMs 123.167 coldStartMs 68.078 warmMs 0.419 status 200 200 serverUs 670 184",
+    "importMs": 123.167,
+    "coldStartMs": 68.078,
+    "warmMs": 0.419,
+    "where": "a fresh node v24.21.0 child process on the bench host (linux), not the Vercel instance"
+  },
+  "requestsAfterLoad": 1,
+  "pageErrors": [],
+  "organism": [
+    {
+      "file": "act/exact-read.mjs",
+      "bytes": 18792,
+      "sha256": "6d7e524b90a6ae05232d6db98651fbc4195edb56987eb21f763a8c878807cdca"
+    },
+    {
+      "file": "tasks/exact.mjs",
+      "bytes": 5686,
+      "sha256": "ede0ce88f1ad49dc0aba9a66caff52483caab9be1c40045e54ba3cf2c395836e"
+    },
+    {
+      "file": "act/word.mjs",
+      "bytes": 103185,
+      "sha256": "c2dd2fe71b77a9dfd1a9dcf33f61c2805fa11434e66e7c6cac6589beca2578cb"
+    }
+  ],
+  "rows": [
+    {
+      "prompt": "what is 17 times 23",
+      "answer": "391",
+      "route": "exact",
+      "provenance": "exact",
+      "nsPerAsk": 15625,
+      "cli": "391",
+      "cliMethod": "exact.arith",
+      "parity": true,
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> what is 17 times 23",
+        "answered exactly by exact.arith, with no model and no network.",
+        "- read \"what is 17 times 23\" as 17 * 23",
+        "- expression 17 * 23",
+        "- exact rational arithmetic on BigInt, no rounding at any step",
+        "391",
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 15,625 ns per ask on this device (median of 7 batches, 448 asks)"
+      ]
+    },
+    {
+      "prompt": "2 to the power of 100",
+      "answer": "1267650600228229401496703205376",
+      "route": "exact",
+      "provenance": "exact",
+      "nsPerAsk": 31250,
+      "cli": "1267650600228229401496703205376",
+      "cliMethod": "exact.arith",
+      "parity": true,
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> 2 to the power of 100",
+        "answered exactly by exact.arith, with no model and no network.",
+        "- read \"2 to the power of 100\" as 2 ^ 100",
+        "- expression 2 ^ 100",
+        "- exact rational arithmetic on BigInt, no rounding at any step",
+        "1267650600228229401496703205376",
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 31,250 ns per ask on this device (median of 7 batches, 448 asks)"
+      ]
+    },
+    {
+      "prompt": "15 percent of 200",
+      "answer": "30",
+      "route": "exact",
+      "provenance": "exact",
+      "nsPerAsk": 10938,
+      "cli": "30",
+      "cliMethod": "exact.arith",
+      "parity": true,
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> 15 percent of 200",
+        "answered exactly by exact.arith, with no model and no network.",
+        "- read \"15 percent of 200\" as 15% of 200",
+        "- expression 15% of 200",
+        "- exact rational arithmetic on BigInt, no rounding at any step",
+        "30",
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 10,938 ns per ask on this device (median of 7 batches, 896 asks)"
+      ]
+    },
+    {
+      "prompt": "the square root of 144",
+      "answer": "12",
+      "route": "exact",
+      "provenance": "exact",
+      "nsPerAsk": 8203,
+      "cli": "12",
+      "cliMethod": "exact.arith",
+      "parity": true,
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> the square root of 144",
+        "answered exactly by exact.arith, with no model and no network.",
+        "- read \"the square root of 144\" as sqrt(144)",
+        "- expression sqrt(144)",
+        "- exact rational arithmetic on BigInt, no rounding at any step",
+        "12",
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 8,203 ns per ask on this device (median of 7 batches, 1,792 asks)"
+      ]
+    },
+    {
+      "prompt": "subtract 3 from 10",
+      "answer": "7",
+      "route": "exact",
+      "provenance": "exact",
+      "nsPerAsk": 14062,
+      "cli": "7",
+      "cliMethod": "exact.arith",
+      "parity": true,
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> subtract 3 from 10",
+        "answered exactly by exact.arith, with no model and no network.",
+        "- read \"subtract 3 from 10\" as (10) - (3)",
+        "- expression (10) - (3)",
+        "- exact rational arithmetic on BigInt, no rounding at any step",
+        "7",
+        "route exact provenance exact method exact.arith model none tokens 0 network 0 14,062 ns per ask on this device (median of 7 batches, 448 asks)"
+      ]
+    },
+    {
+      "prompt": "Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?",
+      "answer": "72",
+      "route": "exact",
+      "provenance": "exact",
+      "nsPerAsk": 181250,
+      "cli": "72",
+      "cliMethod": "exact.word",
+      "parity": true,
+      "requests": [],
+      "server": null,
+      "lines": [
+        "> Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?",
+        "answered exactly by exact.word, with no model and no network.",
+        "- read as a word problem: 2 equations over the quantities the sentences bound; every word consumed by a rule, a bound name or a unit",
+        "- expression 48 + 48 / 2",
+        "- exact rational arithmetic on BigInt, no rounding at any step",
+        "72",
+        "route exact provenance exact method exact.word model none tokens 0 network 0 181,250 ns per ask on this device (median of 7 batches, 112 asks)"
+      ]
+    },
+    {
+      "prompt": "write a poem about the sea",
+      "answer": null,
+      "route": "refused",
+      "provenance": "none",
+      "nsPerAsk": null,
+      "cli": null,
+      "cliMethod": null,
+      "parity": true,
+      "requests": [
+        {
+          "method": "POST",
+          "url": "https://dilation.dev/api/ask"
+        }
+      ],
+      "server": {
+        "status": 200,
+        "route": "direct",
+        "provenance": "memory",
+        "provider": "null",
+        "serverUs": 1166,
+        "rttMs": 106,
+        "text": "nothing in memory matches write, poem, about, sea.\nserver: route direct provenance memory model none: the model cell is not configured on this host: the environment does not hold both BRAIN_LLM_BASE and BRAIN_LLM_KEY, so the null provider (offline, no model, no socket) stood in memory hits 0 web pages 0 1,166 us on the server (iad1) round trip 106 ms in this tab\nknowledge store on the server: absent (no finished ingest at bench/fixtures/wiki/store (no readable meta.json)), so the knowledge tier answers nothing there."
+      },
+      "lines": [
+        "> write a poem about the sea",
+        "no cell in this tab carries this question, so the tab refuses it, not guesses; the organism on the server answers it.",
+        "tab: route refused provenance none model none (the model cell is not in the browser) tokens 0 words the spoken reader could not read: write, a, poem, about, the, sea",
+        "the word problem reader stopped at: \"one sentence\" in: write a poem about the sea",
+        "nothing in memory matches write, poem, about, sea.",
+        "server: route direct provenance memory model none: the model cell is not configured on this host: the environment does not hold both BRAIN_LLM_BASE and BRAIN_LLM_KEY, so the null provider (offline, no model, no socket) stood in memory hits 0 web pages 0 1,166 us on the server (iad1) round trip 106 ms in this tab",
+        "knowledge store on the server: absent (no finished ingest at bench/fixtures/wiki/store (no readable meta.json)), so the knowledge tier answers nothing there."
+      ]
+    }
+  ],
+  "serverRows": {
+    "exact": {
+      "status": 200,
+      "rttMs": 158,
+      "waitedFor429": false,
+      "json": {
+        "ok": true,
+        "text": "answered exactly by exact.arith, with no model and no network.\n- read \"what is 17 times 23\" as 17 * 23\n- expression 17 * 23\n- exact rational arithmetic on BigInt, no rounding at any step\n391",
+        "from": "exact",
+        "route": "direct",
+        "provenance": {
+          "answer": "exact",
+          "method": "exact.arith",
+          "memoryHits": 0,
+          "webPages": 0,
+          "modelAgreed": null
+        },
+        "exact": {
+          "answer": "391",
+          "method": "exact.arith",
+          "ns": 197762
+        },
+        "native": null,
+        "llm": {
+          "provider": null,
+          "model": null,
+          "ms": 0,
+          "tokens": 0,
+          "ok": false,
+          "reason": "not asked: the exact path computed it",
+          "fellBack": null
+        },
+        "promptHash": "c2fc4240bc023880",
+        "promptChars": 19,
+        "redacted": 0,
+        "cites": [],
+        "serverUs": 770,
+        "host": "iad1",
+        "knowledge": {
+          "ready": false,
+          "why": "no finished ingest at bench/fixtures/wiki/store (no readable meta.json)"
+        },
+        "model": {
+          "configured": false,
+          "provider": "null",
+          "names": [
+            "BRAIN_LLM_BASE",
+            "BRAIN_LLM_KEY",
+            "BRAIN_LLM_MODEL"
+          ]
+        }
+      }
+    },
+    "novel": {
+      "status": 200,
+      "rttMs": 152.6,
+      "waitedFor429": false,
+      "json": {
+        "ok": true,
+        "text": "nothing in memory matches write, poem, about, sea.",
+        "from": "memory",
+        "route": "direct",
+        "provenance": {
+          "answer": "memory",
+          "method": null,
+          "memoryHits": 0,
+          "webPages": 0,
+          "modelAgreed": null
+        },
+        "exact": null,
+        "native": null,
+        "llm": {
+          "provider": "null",
+          "model": "null",
+          "ms": 0,
+          "tokens": 13,
+          "ok": true,
+          "reason": "the model cell is not configured on this host: the environment does not hold both BRAIN_LLM_BASE and BRAIN_LLM_KEY, so the null provider (offline, no model, no socket) stood in",
+          "fellBack": null
+        },
+        "promptHash": "59072a9a027dfcb6",
+        "promptChars": 26,
+        "redacted": 0,
+        "cites": [],
+        "serverUs": 901,
+        "host": "iad1",
+        "knowledge": {
+          "ready": false,
+          "why": "no finished ingest at bench/fixtures/wiki/store (no readable meta.json)"
+        },
+        "model": {
+          "configured": false,
+          "provider": "null",
+          "names": [
+            "BRAIN_LLM_BASE",
+            "BRAIN_LLM_KEY",
+            "BRAIN_LLM_MODEL"
+          ]
+        }
+      }
+    },
+    "cap413": {
+      "status": 413,
+      "json": {
+        "ok": false,
+        "error": "the prompt is 2001 chars; at most 2000",
+        "promptChars": 2001
+      }
+    },
+    "get": {
+      "status": 200,
+      "json": {
+        "ok": true,
+        "usage": "POST application/json {\"prompt\": \"...\"} to this path; the organism answers with act/prompt.mjs ask(), as `node bin/brain.mjs ask dilation \"...\"` does, and returns the CLI footer fields. At most 2000 chars, 20 asks a minute per client.",
+        "footer": [
+          "text",
+          "from",
+          "route",
+          "provenance",
+          "exact",
+          "native",
+          "llm",
+          "promptHash",
+          "promptChars",
+          "redacted",
+          "serverUs",
+          "host",
+          "knowledge"
+        ],
+        "host": "iad1",
+        "knowledge": {
+          "ready": false,
+          "why": "no finished ingest at bench/fixtures/wiki/store (no readable meta.json)"
+        },
+        "model": {
+          "configured": false,
+          "provider": "null",
+          "names": [
+            "BRAIN_LLM_BASE",
+            "BRAIN_LLM_KEY",
+            "BRAIN_LLM_MODEL"
+          ]
+        }
+      }
+    },
+    "options": {
+      "status": 204,
+      "accessControlAllowOrigin": null
+    },
+    "rapid": {
+      "n": 30,
+      "statuses": {
+        "200": 17,
+        "429": 13
+      },
+      "first429": 17,
+      "retryAfter": "1",
+      "serverUs": {
+        "min": 230,
+        "median": 352,
+        "max": 717,
+        "n": 17
+      },
+      "rttMs": {
+        "min": 79.2,
+        "median": 85.1,
+        "max": 109.6
+      }
+    },
+    "secrets": [
+      {
+        "s": "sk-",
+        "n": 0
+      },
+      {
+        "s": "sk_",
+        "n": 0
+      },
+      {
+        "s": "Bearer ",
+        "n": 0
+      },
+      {
+        "s": "BRAIN_LLM_KEY=",
+        "n": 0
+      }
+    ]
+  }
+}
