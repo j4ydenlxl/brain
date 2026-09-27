@@ -80,6 +80,7 @@ import { askBySpawn } from './spawn.mjs'; // a question grows the cells that ans
 // synthesize are functions, and a model call or a sandbox worker exists only inside a call.
 import { solveMath } from '../reason/math.mjs';
 import { solvedFor } from '../reason/solved.mjs'; // Board 15 item ns (board 15 builder): the solved region, right after direct
+import { converse } from './converse.mjs'; // the native conversation region (his 2026-09-26 20:20: "it cant even respond to 'hi.'")
 import { synthesize, entryOf as codeEntryOf, docLines as codeDocLines } from '../reason/synth.mjs';
 
 /** The ledger event one ask writes. It carries a HASH of the prompt and never the prompt. */
@@ -749,6 +750,45 @@ function answerFromDirect(brain, text, d, started) {
   return answer;
 }
 
+const NOT_ASKED_NATIVE = 'not asked: the native conversation region answered';
+
+// The answer object of the native conversation region (act/converse.mjs): from 'native',
+// provenance.answer 'native', tier 'native', route 'direct', no model, no memory read, no
+// network; native.ns is the nanoseconds the grammar took, measured around converse() only.
+function answerFromNative(brain, text, c, started) {
+  const hash = promptHash(text);
+  const answer = {
+    ok: true,
+    promptHash: hash,
+    promptChars: text.length,
+    from: 'native',
+    text: 'answered natively by the conversation region (kind ' + c.kind + ', ' + c.ns + ' ns), with no model, no memory read and no network.\n' + c.answer,
+    memory: null,
+    exact: null,
+    native: { kind: c.kind, answer: c.answer, form: c.form, ns: c.ns },
+    cites: [],
+    redacted: 0,
+    redactedShapes: [],
+    provenance: {
+      answer: 'native', source: 'converse', tier: 'native', title: null, method: c.kind, modelAgreed: null,
+      confidence: null, item: null, keyNs: 0, lookupNs: c.ns,
+      memoryHits: 0, webPages: 0,
+      llm: { provider: null, model: null, ms: 0, tokens: 0, ok: false, reason: NOT_ASKED_NATIVE, fellBack: null, probed: null },
+    },
+    words: c.form.split(' ').length,
+    ms: Date.now() - started,
+    route: 'direct',
+    ticks: 0,
+    hops: [],
+  };
+  answer.seq = logAsk(brain, {
+    t: clockT(brain), gen: clockGen(brain), type: ASK_EVENT, by: SURFACE, route: 'direct', promptHash: hash, promptChars: text.length, from: 'native',
+    provenance: 'native', source: 'converse', tier: 'native', lookupNs: c.ns, method: c.kind, modelAgreed: null,
+    memoryHits: 0, webPages: 0, redacted: 0, provider: null, model: null, llmMs: 0, llmOk: false, ms: answer.ms,
+  });
+  return answer;
+}
+
 const NOT_ASKED_SOLVED = 'not asked: a solved template answered';
 const NOT_ASKED_EXACT = 'not asked: the exact path computed it';
 
@@ -1307,6 +1347,15 @@ export async function ask(brain, prompt, opts = {}) {
   const text0 = String(prompt ?? '');
   const hit = opts.direct === false ? null : directAnswer(text0, opts);
   if (hit) return answerFromDirect(brain, text0, hit, started0);
+  // THE NATIVE CONVERSATION REGION (act/converse.mjs; his 2026-09-26 20:20 order: "it cant even
+  // respond to 'hi.' what a shame"): a greeting, thanks, identity, name, ability or farewell turn is
+  // answered here in the microseconds the grammar takes, before the solved region, spawn, the exact
+  // path and every model cell. A prompt with a digit, an operator or more than a few words is not a
+  // turn and falls through untouched, so no real question is ever shadowed. opts.converse false skips it.
+  if (opts.converse !== false) {
+    const c = converse(text0);
+    if (c) return answerFromNative(brain, text0, c, started0);
+  }
   // The solved region (Board 15, item ns; board 15 builder), right after direct: a verified program
   // bound to this question's numbers, no model. Off unless opts.solved or BRAIN_SOLVED=1 (solvedFor).
   const mem = solvedFor(opts);

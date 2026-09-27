@@ -168,12 +168,17 @@ function serverHtml(s) {
     return '<div class="srv" data-server-done="1" data-status="' + s.status + '" data-rtt-ms="' + rtt + '"><div class="foot"><span class="warn">server</span>  ' + why + '  round trip ' + rtt + ' ms in this tab</div></div>';
   }
   const l = j.llm || {}, p = j.provenance || {}, k = j.knowledge || {};
-  const ans = j.exact && j.exact.answer != null ? '<div class="ans srv-ans" data-srv-answer="' + escA(j.exact.answer) + '">' + esc(j.exact.answer) + '</div>' : '';
+  // The native conversation region (act/converse.mjs, his 2026-09-26 20:20 order: "it cant even respond to 'hi.'"):
+  // the server's answer sentence is shown the way an exact answer is, with the region's nanoseconds in the foot.
+  const nat = j.native && j.native.answer != null ? j.native : null;
+  const ans = j.exact && j.exact.answer != null ? '<div class="ans srv-ans" data-srv-answer="' + escA(j.exact.answer) + '">' + esc(j.exact.answer) + '</div>'
+    : nat ? '<div class="ans srv-ans srv-native" data-srv-answer="' + escA(nat.answer) + '" data-srv-native="' + escA(nat.kind) + '">' + esc(nat.answer) + '</div>' : '';
   return '<div class="srv" data-server-done="1" data-status="200" data-srv-route="' + escA(j.route) + '" data-srv-provenance="' + escA(p.answer) + '" data-srv-provider="' + escA(l.provider == null ? 'none' : l.provider) + '" data-server-us="' + Number(j.serverUs) + '" data-rtt-ms="' + rtt + '">'
     + '<pre class="srvtext">' + esc(j.text) + '</pre>' + ans
     + '<div class="foot">server: route <span class="acc">' + esc(j.route) + '</span>  provenance <span class="acc">' + esc(p.answer) + '</span>  ' + modelLine(l, j)
     + '  memory hits ' + (p.memoryHits || 0) + '  web pages ' + (p.webPages || 0)
     + (j.exact && typeof j.exact.ns === 'number' ? '  exact ' + j.exact.ns.toLocaleString('en-US') + ' ns' : '')
+    + (nat && typeof nat.ns === 'number' ? '  native ' + nat.ns.toLocaleString('en-US') + ' ns' : '')
     + '  <span class="ok">' + Number(j.serverUs).toLocaleString('en-US') + ' us on the server</span> (' + esc(j.host) + ')  round trip ' + rtt + ' ms in this tab</div>'
     + (k.ready ? '' : '<div class="foot">knowledge store on the server: absent (' + esc(k.why || 'not ingested') + '), so the knowledge tier answers nothing there.</div>')
     + '</div>';
