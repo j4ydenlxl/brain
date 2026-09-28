@@ -1,5 +1,5 @@
 {
- "at": "2026-09-27T23:57:17.200Z",
+ "at": "2026-09-28T01:41:41.432Z",
  "command": "node bench/grok-bot.mjs",
  "node": "v24.15.0",
  "isTheBar": true,
@@ -22,9 +22,9 @@
   "why": "a research item: nothing is fit, trained or tuned; their numbers are read from published pages and ours from other verdicts, each dated",
   "development": "none",
   "contaminated": false,
-  "oursContamination": "the GSM8K all-records row includes 203 development records (bench/verdicts/public-gsm8k.json split.contaminated); the held-out rows are the clean ones; the HumanEval records 0 to 39 are development (bench/verdicts/public-humaneval-partial.json twoRulers)"
+  "oursContamination": "the GSM8K all-records row includes 203 development records (bench/verdicts/public-gsm8k.json split.contaminated); the held-out rows are the clean ones; the HumanEval records 0 to 39 are development (bench/verdicts/public-humaneval.json twoRulers)"
  },
- "control": "no control of its own; the GSM8K and HumanEval rows carry theirs on the same records: the same model alone and the null arm (bench/verdicts/public-gsm8k.json, bench/verdicts/public-humaneval-partial.json)",
+ "control": "no control of its own; the GSM8K and HumanEval rows carry theirs on the same records: the same model alone and the null arm (bench/verdicts/public-gsm8k.json, bench/verdicts/public-humaneval.json)",
  "readAtBasis": "readAt is the instant the WebFetch result returned, read off the reading builder transcript clock (board 29 for the first 22 sources, board 31 for the last 2); a page that did not load has readAt null and its attempt instant in triedAt",
  "disambiguation": [
   {
@@ -105,54 +105,48 @@
   {
    "set": "humaneval",
    "population": "records both arms graded",
-   "file": "bench/verdicts/public-humaneval-partial.json",
-   "at": "2026-09-27T23:54:06.007Z",
+   "file": "bench/verdicts/public-humaneval.json",
+   "at": "2026-09-28T01:41:13.471Z",
    "organism": {
-    "n": 78,
-    "correct": 70
+    "n": 161,
+    "correct": 123
    },
    "alone": {
-    "n": 78,
-    "correct": 50
+    "n": 161,
+    "correct": 82
    },
    "null": null,
    "interval": null,
-   "live": true,
+   "live": false,
    "progress": {
-    "done": 81,
+    "done": 161,
     "of": 161
    }
   },
   {
    "set": "humaneval",
    "population": "heldOut, records both arms graded",
-   "file": "bench/verdicts/public-humaneval-partial.json",
-   "at": "2026-09-27T23:54:06.007Z",
+   "file": "bench/verdicts/public-humaneval.json",
+   "at": "2026-09-28T01:41:13.471Z",
    "organism": {
-    "n": 40,
-    "correct": 33
+    "n": 121,
+    "correct": 84
    },
    "alone": {
-    "n": 40,
-    "correct": 21
+    "n": 121,
+    "correct": 51
    },
    "null": null,
    "interval": null,
-   "live": true,
+   "live": false,
    "progress": {
-    "done": 81,
+    "done": 161,
     "of": 161
    }
   }
  ],
- "pins": {
-  "bench/verdicts/public-humaneval-partial.json": {
-   "at": "2026-09-27T23:54:06.007Z",
-   "rows": 81,
-   "digest": "ec218b0dbba4083b"
-  }
- },
- "statement": "Grok Bot is the SpaceXAI (formerly xAI) computer-use agent run with Cursor, in beta since Aug 11 2026: Bots with a persistent cloud computer (browser, filesystem, terminal) in one Firecracker microVM per user, that sign into a user's tools and hand any password, CAPTCHA or payment step back to a human. Its own pages print no dollar price for the agent alone (it rides on Cursor plans from $20 a month and SuperGrok at $30 a month on a third party table), no latency and no agent benchmark. Of 54 measures, 3 have a number on both sides. Speed: a third party time to first token of 51.22 s for Grok 4.7 against our hosted round trip of 0.2278 s on one arithmetic prompt (bench/verdicts/site-ask.json at 2026-09-27T19:02:04.005Z), 224.8463565x, not the same prompts. GSM8K: xAI printed 90 percent 8-shot for Grok-1.5 (Mar 2024; no Grok 4.x page read prints GSM8K) and on the same 1319 test records the organism scored 1189 of 1319 = 90.14% (bench/verdicts/public-gsm8k.json at 2026-09-27T21:56:32.679Z), 1.01461039x on error, and their 90 lies inside our 95 percent interval (88.42 to 91.64), so the organism is not shown better than Grok-1.5. HumanEval: xAI printed 88.4 percent for Grok-2 (Aug 2024) on the Python set and the organism passed 70 of 78 = 89.74% on the JavaScript records both arms graded, 38 of them development records (bench/verdicts/public-humaneval-partial.json, run not finished, 81 of 161 records at 2026-09-27T23:54:06.007Z), 1.131x on error. Like with like, each against its control on the same records: GSM8K all records, organism 1189 of 1319 = 90.14% against the same model alone 1041 of 1319 = 78.92% and null 17 of 1319 = 1.29%; GSM8K held out, organism 1007 of 1116 = 90.23% against alone 875 of 1116 = 78.41%; HumanEval, organism 70 of 78 = 89.74% against alone 50 of 78 = 64.10% (on the 40 held-out records both graded, 33 against 21). The speed row and the accuracy rows run on different paths: the 0.2278 s answer is the exact route, which answered 14 of 1319 GSM8K records; through the model cell the organism took a mean 25818.61 ms per GSM8K task against 6843.06 ms for the model alone. On the 291 prompts over 41 kinds a person conceives (bench/verdicts/conceive.json at 2026-09-27T23:47:08.737Z), the organism with its model off answered 12.37 percent natively and refused the rest, passed 6.08 percent of the gradeable ones, and took a median 672500 ns per ask (83500 ns per native answer); with its knowledge tier off, as on dilation.dev, it answered 9.28 percent natively; no Grok page read prints a number on those prompts, so these rows carry no ratio. No verdict prints our price in dollars, so no \"cheaper\" ratio exists yet. No model was called and nothing was trained.",
+ "pins": {},
+ "statement": "Grok Bot is the SpaceXAI (formerly xAI) computer-use agent run with Cursor, in beta since Aug 11 2026: Bots with a persistent cloud computer (browser, filesystem, terminal) in one Firecracker microVM per user, that sign into a user's tools and hand any password, CAPTCHA or payment step back to a human. Its own pages print no dollar price for the agent alone (it rides on Cursor plans from $20 a month and SuperGrok at $30 a month on a third party table), no latency and no agent benchmark. Of 54 measures, 3 have a number on both sides. Speed: a third party time to first token of 51.22 s for Grok 4.7 against our hosted round trip of 0.2118 s on one arithmetic prompt (bench/verdicts/site-ask.json at 2026-09-28T01:24:06.785Z), 241.8319169x, not the same prompts. GSM8K: xAI printed 90 percent 8-shot for Grok-1.5 (Mar 2024; no Grok 4.x page read prints GSM8K) and on the same 1319 test records the organism scored 1189 of 1319 = 90.14% (bench/verdicts/public-gsm8k.json at 2026-09-27T21:56:32.679Z), 1.01461039x on error, and their 90 lies inside our 95 percent interval (88.42 to 91.64), so the organism is not shown better than Grok-1.5. HumanEval: xAI printed 88.4 percent for Grok-2 (Aug 2024) on the Python set and the organism passed 123 of 161 = 76.40% on the JavaScript records both arms graded, 40 of them development records (bench/verdicts/public-humaneval.json, whole set at 2026-09-28T01:41:13.471Z), 0.4914736842x on error. Like with like, each against its control on the same records: GSM8K all records, organism 1189 of 1319 = 90.14% against the same model alone 1041 of 1319 = 78.92% and null 17 of 1319 = 1.29%; GSM8K held out, organism 1007 of 1116 = 90.23% against alone 875 of 1116 = 78.41%; HumanEval, organism 123 of 161 = 76.40% against alone 82 of 161 = 50.93% (on the 121 held-out records both graded, 84 against 51). The speed row and the accuracy rows run on different paths: the 0.2118 s answer is the exact route, which answered 14 of 1319 GSM8K records; through the model cell the organism took a mean 25818.61 ms per GSM8K task against 6843.06 ms for the model alone. On the 291 prompts over 41 kinds a person conceives (bench/verdicts/conceive.json at 2026-09-27T23:47:08.737Z), the organism with its model off answered 12.37 percent natively and refused the rest, passed 6.08 percent of the gradeable ones, and took a median 672500 ns per ask (83500 ns per native answer); with its knowledge tier off, as on dilation.dev, it answered 9.28 percent natively; no Grok page read prints a number on those prompts, so these rows carry no ratio. No verdict prints our price in dollars, so no \"cheaper\" ratio exists yet. No model was called and nothing was trained.",
  "sources": [
   {
    "url": "https://x.ai/news/introducing-grok-bot",
@@ -581,14 +575,14 @@
    "theirsUrl": "https://artificialanalysis.ai/models/grok-4-7",
    "theirsPrinted": "Time to first token: \"51.22s\"",
    "theirsNote": "third party; xAI publishes no latency for Grok Bot or Grok 4.7",
-   "ours": 0.2278,
+   "ours": 0.2118,
    "oursFile": "bench/verdicts/site-ask.json",
    "oursPath": "serverRows.exact.rttMs",
    "oursScale": 0.001,
-   "oursAt": "2026-09-27T19:02:04.005Z",
+   "oursAt": "2026-09-28T01:24:06.785Z",
    "oursLive": false,
    "oursNote": "POST to the hosted /api/ask of \"what is 17 times 23\", round trip from the bench host; NOT the same prompts: theirs is an Intelligence Index task, ours one arithmetic prompt, so the ratio is printed and is not a like-for-like claim",
-   "ratio": 224.8463565,
+   "ratio": 241.8319169,
    "ratioRule": "theirs divided by ours (lower is better)",
    "target10000": "0.005122 seconds (theirs / 10000)"
   },
@@ -601,11 +595,11 @@
    "theirsUrl": "https://docs.x.ai/grok-bot/overview",
    "theirsPrinted": null,
    "theirsNote": "no number: no page read publishes server time per response",
-   "ours": 0.000253,
+   "ours": 0.001275,
    "oursFile": "bench/verdicts/site-ask.json",
    "oursPath": "serverRows.exact.json.serverUs",
    "oursScale": 0.000001,
-   "oursAt": "2026-09-27T19:02:04.005Z",
+   "oursAt": "2026-09-28T01:24:06.785Z",
    "oursLive": false,
    "oursNote": "serverUs of the exact answer on the hosted server, model cell not configured there",
    "ratio": null,
@@ -641,11 +635,11 @@
    "theirsUrl": "https://x.ai/news/introducing-grok-bot",
    "theirsPrinted": null,
    "theirsNote": "no number: no nanosecond or microsecond claim on any page read",
-   "ours": 1074,
+   "ours": 1367,
    "oursFile": "bench/verdicts/site-ask.json",
    "oursPath": "rows[prompt=hey].nsPerAsk",
    "oursScale": 1,
-   "oursAt": "2026-09-27T19:02:04.005Z",
+   "oursAt": "2026-09-28T01:24:06.785Z",
    "oursLive": false,
    "oursNote": "conversation region, provenance native, no request",
    "ratio": null,
@@ -661,11 +655,11 @@
    "theirsUrl": "https://x.ai/news/introducing-grok-bot",
    "theirsPrinted": null,
    "theirsNote": "no number on any page read",
-   "ours": 5664,
+   "ours": 7813,
    "oursFile": "bench/verdicts/site-ask.json",
    "oursPath": "rows[prompt=what is 17 times 23].nsPerAsk",
    "oursScale": 1,
-   "oursAt": "2026-09-27T19:02:04.005Z",
+   "oursAt": "2026-09-28T01:24:06.785Z",
    "oursLive": false,
    "oursNote": "exact route, no request",
    "ratio": null,
@@ -921,14 +915,14 @@
    "theirsUrl": "https://x.ai/news/grok-2",
    "theirsPrinted": "Grok-2‡ 88.4%",
    "theirsNote": "official, Grok-2 (Aug 13 2024), the Python HumanEval; no Grok 4.x page read prints HumanEval",
-   "ours": 89.7435897436,
-   "oursFile": "bench/verdicts/public-humaneval-partial.json",
+   "ours": 76.397515528,
+   "oursFile": "bench/verdicts/public-humaneval.json",
    "oursPath": "paired(organism,alone).organism.accuracy",
    "oursScale": 100,
-   "oursAt": "2026-09-27T23:54:06.007Z",
-   "oursLive": true,
+   "oursAt": "2026-09-28T01:41:13.471Z",
+   "oursLive": false,
    "oursNote": "recounted from the file rows on the records where the organism and the model alone were both graded; theirs is the Python HumanEval on Grok-2, ours the JavaScript translation, so the sets differ by language",
-   "ratio": 1.131,
+   "ratio": 0.4914736842,
    "ratioRule": "their error divided by our error (100 minus each percent)",
    "target10000": "error 0.00116 percent, a score of 99.99884 percent (their error / 10000)"
   },
@@ -941,12 +935,12 @@
    "theirsUrl": "https://x.ai/news/grok-2",
    "theirsPrinted": null,
    "theirsNote": "no number: a control of ours",
-   "ours": 64.1025641026,
-   "oursFile": "bench/verdicts/public-humaneval-partial.json",
+   "ours": 50.9316770186,
+   "oursFile": "bench/verdicts/public-humaneval.json",
    "oursPath": "paired(organism,alone).alone.accuracy",
    "oursScale": 100,
-   "oursAt": "2026-09-27T23:54:06.007Z",
-   "oursLive": true,
+   "oursAt": "2026-09-28T01:41:13.471Z",
+   "oursLive": false,
    "oursNote": "control arm on the same records as the organism row",
    "ratio": null,
    "ratioRule": "no number on their side",
@@ -961,12 +955,12 @@
    "theirsUrl": "https://x.ai/news/grok-2",
    "theirsPrinted": null,
    "theirsNote": "no number: the page prints the whole set only",
-   "ours": 82.5,
-   "oursFile": "bench/verdicts/public-humaneval-partial.json",
+   "ours": 69.4214876033,
+   "oursFile": "bench/verdicts/public-humaneval.json",
    "oursPath": "paired(organism,alone,heldOut).organism.accuracy",
    "oursScale": 100,
-   "oursAt": "2026-09-27T23:54:06.007Z",
-   "oursLive": true,
+   "oursAt": "2026-09-28T01:41:13.471Z",
+   "oursLive": false,
    "oursNote": "records 40 to 160 are held out",
    "ratio": null,
    "ratioRule": "no number on their side",
@@ -981,12 +975,12 @@
    "theirsUrl": "https://x.ai/news/grok-2",
    "theirsPrinted": null,
    "theirsNote": "no number: a control of ours",
-   "ours": 52.5,
-   "oursFile": "bench/verdicts/public-humaneval-partial.json",
+   "ours": 42.1487603306,
+   "oursFile": "bench/verdicts/public-humaneval.json",
    "oursPath": "paired(organism,alone,heldOut).alone.accuracy",
    "oursScale": 100,
-   "oursAt": "2026-09-27T23:54:06.007Z",
-   "oursLive": true,
+   "oursAt": "2026-09-28T01:41:13.471Z",
+   "oursLive": false,
    "oursNote": "control arm on the same held-out records",
    "ratio": null,
    "ratioRule": "no number on their side",
@@ -1535,14 +1529,6 @@
  ],
  "derived": [
   {
-   "what": "HumanEval records the file held at its stamp",
-   "value": 81
-  },
-  {
-   "what": "HumanEval records in the whole set",
-   "value": 161
-  },
-  {
    "what": "conceived prompts asked (conceive.json prompts.asked)",
    "value": 291
   },
@@ -1560,7 +1546,7 @@
   },
   {
    "what": "HumanEval development records both arms graded",
-   "value": 38
+   "value": 40
   },
   {
    "what": "GSM8K records the organism answered natively (public-gsm8k.json arms.organism.native.n)",
@@ -1580,15 +1566,15 @@
   },
   {
    "what": "hosted server compute per answer, microseconds (site-ask.json serverRows.exact.json.serverUs)",
-   "value": 253
+   "value": 1275
   },
   {
    "what": "hosted round trip minus server compute, ms",
-   "value": 227.5
+   "value": 210.5
   },
   {
    "what": "tab answer to \"hey\", ns per ask (site-ask.json rows[prompt=hey].nsPerAsk)",
-   "value": 1074
+   "value": 1367
   },
   {
    "what": "their first token / our GSM8K mean ms per task, x",
@@ -1636,7 +1622,7 @@
   },
   {
    "what": "HumanEval our error, percent",
-   "value": 10.26
+   "value": 23.6
   },
   {
    "what": "HumanEval 10000x error target, percent",
