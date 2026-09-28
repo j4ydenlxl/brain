@@ -424,6 +424,18 @@ Followed by a 125-row prompt-to-idea map written by another model from this sect
 
 (Recorded before any answer. The gap is the one his 19:12 message named, "So close but so far", to frontier level: order 4's published rows. The answer is owed from files only: the ladder's climb line per measure (an earlier board's number against the current one), the HumanEval partial moving under the running rung, and what the two boards in flight have landed at the clock read.)
 
+### His words, verbatim (2026-09-27, arrived mid-turn while board 31 was being read, before the 20:32:34 EDT clock read)
+
+> work efficiently and effectively
+
+(Recorded before any answer. Read as a standing rule from this clock read: shorter answers, one batch of calls where three were made, no ceremony between landings; the work itself stays whole.)
+
+### His words, verbatim (2026-09-27, arrived after the 20:32 EDT answer on the gap, before the 20:57:55 EDT clock read)
+
+> ARC-AGI-1	0.25 (Sep 18)	21.25 (today 18:38)	98	97.75 → 76.75 why so far?> lock in
+
+(Recorded before any answer. He quotes the ARC row of the 20:32 table back and asks why the gap is 76.75 points; "lock in" read as: focus on it now. The why is owed from the grid verdicts' printed breakdown of the 315 unsolved tasks; the lock-in is a board item on ARC launched from this clock read.)
+
 ## §B. OBJECTIVES + PROGRESS (mine; terse; updated only after re-reading §A)
 
 Rules for this section (P9, his 2026-09-23 order on cache reads): objectives are his WHAT in order; STATE is the whole live picture in under 40 lines and is rewritten whole at every checkpoint; the full history is `brain/docs/LOG.md` (append-only, one line per checkpoint, never read in full at session start; the hook prints its last 3 lines). Numbers live in bench/verdicts and docs/NUMBERS.md, not here. Every fact I need survives on disk, none of it needs my context.
