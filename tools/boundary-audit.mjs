@@ -661,12 +661,14 @@ function installJail(jailDir, origMkdir) {
 // Test drivers run a test file that reaches boundaries; function drivers reach the ones no
 // test does (the grid, imagine and public runners, the live-shards census, the generations
 // worker, the self-code worker) and, with a fault, the error posts of the worker sources.
-const TEST_DRIVERS = ['code', 'public', 'generations', 'velocity', 'years', 'knowledge', 'native', 'runtime', 'cloud', 'self-code', 'web-daemon', 'multiply', 'autopilot', 'plateau'];
+const TEST_DRIVERS = ['code', 'public', 'generations', 'velocity', 'years', 'knowledge', 'native', 'runtime', 'cloud', 'self-code', 'web-daemon', 'multiply', 'autopilot', 'plateau', 'grok-bot', 'vision-coverage'];
 export const DRIVERS = [
   ...TEST_DRIVERS.map((t) => ({ name: 'test-' + t, test: 'test/' + t + '.test.mjs' })),
   // board 23: the autopilot test's eval worker posts { error } only when its import fails
   { name: 'test-autopilot-url', test: 'test/autopilot.test.mjs', fault: 'url' },
   { name: 'calibrate', fn: 'calibrate' },
+  // board 31: bench/conceive.mjs grades code prompts in a worker (runCode: workerData in, one postMessage out)
+  { name: 'conceive', fn: 'conceive' },
   { name: 'act-extra', fn: 'act-extra' },
   { name: 'grid', fn: 'grid' },
   { name: 'grid-url', fn: 'grid-fault', fault: 'url' },
@@ -674,6 +676,8 @@ export const DRIVERS = [
   { name: 'imagine', fn: 'imagine', jail: true },
   { name: 'imagine-url', fn: 'imagine-fault', fault: 'url', jail: true },
   { name: 'imagine-poison', fn: 'imagine-fault', fault: 'poison', jail: true },
+  // board 31: a job the wall safety kills with a mined library on the lane, so the respawned worker gets the libs post again
+  { name: 'imagine-kill', fn: 'imagine-kill', jail: true, timeoutMs: 600000 },
   { name: 'public-url', fn: 'public-fault', fault: 'url' },
   { name: 'public-poison', fn: 'public-fault', fault: 'poison' },
   { name: 'live-shards', fn: 'live-shards' },
@@ -690,6 +694,12 @@ const expected = (what, e) => console.log('expected failure (' + what + '): ' + 
 
 const DRIVER_FNS = {
   async calibrate() { console.log(JSON.stringify(calibrate())); },
+  async conceive() {
+    const C = await import(u('bench/conceive.mjs'));
+    // a passing source, a failing test, and a source that runs past the budget (the worker's timeout path)
+    console.log(JSON.stringify(await C.runCode(['function add(a, b) { return a + b; }'], 'add', [{ args: [1, 2], want: 3 }, { args: [2, 2], want: 5 }], { ms: 500 })));
+    console.log(JSON.stringify(await C.runCode(['function spin() { for (;;) {} }'], 'spin', [{ args: [], want: 1 }], { ms: 200 })));
+  },
   async 'act-extra'() {
     const A = await import(u('act/run.mjs'));
     // a BigInt argument crosses the clone but not the worker's JSON round trip: the args post
@@ -717,6 +727,10 @@ const DRIVER_FNS = {
   async imagine() {
     const I = await import(u('bench/imagine.mjs'));
     await I.runImagineBench(I.parseArgs(['--limit', '1', '--mine-ms', '300', '--budget-ms', '600', '--imagine-budget', '40', '--no-knowledge', '--quiet', '--workers', '1']));
+  },
+  async 'imagine-kill'() {
+    const I = await import(u('bench/imagine.mjs'));
+    await I.runImagineBench(I.parseArgs(['--ids', '3631a71a', '--budget-work', '1500', '--mine-ms', '300', '--no-knowledge', '--quiet', '--workers', '1', '--runs', '1']));
   },
   async 'imagine-fault'() {
     const I = await import(u('bench/imagine.mjs'));
@@ -1243,88 +1257,94 @@ export const TOUCHED = [];
 export const RENAMED = {};
 /** Every boundary in the tree, with the largest message the probe measured (bytes). */
 export const ALLOWLIST = [
-  { key: "act/run.mjs|postMessage|{type:'case',args:kase&&kase.args!==undefined?kase.args:[],expected:kase?kase.expected:undefined}", bytes: 0, wire: 176, how: "probe" },
-  { key: "act/run.mjs|workerData|{code:String(code??''),entry:entry&&IDENT.test(entry)?entry:null,keep:KEEP}", bytes: 0, wire: 357, how: "probe" },
-  { key: "act/run.mjs|workerData|{code:String(code??''),tests:String(testsSource??''),prelude:TEST_PRELUDE,prune:PRUNE_SRC,keep:KEEP,}", bytes: 0, wire: 2784, how: "probe" },
+  { key: "act/run.mjs|postMessage|worker-source:{passed:false,error:describe(e),stage,ms:performance.now()-started}", bytes: 0, wire: 175, how: "probe" },
+  { key: "act/run.mjs|postMessage|worker-source:{passed:true,error:null,stage:\"tests\",ms:performance.now()-started}", bytes: 0, wire: 59, how: "probe" },
+  { key: "act/run.mjs|postMessage|worker-source:{type:\"result\",ok,got:rendered,ms,error:cmpError,setup:false}", bytes: 0, wire: 266, how: "probe" },
+  { key: "act/run.mjs|postMessage|worker-source:{type:\"result\",ok:false,got:null,ms,error:err,setup:false}", bytes: 0, wire: 146, how: "probe" },
   { key: "act/run.mjs|postMessage|worker-source:{type:\"result\",ok:false,got:null,ms:0,error:setupError,setup:true}", bytes: 0, wire: 118, how: "probe" },
   { key: "act/run.mjs|postMessage|worker-source:{type:\"result\",ok:false,got:null,ms:performance.now()-started,error:describe(e),setup:false}", bytes: 0, wire: 127, how: "probe" },
-  { key: "act/run.mjs|postMessage|worker-source:{type:\"result\",ok:false,got:null,ms,error:err,setup:false}", bytes: 0, wire: 146, how: "probe" },
-  { key: "act/run.mjs|postMessage|worker-source:{type:\"result\",ok,got:rendered,ms,error:cmpError,setup:false}", bytes: 0, wire: 266, how: "probe" },
-  { key: "act/run.mjs|postMessage|worker-source:{passed:true,error:null,stage:\"tests\",ms:performance.now()-started}", bytes: 0, wire: 59, how: "probe" },
-  { key: "act/run.mjs|postMessage|worker-source:{passed:false,error:describe(e),stage,ms:performance.now()-started}", bytes: 0, wire: 175, how: "probe" },
+  { key: "act/run.mjs|postMessage|{type:'case',args:kase&&kase.args!==undefined?kase.args:[],expected:kase?kase.expected:undefined}", bytes: 0, wire: 176, how: "probe" },
+  { key: "act/run.mjs|workerData|{code:String(code??''),entry:entry&&IDENT.test(entry)?entry:null,keep:KEEP}", bytes: 0, wire: 357, how: "probe" },
+  { key: "act/run.mjs|workerData|{code:String(code??''),tests:String(testsSource??''),prelude:TEST_PRELUDE,prune:PRUNE_SRC,keep:KEEP,}", bytes: 0, wire: 3063, how: "probe" },
   { key: "bench/cloud-host.mjs|send|{op:'stop'}", bytes: 0, wire: 13, how: "literal" },
   { key: "bench/cloud.mjs|send|{op:'stop'}", bytes: 0, wire: 13, how: "literal" },
-  { key: "bench/grid.mjs|postMessage|{id,task}", bytes: 0, wire: 20622, how: "probe" },
-  { key: "bench/grid.mjs|workerData|{searchUrl:pathToFileURL(path.join(ROOT,'capability','grid-search.mjs')).href,budgetMs:cfg.budgetMs,~a2d36b3f2cff", bytes: 0, wire: 11533, how: "probe" },
-  { key: "bench/grid.mjs|postMessage|worker-source:{type:\"ready\",macros:library?library.macros.length:0}", bytes: 0, wire: 39, how: "probe" },
+  { key: "bench/conceive.mjs|postMessage|worker-source:best", bytes: 0, wire: 100, how: "probe" },
+  { key: "bench/conceive.mjs|workerData|{sources:live,entry,tests,ms}", bytes: 0, wire: 187, how: "probe" },
+  { key: "bench/grid-curve.mjs|postMessage|worker-source:{type:\"ready\"}", bytes: 0, wire: 19, how: "literal" },
   { key: "bench/grid.mjs|postMessage|worker-source:{type:\"bootFailed\",error:String(e&&e.stack||e)}", bytes: 0, wire: 781, how: "probe" },
-  { key: "bench/grid.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,solved:r.solved,solvedFirst:r.~72a687c3165e", bytes: 0, wire: 423, how: "probe" },
   { key: "bench/grid.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:\"error\",solved:false,error:String(e&&e.message||e)}}", bytes: 0, wire: 160, how: "probe" },
-  { key: "bench/imagine.mjs|postMessage|msg", bytes: 0, wire: 1910, how: "probe" },
-  { key: "bench/imagine.mjs|workerData|{inventUrl:pathToFileURL(path.join(ROOT,'capability','grid-invent.mjs')).href,libraries}", bytes: 0, wire: 93041, how: "probe" },
-  { key: "bench/imagine.mjs|postMessage|worker-source:{type:\"ready\"}", bytes: 0, wire: 19, how: "probe" },
+  { key: "bench/grid.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,solved:r.solved,solvedFirst:r.~72a687c3165e", bytes: 0, wire: 444, how: "probe" },
+  { key: "bench/grid.mjs|postMessage|worker-source:{type:\"ready\",macros:library?library.macros.length:0}", bytes: 0, wire: 39, how: "probe" },
+  { key: "bench/grid.mjs|postMessage|{id,task}", bytes: 0, wire: 20622, how: "probe" },
+  { key: "bench/grid.mjs|workerData|{searchUrl:pathToFileURL(path.join(ROOT,'capability','grid-search.mjs')).href,budgetMs:cfg.budgetMs,~a2d36b3f2cff", bytes: 0, wire: 321, how: "probe" },
+  { key: "bench/imagine.mjs|postMessage|msg", bytes: 0, wire: 81370, how: "probe" },
   { key: "bench/imagine.mjs|postMessage|worker-source:{type:\"bootFailed\",error:String(e&&e.stack||e)}", bytes: 0, wire: 781, how: "probe" },
-  { key: "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,mined:r.mined||[],baseline:r.baseline}}", bytes: 0, wire: 434, how: "probe" },
-  { key: "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,solved:r.solved,names:r.names,~d0b942e54d00", bytes: 0, wire: 365, how: "probe" },
-  { key: "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:\"error\",solved:false,error:String(e&&e.stack||e)}}", bytes: 0, wire: 513, how: "probe" },
+  { key: "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:\"error\",solved:false,error:String(e&&e.stack||e)}}", bytes: 0, wire: 529, how: "probe" },
+  { key: "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,mined:r.mined||[],baseline:r.b~b797539946f2", bytes: 0, wire: 179, how: "probe" },
+  { key: "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,solved:r.solved,names:r.names,~6677a500e4b2", bytes: 0, wire: 422, how: "probe" },
+  { key: "bench/imagine.mjs|postMessage|worker-source:{type:\"ready\"}", bytes: 0, wire: 19, how: "probe" },
+  { key: "bench/imagine.mjs|postMessage|{kind:'libs',libraries:lane.libraries}", bytes: 0, wire: 771041, how: "probe" },
+  { key: "bench/imagine.mjs|postMessage|{kind:'libs',libraries}", bytes: 0, wire: 771041, how: "probe" },
+  { key: "bench/imagine.mjs|workerData|{inventUrl:pathToFileURL(path.join(ROOT,'capability','grid-invent.mjs')).href}", bytes: 0, wire: 113, how: "probe" },
   { key: "bench/live-shards.mjs|postMessage|{type:'census',runs,fired,errors:b.stats.errors,ticks:workerData.ticks|0,why:[...why.values()],}", bytes: 64616, wire: 65529, how: "probe" },
   { key: "bench/live-shards.mjs|workerData|{liveShardsCensus:true,spec,ticks}", bytes: 0, wire: 13892718, how: "probe" },
-  { key: "bench/public.mjs|postMessage|{type:'task',train:task.train,test:task.test}", bytes: 0, wire: 146026, how: "probe" },
-  { key: "bench/public.mjs|workerData|{gridUrl:pathToFileURL(path.join(ROOT,'tasks','grid.mjs')).href,cellsUrl:pathToFileURL(path.join(ROO~94bf17cdedf8", bytes: 0, wire: 329, how: "probe" },
-  { key: "bench/public.mjs|postMessage|worker-source:{type:\"ready\"}", bytes: 0, wire: 19, how: "probe" },
   { key: "bench/public.mjs|postMessage|worker-source:{type:\"bootFailed\",error:describe(e)}", bytes: 0, wire: 80, how: "probe" },
   { key: "bench/public.mjs|postMessage|worker-source:{type:\"done\",names:found.names,searched:found.searched,outputs,induced}", bytes: 0, wire: 227, how: "probe" },
   { key: "bench/public.mjs|postMessage|worker-source:{type:\"done\",names:null,searched:0,outputs:[],induced:{applied:false,solved:false,program:null,searc~a3205a9a7362", bytes: 0, wire: 207, how: "probe" },
-  { key: "bin/serve.mjs|send|{op:'stop'}", bytes: 0, wire: 13, how: "probe" },
+  { key: "bench/public.mjs|postMessage|worker-source:{type:\"ready\"}", bytes: 0, wire: 19, how: "literal" },
+  { key: "bench/public.mjs|postMessage|{type:'task',train:task.train,test:task.test}", bytes: 0, wire: 146026, how: "probe" },
+  { key: "bench/public.mjs|workerData|{gridUrl:pathToFileURL(path.join(ROOT,'tasks','grid.mjs')).href,cellsUrl:pathToFileURL(path.join(ROO~94bf17cdedf8", bytes: 0, wire: 329, how: "probe" },
+  { key: "bin/serve.mjs|send|{op:'stop'}", bytes: 0, wire: 13, how: "literal" },
   { key: "bin/serve.mjs|send|{type:'status',t:lastT,tps:lastTps,rssMb:Math.round(mu.rss/1048576),maxRssMb:Math.round((process.res~3754f7911147", bytes: 0, wire: 937, how: "probe" },
-  { key: "daemon/generations-worker.mjs|postMessage|{id,ok:true,boot:boot()}", bytes: 0, wire: 209, how: "probe" },
-  { key: "daemon/generations-worker.mjs|postMessage|{id,ok:true,row,best:elite(),summary:epochs.summary()}", bytes: 0, wire: 5085, how: "probe" },
-  { key: "daemon/generations-worker.mjs|postMessage|{id,ok:true,summary:epochs?epochs.summary():null,best:epochs?elite():null}", bytes: 0, wire: 4644, how: "probe" },
-  { key: "daemon/generations-worker.mjs|postMessage|{id,ok:true}", bytes: 0, wire: 24, how: "probe" },
   { key: "daemon/generations-worker.mjs|postMessage|{id,ok:false,error:'unknownop'+String(msg&&msg.op)}", bytes: 0, wire: 72, how: "probe" },
   { key: "daemon/generations-worker.mjs|postMessage|{id,ok:false,error:String((err&&err.stack)||err)}", bytes: 0, wire: 388, how: "probe" },
-  { key: "daemon/multiply.mjs|postMessage|m", bytes: 0, wire: 76, how: "probe" },
-  { key: "daemon/multiply.mjs|postMessage|m#2", bytes: 0, wire: 1236, how: "probe" },
+  { key: "daemon/generations-worker.mjs|postMessage|{id,ok:true,boot:boot()}", bytes: 0, wire: 209, how: "probe" },
+  { key: "daemon/generations-worker.mjs|postMessage|{id,ok:true,row,best:elite(),summary:epochs.summary()}", bytes: 0, wire: 5089, how: "probe" },
+  { key: "daemon/generations-worker.mjs|postMessage|{id,ok:true,summary:epochs?epochs.summary():null,best:epochs?elite():null}", bytes: 0, wire: 4644, how: "probe" },
+  { key: "daemon/generations-worker.mjs|postMessage|{id,ok:true}", bytes: 0, wire: 24, how: "probe" },
+  { key: "daemon/multiply.mjs|postMessage|m", bytes: 0, wire: 1116, how: "probe" },
+  { key: "daemon/multiply.mjs|postMessage|m#2", bytes: 0, wire: 1405, how: "probe" },
   { key: "daemon/multiply.mjs|workerData|(options)planeWorkerOptions(data,heapMb)", bytes: 0, wire: 515, how: "probe" },
   { key: "daemon/run.mjs|postMessage|{id,op,...args}", bytes: 0, wire: 50, how: "probe" },
   { key: "daemon/run.mjs|workerData|{dir:this.dir,seed:this.seed,popSize:this.popSize,ticks:this.ticks}", bytes: 0, wire: 208, how: "probe" },
   { key: "generations/evaluate.mjs|postMessage|{type:'jobs',batch:this.batch,jobs:JSON.stringify(slice)}", bytes: 0, wire: 4151, how: "probe" },
   { key: "generations/evaluate.mjs|workerData|{task:this.task,cfg:this.cfg}", bytes: 0, wire: 299, how: "probe" },
-  // board 23 fix pass: --probe --label plateau --only test-plateau, then --print-allowlist --label plateau
-  { key: "generations/plateau.mjs|postMessage|{result}", bytes: 0, wire: 1523, how: "probe" },
-  { key: "generations/plateau.mjs|postMessage|{error:String((e&&e.stack)||e)}", bytes: 0, wire: 372, how: "probe" },
-  { key: "generations/plateau.mjs|workerData|{plateauJob:job}", bytes: 13592, wire: 14376, how: "probe" },
+  { key: "generations/plateau.mjs|postMessage|{error:String((e&&e.stack)||e)}", bytes: 0, wire: 409, how: "probe" },
+  { key: "generations/plateau.mjs|postMessage|{result}", bytes: 0, wire: 33062, how: "probe" },
+  { key: "generations/plateau.mjs|workerData|{plateauJob:job}", bytes: 16296, wire: 17762, how: "probe" },
   { key: "generations/velocity.mjs|postMessage|out", bytes: 1376, wire: 3080, how: "probe" },
   { key: "generations/velocity.mjs|workerData|{velocityAudit:{seed,counts,maxDepth,components,batch}}", bytes: 0, wire: 1720, how: "probe" },
+  { key: "generations/worker.mjs|postMessage|{type:'ready'}", bytes: 0, wire: 19, how: "literal" },
   { key: "generations/worker.mjs|postMessage|{type:'results',batch:msg.batch,results:JSON.stringify(out)}", bytes: 0, wire: 711, how: "probe" },
-  { key: "generations/worker.mjs|postMessage|{type:'ready'}", bytes: 0, wire: 19, how: "probe" },
-  { key: "generations/years.mjs|postMessage|{k,seed:this.source.seedOf(k)}", bytes: 0, wire: 55, how: "probe" },
   { key: "generations/years.mjs|postMessage|msg", bytes: 0, wire: 4199, how: "probe" },
+  { key: "generations/years.mjs|postMessage|{k,seed:this.source.seedOf(k)}", bytes: 0, wire: 55, how: "probe" },
   { key: "generations/years.mjs|workerData|{yearsPrefetch:{seed:source.seed,maxDepth:source.maxDepth,counts:source.counts||null,port:ch.port2}}", bytes: 0, wire: 154, how: "probe" },
   { key: "memory/direct.mjs|postMessage|out", bytes: 0, wire: 719, how: "probe" },
   { key: "memory/direct.mjs|postMessage|{start:ranges[j][0],end:ranges[j][1],j}", bytes: 0, wire: 51, how: "probe" },
-  { key: "memory/direct.mjs|postMessage|{stop:true}", bytes: 0, wire: 10, how: "probe" },
+  { key: "memory/direct.mjs|postMessage|{stop:true}", bytes: 0, wire: 10, how: "literal" },
   { key: "memory/direct.mjs|workerData|{directFill:true,storeDir:o.storeDir,pool:o.pool??40}", bytes: 0, wire: 112, how: "probe" },
   { key: "runtime/cluster.mjs|postMessage|make(s)", bytes: 704512, wire: 800016, how: "probe" },
   { key: "runtime/cluster.mjs|workerData|{shard:s,shards:S,spec:workerSpec,cellIdx:Int32Array.from(cellIdx[s]),localOf:local,shardOf:of,inEdg~e7a92cc89b25", bytes: 82428, wire: 9706405, how: "probe" },
   { key: "runtime/shard.mjs|postMessage|reply", bytes: 491520, wire: 609246, how: "probe" },
-  { key: "runtime/shard.mjs|postMessage|{type:'ok',id:msg.id,shard:ME}", bytes: 0, wire: 50, how: "probe" },
   { key: "runtime/shard.mjs|postMessage|{type:'counts',id:msg.id,shard:ME,g:myCells,runs,fired}", bytes: 53292, wire: 53374, how: "probe" },
+  { key: "runtime/shard.mjs|postMessage|{type:'error',shard:ME,error:String(err&&err.stack||err)}", bytes: 0, wire: 387, how: "probe" },
+  { key: "runtime/shard.mjs|postMessage|{type:'ok',id:msg.id,shard:ME}", bytes: 0, wire: 50, how: "probe" },
+  { key: "runtime/shard.mjs|postMessage|{type:'ready',shard:ME,cells:myCells.length,edges:brain.connectome.live(),ghosts:ghostLocal.length,c~0d1a73ab8adf", bytes: 0, wire: 118, how: "probe" },
   { key: "runtime/shard.mjs|postMessage|{type:'snapshot',id:msg.id,shard:ME,t:brain.clock.t,cells,stats:{...brain.stats},inflight,outbox:bra~eb391f1e3d6e", bytes: 0, wire: 28041254, how: "probe" },
   { key: "runtime/shard.mjs|postMessage|{type:'stopped',shard:ME}", bytes: 0, wire: 40, how: "probe" },
-  { key: "runtime/shard.mjs|postMessage|{type:'error',shard:ME,error:String(err&&err.stack||err)}", bytes: 0, wire: 387, how: "probe" },
-  { key: "runtime/shard.mjs|postMessage|{type:'ready',shard:ME,cells:myCells.length,edges:brain.connectome.live(),ghosts:ghostLocal.length,c~0d1a73ab8adf", bytes: 0, wire: 118, how: "probe" },
-  // board 23: --probe --label autopilot --only test-autopilot,test-autopilot-url, then --print-allowlist --label autopilot
-  { key: "test/autopilot.test.mjs|workerData|{...data,autopilot:newURL('../self/autopilot.mjs',import.meta.url).href}", bytes: 0, wire: 848, how: "probe" },
-  { key: "test/autopilot.test.mjs|postMessage|worker-source:{json:JSON.stringify(out)}", bytes: 0, wire: 17560, how: "probe" },
   { key: "test/autopilot.test.mjs|postMessage|worker-source:{error:String((e&&e.stack)||e)}", bytes: 0, wire: 757, how: "probe" },
-  { key: "test/cloud.test.mjs|send|{op:'stop'}", bytes: 0, wire: 13, how: "probe" },
+  { key: "test/autopilot.test.mjs|postMessage|worker-source:{json:JSON.stringify(out)}", bytes: 0, wire: 18089, how: "probe" },
+  { key: "test/autopilot.test.mjs|workerData|{...data,autopilot:newURL('../self/autopilot.mjs',import.meta.url).href}", bytes: 0, wire: 848, how: "probe" },
+  { key: "test/cloud.test.mjs|send|{op:'stop'}", bytes: 0, wire: 13, how: "literal" },
+  { key: "test/grok-bot.test.mjs|structuredClone|verdict", bytes: 0, wire: 53672, how: "probe" },
+  { key: "test/grok-bot.test.mjs|structuredClone|verdict#2", bytes: 0, wire: 53672, how: "probe" },
   { key: "test/plateau.test.mjs|structuredClone|matrixToWire(a.searched)", bytes: 9488, wire: 9884, how: "probe" },
-  { key: "tools/boundary-audit.mjs|postMessage|{view}", bytes: 1048576, wire: 1048585, how: "probe" },
+  { key: "test/vision-coverage.test.mjs|structuredClone|V", bytes: 0, wire: 61815, how: "probe" },
   { key: "tools/boundary-audit.mjs|postMessage|{sview}", bytes: 0, wire: 10, how: "probe" },
-  { key: "tools/ingest-wiki.mjs|postMessage|{id,shared,spans:mine}", bytes: 0, wire: 64, how: "probe" },
+  { key: "tools/boundary-audit.mjs|postMessage|{view}", bytes: 1048576, wire: 1048585, how: "probe" },
   { key: "tools/ingest-wiki.mjs|postMessage|{id,results}", bytes: 0, wire: 88, how: "probe" },
-  { key: "tools/ingest-wiki.mjs|workerData|{role:'bz2'}", bytes: 0, wire: 17, how: "probe" },
+  { key: "tools/ingest-wiki.mjs|postMessage|{id,shared,spans:mine}", bytes: 0, wire: 64, how: "probe" },
+  { key: "tools/ingest-wiki.mjs|workerData|{role:'bz2'}", bytes: 0, wire: 17, how: "literal" },
 ];
 
 if (PROBE_DIR) installProbe();

@@ -86,7 +86,7 @@ export class Client {
     this.unsolicited.push(m);
     for (const w of this.waiters.slice()) if (w.pred(m)) { this.waiters.splice(this.waiters.indexOf(w), 1); w.resolve(m); }
   }
-  send(obj) { this.child.stdin.write(JSON.stringify(obj) + '\n'); }
+  write(obj) { this.child.stdin.write(JSON.stringify(obj) + '\n'); }
   raw(line) { this.child.stdin.write(line + '\n'); }
   /** One request; resolves {msg, ms} or {msg: null, ms, timeout: true}. */
   request(method, params, timeoutMs = CALL_MS) {
@@ -95,10 +95,10 @@ export class Client {
     return new Promise((resolve) => {
       const timer = setTimeout(() => { this.pending.delete(id); resolve({ msg: null, ms: Number(process.hrtime.bigint() - t0) / 1e6, timeout: true }); }, timeoutMs);
       this.pending.set(id, (msg) => { clearTimeout(timer); resolve({ msg, ms: Number(process.hrtime.bigint() - t0) / 1e6 }); });
-      this.send({ jsonrpc: '2.0', id, method, ...(params === undefined ? {} : { params }) });
+      this.write({ jsonrpc: '2.0', id, method, ...(params === undefined ? {} : { params }) });
     });
   }
-  notify(method, params) { this.send({ jsonrpc: '2.0', method, ...(params === undefined ? {} : { params }) }); }
+  notify(method, params) { this.write({ jsonrpc: '2.0', method, ...(params === undefined ? {} : { params }) }); }
   /** Wait for an unsolicited message the predicate accepts (already arrived or arriving). */
   waitFor(pred, timeoutMs = 10000) {
     const have = this.unsolicited.find(pred);
