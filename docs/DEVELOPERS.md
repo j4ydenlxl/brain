@@ -213,8 +213,8 @@ Register it as `README.md` shows, or with `claude mcp add --scope project brain 
 | articles and facts in the store | 284749 articles, 1911943 facts | `bench/verdicts/knowledge.json` | `ingest.counts.articles`, `ingest.facts` | `2026-09-27T13:42:48.550Z` |
 | store files and bytes | 13 files, 388459374 bytes | `bench/verdicts/knowledge.json` | `store.fingerprint.files`, `store.fingerprint.bytes` | `2026-09-27T13:42:48.550Z` |
 | the ladder, composite day over day (in `README.md`) | +6.15 percent | `bench/verdicts/ladder.json` | `lastDelta` | `2026-09-27T23:12:56.647Z` |
-| the packed tarball (in `README.md`) | 236 files, 1717617 bytes packed, 5676259 bytes unpacked | `bench/verdicts/install.json` | `files`, `tarballBytes`, `unpackedBytes` | `2026-09-28T00:46:18.812Z` |
-| his bare prompts answered by the installed copy (in `README.md`) | 4 of 5 | `bench/verdicts/install.json` | `prompts[answered=true].length`, `prompts.length` | `2026-09-28T00:46:18.812Z` |
+| the packed tarball (in `README.md`) | 238 files, 1729955 bytes packed, 5713504 bytes unpacked | `bench/verdicts/install.json` | `files`, `tarballBytes`, `unpackedBytes` | `2026-09-28T01:14:09.037Z` |
+| his bare prompts answered by the installed copy (in `README.md`) | 4 of 5 | `bench/verdicts/install.json` | `prompts[answered=true].length`, `prompts.length` | `2026-09-28T01:14:09.037Z` |
 | his probe prompts answered by the site (in `README.md`) | 2 of 5 | `bench/verdicts/site-probe.json` | `ok`, `n` | `2026-09-27T19:02:04.005Z` |
 
 The limits and status codes above are constants read from `act/ask-http.mjs`, not measurements. The bar re-checks every row: the row names one field per number, in order, and each number must equal that field's value in the file it cites (a value may be rounded to the decimals the row wrote, as the store build's seconds are). A field is a dot separated path: a name, an array index, `length` on an array, or `name[key=value]`, which keeps the array elements whose key reads that value. A row whose file has moved to a newer `at` is reported as stale.

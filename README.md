@@ -22,8 +22,8 @@ Each number here equals the field named beside it in the verdict file that measu
 | what | number | verdict file | field | at |
 | --- | --- | --- | --- | --- |
 | the ladder, composite day over day | +6.15 percent | `bench/verdicts/ladder.json` | `lastDelta` | `2026-09-27T23:12:56.647Z` |
-| the packed tarball | 236 files, 1717617 bytes packed, 5676259 bytes unpacked | `bench/verdicts/install.json` | `files`, `tarballBytes`, `unpackedBytes` | `2026-09-28T00:46:18.812Z` |
-| his bare prompts answered by the installed copy | 4 of 5 | `bench/verdicts/install.json` | `prompts[answered=true].length`, `prompts.length` | `2026-09-28T00:46:18.812Z` |
+| the packed tarball | 238 files, 1729955 bytes packed, 5713504 bytes unpacked | `bench/verdicts/install.json` | `files`, `tarballBytes`, `unpackedBytes` | `2026-09-28T01:14:09.037Z` |
+| his bare prompts answered by the installed copy | 4 of 5 | `bench/verdicts/install.json` | `prompts[answered=true].length`, `prompts.length` | `2026-09-28T01:14:09.037Z` |
 | his probe prompts answered by the site | 2 of 5 | `bench/verdicts/site-probe.json` | `ok`, `n` | `2026-09-27T19:02:04.005Z` |
 
 ## The command line
