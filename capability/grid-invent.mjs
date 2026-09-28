@@ -34,7 +34,8 @@
 // THE NULL. Every claim here is against a null arm at the same budget: random compositions of
 // the fixed vocabulary and pairwise recombinations of the solved programs, as many as the
 // invented library holds, admitted to each task by the same ranking, the same count, the same
-// cost, the same clock. bench/imagine.mjs runs both arms on the 236 timeouts, interleaved.
+// cost, the same work budget (see the work meter below; board 28 made every budget of the bench
+// work, never the wall clock). bench/imagine.mjs runs both arms on the 236 timeouts, interleaved.
 import {
   PRIMS, LEARNERS, applyStep, hashValue, sameGrid, isAnswerGrid, isGrid, byName, components, grid, BG, MAX_SIDE,
 } from './grid-dsl.mjs';
@@ -54,6 +55,44 @@ export const INVENT_DEFAULTS = Object.freeze({
   doubt: false,       // keep a memorised program as a fallback and search on (see memorised)
 });
 const now = () => performance.now();
+
+// ---------------------------------------------------------------- the work meter (board 28)
+// A wall clock budget does not fix a draw: the same task on the same seed searched 3000 ms on a
+// loaded machine and on an idle one stops at different states, so two runs of the bar at fixed
+// seeds found different programs and the verdict flipped (barMet false, then true, board 24a).
+// Every budget of the bench is now WORK: the search, the admission screen, the invented words and
+// the learners count what they do into this meter, and a budget stops at the same state on any
+// machine. The meter counts four things: calls (one per word or learner application), cells (the
+// cells a word read and wrote, the cells hashed and compared), learn (a learner's cost times the
+// cells it was fitted on) and grade (the cells a program was wired through to be graded).
+/** The running totals of this thread's work. Only ever added to. */
+export const meter = { calls: 0, cells: 0, learn: 0, grade: 0 };
+/**
+ * Milliseconds of this machine per unit of each count, fitted once by test/imagine-work-probe.mjs
+ * (non negative least squares, no intercept, over the timed searches of 24 grid.json timeouts at
+ * the old wall clocks of 3000 and 1000 ms, with the fixed vocabulary and with a 651 word invented
+ * library) and frozen. Fitted by board 28 (2026-09-27, the machine shared with other boards), whose
+ * run printed: calls 0.00123, cells 0.000036, learn 0, grade 0, and work ms over wall ms over its
+ * 97 timed phases of 50 ms or more: median 0.997, quartiles 0.837 to 1.1, range 0.405 to 1.48. The
+ * fit put learn and grade at 0: their time is carried by the calls and cells that come with them.
+ * A budget of B work ms is about the search that took B ms here when it was fitted, and the SAME
+ * count on every run and machine; the weights are a unit, and no draw depends on them being right.
+ */
+export const WORK_MS = Object.freeze({ calls: 0.00123, cells: 0.000036, learn: 0, grade: 0 });
+/** The work done by this thread so far, in work ms. */
+export const workNow = () => meter.calls * WORK_MS.calls + meter.cells * WORK_MS.cells + meter.learn * WORK_MS.learn + meter.grade * WORK_MS.grade;
+/** A copy of the meter's counts, for workSince. */
+export const meterSnap = () => ({ calls: meter.calls, cells: meter.cells, learn: meter.learn, grade: meter.grade });
+/**
+ * The work since a snapshot, in work ms. It is weighed from the differences of the integer counts,
+ * never as workNow() minus an earlier workNow(): a floating point difference of two large totals
+ * rounds by what the thread did BEFORE the snapshot, so a budget could stop one state apart on two
+ * workers that ran different jobs first. From the count differences the same search counts the
+ * same work whatever ran before it.
+ */
+export const workSince = (s) => (meter.calls - s.calls) * WORK_MS.calls + (meter.cells - s.cells) * WORK_MS.cells + (meter.learn - s.learn) * WORK_MS.learn + (meter.grade - s.grade) * WORK_MS.grade;
+/** The cells a value holds: a grid's, the source grid's for objects, 1 for a colour. */
+export const sizeOf = (v) => (v && v.cells ? v.cells.length : v && v.src && v.src.cells ? v.src.cells.length : 1);
 const LEARNER_NAMES = new Set(LEARNERS.map((l) => l.name));
 const BASE = new Map(PRIMS.map((p) => [p.name, p]));
 const fit = (g) => (g && isGrid(g) && g.w >= 1 && g.h >= 1 && g.w <= MAX_SIDE && g.h <= MAX_SIDE ? g : null);
@@ -113,6 +152,7 @@ export function specKey(s) {
     case 'quad': return 'quad(' + s.fs.map(specKey).join(',') + ')';
     case 'fix': return 'fix(' + specKey(s.f) + ')';
     case 'sel': return 'sel.' + s.mode + '.' + s.pick + '(' + specKey(s.f) + ')';
+    case 'seq': return 'seq(' + s.fs.map(specKey).join(';') + ')';
     default: return '?';
   }
 }
@@ -129,6 +169,7 @@ export function specWords(s) {
     case 'quad': return ['quad', ...s.fs.flatMap(specWords)];
     case 'fix': return ['fix', ...specWords(s.f)];
     case 'sel': return ['sel', s.mode, s.pick, ...specWords(s.f)];
+    case 'seq': return ['seq', ...s.fs.flatMap(specWords)];
     default: return ['?'];
   }
 }
@@ -158,6 +199,7 @@ export function specType(s) {
     case 'both': return BOTH_HOWS.includes(s.how) && (s.f === null || gg(s.f)) && gg(s.g) ? { from: 'grid', to: 'grid' } : null;
     case 'quad': return Array.isArray(s.fs) && s.fs.length === 4 && s.fs.every((f) => f === null || gg(f)) ? { from: 'grid', to: 'grid' } : null;
     case 'sel': return SEL_MODES.includes(s.mode) && SELECTOR_SET.has(s.pick) && gg(s.f) ? { from: 'grid', to: 'grid' } : null;
+    case 'seq': return Array.isArray(s.fs) && s.fs.length >= 2 && s.fs.every((f) => f !== null && gg(f)) ? { from: 'grid', to: 'grid' } : null;
     default: return null;
   }
 }
@@ -303,9 +345,12 @@ function quadOf(parts) {
 export function runSpec(spec, v) {
   if (!v) return null;
   if (!spec) return v;
+  // the work meter: one call and the cells read for every base word run, and the cells of the
+  // value every combinator walks (its inner words count themselves)
+  if (spec.k !== 'op' && spec.k !== 'chain') { meter.calls++; meter.cells += sizeOf(v); }
   switch (spec.k) {
-    case 'op': return applyStep({ op: spec.op }, v);
-    case 'chain': { let x = v; for (const op of spec.ops) { x = applyStep({ op }, x); if (!x) return null; } return x; }
+    case 'op': meter.calls++; meter.cells += sizeOf(v); return applyStep({ op: spec.op }, v);
+    case 'chain': { let x = v; for (const op of spec.ops) { meter.calls++; meter.cells += sizeOf(x); x = applyStep({ op }, x); if (!x) return null; } return x; }
     case 'each': return isGrid(v) ? fit(eachObject(v, spec.mode, (g) => runSpec(spec.f, g))) : null;
     case 'cells': return isGrid(v) ? fit(eachCell(v, (g) => runSpec(spec.f, g))) : null;
     case 'layers': return isGrid(v) ? fit(eachLayer(v, (g) => runSpec(spec.f, g))) : null;
@@ -316,6 +361,7 @@ export function runSpec(spec, v) {
     }
     case 'quad': return isGrid(v) ? fit(quadOf(spec.fs.map((f) => runSpec(f, v)))) : null;
     case 'sel': return isGrid(v) ? fit(eachSelected(v, spec.mode, spec.pick, (g) => runSpec(spec.f, g))) : null;
+    case 'seq': { let x = v; for (const f of spec.fs) { x = runSpec(f, x); if (!x || !isGrid(x)) return null; } return fit(x); }
     case 'fix': {
       if (!isGrid(v)) return null;
       let x = runSpec(spec.f, v);
@@ -469,14 +515,20 @@ export function memorised(L, tr, wanted) {
  * above zero it also records the best partial programs by mapped pixel agreement.
  * @param {{train: object[], test: object[]}} task grids in the DSL's form
  * @param {object[]} extras primitives from asPrimitive()
- * @param {object} [opts] budgetMs, deadline, maxDepth, slowDepth, maxStates, mine
+ * With opts.work (work ms, see WORK_MS) the budget is WORK and the wall clock never decides: the
+ * same task with the same words stops at the same state on any machine, under any load. Without
+ * it, budgetMs or deadline is a wall clock, as before.
+ * @param {object} [opts] work, budgetMs, deadline, maxDepth, slowDepth, maxStates, mine
  */
 export function searchWith(task, extras = [], opts = {}) {
-  const o = { budgetMs: 3000, maxDepth: 4, slowDepth: 2, maxStates: 200_000, mine: 0, doubt: INVENT_DEFAULTS.doubt, ...opts };
+  const o = { budgetMs: 3000, maxDepth: 4, slowDepth: 2, maxStates: 200_000, mine: 0, doubt: INVENT_DEFAULTS.doubt, work: null, ...opts };
   const t0 = now(), deadline = typeof o.deadline === 'number' ? o.deadline : t0 + o.budgetMs;
+  const w0 = meterSnap(), workLimit = typeof o.work === 'number' && o.work >= 0 ? o.work : null;
+  const over = workLimit === null ? () => now() > deadline : () => workSince(w0) > workLimit;
   const vocab = extras.concat(PRIMS);
   const train = task.train, tests = task.test.map((t) => t.input || t);
   const nTrain = train.length, wanted = train.map((p) => p.output);
+  const wantedCells = wanted.reduce((a, g) => a + sizeOf(g), 0);
   const alwaysChanges = train.every((p) => !sameGrid(p.input, p.output));
   let searched = 0, rejected = 0, stored = 0, cellsUsed = 0;
   let fallback = null, doubted = 0; // with o.doubt: the first memorised program found, and how many were
@@ -503,6 +555,7 @@ export function searchWith(task, extras = [], opts = {}) {
     depth: hit ? hit.steps.length : null, outputs: hit ? hit.outputs : null,
     used: hit ? hit.steps.filter((s) => s.spec).map((s) => s.op.slice(4)) : [],
     searched, states: seen.size, rejected, popped, ms: Math.round((now() - t0) * 100) / 100, cells: cellsUsed,
+    work: Math.round(workSince(w0) * 1e4) / 1e4, workLimit, byWork: workLimit !== null,
     vocabulary: vocab.length + LEARNERS.length, mined: o.mine ? mined : undefined, baseline: o.mine ? Math.round(baseline * 1e4) / 1e4 : undefined,
     };
   };
@@ -511,6 +564,7 @@ export function searchWith(task, extras = [], opts = {}) {
     if (alwaysChanges && testOuts.some((g, i) => sameGrid(g, tests[i]))) { rejected++; return null; }
     const graded = gradeInvented(steps, train, tests);
     cellsUsed += graded.cells;
+    meter.calls++; meter.grade += graded.cells * (wantedCells + tests.reduce((a, g) => a + sizeOf(g), 0));
     if (!graded.ok) { rejected++; return null; }
     for (let i = 0; i < testOuts.length; i++) if (!sameGrid(graded.outputs[i], testOuts[i])) { rejected++; return null; }
     return { steps, outputs: graded.outputs };
@@ -520,19 +574,23 @@ export function searchWith(task, extras = [], opts = {}) {
     const tr = state.vals.slice(0, nTrain), te = state.vals.slice(nTrain);
     if (exact) {
       searched++;
+      meter.calls++; meter.cells += wantedCells;
       let all = true;
       for (let i = 0; i < nTrain; i++) if (!sameGrid(tr[i], wanted[i])) { all = false; break; }
       if (all) { const r = accept(state.steps, te); if (r) return r; }
     }
+    let stateCells = 0;
+    for (const v of state.vals) stateCells += sizeOf(v);
     for (const L of learners) {
-      if (now() > deadline) return null;
+      if (over()) return null;
       searched++;
       let params = null;
+      meter.calls++; meter.learn += L.cost * (stateCells + wantedCells);
       try { params = L.learn(tr, wanted, te); } catch { params = null; }
       if (!params) continue;
       const step = { op: L.name, learned: params };
       let fits = true;
-      for (let i = 0; i < nTrain; i++) { const g = applyStep(step, tr[i]); if (!g || !sameGrid(g, wanted[i])) { fits = false; break; } }
+      for (let i = 0; i < nTrain; i++) { meter.calls++; meter.cells += sizeOf(tr[i]) + sizeOf(wanted[i]); const g = applyStep(step, tr[i]); if (!g || !sameGrid(g, wanted[i])) { fits = false; break; } }
       if (!fits) continue;
       const r = accept(state.steps.concat([step]), te.map((g) => applyStep(step, g)));
       if (r && o.doubt && memorised(L, tr, wanted)) { doubted++; if (!fallback) fallback = r; continue; }
@@ -572,17 +630,20 @@ export function searchWith(task, extras = [], opts = {}) {
     if (s.depth > 0 && s.depth <= o.slowDepth && s.type === 'grid') {
       const r = terminals(s, SLOW, false);
       if (r) return finish('found', r);
-      if (now() > deadline) return finish('timeout', null);
+      if (over()) return finish('timeout', null);
     }
     for (const p of vocab) {
       if (p.from !== s.type) continue;
-      if (now() > deadline) return finish('timeout', null);
+      if (over()) return finish('timeout', null);
       const vals = new Array(s.vals.length);
       let bad = false;
       for (let i = 0; i < s.vals.length; i++) {
         let v = null;
+        // a base word counts here; an invented word counts inside runSpec
+        if (!p.invented) { meter.calls++; meter.cells += sizeOf(s.vals[i]); }
         try { v = p.apply(s.vals[i]); } catch { v = null; }
         if (!v) { bad = true; break; }
+        meter.cells += sizeOf(v); // hashed into the state key
         vals[i] = v;
       }
       if (bad) continue;
@@ -596,7 +657,7 @@ export function searchWith(task, extras = [], opts = {}) {
       const step = p.invented ? { op: p.name, spec: p.spec } : { op: p.name };
       const child = { vals, type: p.to, steps: s.steps.concat([step]), depth, cost: s.cost + p.cost };
       if (child.type === 'grid') {
-        if (o.mine && !p.invented) mineAt(vals, child.steps, child.cost);
+        if (o.mine && !p.invented) { meter.cells += wantedCells; mineAt(vals, child.steps, child.cost); }
         const r = terminals(child, FAST, true);
         if (r) return finish('found', r);
       }
@@ -665,34 +726,38 @@ export function improvement(made, inputs, wanted) {
  * library cannot decide. The same function admits the null arm's words.
  * @returns {{admitted: object[], screened: number, scored: number, ms: number, cut: boolean}}
  */
-export function admitFor(library, task, k = INVENT_DEFAULTS.admit, deadline = Infinity) {
-  const t0 = now();
+export function admitFor(library, task, k = INVENT_DEFAULTS.admit, deadline = Infinity, work = null) {
+  const t0 = now(), w0 = meterSnap();
+  // with a work limit (work ms) the screen stops at the same word on any machine; else the wall clock
+  const over = typeof work === 'number' && work >= 0 ? () => workSince(w0) > work : () => now() > deadline;
   const ins = task.train.map((p) => p.input), wanted = task.train.map((p) => p.output), tests = task.test.map((t) => t.input || t);
   const byKey = (a, b) => b.score - a.score || (a.c.key < b.c.key ? -1 : a.c.key > b.c.key ? 1 : 0);
   const first = [];
   let screened = 0, cut = false;
   for (const c of library) {
-    if ((screened & 15) === 0 && now() > deadline) { cut = true; break; }
+    if (over()) { cut = true; break; }
     screened++;
     const r = runSpec(c.spec, ins[0]);
     if (!r || !isGrid(r) || sameGrid(r, ins[0])) continue;
+    meter.cells += sizeOf(r) + sizeOf(wanted[0]);
     const s = improvement([r], [ins[0]], [wanted[0]]);
     first.push({ c, score: s, r0: r });
   }
   first.sort(byKey);
   const scored = [];
   for (const f of first.slice(0, 4 * k)) {
-    if (now() > deadline) { cut = true; break; }
+    if (over()) { cut = true; break; }
     const outs = [f.r0];
     let ok = true;
     for (let i = 1; i < ins.length; i++) { const r = runSpec(f.c.spec, ins[i]); if (!r || !isGrid(r)) { ok = false; break; } outs.push(r); }
     if (!ok) continue;
     for (const g of tests) { const r = runSpec(f.c.spec, g); if (!r || !isGrid(r)) { ok = false; break; } }
     if (!ok) continue;
+    for (let i = 0; i < outs.length; i++) meter.cells += sizeOf(outs[i]) + sizeOf(wanted[i]);
     scored.push({ c: f.c, score: improvement(outs, ins, wanted) });
   }
   scored.sort(byKey);
-  return { admitted: scored.slice(0, k).map((s) => s.c), screened, scored: scored.length, ms: Math.round((now() - t0) * 100) / 100, cut };
+  return { admitted: scored.slice(0, k).map((s) => s.c), screened, scored: scored.length, ms: Math.round((now() - t0) * 100) / 100, work: Math.round(workSince(w0) * 1e4) / 1e4, cut };
 }
 
 // ---------------------------------------------------------------- source (i): collapse
@@ -796,18 +861,23 @@ export function recombineChains(a, b, rng) {
  * The space mind/imagine.mjs propose() imagines in over the DSL. Its operators build words the
  * chain grammar cannot say (lift, superpose, quarter, fixed point) and conjugations and
  * analogies of what memory holds; its null is randomChain and recombineChains.
- * @param {{memoryChains?: object[]}} [opts] grid to grid chains from memory, raw material for
- *   conjugation and analogy
+ * @param {{memoryChains?: object[], inners?: object[], prior?: object}} [opts] grid to grid chains
+ *   from memory, raw material for conjugation and analogy; with a prior (libraryPrior), the
+ *   operators are drawn in proportion to their counts plus alpha and a base word or a library
+ *   routine is drawn in proportion to its uses plus alpha. Without one the draws are exactly the
+ *   uniform ones.
  */
 export function dslSpace(opts = {}) {
   const chains = (opts.memoryChains || []).filter((c) => c && c.spec && isGridWord(c.spec) && opsOf(c.spec));
   const inners = (opts.inners || []).filter((c) => c && c.spec && isGridWord(c.spec));
+  const pool = opts.prior ? priorPool(opts.prior) : null;
   const pickInner = (rng) => {
     if (inners.length && rng.int(2) === 0) return rng.pick(inners).spec;
+    if (pool) return chains.length && rng.int(4) === 0 ? rng.pick(chains).spec : drawWeighted(pool, rng);
     return chains.length && rng.int(4) === 0 ? rng.pick(chains).spec : { k: 'op', op: rng.pick(GRID_WORDS) };
   };
   const make = (spec) => (spec && isGridWord(spec) ? { spec } : null);
-  return {
+  const space = {
     type: 'primitive',
     key: (c) => specKey(c.spec),
     words: (c) => specWords(c.spec),
@@ -845,6 +915,30 @@ export function dslSpace(opts = {}) {
       },
     ],
   };
+  // propose() draws operators round robin, so an operator given m slots is drawn m times a cycle
+  if (opts.prior) space.operators = space.operators.flatMap((op) => Array(operatorSlots(opts.prior, op.name)).fill(op));
+  return space;
+}
+/** The draw slots of one operator under a prior: its count plus alpha, at least one. */
+export function operatorSlots(prior, name) {
+  const alpha = prior && typeof prior.alpha === 'number' ? prior.alpha : 1;
+  return Math.max(1, Math.round(alpha + ((prior && prior.ops && prior.ops[name]) || 0)));
+}
+/** The weighted pool a prior draws inner words from: every base grid word and every routine. */
+function priorPool(prior) {
+  const alpha = typeof prior.alpha === 'number' ? prior.alpha : 1;
+  const items = [], cum = [];
+  let total = 0;
+  const add = (spec, w) => { if (!(w > 0)) return; total += w; items.push(spec); cum.push(total); };
+  for (const op of GRID_WORDS) add({ k: 'op', op }, alpha + ((prior.words && prior.words[op]) || 0));
+  for (const r of prior.routines || []) if (r && r.spec && isGridWord(r.spec)) add(r.spec, alpha + (r.uses || 0));
+  return { items, cum, total };
+}
+function drawWeighted(pool, rng) {
+  const x = rng.next() * pool.total;
+  let lo = 0, hi = pool.cum.length - 1;
+  while (lo < hi) { const mid = (lo + hi) >> 1; if (pool.cum[mid] > x) hi = mid; else lo = mid + 1; }
+  return pool.items[lo];
 }
 
 /**
@@ -853,12 +947,12 @@ export function dslSpace(opts = {}) {
  * outside the null.
  * @returns {{words: object[], report: object}}
  */
-export function imagineWords({ memory, budget = 400, seed = 'grid-invent', floor, knowledge = null, rounds = INVENT_DEFAULTS.rounds }) {
+export function imagineWords({ memory, budget = 400, seed = 'grid-invent', floor, knowledge = null, rounds = INVENT_DEFAULTS.rounds, prior = null }) {
   const memoryChains = memory.filter((m) => m.spec && m.spec.k === 'chain');
   const words = [], reports = [];
   let mem = memory, inners = [];
   for (let round = 1; round <= Math.max(1, rounds); round++) {
-    const space = dslSpace({ memoryChains, inners });
+    const space = dslSpace(prior ? { memoryChains, inners, prior } : { memoryChains, inners });
     const n = round === 1 ? budget : Math.max(1, Math.floor(budget / 2));
     const report = propose({ space, memory: mem, floor, seed: round === 1 ? seed : seed + ':round' + round, knowledge }, n);
     const got = report.candidates.map((c) => word(c.spec, 'imagine', [], { operator: c.operator, novelty: c.novelty, nearest: c.nearest, round }));
@@ -896,6 +990,174 @@ export function noveltyAgainst(words, solved) {
     if (typeof w.noveltyHeld !== 'number') w.noveltyHeld = noveltyOf(space, w, held).distance;
   }
   return words;
+}
+
+// ---------------------------------------------------------------- the library (DreamCoder's sleep)
+// Ellis et al., DreamCoder (PLDI 2021, arXiv 2006.08381), and its use on ARC in "Dreaming with ARC"
+// (Banburski et al., CBMM Memo 113): WAKE solves tasks with the current library; SLEEP
+// (abstraction) adds to the library the fragment of the solved programs that most shortens the
+// description of the library plus the programs rewritten with it, and refits the grammar's weights
+// to the programs, so the next search draws what solved before more often. Here the wake is the
+// invented arm's own solves on the OTHER fold of the scored tasks (plus the solved programs of
+// grid.json); the library it compresses into is scored only on the fold it never saw.
+
+/** The fold of a task id: FNV-1a of the id, modulo k. Pure, so every run folds alike. */
+export function foldOf(id, k = 2) {
+  let h = 0x811c9dc5;
+  const s = String(id);
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h % k;
+}
+/**
+ * The steps of a solved program, learned last step removed: a base word is { k: 'op' }, an added
+ * word 'inv:<key>' is looked up by key. Null when a step cannot be read.
+ * @param {string[]} names a program as searchWith names it
+ * @param {Map<string, object>} [byKey] the added words the program could use
+ */
+export function programSteps(names, byKey = new Map()) {
+  const ops = (names || []).slice();
+  while (ops.length && LEARNER_NAMES.has(ops[ops.length - 1])) ops.pop();
+  const out = [];
+  for (const n of ops) {
+    if (BASE.has(n)) { out.push({ key: n, spec: { k: 'op', op: n }, invented: false, operator: null }); continue; }
+    const w = typeof n === 'string' && n.startsWith('inv:') ? byKey.get(n.slice(4)) : null;
+    if (!w || !w.spec) return null;
+    out.push({ key: w.key || specKey(w.spec), spec: w.spec, invented: true, operator: w.operator ?? null });
+  }
+  return out;
+}
+/** One word for a run of steps: base words merge into a chain, anything else is a seq. Null unless grid to grid. */
+export function seqSpec(specs) {
+  const units = [];
+  const flat = (s) => { if (s && s.k === 'chain') return s.ops.map((op) => ({ k: 'op', op })); if (s && s.k === 'seq') return s.fs.flatMap(flat); return [s]; };
+  let run = [];
+  const close = () => { if (run.length) { units.push(chainSpec(run)); run = []; } };
+  for (const s of (specs || []).flatMap(flat)) {
+    if (!s) return null;
+    if (s.k === 'op' && BASE.has(s.op)) run.push(s.op);
+    else { close(); units.push(s); }
+  }
+  close();
+  if (!units.length) return null;
+  const spec = units.length === 1 ? units[0] : { k: 'seq', fs: units };
+  return isGridWord(spec) ? spec : null;
+}
+/**
+ * The sleep: greedy compression of a corpus of solved programs into a library of routines.
+ * A step's description length is 1 for a base word or a routine and the length of its structural
+ * tokens (specWords) for an added word the library does not hold. A candidate is a contiguous run
+ * of two or more steps that is a grid to grid word, or one added word; adding it rewrites every
+ * non overlapping use to one step, so it gains uses x (its length - 1) and costs lambda x its
+ * length in the library. The best candidate with a gain above 0 is added, the corpus rewritten,
+ * and the search repeats, so a routine can hold an earlier one.
+ * @param {{id: string, steps: object[]}[]} programs
+ * @param {{lambda?: number, maxRoutines?: number}} [opts]
+ * @returns {{routines: object[], before: number, after: number}}
+ */
+export function compressLibrary(programs, opts = {}) {
+  const lambda = typeof opts.lambda === 'number' ? opts.lambda : 1;
+  const max = typeof opts.maxRoutines === 'number' ? opts.maxRoutines : 24;
+  const dlOf = (s) => (s.routine || !s.invented ? 1 : specWords(s.spec).length);
+  let progs = (programs || []).filter((p) => p && Array.isArray(p.steps) && p.steps.length)
+    .map((p) => ({ id: p.id, steps: p.steps.map((s) => ({ key: s.key || specKey(s.spec), spec: s.spec, invented: !!s.invented, routine: !!s.routine })) }));
+  const total = () => progs.reduce((a, p) => a + p.steps.reduce((b, s) => b + dlOf(s), 0), 0);
+  const before = total();
+  const routines = [];
+  let libraryDl = 0;
+  const uses = (steps, keys) => {
+    let n = 0;
+    for (let i = 0; i + keys.length <= steps.length;) {
+      let hit = true;
+      for (let j = 0; j < keys.length; j++) if (steps[i + j].key !== keys[j]) { hit = false; break; }
+      if (hit) { n++; i += keys.length; } else i++;
+    }
+    return n;
+  };
+  for (let it = 0; it < max; it++) {
+    const cands = new Map();
+    for (const p of progs) for (let a = 0; a < p.steps.length; a++) for (let b = a + 1; b <= p.steps.length; b++) {
+      const frag = p.steps.slice(a, b);
+      if (frag.length === 1 && !(frag[0].invented && !frag[0].routine)) continue;
+      const fk = frag.map((s) => s.key).join(' ; ');
+      if (cands.has(fk)) { const c = cands.get(fk); if (c) c.ids.add(p.id); continue; }
+      const spec = frag.length === 1 ? frag[0].spec : seqSpec(frag.map((s) => s.spec));
+      if (!spec || !isGridWord(spec)) { cands.set(fk, null); continue; }
+      cands.set(fk, { keys: frag.map((s) => s.key), spec, dl: frag.reduce((x, s) => x + dlOf(s), 0), ids: new Set([p.id]) });
+    }
+    let best = null;
+    for (const [fk, c] of cands) {
+      if (!c) continue;
+      c.uses = progs.reduce((x, p) => x + uses(p.steps, c.keys), 0);
+      c.gain = c.uses * (c.dl - 1) - lambda * c.dl;
+      c.fk = fk;
+      if (c.gain > 0 && (!best || c.gain > best.gain || (c.gain === best.gain && fk < best.fk))) best = c;
+    }
+    if (!best) break;
+    const key = specKey(best.spec);
+    const step = { key, spec: best.spec, invented: false, routine: true };
+    progs = progs.map((p) => {
+      const out = [];
+      for (let i = 0; i < p.steps.length;) {
+        let hit = i + best.keys.length <= p.steps.length;
+        for (let j = 0; hit && j < best.keys.length; j++) if (p.steps[i + j].key !== best.keys[j]) hit = false;
+        if (hit) { out.push(step); i += best.keys.length; } else { out.push(p.steps[i]); i++; }
+      }
+      return { id: p.id, steps: out };
+    });
+    libraryDl += lambda * best.dl;
+    routines.push({ key, spec: best.spec, uses: best.uses, dl: best.dl, gain: best.gain, from: [...best.ids].sort() });
+  }
+  return { routines, before, after: total() + libraryDl };
+}
+/**
+ * The grammar refit to a corpus: how often each base grid word appears in the programs (inside
+ * added words too) and how often each imagination operator's words were used, with alpha added
+ * to every count when it is drawn (dslSpace).
+ * @param {{steps: object[]}[]} programs
+ * @param {object[]} [routines] compressLibrary's routines, drawn by their uses
+ */
+export function libraryPrior(programs, routines = [], alpha = 1) {
+  const gridWord = new Set(GRID_WORDS);
+  const words = {}, ops = {};
+  for (const p of programs || []) for (const s of (p && p.steps) || []) {
+    for (const t of specWords(s.spec)) if (gridWord.has(t)) words[t] = (words[t] || 0) + 1;
+    if (s.invented && s.operator) ops[s.operator] = (ops[s.operator] || 0) + 1;
+  }
+  return { alpha, words, ops, routines: (routines || []).map((r) => ({ key: r.key, spec: r.spec, uses: r.uses })) };
+}
+/**
+ * The library arm's words: the plain invented library's base words (the collapsed and mined words,
+ * exactly as the invented arm holds them), then the routines the sleep kept, then imagination
+ * drawn under the refit prior with the same seed, merged by key and capped at `cap` words (the
+ * plain invented library's size, so the library arm never holds more words than the invented arm
+ * or the null). A routine's sources are the programs it was compressed from, and every word
+ * imagined under the prior carries `fedBy` (the scored tasks whose solved programs fed the prior)
+ * as its sources, so offerable() never offers a task a word its own solved program shaped.
+ * @returns {{words: object[], routines: number, routinesNew: number, imagined: number, report: object}}
+ */
+export function libraryWords({ memory, base = [], routines = [], prior = null, fedBy = [], budget = 400, seed = 'grid-invent', knowledge = null, cap = Infinity, floor, rounds = INVENT_DEFAULTS.rounds }) {
+  const routineWords = (routines || []).filter((r) => r && r.spec && isGridWord(r.spec)).map((r) => word(r.spec, 'library.routine', r.from || [], { uses: r.uses, gain: r.gain }));
+  const mem = (memory || []).concat(routineWords.map((w) => ({ spec: w.spec })));
+  const imagined = imagineWords({ memory: mem, budget, seed, floor, knowledge, rounds, prior });
+  const fed = [...new Set(fedBy || [])].sort();
+  const map = new Map();
+  for (const w of base || []) mergeInto(map, { ...w, sources: (w.sources || []).slice() });
+  let routinesNew = 0, imaginedIn = 0;
+  for (const w of routineWords) { if (!map.has(w.key)) routinesNew++; mergeInto(map, { ...w, sources: w.sources.slice() }); }
+  for (const w of imagined.words) {
+    if (map.has(w.key) || map.size >= cap) continue;
+    map.set(w.key, { ...w, sources: fed.slice() });
+    imaginedIn++;
+  }
+  return { words: [...map.values()], routines: routineWords.length, routinesNew, imagined: imaginedIn, report: imagined.report };
+}
+/**
+ * The words one task may be offered: the arm's library plus any extra words (kept words carried
+ * from another library), less every word whose sources hold the task (it was mined or collapsed
+ * from it, or its solved program fed the word). The bench's workers call this.
+ */
+export function offerable(library, extra, taskId) {
+  return (library || []).concat(extra || []).filter((w) => w && !(w.sources || []).includes(taskId));
 }
 
 // ---------------------------------------------------------------- the null library

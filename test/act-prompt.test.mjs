@@ -589,3 +589,257 @@ test('ASK_FAST: the same promptHash, the same knowledgeReady refusal, the same l
   assert.deepEqual(on.keys.slice(0, 4), ['seq', 't', 'gen', 'type']);
   assert.ok(!on.stubKeys.includes('t') && !on.stubKeys.includes('gen'), on.stubKeys.join(','));
 });
+
+// ================================================================== the program tier
+// board 26 builder, item wire-induce (ROUTE A of docs/RESEARCH-PARADIGM.md): act/prompt.mjs asks the programs
+// bench/induce.mjs induced (reason/induce.mjs answerFromPrograms) after the knowledge tier and before the reasoning
+// regions. Every case here is model off (provider 'null', or no ask() at all): no socket is opened.
+const BAKER = 'A baker made 6 trays of 8 cookies each and gave away 5 cookies. How many cookies are left?';
+const STAMPS = 'Mia collects 14 red stamps and 9 blue stamps on Monday and loses 5 of them on Tuesday. How many stamps does Mia keep?';
+const KITES = 'Ana has 7 kites. Ben has 11 kites. How many kites is that?';
+// A planted store in the shape reason/induce.mjs abstract() writes: one pattern at one level, one program, the
+// level's development leave-one-out precision in devLoo (the number the tier's floor reads).
+async function plantedStore(sentence, program, precision, level = 'cue') {
+  const I = await import('../reason/induce.mjs');
+  const pat = I.patterns(I.parse(sentence))[level];
+  const records = ['planted.1', 'planted.2', 'planted.3'];
+  return {
+    version: 1, minSupport: 2, keepBy: 'chain', rankBy: 'precision', invariant: 'whole',
+    levels: { role: {}, cue: {}, named: {}, count: {}, [level]: { [pat]: [{ program, ops: 2, support: 3, chain: 3, records, chainRecords: records, tried: 3 }] } },
+    devLoo: { [level]: { answered: 3, right: 3, precision } },
+  };
+}
+// The fields of an answer that say what answered it, and the answer itself (ms and seq are clocks and counters).
+const shapeOf = (a) => ({ from: a.from, route: a.route, text: a.text, provenance: a.provenance.answer, memory: a.memory, llm: a.provenance.llm.provider });
+
+test('the program tier answers a planted word problem with its program as provenance, native, and prints its ns', async (t) => {
+  const P = await import('../act/prompt.mjs');
+  const { brain, events } = newBrain(t, { name: 'program-tier' });
+  const store = await plantedStore(BAKER, 'sub(mul(q0,q1),q2)', 1);
+  const before = { ...P.PROGRAM_TIER };
+  const a = await ask(brain, BAKER, { provider: 'null', programs: store });
+  assert.equal(a.from, 'program');
+  assert.equal(a.route, 'program');
+  assert.equal(a.native, true);
+  assert.equal(a.provenance.answer, 'program');
+  assert.equal(a.provenance.tier, 'program');
+  assert.equal(a.provenance.program, 'sub(mul(q0,q1),q2)', 'the provenance is the program text');
+  assert.equal(a.program.text, 'sub(mul(q0,q1),q2)');
+  assert.equal(a.program.answer, '43', '6 trays of 8, less 5');
+  assert.equal(a.text.split('\n').at(-1), '43', 'the answer is the last line, where the one ruler reads it');
+  const first = a.text.split('\n')[0];
+  assert.match(first, /^answered by an induced program \(sub\(mul\(q0,q1\),q2\), level cue, development precision 1 at floor ([0-9.]+), \d+ ns\), with no model and no network\.$/);
+  assert.equal(first.match(/at floor ([0-9.]+),/)[1], String(P.PROGRAM.floor), 'the floor printed is the one the tier applies');
+  assert.ok(Number.isInteger(a.program.ns) && a.program.ns > 0, 'ns ' + a.program.ns);
+  assert.equal(a.provenance.programNs, a.program.ns);
+  assert.equal(a.program.quantities, 3);
+  assert.equal(a.program.floor, P.PROGRAM.floor);
+  assert.equal(a.provenance.llm.provider, null);
+  assert.match(a.provenance.llm.reason, /^not asked: an induced program answered$/);
+  assert.equal(P.PROGRAM_TIER.answered, before.answered + 1);
+  assert.equal(P.PROGRAM_TIER.lastNs, a.program.ns);
+  // one ledger event, route program, carrying the hash and the program and never the prompt's words
+  const asked = events(ASK_EVENT);
+  assert.equal(asked.length, 1);
+  assert.equal(asked[0].route, 'program');
+  assert.equal(asked[0].from, 'program');
+  assert.equal(asked[0].program, 'sub(mul(q0,q1),q2)');
+  assert.equal(asked[0].programNs, a.program.ns);
+  assert.equal(asked[0].promptHash, promptHash(BAKER));
+  assert.equal(JSON.stringify(asked[0]).includes('cookies'), false, JSON.stringify(asked[0]));
+  // the control: the same prompt with the tier off is the memory miss, so the tier is what answered
+  const off = await ask(brain, BAKER, { provider: 'null', programs: false });
+  assert.equal(off.from, 'memory');
+  assert.equal(off.provenance.answer, 'memory');
+  t.diagnostic('program tier: ' + a.program.text + ' answered ' + a.program.answer + ' in ' + a.program.ns + ' ns (performance.now()), level ' + a.program.level);
+  console.log('program tier: from ' + a.from + ', route ' + a.route + ', provenance ' + a.provenance.program + ', answer ' + a.program.answer + ', ' + a.program.ns + ' ns');
+});
+
+test('the program tier falls through unchanged: no matching program, a level below the floor, a partial parse', async (t) => {
+  const P = await import('../act/prompt.mjs');
+  const { brain } = newBrain(t, { name: 'program-miss' });
+  const store = await plantedStore(BAKER, 'sub(mul(q0,q1),q2)', 1);
+  // (1) no kept program shares this sentence's pattern (the store holds the baker's cue pattern only)
+  const I = await import('../reason/induce.mjs');
+  assert.notEqual(I.patterns(I.parse(STAMPS)).cue, I.patterns(I.parse(BAKER)).cue, 'the control sentence has another pattern');
+  let before = { ...P.PROGRAM_TIER };
+  const miss = await ask(brain, STAMPS, { provider: 'null', programs: store });
+  const missOff = await ask(brain, STAMPS, { provider: 'null', programs: false });
+  assert.deepEqual(shapeOf(miss), shapeOf(missOff));
+  assert.equal(miss.from, 'memory');
+  assert.equal(P.PROGRAM_TIER.missed, before.missed + 1, 'the tier was asked and missed');
+  assert.equal(P.PROGRAM_TIER.answered, before.answered);
+  // (2) the level that would answer has a development precision below PROGRAM.floor
+  const low = await plantedStore(BAKER, 'sub(mul(q0,q1),q2)', 0.1);
+  assert.ok(0.1 < P.PROGRAM.floor);
+  before = { ...P.PROGRAM_TIER };
+  const below = await ask(brain, BAKER, { provider: 'null', programs: low });
+  const belowOff = await ask(brain, BAKER, { provider: 'null', programs: false });
+  assert.deepEqual(shapeOf(below), shapeOf(belowOff));
+  assert.equal(P.PROGRAM_TIER.missed, before.missed + 1);
+  // the same store at a floor under its precision answers: the floor, not the pattern, refused it
+  const swept = await ask(brain, BAKER, { provider: 'null', programs: low, programFloor: 0.05 });
+  assert.equal(swept.from, 'program');
+  // (3) a partial parse: the program leaves the third quantity unread (6 x 8 = 48 is a whole positive number)
+  const partial = await plantedStore(BAKER, 'mul(q0,q1)', 1);
+  before = { ...P.PROGRAM_TIER };
+  const part = await ask(brain, BAKER, { provider: 'null', programs: partial });
+  assert.deepEqual(shapeOf(part), shapeOf(belowOff));
+  assert.equal(P.PROGRAM_TIER.partial, before.partial + 1, 'answerFromPrograms hit, and gate 5 refused it');
+  assert.equal(P.PROGRAM_TIER.answered, before.answered);
+});
+
+test('a missing or unreadable program store skips the tier silently', async (t) => {
+  const P = await import('../act/prompt.mjs');
+  const { brain } = newBrain(t, { name: 'program-store' });
+  const dir = mkdtempSync(path.join(tmpdir(), 'brain-programs-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const absent = path.join(dir, 'induce-programs.json');
+  const before = { ...P.PROGRAM_TIER };
+  assert.equal(P.programStore(absent), null);
+  const a = await ask(brain, BAKER, { provider: 'null', programs: absent });
+  const off = await ask(brain, BAKER, { provider: 'null', programs: false });
+  assert.deepEqual(shapeOf(a), shapeOf(off));
+  assert.equal(P.PROGRAM_TIER.loads, before.loads);
+  assert.equal(P.PROGRAM_TIER.loadFailures, before.loadFailures, 'an absent store is not a failure');
+  assert.equal(P.PROGRAM_TIER.asked, before.asked, 'no store, no program asked');
+  // a store that is not JSON is counted as a failure once and skipped the same way
+  const { writeFileSync } = await import('node:fs');
+  const bad = path.join(dir, 'bad.json');
+  writeFileSync(bad, '{ not json');
+  const b = await ask(brain, BAKER, { provider: 'null', programs: bad });
+  assert.deepEqual(shapeOf(b), shapeOf(off));
+  assert.equal(P.PROGRAM_TIER.loadFailures, before.loadFailures + 1);
+  // the same planted store written to a file is read from disk and answers
+  const good = path.join(dir, 'good.json');
+  writeFileSync(good, JSON.stringify(await plantedStore(BAKER, 'sub(mul(q0,q1),q2)', 1)));
+  const c = await ask(brain, BAKER, { provider: 'null', programs: good });
+  assert.equal(c.from, 'program');
+  assert.equal(P.PROGRAM_TIER.loads, before.loads + 1);
+  P.resetPrograms();
+});
+
+test('the program tier never runs for a conversational prompt (hey) or an exact prompt (2+2)', async (t) => {
+  const P = await import('../act/prompt.mjs');
+  const { brain } = newBrain(t, { name: 'program-never' });
+  // a planted store WITH a program for the pattern 2+2 parses to (two quantities, no cue): the matched control below
+  // shows it fires on a word problem of that pattern, so its silence on 2+2 is the ordering, not an empty store
+  const I = await import('../reason/induce.mjs');
+  assert.equal(I.patterns(I.parse('2+2')).cue, I.patterns(I.parse(KITES)).cue);
+  const store = await plantedStore(KITES, 'add(q0,q1)', 1);
+  const before = { ...P.PROGRAM_TIER };
+  const hey = await ask(brain, 'hey', { provider: 'null', programs: store });
+  assert.equal(hey.from, 'native');
+  const four = await ask(brain, '2+2', { provider: 'null', programs: store });
+  assert.equal(four.from, 'exact');
+  assert.equal(four.text.split('\n').at(-1), '4');
+  // with the conversation region and the early exact path turned off, the tier still does not run on either
+  const hey2 = await ask(brain, 'hey', { provider: 'null', programs: store, converse: false });
+  assert.notEqual(hey2.from, 'program');
+  const four2 = await ask(brain, '2+2', { provider: 'null', programs: store, exact: false });
+  assert.equal(four2.from, 'exact', 'solve() computed it, so the tier was never asked');
+  assert.equal(P.PROGRAM_TIER.asked, before.asked, 'the tier was asked nothing');
+  assert.equal(P.PROGRAM_TIER.answered, before.answered);
+  assert.equal(P.PROGRAM_TIER.noQuantity, before.noQuantity + 1, 'hey with the conversation region off carries no quantity');
+  // the matched control: the same store answers the word problem of that pattern
+  const kites = await ask(brain, KITES, { provider: 'null', programs: store });
+  assert.equal(kites.from, 'program');
+  assert.equal(kites.program.answer, '18');
+});
+
+test('the program tier defers to the math region when a model cell may be reached, and fires model off', async () => {
+  const P = await import('../act/prompt.mjs');
+  const store = await plantedStore(BAKER, 'sub(mul(q0,q1),q2)', 1);
+  const before = { ...P.PROGRAM_TIER };
+  // no ask() here: programAnswer alone, so no socket can be opened by a region
+  assert.equal(P.programAnswer(BAKER, { programs: store, provider: 'env' }), null);
+  assert.equal(P.PROGRAM_TIER.deferred, before.deferred + 1);
+  const off = P.programAnswer(BAKER, { programs: store, provider: 'null' });
+  assert.equal(off.hit.program, 'sub(mul(q0,q1),q2)');
+  // board 31 (item wire-induce-verify): with the regions off a model still answers after the tier (its prose, alone
+  // 164/200 in bench/verdicts/math.json), so the tier defers there too; board 26 answered here, in front of the model
+  const d0 = P.PROGRAM_TIER.deferred;
+  assert.equal(P.programAnswer(BAKER, { programs: store, provider: 'env', regions: false }), null, 'regions off, a model named: the tier defers');
+  assert.equal(P.programAnswer(BAKER, { programs: store, provider: 'ollama', regions: false }), null);
+  assert.equal(P.programAnswer(BAKER, { programs: store }), null, 'no provider named: ask() would probe the local model, so the tier defers');
+  assert.equal(P.PROGRAM_TIER.deferred, d0 + 3);
+  assert.equal(P.programAnswer(BAKER, { programs: store, provider: 'null', regions: false }).hit.answer, '43', 'the matched control: model off, regions off, it fires');
+  assert.equal(P.programAnswer(BAKER, { programs: false, provider: 'null' }), null);
+});
+
+test('the program tier never answers a code prompt, model off or on, while the same store answers the same words as a word problem', async (t) => {
+  // board 31, item wire-induce-verify: board 26's tier answered a number to 5 of 161 HumanEval prompts model off and
+  // pre-empted the code region on them with a model (test/wire-induce-verify.mjs --before). The shape gate refuses a
+  // prompt without mathShape; the matched control is the same sentence without the function, which the same store answers.
+  const P = await import('../act/prompt.mjs');
+  const I = await import('../reason/induce.mjs');
+  const store = await plantedStore(BAKER, 'sub(mul(q0,q1),q2)', 1);
+  const CODE = '// ' + BAKER + '\nfunction cookiesLeft(trays, perTray, given) {\n}\n';
+  assert.ok(P.codeShape(CODE), 'the fixture is a code prompt');
+  assert.equal(P.mathShape(CODE), null);
+  const raw = I.answerFromPrograms(CODE, store);
+  assert.equal(raw && raw.answer, '43', 'the kept program itself matches the code prompt: only the gate refuses it');
+  let before = { ...P.PROGRAM_TIER };
+  assert.equal(P.programAnswer(CODE, { programs: store, provider: 'null' }), null);
+  assert.equal(P.PROGRAM_TIER.shape, before.shape + 1, 'refused by the shape gate');
+  assert.equal(P.PROGRAM_TIER.asked, before.asked, 'before the kept programs were asked');
+  assert.equal(P.programAnswer(CODE, { programs: store, provider: 'ollama' }), null, 'with a model it defers to the code region');
+  // through ask(), model off: the code prompt falls through exactly as with the tier off; the word problem does not
+  const { brain } = newBrain(t, { name: 'program-code' });
+  const on = await ask(brain, CODE, { provider: 'null', programs: store });
+  const off = await ask(brain, CODE, { provider: 'null', programs: false });
+  assert.notEqual(on.from, 'program');
+  assert.equal(on.from, off.from);
+  assert.equal(on.text, off.text);
+  before = { ...P.PROGRAM_TIER };
+  const word = await ask(brain, BAKER, { provider: 'null', programs: store });
+  assert.equal(word.from, 'program');
+  assert.equal(word.program.answer, '43');
+  assert.equal(P.PROGRAM_TIER.answered, before.answered + 1);
+});
+
+test('the shipped program store loads, and PROGRAM.floor is a precision its development leave-one-out printed', async () => {
+  const P = await import('../act/prompt.mjs');
+  const { existsSync } = await import('node:fs');
+  assert.ok(existsSync(P.PROGRAM_STORE), 'bench/verdicts/induce-programs.json is committed');
+  P.resetPrograms();
+  const kept = P.programStore();
+  assert.ok(kept && kept.levels && kept.devLoo, 'the store carries its levels and devLoo');
+  const printed = Object.values(kept.devLoo).map((x) => x.precision);
+  assert.ok(printed.includes(P.PROGRAM.floor), 'floor ' + P.PROGRAM.floor + ' is one of ' + printed.join(', '));
+  const admitted = Object.keys(kept.devLoo).filter((lv) => kept.devLoo[lv].precision >= P.PROGRAM.floor).sort();
+  const refused = Object.keys(kept.devLoo).filter((lv) => kept.devLoo[lv].precision < P.PROGRAM.floor).sort();
+  assert.ok(admitted.length >= 1 && refused.length >= 1, 'the floor admits some levels and refuses others: ' + admitted + ' | ' + refused);
+  assert.equal(P.programStore(), kept, 'read once, then the same object');
+});
+
+test('the program tier at the count level: the pattern names no x part, so gate 5 re-parses, and a cue word with no quantity is refused', async () => {
+  const P = await import('../act/prompt.mjs');
+  // (1) whole: a count-level program that reads q0, q1 and q2 answers 6 x 8 - 5 = 43
+  const whole = await plantedStore(BAKER, 'sub(mul(q0,q1),q2)', 1, 'count');
+  let before = { ...P.PROGRAM_TIER };
+  const g = P.programAnswer(BAKER, { programs: whole, provider: 'null' });
+  assert.equal(g.hit.level, 'count');
+  assert.equal(g.hit.pattern, 'n3');
+  assert.equal(g.hit.answer, '43');
+  assert.equal(g.quantities, 3);
+  assert.ok(Number.isInteger(g.ns) && g.ns > 0, 'ns ' + g.ns);
+  assert.equal(P.PROGRAM_TIER.answered, before.answered + 1);
+  // (2) partial at the count level: the program leaves q2 unread, so the re-parse refuses it
+  const part = await plantedStore(BAKER, 'mul(q0,q1)', 1, 'count');
+  before = { ...P.PROGRAM_TIER };
+  assert.equal(P.programAnswer(BAKER, { programs: part, provider: 'null' }), null);
+  assert.equal(P.PROGRAM_TIER.partial, before.partial + 1);
+  assert.equal(P.PROGRAM_TIER.answered, before.answered);
+  // (3) a number word the parse does not count ("no one"), under a program over named quantities only: QUANTITY_CUE
+  // lets it through, answerFromPrograms hits (a pair of dozens is 24), and the pattern's n0 refuses it as no quantity
+  const PAIR = 'No one bought a pair of dozens of eggs. How many eggs are there?';
+  const I = await import('../reason/induce.mjs');
+  assert.equal(I.parse(PAIR).pos.length, 0, 'the control: parse() reads no positional quantity here');
+  const named = await plantedStore(PAIR, 'mul(dozen,two)', 1, 'count');
+  before = { ...P.PROGRAM_TIER };
+  assert.equal(P.programAnswer(PAIR, { programs: named, provider: 'null' }), null);
+  assert.equal(P.PROGRAM_TIER.asked, before.asked + 1, 'the cue word reached the kept programs');
+  assert.equal(P.PROGRAM_TIER.noQuantity, before.noQuantity + 1, 'and the n0 pattern refused it');
+  assert.equal(P.PROGRAM_TIER.answered, before.answered);
+});

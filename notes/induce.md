@@ -155,3 +155,129 @@ answered 99 held-out records and got 2 right, so a floor on a level's developmen
 (`answerFromPrograms(..., { minPrecision })`, read from the store's devLoo) is the obvious next cut, and
 the residual (the development records no program reproduces, and those reproduced only by
 coincidence, not by the worked chain) is where the parse and the DSL grow next.
+
+## Wired (board 26, item wire-induce): the program tier in ask()
+
+- Where: act/prompt.mjs ask(), after the knowledge tier and before the reasoning regions, on either route. An
+  answer from it has from 'program', route 'program', native true, provenance.tier 'program', provenance.program
+  the program text, and program.ns (performance.now(), in ns); the first line names the program, its level, the
+  level's development precision and the floor, and the answer is the last line. The memory-miss end is unchanged.
+- Gates (the header comment in act/prompt.mjs numbers them):
+  1. the store loads: opts.programs is a path or a store object, false turns the tier off, absent means
+     bench/verdicts/induce-programs.json; a missing store skips the tier silently (and is looked for again);
+  2. solve() computes nothing on the prompt, and the prompt carries a quantity: QUANTITY_CUE (a digit or a number
+     word) before any parse, and the answering pattern's n part after it (n0 is refused);
+  3. no math region will be tried: with a model cell the tier defers (bench/verdicts/math.json arm pot5v, 180 of
+     200); model off (provider 'null', or regions false) it fires; (board 31 replaced this gate: see the section
+     below, the tier now answers only with provider 'null' and only a prompt with mathShape);
+  4. THE FLOOR (board 31: now 0.1046 on the re-induced store, the section below): the answering level's
+     development leave-one-out precision (the store's devLoo) is at least PROGRAM.floor = 0.1515, the cue level's printed 10/66 (bench/induce.mjs "by level named 19/312, cue 10/66,
+     count 6/314, role 5/8"). It admits role (0.625) and cue, refuses named (0.0609) and count (0.0191); chosen on
+     development only;
+  5. the parse is whole: the program reads every positional quantity (q0 to qn-1) and the leaves fit the search's
+     window of 12. Both counts come off the hit's pattern ('n3|qleft|x' is 3 positional, 0 named), so the parse
+     answerFromPrograms ran is not repeated; the count level ('n3', no x part) re-parses.
+
+### Measured
+
+- tests: `node --test test/act-prompt.test.mjs test/induce.test.mjs` printed `ℹ tests 39`, `ℹ pass 39`,
+  `ℹ fail 0` (seven program tier tests added to act-prompt: planted answer with provenance and ns, fall through
+  on no pattern / below the floor / partial parse, missing and unreadable store, never on hey or 2+2 with a
+  matched control that fires, deferral to the math region, the shipped store and its floor, the count level)
+- mutants (scratch copy of the tree, test/act-prompt.test.mjs): `mutants red 12 of 12` (tier off, no floor, no
+  whole-parse gate, no deferral, no solve gate, absent store read with a throw, no quantity gate, no n0 backstop,
+  whole gate skips the last quantity, count level trusts the pattern, native false, answer not last line)
+- one parse against the two-parse reference on every GSM8K test question, model off: `questions 1319 same 1319
+  diff 0 fired 111`; warm, gsm8k.797 `programAnswer warm 1000: median ns 29000, p10 18900, p90 46600` (38600
+  median before the second parse was removed, in the same scratch probe)
+- gate probe (scratch, development leave-one-out of the 718 records): no gate 700 answered, 40 right; floor 76,
+  15; floor and whole parse 64, 15; whole parse alone 345, 35
+- the full bench, `node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir bench/verdicts -- node
+  --max-old-space-size=4000 bench/ns.mjs` (bench/verdicts/ns.json at 2026-09-27T18:42:55.773Z; `BUDGET done exit
+  0: wall 1463.27 s, peak ram 1662.5MB, peak dir 53.7MB`):
+  - `program arm (reason/induce.mjs kept programs, bench/verdicts/induce-programs.json sha256 71d93fbfa1346d7a):
+    200 held-out records, answered 196 (98.0%), right 9 (4.5% of held out, precision 4.6%); held-out ids a kept
+    program cites 0; answer median 44500 ns, p99 117100 ns (p90 79100, min 17900, max 203100, mean 49952.6; 196
+    timed)` (modelCalls 0; this arm is the whole library with no floor and no gates)
+  - held out through ask(): `fell through to the next region: 199/200 (99.5%), provenance there
+    {"memory":187,"program":12}`; of the tier's 12, right 1 (gsm8k.1242)
+  - development through ask(): `provenance there {"memory":805,"program":77}`, of the 77 right 29 (development
+    records the programs were induced from, so in sample)
+  - `BAR: ... sub-token share 0.5% (1/200; solved 0, exact.word 1) ... BAR NOT MET`: ns.json's own bar counts
+    solved and exact, not program
+  - the held-out pool is now 243 records (the journals grew: bench/verdicts/public/gsm8k-public_1.jsonl names 1034
+    GSM8K ids), so the 200 differ from induce.json's: 72 shared, 0 in induce.json's development
+- the bar ask (scratch, the 200 held-out ids of ns.json through ask() with provider 'null'):
+  `ask gsm8k.1242 (held out, provider null): from program, route program, native true, program
+  shrink(shrink(q0,f0),f1), level role, answer 20, gold 20, right true, ns 63000`; `from program 12, right 1;
+  other provenance {"memory":187,"exact":1}; model calls 0 (provider null)`
+- control, the same 200 with programs false: `{"memory:wrong":199,"exact:right":1}`. The tier adds 1 right and
+  answers 11 wrong numbers where the memory-miss end was also wrong; the cue level went 0 of 10 on held out and
+  role 1 of 2, against a development leave-one-out of 15 of 64 behind both gates.
+- read: reason/induce.mjs (parse, patterns, leavesOf, answerFromPrograms and its minPrecision), bench/induce.mjs
+  printed lines in bench/verdicts/induce.json, bench/verdicts/induce-programs.json devLoo, bench/ns.mjs (askSet,
+  programArm, the quiet options), bench/verdicts/math.json arm pot5v, act/prompt.mjs (the tier order, regionFor,
+  answerFromKnowledge), test/prompt-regions.test.mjs (gsm8k.0 model off still answers from memory).
+- one smoke ask() early in the build ran without provider 'null' and reached regionCell's probe of the local
+  model port; every ask after it, in tests and scratch, passed provider 'null'.
+
+## Verified (board 31, item wire-induce-verify): no right to wrong flip, and the tier no longer answers in front of a model
+
+- Bar: `node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir bench/verdicts -- node --max-old-space-size=4000
+  test/wire-induce-verify.mjs` writes bench/verdicts/induce-wire.json (isTheBar true) and adds a wire block, 34
+  `wire: ` lines and a statement addition to bench/verdicts/ns.json (its own barMet stays false). The control is
+  the same script with `--before`, run on the tier as board 26 wired it: bench/verdicts/induce-wire-before.json
+  (isTheBar false). No flag was added to the loop: the tier off is `ask(..., { programs: false })`, which board 26
+  already carried.
+- Reproduce (the control run, board 26's store sha256 71d93fbfa1346d7a on board 26's draw rebuilt from the journals
+  at ns.json's 2026-09-27T18:42:55.773Z, pool 243): `answered 196 (98.0%), right 9 (4.5% of held out, precision
+  4.6%)`, `answer median 42200 ns, p99 166000 ns` (board 26 printed 44500 and 117100: timing moves run to run);
+  ask() on that draw `right to wrong 0, wrong to right 1`, the tier answered 12, right 1. ns.json at
+  2026-09-27T19:10:37.542Z (bench/ns.mjs, the build's bar command) printed `fell through to the next region:
+  199/200 (99.5%)`, `the same answer as ask() with solved off 199/199`, `sub-token share 0.5% (1/200 ...) BAR NOT
+  MET`; bench/ns.mjs was not re-run: `with every journal row on disk now: pool 0, drawn 0`, so a run today would
+  grade no held-out record and overwrite ns.json.
+- What the control found (model off flips were already 0, the teeth were elsewhere):
+  - `pre-emptions with a model 33`: HumanEval 5 of 161 under every model option (organism arm, the site's env
+    provider, no provider named), and with the regions off GSM8K 13 of 199 plus HumanEval 5; the later tiers
+    there are the math region (bench/verdicts/math.json pot5v 180/200) and the model's prose (alone 164/200),
+    against the tier's best admitted development precision 0.625.
+  - `the tier answered a number to 5` of 161 HumanEval code prompts model off (HumanEval_2_truncate_number,
+    HumanEval_18_how_many_times, HumanEval_54_same_chars, HumanEval_95_check_dict_case, HumanEval_98_count_upper).
+  - ns.json and induce.json held out `shared 78; the same ids: NO`.
+- The fix (act/prompt.mjs programAnswer, gate 3): the tier answers only with provider 'null' (any other provider,
+  or none named, defers: PROGRAM_TIER.deferred), and only a prompt with mathShape (PROGRAM_TIER.shape; all 1319
+  GSM8K test questions and their ALONE_PROMPT forms have it, printed `gsm8k 1319 mathShape question 1319 alone
+  prompt 1319`). Tests: the regions-off deferral (env, ollama, none) with the provider 'null' control, and a code
+  prompt built from the baker sentence that the kept program matches but the gate refuses, with the word problem
+  as the matched control. Mutants: shape gate removed `pass 24, fail 1`; deferral narrowed to regions-on
+  `pass 24, fail 1`.
+- The pool drift: bench/induce.mjs re-run (`node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir bench/verdicts
+  -- node --max-old-space-size=4000 bench/induce.mjs`, `BUDGET done exit 0: wall 19.87 s`) reads ns.json's
+  rows.development (1090) and split.heldOut.ids. The 200 are bench/public.mjs sampleIds at seed public/1 over the
+  229 GSM8K test records no development journal named at ns.json's 2026-09-27T19:10:37.542Z; rebuilt from the
+  journals at that instant `equal to ns.json's ids: yes`. It printed `development leave-one-out: 1067 of 1090
+  answered, 63 right (precision 5.9%); by level named 29/511, cue 16/153, count 10/379, role 8/24`, `held out:
+  ... answered 196 (98.0%), right 11 (5.5% of held out; precision 5.6%)`, `placebo ... right 6 (3.0%)`, store
+  405 programs, sha256 9126bf089d312f46.
+- The floor, chosen on development only by board 26's rule (the cue level's printed development leave-one-out
+  precision): PROGRAM.floor 0.1046 (16/153). It admits role (0.3333) and cue and refuses named (0.0568) and count
+  (0.0264). Held out was read after, not to choose it: `by level cue 3/20 = 0.15 clears, role 2/2 = 1 clears`.
+- After (bench/verdicts/induce-wire.json), on ns.json's 200 held-out ids:
+  - `right to wrong 0, wrong to right 5, both right 1, both wrong 194`, the tier answered 22, right 5 (ns bar
+    options; the site options printed the same counts);
+  - `pre-emptions with a model 0` (every option set, every population), `HumanEval numbers model off 0`,
+    `site: 5 of 5 prompts gave the same route, provenance and first line`, `sockets attempted 0`, `BAR MET`.
+- Tests: `node --test test/act-prompt.test.mjs test/induce.test.mjs test/wire-induce-verify.test.mjs` printed
+  `ℹ tests 44`, `ℹ pass 44`, `ℹ fail 0` (test/wire-induce-verify.test.mjs re-grades the flips from the verdict's
+  rows, rebuilds the draw, and checks every statement number against the printed lines, with a planted number
+  as its control).
+- Read: bench/ns.mjs (the draw, modelOffJournal, programArm, askSet and the quiet options), bench/induce.mjs,
+  bench/public.mjs (askArm, regionsOf, sampleIds, loadHumanEval, ALONE_PROMPT), act/ask-http.mjs (the site's
+  provider 'env' or 'null'), reason/induce.mjs answerFromPrograms, bench/verdicts/math.json arms,
+  bench/verdicts/public/humaneval-public_1.jsonl (the organism arm answers code with the model), and this file's
+  board 26 section (the tree's own prior attempt).
+- Open: bench/ns.mjs cannot draw a held-out set any more (pool 0: the GSM8K rung's journal names every test id);
+  it needs a pinned id list before it is re-run. ns.json's own program block (its `program arm` lines) was
+  printed on the old store; the wire lines carry the new one. A humaneval rung started before this fix loaded the
+  old gate.

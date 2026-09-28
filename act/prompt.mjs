@@ -82,6 +82,9 @@ import { solveMath } from '../reason/math.mjs';
 import { solvedFor } from '../reason/solved.mjs'; // Board 15 item ns (board 15 builder): the solved region, right after direct
 import { converse } from './converse.mjs'; // the native conversation region (his 2026-09-26 20:20: "it cant even respond to 'hi.'")
 import { synthesize, entryOf as codeEntryOf, docLines as codeDocLines } from '../reason/synth.mjs';
+// The program tier (board 26 builder, item wire-induce): programs bench/induce.mjs induced from development GSM8K records.
+// Importing it opens nothing: the kept store is read by programStore() on the first question that reaches the tier.
+import { answerFromPrograms, leafNames, leavesOf, parse as parseQuantities, readProgram } from '../reason/induce.mjs';
 
 /** The ledger event one ask writes. It carries a HASH of the prompt and never the prompt. */
 export const ASK_EVENT = 'act.ask';
@@ -1021,6 +1024,183 @@ function answerFromKnowledge(brain, text, k, opts, started) {
   return answer;
 }
 
+// ---------------------------------------------------------------- the program tier
+// THE PROGRAM TIER (board 26 builder, item wire-induce; ROUTE A of docs/RESEARCH-PARADIGM.md, his 2026-09-26 19:41
+// EDT order "there needs to be a paradigm shift"). reason/induce.mjs answerFromPrograms runs the programs
+// bench/induce.mjs induced from development GSM8K records (bench/verdicts/induce-programs.json, the kept store) on
+// the question's own parsed quantities: the answer is a PROGRAM run, not a stored answer, in microseconds, with no
+// model and no socket. Every answer carries its program as provenance.
+//
+// Where it sits: after the knowledge tier and before the reasoning regions, on either route. The direct table, the
+// conversation region, a solved template, the exact path and a fact memory holds all answer first, so an induced
+// program never second guesses any of them.
+//
+// When it fires. The whole library is right on 9 of 200 held-out records (bench/verdicts/induce.json heldOut,
+// precision 4.6%), so the tier answers ONLY when every gate below holds, and otherwise the ask goes on untouched:
+//   1. the store loads: opts.programs is a path or a store object, false turns the tier off, absent means
+//      PROGRAM_STORE; an absent or unreadable store skips the tier silently (an absent one is looked for again on
+//      the next question, so a store bench/induce.mjs writes later is picked up);
+//   2. solve() computes nothing on the prompt, and the prompt carries at least one quantity (QUANTITY_CUE before any
+//      parse, and the answering pattern's own count after it), so a greeting or 2+2 never reaches it;
+//   3. no model cell may answer after it, and the prompt has the math shape (board 31 builder, item wire-induce-verify).
+//      With any provider but 'null' (a named model, 'env', or none named, where ask() probes the local model) the tier
+//      DEFERS (PROGRAM_TIER.deferred): the math region, the code region and the model's own prose all come after it,
+//      and every one was measured above every level of the tier (bench/verdicts/math.json, qwen3:1.7b: pot5v 180/200,
+//      the model alone in prose 164/200, against the best level's development precision 0.625). Board 26 deferred to
+//      the math region only, and test/wire-induce-verify.mjs --before counted what that let through: the tier answering
+//      in front of the code region on 5 of 161 HumanEval prompts under every model option (2 of them seen live, the
+//      organism arm absent on HumanEval_2 and HumanEval_18 in bench/verdicts/public/humaneval-public_1.jsonl), and in
+//      front of the model's prose on 13 of 199 GSM8K held-out prompts with the regions off (33 in all). Model off, a
+//      prompt the tier may answer must have mathShape (a number, a question and a quantity cue; never a code, fact,
+//      url or command shape: PROGRAM_TIER.shape), the shape of the word problems the programs were induced from and
+//      of all 1319 GSM8K test questions; model off it had answered a number to 5 HumanEval code prompts;
+//   4. the level that answered has a development leave-one-out precision (the store's devLoo, which bench/induce.mjs
+//      printed as "by level named 29/511, cue 16/153, count 10/379, role 8/24") at or above PROGRAM.floor;
+//   5. the parse is whole: the program reads every positional quantity the parse extracted (q0 to qn-1) and the parse
+//      fits the search's leaf window, so no quantity the question wrote was ignored (PROGRAM_TIER.partial). Both counts
+//      are read off the pattern the hit was filed under (its n part, and its x part naming the named quantities), so
+//      the parse answerFromPrograms ran is not run a second time; the count level has no x part and re-parses.
+//
+// THE FLOOR. PROGRAM.floor is 0.1046, the cue level's printed development leave-one-out precision (16/153): it admits
+// role (8/24 = 0.3333) and cue, and refuses named (29/511 = 0.0568) and count (10/379 = 0.0264). The rule is board 26's
+// (the cue level's precision, then 10/66 = 0.1515 on its store); board 31 re-induced on ns.json's 200 held-out ids
+// (bench/verdicts/induce.json at 2026-09-27, development 1090 from ns.json rows.development) and re-read the number.
+// It is a number the bench printed, chosen on development only; held out was not read to choose it. opts.programFloor
+// replaces it for a sweep.
+/** Where bench/induce.mjs writes the kept programs (reason/induce.mjs abstract, per cue level and pattern). */
+export const PROGRAM_STORE = path.resolve(HERE, '..', 'bench', 'verdicts', 'induce-programs.json');
+/** floor: the least development leave-one-out precision of the answering level; maxLeaves: reason/induce.mjs search()'s leaf window. */
+export const PROGRAM = Object.freeze({ floor: 0.1046, floorFrom: 'bench/verdicts/induce.json development.leaveOneOut.byLevel.cue 16/153', maxLeaves: 12 });
+/** The tier's running counts, read by tests and benches: asked counts the prompts that passed QUANTITY_CUE and reached the kept programs. */
+export const PROGRAM_TIER = { loads: 0, loadFailures: 0, asked: 0, answered: 0, deferred: 0, noQuantity: 0, shape: 0, missed: 0, partial: 0, lastNs: 0 };
+const PSTORES = new Map();
+const PTREES = new Map();
+
+/**
+ * The kept store the tier answers from. Never throws.
+ * @param {string|object|boolean} [spec] a path, a store object (a test's planted one), false for none; absent: PROGRAM_STORE
+ * @returns {object|null}
+ */
+export function programStore(spec) {
+  if (spec === false) return null;
+  if (spec && typeof spec === 'object') return spec.levels && typeof spec.levels === 'object' ? spec : null;
+  const file = spec === undefined || spec === null || spec === true ? PROGRAM_STORE : path.resolve(String(spec));
+  const c = PSTORES.get(file);
+  if (c) return c.kept;
+  if (!fs.existsSync(file)) return null; // absent: not remembered, and probed without a throw
+  let kept = null;
+  try { const j = JSON.parse(fs.readFileSync(file, 'utf8')); kept = j && j.levels && typeof j.levels === 'object' ? j : null; } catch { kept = null; }
+  if (kept) PROGRAM_TIER.loads++; else PROGRAM_TIER.loadFailures++;
+  PSTORES.set(file, { kept });
+  return kept;
+}
+/** Forget every store read (a store rewritten on disk is read again by the next question). */
+export function resetPrograms() { PSTORES.clear(); }
+
+// Gate 2 before any parse: a superset of the positional quantities reason/induce.mjs parse() reads (a digit, a number
+// word, a hundred, a dozen). A prompt without one is refused here; one that has a cue word but parses to no positional
+// quantity is refused after the hit, by the pattern's n part.
+const QUANTITY_CUE = /\d|\b(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|dozen)\b/i;
+
+// Gate 5: every positional quantity is a leaf of the program, and the parse fits the search's window. n and the leaf
+// count come from the hit's pattern ('n3|qleft|x' has 3 positional and 0 named quantities); the count level ('n3')
+// names no x part, so that one level re-parses. Returns { quantities, whole }.
+function wholeParse(text, hit) {
+  const parts = String(hit.pattern).split('|');
+  const m = /^n(\d+)$/.exec(parts[0]);
+  if (!m) return { quantities: null, whole: false };
+  const n = Number(m[1]);
+  const x = parts.find((seg) => seg[0] === 'x');
+  const leaves = x !== undefined ? n + (x.length > 1 ? x.slice(1).split(',').length : 0) : leavesOf(parseQuantities(text)).length;
+  if (n === 0) return { quantities: 0, whole: false };
+  if (leaves > PROGRAM.maxLeaves) return { quantities: n, whole: false };
+  let used = PTREES.get(hit.program);
+  if (!used) { used = leafNames(readProgram(hit.program)); PTREES.set(hit.program, used); }
+  for (let i = 0; i < n; i++) if (!used.has('q' + i)) return { quantities: n, whole: false };
+  return { quantities: n, whole: true };
+}
+
+/**
+ * Ask the program tier (gates 1, 3, 4 and 5 above; ask() applies gate 2's solve() before it). Never throws.
+ * @param {string} text the prompt
+ * @param {object} [opts] { programs, programFloor, provider }: the tier answers only with provider 'null'
+ * @returns {object|null} null when a gate refused; otherwise { hit, precision, floor, quantities, ns, store }, ns the
+ *   nanoseconds (performance.now()) the parse, the kept programs and the gate took
+ */
+export function programAnswer(text, opts = {}) {
+  if (opts.programs === false) return null;
+  const kept = programStore(opts.programs);
+  if (!kept) return null;
+  // gate 3: a model cell may answer after the tier (any provider but 'null'), so the tier defers to it
+  if (opts.provider !== 'null') { PROGRAM_TIER.deferred++; return null; }
+  const floor = Number.isFinite(opts.programFloor) ? opts.programFloor : PROGRAM.floor;
+  const t0 = performance.now();
+  if (!QUANTITY_CUE.test(text)) { PROGRAM_TIER.noQuantity++; return null; }
+  // gate 3, model off: the word-problem shape the programs were induced from (never code, a fact, a url or a command)
+  if (!mathShape(text)) { PROGRAM_TIER.shape++; return null; }
+  PROGRAM_TIER.asked++;
+  let hit = null;
+  try { hit = answerFromPrograms(text, kept, { minPrecision: floor }); } catch { hit = null; }
+  if (!hit) { PROGRAM_TIER.missed++; return null; }
+  let g = null;
+  try { g = wholeParse(text, hit); } catch { g = null; }
+  const ns = Math.round((performance.now() - t0) * 1e6);
+  if (g && g.quantities === 0) { PROGRAM_TIER.noQuantity++; return null; }
+  if (!g || !g.whole) { PROGRAM_TIER.partial++; return null; }
+  PROGRAM_TIER.answered++;
+  PROGRAM_TIER.lastNs = ns;
+  const lv = kept.devLoo && kept.devLoo[hit.level];
+  return {
+    hit, precision: lv ? lv.precision : null, floor, quantities: g.quantities, ns,
+    store: opts.programs && typeof opts.programs === 'object' ? 'object' : path.relative(path.resolve(HERE, '..'), opts.programs ? path.resolve(String(opts.programs)) : PROGRAM_STORE).replaceAll('\\', '/'),
+  };
+}
+
+const NOT_ASKED_PROGRAM = 'not asked: an induced program answered';
+
+// The answer object of the program tier: from 'program', route 'program', native true (no model, no memory read, no
+// network), provenance.program the program text, program.ns the nanoseconds the tier took. The first line says which
+// program answered, at which level and development precision; the answer is the last line, where the one ruler reads it.
+function answerFromProgram(brain, text, g, started) {
+  const hash = promptHash(text);
+  const h = g.hit;
+  const head = 'answered by an induced program (' + h.program + ', level ' + h.level + ', development precision ' + g.precision + ' at floor ' + g.floor + ', ' + g.ns + ' ns), with no model and no network.';
+  const program = {
+    text: h.program, answer: h.answer, level: h.level, pattern: h.pattern, support: h.support, chain: h.chain, tried: h.tried,
+    records: h.records, precision: g.precision, floor: g.floor, quantities: g.quantities, ns: g.ns, store: g.store,
+  };
+  const answer = {
+    ok: true,
+    promptHash: hash,
+    promptChars: text.length,
+    from: 'program',
+    text: head + '\n' + h.answer,
+    memory: null,
+    exact: null,
+    native: true,
+    program,
+    cites: [],
+    redacted: 0,
+    redactedShapes: [],
+    provenance: {
+      answer: 'program', tier: 'program', program: h.program, method: 'program', level: h.level, precision: g.precision, floor: g.floor,
+      programNs: g.ns, modelAgreed: null, memoryHits: 0, webPages: 0,
+      llm: { provider: null, model: null, ms: 0, tokens: 0, ok: false, reason: NOT_ASKED_PROGRAM, fellBack: null, probed: null },
+    },
+    words: [],
+    ms: Date.now() - started,
+    route: 'program',
+    ticks: 0,
+    hops: [],
+  };
+  answer.seq = logAsk(brain, {
+    t: clockT(brain), gen: clockGen(brain), type: ASK_EVENT, by: SURFACE, route: 'program', promptHash: hash, promptChars: text.length, from: 'program',
+    provenance: 'program', tier: 'program', programNs: g.ns, program: h.program, level: h.level, method: 'program', modelAgreed: null,
+    memoryHits: 0, webPages: 0, redacted: 0, provider: null, model: null, llmMs: 0, llmOk: false, ms: answer.ms,
+  });
+  return answer;
+}
+
 // ---------------------------------------------------------------- the reasoning regions
 // THE REGIONS (Board 11, item public). A question the exact path cannot compute and memory does
 // not hold is no longer handed straight to one prose answer from the model cell when it has one
@@ -1374,6 +1554,8 @@ async function askViaRegion(brain, prompt, opts) {
  *   solved     the solved region (reason/solved.mjs): a SolvedMemory, true for the default one
  *              (state/self/ns-templates.jsonl), false or absent for none (BRAIN_SOLVED=1: default)
  *   learnSolved  true: a math region answer the memory verifies becomes a template
+ *   programs   the program tier (board 26, item wire-induce): false turns it off; a path or a store object replaces
+ *              PROGRAM_STORE; absent means PROGRAM_STORE when it is on disk. programFloor replaces PROGRAM.floor
  * @returns {Promise<object>} the answer, with provenance
  */
 export async function ask(brain, prompt, opts = {}) {
@@ -1435,6 +1617,16 @@ export async function ask(brain, prompt, opts = {}) {
     if (known && known.above && opts.prose !== true) {
       learnDirect(opts, text, { known, fq });
       return answerFromKnowledge(brain, text, known, opts, started);
+    }
+  }
+  // THE PROGRAM TIER (board 26 builder, item wire-induce): an induced program over the prompt's own quantities, after
+  // the knowledge tier and before the reasoning regions. Only when solve() computes nothing (the early path's null is
+  // reused, as the knowledge tier reuses it); its other gates are programAnswer's. opts.programs false skips it.
+  if (opts.programs !== false && opts.prose !== true) {
+    if (solved === undefined) solved = earlyMiss && ASK_FAST.on ? null : solve(text);
+    if (!solved) {
+      const prog = programAnswer(text, opts);
+      if (prog) return answerFromProgram(brain, text, prog, started);
     }
   }
   // The reasoning regions: after the exact path and the memory step, before every model cell, on

@@ -1,14 +1,29 @@
 // test/imagine.mutants.mjs: mutants for test/imagine.test.mjs. Each breaks one check the imagine
 // item requires, and the suite must go red on every one. The original file is restored in a
-// finally, whatever happens. Run it alone: it edits mind/imagine.mjs and capability/grid-invent.mjs
-// in place while it runs.
+// finally, whatever happens. Run it alone: it edits mind/imagine.mjs, capability/grid-invent.mjs
+// and bench/imagine.mjs in place while it runs.
+//
+// Board 28: it REFUSES to start while any bench/verdicts/imagine-*-partial.json (or
+// imagine-partial.json) is younger than ten minutes. bench/imagine.mjs keeps
+// imagine-running-partial.json fresh while it runs and removes it at the end, and every narrower run
+// writes a partial verdict when it ends. A bench started while a mutant sits in these files loads
+// the mutant (its workers import capability/grid-invent.mjs when they boot), and board 24a's mutants
+// ran while its bar launched; a young partial is the sign a bench is running or just ran.
 //
 //   node test/imagine.mutants.mjs
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..') + path.sep;
+// the guard: no mutant while a bench may be loading these files
+const YOUNG_MS = 10 * 60 * 1000;
+const VERDICTS = ROOT + 'bench' + path.sep + 'verdicts';
+const young = readdirSync(VERDICTS).filter((n) => /^imagine-(.*-)?partial\.json$/.test(n)).map((n) => ({ n, age: Date.now() - statSync(VERDICTS + path.sep + n).mtimeMs })).filter((x) => x.age < YOUNG_MS);
+if (young.length) {
+  console.log('refused: ' + young.map((x) => 'bench/verdicts/' + x.n + ' is ' + Math.round(x.age / 1000) + ' s old').join(', ') + '; a bench of bench/imagine.mjs is running or just ran, and a mutant in the files it loads would reach it. Run again when every imagine partial is ten minutes old.');
+  process.exit(2);
+}
 const MUTANTS = [
   { name: 'memory check off', file: 'mind/imagine.mjs', from: 'if (nov.inMemory) { rejected.inMemory++; continue; }', to: 'if (false) { rejected.inMemory++; continue; }' },
   { name: 'knowledge check off', file: 'mind/imagine.mjs', from: 'if (hit.length) { rejected.inKnowledge++; continue; }', to: 'if (false) { rejected.inKnowledge++; continue; }' },
@@ -31,6 +46,32 @@ const MUTANTS = [
   { name: 'a tie counts as beyond the null', file: 'bench/imagine.mjs', from: 'beyond = paired.filter(([v, c]) => v > c).length;', to: 'beyond = paired.filter(([v, c]) => v >= c).length;' },
   { name: 'a lead bar read as a count', file: 'bench/imagine.mjs', from: "  if (t === 'screen') return leadBar(objective) ? run.invented.solved - run.null.solved : run.invented.solved;", to: "  if (t === 'screen') return run.invented.solved;" },
   { name: 'transfer graded without a carry', file: 'bench/imagine.mjs', from: " && (o.template !== 'transfer' || r.carry));", to: ');' },
+
+  // board 24a: the bar decided from the rows, and the DreamCoder library arm
+  { name: 'a mean lead equal to the band meets the bar', file: 'bench/imagine.mjs', from: 'const met = seeds.length >= minSeeds && runsPerSeed >= minRuns && meanLead > band;', to: 'const met = seeds.length >= minSeeds && runsPerSeed >= minRuns && meanLead >= band;' },
+  { name: 'the band is the lead range alone', file: 'bench/imagine.mjs', from: 'const seedBand = rows.length ? Math.max(ranges.arm, ranges.control, ranges.lead) : null;', to: 'const seedBand = rows.length ? ranges.lead : null;' },
+  { name: 'the bar needs no seeds', file: 'bench/imagine.mjs', from: 'const met = seeds.length >= minSeeds && runsPerSeed', to: 'const met = seeds.length > 0 && runsPerSeed' },
+  { name: 'a fold sleeps on its own programs', file: 'bench/imagine.mjs', from: 'if (!x || G.foldOf(x.id, folds) === fold) continue;', to: 'if (!x) continue;' },
+  { name: 'the sleep reads a program that was not solved', file: 'bench/imagine.mjs', from: 'if (!a || a.solved !== true || !Array.isArray(a.names)) continue;', to: 'if (!a || !a.solved || !Array.isArray(a.names)) continue;' },
+  { name: 'offerable offers a task its own words', file: 'capability/grid-invent.mjs', from: 'return (library || []).concat(extra || []).filter((w) => w && !(w.sources || []).includes(taskId));', to: 'return (library || []).concat(extra || []).filter((w) => w);' },
+  { name: 'a word imagined under the prior forgets what fed it', file: 'capability/grid-invent.mjs', from: 'map.set(w.key, { ...w, sources: fed.slice() });', to: 'map.set(w.key, { ...w, sources: [] });' },
+  { name: 'the sleep keeps a routine that gains nothing', file: 'capability/grid-invent.mjs', from: 'if (c.gain > 0 && (!best', to: 'if (c.gain >= 0 && (!best' },
+  { name: 'the prior never reaches the operator draw', file: 'capability/grid-invent.mjs', from: 'if (opts.prior) space.operators = ', to: 'if (false) space.operators = ' },
+  { name: 'a program keeps its learned last step', file: 'capability/grid-invent.mjs', from: 'export function programSteps(names, byKey = new Map()) {\n  const ops = (names || []).slice();\n  while (ops.length && LEARNER_NAMES.has(ops[ops.length - 1])) ops.pop();', to: 'export function programSteps(names, byKey = new Map()) {\n  const ops = (names || []).slice();' },
+
+  // board 28: every budget is work, the bar runs every seed twice, and the results apply in job order
+  { name: 'the band ignores the run to run band', file: 'bench/imagine.mjs', from: 'const band = seedBand === null ? null : runBand === null ? seedBand : Math.max(seedBand, runBand);', to: 'const band = seedBand;' },
+  { name: 'one run meets the bar', file: 'bench/imagine.mjs', from: 'runsPerSeed >= minRuns && meanLead > band;', to: 'meanLead > band;' },
+  { name: 'a repeated run number counts as a second run', file: 'bench/imagine.mjs', from: 'Math.min(...bySeed.map((xs) => new Set(xs.map(runOf)).size))', to: 'Math.min(...bySeed.map((xs) => xs.length))' },
+  { name: 'the run to run band reads the lead alone', file: 'bench/imagine.mjs', from: 'Math.max(runRanges.arm, runRanges.control, runRanges.lead);', to: 'runRanges.lead;' },
+  { name: 'results apply in the order they finish', file: 'bench/imagine.mjs', from: '    done(j, x) { buf.set(j, x); flush(); },', to: '    done(j, x) { apply(j, x); next++; flush(); },' },
+  { name: 'a job sees the words of the job just before it', file: 'bench/imagine.mjs', from: 'return entered.stage === stage && entered.job <= job - lag;', to: 'return entered.stage === stage && entered.job < job;' },
+  { name: 'a grid run is whole only as a bar', file: 'bench/imagine.mjs', from: "  return typeof gv.n === 'number' && gv.n > 0 && gv.n === gv.of && gv.rows.length === gv.n && !gv.controlArm && !gv.repeatOf;", to: '  return false;' },
+  { name: 'the search budget reads the wall clock', file: 'capability/grid-invent.mjs', from: 'const over = workLimit === null ? () => now() > deadline : () => workSince(w0) > workLimit;', to: 'const over = () => now() > deadline;' },
+  // board 31: a cfg without seeds is refused, and the split names its ids
+  { name: 'the bench defaults a cfg without seeds', file: 'bench/imagine.mjs', from: "  if (!Array.isArray(cfg.seeds) || !cfg.seeds.length || !(Number.isInteger(cfg.runs) && cfg.runs >= 1)) throw new Error(", to: "  if (false) throw new Error(" },
+  { name: 'the split forgets the held out ids', file: 'bench/imagine.mjs', from: '      ids: Array.isArray(opts.heldOutIds) ? opts.heldOutIds.slice() : null,', to: '      ids: null,' },
+  { name: 'the admission budget reads the wall clock', file: 'capability/grid-invent.mjs', from: "const over = typeof work === 'number' && work >= 0 ? () => workSince(w0) > work : () => now() > deadline;", to: 'const over = () => now() > deadline;' },
 ];
 const runSuite = () => {
   const r = spawnSync(process.execPath, ['--max-old-space-size=2000', '--test', 'test/imagine.test.mjs'], { cwd: ROOT, encoding: 'utf8', timeout: 170_000 });

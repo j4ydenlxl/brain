@@ -5,8 +5,12 @@ Owner of `mind/imagine.mjs`, `capability/grid-invent.mjs`, `bench/imagine.mjs`,
 (Board 10, item imagine). His P14, verbatim: "Ai is algorithms. What if this had imagination? Could
 think outside the box? Could vision? Could create new things that have never been done before".
 
-The bar command is `node --max-old-space-size=4000 bench/imagine.mjs --split training --budget-ms
-3000 --workers 2`. The runs so far, one at a time, each the only bench process of this item:
+The bar command is `node --max-old-space-size=4000 bench/imagine.mjs --split training --budget-work
+1500 --workers 2` (board 31; before board 28 it was `--budget-ms 3000`, a wall clock), launched
+since board 24a through `node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir bench/verdicts --`.
+Since board 24a it runs three seeds and the library arm in one process and decides `barMet` from
+its own rows; since board 28 every budget is counted work and every seed runs twice. The runs so far, one at a time, each the only
+bench process of this item:
 
 | run | command options | wall | verdict |
 | --- | --- | --- | --- |
@@ -25,8 +29,18 @@ The bar command is `node --max-old-space-size=4000 bench/imagine.mjs --split tra
 | screen | the bar plus `--admit 64` | 799.48 s | `bench/verdicts/imagine-admit-64.json` |
 | budget | the bar plus `--budget-ms 6000` in place of 3000 | 1428.52 s | `bench/verdicts/imagine-budgetms-6000.json` |
 | budget s2 | the same plus `--seed s2` | 1426.16 s | `bench/verdicts/imagine-budgetms-6000-seed-s2.json` |
+| board 24a small | `--limit 8 --budget-ms 600 --mine-ms 200 --imagine-budget 80 --no-knowledge` | 25.07 s | `bench/verdicts/imagine-budgetms-600-minems-200-imaginebudget-80-knowledge-false-partial.json` |
+| board 24a ten ids | the bar plus `--ids` of ten tasks solved in earlier runs | 104.86 s | `bench/verdicts/imagine-partial.json` |
+| board 24a bar | the bar: seeds imagine-bench, s2, s3, the library arm on | 3192.1 s | `bench/verdicts/imagine.json` (isTheBar true, barMet false), overwritten by the next row |
+| board 24a verifier | the same command again | not kept | `bench/verdicts/imagine.json` at 2026-09-27T15:34:28Z (barMet true, a wall clock draw), superseded by board 31 |
+| board 28 small | `--limit 8 --imagine-budget 80 --no-knowledge`, work budgets 800 and 300, 2 runs | 56.83 s | `bench/verdicts/imagine-imaginebudget-80-knowledge-false-partial.json` |
+| board 28 ten ids | the bar plus `--ids` of 17 ids (10 of them timeouts of the new grid.json), work 800, 2 runs | 124.96 s | `bench/verdicts/imagine-partial.json` (overwrote board 24a's ten ids run) |
+| board 31 timing | `--limit 24 --runs 1 --seeds imagine-bench --budget-work 1500` | 55.17 s | `bench/verdicts/imagine-budgetwork-1500-seeds-imaginebench-runs-1-partial.json` |
+| board 31 bar | the bar: `--budget-work 1500`, seeds imagine-bench, s2, s3, each run twice, the library arm on | 2729.51 s | `bench/verdicts/imagine.json` (isTheBar true, barMet false) |
 
-Run 2 is the bar's verdict (node v24.15.0, isTheBar true). Every number below was printed by one of
+The board 24a bar run is the bar's verdict (node v24.15.0, isTheBar true, barMet false); run 2 was
+the verdict before it, and the sections after the board 24a one describe runs 1 and 2 and the
+suites around them. Every number below was printed by one of
 these runs or by a command named with it: `node bench/imagine.mjs --runs`, `node bench/imagine.mjs
 --objectives`, `node --test test/imagine.test.mjs`, `node test/imagine.mutants.mjs`, or a one off
 `node -e` over a verdict, or an analysis script named where it is used. Those scripts are
@@ -38,6 +52,299 @@ the same inputs, every output the note quotes came back identical, and a control
 different output did not. Two of those inputs are run 1's verdict, whose only copy is outside the
 repository: a second bar verdict in `bench/verdicts/` would be published by `tools/findings.mjs`
 as a finding of its own. The machine was shared with other builders while the runs ran.
+
+## Boards 28 and 31: one seed, one draw (item imagine-repeat)
+
+**Why.** Board 24a's bar printed invented 8, 9, 5 against null 3, 5, 6, a mean lead of 2.6667 inside a
+seed to seed band of 6: barMet false. Its verifier ran the SAME command again and printed invented
+8, 9, 7 against null 5, 5, 4, a mean lead of 3.3333 above a band of 2: barMet true, written over the
+verdict at 2026-09-27T15:34:28Z. **That barMet true was a wall clock draw and is superseded** by the
+board 31 verdict below: mining (1000 ms a task) and the search (3000 ms a task per arm) were budgeted
+by the wall clock, so a seed did not fix what a task searched (the invented library sizes differed
+between the two runs), and at one seed the null arm moved 3 to 5 (imagine-bench) and 6 to 4 (s3),
+as far as the seeds moved it. A band read from the seeds alone could not see that. The memory
+"external bench repeatability" says the same: a re-run of the same arm moved further than the arms.
+
+**What was built.** Board 28 wrote it and died on the session limit before a bar run or a note;
+board 31 read every file it left (the tests were green, 21 of 21), kept it, and finished:
+
+- **Every budget is work** (`capability/grid-invent.mjs`, the work meter). The search, the admission
+  screen, the invented words and the learners count what they do: calls (one per word or learner
+  application), cells (read, written, hashed, compared), learn and grade. `WORK_MS` weighs the
+  counts so one work ms is about one wall ms on this machine; the fit is `test/imagine-work-probe.mjs`,
+  whose board 28 run the file header records as calls 0.00123, cells 0.000036, learn 0, grade 0, work
+  over wall median 0.997 over 97 timed phases (board 31 did not re-run the probe: no draw depends on
+  the weights, they are a unit). `searchWith` and `solveWith` take `opts.work`, `admitFor` a work
+  budget. `--budget-work N` and `--mine-work M` name the budgets (`--budget-ms` and `--mine-ms` are
+  read as the same work budgets). The wall clock is printed and never budgets a draw: it only stops
+  a job at 4 times its budget plus 4000 ms (`WALL_SAFETY`), and every such stop is counted and
+  printed, because under a heavy load a wall limit that binds first would bring back the very
+  movement this removes (the same failure is filed against another project's deterministic mode,
+  spoorendonk/coso issue 209, read while this ran).
+- **Results apply in job order.** Board 24a offered a job the words of whichever jobs had FINISHED,
+  which depends on the machine. `inOrder` applies results in job order, and `visibleAt` offers job j
+  of a stage only the words that jobs up to j minus `LAG` (2, the most workers) brought in, plus
+  every earlier stage's, so the worker that finishes first decides nothing.
+- **Every seed runs twice** (`--runs 2`, the default; mining included). `barOf` now reads two bands
+  over three numbers (the arm's count, the control's count, the lead): the seed to seed band (the
+  range across the seeds within one run, the largest over the runs) and the run to run band (the
+  range across the runs at one seed, the largest over the seeds). The band is the larger, `bound`
+  names which one set it, and `barMet` needs at least 3 seeds, every seed run at least twice, and a
+  mean lead strictly above the band. The library arm keeps its own two bands as the second
+  comparison, against the null and against the invented arm.
+- **The verdict carries both runs per seed** (`perRun`, `solvedWithInvented` as one array per run),
+  both bands, `bound`, and `runToRun`: per seed and arm the task rows whose status, program, words,
+  states or work came back different, the key list fingerprints of every library, and the mining
+  fingerprint. The statement says which band bound, and names the verdict it replaces.
+- **The mutants refuse to run beside a bench.** `test/imagine.mutants.mjs` edits
+  `capability/grid-invent.mjs`, `bench/imagine.mjs` and `mind/imagine.mjs` in place. A bench's
+  workers import `capability/grid-invent.mjs` when they boot, and a worker the wall safety replaces
+  boots again mid run, so a mutant in the file at that moment runs inside the bar; board 24a's first
+  bar launch had the mutants beside it and was relaunched. The bench now keeps
+  `bench/verdicts/imagine-running-partial.json` fresh every minute and removes it at the end, every
+  narrower run writes a partial verdict, and the harness refuses (exit 2) while any
+  `bench/verdicts/imagine-*-partial.json` is younger than ten minutes.
+- **Board 31**: the dead ternary is gone (`runImagineBench` defaulted `cfg.seeds` and `cfg.runs`
+  though `parseArgs` always sets them; it now refuses a cfg without them, and a test holds that);
+  the split names the development ids (the tasks `bench/verdicts/grid.json` solved, never scored), the
+  held out ids (the scored timeouts), the seeds and the runs. `contaminated` stays the reason, not
+  false: the scored tasks were seen in development (the DSL and the imagination's combinators were
+  written against the training split, and every scored task's train pairs were mined for words
+  offered to the OTHER scored tasks), which is the rule of `bench/gate.mjs` ("true with the reason
+  when a held-out record was ever seen in development") and of `test/contamination-split.test.mjs`
+  (a set that is not really held out gives the reason). No scored task's own pairs or test output fed
+  a word it was offered, so the comparison of the arms is clean; the absolute counts are in sample.
+- **The work budget, chosen by time and never by a solve.** A timing partial (24 tasks, one seed, one
+  run, 1500 work ms) printed `work ms per task invented 1381, null 1500.05, library 1498.27; wall ms
+  per task invented 1132.72, null 1347.28, library 1217.16` and `solve 47.37 s` for 72 jobs (0 solved
+  in every arm): about 0.88 wall ms per work ms. The bar is 195 tasks x 3 jobs x 3 seeds x 2 runs,
+  3510 jobs on 2 workers, so 1500 work ms is about 2320 s of solving, under an hour with room for the
+  shared load. `BAR_WORK` is 1500, `BAR_MINE_WORK` 300 (board 28).
+- **The scored set moved under the item.** Board 26 rewrote `bench/verdicts/grid.json` at
+  2026-09-27T18:54:29Z (isTheBar false, 400 of 400 rows, 167 solved, 195 timed out), so the bar
+  scores 195 timeouts where board 24a scored 236; the numbers are not comparable one to one.
+- **Not done here**: `tools/boundary-audit.mjs` lists 80 boundaries with 5 unlisted and 3 stale, all
+  in `bench/imagine.mjs` (the two worker `postMessage` boundaries changed shape); the orchestrator
+  allowlists them after this item lands.
+
+Board 28's two partials, read from their verdicts' printed lines, showed the draw fixed before any
+bar ran: at `--limit 8` (work 800) `run 1 against run 2 at one seed: mining identical; rows that came
+back different (status, program, words, states, work) 0 of 72`, and on ten timeouts `0 of 90`.
+
+### The bar, printed (board 31)
+
+The bar command, launched as the brief says, alone on this item, with 34098 MB free before it
+(`os.freemem()`):
+
+    node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir bench/verdicts -- node --max-old-space-size=4000 bench/imagine.mjs --split training --budget-work 1500 --workers 2
+
+The lines that decide it, verbatim from its stdout:
+
+    tasks 195 (the fixed vocabulary timed out on every one at 3000 ms in bench/verdicts/grid.json; so it solves 0 of them by construction; fold 0 99, fold 1 96); budget 1500 work ms per task per arm, mining 300 work ms per task; 2 runs of seeds imagine-bench, s2, s3
+    run 1 mining: 195 tasks, 0 found a program while mining, stopped by the wall clock safety 0, fingerprint deaeaae0, 18 s
+    run 2 mining: 195 tasks, 0 found a program while mining, stopped by the wall clock safety 0, fingerprint deaeaae0, 18.89 s
+    run 1 seed imagine-bench: solved with an added word: invented 2 (44f52bb0, 53b68214), null 2 (1c786137, 6773b310), library 2 (44f52bb0, 53b68214) of 195; without an added word: invented 0, null 0, library 0; found but wrong: invented 5, null 4, library 2
+    run 1 seed s2: solved with an added word: invented 1 (44f52bb0), null 2 (44f52bb0, 6773b310), library 3 (44f52bb0, 4be741c5, 53b68214) of 195; without an added word: invented 0, null 0, library 0; found but wrong: invented 4, null 4, library 5
+    run 1 seed s3: solved with an added word: invented 2 (44f52bb0, 53b68214), null 1 (44f52bb0), library 1 (53b68214) of 195; without an added word: invented 0, null 0, library 0; found but wrong: invented 5, null 3, library 5
+    run 2 seed imagine-bench: solved with an added word: invented 2 (44f52bb0, 53b68214), null 2 (1c786137, 6773b310), library 2 (44f52bb0, 53b68214) of 195; without an added word: invented 0, null 0, library 0; found but wrong: invented 5, null 4, library 2
+    run 2 seed s2: solved with an added word: invented 1 (44f52bb0), null 2 (44f52bb0, 6773b310), library 3 (44f52bb0, 4be741c5, 53b68214) of 195; without an added word: invented 0, null 0, library 0; found but wrong: invented 4, null 4, library 5
+    run 2 seed s3: solved with an added word: invented 2 (44f52bb0, 53b68214), null 1 (44f52bb0), library 1 (53b68214) of 195; without an added word: invented 0, null 0, library 0; found but wrong: invented 5, null 3, library 5
+    the bar, the invented arm against the null arm: invented 2, 1, 2 | 2, 1, 2; null 2, 2, 1 | 2, 2, 1; lead 0, -1, 1 | 0, -1, 1 (run 1 | run 2, seeds in the order imagine-bench, s2, s3); mean lead 0; seed to seed band 2 (the largest range across the 3 seeds within one run of: the invented count 1, the null count 1, the lead 2); run to run band 0 (the largest move between runs at one seed of: the invented count 0, the null count 0, the lead 0); band 2, set by the seed to seed band
+    barMet false: the mean lead 0 is not above the band 2, set by the seed to seed band
+    the library arm (DreamCoder: routines compressed from solved programs by description length, the imagination's draw refit to them, cross fitted by fold) against the same null: library 2, 3, 1 | 2, 3, 1; null 2, 2, 1 | 2, 2, 1; lead 0, 1, 0 | 0, 1, 0 (run 1 | run 2, seeds in the order imagine-bench, s2, s3); mean lead 0.3333; seed to seed band 2 (the largest range across the 3 seeds within one run of: the library count 2, the null count 1, the lead 1); run to run band 0 (the largest move between runs at one seed of: the library count 0, the null count 0, the lead 0); band 2, set by the seed to seed band; beyond the band false
+    the library arm against the invented arm: library 2, 3, 1 | 2, 3, 1; invented 2, 1, 2 | 2, 1, 2; lead 0, 2, -1 | 0, 2, -1 (run 1 | run 2, seeds in the order imagine-bench, s2, s3); mean lead 0.3333; seed to seed band 3 (the largest range across the 3 seeds within one run of: the library count 2, the invented count 1, the lead 3); run to run band 0 (the largest move between runs at one seed of: the library count 0, the invented count 0, the lead 0); band 3, set by the seed to seed band; beyond the band false
+    run 1 against run 2 at one seed: mining identical; rows that came back different (status, program, words, states, work) 0 of 1755: seed imagine-bench invented 0, null 0, library 0 of 195 (libraries identical); seed s2 invented 0, null 0, library 0 of 195 (libraries identical); seed s3 invented 0, null 0, library 0 of 195 (libraries identical)
+    per task over the seeds and runs (seed runs one arm solved it in minus the other, one vote per task): invented over null ahead 2, behind 2, sign test p 1; library over null ahead 2, behind 2, p 1; library over invented ahead 2, behind 1, p 1
+    phases: mine 36.89 s, invent and sleep 58.73 s, solve 2633.28 s over 2 runs of 3 seeds (run walls 1369.39 s, 1359.54 s); stopped by the wall clock safety: mining 0, solving 18; workers replaced 18; wall 2729.19 s; peak rss 1033 MB
+    wrote bench/verdicts/imagine.json (1.78 MB) (isTheBar true, barMet false)
+    BUDGET done exit 0: wall 2729.51 s, peak ram 1022.0MB, peak dir 58.0MB, cpu 5462.44 s, 1365 samples, record state/budget/last.json
+
+**Result: barMet false, and the draw is fixed.** Run 2 repeated run 1 row for row: 0 of 1755 task
+rows (195 tasks x 3 arms x 3 seeds) came back different, the mining fingerprint was the same
+(deaeaae0) and every library's key list fingerprint was the same, so the run to run band is 0 and
+the band, 2, is set by the seed to seed band. The invented arm solved 2, 1, 2 and the null 2, 2, 1
+at every seed of both runs: a mean lead of 0. The library arm (DreamCoder) solved 2, 3, 1, a mean
+lead of 0.3333 over the null, inside its band of 2. Per task, the invented arm was ahead on 2 tasks
+(44f52bb0, which it solved at every seed and the null at two, and 53b68214) and behind on 2
+(1c786137, 6773b310): sign test p 1.
+
+**Read from the rows, before and after writing this.** At 1500 work ms a task (about half the old
+3000 wall ms) every arm solves 1 to 3 of 195 where board 24a's arms solved 3 to 9 of 236 at 3000 ms,
+so the counts are too small to separate: 44f52bb0 and 53b68214 are the invented arm's only solves,
+and the null arm's 1c786137 and 6773b310 are tasks the invented arm never solved. Each sleep kept 1
+routine that was already a word (0 not already a word), as in board 24a: the development corpus is 90
+readable programs and the other fold fed 0 to 2 solves.
+
+**The wall safety bound on one task, the same way every time.** The bench printed `stopped by the
+wall clock safety: mining 0, solving 18; workers replaced 18`. All 18 are one task, 3631a71a, in all
+three arms at every seed of both runs (read from the verdict's rows): its 1500 work ms take longer
+than the 10000 ms safety. A one off probe (the session scratchpad, `solveWith` with the fixed
+vocabulary alone) printed `work 1500 status timeout searched 10857 reported work 1500.2737 wall ms
+10135 counts {"calls":30787,"cells":40622380,"learn":25782591,"grade":0}`: four 30x30 train pairs,
+and the learners' count (25782591) weighs 0 in `WORK_MS`, so this task is under priced by the fit.
+It did not move a row between the runs (the kills are in the 0 of 1755) and it cannot move the
+verdict (a solve by one arm at every seed would move the mean lead by 1, under the band of 2), but on
+a faster machine the job could end before the safety and grade differently. The fix is a refit of
+`WORK_MS` that prices `learn` (or a safety that does not bind at 4x), and then the bar again: left open.
+
+## Board 24a: the bar decided from its rows, and a DreamCoder library
+
+The brief for this round: the bench decides `barMet` from its own rows, true only when the
+invented arm solves MORE timed out tasks than the null by more than the seed to seed band, over
+at least three seeds, with the band printed; the verdict carries `split` (development, heldOut,
+contaminated); and ONE published idea is applied to the invention step, measured against the
+same null on the same seeds.
+
+**Result: barMet false, with the band printed.** Over the seeds imagine-bench, s2 and s3 the
+invented arm solved 8, 9 and 5 of the 236 timeouts and the null 3, 5 and 6: a mean lead of 2.6667
+against a seed to seed band of 6. The library arm (DreamCoder) solved 6, 5 and 8: a mean lead of
+1.6667 over the null against a band of 3, and a mean lead of -1 over the plain invented arm.
+
+### What changed
+
+- **One command, three seeds.** The bar command now runs the seeds `imagine-bench`, `s2` and `s3`
+  in one process (`--seeds a,b,c` names others; `--seed x` runs one and is a variant). Mining
+  runs once. Each seed draws its own imagination, its own null library of the same size and its
+  own library arm, and scores every arm on the same 236 timeouts.
+- **barMet from the rows** (`barOf` in `bench/imagine.mjs`). Per seed, the lead is invented
+  solves minus null solves. The band is the LARGEST range across the seeds of three numbers: the
+  invented count, the null count and the lead, that is how far one of them moved when only the
+  draw changed. `barMet` is true only with at least 3 seeds and a mean lead strictly above the
+  band, so a met bar is positive in every seed. A lead equal to the band is not met, and a steady
+  lead is not met when the counts themselves move more than it (tests hold both).
+- **The split.** `development` is the ARC-AGI-1 training material the vocabulary was invented on
+  (the DSL, the solved programs of `bench/verdicts/grid.json`, the mined train pairs). `heldOut`
+  is the 236 scored timeouts, with the two folds. `contaminated` is the reason, never false: every
+  scored task's train pairs were mined for words offered to the OTHER scored tasks, and the DSL was
+  written against the training split. No test output fed a word a task was offered.
+- **The control is the null arm**, as before: random compositions of the fixed vocabulary and
+  pairwise recombinations of the same memory, as many words as the invented library, through the
+  same screen and the same clock. The verdict names it in `control` and in its statement.
+
+### The published idea: DreamCoder's library learning
+
+DreamCoder (Ellis et al., PLDI 2021, arXiv 2006.08381) alternates WAKE, solving tasks with the
+current library, and SLEEP: abstraction adds to the library the program fragments that most
+compress the solved programs, and dreaming refits the generative model so the next search draws
+what solved before more often. "Dreaming with ARC" (Banburski et al., CBMM Memo 113) applied it
+to ARC. Applied here as the **library arm**, a third arm beside invented and null:
+
+- **Sleep (abstraction).** `compressLibrary` in `capability/grid-invent.mjs`. A solved program is
+  read into steps (`programSteps`: the learned last step dropped, an added word looked up by key).
+  A step costs 1 if it is a base word or a routine, else the length of its structural tokens. A
+  candidate is a contiguous run of two or more steps that is a grid to grid word, or one added
+  word. Adding it gains uses x (its length - 1) and costs lambda x its length. The best candidate
+  with a gain above 0 is added, the corpus is rewritten, and the search repeats, so a routine can
+  hold an earlier one.
+- **Refit (the grammar).** `libraryPrior` counts each base grid word in the programs (inside
+  added words too) and each imagination operator whose word was used. `dslSpace` with a prior gives
+  an operator (its count plus alpha) slots in the round robin draw and draws inner words in
+  proportion to their count plus alpha, routines by their uses plus alpha. Without a prior the
+  draws are exactly the old uniform ones.
+- **The library arm's words** (`libraryWords`): the same collapsed and mined words the invented
+  arm holds, then the routines, then imagination under the refit prior with the same seed, capped
+  at the invented library's size, so it never holds more words than the invented arm or the null.
+- **Cross fitting, so no scored task shapes a word it is offered.** The 236 timeouts split into
+  two folds by `foldOf` (FNV-1a of the id, modulo 2): 120 and 116. Stage A scores invented and
+  null on fold 0. The sleep for fold 1 reads the development programs (the solved programs of
+  grid.json, tasks never scored) plus the invented arm's SOLVED programs of fold 0 only
+  (`sleepCorpus`). Stage B scores invented, null and library on fold 1, interleaved. The sleep for
+  fold 0 reads the invented solves of fold 1. Stage C scores the library on fold 0. A routine
+  carries the programs it came from as sources, every word imagined under a prior carries the
+  tasks that fed that prior, and a word the library arm kept travels to the other fold with those
+  sources; `offerable` never offers a task a word whose sources hold it.
+- **Settings fixed before the first library run**, never tuned on its solves: 2 folds, lambda 1,
+  at most 24 routines, alpha 1 (`LIBRARY` in `bench/imagine.mjs`).
+
+### The bar, printed
+
+The bar command, launched as the brief says:
+
+    node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir bench/verdicts -- node --max-old-space-size=4000 bench/imagine.mjs --split training --budget-ms 3000 --workers 2
+
+The lines that decide it:
+
+    tasks 236 (the fixed vocabulary timed out on every one at 3000 ms in bench/verdicts/grid.json; so it solves 0 of them by construction; fold 0 120, fold 1 116)
+    the bar, the invented arm against the null arm on seeds imagine-bench, s2, s3: invented 8, 9, 5; null 3, 5, 6; lead 5, 4, -1; mean lead 2.6667; seed to seed band 6 (the largest range across the 3 seeds of: the invented count 4, the null count 3, the lead 6)
+    barMet false: the mean lead 2.6667 is not above the band 6
+    the library arm (DreamCoder: routines compressed from solved programs by description length, the imagination's draw refit to them, cross fitted by fold) against the same null on the same seeds: library 6, 5, 8; null 3, 5, 6; lead 3, 0, 2; mean lead 1.6667; seed to seed band 3 (the largest range across the 3 seeds of: the library count 3, the null count 3, the lead 3); beyond the band false
+    the library arm against the invented arm on the same seeds: library 6, 5, 8; invented 8, 9, 5; lead -2, -4, 3; mean lead -1; seed to seed band 7 (the largest range across the 3 seeds of: the library count 3, the invented count 4, the lead 7); beyond the band false
+    per task over the seeds (seeds one arm solved it in minus the other, one vote per task): invented over null ahead 10, behind 4, sign test p 0.1796; library over null ahead 7, behind 3, p 0.3438; library over invented ahead 4, behind 7, p 0.5488
+    phases: mine 120.72 s once (0 found a program while mining), invent and sleep 56.19 s, solve 3015.09 s over 3 seeds; wall 3192.1 s; peak rss 1724 MB
+    wrote bench/verdicts/imagine.json (isTheBar true, barMet false)
+    BUDGET done exit 0: wall 3192.40 s, peak ram 1703.3MB, peak dir 50.3MB, cpu 6945.02 s, 1597 samples, record state/budget/last.json
+
+Per seed, from the same run:
+
+    seed imagine-bench: solved with an added word: invented 8 (017c7c7b, 32597951, 44f52bb0, 53b68214, 794b24be, d4469b4b, ef135b50, ff28f65a), null 3 (44f52bb0, 6cdd2623, d4469b4b), library 6 (11852cab, 32597951, 44f52bb0, 6cdd2623, 794b24be, d4469b4b) of 236; without an added word: invented 0, null 0, library 0; found but wrong: invented 14, null 14, library 17
+    seed s2: solved with an added word: invented 9 (11852cab, 32597951, 44f52bb0, 4522001f, 53b68214, 73251a56, 794b24be, ba97ae07, d4469b4b), null 5 (44f52bb0, 4522001f, 6cdd2623, 794b24be, d4469b4b), library 5 (44f52bb0, 794b24be, ba97ae07, d4469b4b, ef135b50) of 236; without an added word: invented 0, null 0, library 0; found but wrong: invented 13, null 13, library 19
+    seed s3: solved with an added word: invented 5 (28e73c20, 44f52bb0, 794b24be, ba97ae07, d4469b4b), null 6 (31aa019c, 44f52bb0, 4522001f, 6773b310, 794b24be, d4469b4b), library 8 (11852cab, 239be575, 44f52bb0, 4522001f, 53b68214, 6773b310, 794b24be, d4469b4b) of 236; without an added word: invented 0, null 0, library 0; found but wrong: invented 13, null 15, library 16
+    seed imagine-bench by operator (invented arm words / solves): lift.object 232/0, lift.cell 238/0, lift.layer 241/0, superpose 229/7, quarter 176/0, fixpoint 241/2, lift.select 239/0, conjugate 142/0, analogy 92/0; imagination by round: round 1 1421 words, 6 tasks; round 2 409 words, 0 tasks
+    seed s2 by operator (invented arm words / solves): lift.object 234/1, lift.cell 239/0, lift.layer 239/0, superpose 232/5, quarter 177/0, fixpoint 230/1, lift.select 236/0, conjugate 125/1, analogy 88/0; imagination by round: round 1 1408 words, 5 tasks; round 2 392 words, 1 tasks
+    seed s3 by operator (invented arm words / solves): lift.object 241/0, lift.cell 234/0, lift.layer 237/0, superpose 235/1, quarter 175/0, fixpoint 234/1, lift.select 241/0, conjugate 142/0, analogy 93/0; imagination by round: round 1 1405 words, 2 tasks; round 2 427 words, 0 tasks
+    seed imagine-bench libraries: invented 3690 (collapse 24, collapse.generalised 138, timeout 241, timeout.generalised 1457, imagine 1830), null 3690; library fold 1 3690 (slept on 6 invented solves of the other fold and 93 development programs: 1 routines, 0 not already a word, description length 155 to 154; 1830 words imagined under the refit draw); library fold 0 3690 (slept on 2 invented solves of the other fold and 93 development programs: 1 routines, 0 not already a word, description length 139 to 138; 1830 words imagined under the refit draw)
+    seed imagine-bench kept through the gate: invented 9 (12 submitted, 0 refused), library 8 (9 submitted, 0 refused); null words that solved 4; mean novelty of the invented arm's kept words 0.3363; library solves by a routine 0, by a word imagined under the refit draw 3, by another word 3
+    seed s2 kept through the gate: invented 12 (12 submitted, 0 refused), library 5 (5 submitted, 0 refused); null words that solved 6; mean novelty of the invented arm's kept words 0.3135; library solves by a routine 0, by a word imagined under the refit draw 2, by another word 3
+    seed s3 kept through the gate: invented 5 (5 submitted, 0 refused), library 12 (14 submitted, 0 refused); null words that solved 6; mean novelty of the invented arm's kept words 0.287; library solves by a routine 0, by a word imagined under the refit draw 5, by another word 3
+
+Every stage of every seed printed killed 0, errors 0. The verdict is 1050060 bytes with 708 rows
+(236 tasks x 3 seeds), node v24.15.0, `at` 2026-09-27T14:36:15.204Z.
+
+### Why it failed, read from the rows
+
+Read before any fix, by a `node -e` over the verdict's rows (per task, per seed, per arm):
+
+- **The band is the lead's own range, 5, 4, -1.** In s3 the invented arm solved 5 and the null 6.
+- **The invented arm's extra solves do not recur.** Of the 13 distinct tasks it solved over the
+  three seeds, 3 were solved in all three (44f52bb0, 794b24be, d4469b4b), 3 in two and 7 in one.
+  The null solved 7 distinct, 2 in all three (44f52bb0, d4469b4b), 3 in two and 2 in one. The
+  tasks it solves in all three seeds, the null solves too (794b24be in two of its seeds).
+- **Which superpose words a seed draws decides its count.** The superpose operator's words were in
+  7 solves in imagine-bench, 5 in s2 and 1 in s3 (the by operator lines). 32597951 was solved in
+  imagine-bench and s2 by the invented arm, with different superpose words each time, and timed
+  out in s3; 53b68214 was solved by the invented arm in imagine-bench and s2 and in s3 only by the
+  library arm, each time with `both.hcat(id,andLR)` first. 19 of the invented arm's 22 solves over
+  the seeds end in a learned last step (localRule, extendTo, colormap and the like) fitted on the
+  grid a drawn word produced; so do 12 of the null's 14 and 17 of the library arm's 19.
+- So on average the invented arm is ahead (per task 10 ahead, 4 behind, sign test p 0.1796), but
+  the seed to seed swing in what the round robin draws is larger than the lead. No fix was made
+  after the bar: the brief takes a false barMet with the band printed as a landing, and a change
+  chosen on these seeds would be read off the scored tasks.
+
+### The library arm: what the sleep found
+
+- **The routines did nothing.** Each of the six sleeps kept 1 routine, already a word of the
+  library (0 not already a word), and shortened the corpus by 1 (for example 155 to 154). No
+  library solve used a routine: by a routine 0 in every seed. Its solves came from words imagined
+  under the refit draw (3, 2, 5) and other words (3, 3, 3).
+- **The corpus is too thin to compress.** A one off probe over `bench/verdicts/grid.json`
+  (`node test/imagine-sleep-probe.mjs`, written in the session scratchpad and copied into `test/`
+  with its paths made relative; re-run from there it printed the same bytes) printed `programs with steps 93 lengths
+  {"1":71,"2":17,"3":3,"4":2}`, `routines 1 before 122 after 121` and `chain(keepRareColor,cropBBox)
+  uses 3 gain 1`. With 71 of 93 programs one step long there is almost nothing to share; the sleep
+  adds 2 to 6 invented solves of the other fold per sleep, also short.
+- **The refit draw did move the imagination**: the library arm solved 12 distinct tasks, 8 of
+  them in one seed only, including 3 tasks the invented arm never solved in any seed (239be575, 6773b310,
+  6cdd2623). Against the
+  null it led in 2 seeds and tied in 1 (lead 3, 0, 2), inside its band of 3.
+- DreamCoder's gains come from compressing many solved programs that share structure; the idea
+  applied here is sound but starved. A larger corpus (the solved programs of every ARC run, or
+  the evaluation split's) is the next thing it needs, not a new setting.
+
+### Earlier board 24a runs (partial, isTheBar false)
+
+- **Ten ids** (the bar plus `--ids` of ten tasks solved in earlier runs, 104.86 s, `bench/verdicts/imagine-partial.json`):
+  `the bar, the invented arm against the null arm on seeds imagine-bench, s2, s3: invented 5, 6, 7; null 5, 5, 5; lead 0, 1, 2; mean lead 1; seed to seed band 2`,
+  then `barMet false: the mean lead 1 is not above the band 2`. Every stage printed killed 0, errors 0.
+- **Small** (`--limit 8 --budget-ms 600 --mine-ms 200 --imagine-budget 80 --no-knowledge`, 25.07 s,
+  `bench/verdicts/imagine-budgetms-600-minems-200-imaginebudget-80-knowledge-false-partial.json`):
+  every arm solved 0 in every seed, `barMet false: the mean lead 0 is not above the band 0`.
+- **A stopped launch.** The first launch of the bar command was stopped after its 120 s status
+  line, while mining: `node test/imagine.mutants.mjs` (which edits `capability/grid-invent.mjs`,
+  `bench/imagine.mjs` and `mind/imagine.mjs` in place) was run by mistake alongside it, and a
+  worker spawned then could have loaded a mutant. The harness restored every file (compared byte
+  for byte against a copy taken before), no other running bench imports these files, and the bar
+  was relaunched from scratch. The run above is that relaunch.
 
 ## What was built
 
@@ -149,9 +456,9 @@ Naming of other runs:
   `imagine-<option>-<value>.json` with isTheBar false, and also keeps its state under
   `state/imagine/partial/`.
 
-## The bar, printed
+## The bar before board 24a, printed (runs 1 and 2)
 
-Run 2, the current verdict:
+Run 2, the verdict before board 24a:
 
     tasks 236 (the fixed vocabulary timed out on every one at 3000 ms in bench/verdicts/grid.json)
     solved with invented primitives at the same budget: 4 of 236 (31aa019c, 44f52bb0, 794b24be, d4469b4b)
@@ -752,6 +1059,10 @@ and, for the objectives with a lead bar or a same metric control:
 
 ## What it says, and what it does not
 
+- **Board 24a, decided from the rows: not met.** Over three seeds in one launch the invented arm
+  led the null by 5, 4 and -1 (mean 2.6667) against a seed to seed band of 6. Per task it was ahead
+  on 10 and behind on 4 (p 0.1796). The lead is there on average and smaller than what one seed's
+  draw moves. The DreamCoder library arm did not change that: its routines were never used.
 - **On training, imagination does not clearly beat recombination.** The invented arm solved 4 in
   each of 3 runs; the null solved 3, 3 and 4. Invented was ahead in 2 runs and tied in 1 (sign
   test p 0.5). The invented arm was steadier: 3 tasks came back in all 3 runs.
@@ -811,7 +1122,9 @@ replicate, the last suite to run:
 
 ## Tests
 
-`node --test test/imagine.test.mjs`: 9 of 9 pass (duration_ms 1137.8948). The tests check:
+`node --test test/imagine.test.mjs` on node v24.15.0, after the board 31 bar run: `ℹ tests 22`,
+`ℹ pass 22`, `ℹ fail 0` (duration_ms 7464.9596); after the board 24a bar run it printed 17 of 17.
+The tests check:
 
 - a stored word, an exact knowledge title and a word within the floor are rejected, while a
   control operator in the same call proves the path can return something;
@@ -841,12 +1154,63 @@ replicate, the last suite to run:
 - a memorised program is doubted: `memorised` is true for a localRule that predicts neither pair
   from the other, false for one that does, false for a colour map and for one train pair; with
   doubt, the search prefers a fit that is not memorised and still answers with the fallback when
-  it finds nothing better; doubt is off by default.
+  it finds nothing better; doubt is off by default;
+- (board 24a) the bar is met only when the mean lead over at least three seeds is strictly above
+  the band: met at leads 3, 4, 2 (band 2); not met with two seeds, at a mean lead equal to the band
+  (1, 2, 3), with a lead of 5 in every seed when the counts move 6, or behind the control; the
+  band is the largest of the three ranges; a row that is not a number is not a seed; the bench
+  defaults to the three bar seeds and refuses a repeated seed;
+- a task votes once over the seeds, and a task both arms solved equally often casts no vote;
+- the sleep keeps a routine only when it shortens the corpus: a two word fragment used twice
+  (gain 0) is not kept, used three times it is (gain 1, the corpus shorter by exactly the gain), a
+  routine holds an earlier one (7 uses then 3, description length 17 to 11), one added word of
+  three tokens used twice is kept, and lambda 2 keeps nothing;
+- a solved program is read into steps (the learned last step dropped, an added word looked up by
+  key, null for a name it cannot read) and a run of steps into one word (base words chain, the
+  rest make a seq, a nested seq flattens);
+- the refit draw favours what solved: counts and operator slots are what the programs hold, a
+  word with 1000 uses is drawn more than half the time and under a fifth without a prior, a
+  routine is drawn by its uses, and without a prior each operator is drawn once a cycle;
+- the library arm never offers a task a word its own program shaped: base words first, a
+  routine keeps the programs it came from as sources, every word imagined under the prior carries
+  the tasks that fed it, `offerable` drops each of them for those tasks and offers everything to a
+  task that fed nothing, and the cap holds;
+- a fold is slept only on the solved programs of the other fold: the fold of an id never changes,
+  both folds hold tasks, and `sleepCorpus` reads neither its own fold, nor an unsolved or found but
+  wrong program, nor one it cannot read;
+- the bar command is not a variant (`--seed s2` and `--no-library` are), and on both ARC splits the
+  split names the cross fitting and gives `contaminated` as a reason, never false; (board 31) the
+  split names the development ids, the held out ids (no id in both), the seeds and the runs;
+- (board 28) the band is the larger of the seed to seed and the run to run band: a second run that
+  moves every count by 4 sets a band of 4 and unmeets a mean lead of 3 the seeds alone met, the same
+  run twice gives a run to run band of 0, a move of the lead alone binds, equal bands are named, and
+  one run (or a run number repeated, or a seed missing from run 2) never meets the bar;
+- (board 28) results apply in job order whatever order they finish in, and job j is offered only
+  the words of jobs up to j minus LAG: two stages whose jobs finish in different random orders
+  offer every job the same words, while offering every word applied so far (the board 24a way)
+  differs with the order (the control);
+- (board 28) a search under a work budget draws the same library and the same solves on any
+  clock: on a small planted set (the planted scene, the same scenes mirrored inside each object's
+  box, and a noise task), mining, the invented library, the admission and the solves are identical
+  twice and again with a word that burns 4 ms of wall clock per call; the planted mirror is solved,
+  the noise task times out by work, an admission cut by work stops at the same word; the control:
+  under a WALL budget the same slow word cuts the same search short (fewer states searched);
+- (board 28) a grid verdict ran the whole split by its own counts, not by its isTheBar (board 26
+  writes the training grid.json with isTheBar false), and the bar command is the defaults: the work
+  budgets and two runs;
+- (board 31) the bench refuses a cfg without seeds or runs instead of defaulting them.
 
-`node --test test/grid.test.mjs` stays green: 7 of 7 (duration_ms 725.5325).
+`node --test test/grid.test.mjs` stayed green: 7 of 7 (duration_ms 725.5325), before board 24a; it
+was not re-run in board 24a (the brief runs only this item's own test files).
 
 `node test/imagine.mutants.mjs` breaks one required check at a time and runs the suite. It
-printed `mutants killed 21 of 21` and `baseline: 9 tests, all pass`. The mutants:
+printed, after the board 31 bar run (the bar had exited and no imagine partial was younger than ten
+minutes), `baseline: 22 tests, all pass` and `mutants killed 42 of 42`, exit 0; the three source files
+were compared byte for byte against copies taken before and came back identical. After the board 24a
+bar run it printed 31 of 31 over 17 tests (before board 24a: 21 of 21 over 9 tests). The guard's
+control: with `bench/verdicts/imagine-guardcontrol-partial.json` written a moment before (then
+removed), the harness printed `refused: bench/verdicts/imagine-guardcontrol-partial.json is 0 s old;
+...` and exited 2 without touching a file. The mutants:
 
 - the memory, knowledge, null and floor checks turned off;
 - the held out rule, novelty rule and control requirement removed;
@@ -863,7 +1227,17 @@ printed `mutants killed 21 of 21` and `baseline: 9 tests, all pass`. The mutants
 - doubt dropping the fallback;
 - an objective's control never read;
 - a tie counted as beyond the null;
-- a lead bar read as a count.
+- a lead bar read as a count;
+- (board 24a) a mean lead equal to the band meeting the bar; the band taken as the lead range
+  alone; the bar needing no seeds; a fold sleeping on its own programs; the sleep reading a
+  program that was not solved; `offerable` offering a task its own words; a word imagined under
+  the prior forgetting what fed it; the sleep keeping a routine that gains nothing; the prior
+  never reaching the operator draw; a program keeping its learned last step;
+- (board 28) the band ignoring the run to run band; one run meeting the bar; a repeated run number
+  counted as a second run; the run to run band reading the lead alone; results applied in the order
+  they finish; a job seeing the words of the job just before it; a grid run whole only as a bar; the
+  search budget reading the wall clock; the admission budget reading the wall clock;
+- (board 31) the bench defaulting a cfg without seeds; the split forgetting the held out ids.
 
 **A mutant that never ran was counted as killed.** The first version of the last mutant left an
 unbalanced parenthesis, so `bench/imagine.mjs` failed to parse, the test file failed to load, and
@@ -892,4 +1266,59 @@ DOES NOT PARSE, mutant never ran`, `control: a no-op edit: SURVIVED, exit 0, pas
 - The state files are small. After run 2, objectives.jsonl was 19436 bytes (19 lines),
   patches.jsonl 4696 (7 lines) and vocabulary.json 2771. The verdict was 203100 bytes. No
   rotation is needed.
-- No model calls and no network.
+- Board 24a bar: `BUDGET done exit 0: wall 3192.40 s, peak ram 1703.3MB, peak dir 50.3MB, cpu
+  6945.02 s`; the bench printed peak rss 1724 MB. Free memory before the launch: 37888 MB
+  (`os.freemem()`). The verdict is 1050060 bytes, far under 100 MB. The ten ids run printed
+  `peak ram 1123.9MB`, the small run peak rss 553 MB.
+- Board 31 bar: `BUDGET done exit 0: wall 2729.51 s, peak ram 1022.0MB, peak dir 58.0MB, cpu
+  5462.44 s`; the bench printed peak rss 1033 MB and wrote a 1.78 MB verdict (1869286 bytes, 1170 rows:
+  195 tasks x 3 seeds x 2 runs, each row holding the three arms). The timing partial printed `peak ram
+  911.7MB`, wall 55.54 s. Free memory before the bar: 34098 MB.
+- No model calls and no network (model off: provider null, no socket, no call to port 11434).
+
+## Measured (board 24a): what was read
+
+- **The prior attempt**: this note in full; `bench/verdicts/imagine.json` as it stood (written
+  2026-09-26T19:52:35Z on node v22.22.2, invented 5 against null 5, no `barMet`);
+  `bench/verdicts/dream.json` (how another item states its split); and the uncommitted library
+  code a previous builder left in `capability/grid-invent.mjs` (the seq word, the prior draw,
+  `compressLibrary`, `libraryPrior`, `foldOf`, `programSteps`, `seqSpec`), kept and wired in, with
+  `libraryWords` rewritten and `offerable` added.
+- **The published way** (three pages and one search): the arXiv abstract page of DreamCoder
+  (2006.08381); a web search for "Dreaming with ARC" (CBMM Memo 113), whose result described the
+  compression as running over correct programs; the memo's PDF, which could not be rendered here
+  (no pdftoppm), and was not retried; the README of the mxbi/dreamcoder-arc repository, which gave
+  no detail of the method.
+- **Why the bar failed**, read before any fix and again after writing this note: the verdict's
+  rows per task, seed and arm (`node -e` over `bench/verdicts/imagine.json`), and the sleep probe
+  over `bench/verdicts/grid.json`. No fix followed, so there is no after run to read.
+- **Before the bar**: the small and ten ids runs, read to check that the stages, the folds and
+  the leakage guards ran (killed 0, errors 0 in every stage).
+
+## Measured (board 31): what was read, and the final bar
+
+- **The prior attempts**: `git diff --stat` on this item's files (1703 insertions, 380 deletions,
+  all uncommitted), `node --test test/imagine.test.mjs` first (21 of 21 green, so the working copy
+  was coherent and no repair was needed), then `bench/imagine.mjs` whole, the header and work meter
+  of `capability/grid-invent.mjs`, `test/imagine.test.mjs`, `test/imagine.mutants.mjs`,
+  `test/imagine-work-probe.mjs`, this note, and the printed lines of board 28's two partials
+  (`bench/verdicts/imagine-imaginebudget-80-knowledge-false-partial.json`, `imagine-partial.json`).
+  `bench/verdicts/imagine-running-partial.json` was a stale marker of board 28's killed bar launch
+  (`at` 2026-09-27T19:32:12Z); the board 31 bar rewrote and removed it.
+- **The house rules on the split**: `bench/gate.mjs` (the CONTAMINATION row) and
+  `test/contamination-split.test.mjs` (15 of 15 green after the split gained its ids).
+- **The published way** (one search): a web search on work budgets against wall clock limits for
+  reproducible search, which returned spoorendonk/coso issue 209 ("e2e deterministic_work fails
+  under load: wall clock binds before the work budget") and, from the same results, the practice in
+  program synthesis of budgeting by programs enumerated, which is hardware independent (read from
+  the search summary only; no result page was opened). The first is the failure the wall safety count watches for; it fired here on one task.
+- **Why the bar is barMet false**, read from the rows before writing and again after: every arm
+  solves 1 to 3 tasks at 1500 work ms, the lead is -1, 0 or 1 at each seed and identical in both
+  runs; the wall safety kills are one task, 3631a71a, read from the verdict's rows and a one off
+  probe of `solveWith` on it.
+- **The earlier barMet true at 2026-09-27T15:34:28Z was a wall clock draw, superseded.** The new
+  verdict names it in `supersedes` (`{"at":"2026-09-27T15:34:28.279Z","barMet":true,"byWork":false}`)
+  and in its statement.
+- The final bar's printed lines are in "The bar, printed (board 31)" above; its verdict is
+  `bench/verdicts/imagine.json`, `at` 2026-09-28T00:14:12.089Z, node v24.15.0, isTheBar true,
+  barMet false, variant null.

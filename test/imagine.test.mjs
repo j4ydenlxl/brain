@@ -10,6 +10,7 @@ import { Gate } from '../core/gate.mjs';
 import { Ledger } from '../core/ledger.mjs';
 import * as BENCH from '../bench/imagine.mjs';
 import { LEARNERS } from '../capability/grid-dsl.mjs';
+import { RNG } from '../core/rng.mjs';
 const { objectiveTemplates } = BENCH;
 
 const newGate = () => new Gate({ ledger: new Ledger({ ring: 256 }) });
@@ -333,4 +334,397 @@ test('the arms are paired by task, and a task votes once across runs', () => {
   assert.equal(s.pairing.taskAhead, 1, 'per task, task a votes once');
   assert.equal(s.pairing.taskBehind, 1);
   assert.equal(s.pairing.pTasks, 1);
+});
+
+// ---------------------------------------------------------------- board 24a: the bar from the rows, and the library arm
+test('the bar is met only when the mean lead over three or more seeds is above the seed to seed band', () => {
+  const rows = (arm, control) => arm.map((a, i) => ({ seed: 's' + i, arm: a, control: control[i] }));
+  // the seed to seed rule alone: one run per seed allowed here (board 28 needs two, asserted below)
+  const bar1 = (r) => BENCH.barOf(r, BENCH.MIN_SEEDS, 1);
+  // leads 3, 4, 2: mean 3; the counts move 1 and 1, the lead moves 2, so the band is 2
+  const met = bar1(rows([5, 6, 5], [2, 2, 3]));
+  assert.deepEqual(met.lead, [3, 4, 2]);
+  assert.deepEqual(met.ranges, { arm: 1, control: 1, lead: 2 });
+  assert.equal(met.band, 2);
+  assert.equal(met.meanLead, 3);
+  assert.equal(met.met, true);
+  assert.deepEqual(met.seeds, ['s0', 's1', 's2']);
+  // the same two seeds that led are not enough: the bar needs three
+  const two = bar1(rows([5, 6], [2, 2]));
+  assert.equal(two.met, false);
+  assert.match(two.why, /2 seeds, the bar needs 3/);
+  // a mean lead EQUAL to the band is not above it (leads 1, 2, 3: mean 2, band 2)
+  const equal = bar1(rows([1, 2, 3], [0, 0, 0]));
+  assert.equal(equal.meanLead, 2);
+  assert.equal(equal.band, 2);
+  assert.equal(equal.met, false);
+  // the band is the largest of the three ranges: a lead of 5 in every seed (its own range 0) is
+  // still not met when the counts themselves move 6 between seeds
+  const moving = bar1(rows([10, 16, 10], [5, 11, 5]));
+  assert.deepEqual(moving.lead, [5, 5, 5]);
+  assert.equal(moving.ranges.lead, 0);
+  assert.equal(moving.band, 6);
+  assert.equal(moving.met, false);
+  assert.equal(bar1(rows([10, 14, 10], [5, 9, 5])).met, true, 'band 4 under a lead of 5');
+  // the arm behind the control never meets it, however steady
+  const behind = bar1(rows([1, 1, 1], [4, 4, 4]));
+  assert.equal(behind.meanLead, -3);
+  assert.equal(behind.band, 0);
+  assert.equal(behind.met, false);
+  // a row that is not a number is not a seed; nothing at all is not met
+  assert.equal(bar1([{ arm: NaN, control: 1 }, ...rows([5, 6], [2, 2])]).seeds.length, 2);
+  const none = BENCH.barOf([]);
+  assert.deepEqual([none.met, none.band, none.meanLead], [false, null, null]);
+  // the bench runs at least the seeds the bar needs, all distinct
+  const d = BENCH.parseArgs([]);
+  assert.deepEqual(d.seeds, [...BENCH.BAR_SEEDS]);
+  assert.ok(d.seeds.length >= BENCH.MIN_SEEDS);
+  assert.equal(d.library, true);
+  assert.throws(() => BENCH.parseArgs(['--seeds', 'a,a,b']), /distinct/);
+  // board 28: the same rows under the bar's own rule are not met, one run is not enough
+  const oneRun = BENCH.barOf(rows([5, 6, 5], [2, 2, 3]));
+  assert.equal(oneRun.met, false);
+  assert.equal(oneRun.runBand, null);
+  assert.match(oneRun.why, /1 run at a seed, the bar needs 2/);
+  assert.equal(d.runs, BENCH.MIN_RUNS);
+  assert.ok(BENCH.MIN_RUNS >= 2);
+});
+
+test('a task votes once over the seeds', () => {
+  // x: a in 2 seeds, b in 0 (ahead); y: a 1, b 2 (behind); z: a 0, b 2 (behind); w: 1 and 1 (no vote)
+  const v = BENCH.taskVotes([{ a: ['x', 'y', 'w'], b: ['y', 'w'] }, { a: ['x'], b: ['z'] }, { a: [], b: ['z', 'y'] }]);
+  assert.deepEqual([v.ahead, v.behind], [1, 2]);
+  assert.equal(v.p, BENCH.signTest(1, 2));
+  assert.deepEqual(BENCH.taskVotes([]), { ahead: 0, behind: 0, p: BENCH.signTest(0, 0) });
+});
+
+test('the sleep keeps a routine only when it shortens the corpus, and a routine can hold an earlier one', () => {
+  const p = (id, ops) => ({ id, steps: G.programSteps(ops) });
+  // a fragment of two base words used twice gains 2 x 1 - 2 = 0: not kept
+  const twice = G.compressLibrary([p('a', ['flipH', 'rot90']), p('b', ['flipH', 'rot90'])]);
+  assert.equal(twice.routines.length, 0);
+  assert.equal(twice.after, twice.before);
+  // used three times it gains 3 x 1 - 2 = 1, and the corpus shrinks by exactly the gain
+  const thrice = G.compressLibrary([p('a', ['flipH', 'rot90']), p('b', ['flipH', 'rot90']), p('c', ['flipH', 'rot90', 'transpose'])]);
+  assert.equal(thrice.routines.length, 1);
+  assert.deepEqual(thrice.routines[0].spec, G.chainSpec(['flipH', 'rot90']));
+  assert.deepEqual([thrice.routines[0].uses, thrice.routines[0].dl, thrice.routines[0].gain], [3, 2, 1]);
+  assert.deepEqual(thrice.routines[0].from, ['a', 'b', 'c']);
+  assert.equal(thrice.before - thrice.after, 1);
+  // seven uses of flipH rot90 (gain 5) beat three of flipH rot90 transpose (gain 3); after the
+  // rewrite the routine plus transpose is two steps used three times (gain 1): a routine inside a routine
+  const nest = G.compressLibrary([
+    ...['p1', 'p2', 'p3'].map((id) => p(id, ['flipH', 'rot90', 'transpose'])),
+    ...['p4', 'p5', 'p6', 'p7'].map((id) => p(id, ['flipH', 'rot90'])),
+  ]);
+  assert.deepEqual(nest.routines.map((r) => [r.key, r.uses, r.dl, r.gain]), [['chain(flipH,rot90)', 7, 2, 5], ['chain(flipH,rot90,transpose)', 3, 2, 1]]);
+  assert.deepEqual(nest.routines[1].from, ['p1', 'p2', 'p3']);
+  assert.deepEqual([nest.before, nest.after], [17, 11]);
+  assert.equal(nest.before - nest.after, nest.routines.reduce((a, r) => a + r.gain, 0));
+  // one added word of three tokens used twice gains 2 x 2 - 3 = 1: an invented word the library keeps
+  const inv = { key: G.specKey(FLIP), spec: FLIP, invented: true, operator: 'lift.object' };
+  const one = G.compressLibrary([{ id: 'a', steps: [inv] }, { id: 'b', steps: [inv, { key: 'rot90', spec: { k: 'op', op: 'rot90' } }] }]);
+  assert.deepEqual(one.routines.map((r) => [r.key, r.uses, r.dl, r.gain]), [[G.specKey(FLIP), 2, 3, 1]]);
+  // lambda prices the library: at 2 the same corpus keeps nothing
+  assert.equal(G.compressLibrary([p('a', ['flipH', 'rot90']), p('b', ['flipH', 'rot90']), p('c', ['flipH', 'rot90'])], { lambda: 2 }).routines.length, 0);
+});
+
+test('a solved program is read into steps, and a run of steps into one word', () => {
+  // the learned last step is not part of the program
+  assert.deepEqual(G.programSteps(['flipH', 'rot90', 'localRule']).map((s) => [s.key, s.invented]), [['flipH', false], ['rot90', false]]);
+  const byKey = new Map([[G.specKey(FLIP), { key: G.specKey(FLIP), spec: FLIP, operator: 'lift.object' }]]);
+  const read = G.programSteps(['inv:' + G.specKey(FLIP), 'rot90'], byKey);
+  assert.deepEqual(read.map((s) => [s.key, s.invented, s.operator]), [[G.specKey(FLIP), true, 'lift.object'], ['rot90', false, null]]);
+  assert.equal(G.programSteps(['inv:not-a-word', 'rot90'], byKey), null, 'an added word it cannot look up');
+  assert.equal(G.programSteps(['notAWord'], byKey), null, 'a name that is neither a base word nor an added one');
+  // base words merge into a chain; anything else makes a seq; a nested seq flattens
+  assert.deepEqual(G.seqSpec([{ k: 'op', op: 'flipH' }, { k: 'op', op: 'rot90' }]), G.chainSpec(['flipH', 'rot90']));
+  const mixed = G.seqSpec([{ k: 'op', op: 'flipH' }, FLIP]);
+  assert.deepEqual(mixed, { k: 'seq', fs: [{ k: 'op', op: 'flipH' }, FLIP] });
+  assert.deepEqual(G.seqSpec([mixed, { k: 'op', op: 'rot90' }]), { k: 'seq', fs: [{ k: 'op', op: 'flipH' }, FLIP, { k: 'op', op: 'rot90' }] });
+  assert.equal(G.seqSpec([]), null);
+  assert.equal(G.seqSpec([{ k: 'op', op: 'flipH' }, null]), null);
+  assert.ok(G.isGridWord(mixed));
+});
+
+test('the refit draw favours what solved, and without a prior the draw is the uniform one', () => {
+  const prior = G.libraryPrior([{ steps: [{ spec: { k: 'op', op: 'flipH' } }, { spec: FLIP, invented: true, operator: 'lift.object' }] }], [], 1);
+  assert.deepEqual(prior.words, { flipH: 2 }, 'flipH alone and inside the added word');
+  assert.deepEqual(prior.ops, { 'lift.object': 1 });
+  assert.equal(G.operatorSlots(prior, 'lift.object'), 2);
+  assert.equal(G.operatorSlots(prior, 'lift.cell'), 1);
+  const plain = G.dslSpace();
+  const names = plain.operators.map((o) => o.name);
+  assert.equal(new Set(names).size, names.length, 'each operator once without a prior');
+  const refit = G.dslSpace({ prior });
+  assert.equal(refit.operators.length, names.length + 1);
+  assert.equal(refit.operators.filter((o) => o.name === 'lift.object').length, 2);
+  // the inner word a lift draws: 1000 uses of flipH against alpha 1 for every other word
+  const share = (space, rngSeed, is) => {
+    const op = space.operators.find((o) => o.name === 'lift.cell');
+    const rng = new RNG(rngSeed);
+    let n = 0, hit = 0;
+    for (let i = 0; i < 400; i++) { const c = op.make(null, rng); if (!c) continue; n++; if (is(c.spec.f)) hit++; }
+    assert.ok(n >= 100, 'enough draws came back to measure a share: ' + n);
+    return hit / n;
+  };
+  const isFlip = (f) => f && f.k === 'op' && f.op === 'flipH';
+  const heavy = G.dslSpace({ prior: { alpha: 1, words: { flipH: 1000 }, ops: {}, routines: [] } });
+  assert.ok(share(heavy, 'refit', isFlip) > 0.5, 'the heavy word is drawn more than half the time');
+  assert.ok(share(plain, 'refit', isFlip) < 0.2, 'the uniform draw does not favour it');
+  // a routine is drawn by its uses
+  const R = G.chainSpec(['flipH', 'rot90']);
+  const withRoutine = G.dslSpace({ prior: { alpha: 1, words: {}, ops: {}, routines: [{ key: G.specKey(R), spec: R, uses: 1000 }] } });
+  assert.ok(share(withRoutine, 'refit', (f) => f && G.specKey(f) === G.specKey(R)) > 0.5);
+});
+
+test('the library arm never offers a task a word its own program shaped', () => {
+  const base = [{ spec: FLIP, key: G.specKey(FLIP), source: 'collapse', sources: ['t1'] }];
+  const R = G.chainSpec(['flipH', 'rot90']);
+  const routines = [{ key: G.specKey(R), spec: R, uses: 3, gain: 1, from: ['t2', 't3'] }];
+  const lib = G.libraryWords({ memory: G.vocabularyMemory(), base, routines, prior: G.libraryPrior([], routines, 1), fedBy: ['t5', 't4', 't4'], budget: 40, rounds: 1, seed: 'library-test' });
+  assert.equal(lib.words[0].key, G.specKey(FLIP), 'the base words come first');
+  const routine = lib.words.find((w) => w.key === G.specKey(R));
+  assert.deepEqual([routine.source, routine.sources], ['library.routine', ['t2', 't3']]);
+  assert.equal(lib.routinesNew, 1);
+  const imagined = lib.words.filter((w) => w.source === 'imagine');
+  assert.ok(imagined.length > 0, 'the prior imagined words');
+  assert.equal(imagined.length, lib.imagined);
+  for (const w of imagined) assert.deepEqual(w.sources, ['t4', 't5']);
+  // offerable drops every word whose sources hold the task
+  const extra = [{ spec: { k: 'fix', f: { k: 'op', op: 'flipH' } }, key: 'fix(flipH)', source: 'imagine', sources: ['t9'] }];
+  const keys = (id) => G.offerable(lib.words, extra, id).map((w) => w.key);
+  assert.ok(!keys('t1').includes(G.specKey(FLIP)));
+  assert.ok(!keys('t2').includes(G.specKey(R)));
+  assert.equal(keys('t4').length, lib.words.length + 1 - imagined.length);
+  assert.ok(!keys('t9').includes('fix(flipH)'));
+  assert.equal(keys('t0').length, lib.words.length + 1, 'a task that fed nothing is offered everything');
+  // the cap holds the library at the size it is given
+  const capped = G.libraryWords({ memory: G.vocabularyMemory(), base, routines, fedBy: [], budget: 40, rounds: 1, seed: 'library-test', cap: 2 });
+  assert.deepEqual([capped.words.length, capped.imagined], [2, 0]);
+});
+
+test('a fold is slept only on the solved programs of the other fold', () => {
+  const ids = Array.from({ length: 40 }, (_, i) => 'task' + i);
+  const folds = ids.map((id) => G.foldOf(id));
+  assert.deepEqual(folds, ids.map((id) => G.foldOf(id)), 'the fold of an id never changes');
+  const f0 = ids.filter((id) => G.foldOf(id) === 0), f1 = ids.filter((id) => G.foldOf(id) === 1);
+  assert.ok(f0.length > 0 && f1.length > 4, 'both folds hold tasks: ' + f0.length + ' and ' + f1.length);
+  assert.ok(ids.every((id) => [0, 1, 2].includes(G.foldOf(id, 3))));
+  const row = (id, solved, names = ['flipH', 'rot90']) => ({ id, invented: { solved, names } });
+  const rows = [row(f0[0], true), row(f1[0], true), row(f1[1], false), row(f1[2], 'found'), row(f1[3], true, ['inv:missing']), row(f1[4], true)];
+  const dev = [{ id: 'dev', steps: G.programSteps(['transpose']) }];
+  const c = BENCH.sleepCorpus({ rows, fold: 0, folds: 2, devPrograms: dev });
+  assert.deepEqual(c.fed, [f1[0], f1[4]].sort(), 'only solved programs of the other fold that can be read');
+  assert.deepEqual(c.programs.map((p) => p.id), ['dev', f1[0], f1[4]]);
+  const other = BENCH.sleepCorpus({ rows, fold: 1, folds: 2, devPrograms: dev });
+  assert.deepEqual(other.fed, [f0[0]]);
+  assert.ok(!other.fed.some((id) => G.foldOf(id) === 1));
+});
+
+test('the bar command is not a variant, and its split names what fed the invention', () => {
+  assert.equal(BENCH.variantOf(BENCH.parseArgs([])), '');
+  assert.equal(BENCH.variantOf(BENCH.parseArgs(['--seeds', 'imagine-bench,s2,s3'])), '');
+  assert.match(BENCH.variantOf(BENCH.parseArgs(['--seed', 's2'])), /seeds-s2/);
+  assert.match(BENCH.variantOf(BENCH.parseArgs(['--no-library'])), /library-false/);
+  for (const arcSplit of ['training', 'evaluation']) {
+    const s = BENCH.splitFor({ arcSplit, n: 10, library: true, folds: 2 });
+    assert.equal(typeof s.contaminated, 'string', 'mining feeds the invention, so never false');
+    assert.ok(s.contaminated.length > 0);
+    assert.equal(s.heldOut.n, 10);
+    assert.equal(s.heldOut.folds, 2);
+    assert.match(s.heldOut.what, /cross fitted/);
+    assert.equal(s.development.arcSplit, 'training');
+  }
+  assert.doesNotMatch(BENCH.splitFor({ arcSplit: 'training' }).heldOut.what, /cross fitted/);
+  // board 31: the split names the development ids, the held out ids and the seeds, and says why it is contaminated
+  const named = BENCH.splitFor({ arcSplit: 'training', n: 2, development: 3, developmentIds: ['d1', 'd2', 'd3'], heldOutIds: ['h1', 'h2'], seeds: ['imagine-bench', 's2', 's3'], runs: 2 });
+  assert.deepEqual([named.development.ids, named.heldOut.ids, named.seeds, named.runs], [['d1', 'd2', 'd3'], ['h1', 'h2'], ['imagine-bench', 's2', 's3'], 2]);
+  assert.ok(!named.development.ids.some((id) => named.heldOut.ids.includes(id)), 'no development id is scored');
+  assert.match(named.contaminated, /written against/);
+  assert.match(named.contaminated, /never to itself/);
+  assert.deepEqual([BENCH.splitFor({}).development.ids, BENCH.splitFor({}).heldOut.ids, BENCH.splitFor({}).seeds], [null, null, null]);
+});
+
+test('the bench refuses a cfg without seeds or runs instead of defaulting them', async () => {
+  const d = BENCH.parseArgs([]);
+  await assert.rejects(BENCH.runImagineBench({ ...d, seeds: undefined }), /needs cfg.seeds/);
+  await assert.rejects(BENCH.runImagineBench({ ...d, seeds: [] }), /needs cfg.seeds/);
+  await assert.rejects(BENCH.runImagineBench({ ...d, runs: 0 }), /needs cfg.seeds and cfg.runs/);
+});
+
+// ---------------------------------------------------------------- board 28: one seed, one draw
+test('the band is the larger of the seed to seed and the run to run band, and one run never meets the bar', () => {
+  const at = (run, arm, control) => arm.map((a, i) => ({ seed: 's' + i, run, arm: a, control: control[i] }));
+  // run 1 alone: leads 3, 4, 2, mean 3 above a seed to seed band of 2; the seed to seed rule met it
+  const run1 = at(1, [9, 10, 9], [6, 6, 7]);
+  assert.equal(BENCH.barOf(run1, BENCH.MIN_SEEDS, 1).met, true);
+  // run 2 of the same seeds: every count moved 4, the leads did not. The run to run band is 4
+  // and binds; the mean lead 3 is not above it
+  const moved = BENCH.barOf(run1.concat(at(2, [5, 6, 5], [2, 2, 3])));
+  assert.deepEqual(moved.runs, [1, 2]);
+  assert.deepEqual(moved.rowRuns, [1, 1, 1, 2, 2, 2]);
+  assert.deepEqual(moved.ranges, { arm: 1, control: 1, lead: 2 });
+  assert.deepEqual(moved.runRanges, { arm: 4, control: 4, lead: 0 });
+  assert.deepEqual([moved.seedBand, moved.runBand, moved.band], [2, 4, 4]);
+  assert.equal(moved.meanLead, 3);
+  assert.equal(moved.bound, 'the run to run band');
+  assert.equal(moved.met, false);
+  assert.match(moved.why, /not above the band 4, set by the run to run band/);
+  // the same run twice: the run to run band is 0, the seed to seed band binds, and it is met
+  const same = BENCH.barOf(run1.concat(at(2, [9, 10, 9], [6, 6, 7])));
+  assert.deepEqual([same.seedBand, same.runBand, same.band, same.bound, same.met], [2, 0, 2, 'the seed to seed band', true]);
+  // a run to run move of the lead binds too (at s0 the control moved 3, the lead 3)
+  const lead = BENCH.barOf(run1.concat(at(2, [9, 10, 9], [3, 6, 7])));
+  assert.equal(lead.runRanges.lead, 3);
+  assert.equal(lead.runRanges.control, 3);
+  assert.equal(lead.band, Math.max(lead.seedBand, 3));
+  // equal bands are named as equal
+  assert.equal(BENCH.barOf(at(1, [5, 6, 5], [2, 2, 3]).concat(at(2, [7, 8, 7], [2, 2, 3]))).bound, 'both bands (equal)');
+  // one run: not met however large the lead; a run number repeated is still one run
+  const one = BENCH.barOf(at(1, [20, 20, 20], [0, 0, 0]));
+  assert.equal(one.met, false);
+  assert.equal(one.runsPerSeed, 1);
+  assert.equal(BENCH.barOf(at(1, [20, 20, 20], [0, 0, 0]).concat(at(1, [20, 20, 20], [0, 0, 0]))).met, false);
+  // a seed missing from run 2 has one run: not met
+  const missing = BENCH.barOf(at(1, [20, 20, 20], [0, 0, 0]).concat(at(2, [20, 20], [0, 0])));
+  assert.equal(missing.runsPerSeed, 1);
+  assert.equal(missing.met, false);
+  // two runs of three seeds with a steady lead above both bands: met
+  assert.equal(BENCH.barOf(at(1, [20, 20, 20], [0, 0, 0]).concat(at(2, [20, 20, 20], [0, 0, 0]))).met, true);
+});
+
+test('results are applied in job order, and a job is offered only the words of the jobs LAG before it', async () => {
+  // inOrder: finished 2, 0, 1 is applied 0, 1, 2
+  const applied = [];
+  const o = BENCH.inOrder((j, x) => applied.push([j, x]));
+  o.done(2, 'c');
+  assert.deepEqual(applied, []);
+  let reached = false;
+  const two = o.until(2).then(() => { reached = true; });
+  o.done(0, 'a');
+  await Promise.resolve();
+  assert.equal(reached, false, 'one of two applied');
+  o.done(1, 'b');
+  await two;
+  assert.deepEqual(applied, [[0, 'a'], [1, 'b'], [2, 'c']]);
+  assert.equal(o.applied, 3);
+  // visibleAt: job 5 sees what jobs up to 5 - LAG brought in, every earlier stage, and a carried word
+  const L = BENCH.LAG;
+  assert.ok(L >= 1);
+  assert.equal(BENCH.visibleAt({ stage: 0, job: 5 - L }, 0, 5), true);
+  assert.equal(BENCH.visibleAt({ stage: 0, job: 6 - L }, 0, 5), false);
+  assert.equal(BENCH.visibleAt({ stage: 0, job: 9 }, 1, 0), true);
+  assert.equal(BENCH.visibleAt({ stage: -1, job: 0 }, 0, 0), true);
+  assert.equal(BENCH.visibleAt(null, 0, 0), true);
+  assert.equal(BENCH.visibleAt({ stage: 1, job: 0 }, 0, 9), false);
+  // a stage on two workers whose jobs finish in a random order, the bench's way: job j waits for
+  // the jobs up to j - LAG, and every third job brings in a word. What each job is offered does
+  // not depend on the order; offering every word applied so far (the board 24a way) does.
+  const stage = async (seed, filtered) => {
+    let s = seed;
+    const rnd = () => (s = (s * 1103515245 + 12345) % 2147483648) / 2147483648;
+    const entered = new Map(), offered = [];
+    const order = BENCH.inOrder((j) => { if (j % 3 === 0) entered.set('w' + j, { stage: 0, job: j }); });
+    let next = 0;
+    const lane = async () => {
+      for (;;) {
+        if (next >= 30) return;
+        const j = next++;
+        await order.until(j - L + 1);
+        offered[j] = [...entered.keys()].filter((k) => !filtered || BENCH.visibleAt(entered.get(k), 0, j)).join(' ');
+        const ticks = Math.floor(rnd() * 12);
+        for (let t = 0; t < ticks; t++) await new Promise((r) => setImmediate(r));
+        order.done(j, null);
+      }
+    };
+    await Promise.all([lane(), lane()]);
+    return offered;
+  };
+  const a = await stage(1, true), b = await stage(987654321, true);
+  assert.equal(a.length, 30);
+  assert.deepEqual(a, b);
+  assert.equal(a[L], 'w0', 'job LAG sees job 0');
+  let differs = 0;
+  for (const s of [1, 7, 42, 99, 12345]) if (JSON.stringify(await stage(s, false)) !== JSON.stringify(await stage(s + 1000, false))) differs++;
+  assert.ok(differs > 0, 'the unfiltered stage depends on the finishing order');
+});
+
+test('a search under a work budget draws the same library and the same solves on any clock', () => {
+  // a small planted set: the planted scene, the same scenes mirrored top to bottom inside each
+  // object's box, and a noise task nothing solves
+  let x = 12345;
+  const rnd = () => (x = (x * 1103515245 + 12345) % 2147483648) / 2147483648;
+  const noise = () => Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => Math.floor(rnd() * 10)));
+  const eachV = (parts) => {
+    const g = Array.from({ length: 10 }, () => new Array(10).fill(0));
+    for (const [shape, color, r, c] of parts) shape.slice().reverse().forEach((row, y) => row.forEach((v, xx) => { if (v) g[r + y][c + xx] = color; }));
+    return { input: scene(parts, false), output: g };
+  };
+  const TASKS = {
+    planted: PLANTED,
+    plantedV: { train: [eachV([[A, 1, 1, 1], [B, 2, 5, 4]]), eachV([[B, 3, 0, 6], [A, 4, 6, 1]]), eachV([[C, 6, 2, 3], [A, 7, 6, 6]])], test: [eachV([[C, 8, 1, 1], [B, 9, 6, 5]])] },
+    hard: { train: [0, 1, 2].map(() => ({ input: noise(), output: noise() })), test: [{ input: noise(), output: noise() }] },
+  };
+  // a word that burns the wall clock and does nothing: invented, so the search does not count it,
+  // and it refuses every grid, so it adds no state
+  const spin = (ms) => { const e = performance.now() + ms; while (performance.now() < e); };
+  const slow = { name: 'inv:slow', key: 'slow', from: 'grid', to: 'grid', cost: 1, invented: true, spec: { k: 'op', op: 'identity' }, apply: () => { spin(4); return null; } };
+  const WORK = 400, MINE = 200;
+  const draw = (extra) => {
+    const minedRows = Object.entries(TASKS).map(([id, t]) => { const m = G.searchWith(G.arcTask(t), extra, { work: MINE, mine: 8 }); return { id, mined: m.mined || [], status: m.status, searched: m.searched, work: m.work, byWork: m.byWork }; });
+    const fromTimeouts = G.fromTimeouts(minedRows);
+    const imagined = G.imagineWords({ memory: G.vocabularyMemory().concat(fromTimeouts), budget: 400, seed: 'test-work' });
+    const library = fromTimeouts.concat(imagined.words);
+    const solves = Object.entries(TASKS).map(([id, t]) => {
+      const adm = G.admitFor(library, G.arcTask(t), 16, Infinity, WORK * 0.4);
+      const r = G.solveWith(t, adm.admitted.map((w) => G.asPrimitive(w)).filter(Boolean).concat(extra), { work: WORK - adm.work });
+      return { id, admitted: adm.admitted.map((w) => w.key), admitWork: adm.work, status: r.status, solved: r.solved, names: r.names, searched: r.searched, states: r.states, work: r.work, byWork: r.byWork };
+    });
+    // an admission the work cuts short: it stops at the same word every time
+    const c = G.admitFor(library, G.arcTask(TASKS.planted), 16, Infinity, 5);
+    const cutShort = { cut: c.cut, screened: c.screened, work: c.work, admitted: c.admitted.map((w) => w.key) };
+    return { mined: minedRows, library: library.map((w) => w.key), solves, cutShort };
+  };
+  const one = draw([]), two = draw([]), slowed = draw([slow]);
+  assert.ok(one.mined.every((m) => m.byWork && m.work > MINE && m.work < MINE + 50), 'mining stops on work: ' + one.mined.map((m) => m.work).join(', '));
+  assert.ok(one.mined.some((m) => m.mined.length > 0), 'mining kept a partial program');
+  assert.ok(one.library.length > 100, 'library ' + one.library.length);
+  // the same draw twice, and the same draw with the wall clock slowed: identical libraries and solves
+  assert.deepEqual(two, one);
+  assert.deepEqual(slowed.library, one.library);
+  assert.deepEqual(slowed.solves, one.solves);
+  assert.deepEqual(slowed.mined.map((m) => [m.id, m.status, m.searched, m.work, m.mined]), one.mined.map((m) => [m.id, m.status, m.searched, m.work, m.mined]));
+  assert.equal(one.cutShort.cut, true, 'the admission was cut by work');
+  assert.ok(one.cutShort.screened > 0 && one.cutShort.screened < one.library.length, 'screened ' + one.cutShort.screened);
+  assert.ok(one.cutShort.work > 5, 'work ' + one.cutShort.work);
+  const solved = one.solves.filter((s) => s.solved).map((s) => s.id);
+  assert.ok(solved.includes('plantedV'), 'solved: ' + solved.join(', '));
+  const hard = one.solves.find((s) => s.id === 'hard');
+  assert.deepEqual([hard.status, hard.byWork], ['timeout', true]);
+  // the control: under a WALL budget the same slowed word cuts the same search short
+  const wall = (extra) => G.solveWith(TASKS.hard, extra, { budgetMs: 300 });
+  wall([]);
+  const plain = wall([]), cut = wall([slow]);
+  assert.equal(plain.byWork, false);
+  assert.ok(cut.searched < plain.searched * 0.8, 'wall budget: slowed ' + cut.searched + ' against ' + plain.searched);
+});
+
+test('a grid verdict ran the whole split by its own counts, not by its isTheBar', () => {
+  const rows = Array.from({ length: 4 }, (_, i) => ({ id: 't' + i, status: i ? 'timeout' : 'found' }));
+  const whole = { isTheBar: false, n: 4, of: 4, rows, controlArm: false, repeatOf: null };
+  assert.equal(BENCH.gridWhole(whole), true, 'board 26: training is in sample, still the whole split');
+  assert.equal(BENCH.gridWhole({ ...whole, rows: rows.slice(1) }), false, 'a row missing');
+  assert.equal(BENCH.gridWhole({ ...whole, n: 3 }), false, 'fewer tasks than the split');
+  assert.equal(BENCH.gridWhole({ ...whole, controlArm: true }), false, 'a control arm is not the grid run');
+  assert.equal(BENCH.gridWhole({ ...whole, repeatOf: 'bench/verdicts/grid.json' }), false, 'a repeat is not the grid run');
+  assert.equal(BENCH.gridWhole({ ...whole, isTheBar: true, n: 3 }), true, 'a grid bar is whole by its own word');
+  assert.equal(BENCH.gridWhole(null), false);
+  assert.equal(BENCH.gridWhole({ n: 0, of: 0, rows: [] }), false, 'nothing ran');
+  // the bar command is the defaults: the work budgets and two runs
+  const d = BENCH.parseArgs(['--split', 'training', '--budget-work', String(BENCH.BAR_WORK), '--workers', '2']);
+  assert.equal(BENCH.variantOf(d), '');
+  assert.deepEqual([d.budgetWork, d.mineWork, d.runs], [BENCH.BAR_WORK, BENCH.BAR_MINE_WORK, 2]);
+  assert.match(BENCH.variantOf(BENCH.parseArgs(['--runs', '1'])), /runs-1/);
+  assert.throws(() => BENCH.parseArgs(['--runs', '0']), /--runs/);
 });
