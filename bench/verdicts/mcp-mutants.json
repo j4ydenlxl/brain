@@ -1,0 +1,298 @@
+{
+  "at": "2026-09-28T01:00:39.038Z",
+  "command": "node bench/mcp.mjs --mutants --scratch <scratch>",
+  "node": "v24.15.0",
+  "isTheBar": true,
+  "barMet": true,
+  "of": "the mutant pass of item mcp-server (board 32); the protocol bar is bench/verdicts/mcp.json",
+  "split": {
+    "development": "the mutant table was written from tools/mcp.mjs and the fix pass findings before this run; nothing is fit or tuned",
+    "heldOut": "none",
+    "why": "a mutant pass has no held-out data: each defect is either noticed by a test that passed on the unmutated control or it is not",
+    "contaminated": false
+  },
+  "control": "the unmutated transplant of tools/mcp.mjs (same imports, same probe header, no defect) ran the same suite first; a mutant counts as killed only when a test that passed there fails, and only when its probe proves the defect ran",
+  "model": "off: the suite passes provider \"none\" or is refused before any model; no mutant touches the provider path",
+  "suite": "test/mcp.test.mjs",
+  "baseline": {
+    "tests": 15,
+    "pass": 15,
+    "skipped": 0,
+    "fail": 0,
+    "exit": 0,
+    "ms": 2487.178,
+    "probeLines": 0,
+    "clockLegal": true
+  },
+  "timeoutMs": 120000,
+  "tally": {
+    "total": 16,
+    "executed": 16,
+    "killed": 16,
+    "survived": 0,
+    "notExecuted": 0
+  },
+  "mutants": [
+    {
+      "id": "m01",
+      "what": "a notification is answered",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 1,
+      "testsFailed": 1,
+      "testsReported": 15,
+      "killedBy": [
+        "a notification gets no answer: after notifications/initialized and an unknown notification, the first line back is the ping answer"
+      ],
+      "timedOut": false,
+      "ms": 2532.556,
+      "exit": 1
+    },
+    {
+      "id": "m02",
+      "what": "a line that is not JSON answers -32600, not -32700",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 1,
+      "testsFailed": 1,
+      "testsReported": 15,
+      "killedBy": [
+        "a malformed line answers -32700 with id null, and the server keeps serving"
+      ],
+      "timedOut": false,
+      "ms": 2589.656,
+      "exit": 1
+    },
+    {
+      "id": "m03",
+      "what": "the startup line goes to stdout",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 11,
+      "testsFailed": 11,
+      "testsReported": 15,
+      "killedBy": [
+        "a request: initialize echoes a known protocol version, answers LATEST for an unknown one, names the server and its package version",
+        "a notification gets no answer: after notifications/initialized and an unknown notification, the first line back is the ping answer",
+        "a malformed line answers -32700 with id null, and the server keeps serving",
+        "an unknown method answers -32601; a batch, an object id, a missing method, a wrong jsonrpc and a JSON null answer -32600",
+        "tool errors: a bad verdict name and a missing verdict file are isError true; an unknown tool is -32602; ask without a prompt is isError; provider env without the names is refused before any model",
+        "tools/list names the four tools, each with a description and an object inputSchema",
+        "ask: \"hey\" is answered natively with a JSON footer line; a prompt nothing carries is the memory miss (the control)",
+        "verdict and status return what the files say (read here independently)",
+        "knowledge with the store absent says so and is not an error",
+        "knowledge with the store present returns Paris as the top answer (skipped when the store is not on this host)",
+        "--state loads the named brain from BRAIN_STATE_DIR (the CLI path); a name not there falls back to the seed and says so"
+      ],
+      "timedOut": false,
+      "ms": 1996.932,
+      "exit": 1
+    },
+    {
+      "id": "m04",
+      "what": "stdin end exits 1",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 11,
+      "testsFailed": 11,
+      "testsReported": 15,
+      "killedBy": [
+        "a request: initialize echoes a known protocol version, answers LATEST for an unknown one, names the server and its package version",
+        "a notification gets no answer: after notifications/initialized and an unknown notification, the first line back is the ping answer",
+        "a malformed line answers -32700 with id null, and the server keeps serving",
+        "an unknown method answers -32601; a batch, an object id, a missing method, a wrong jsonrpc and a JSON null answer -32600",
+        "tool errors: a bad verdict name and a missing verdict file are isError true; an unknown tool is -32602; ask without a prompt is isError; provider env without the names is refused before any model",
+        "tools/list names the four tools, each with a description and an object inputSchema",
+        "ask: \"hey\" is answered natively with a JSON footer line; a prompt nothing carries is the memory miss (the control)",
+        "verdict and status return what the files say (read here independently)",
+        "knowledge with the store absent says so and is not an error",
+        "knowledge with the store present returns Paris as the top answer (skipped when the store is not on this host)",
+        "--state loads the named brain from BRAIN_STATE_DIR (the CLI path); a name not there falls back to the seed and says so"
+      ],
+      "timedOut": false,
+      "ms": 2585.064,
+      "exit": 1
+    },
+    {
+      "id": "m05",
+      "what": "the per call stderr log line is dropped",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 6,
+      "testsFailed": 1,
+      "testsReported": 15,
+      "killedBy": [
+        "tool errors: a bad verdict name and a missing verdict file are isError true; an unknown tool is -32602; ask without a prompt is isError; provider env without the names is refused before any model"
+      ],
+      "timedOut": false,
+      "ms": 2475.077,
+      "exit": 1
+    },
+    {
+      "id": "m06",
+      "what": "an unknown tool is not refused with -32602",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 6,
+      "testsFailed": 1,
+      "testsReported": 15,
+      "killedBy": [
+        "tool errors: a bad verdict name and a missing verdict file are isError true; an unknown tool is -32602; ask without a prompt is isError; provider env without the names is refused before any model"
+      ],
+      "timedOut": false,
+      "ms": 2527.153,
+      "exit": 1
+    },
+    {
+      "id": "m07",
+      "what": "a message that is not an object is not refused",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 11,
+      "testsFailed": 1,
+      "testsReported": 15,
+      "killedBy": [
+        "an unknown method answers -32601; a batch, an object id, a missing method, a wrong jsonrpc and a JSON null answer -32600"
+      ],
+      "timedOut": false,
+      "ms": 12472.016,
+      "exit": 1
+    },
+    {
+      "id": "m08",
+      "what": "arguments that are not an object are not refused",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 6,
+      "testsFailed": 1,
+      "testsReported": 15,
+      "killedBy": [
+        "tool errors: a bad verdict name and a missing verdict file are isError true; an unknown tool is -32602; ask without a prompt is isError; provider env without the names is refused before any model"
+      ],
+      "timedOut": false,
+      "ms": 2510.192,
+      "exit": 1
+    },
+    {
+      "id": "m09",
+      "what": "the footer never flags a memory miss",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 2,
+      "testsFailed": 1,
+      "testsReported": 15,
+      "killedBy": [
+        "ask: \"hey\" is answered natively with a JSON footer line; a prompt nothing carries is the memory miss (the control)"
+      ],
+      "timedOut": false,
+      "ms": 2527.221,
+      "exit": 1
+    },
+    {
+      "id": "m10",
+      "what": "the knowledge tool drops its answers",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 1,
+      "testsFailed": 1,
+      "testsReported": 15,
+      "killedBy": [
+        "knowledge with the store present returns Paris as the top answer (skipped when the store is not on this host)"
+      ],
+      "timedOut": false,
+      "ms": 2461.954,
+      "exit": 1
+    },
+    {
+      "id": "m11",
+      "what": "the verdict tool prints the command as the statement",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 1,
+      "testsFailed": 1,
+      "testsReported": 15,
+      "killedBy": [
+        "verdict and status return what the files say (read here independently)"
+      ],
+      "timedOut": false,
+      "ms": 2481.7,
+      "exit": 1
+    },
+    {
+      "id": "m12",
+      "what": "the status ladder line prints the wrong field",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 1,
+      "testsFailed": 1,
+      "testsReported": 15,
+      "killedBy": [
+        "verdict and status return what the files say (read here independently)"
+      ],
+      "timedOut": false,
+      "ms": 2424.355,
+      "exit": 1
+    },
+    {
+      "id": "m13",
+      "what": "--state is ignored",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 11,
+      "testsFailed": 1,
+      "testsReported": 15,
+      "killedBy": [
+        "--state loads the named brain from BRAIN_STATE_DIR (the CLI path); a name not there falls back to the seed and says so"
+      ],
+      "timedOut": false,
+      "ms": 2522.282,
+      "exit": 1
+    },
+    {
+      "id": "m14",
+      "what": "initialize always answers LATEST",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 1,
+      "testsFailed": 1,
+      "testsReported": 15,
+      "killedBy": [
+        "a request: initialize echoes a known protocol version, answers LATEST for an unknown one, names the server and its package version"
+      ],
+      "timedOut": false,
+      "ms": 2586.458,
+      "exit": 1
+    },
+    {
+      "id": "m15",
+      "what": "a blank line is answered",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 1,
+      "testsFailed": 1,
+      "testsReported": 15,
+      "killedBy": [
+        "a malformed line answers -32700 with id null, and the server keeps serving"
+      ],
+      "timedOut": false,
+      "ms": 2564.401,
+      "exit": 1
+    },
+    {
+      "id": "m16",
+      "what": "the verdict name is not checked",
+      "status": "killed",
+      "executed": true,
+      "probeLines": 2,
+      "testsFailed": 1,
+      "testsReported": 15,
+      "killedBy": [
+        "tool errors: a bad verdict name and a missing verdict file are isError true; an unknown tool is -32602; ask without a prompt is isError; provider env without the names is refused before any model"
+      ],
+      "timedOut": false,
+      "ms": 2526.614,
+      "exit": 1
+    }
+  ],
+  "statement": "The mutant pass asks whether test/mcp.test.mjs can notice tools/mcp.mjs breaking. The server was copied into a scratch directory with its imports pointed back at the tree and a probe added; the unmutated copy ran the suite first as the control: 15 of 15 tests passed in 2487.178 ms and the probe wrote 0 lines. Then 16 copies each carried one deliberate defect (a notification answered, the wrong parse error code, noise on stdout, a nonzero exit, a lost log line, an unknown tool or bad input let through, a footer, knowledge, verdict or status field falsified, --state ignored, the protocol version ignored, a blank line answered, the verdict name unchecked), and each defect's own code wrote a probe line when it ran. 16 of 16 were killed (a test that passed on the control failed), 0 survived and 0 never executed, so every defect this table names is one the suite catches. The provider env refusal is not mutated: removing it would let a call reach a model endpoint, and this pass runs model off."
+}

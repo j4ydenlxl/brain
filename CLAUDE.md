@@ -24,3 +24,7 @@ IF YOU ARE A SUBAGENT (spawned by the Workflow tool's agent(), by the Agent tool
 The work itself stays the same optimal work: every test, every bar, every number printed by a command. Only the report shrinks: a schema field holds the number or the exact printed line, never a narrative; a list holds the items, never a paragraph per item.
 
 IF YOU ARE THE ORCHESTRATOR: prefix every subagent prompt with the directive above (the board harnesses do it in run()), never use the Explore or Plan agent types (they do not load this file), and read MANUAL.md first.
+
+# The brain is a tool (his order 44, 2026-09-27)
+
+`tools/mcp.mjs` is a zero-dependency stdio MCP server (tools: ask, knowledge, verdict, status), registered as `brain` in the parent checkout's `.mcp.json`. A Claude session in this tree may call it instead of re-deriving what the organism already answers or what a verdict already prints; `notes/mcp.md` has the interface, `bench/verdicts/mcp.json` its bar. Developers start at `README.md` and `docs/DEVELOPERS.md`.

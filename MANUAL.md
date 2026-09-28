@@ -436,6 +436,12 @@ Followed by a 125-row prompt-to-idea map written by another model from this sect
 
 (Recorded before any answer. He quotes the ARC row of the 20:32 table back and asks why the gap is 76.75 points; "lock in" read as: focus on it now. The why is owed from the grid verdicts' printed breakdown of the 315 unsolved tasks; the lock-in is a board item on ARC launched from this clock read.)
 
+### His words, verbatim (2026-09-27, arrived mid-turn after the 20:58 EDT ARC answer, before the 21:14:54 EDT clock read)
+
+> it should surpass , its the baseline, its not what it is
+
+(Recorded before any answer. Read as: the frontier row is the BASELINE the brain must surpass, not a description of where it stands; the 20:58 line naming the no-model row Icecuber at 17 percent is context, never a bar. Order 4 keeps the published frontier row as its bar on every measure and prints NOT MET until it is passed.)
+
 ## §B. OBJECTIVES + PROGRESS (mine; terse; updated only after re-reading §A)
 
 Rules for this section (P9, his 2026-09-23 order on cache reads): objectives are his WHAT in order; STATE is the whole live picture in under 40 lines and is rewritten whole at every checkpoint; the full history is `brain/docs/LOG.md` (append-only, one line per checkpoint, never read in full at session start; the hook prints its last 3 lines). Numbers live in bench/verdicts and docs/NUMBERS.md, not here. Every fact I need survives on disk, none of it needs my context.

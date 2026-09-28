@@ -1,0 +1,179 @@
+{
+  "at": "2026-09-28T00:59:21.185Z",
+  "command": "node bench/mcp.mjs",
+  "node": "v24.15.0",
+  "isTheBar": true,
+  "barMet": true,
+  "split": {
+    "development": "the item text (board 32, mcp-server) and the fix pass findings fixed every call and its expected answer before the run; no data is fit or tuned",
+    "heldOut": "none",
+    "why": "a protocol conformance bar over fixed calls has no held-out data: each call either behaves as the MCP 2025-06-18 stdio transport and the item text require or it does not",
+    "contaminated": false
+  },
+  "control": "four negative controls run beside the checks they guard: ask \"qwzx vrbl plomf\" must be the memory miss (FALLTHROUGH_HEAD); ask \"What is the capital of Italy?\" must reach the knowledge route with an answer line the paris check rejects; knowledge \"qwzx vrbl plomf\", and the Paris header alone (which echoes its subject), must fail the Paris check; verdict \"../ladder\" must be isError true. The malformed line and the unknown tool are the protocol's own negative cases. The mutant pass (bench/verdicts/mcp-mutants.json) is the control on the test suite",
+  "tools": [
+    "ask",
+    "knowledge",
+    "status",
+    "verdict"
+  ],
+  "protocolVersion": "2025-06-18",
+  "serverInfo": {
+    "name": "brain",
+    "version": "0.1.0"
+  },
+  "model": "off: every ask passed provider \"none\" (provider null, no socket, no model call)",
+  "knowledgeStore": "present (bench/fixtures/wiki/store)",
+  "calls": [
+    {
+      "tool": "initialize",
+      "ms": 42.001,
+      "ok": true,
+      "firstLine": "{\"protocolVersion\":\"2025-06-18\",\"capabilities\":{\"tools\":{\"listChanged\":false}},\"serverInfo\":{\"name\":\"brain\",\"version\":\"0.1.0\"},\"instructions\":\"The Dilation brain as tools. ask answers natively, exactl",
+      "detail": "protocolVersion 2025-06-18, serverInfo brain 0.1.0, capabilities.tools true"
+    },
+    {
+      "tool": "tools/list",
+      "ms": 0.46,
+      "ok": true,
+      "firstLine": "{\"tools\":[{\"name\":\"ask\",\"description\":\"Ask the Dilation brain a question: act/prompt.mjs ask(), the path `node bin/brain.mjs ask` runs. It answers natively (greetings, who it is, what it can do), exac",
+      "names": [
+        "ask",
+        "knowledge",
+        "status",
+        "verdict"
+      ],
+      "detail": "tools ask, knowledge, status, verdict; each with a description and an object inputSchema true"
+    },
+    {
+      "tool": "ask hey",
+      "ms": 103.401,
+      "ok": true,
+      "firstLine": "answered natively by the conversation region (kind greeting, 263500 ns), with no model, no memory read and no network.",
+      "route": "direct",
+      "provenance": "native",
+      "ns": 263500,
+      "serverUs": 1077,
+      "detail": "footer: route direct, provenance native, native kind greeting, ns 263500, serverUs 1077, llm.provider null, memoryMiss false"
+    },
+    {
+      "tool": "ask miss (control)",
+      "ms": 10.674,
+      "ok": true,
+      "firstLine": "I do not carry that yet: I answer greetings and questions about myself natively, arithmetic and equations exactly, word problems with my own programs and facts I ingested from memory; no language mode",
+      "provenance": "memory",
+      "memoryMiss": true,
+      "detail": "starts with FALLTHROUGH_HEAD true, footer memoryMiss true, native null"
+    },
+    {
+      "tool": "ask capital of France",
+      "ms": 24.16,
+      "ok": true,
+      "firstLine": "from memory (knowledge tier, article \"Capital of France\", confidence 1 at floor 0.2), best first:",
+      "route": "knowledge",
+      "tier": "knowledge",
+      "provenance": "memory",
+      "answer": "paris",
+      "article": "Capital of France",
+      "serverUs": 23776,
+      "detail": "answer line: paris (article \"Capital of France\"); footer route knowledge, tier knowledge, provenance memory"
+    },
+    {
+      "tool": "ask capital of Italy (control)",
+      "ms": 14.836,
+      "ok": true,
+      "firstLine": "from memory (knowledge tier, article \"Italy\", confidence 0.6292 at floor 0.2), best first:",
+      "route": "knowledge",
+      "answer": "rome",
+      "article": "Italy",
+      "detail": "answer line: rome (article \"Italy\"); footer route knowledge; the paris check reads it as false"
+    },
+    {
+      "tool": "knowledge Paris",
+      "ms": 35.872,
+      "ok": true,
+      "firstLine": "knowledge tier: 3 answers and 3 facts for \"Paris\" (what), 5384 candidates, 33.767 ms",
+      "storePresent": true,
+      "answers": 3,
+      "top": {
+        "np": "paris",
+        "title": "Paris"
+      },
+      "detail": "top answer: paris (article \"Paris\"); answer lines 3 of the header's 3, fact lines 3 of 3"
+    },
+    {
+      "tool": "knowledge qwzx (control)",
+      "ms": 4.186,
+      "ok": true,
+      "firstLine": "knowledge tier: 0 answers and 0 facts for \"qwzx vrbl plomf\" (what), 0 candidates, 2.068 ms",
+      "answers": 0,
+      "detail": "the Paris check reads it as false (answer lines 0); on the Paris header alone, which echoes \"Paris\", it reads false"
+    },
+    {
+      "tool": "verdict public-gsm8k",
+      "ms": 6.218,
+      "ok": true,
+      "firstLine": "verdict public-gsm8k: barMet (absent), isTheBar true, at 2026-09-27T21:56:32.679Z",
+      "statementChars": 1785,
+      "detail": "the text carries bench/verdicts/public-gsm8k.json read here: its first line, command and statement (1785 chars) true"
+    },
+    {
+      "tool": "verdict ../ladder (control)",
+      "ms": 0.526,
+      "ok": true,
+      "firstLine": "the verdict name must match ^[a-z0-9-]+$ (at most 128 chars); got \"../ladder\""
+    },
+    {
+      "tool": "status",
+      "ms": 2.048,
+      "ok": true,
+      "firstLine": "VISION 44 orders listed. MET: 16. PARTIAL: 22. OPEN: 5. FROZEN: 1.",
+      "detail": "line 1 equals tools/vision-count.mjs on docs/VISION.md true; line 2 equals bench/verdicts/ladder.json line, at and barMet true"
+    },
+    {
+      "tool": "unknown tool",
+      "ms": 0.356,
+      "ok": true,
+      "firstLine": "error -32602: Unknown tool: no-such-tool (this server has ask, knowledge, verdict, status)"
+    },
+    {
+      "tool": "malformed line",
+      "ms": 0.282,
+      "ok": true,
+      "firstLine": "error -32700: Parse error: the line is not JSON"
+    },
+    {
+      "tool": "ping after malformed",
+      "ms": 0.22,
+      "ok": true,
+      "firstLine": "{}"
+    }
+  ],
+  "checks": {
+    "handshakeOk": true,
+    "listOk": true,
+    "heyOk": true,
+    "verdictOk": true,
+    "statusOk": true,
+    "unknownOk": true,
+    "knowledgeOk": true,
+    "capitalOk": true,
+    "missControlOk": true,
+    "capitalControlOk": true,
+    "knowledgeControlOk": true,
+    "verdictControlOk": true,
+    "stdoutClean": true,
+    "notificationSilent": true,
+    "logsOk": true
+  },
+  "malformedSurvived": true,
+  "exitCode": 0,
+  "stdoutLines": 14,
+  "stdoutNonJson": [],
+  "notificationAnswers": 0,
+  "stderrToolLogs": 9,
+  "toolCalls": 9,
+  "wallMs": 279,
+  "barRule": "handshake ok AND tools/list has the four AND ask hey answered natively AND verdict ok AND malformedSurvived AND exitCode 0 (the item text), and (stricter) stdout clean AND the notification silent AND one stderr log line per tool call AND knowledge AND status AND the unknown tool refused AND the capital (when the store is on this host) AND every control behaving",
+  "statement": "A Claude session (or any MCP client) can now call the brain as a tool: tools/mcp.mjs is a zero dependency stdio MCP server, and this bar drove it as a client with no model anywhere (every ask passed provider none). The handshake negotiated protocol 2025-06-18 with server \"brain\" 0.1.0; tools/list named ask, knowledge, status, verdict. \"hey\" was answered natively by the conversation region in 103.401 ms round trip (the footer says 263500 ns in the region), and the control prompt \"qwzx vrbl plomf\" came back as the memory miss, so that check can fail. \"What is the capital of France?\" answered paris on its own answer line (article \"Capital of France\"), by route knowledge from tier knowledge, in 24.16 ms, and the control \"What is the capital of Italy?\" answered rome by the same route, so the paris check can fail on a live knowledge answer. knowledge \"Paris\" put paris from the article \"Paris\" first of 3 answers; its control \"qwzx vrbl plomf\" fails that check, and so does the Paris header alone, which echoes the subject. The verdict tool returned bench/verdicts/public-gsm8k.json as the file reads, its statement verbatim (1785 chars) and refused the name \"../ladder\"; status printed the vision count and the ladder line exactly as the files give them; an unknown tool was refused. A malformed line got -32700 and the next ping was answered; stdout carried 14 lines, 0 of them not JSON-RPC; the notification got 0 answers; 9 of 9 tool calls left their stderr log line; closing stdin exited with code 0. 14 of 14 calls behaved. barMet is true."
+}
