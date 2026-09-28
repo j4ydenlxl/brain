@@ -1123,7 +1123,8 @@ async function main() {
     for (const m of src.matchAll(/\bimport\(\s*['"]([^'"]+)['"]/g)) specs.push(m[1]);
     for (const spec of specs) {
       if (/[ ()+]/.test(spec)) continue; // a specifier never holds a space, a parenthesis or a plus: this is a string literal that spells an import call (test/boundary.test.mjs:132), not an import
-      if (spec.startsWith('.') || spec.startsWith('/') || spec.startsWith('node:') || spec.startsWith('file:')) continue;
+      // a data: URL carries its module inline (tools/split-stamp.mjs builds one from source), so it is never a missing file
+      if (spec.startsWith('.') || spec.startsWith('/') || spec.startsWith('node:') || spec.startsWith('file:') || spec.startsWith('data:')) continue;
       badImports.push(rel(f) + ' -> ' + spec);
     }
   }

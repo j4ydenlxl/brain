@@ -661,7 +661,7 @@ function installJail(jailDir, origMkdir) {
 // Test drivers run a test file that reaches boundaries; function drivers reach the ones no
 // test does (the grid, imagine and public runners, the live-shards census, the generations
 // worker, the self-code worker) and, with a fault, the error posts of the worker sources.
-const TEST_DRIVERS = ['code', 'public', 'generations', 'velocity', 'years', 'knowledge', 'native', 'runtime', 'cloud', 'self-code', 'web-daemon', 'multiply', 'autopilot', 'plateau', 'grok-bot', 'vision-coverage'];
+const TEST_DRIVERS = ['code', 'public', 'generations', 'velocity', 'years', 'knowledge', 'native', 'runtime', 'cloud', 'self-code', 'web-daemon', 'multiply', 'autopilot', 'plateau', 'grok-bot', 'vision-coverage', 'mistakes'];
 export const DRIVERS = [
   ...TEST_DRIVERS.map((t) => ({ name: 'test-' + t, test: 'test/' + t + '.test.mjs' })),
   // board 23: the autopilot test's eval worker posts { error } only when its import fails
@@ -673,6 +673,10 @@ export const DRIVERS = [
   { name: 'grid', fn: 'grid' },
   { name: 'grid-url', fn: 'grid-fault', fault: 'url' },
   { name: 'grid-poison', fn: 'grid-fault', fault: 'poison' },
+  // board 33: bench/grid-curve.mjs runs the second attempt and the clock curve in its own workers (task in, done out)
+  { name: 'grid-curve', fn: 'grid-curve' },
+  { name: 'grid-curve-url', fn: 'grid-curve-fault', fault: 'url' },
+  { name: 'grid-curve-poison', fn: 'grid-curve-fault', fault: 'poison' },
   { name: 'imagine', fn: 'imagine', jail: true },
   { name: 'imagine-url', fn: 'imagine-fault', fault: 'url', jail: true },
   { name: 'imagine-poison', fn: 'imagine-fault', fault: 'poison', jail: true },
@@ -719,6 +723,17 @@ const DRIVER_FNS = {
       const lib = L.learnLibrary(L.mergeCorpora(L.corpusFromVerdict(JSON.parse(fs.readFileSync(vf, 'utf8')), { keep: null })), {});
       await G.runGridBench({ ...base, limit: 2, libraryJson: lib, label: 'library' });
     }
+  },
+  // one training task at a short clock on one worker, verdict and journal in a scratch directory (no write into the tree)
+  async 'grid-curve'() {
+    const C = await import(u('bench/grid-curve.mjs'));
+    const args = ['--split', 'training', '--limit', '1', '--seed', '33', '--budget-ms', '300', '--attempts', '2', '--workers', '1', '--verdicts', TMP(), '--quiet'];
+    await C.runCurve(C.parseCurveArgs(args), { argv: args, log: () => {} });
+  },
+  async 'grid-curve-fault'() {
+    const C = await import(u('bench/grid-curve.mjs'));
+    const args = ['--split', 'training', '--limit', '1', '--seed', '33', '--budget-ms', '300', '--attempts', '2', '--workers', '1', '--verdicts', TMP(), '--quiet'];
+    try { await C.runCurve(C.parseCurveArgs(args), { argv: args, log: () => {} }); } catch (e) { expected('grid-curve', e); }
   },
   async 'grid-fault'() {
     const G = await import(u('bench/grid.mjs'));
@@ -1270,7 +1285,12 @@ export const ALLOWLIST = [
   { key: "bench/cloud.mjs|send|{op:'stop'}", bytes: 0, wire: 13, how: "literal" },
   { key: "bench/conceive.mjs|postMessage|worker-source:best", bytes: 0, wire: 100, how: "probe" },
   { key: "bench/conceive.mjs|workerData|{sources:live,entry,tests,ms}", bytes: 0, wire: 187, how: "probe" },
-  { key: "bench/grid-curve.mjs|postMessage|worker-source:{type:\"ready\"}", bytes: 0, wire: 19, how: "literal" },
+  { key: "bench/grid-curve.mjs|postMessage|worker-source:{type:\"bootFailed\",error:String(e&&e.stack||e)}", bytes: 0, wire: 781, how: "probe" },
+  { key: "bench/grid-curve.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:\"error\",solved:false,error:String(e&&e.message||e)}}", bytes: 0, wire: 160, how: "probe" },
+  { key: "bench/grid-curve.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,solved:r.solved,solvedFirst:r.~4b4a3a0dbebe", bytes: 0, wire: 436, how: "probe" },
+  { key: "bench/grid-curve.mjs|postMessage|worker-source:{type:\"ready\"}", bytes: 0, wire: 19, how: "probe" },
+  { key: "bench/grid-curve.mjs|postMessage|{id,task}", bytes: 0, wire: 16035, how: "probe" },
+  { key: "bench/grid-curve.mjs|workerData|{searchUrl:pathToFileURL(path.join(ROOT,'capability','grid-search.mjs')).href,budgetMs,maxDepth:DEPT~7b9ca7c213ba", bytes: 0, wire: 179, how: "probe" },
   { key: "bench/grid.mjs|postMessage|worker-source:{type:\"bootFailed\",error:String(e&&e.stack||e)}", bytes: 0, wire: 781, how: "probe" },
   { key: "bench/grid.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:\"error\",solved:false,error:String(e&&e.message||e)}}", bytes: 0, wire: 160, how: "probe" },
   { key: "bench/grid.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,solved:r.solved,solvedFirst:r.~72a687c3165e", bytes: 0, wire: 444, how: "probe" },
@@ -1332,6 +1352,11 @@ export const ALLOWLIST = [
   { key: "runtime/shard.mjs|postMessage|{type:'ready',shard:ME,cells:myCells.length,edges:brain.connectome.live(),ghosts:ghostLocal.length,c~0d1a73ab8adf", bytes: 0, wire: 118, how: "probe" },
   { key: "runtime/shard.mjs|postMessage|{type:'snapshot',id:msg.id,shard:ME,t:brain.clock.t,cells,stats:{...brain.stats},inflight,outbox:bra~eb391f1e3d6e", bytes: 0, wire: 28041254, how: "probe" },
   { key: "runtime/shard.mjs|postMessage|{type:'stopped',shard:ME}", bytes: 0, wire: 40, how: "probe" },
+  { key: "self/mistakes.mjs|postMessage|{fatal:String((e&&e.stack)||e).slice(0,600)}", bytes: 0, wire: 560, how: "probe" },
+  { key: "self/mistakes.mjs|postMessage|{id,prompt:String(prompt??''),holdMs:holdMs>0?holdMs:0}", bytes: 0, wire: 82, how: "probe" },
+  { key: "self/mistakes.mjs|postMessage|{id:m.id,text:a&&typeofa.text==='string'?a.text:'',route:a?a.route??null:null,provenance:typeofpv===~8864af5a9ee5", bytes: 0, wire: 293, how: "probe" },
+  { key: "self/mistakes.mjs|postMessage|{ready:true}", bytes: 0, wire: 11, how: "probe" },
+  { key: "self/mistakes.mjs|workerData|{role:ASK_ROLE,fault:this.fault}", bytes: 0, wire: 57, how: "probe" },
   { key: "test/autopilot.test.mjs|postMessage|worker-source:{error:String((e&&e.stack)||e)}", bytes: 0, wire: 757, how: "probe" },
   { key: "test/autopilot.test.mjs|postMessage|worker-source:{json:JSON.stringify(out)}", bytes: 0, wire: 18089, how: "probe" },
   { key: "test/autopilot.test.mjs|workerData|{...data,autopilot:newURL('../self/autopilot.mjs',import.meta.url).href}", bytes: 0, wire: 848, how: "probe" },
@@ -1339,6 +1364,9 @@ export const ALLOWLIST = [
   { key: "test/grok-bot.test.mjs|structuredClone|verdict", bytes: 0, wire: 53308, how: "probe" },
   { key: "test/grok-bot.test.mjs|structuredClone|verdict#10", bytes: 0, wire: 53308, how: "probe" },
   { key: "test/grok-bot.test.mjs|structuredClone|verdict#11", bytes: 0, wire: 53308, how: "probe" },
+  { key: "test/grok-bot.test.mjs|structuredClone|verdict#12", bytes: 0, wire: 53308, how: "probe" },
+  { key: "test/grok-bot.test.mjs|structuredClone|verdict#13", bytes: 0, wire: 53308, how: "probe" },
+  { key: "test/grok-bot.test.mjs|structuredClone|verdict#14", bytes: 0, wire: 53308, how: "probe" },
   { key: "test/grok-bot.test.mjs|structuredClone|verdict#2", bytes: 0, wire: 53308, how: "probe" },
   { key: "test/grok-bot.test.mjs|structuredClone|verdict#3", bytes: 0, wire: 53308, how: "probe" },
   { key: "test/grok-bot.test.mjs|structuredClone|verdict#4", bytes: 0, wire: 53308, how: "probe" },

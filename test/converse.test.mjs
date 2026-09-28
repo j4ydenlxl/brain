@@ -166,7 +166,7 @@ test('every new atom, several forms each, and their answers stay true (no feelin
   }
   // no answer claims a feeling, a mood or a like
   for (const e of examples()) assert.doesNotMatch(converse(e.prompt).answer, /\bI (feel|felt|am feeling|love|enjoy|am happy|am sad|am glad|like)\b/, e.kind);
-  for (const a of examples().map((e) => converse(e.prompt).answer)) assert.doesNotMatch(a, /—/, 'no em-dash');
+  for (const a of examples().map((e) => converse(e.prompt).answer)) assert.doesNotMatch(a, /\u2014/, 'no em-dash');
 });
 
 test('the first commit month in the age answer is the one git prints (when the clone has its history)', (t) => {
@@ -225,7 +225,7 @@ test('the source is browser safe: no runtime global, no Node import, no require,
   assert.ok(!/^\s*import\s/m.test(src), 'no import at all');
   // the same test web/ask.mjs runs before it copies a module into the visitor tab
   assert.ok(!/\bfrom\s*['"]node:|\brequire\(|\bprocess\.|\bfetch\(/.test(src), 'web/ask.mjs would accept this file');
-  assert.ok(!src.includes('—'), 'no em-dash');
+  assert.ok(!src.includes('\u2014'), 'no em-dash');
 });
 
 test('converse() runs with the runtime global shadowed to undefined and still answers "hey" (the browser proof)', () => {

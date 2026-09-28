@@ -28,7 +28,7 @@
 //      candidate is rejected and the search goes on.
 //   7. When every train pair changes its input, a program that hands a test input back
 //      unchanged has not found the task's rule on that input. Rejected, the search goes on.
-import { PRIMS, LEARNERS, FALLBACK_LEARNERS, applyStep, hashValue, sameGrid, isAnswerGrid, fromRows, toRows } from './grid-dsl.mjs';
+import { PRIMS, LEARNERS, FALLBACK_LEARNERS, applyStep, hashValue, sameGrid, isAnswerGrid, fromRows, toRows, expandName } from './grid-dsl.mjs';
 import { Brain } from '../core/brain.mjs';
 
 export const SEARCH_DEFAULTS = Object.freeze({
@@ -288,9 +288,15 @@ function searchCore(task, o, earlier, resume = null) {
   // attempt that answers every test input exactly as an earlier one did is not a new attempt.
   const take = (steps, testOuts) => {
     if (hits.length && hits.some((h) => testOuts.every((g, i) => g && sameGrid(g, h.outputs[i])))) return false;
+    if (now() > hard) return false; // past the task's clock: not graded, not taken
     const r = accept(steps, testOuts);
     if (!r) return false;
     r.ms = Math.round((now() - t0) * 100) / 100;
+    // The stamp is read before this check, so a taken attempt is always at or under the clock: board 34b's
+    // second verify re-ran the 3000 ms evaluation point and found one fallback answer stamped 3009.2 ms
+    // that the bench had counted (94 solved, 93 in clock). The bench counts a task only on a right attempt
+    // stamped at or under its budget (test/grid-vocab-verdict.mjs solvedInClock); the search now agrees.
+    if (now() > hard) return false;
     hits.push(r);
     return hits.length >= want;
   };
@@ -425,18 +431,46 @@ function searchCore(task, o, earlier, resume = null) {
   }
 }
 
+// ---------------------------------------------------------------- the second attempt (Board 33, item arc-lock-in)
+/** A program's length: its base words, a learned last step counted as one, a macro counted as the words it stands for. */
+export function programLength(a) {
+  const names = Array.isArray(a && a.names) ? a.names : Array.isArray(a && a.steps) ? a.steps.map((s) => s.op) : [];
+  let n = 0;
+  for (const x of names) n += expandName(x).length;
+  return n;
+}
+/**
+ * THE ORDER OF THE TWO ATTEMPTS. The search takes accepted programs in the order it finds them and
+ * stops at opts.attempts of them; a later program is taken only when its test outputs differ from
+ * every earlier one on at least one test input (take() in searchCore). So with attempts 2 the two
+ * attempts are the FIRST TWO programs found that fit every train pair and answer the test
+ * differently, and when only one such answer exists attempt 2 is empty. This orders them: by
+ * program length (programLength), then by discovery order; each keeps found, its place in the
+ * discovery order (1 is what a one attempt run answers). Pure: the hits are not changed.
+ */
+export function orderAttempts(hits) {
+  return (Array.isArray(hits) ? hits : [])
+    .map((h, k) => ({ h, k, n: programLength(h) }))
+    .sort((a, b) => a.n - b.n || a.k - b.k)
+    .map(({ h, k }) => ({ ...h, found: k + 1 }));
+}
+
 /**
  * One ARC task from its JSON: search, answer through cells, and grade against the test
  * outputs when the JSON carries them. With opts.attempts 1 (the default) ONE attempt per task,
  * as bench/public.mjs takes. With 2, ARC's own rule: each test input is answered by up to two
  * attempts, and the task is solved when every test input has a right answer among its tries.
- * solvedFirst is the first attempt alone, so a two attempt run still prints the one attempt score.
+ * solvedFirst is the program found first alone, so a two attempt run still prints the one attempt score.
+ * The attempts are listed in orderAttempts' order (program length, then discovery), each with
+ * found (its place in the discovery order), and attemptRight follows that list; solvedFirst stays
+ * the program found first, the answer a one attempt run gives.
  */
 export function solveArcTask(json, opts = {}) {
   const task = taskFromArc(json);
   const r = searchGrid(task, opts);
   const outputs = r.outputs ? r.outputs.map(toRows) : null;
-  const tries = r.attempts.map((a) => a.outputs.map(toRows));
+  const ordered = orderAttempts(r.attempts);
+  const tries = ordered.map((a) => a.outputs.map(toRows));
   let solved = null, solvedFirst = null, attemptRight = null;
   if (json.test.every((t) => Array.isArray(t.output))) {
     const eq = (g, i) => !!g && JSON.stringify(g) === JSON.stringify(json.test[i].output);
@@ -446,7 +480,7 @@ export function solveArcTask(json, opts = {}) {
   }
   return {
     ...r, outputs, solved, solvedFirst, attemptRight,
-    attempts: r.attempts.map((a) => (a.phase ? { names: a.names, ms: a.ms, phase: a.phase } : { names: a.names, ms: a.ms })),
+    attempts: ordered.map((a) => (a.phase ? { names: a.names, ms: a.ms, phase: a.phase, found: a.found } : { names: a.names, ms: a.ms, found: a.found })),
     steps: r.steps ? r.steps.map((s) => ({ op: s.op, learned: s.learned ? true : undefined })) : null,
   };
 }

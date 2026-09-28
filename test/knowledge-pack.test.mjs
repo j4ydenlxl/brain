@@ -212,7 +212,9 @@ test('the verdict: barMet only when every cap is packed under its bytes, measure
   assert.equal(P.finishVerdict({ ...base, caps: [row(200), row(100), row(50, { visible: vis({ recallFirst: null }) })] }).barMet, false);
   assert.equal(P.finishVerdict({ ...base, full: { ...base.full, control: { ...base.full.control, visible: null } }, caps: [row(200), row(100), row(50)] }).barMet, false);
   assert.match(P.finishVerdict({ ...base, caps: [row(200), row(100), row(50)] }).statement, /visible recall first 70/);
-  assert.equal(P.DEFAULT_RULE, JSON.parse(fs.readFileSync(P.DEV_VERDICT, 'utf8')).chosen, 'the default rule is not the one --dev chose outside the draw');
+  // the rule --dev chose outside the draw, as the bar file records it in split.development (knowledge-pack-dev-partial.json
+  // is the --dev run's own working file: written on 2026-09-27, it was not on disk at the 2026-09-28 gate, and the bar file is)
+  assert.equal(P.DEFAULT_RULE, JSON.parse(fs.readFileSync(P.VERDICT, 'utf8')).split.development.chosen, 'the default rule is not the one --dev chose outside the draw');
 });
 
 test('the statement quotes only numbers the bar commands printed: a number no command printed (a store count read from meta.json, a limit typed into the code) fails the bar', () => {

@@ -843,3 +843,63 @@ test('the program tier at the count level: the pattern names no x part, so gate 
   assert.equal(P.PROGRAM_TIER.noQuantity, before.noQuantity + 1, 'and the n0 pattern refused it');
   assert.equal(P.PROGRAM_TIER.answered, before.answered);
 });
+
+test('the program tier never answers an explicit expression: the exact path owns 7 * 8 * 9 whether or not it computed it', async (t) => {
+  // 2026-09-28: with the exact path missing the trailing instruction, the tier answered 65 (sub(mul(q1,q2),q0)) to
+  // this fixture row through ask() model off. The programs were induced from word problems; an expression is never one.
+  const P = await import('../act/prompt.mjs');
+  const I = await import('../reason/induce.mjs');
+  const Q = 'What is 7 * 8 * 9? Answer with the number only.';
+  const store = await plantedStore(Q, 'sub(mul(q1,q2),q0)', 1);
+  assert.ok(P.mathShape(Q), 'the row has the math shape: numbers, a question and an operator cue');
+  const raw = I.answerFromPrograms(Q, store);
+  assert.equal(raw && raw.answer, '65', 'the kept program matches the expression and is wrong: only the gate refuses it');
+  const before = { ...P.PROGRAM_TIER };
+  assert.equal(P.programAnswer(Q, { programs: store, provider: 'null' }), null);
+  assert.equal(P.PROGRAM_TIER.shape, before.shape + 1, 'refused as an expression');
+  assert.equal(P.PROGRAM_TIER.asked, before.asked, 'before the kept programs were asked');
+  const WORDS = 'A box holds 3/4 of 8 apples and 1/8 of 16 pears; how many fruit is that?';
+  for (const e of ['What is 1000 - 379?', 'What is 2 ^ 10 plus 3?', WORDS]) assert.equal(P.EXPRESSION_RE.test(e), e !== WORDS, e);
+  assert.equal(P.EXPRESSION_RE.test('from 2026-05-01 to 2026-05-03'), false, 'a date is not an expression');
+  // through ask(), model off, the exact path answers the row and the tier is never reached
+  const { brain } = newBrain(t, { name: 'program-expression' });
+  const a = await ask(brain, Q, { provider: 'null', programs: store });
+  assert.equal(a.provenance.answer, 'exact');
+  assert.equal(a.exact.answer, '504');
+  assert.equal(a.text.trim().split(String.fromCharCode(10)).pop(), '504');
+});
+
+test('the code-native readers answer a code prompt with provider null, and a poem leaves them unanswered (board 34, item code-native)', async (t) => {
+  // act/code-native.mjs through ask(), model off: the census's reverseString row is answered natively with a function
+  // that runs, the counter moves by one, the ledger records route code-native, and a poem never moves the answered count.
+  const P = await import('../act/prompt.mjs');
+  const { runCases } = await import('../act/run.mjs');
+  const { brain, events } = newBrain(t, { name: 'code-native' });
+  const Q = 'Write a JavaScript function named reverseString that takes a string and returns it reversed.';
+  const before = { ...P.CODE_NATIVE };
+  const a = await ask(brain, Q, { provider: 'null' });
+  assert.equal(a.provenance.answer, 'native');
+  assert.equal(a.provenance.source, 'code-native');
+  assert.equal(a.provenance.tier, 'native');
+  assert.equal(a.provenance.llm.provider, null);
+  assert.match(a.provenance.llm.reason, /^not asked/);
+  assert.equal(a.from, 'native');
+  assert.equal(a.route, 'code-native');
+  assert.equal(a.native.method, 'spec-reader:reverse-string');
+  assert.equal(P.CODE_NATIVE.asked, before.asked + 1);
+  assert.equal(P.CODE_NATIVE.answered, before.answered + 1);
+  assert.ok(P.CODE_NATIVE.lastNs > 0);
+  const code = /```javascript\n([\s\S]*?)```/.exec(a.text)[1];
+  const run = await runCases(code, [{ args: ['abc'], expected: 'cba' }, { args: [''], expected: '' }], { entry: 'reverseString' });
+  assert.equal(run.passed, 2, 'the answered function runs');
+  const ev = events(ASK_EVENT).pop();
+  assert.equal(ev.route, 'code-native');
+  assert.equal(ev.provenance, 'native');
+  const mid = { ...P.CODE_NATIVE };
+  const poem = await ask(brain, 'Write a poem about the sea.', { provider: 'null' });
+  assert.notEqual(poem.route, 'code-native');
+  assert.equal(P.CODE_NATIVE.answered, mid.answered, 'a poem is never answered by the code readers');
+  const off = await ask(brain, Q, { provider: 'null', codeNative: false });
+  assert.notEqual(off.route, 'code-native', 'opts.codeNative false skips the readers');
+  assert.equal(P.CODE_NATIVE.answered, mid.answered);
+});

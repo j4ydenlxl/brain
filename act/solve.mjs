@@ -36,6 +36,7 @@
 import * as E from '../tasks/exact.mjs';
 import { CAPS, tokenize, parseWhole, parseEquation, hasUnknown, evalExact, spokenExpression, arithFrom } from './exact-read.mjs';
 import { readWord } from './word.mjs';
+import { exactKinds, KIND_METHODS } from './exact-kinds.mjs';
 export { CAPS, tokenize, parseWhole, evalExact, spokenExpression };
 import * as S from '../core/signal.mjs';
 import { solveAlgebra } from '../tasks/algebra.mjs';
@@ -48,7 +49,7 @@ import { fromRows as fromDslRows, toRows as toDslRows } from '../capability/grid
 const L = S.S;
 
 /** The methods solve() can return, so a caller can enumerate them without parsing prose. */
-export const METHODS = Object.freeze(['exact.arith', 'exact.compare', 'exact.linear', 'exact.sequence', 'exact.grid', 'exact.word']);
+export const METHODS = Object.freeze([...new Set(['exact.arith', 'exact.compare', 'exact.linear', 'exact.sequence', 'exact.grid', 'exact.word', ...KIND_METHODS])]);
 
 // THE WORD PROBLEM READER (act/word.mjs; board 18 builder, queue item 1, his 10:05 EDT order "Every request
 // should be less than a token and it should be done in microseconds"). solve() tries it after the spoken
@@ -57,6 +58,12 @@ export const METHODS = Object.freeze(['exact.arith', 'exact.compare', 'exact.lin
 const WORD_READER = { on: true };
 /** Plug (true) or unplug (false) the word problem reader; returns what it was. */
 export function wordReader(on) { const was = WORD_READER.on; if (typeof on === 'boolean') WORD_READER.on = on; return was; }
+// THE NINE KINDS AND THE THREE GAPS (act/exact-kinds.mjs and the gap readers below; board 34, item exact-kinds) have
+// the same kind of switch: bench/exact-kinds.mjs unplugs them in a child census to print every kind without them,
+// as its control. Nothing else turns it off, and it reads no environment variable.
+const KINDS_READER = { on: true };
+/** Plug (true) or unplug (false) the nine kinds and the three gap readers; returns what it was. */
+export function kindsReader(on) { const was = KINDS_READER.on; if (typeof on === 'boolean') KINDS_READER.on = on; return was; }
 
 // The tokenizer, parser, exact evaluator and the spoken front end live in act/exact-read.mjs (moved
 // unchanged on 2026-09-26 so the browser organism on dilation.dev runs the same code); imported above.
@@ -93,6 +100,17 @@ const COMPARE_RE = /^Compare two numbers\..*?First\s+(-?[\d.]+)\s*,\s*second\s+(
 // in the sentence: the gate holds a proposal." has a colon too, and its tail is not an
 // expression, but a looser rule would be one prose question away from an exact wrong answer.
 const COMPUTE_PREFIX_RE = /^[^:]*\b(?:compute|evaluate|solve|simplify)\b[^:]*:\s*/i;
+// A trailing instruction about the FORM of the answer ("Answer with the number only.", "Reply with just the
+// value", "Give only the result, no explanation") names no quantity, so nothing it says can move the value: it is
+// set aside and the head is solved on its own. It is only ever a final sentence after the question's own end (a
+// ?, a . or a comma), so a question that merely contains the word answer keeps it. On 2026-09-28 the whole
+// bench/fixtures/answer-questions.json arithmetic family, every row ending in that sentence, was null here and
+// an induced program answered 65 to "What is 7 * 8 * 9? Answer with the number only." (act/prompt.mjs).
+const FORMAT_TAIL_RE = /(?<=[?.!,;:]|\n)\s*(?:please\s+)?(?:(?:answer|reply|respond|give|return|output|write|state|provide|say)\b[^.?!\n]*?\b(?:number|numeral|digits?|answer|value|result|integer|figure|amount)s?\b[^.?!\n]*|(?:just|only)\s+the\s+(?:number|answer|result|value|final answer)\b[^.?!\n]*|no\s+(?:explanation|working|words|text|units)\b[^.?!\n]*)[.!]?\s*$/i;
+// An instruction that asks for a particular FORM of the value (a decimal, a fraction, a rounding, a unit, a word)
+// is not set aside: the exact rational the head computes may not be the form asked for, and a value in the wrong
+// form is not the answer. The prompt then stays null here, as before.
+const FORM_CHANGE_RE = /\b(?:decimal|fraction|percent|percentage|round|rounded|rounding|nearest|significant|places|word|words|letter|letters|unit|units|scientific|hex|hexadecimal|binary|base|simplest|lowest|mixed|notation)\b/i;
 const SEQUENCE_RE = /first terms of an exact sequence\s*:\s*(.+?)\s*\.\s*What is the next term/is;
 const SEQUENCE_QMARK_RE = /^\s*([-\d][-\d.,/\s]*?),\s*\?\s*$/;
 const GRID_HEAD_RE = /rows separated by \|/i;
@@ -226,6 +244,70 @@ function solveGrid(prompt) {
   };
 }
 
+// ---------------------------------------------------------------- three gaps of the exact reader (board 34)
+// bench/fixtures/answer-questions.json holds three arithmetic rows the reader above left null: the sum of a range,
+// a remainder, and "0.1 + 0.2 exactly". Each is read here in full and computed in BigInt (method exact.arith), or
+// left null. The tokenizer reads % as a percent (act/exact-read.mjs), so a remainder is read only from words.
+const INT_SRC = '(\\d{1,3}(?:,\\d{3})+|\\d+)';
+const RANGE_NOUN = '(?<noun>whole numbers|integers|natural numbers|counting numbers|numbers)';
+const ASK_LEAD = "(?:what is |what's |find |compute |calculate |work out )?";
+const SUM_RANGE_RES = [
+  new RegExp('^' + ASK_LEAD + 'the sum of (?:all )?(?:of )?(?:the )?' + RANGE_NOUN + ' from ' + INT_SRC + ' (?:to|through|up to) ' + INT_SRC + '(?:,? inclusive)?\\s*[?.!]?$', 'i'),
+  new RegExp('^' + ASK_LEAD + 'the sum of (?:all )?(?:of )?(?:the )?' + RANGE_NOUN + ' between ' + INT_SRC + ' and ' + INT_SRC + ',? inclusive\\s*[?.!]?$', 'i'),
+  new RegExp('^add (?:up )?(?:all )?(?:of )?(?:the )?' + RANGE_NOUN + ' from ' + INT_SRC + ' (?:to|through) ' + INT_SRC + '(?:,? inclusive)?\\s*[?.!]?$', 'i'),
+];
+const REMAINDER_RES = [
+  new RegExp('^' + ASK_LEAD + 'the remainder (?:when|if) ' + INT_SRC + ' is divided by ' + INT_SRC + '\\s*[?.!]?$', 'i'),
+  new RegExp('^' + ASK_LEAD + 'the remainder of ' + INT_SRC + ' (?:divided by|over) ' + INT_SRC + '\\s*[?.!]?$', 'i'),
+  new RegExp("^(?:what is |what's |compute |calculate |evaluate |find )?" + INT_SRC + ' (?:mod|modulo) ' + INT_SRC + '\\s*[?.!]?$', 'i'),
+];
+// "exactly" as the last word of a question asks for the exact value, and says nothing about its form
+const EXACTLY_RE = /,?\s+exactly(?=\s*[?.!]?\s*$)/i;
+const bigOf = (s) => (s.length <= CAPS.exponent ? BigInt(s.replace(/,/g, '')) : null);
+
+/** The sum of the whole numbers from a to b, both counted: (a + b)(b - a + 1) / 2. */
+function solveSumRange(text) {
+  for (const re of SUM_RANGE_RES) {
+    const m = re.exec(text.trim());
+    if (!m) continue;
+    const a = bigOf(m[2]), b = bigOf(m[3]), noun = m.groups.noun.toLowerCase();
+    if (a === null || b === null || a > b) return null;
+    // whether 0 is a natural number depends on the book, so a range of natural or counting numbers starts at 1
+    if ((noun === 'natural numbers' || noun === 'counting numbers') && a < 1n) return null;
+    const n = b - a + 1n, sum = ((a + b) * n) / 2n;
+    return { answer: sum.toString(), method: 'exact.arith', steps: ['the ' + n + ' whole numbers from ' + a + ' to ' + b + ', both counted', 'sum = (first + last) x count / 2 = (' + a + ' + ' + b + ') x ' + n + ' / 2 = ' + sum] };
+  }
+  return null;
+}
+/** The remainder of a whole number divided by a positive whole number (a negative operand has two conventions, so it is not read). */
+function solveRemainder(text) {
+  for (const re of REMAINDER_RES) {
+    const m = re.exec(text.trim());
+    if (!m) continue;
+    const a = bigOf(m[1]), b = bigOf(m[2]);
+    if (a === null || b === null || b === 0n) return null;
+    const q = a / b, r = a % b;
+    return { answer: r.toString(), method: 'exact.arith', steps: [a + ' = ' + b + ' x ' + q + ' + ' + r, 'the remainder is ' + r + ', from 0 up to ' + (b - 1n)] };
+  }
+  return null;
+}
+/** "What is 0.1 + 0.2 exactly?": the head solved by the exact reader alone, printed as a decimal when the question wrote decimals and the value terminates. */
+function solveExactly(text) {
+  const m = EXACTLY_RE.exec(text);
+  if (!m) return null;
+  const head = (text.slice(0, m.index) + text.slice(m.index + m[0].length)).trim();
+  if (!head || head === text.trim() || EXACTLY_RE.test(head)) return null;
+  const r = solve(head);
+  if (!r || r.method !== 'exact.arith') return null;
+  const v = E.qFromString(r.answer);
+  const dec = /\d\.\d/.test(head) ? E.qToDecimal(v) : null;
+  if (dec !== null && dec !== r.answer) { r.steps.push('the question wrote decimals and ' + r.answer + ' terminates: ' + dec + ', exactly'); r.answer = dec; }
+  r.steps.unshift('read "exactly" as asking for the exact value of "' + head + '"');
+  return r;
+}
+// A form tail that names a number ("Answer with the number only.") is set aside for the nine kinds only when their answer is a number.
+const NUMBER_TAIL_RE = /\b(?:number|numeral|digits?|integer|figure)s?\b/i;
+const NUMBER_ANSWER_RE = /^-?\d+(?:\.\d+)?(?:\/\d+)?$/;
 // ---------------------------------------------------------------- solve
 /**
  * What the organism can compute from this prompt alone.
@@ -251,7 +333,14 @@ export function solve(prompt) {
   const direct = solveExpression(text);
   if (direct) return direct;
   const stripped = COMPUTE_PREFIX_RE.exec(text);
-  if (stripped) { const r = solveExpression(text.slice(stripped[0].length)); if (r) return r; }
+  if (stripped) {
+    const body = text.slice(stripped[0].length);
+    const r = solveExpression(body);
+    if (r) return r;
+    // the same spoken front end the whole prompt gets below, on the body: "Compute: 6 * 7." is "6 * 7." is 6 * 7
+    const said = spokenExpression(body);
+    if (said && said !== body.trim()) { const rs = solveExpression(said); if (rs) { rs.steps.unshift('read "' + body.trim() + '" as ' + said); return rs; } }
+  }
   const spoken = spokenExpression(text);
   if (spoken && spoken !== text.trim()) {
     const r = solveExpression(spoken);
@@ -259,6 +348,26 @@ export function solve(prompt) {
   }
   // a word problem read whole into one exact expression (method exact.word), or null
   if (WORD_READER.on) { const w = readWord(text); if (w) return w; }
+  // the three gaps above (method exact.arith): a range sum, a remainder, a value asked for "exactly"
+  const gap = KINDS_READER.on ? solveSumRange(text) || solveRemainder(text) || solveExactly(text) : null;
+  if (gap) return gap;
+  // NINE KINDS (act/exact-kinds.mjs, board 34): units, sequence, counting, spelling, calendar, comparison,
+  // probability, geometry and logic, each read completely or null. They run LAST, after every older reader, so
+  // no answer an older reader gave can move; and before the form tail below, so "How many hours are in 3 days?
+  // Answer with the number only." reaches them as its head.
+  const kind = KINDS_READER.on ? exactKinds(text) : null;
+  if (kind) return kind;
+  // a trailing instruction about the answer's form (FORMAT_TAIL_RE), set aside: the head is solved on its own
+  const tail = FORMAT_TAIL_RE.exec(text);
+  if (tail && tail.index > 0 && !FORM_CHANGE_RE.test(tail[0])) {
+    const head = text.slice(0, tail.index).replace(/[ ,;:]+$/, '').trim();
+    if (head && head !== text.trim()) {
+      const r = solve(head);
+      // an answer from the nine kinds that is not a number does not meet a tail that asks for a number
+      const unmet = r && KIND_METHODS.includes(r.method) && NUMBER_TAIL_RE.test(tail[0]) && !NUMBER_ANSWER_RE.test(r.answer);
+      if (r && !unmet) { r.steps.unshift('set aside the instruction "' + tail[0].trim() + '" and read "' + head + '"'); return r; }
+    }
+  }
   return null;
 }
 

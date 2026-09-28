@@ -345,14 +345,16 @@ test('controls: each check fails on a copy bent the way it guards against', () =
 
   // a live file: an earlier row that changed after the stamp, and a pin claiming more rows than exist
   const live = verdict.measures.find((m) => m.oursLive);
+  // the three copies are made before the branch: the boundary probe then reaches them on a tree with no live file
+  const movedRows = structuredClone(verdict), tooMany = structuredClone(verdict), unpinned = structuredClone(verdict);
   if (live) {
-    const movedRows = structuredClone(verdict); movedRows.pins[live.oursFile].digest = '0000000000000000';
+    movedRows.pins[live.oursFile].digest = '0000000000000000';
     for (const m of movedRows.measures) if (m.oursFile === live.oursFile) m.oursAt = movedRows.pins[live.oursFile].at = '2026-01-01T00:00:00.000Z';
     assert.ok(caught(movedRows, 'stale: '), 'a pinned live file whose rows changed');
-    const tooMany = structuredClone(verdict); tooMany.pins[live.oursFile].rows += 100000;
+    tooMany.pins[live.oursFile].rows += 100000;
     for (const m of tooMany.measures) if (m.oursFile === live.oursFile) m.oursAt = tooMany.pins[live.oursFile].at = '2026-01-01T00:00:00.000Z';
     assert.ok(caught(tooMany, 'stale: '), 'a pin that claims rows the file never held');
-    const unpinned = structuredClone(verdict); delete unpinned.pins[live.oursFile];
+    delete unpinned.pins[live.oursFile];
     assert.ok(caught(unpinned, 'a live file without a pin'), 'a live row without a pin');
   } else assert.deepEqual(verdict.pins, {}, 'no live file read, so no pin');
   // the build refuses a pin whose rows changed rather than re-reading the file as it is now

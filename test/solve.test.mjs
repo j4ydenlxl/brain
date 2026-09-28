@@ -346,3 +346,92 @@ test('the CLI shape of a word problem: route direct, provenance exact, method ex
     assert.equal(fetches, 0);
   } finally { globalThis.fetch = real; }
 });
+
+// 2026-09-28: every row of the fixture's arithmetic family ends in "Answer with the number only." and every one was
+// null here, so the null arm retrieved them from memory and, in act/prompt.mjs, an induced program answered 65 to
+// 7 * 8 * 9. The instruction names no quantity: it is set aside and the head is solved. The three rows that were
+// still null (the sum from 1 to 100, a remainder, and "0.1 + 0.2 exactly") were the exact reader's own gaps, not the
+// tail's; board 34 (exact-kinds) closed them, so all ten rows are computed and each is asserted below.
+test('a trailing instruction about the form of the answer is set aside and the head is solved', () => {
+  const items = JSON.parse(readFileSync(new URL('../bench/fixtures/answer-questions.json', import.meta.url), 'utf8')).items;
+  const arithmetic = items.filter((it) => it.family === 'arithmetic');
+  assert.equal(arithmetic.length, 10);
+  const computed = arithmetic.filter((it) => solve(it.q));
+  assert.deepEqual(computed.map((it) => it.a), ['391', '6912', '1024', '621', '5050', '36', '7/8', '2', '0.3', '504'], 'all ten rows, the three gaps closed by board 34');
+  for (const it of computed) {
+    const r = solve(it.q);
+    assert.equal(r.answer, it.a, it.q);
+    assert.equal(r.method, 'exact.arith');
+    assert.match(r.steps[0], /^set aside the instruction "Answer with the (?:number|value) only[.]" and read "/, it.q);
+  }
+  // the head is what is solved: the same value as the bare question
+  assert.equal(solve('What is 7 * 8 * 9? Answer with the number only.').answer, solve('What is 7 * 8 * 9?').answer);
+  assert.equal(solve('What is 12 + 30, just the number').answer, '42');
+  assert.equal(solve('Compute: 6 * 7. Reply with only the result, no explanation.').answer, '42');
+  // an instruction alone is nothing to solve, and one that asks for another FORM of the value is not set aside
+  assert.equal(solve('Answer with the number only.'), null);
+  assert.equal(solve('What is 10 / 4? Answer as a decimal.'), null);
+  assert.equal(solve('What is 3/4 + 1/8? Answer with the value only, rounded to two places.'), null);
+  // a question that merely contains the word answer keeps it: the tail is only ever a final sentence
+  assert.equal(solve('How many words are in the sentence: the gate holds a proposal. Answer with the number only.'), null);
+});
+
+// ---------------------------------------------------------------- board 34: the three gaps and the nine kinds
+// The three arithmetic rows of bench/fixtures/answer-questions.json the reader left null, each graded against a value
+// this file builds from the operands, plus the refusals that keep each gap reader complete-or-null.
+test('the three gaps: a range sum, a remainder, and a decimal expression asked for exactly', () => {
+  // the sum 1 + 2 + ... + 100, built by a loop here, not by the closed form the reader uses
+  let sum = 0n; for (let i = 1n; i <= 100n; i++) sum += i;
+  const r1 = solve('What is the sum of all the whole numbers from 1 to 100?');
+  assert.equal(r1.answer, sum.toString());
+  assert.equal(r1.method, 'exact.arith');
+  let s2 = 0n; for (let i = 17n; i <= 29n; i++) s2 += i;
+  assert.equal(solve('What is the sum of the integers from 17 to 29?').answer, s2.toString());
+  assert.equal(solve('Add up all the numbers from 1 to 10.').answer, '55');
+  assert.equal(solve('What is the sum of the numbers between 1 and 10 inclusive?').answer, '55');
+  // the remainder, checked by the division identity a = b q + r with 0 <= r < b
+  for (const [q, a, b] of [['What is the remainder when 100 is divided by 7?', 100n, 7n], ['What is 100 mod 7?', 100n, 7n], ['What is the remainder of 12345 divided by 97?', 12345n, 97n], ['1000 modulo 13', 1000n, 13n]]) {
+    const r = solve(q);
+    assert.ok(r, q);
+    assert.equal(r.method, 'exact.arith');
+    const rem = BigInt(r.answer);
+    assert.ok(rem >= 0n && rem < b && (a - rem) % b === 0n, q + ' gave ' + r.answer);
+  }
+  // exactly: the decimal the question wrote in, when it terminates; the fraction otherwise
+  const r3 = solve('What is 0.1 + 0.2 exactly?');
+  assert.equal(r3.answer, '0.3');
+  assert.equal(r3.method, 'exact.arith');
+  assert.equal(solve('0.1 + 0.2').answer, '3/10', 'the bare expression keeps its exact fraction');
+  assert.equal(solve('What is 10 / 4 exactly?').answer, '5/2', 'no decimal in the question, so the fraction stands');
+  assert.equal(solve('What is 1/3 exactly?').answer, '1/3');
+  // with the fixture's own tail, all three reach the head
+  assert.equal(solve('What is the sum of all the whole numbers from 1 to 100? Answer with the number only.').answer, '5050');
+  assert.equal(solve('What is the remainder when 100 is divided by 7? Answer with the number only.').answer, '2');
+  assert.equal(solve('What is 0.1 + 0.2 exactly? Answer with the value only.').answer, '0.3');
+});
+
+test('the gap readers refuse what they cannot read completely', () => {
+  assert.equal(solve('100 % 7'), null, '% is a percent to the tokenizer, never a modulo');
+  assert.equal(solve('What is the sum of the numbers between 1 and 10?'), null, 'between, without inclusive, has two readings');
+  assert.equal(solve('What is the sum of the natural numbers from 0 to 10?'), null, 'whether 0 is natural depends on the book');
+  assert.equal(solve('What is the sum of all the whole numbers from 10 to 1?'), null);
+  assert.equal(solve('What is the sum of all the even numbers from 1 to 100?'), null);
+  assert.equal(solve('What is the remainder when 7 is divided by 0?'), null);
+  assert.equal(solve('What is the remainder when -7 is divided by 2?'), null, 'a negative remainder has two conventions');
+  assert.equal(solve('What is the remainder when 7.5 is divided by 2?'), null);
+  assert.equal(solve('What is the capital of France exactly?'), null);
+  assert.equal(solve('Compare cats and dogs as pets in exactly two sentences.'), null);
+});
+
+test('solve() reaches the nine kinds last, and a number tail is not met by a word', () => {
+  for (const m of ['exact.units', 'exact.sequence', 'exact.counting', 'exact.spelling', 'exact.calendar', 'exact.comparison', 'exact.probability', 'exact.geometry', 'exact.logic']) assert.ok(METHODS.includes(m), m);
+  assert.equal(new Set(METHODS).size, METHODS.length, 'no method listed twice');
+  const u = solve('How many hours are in 3 days? Answer with the number only.');
+  assert.equal(u.answer, '72');
+  assert.equal(u.method, 'exact.units');
+  assert.match(u.steps[0], /^set aside the instruction "Answer with the number only[.]"/);
+  assert.equal(solve('What day comes after Tuesday?').answer, 'Wednesday');
+  assert.equal(solve('What day comes after Tuesday? Answer with the number only.'), null, 'a weekday is not a number');
+  // an older reader still answers first: the arithmetic of a word problem is not re-read as a kind
+  assert.equal(solve('What is 17 * 23?').method, 'exact.arith');
+});

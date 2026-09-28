@@ -20,6 +20,7 @@ import { RNG } from '../core/rng.mjs';
 import {
   ARMS, buildBrain, buildQuestions, extractAnswer, gradeAnswer, nFor95, planArms, run, stride, summarizeArm, wilson,
 } from '../bench/answer.mjs';
+import { solve } from '../act/solve.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURE = path.join(HERE, '..', 'bench', 'fixtures', 'answer-questions.json');
@@ -216,11 +217,16 @@ test('the control arm reports what answered each question, and the suites are al
   assert.equal(s.absent, false);
   assert.ok(s.provenance, 'the control arm carries provenance counts');
   assert.deepEqual(Object.keys(s.provenance).sort(), ['exact', 'memory']);
-  // Every suite question is computed, and every fixture question is retrieved. The two
-  // populations do not overlap, which is what makes the two counts readable.
+  // Every suite question is computed. A fixture question is computed when act/solve.mjs reads it (since 2026-09-28
+  // the exact path sets aside a trailing "Answer with the number only." and computes the arithmetic rows it can
+  // read, 7 of 10 that day) and retrieved otherwise. The two populations do not overlap, which is what makes the
+  // two counts readable, and the computed ones are all right: an exact answer that was wrong would not be exact.
   const suiteItems = v.questions.bySource.algebra + v.questions.bySource.sequence + v.questions.bySource.grid;
-  assert.equal(s.provenance.exact.n, suiteItems);
-  assert.equal(s.provenance.memory.n, v.questions.bySource.fixture);
+  const fixtureComputed = buildQuestions({ tasksPerSuite: 2 }).filter((q) => q.source === 'fixture' && solve(q.q)).length;
+  assert.ok(fixtureComputed > 0 && fixtureComputed < v.questions.bySource.fixture, 'fixture rows the exact path computes: ' + fixtureComputed + ' of ' + v.questions.bySource.fixture);
+  assert.equal(s.provenance.exact.n, suiteItems + fixtureComputed);
+  assert.equal(s.provenance.exact.correct, s.provenance.exact.n, 'every computed answer is right');
+  assert.equal(s.provenance.memory.n, v.questions.bySource.fixture - fixtureComputed);
   assert.equal(s.provenance.exact.n + s.provenance.memory.n, s.n);
   for (const source of ['algebra', 'sequence', 'grid']) {
     assert.equal(s.bySource[source].n, v.questions.bySource[source]);

@@ -349,8 +349,9 @@ test('model arm on a mock ollama: present, every row reached and graded, the jou
     assert.ok(mr.every((r) => (r.gradeType === 'none' ? r.graded === null : typeof r.graded === 'boolean')));
     const by = Object.fromEntries(mr.map((r) => [r.id, r]));
     assert.equal(by['fact-01'].graded, true, 'the knowledge tier or the cell says Tokyo');
-    assert.equal(by['code-01'].from, 'llm');
-    assert.equal(by['code-01'].graded, true, 'the mock cell wrote a passing function, run in the worker');
+    // board 34: act/code-native.mjs writes reverseString itself, so the row no longer reaches the mock; either source is graded in the worker
+    assert.ok(['llm', 'native'].includes(by['code-01'].from), 'code-01 from ' + by['code-01'].from);
+    assert.equal(by['code-01'].graded, true, by['code-01'].from === 'llm' ? 'the mock cell wrote a passing function, run in the worker' : 'the organism wrote a passing function (code-native), run in the worker');
     assert.equal(by['poem-01'].from, 'llm');
     assert.equal(by['poem-01'].graded, false, 'a one line "ok" is not a haiku');
     assert.equal(by['poem-01'].llm.provider, 'ollama');
@@ -363,7 +364,8 @@ test('model arm on a mock ollama: present, every row reached and graded, the jou
     assert.equal(v.arms.model.wrongNative, v.arms.model.wrongNativeIds.length);
     assert.ok(!v.arms.model.wrongNativeIds.includes('code-01'), 'a passing answer is not wrong');
     assert.equal(v.nextCommand, null, 'the model arm is present, so no command is owed');
-    assert.ok(m.seen.generate >= 3, 'the cell was asked ' + m.seen.generate + ' times');
+    const fromModel = mr.filter((r) => r.from === 'llm').length;
+    assert.ok(fromModel >= 2 && m.seen.generate >= fromModel, 'the cell was asked ' + m.seen.generate + ' times for ' + fromModel + ' rows from the model (board 34: code-01 is native now, so 3 became 2)');
     assert.equal(v.journal.appended, 5);
     assert.equal(v.isTheBar, false, 'one arm is not the bar');
     assert.equal(v.barMet, false);

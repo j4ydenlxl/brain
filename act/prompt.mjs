@@ -82,6 +82,7 @@ import { solveMath } from '../reason/math.mjs';
 import { solvedFor } from '../reason/solved.mjs'; // Board 15 item ns (board 15 builder): the solved region, right after direct
 import { converse } from './converse.mjs'; // the native conversation region (his 2026-09-26 20:20: "it cant even respond to 'hi.'")
 import { synthesize, entryOf as codeEntryOf, docLines as codeDocLines } from '../reason/synth.mjs';
+import { codeNative, codeNativeShape } from './code-native.mjs'; // code, code-reading, sql, command and format with no model (board 34, item code-native)
 // The program tier (board 26 builder, item wire-induce): programs bench/induce.mjs induced from development GSM8K records.
 // Importing it opens nothing: the kept store is read by programStore() on the first question that reaches the tier.
 import { answerFromPrograms, leafNames, leavesOf, parse as parseQuantities, readProgram } from '../reason/induce.mjs';
@@ -827,6 +828,45 @@ function answerFromNative(brain, text, c, started) {
   return answer;
 }
 
+const NOT_ASKED_CODE_NATIVE = 'not asked: the code-native readers answered';
+
+// The answer object of the code-native readers (act/code-native.mjs, board 34 item code-native): the same shape as
+// answerFromNative (from 'native', provenance.answer 'native', tier 'native', no model, no memory read, no network),
+// with provenance.source 'code-native', route 'code-native', and native.ns the nanoseconds codeNative() took.
+function answerFromCodeNative(brain, text, cn, started) {
+  const hash = promptHash(text);
+  const answer = {
+    ok: true,
+    promptHash: hash,
+    promptChars: text.length,
+    from: 'native',
+    text: cn.text,
+    memory: null,
+    exact: null,
+    native: { kind: cn.kind, answer: cn.answer, form: cn.method, method: cn.method, steps: cn.steps, lang: cn.lang, ns: cn.ns },
+    cites: [],
+    redacted: 0,
+    redactedShapes: [],
+    provenance: {
+      answer: 'native', source: 'code-native', tier: 'native', title: null, method: cn.method, modelAgreed: null,
+      confidence: null, item: null, keyNs: 0, lookupNs: cn.ns,
+      memoryHits: 0, webPages: 0,
+      llm: { provider: null, model: null, ms: 0, tokens: 0, ok: false, reason: NOT_ASKED_CODE_NATIVE, fellBack: null, probed: null },
+    },
+    words: String(cn.answer).split(/\s+/).filter(Boolean).length,
+    ms: Date.now() - started,
+    route: 'code-native',
+    ticks: 0,
+    hops: [],
+  };
+  answer.seq = logAsk(brain, {
+    t: clockT(brain), gen: clockGen(brain), type: ASK_EVENT, by: SURFACE, route: 'code-native', promptHash: hash, promptChars: text.length, from: 'native',
+    provenance: 'native', source: 'code-native', tier: 'native', lookupNs: cn.ns, method: cn.method, modelAgreed: null,
+    memoryHits: 0, webPages: 0, redacted: 0, provider: null, model: null, llmMs: 0, llmOk: false, ms: answer.ms,
+  });
+  return answer;
+}
+
 const NOT_ASKED_SOLVED = 'not asked: a solved template answered';
 const NOT_ASKED_EXACT = 'not asked: the exact path computed it';
 
@@ -1054,6 +1094,10 @@ function answerFromKnowledge(brain, text, k, opts, started) {
 //      prompt the tier may answer must have mathShape (a number, a question and a quantity cue; never a code, fact,
 //      url or command shape: PROGRAM_TIER.shape), the shape of the word problems the programs were induced from and
 //      of all 1319 GSM8K test questions; model off it had answered a number to 5 HumanEval code prompts;
+//      and never an explicit expression, two quantities joined by + * x ^ or a spaced - (EXPRESSION_RE, counted under
+//      PROGRAM_TIER.shape too): on 2026-09-28 the tier answered 65 (sub(mul(q1,q2),q0)) to "What is 7 * 8 * 9? Answer
+//      with the number only." when the exact path missed the trailing instruction; an expression is the exact path's
+//      whether or not it computed it, since the programs were induced from word problems and never from one;
 //   4. the level that answered has a development leave-one-out precision (the store's devLoo, which bench/induce.mjs
 //      printed as "by level named 29/511, cue 16/153, count 10/379, role 8/24") at or above PROGRAM.floor;
 //   5. the parse is whole: the program reads every positional quantity the parse extracted (q0 to qn-1) and the parse
@@ -1073,6 +1117,8 @@ export const PROGRAM_STORE = path.resolve(HERE, '..', 'bench', 'verdicts', 'indu
 export const PROGRAM = Object.freeze({ floor: 0.1046, floorFrom: 'bench/verdicts/induce.json development.leaveOneOut.byLevel.cue 16/153', maxLeaves: 12 });
 /** The tier's running counts, read by tests and benches: asked counts the prompts that passed QUANTITY_CUE and reached the kept programs. */
 export const PROGRAM_TIER = { loads: 0, loadFailures: 0, asked: 0, answered: 0, deferred: 0, noQuantity: 0, shape: 0, missed: 0, partial: 0, lastNs: 0 };
+/** The code-native readers' running counts (board 34 item code-native): asked counts the prompts codeNativeShape() gave a reader. */
+export const CODE_NATIVE = { asked: 0, answered: 0, refused: 0, lastNs: 0 };
 const PSTORES = new Map();
 const PTREES = new Map();
 
@@ -1127,6 +1173,10 @@ function wholeParse(text, hit) {
  * @returns {object|null} null when a gate refused; otherwise { hit, precision, floor, quantities, ns, store }, ns the
  *   nanoseconds (performance.now()) the parse, the kept programs and the gate took
  */
+// Two quantities joined by an operator: 7 * 8 * 9, 1000 - 379, 2 ^ 10, 3/4 + 1/8 (the plus). A bare hyphen between
+// digits is a date or a range (2026-05-01, 3-4), and a slash between digits is a fraction a word problem may carry,
+// so neither is an operator here.
+export const EXPRESSION_RE = /(?:\d|\))(?:\s*[+*\u00d7\u00f7^]\s*|\s+-\s+)(?:\d|\()/;
 export function programAnswer(text, opts = {}) {
   if (opts.programs === false) return null;
   const kept = programStore(opts.programs);
@@ -1138,6 +1188,8 @@ export function programAnswer(text, opts = {}) {
   if (!QUANTITY_CUE.test(text)) { PROGRAM_TIER.noQuantity++; return null; }
   // gate 3, model off: the word-problem shape the programs were induced from (never code, a fact, a url or a command)
   if (!mathShape(text)) { PROGRAM_TIER.shape++; return null; }
+  // gate 3, model off, the other half: an explicit expression is the exact path's, computed or not (never a word problem)
+  if (EXPRESSION_RE.test(text)) { PROGRAM_TIER.shape++; return null; }
   PROGRAM_TIER.asked++;
   let hit = null;
   try { hit = answerFromPrograms(text, kept, { minPrecision: floor }); } catch { hit = null; }
@@ -1602,6 +1654,19 @@ export async function ask(brain, prompt, opts = {}) {
       return answerFromExact(brain, text0, early, ns, started0);
     }
     earlyMiss = true;
+  }
+  // THE CODE-NATIVE READERS (board 34, item code-native; his 2026-09-28 order: code natively, no model): a code,
+  // code-reading, sql, command or format prompt that act/code-native.mjs reads to the last word is answered here, with
+  // no model and no network; a prompt it cannot read completely falls through untouched. opts.codeNative false skips it.
+  if (opts.codeNative !== false && opts.prose !== true && codeNativeShape(text0)) {
+    CODE_NATIVE.asked++;
+    const cn = await codeNative(text0);
+    if (cn) {
+      CODE_NATIVE.answered++;
+      CODE_NATIVE.lastNs = cn.ns;
+      return answerFromCodeNative(brain, text0, cn, started0);
+    }
+    CODE_NATIVE.refused++;
   }
   const route = routeFor(brain, opts);
   const started = Date.now();

@@ -71,6 +71,9 @@ GITHUB_TOKEN unset so no trial reached api.github.com):
   waits for 16 GB free by default and bench/compress.mjs waits for its MIN_FREE_GB; a 16 GB
   host never has that free. Next rung: those forms pass a host-sized wait (daemon has
   `--wait-free-gb`), then the run again.
-- Still without a trial: missed grid-library, multiply, ns, soak; gate-red badImports and
-  row:budget (the scan and the BUDGET row live inside the whole gate run).
+- 2026-09-28: every gap of the four counted kinds carries a trial (the ledger by kind: missed 26, ladder 7,
+  gate red 2, gate slow 8, none without one) after 15 FORMS entries were added (boundary, essay, grid-curve,
+  grid-library, grid-local-evaluation, imagine, multiply, ns, plateau, published-rows, site-probe, soak,
+  vision-count, self-queries, and the ladder form multiplying); test/gaps.test.mjs asserts each key resolves
+  to an existing bench file. The gate-red badImports and row:budget gaps closed with the 0/0 gate scan.
 - cloud and cloud-fit need bench/fixtures/wiki/store, absent here.

@@ -381,14 +381,86 @@ export const FORMS = Object.freeze({
     dry: { argv: [HEAP, 'bench/ladder.mjs', '--daily', '--quick'], flag: '--quick', doc: 'bench/ladder.mjs: --quick opens no socket and writes nothing' },
     diskMb: 200, doc: 'bench/ladder.mjs --daily: the daily ruler, a model run',
   },
+  // board 34 builder (the AUTONOMY row): the thirteen missed benches, each on its own documented narrowing,
+  // and multiply, which the ladder block "multiplying" reads (bench/verdicts/multiply.json bar.populationFresh)
+  boundary: {
+    bench: 'tools/boundary-audit.mjs', argv: ['tools/boundary-audit.mjs', '--static'],
+    minutes: 2, needsModel: false, where: 'tree', writes: [], parser: 'boundaryStatic', diskMb: 50,
+    doc: 'tools/boundary-audit.mjs --static: the static scan alone, read only (no probe, no driver, no file written)',
+  },
+  essay: {
+    bench: 'bench/essay.mjs', argv: ['bench/essay.mjs', '--nowrite', '--quiet'],
+    minutes: 2, needsModel: false, where: 'tree', writes: [], parser: 'essay', diskMb: 50,
+    doc: 'bench/essay.mjs --nowrite: the whole judge with the provider left null (no socket, no model) and no verdict written',
+  },
+  'grid-curve': {
+    bench: 'bench/grid-curve.mjs', argv: [HEAP, 'bench/grid-curve.mjs', '--split', 'training', '--budget-ms', '3000', '--attempts', '2', '--limit', '10', '--workers', '4', '--verdicts', '{tmp}'],
+    minutes: 5, needsModel: false, where: 'tree', writes: [], parser: 'gridCurve', diskMb: 100,
+    doc: 'bench/grid-curve.mjs --limit N --verdicts DIR: the first N training tasks at one budget point, the journal and the verdict under the trial temp dir',
+  },
+  'grid-library': {
+    bench: 'bench/grid.mjs', argv: [HEAP, 'bench/grid.mjs', '--split', 'evaluation', '--budget-ms', '3000', '--workers', '2', '--library', '--corpus', 'bench/verdicts/grid.json,bench/verdicts/grid-library-harvest15-partial.json', '--min-free-mb', '4000', '--limit', '10', '--tag', 'gaps'],
+    minutes: 6, needsModel: false, where: 'copy', fixtures: ['bench/fixtures/public/arc-agi-1'], writes: ['bench/verdicts/grid-library-gaps-partial.json'], parser: 'gridLibrary', diskMb: 200,
+    doc: 'bench/grid.mjs --library --limit N --tag T: the bar command on the first N evaluation tasks, written to grid-library-T-partial.json with isTheBar false',
+  },
+  'grid-local-evaluation': {
+    bench: 'bench/grid.mjs', argv: [HEAP, 'bench/grid.mjs', '--split', 'evaluation', '--budget-ms', '3000', '--workers', '4', '--tag', 'local-evaluation', '--limit', '10'],
+    minutes: 4, needsModel: false, where: 'copy', fixtures: ['bench/fixtures/public/arc-agi-1'], writes: ['bench/verdicts/grid-local-evaluation-partial.json'], parser: 'gridLocal', diskMb: 200,
+    doc: 'bench/grid.mjs --tag local-evaluation --limit N: the first N evaluation tasks, written to grid-local-evaluation-partial.json with isTheBar false',
+  },
+  imagine: {
+    bench: 'bench/imagine.mjs', argv: ['--max-old-space-size=4000', 'bench/imagine.mjs', '--split', 'training', '--budget-work', '1500', '--workers', '2', '--limit', '10'],
+    minutes: 8, needsModel: false, where: 'copy', fixtures: ['bench/fixtures/public/arc-agi-1', 'bench/fixtures/wiki/store'], writes: ['bench/verdicts/imagine-partial.json', 'bench/verdicts/imagine-running-partial.json'], parser: 'imagine', diskMb: 400,
+    doc: 'bench/imagine.mjs --limit N: the bar command (every seed, every run) on the first N scored timeouts, written to imagine-partial.json with isTheBar false (--seed or --runs would name a variant file instead)',
+  },
+  multiply: {
+    bench: 'bench/multiply.mjs', argv: ['--max-old-space-size=4000', 'bench/multiply.mjs', '--evals', '200000', '--seeds', 'decide1,decide2', '--candidates', 'k64-l256', '--out', '{tmp}/multiply'],
+    minutes: 8, needsModel: false, where: 'copy', writes: ['bench/verdicts/multiply-run-partial.json'], parser: 'multiply', diskMb: 1024,
+    doc: 'bench/multiply.mjs --evals N --seeds A,B --candidates C: the suite the bar chose (k64-l256; k4-ladder SATURATES at 200,000 evaluations and decides nothing), two deciding seeds; any flag but --out writes multiply-run-partial.json with isTheBar false; the run cache under the trial temp dir',
+  },
+  ns: {
+    bench: 'bench/ns.mjs', argv: [HEAP, 'bench/ns.mjs', '--limit', '20', '--repeats', '100', '--ask-repeats', '100', '--miss-ask-repeats', '10', '--no-wiki'],
+    minutes: 6, needsModel: false, where: 'copy', fixtures: ['bench/fixtures/public/gsm8k'], writes: ['bench/verdicts/ns-partial.json', 'bench/verdicts/ns-fill-partial.json'], parser: 'ns', diskMb: 200,
+    doc: 'bench/ns.mjs --limit N --repeats R --no-wiki: a narrower run, written to ns-partial.json with isTheBar false; no model is called',
+  },
+  plateau: {
+    bench: 'bench/plateau.mjs', argv: ['--max-old-space-size=4000', 'bench/plateau.mjs', '--smoke', '--generations', '5000', '--tune-seeds', '2', '--arm-seeds', '1', '--fresh-seeds', '2', '--concurrency', '4'],
+    minutes: 8, needsModel: false, where: 'copy', writes: ['bench/verdicts/plateau-partial.json'], parser: 'plateau', diskMb: 400,
+    doc: 'bench/plateau.mjs --smoke --generations N: the whole path on the smoke namespace (never the held-out seeds) at a small generation budget, written to plateau-partial.json with isTheBar false',
+  },
+  'published-rows': {
+    bench: 'test/published-rows-bar.mjs', argv: ['test/published-rows-bar.mjs', '--out', '{tmp}/published-rows.json'],
+    minutes: 2, needsModel: false, where: 'tree', writes: [], parser: 'publishedRows', diskMb: 64,
+    doc: 'test/published-rows-bar.mjs --out PATH: the whole bar, its verdict under the trial temp dir; reads research/published.json and runs test/published.test.mjs',
+  },
+  'site-probe': {
+    bench: 'bench/site-ask.mjs', argv: [HEAP, 'bench/site-ask.mjs', '--url', 'https://dilation.dev/ask'],
+    minutes: 5, needsModel: false, network: true, where: 'copy', writes: ['bench/verdicts/site-ask.json', 'bench/verdicts/site-probe.json'], parser: 'siteProbe', diskMb: 400,
+    doc: 'bench/site-ask.mjs --url https://dilation.dev/ask: a NETWORK probe (his five prompts asked of the live page through Playwright, no model on this side), on a copy so site-ask.json and site-probe.json never land in the tree',
+  },
+  soak: {
+    bench: 'bin/brain.mjs', argv: [HEAP, 'bin/brain.mjs', 'self-code', '--auto', '--soak', '1', '--author', 'off', '--dry', '--resume-minutes', '0', '--json'],
+    minutes: 6, needsModel: false, where: 'copy', writes: ['bench/verdicts/soak-partial.json'], parser: 'soak', diskMb: 2048,
+    doc: 'bin/brain.mjs self-code --auto --soak 1 --author off --dry: the proof soak (self/autopilot.mjs SOAK_PROOF_COMMAND) dry, the resume source off (it waits on the model queue), graded to soak-partial.json with isTheBar false',
+  },
+  'vision-count': {
+    bench: 'tools/vision-count.mjs', argv: ['tools/vision-count.mjs', '--json'],
+    minutes: 1, needsModel: false, where: 'copy', writes: ['bench/verdicts/vision-count.json'], parser: 'visionCount', diskMb: 50,
+    doc: 'tools/vision-count.mjs --json: the whole count of docs/VISION.md (instant), on a copy because --json writes bench/verdicts/vision-count.json',
+  },
+  'self-queries': {
+    bench: 'bench/self-queries.mjs', argv: ['--max-old-space-size=4000', 'bench/self-queries.mjs', '--n', '500', '--nowrite'],
+    minutes: 3, needsModel: false, where: 'tree', writes: [], parser: 'selfQueries', diskMb: 64,
+    doc: 'bench/self-queries.mjs --n N --nowrite: N generated questions at each held-out seed (34, 35), model off, the self test and every control first; nothing written',
+  },
 });
 
 /** Which form measures a missed or unreadable verdict again, by stem. */
-export const VERDICT_FORMS = Object.freeze({ compress: 'compress', math: 'math', 'venue-full': 'venue', venue: 'venue', authorship: 'authorship', 'schedule-autopilot': 'schedule', gaps: 'gaps', 'grid-evaluation': 'grid', daemon: 'daemon', spread: 'spread', 'spread-control': 'spread', operators: 'operators', autopilot: 'autopilot', 'autopilot-board10': 'autopilot', 'autopilot-board14-first': 'autopilot', cloud: 'cloud', 'cloud-2': 'cloud', 'cloud-host': 'cloud-host', 'cloud-fit': 'cloud-fit', 'cloud-fit-300': 'cloud-fit', 'cloud-fit-control': 'cloud-fit', contamination: 'row:contamination' });
+export const VERDICT_FORMS = Object.freeze({ compress: 'compress', math: 'math', 'venue-full': 'venue', venue: 'venue', authorship: 'authorship', 'schedule-autopilot': 'schedule', gaps: 'gaps', 'grid-evaluation': 'grid', daemon: 'daemon', spread: 'spread', 'spread-control': 'spread', operators: 'operators', autopilot: 'autopilot', 'autopilot-board10': 'autopilot', 'autopilot-board14-first': 'autopilot', cloud: 'cloud', 'cloud-2': 'cloud', 'cloud-host': 'cloud-host', 'cloud-fit': 'cloud-fit', 'cloud-fit-300': 'cloud-fit', 'cloud-fit-control': 'cloud-fit', contamination: 'row:contamination', boundary: 'boundary', essay: 'essay', 'grid-curve': 'grid-curve', 'grid-library': 'grid-library', 'grid-local-evaluation': 'grid-local-evaluation', imagine: 'imagine', multiply: 'multiply', ns: 'ns', plateau: 'plateau', 'published-rows': 'published-rows', 'site-probe': 'site-probe', soak: 'soak', 'vision-count': 'vision-count', 'self-queries': 'self-queries' });
 // board 17 builder (the organism's item): contamination.json's rule is "node bench/gate.mjs --contamination has no
 // cause", which is the CONTAMINATION row's own trial, so its gap shares that trial (a "row:" key names a ROW_FORMS entry).
 /** Which form measures a ladder block again, by the block's id. */
-export const LADDER_FORMS = Object.freeze({ 'sets.gsm8k': 'public-gsm8k', 'sets.humaneval': 'public-humaneval', 'sets.arc': 'grid', improvement: 'daemon', target: 'ladder-daily' });
+export const LADDER_FORMS = Object.freeze({ 'sets.gsm8k': 'public-gsm8k', 'sets.humaneval': 'public-humaneval', 'sets.arc': 'grid', improvement: 'daemon', target: 'ladder-daily', multiplying: 'multiply' });
 /** Census ticks per seed where the bar's 200 does not fit: census-h20-partial.json ran gen-0 at 20 ticks with rssAfterFull 3600.6 MB. */
 export const CENSUS_TICKS = Object.freeze({ 'organism/gen-0': 20 });
 /** Seeds with no bounded census form, and why. */
@@ -411,6 +483,7 @@ export function trialOf(key, form = FORMS[key]) {
     dry: form.dry ? { argv: form.dry.argv.slice(), flag: form.dry.flag, command: null } : null,
     seed: form.seed || null, fixtures: (form.fixtures || []).slice(), trader: !!form.trader, ramMb: RAM_MB, diskMb: form.diskMb, doc: form.doc || null,
   };
+  if (form.network) t.network = true; // a probe of a live host: it runs as any trial, and fails without the network
   t.command = commandOf(t);
   if (t.dry) t.dry.command = commandOf({ ...t, argv: t.dry.argv });
   return t;
@@ -494,6 +567,21 @@ export const PARSERS = Object.freeze({
   contamination: { name: 'bar files without a split object, plus contaminated and unlabelled', stdout: true, read: (out) => { const s = String(out); const a = s.match(/with no split (\d+)/), b = s.match(/split not an object (\d+)/), c = s.match(/contaminated and unlabelled (\d+)/); return a && b && c ? num(Number(a[1]) + Number(b[1]) + Number(c[1])) : null; } },
   boundary: { name: 'unlisted plus over-cap boundaries', stdout: true, read: (out) => { const m = String(out).match(/unlisted (\d+), stale (\d+), over cap (\d+)/); return m ? num(Number(m[1]) + Number(m[3])) : null; } },
   cloudFit: { name: 'budget kills at the rss cap, instance A', file: () => 'bench/verdicts/cloud-fit-partial.json', read: (v) => num(v && v.restartsBreakdown && v.restartsBreakdown.budgetKills) },
+  // board 34 builder: the parsers of the thirteen missed benches, each a number its trial prints or writes
+  boundaryStatic: { name: 'allowlist unlisted plus stale boundaries (static scan)', stdout: true, read: (out) => { const m = String(out).match(/allowlist unlisted (\d+), stale (\d+)/); return m ? num(Number(m[1]) + Number(m[2])) : null; } },
+  essay: { name: 'held-out gap of the organism over the template (points)', stdout: true, read: (out) => { const m = String(out).match(/^ESSAY .*?, gap (-?\d+(?:\.\d+)?)/m); return m ? num(Number(m[1])) : null; } },
+  gridCurve: { name: 'percent solved at the last budget point', stdout: true, read: (out) => { const ms = [...String(out).matchAll(/POINT .*?= (-?\d+(?:\.\d+)?) percent/g)]; return ms.length ? num(Number(ms[ms.length - 1][1])) : null; } },
+  gridLibrary: { name: 'library margin over the best no-library arm', file: () => 'bench/verdicts/grid-library-gaps-partial.json', read: (v) => num(get(v, 'comparison.margin')) },
+  gridLocal: { name: 'percent solved', file: () => 'bench/verdicts/grid-local-evaluation-partial.json', read: (v) => num(v && v.pct) },
+  imagine: { name: 'mean lead of the invented arm over the null arm', file: () => 'bench/verdicts/imagine-partial.json', read: (v) => num(get(v, 'bar.meanLead')) },
+  multiply: { name: 'fresh solves of the population', file: () => 'bench/verdicts/multiply-run-partial.json', read: (v) => num(get(v, 'bar.populationFresh')) },
+  ns: { name: 'held-out records answered sub-token (of the --limit drawn; the share is n/a when none is drawn)', file: () => 'bench/verdicts/ns-partial.json', read: (v) => num(get(v, 'heldOut.subToken')) },
+  plateau: { name: 'combination minus control on the grid plane', file: () => 'bench/verdicts/plateau-partial.json', read: (v) => num(get(v, 'bar.per.grid.diff')) },
+  publishedRows: { name: 'required pairs with a row', stdout: true, read: (out) => { const m = String(out).match(/required pairs with a row (\d+)\/(\d+)/); return m ? num(Number(m[1])) : null; } },
+  siteProbe: { name: 'probe prompts answered', file: () => 'bench/verdicts/site-probe.json', read: (v) => num(v && v.ok) },
+  soak: { name: 'gap attempts of the soak', file: () => 'bench/verdicts/soak-partial.json', read: (v) => num(get(v, 'totals.gapsOnly.attempts')) ?? num(get(v, 'totals.attempts')) },
+  visionCount: { name: 'orders MET', file: () => 'bench/verdicts/vision-count.json', read: (v) => num(get(v, 'counts.MET')) },
+  selfQueries: { name: 'wrong exact answers over every kind', stdout: true, read: (out) => { const m = String(out).match(/^total asked \d+ answered \d+ correct \d+ wrong (\d+)/m); return m ? num(Number(m[1])) : null; } },
   test: { name: 'wall ms', row: true },
 });
 

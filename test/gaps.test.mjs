@@ -11,6 +11,7 @@ import { readdirSync, readFileSync, rmSync, existsSync, utimesSync, writeFileSyn
 import path from 'node:path';
 import { buildLedger, writeLedger, readLedger, classifyBar, summarize, measureOf, LEDGER_REL , rowTrial, barLines, trialShareOf, PARSERS, ROOT, rowAlone, ROW_ALONE } from '../self/gaps.mjs';
 import { runTrial, barShare, SHARE_BAR } from '../bench/gaps.mjs';
+import { trialOf, VERDICT_FORMS, LADDER_FORMS } from '../self/gaps.mjs';
 import { plantTree, put, EXPECTED, BAROBJ_MEASURE, plantedLadder, plantedGate } from './gaps-plant.mjs';
 
 const pick = (l) => ({ id: l.id, kind: l.kind, measured: l.measured, bar: l.bar, distance: l.distance, subsystem: l.subsystem });
@@ -281,4 +282,20 @@ test('--trial-ram-mb: a trial capped under its ledger cap is killed at the small
     assert.equal(control.outcome, 'exit', 'the ledger cap of 6000 MB lets the same trial finish');
     assert.equal(control.exitCode, 0);
   } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+// board 34 builder (the AUTONOMY row): the forms of the thirteen missed benches (multiply also serves the ladder block multiplying), and self-queries
+const BOARD34_FORMS = ['boundary', 'essay', 'grid-curve', 'grid-library', 'grid-local-evaluation', 'imagine', 'multiply', 'ns', 'plateau', 'published-rows', 'site-probe', 'soak', 'vision-count', 'self-queries'];
+test('every form board 34 added resolves through trialOf() to a trial whose bench file exists on disk', () => {
+  for (const key of BOARD34_FORMS) {
+    const t = trialOf(key);
+    assert.ok(t && t.key === key, key + ' resolves through trialOf()');
+    assert.ok(typeof t.bench === 'string' && existsSync(path.join(ROOT, t.bench)), key + ': its bench file ' + t.bench + ' exists on disk');
+    assert.ok(t.argv.includes(t.bench), key + ': its argv runs its bench');
+    assert.ok(PARSERS[t.parser], key + ': its parser ' + t.parser + ' is registered');
+    assert.ok(t.needsModel === false && t.minutes > 0 && t.minutes <= 10, key + ': no model, under the 10 minute bound');
+    assert.ok(Object.values(VERDICT_FORMS).includes(key), key + ' is matched to its verdict');
+  }
+  assert.equal(LADDER_FORMS.multiplying, 'multiply', 'the ladder block multiplying resolves to the multiply form');
+  assert.equal(trialOf('site-probe').network, true, 'the network probe is marked');
 });

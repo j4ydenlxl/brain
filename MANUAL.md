@@ -442,6 +442,30 @@ Followed by a 125-row prompt-to-idea map written by another model from this sect
 
 (Recorded before any answer. Read as: the frontier row is the BASELINE the brain must surpass, not a description of where it stands; the 20:58 line naming the no-model row Icecuber at 17 percent is context, never a bar. Order 4 keeps the published frontier row as its bar on every measure and prints NOT MET until it is passed.)
 
+### His words, verbatim (2026-09-28, the session start, before the 07:53 EDT clock read; the message opened with the previous session's handoff list pasted back, then this)
+
+> Continue with the Brain project. Remember the whole goal is fronteir bench, very adaptive reasoning, learning from mistakes, simulating and stimulating itself by so many automatic queries and self iteration + superior coding skills + super long context window plus being a pro at everything and being able to respond to everything and doing everything natively eliminating the need of vibe coding
+
+(Read as the goal in his own order: the frontier bench (order 4), adaptive reasoning, learning from mistakes, self-generated queries and self iteration (orders 5, 6, 53), coding (order 38), a long context, a pro at everything (order 17), responding to everything natively (orders 41, 42). Board 34 was cut from this sentence: exact-kinds, code-native, mistakes, self-queries, arc-vocab.)
+
+### His words, verbatim (2026-09-28, arrived mid-turn after the 08:53:38 EDT clock read and before the 09:04:32 EDT one, while checkpoint 3 was being landed by hand)
+
+> No subagents ? No boards?
+
+(Read as an order: the checkpoint items were by hand because they were the handoff's own list; the substantive work toward the goal above gets a board at once, in parallel with the checkpoint. docs/boards/board-34.js was written and launched before the checkpoint went on.)
+
+### His words, verbatim (2026-09-28, arrived mid-turn in the same window, one tool result after the message above)
+
+> Are you on Ultracode mode rn?
+
+(Answered yes: Ultracode was confirmed on for this session, and board 34 is the Workflow it calls for: Opus 5.5 builders with the CONCISE prefix, a skeptic verify per item, one fix pass, a second verify.)
+
+### His words, verbatim (2026-09-28, arrived mid-turn before the 13:12:37 EDT clock read, while board 34's landing was being read)
+
+> Continue remember self improving to make it fill in the gaps is very high priority,  73 percent on the banked week
+
+(Read as: the loop by which the organism improves itself and fills its own gaps is the top priority of what remains, and the banked week's pool stands at 73 percent, so what is left is spent on that loop first. Board 34b closes board 34's two open stages (a second fix of the mistakes item, the missing second verify of arc-vocab); board 35 is the gap-filling loop itself, cut from the mistakes ledger and the self-queries misses in the order their counts rank them.)
+
 ## §B. OBJECTIVES + PROGRESS (mine; terse; updated only after re-reading §A)
 
 Rules for this section (P9, his 2026-09-23 order on cache reads): objectives are his WHAT in order; STATE is the whole live picture in under 40 lines and is rewritten whole at every checkpoint; the full history is `brain/docs/LOG.md` (append-only, one line per checkpoint, never read in full at session start; the hook prints its last 3 lines). Numbers live in bench/verdicts and docs/NUMBERS.md, not here. Every fact I need survives on disk, none of it needs my context.

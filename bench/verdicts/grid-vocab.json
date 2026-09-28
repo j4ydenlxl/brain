@@ -1,0 +1,503 @@
+{
+ "at": "2026-09-28T14:17:59.576Z",
+ "command": "node test/grid-vocab-verdict.mjs",
+ "node": "v24.15.0",
+ "isTheBar": true,
+ "barMet": false,
+ "contaminated": true,
+ "bar": "the evaluation split whole at 3000 ms with 2 attempts and the control file bench/verdicts/grid-split-evaluation-control.json; met when it solves at least 96 of 400 with a right attempt stamped inside the clock, loses at most 3 of the tasks bench/verdicts/grid-attempts.json solved, and the training control loses at most 2",
+ "runs": [
+  "node tools/budget.mjs --ram-mb 8000 --disk-mb 300 --dir state/board34/arc-vocab -- node --max-old-space-size=4000 bench/grid-curve.mjs --split training --budget-ms 3000 --attempts 2 --workers 12 --limit 100 --seed 33 --journal bench/verdicts/grid-vocab-training-3000ms-n100-seed33.jsonl --verdicts state/board34/arc-vocab/v --quiet",
+  "node tools/budget.mjs --ram-mb 8000 --disk-mb 300 --dir state/board34/arc-vocab -- node --max-old-space-size=4000 bench/grid-curve.mjs --out attempts --split evaluation --budget-ms 3000 --attempts 2 --workers 12 --base bench/verdicts/grid-local-evaluation.json --control bench/verdicts/grid-split-evaluation-control.json --journal bench/verdicts/grid-vocab-evaluation-3000ms.jsonl --verdicts state/board34/arc-vocab/v --quiet",
+  "node test/grid-vocab-verdict.mjs"
+ ],
+ "notTheBarBecause": [],
+ "model": "none",
+ "split": {
+  "development": {
+   "what": "the ARC-AGI-1 training split: every added word was read off its unsolved tasks (notes/grid-vocab.md); the control is a fixed seed draw of 100 of it",
+   "arcSplit": "training",
+   "n": 400
+  },
+  "heldOut": {
+   "what": "the ARC-AGI-1 evaluation split, every task scored; no evaluation task was opened to write the words (journal rows of Board 33 and of this item's earlier runs only: ids, status, phase)",
+   "arcSplit": "evaluation",
+   "n": 400,
+   "idsSha256": "06af84beade2a3890f93dcdb27ca77ad07932f8c9f760b21d74a84f6df018fd5"
+  },
+  "heldOutFile": {
+   "file": "bench/verdicts/grid-split-evaluation-control.json",
+   "sha256": "f6db65df2776ef7340ea217c0773463c7cf5e9c384b3c0072f13fb96028b7cac",
+   "at": "2026-09-27T18:34:01.166Z",
+   "why": "the file that names the held out tasks and their fixed vocabulary answers, written before this item's code"
+  },
+  "evaluationRuns": "third: the builder's run and the verify plane's re-run came first; this fix pass changed the code from their structural findings (answers taken past the clock, files outside the item) and the training split",
+  "contaminated": "1 of the 400 scored evaluation tasks shares a pair with a development task (070dd51e is pair for pair identical to training 40853293), so its score is in sample; the other scored tasks share no train or test pair with the development tasks",
+  "decidedFrom": {
+   "what": "every train and test pair of each scored task compared, by the sha256 of its input and output grids, with every train and test pair of the development tasks",
+   "pairsCompared": {
+    "scored": 1782,
+    "development": 1718
+   },
+   "scoredTasksSharingAPair": 1,
+   "duplicates": [
+    {
+     "id": "070dd51e",
+     "of": [
+      "40853293"
+     ],
+     "pairs": 3,
+     "ofPairs": 3,
+     "whole": true
+    }
+   ]
+  }
+ },
+ "vocabulary": {
+  "before": 196,
+  "after": 196,
+  "definition": "PRIMS.length + LEARNERS.length (capability/grid-dsl.mjs VOCABULARY_SIZE)",
+  "prims": 186,
+  "learners": 10,
+  "latePrimitives": {
+   "added": [
+    "cropPeriod",
+    "monochrome",
+    "outlineDiag",
+    "fillColorBoxes",
+    "downAny2",
+    "downAny3",
+    "cropFrame",
+    "cropCorners",
+    "cropCornersPaint",
+    "kronHalves",
+    "pullToTop",
+    "pullToRare",
+    "padEdge"
+   ],
+   "inPrims": 0,
+   "reachedBy": "lateWord"
+  },
+  "fallbackLearners": {
+   "before": 1,
+   "after": 11,
+   "added": [
+    "solidColor",
+    "countOut",
+    "extendPeriod",
+    "pickObject",
+    "partsPick",
+    "partsOverlay",
+    "cellsMap",
+    "regionRecolor",
+    "symComplete",
+    "lateWord"
+   ],
+   "inputOnly": true
+  }
+ },
+ "families": [
+  {
+   "name": "pick an object by a measure",
+   "taskIds": [
+    "8efcae92",
+    "ae4f1146",
+    "e50d258f",
+    "48d8fb45",
+    "3f7978a0",
+    "5117e062"
+   ],
+   "words": [
+    "pickObject",
+    "monochrome"
+   ]
+  },
+  {
+   "name": "parts: pick one, or lay them over one another",
+   "taskIds": [
+    "662c240a",
+    "75b8110e",
+    "cf98881b"
+   ],
+   "words": [
+    "partsPick",
+    "partsOverlay"
+   ]
+  },
+  {
+   "name": "the periodic tile and the 1D period",
+   "taskIds": [
+    "2dee498d",
+    "7b7f7511",
+    "017c7c7b"
+   ],
+   "words": [
+    "cropPeriod",
+    "extendPeriod"
+   ]
+  },
+  {
+   "name": "symmetry completed about a local centre",
+   "taskIds": [
+    "11852cab",
+    "1b60fb0c",
+    "4c5c2cf0"
+   ],
+   "words": [
+    "symComplete"
+   ]
+  },
+  {
+   "name": "background regions recoloured by a feature",
+   "taskIds": [
+    "44d8ac46",
+    "868de0fa",
+    "e73095fd"
+   ],
+   "words": [
+    "regionRecolor"
+   ]
+  },
+  {
+   "name": "frames and corners",
+   "taskIds": [
+    "1c786137",
+    "3de23699"
+   ],
+   "words": [
+    "cropFrame",
+    "cropCorners",
+    "cropCornersPaint"
+   ]
+  },
+  {
+   "name": "the Kronecker product of two parts",
+   "taskIds": [
+    "b190f7f5"
+   ],
+   "words": [
+    "kronHalves"
+   ]
+  },
+  {
+   "name": "pull toward an anchor",
+   "taskIds": [
+    "05f2a901",
+    "4093f84a"
+   ],
+   "words": [
+    "pullToRare",
+    "pullToTop"
+   ]
+  },
+  {
+   "name": "lossy downscale",
+   "taskIds": [
+    "46f33fce"
+   ],
+   "words": [
+    "downAny2",
+    "downAny3"
+   ]
+  },
+  {
+   "name": "edge padding",
+   "taskIds": [
+    "49d1d64f"
+   ],
+   "words": [
+    "padEdge"
+   ]
+  },
+  {
+   "name": "diagonal neighbours",
+   "taskIds": [
+    "10fcaaa3"
+   ],
+   "words": [
+    "outlineDiag"
+   ]
+  },
+  {
+   "name": "each colour's box filled",
+   "taskIds": [
+    "56ff96f3"
+   ],
+   "words": [
+    "fillColorBoxes"
+   ]
+  },
+  {
+   "name": "a count made into a grid",
+   "taskIds": [
+    "1fad071e",
+    "d0f5fe59",
+    "b0c4d837"
+   ],
+   "words": [
+    "countOut"
+   ]
+  },
+  {
+   "name": "a uniform output of a learned colour",
+   "taskIds": [
+    "445eab21",
+    "5582e5ca"
+   ],
+   "words": [
+    "solidColor"
+   ]
+  },
+  {
+   "name": "partition cells mapped by a feature",
+   "taskIds": [
+    "6773b310",
+    "29623171"
+   ],
+   "words": [
+    "cellsMap"
+   ]
+  }
+ ],
+ "control": {
+  "split": "training",
+  "n": 100,
+  "budgetMs": 3000,
+  "attempts": 2,
+  "maxDepth": 4,
+  "workers": 12,
+  "idsSha": "85e3510a64704a0debc4fbc7e79785644683702699da5af3c1d53d441a33bddb",
+  "journal": "bench/verdicts/grid-vocab-training-3000ms-n100-seed33.jsonl",
+  "beforeJournal": "bench/verdicts/grid-curve-training-3000ms-n100-seed33.jsonl",
+  "commands": [
+   "node bench/grid-curve.mjs --split training --budget-ms 3000 --attempts 2 --workers 12 --limit 100 --seed 33 --journal bench/verdicts/grid-vocab-training-3000ms-n100-seed33.jsonl --verdicts state/board34/arc-vocab/v --quiet"
+  ],
+  "before": 41,
+  "beforeInClock": 41,
+  "afterBench": 45,
+  "after": 45,
+  "gained": [
+   "29623171",
+   "48d8fb45",
+   "49d1d64f",
+   "4c5c2cf0"
+  ],
+  "lost": [],
+  "benchGained": [
+   "29623171",
+   "48d8fb45",
+   "49d1d64f",
+   "4c5c2cf0"
+  ],
+  "benchLost": [],
+  "timedOut": 46,
+  "foundButWrong": 9,
+  "exhausted": 0,
+  "errors": 0,
+  "killed": 0,
+  "meanMs": 2538.88,
+  "wallSeconds": 25.96,
+  "maxRowMs": 3033.37,
+  "attemptsPastTheClock": 0,
+  "attemptsWithAnAddedWord": {
+   "right": 5,
+   "wrong": 0,
+   "pastTheClock": 0,
+   "maxMs": 2387.47,
+   "byWord": {
+    "cellsMap": {
+     "right": 1,
+     "wrong": 0
+    },
+    "pickObject": {
+     "right": 1,
+     "wrong": 0
+    },
+    "lateWord": {
+     "right": 1,
+     "wrong": 0
+    },
+    "symComplete": {
+     "right": 1,
+     "wrong": 0
+    },
+    "regionRecolor": {
+     "right": 1,
+     "wrong": 0
+    }
+   }
+  },
+  "gainedBy": [
+   {
+    "id": "29623171",
+    "attempts": [
+     "cellsMap (fallback, 2273 ms, right)"
+    ]
+   },
+   {
+    "id": "48d8fb45",
+    "attempts": [
+     "pickObject (fallback, 2255 ms, right)",
+     "cellsDistinct>cropBBox>fixedCrop (search, 2987 ms, wrong)"
+    ]
+   },
+   {
+    "id": "49d1d64f",
+    "attempts": [
+     "lateWord (fallback, 2263 ms, right)"
+    ]
+   },
+   {
+    "id": "4c5c2cf0",
+    "attempts": [
+     "symComplete (fallback, 2286 ms, right)"
+    ]
+   }
+  ],
+  "lostDetail": []
+ },
+ "evaluation": {
+  "split": "evaluation",
+  "n": 400,
+  "budgetMs": 3000,
+  "attempts": 2,
+  "maxDepth": 4,
+  "workers": 12,
+  "idsSha": "06af84beade2a3890f93dcdb27ca77ad07932f8c9f760b21d74a84f6df018fd5",
+  "journal": "bench/verdicts/grid-vocab-evaluation-3000ms.jsonl",
+  "beforeJournal": "bench/verdicts/grid-attempts-evaluation-3000ms.jsonl",
+  "commands": [
+   "node bench/grid-curve.mjs --out attempts --split evaluation --budget-ms 3000 --attempts 2 --workers 12 --base bench/verdicts/grid-local-evaluation.json --control bench/verdicts/grid-split-evaluation-control.json --journal bench/verdicts/grid-vocab-evaluation-3000ms.jsonl --verdicts state/board34/arc-vocab/v --quiet"
+  ],
+  "before": 86,
+  "beforeInClock": 86,
+  "afterBench": 94,
+  "after": 94,
+  "gained": [
+   "281123b4",
+   "3194b014",
+   "3d31c5b3",
+   "6a11f6da",
+   "7bb29440",
+   "c3202e5a",
+   "e99362f0",
+   "ea9794b1"
+  ],
+  "lost": [],
+  "benchGained": [
+   "281123b4",
+   "3194b014",
+   "3d31c5b3",
+   "6a11f6da",
+   "7bb29440",
+   "c3202e5a",
+   "e99362f0",
+   "ea9794b1"
+  ],
+  "benchLost": [],
+  "timedOut": 279,
+  "foundButWrong": 26,
+  "exhausted": 1,
+  "errors": 0,
+  "killed": 0,
+  "meanMs": 2786.95,
+  "wallSeconds": 103.07,
+  "maxRowMs": 3799.7,
+  "attemptsPastTheClock": 0,
+  "attemptsWithAnAddedWord": {
+   "right": 9,
+   "wrong": 0,
+   "pastTheClock": 0,
+   "maxMs": 2279.36,
+   "byWord": {
+    "solidColor": {
+     "right": 2,
+     "wrong": 0
+    },
+    "partsOverlay": {
+     "right": 5,
+     "wrong": 0
+    },
+    "pickObject": {
+     "right": 1,
+     "wrong": 0
+    },
+    "partsPick": {
+     "right": 1,
+     "wrong": 0
+    }
+   }
+  },
+  "gainedBy": [
+   {
+    "id": "281123b4",
+    "attempts": [
+     "partsOverlay (fallback, 2265 ms, right)"
+    ]
+   },
+   {
+    "id": "3194b014",
+    "attempts": [
+     "solidColor (fallback, 2266 ms, right)"
+    ]
+   },
+   {
+    "id": "3d31c5b3",
+    "attempts": [
+     "partsOverlay (fallback, 2266 ms, right)"
+    ]
+   },
+   {
+    "id": "6a11f6da",
+    "attempts": [
+     "partsOverlay (fallback, 2268 ms, right)"
+    ]
+   },
+   {
+    "id": "7bb29440",
+    "attempts": [
+     "pickObject (fallback, 2263 ms, right)"
+    ]
+   },
+   {
+    "id": "c3202e5a",
+    "attempts": [
+     "partsPick (fallback, 2263 ms, right)"
+    ]
+   },
+   {
+    "id": "e99362f0",
+    "attempts": [
+     "partsOverlay (fallback, 2261 ms, right)"
+    ]
+   },
+   {
+    "id": "ea9794b1",
+    "attempts": [
+     "partsOverlay (fallback, 2271 ms, right)"
+    ]
+   }
+  ],
+  "lostDetail": [],
+  "clean": {
+   "n": 399,
+   "solved": 93,
+   "without": [
+    "070dd51e"
+   ]
+  }
+ },
+ "controlArm": {
+  "file": "bench/verdicts/grid-split-evaluation-control.json",
+  "at": "2026-09-27T18:34:01.166Z",
+  "command": "node bench/grid.mjs --split evaluation --budget-ms 3000 --workers 4 --fixed-vocab --tag split-evaluation-control",
+  "controlArm": true,
+  "arm": "the search without the fallback phase (--fixed-vocab), one attempt, the vocabulary before Board 23",
+  "sha256": "f6db65df2776ef7340ea217c0773463c7cf5e9c384b3c0072f13fb96028b7cac",
+  "solved": 71,
+  "thisRun": 94,
+  "gained": 23,
+  "lost": 0
+ },
+ "statement": "Board 34 (arc-vocab) added 13 primitives and 10 fallback learners to capability/grid-dsl.mjs, read off 15 families of unsolved TRAINING tasks (notes/grid-vocab.md). The primitives are late words: registered by name but kept out of PRIMS, so the counted vocabulary (PRIMS plus LEARNERS) stays 196 and the search meets them through the fallback learner lateWord; the fallback learners went from 1 to 11, each run on the task's input only, its answer taken inside the clock. A task counts as solved here only when a right attempt was stamped at or under 3000 ms. The training control (in sample, 100 tasks, seed 33) went 41 to 45 (gained 4, lost 0). The held out evaluation split at 3000 ms with 2 attempts went 86 to 94 of 400 (gained 8, lost 0); timed out 279, found but wrong 26, exhausted 1, mean 2786.95 ms; attempts with an added word 9 right and 0 wrong, 0 of them stamped past the clock. Against the control arm bench/verdicts/grid-split-evaluation-control.json (the search without the fallback phase (--fixed-vocab), one attempt, the vocabulary before Board 23, 71 solved) this run gained 23 and lost 0. This is the bar run, and the bar (at least 96 of 400 inside the clock, at most 3 lost, the training control losing at most 2) is NOT MET. Contaminated as bench/verdicts/grid-attempts.json was: 1 of the 400 scored evaluation tasks shares a pair with a development task (070dd51e is pair for pair identical to training 40853293), so its score is in sample; the other scored tasks share no train or test pair with the development tasks; without 070dd51e this run solves 93 of 399. This is the third run of this item's words on the evaluation split (the builder's, the verify plane's, this fix pass's); the fix was decided from the verify plane's findings and the training split, and no evaluation task was opened. Latencies were measured on a machine shared with other builders."
+}

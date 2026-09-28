@@ -1,6 +1,6 @@
 # Grok Bot: what it is, what it costs, what it cannot do, and the ratios
 
-VISION order 43 (his words, 2026-09-27: "Look at Grok bot. And make ours 10000x better and cheaper"). Board 29 item grok-bot, rebuilt on board 31 item grok-bot-fix. Assembled by `node bench/grok-bot.mjs` at 2026-09-27T23:57:17.200Z, which also writes bench/verdicts/grok-bot.json; no model call, no network. Every page below carries the instant its read returned. Every number on our side is read at run time from a verdict under bench/verdicts, with the file, path and the file's own stamp in section 6; nothing is from memory.
+VISION order 43 (his words, 2026-09-27: "Look at Grok bot. And make ours 10000x better and cheaper"). Board 29 item grok-bot, rebuilt on board 31 item grok-bot-fix. Assembled by `node bench/grok-bot.mjs` at 2026-09-28T18:17:36.925Z, which also writes bench/verdicts/grok-bot.json; no model call, no network. Every page below carries the instant its read returned. Every number on our side is read at run time from a verdict under bench/verdicts, with the file, path and the file's own stamp in section 6; nothing is from memory.
 
 ## 0. Which product "Grok Bot" is
 
@@ -73,10 +73,10 @@ Pages that did not load, so nothing is taken from them: https://x.ai/bot (403), 
 
 | Measure | Ours | Unit | File (path) | File stamped |
 | --- | --- | --- | --- | --- |
-| Time to first token (theirs, Grok 4.7 xhigh, third party) against the hosted round trip of one answered prompt (ours) | 0.2278 | seconds | bench/verdicts/site-ask.json (serverRows.exact.rttMs) | 2026-09-27T19:02:04.005Z |
-| Server compute per response, one answered prompt | 0.000253 | seconds | bench/verdicts/site-ask.json (serverRows.exact.json.serverUs) | 2026-09-27T19:02:04.005Z |
-| Answer computed in the browser tab, "hey" | 1074 | ns per ask | bench/verdicts/site-ask.json (rows[prompt=hey].nsPerAsk) | 2026-09-27T19:02:04.005Z |
-| Answer computed in the browser tab, "what is 17 times 23" | 5664 | ns per ask | bench/verdicts/site-ask.json (rows[prompt=what is 17 times 23].nsPerAsk) | 2026-09-27T19:02:04.005Z |
+| Time to first token (theirs, Grok 4.7 xhigh, third party) against the hosted round trip of one answered prompt (ours) | 0.2118 | seconds | bench/verdicts/site-ask.json (serverRows.exact.rttMs) | 2026-09-28T01:24:06.785Z |
+| Server compute per response, one answered prompt | 0.001275 | seconds | bench/verdicts/site-ask.json (serverRows.exact.json.serverUs) | 2026-09-28T01:24:06.785Z |
+| Answer computed in the browser tab, "hey" | 1367 | ns per ask | bench/verdicts/site-ask.json (rows[prompt=hey].nsPerAsk) | 2026-09-28T01:24:06.785Z |
+| Answer computed in the browser tab, "what is 17 times 23" | 7813 | ns per ask | bench/verdicts/site-ask.json (rows[prompt=what is 17 times 23].nsPerAsk) | 2026-09-28T01:24:06.785Z |
 | Direct table lookup, median per hit | 70.92 | ns | bench/verdicts/native.json (timing.hitNsMedian) | 2026-09-27T13:35:25.098Z |
 | Whole ask() median, exact route, model off | 7.05 | microseconds | bench/verdicts/speed.json (askLine (regex exact ([0-9.]+))) | 2026-09-26T21:57:47.681Z |
 | GSM8K exact accuracy, organism, all 1319 test records | 90.144 | percent | bench/verdicts/public-gsm8k.json (arms.organism.accuracy) | 2026-09-27T21:56:32.679Z |
@@ -89,21 +89,21 @@ Pages that did not load, so nothing is taken from them: https://x.ai/bot (403), 
 | GSM8K mean time per task, organism | 25818.61 | ms | bench/verdicts/public-gsm8k.json (arms.organism.meanMs) | 2026-09-27T21:56:32.679Z |
 | GSM8K mean time per task, the same model alone | 6843.06 | ms | bench/verdicts/public-gsm8k.json (arms.alone.meanMs) | 2026-09-27T21:56:32.679Z |
 | Held-out GSM8K answered sub-token (nanosecond classes) | 0.5 | percent | bench/verdicts/ns.json (heldOut.share) | 2026-09-27T19:10:37.542Z |
-| HumanEval pass@1, organism, records both arms graded (ours MultiPL-E JavaScript) | 89.7435897436 | percent | bench/verdicts/public-humaneval-partial.json (paired(organism,alone).organism.accuracy) | 2026-09-27T23:54:06.007Z, run not finished |
-| HumanEval control: the same model alone, records both arms graded | 64.1025641026 | percent | bench/verdicts/public-humaneval-partial.json (paired(organism,alone).alone.accuracy) | 2026-09-27T23:54:06.007Z, run not finished |
-| HumanEval pass@1, organism, held-out records both arms graded | 82.5 | percent | bench/verdicts/public-humaneval-partial.json (paired(organism,alone,heldOut).organism.accuracy) | 2026-09-27T23:54:06.007Z, run not finished |
-| HumanEval control: the same model alone, held-out records both arms graded | 52.5 | percent | bench/verdicts/public-humaneval-partial.json (paired(organism,alone,heldOut).alone.accuracy) | 2026-09-27T23:54:06.007Z, run not finished |
+| HumanEval pass@1, organism, records both arms graded (ours MultiPL-E JavaScript) | 76.397515528 | percent | bench/verdicts/public-humaneval.json (paired(organism,alone).organism.accuracy) | 2026-09-28T01:41:13.471Z |
+| HumanEval control: the same model alone, records both arms graded | 50.9316770186 | percent | bench/verdicts/public-humaneval.json (paired(organism,alone).alone.accuracy) | 2026-09-28T01:41:13.471Z |
+| HumanEval pass@1, organism, held-out records both arms graded | 69.4214876033 | percent | bench/verdicts/public-humaneval.json (paired(organism,alone,heldOut).organism.accuracy) | 2026-09-28T01:41:13.471Z |
+| HumanEval control: the same model alone, held-out records both arms graded | 42.1487603306 | percent | bench/verdicts/public-humaneval.json (paired(organism,alone,heldOut).alone.accuracy) | 2026-09-28T01:41:13.471Z |
 | ARC-AGI-1 evaluation, organism, one attempt | 0.25 | percent | bench/verdicts/public-arc.json (arms.organism.accuracy) | 2026-09-18T14:35:37.968Z |
 | Own code tasks fully solved, organism (self-code bench) | 40 | percent | bench/verdicts/code.json (arms.organism.accuracy) | 2026-09-18T13:53:11.217Z |
 | Knowledge tier, held-out first sentences, recall@1 | 62.5 | percent | bench/verdicts/knowledge.json (grade.recall1) | 2026-09-27T13:42:48.550Z |
 | Held-out facts answered by ask() with the model off, recall@1 | 122 | count of 200 | bench/verdicts/native.json (split.heldOut.tableRecallAt1) | 2026-09-27T13:35:25.098Z |
-| Conceived prompts, every kind: share answered natively, organism, model off | 12.37 | percent | bench/verdicts/conceive.json (arms.organism.nativeShare) | 2026-09-27T23:47:08.737Z |
-| Conceived prompts, every kind: share of the gradeable passing their rubric, organism, model off | 6.08 | percent | bench/verdicts/conceive.json (arms.organism.correctShare) | 2026-09-27T23:47:08.737Z |
-| Conceived prompts, every kind: median per ask, organism, model off | 672500 | ns | bench/verdicts/conceive.json (arms.organism.ns.median) | 2026-09-27T23:47:08.737Z |
-| Conceived prompts, every kind: median per native answer, organism, model off | 83500 | ns | bench/verdicts/conceive.json (arms.organism.ns.nativeMedian) | 2026-09-27T23:47:08.737Z |
-| Conceived prompts, every kind: share answered natively, knowledge tier off as on dilation.dev | 9.28 | percent | bench/verdicts/conceive.json (arms.organism-site.nativeShare) | 2026-09-27T23:47:08.737Z |
-| Authored code lines in the tree | 178639 | lines | bench/verdicts/gate.json (lines.code) | 2026-09-27T00:35:24.141Z |
-| Generated organism lines | 10990921 | lines | bench/verdicts/gate.json (lines.generated) | 2026-09-27T00:35:24.141Z |
+| Conceived prompts, every kind: share answered natively, organism, model off | 12.37 | percent | bench/verdicts/conceive.json (arms.organism.nativeShare) | 2026-09-28T12:18:03.618Z |
+| Conceived prompts, every kind: share of the gradeable passing their rubric, organism, model off | 6.08 | percent | bench/verdicts/conceive.json (arms.organism.correctShare) | 2026-09-28T12:18:03.618Z |
+| Conceived prompts, every kind: median per ask, organism, model off | 775500 | ns | bench/verdicts/conceive.json (arms.organism.ns.median) | 2026-09-28T12:18:03.618Z |
+| Conceived prompts, every kind: median per native answer, organism, model off | 87600 | ns | bench/verdicts/conceive.json (arms.organism.ns.nativeMedian) | 2026-09-28T12:18:03.618Z |
+| Conceived prompts, every kind: share answered natively, knowledge tier off as on dilation.dev | 9.28 | percent | bench/verdicts/conceive.json (arms.organism-site.nativeShare) | 2026-09-28T12:18:03.618Z |
+| Authored code lines in the tree | 220395 | lines | bench/verdicts/gate.json (lines.code) | 2026-09-28T18:16:53.184Z |
+| Generated organism lines | 10986227 | lines | bench/verdicts/gate.json (lines.generated) | 2026-09-28T18:16:53.184Z |
 
 Like with like: each pair below is two arms on the same records, recounted by the assembler.
 
@@ -111,8 +111,8 @@ Like with like: each pair below is two arms on the same records, recounted by th
 | --- | --- | --- | --- | --- | --- |
 | gsm8k | all | 1189 of 1319 | 1041 of 1319 | 17 of 1319 | bench/verdicts/public-gsm8k.json 2026-09-27T21:56:32.679Z |
 | gsm8k | heldOut | 1007 of 1116 | 875 of 1116 | 8 of 1116 | bench/verdicts/public-gsm8k.json 2026-09-27T21:56:32.679Z |
-| humaneval | records both arms graded | 70 of 78 | 50 of 78 | not paired | bench/verdicts/public-humaneval-partial.json 2026-09-27T23:54:06.007Z (run not finished) |
-| humaneval | heldOut, records both arms graded | 33 of 40 | 21 of 40 | not paired | bench/verdicts/public-humaneval-partial.json 2026-09-27T23:54:06.007Z (run not finished) |
+| humaneval | records both arms graded | 123 of 161 | 82 of 161 | not paired | bench/verdicts/public-humaneval.json 2026-09-28T01:41:13.471Z |
+| humaneval | heldOut, records both arms graded | 84 of 121 | 51 of 121 | not paired | bench/verdicts/public-humaneval.json 2026-09-28T01:41:13.471Z |
 
 On his question "and what about nanoseconds per response": the tab answers "hey" and "what is 17 times 23" in the ns per ask of section 6, and the direct table in its median ns per hit; these are the prompts it carries, not every prompt. No page read gives Grok a nanosecond, microsecond or millisecond number for a response.
 
@@ -128,11 +128,11 @@ Cheaper and faster (lower is better): the ratio is theirs divided by ours, and 1
 | grok-4.7 price per million output tokens (prompt under 200k) | 6 USD per million tokens | no number on our side yet | none | 0.0006 USD per million tokens (theirs / 10000) |
 | grok-4.7 price per million input tokens (prompt under 200k) | 2 USD per million tokens | no number on our side yet | none | 0.0002 USD per million tokens (theirs / 10000) |
 | Cost per Artificial Analysis Intelligence Index task (Grok 4.7 xhigh) | 3.74 USD per task | no number on our side yet | none | 0.000374 USD per task (theirs / 10000) |
-| Time to first token (theirs, Grok 4.7 xhigh, third party) against the hosted round trip of one answered prompt (ours) | 51.22 seconds | 0.2278 seconds | 224.8463565x (theirs divided by ours (lower is better)) | 0.005122 seconds (theirs / 10000) |
-| Server compute per response, one answered prompt | no number on their side | 0.000253 seconds | none | no number on their side, so 10000x names no target |
+| Time to first token (theirs, Grok 4.7 xhigh, third party) against the hosted round trip of one answered prompt (ours) | 51.22 seconds | 0.2118 seconds | 241.8319169x (theirs divided by ours (lower is better)) | 0.005122 seconds (theirs / 10000) |
+| Server compute per response, one answered prompt | no number on their side | 0.001275 seconds | none | no number on their side, so 10000x names no target |
 | Output speed | 82.1 tokens per second | no number on our side yet | none | 821000 tokens per second (theirs x 10000) |
-| Answer computed in the browser tab, "hey" | no number on their side | 1074 ns per ask | none | no number on their side, so 10000x names no target |
-| Answer computed in the browser tab, "what is 17 times 23" | no number on their side | 5664 ns per ask | none | no number on their side, so 10000x names no target |
+| Answer computed in the browser tab, "hey" | no number on their side | 1367 ns per ask | none | no number on their side, so 10000x names no target |
+| Answer computed in the browser tab, "what is 17 times 23" | no number on their side | 7813 ns per ask | none | no number on their side, so 10000x names no target |
 | Direct table lookup, median per hit | no number on their side | 70.92 ns | none | no number on their side, so 10000x names no target |
 | Whole ask() median, exact route, model off | no number on their side | 7.05 microseconds | none | no number on their side, so 10000x names no target |
 | GSM8K exact accuracy, organism, all 1319 test records | 90 percent | 90.144 percent | 1.01461039x (their error divided by our error (100 minus each percent)) | error 0.001 percent, a score of 99.999 percent (their error / 10000) |
@@ -145,18 +145,18 @@ Cheaper and faster (lower is better): the ratio is theirs divided by ours, and 1
 | GSM8K mean time per task, organism | no number on their side | 25818.61 ms | none | no number on their side, so 10000x names no target |
 | GSM8K mean time per task, the same model alone | no number on their side | 6843.06 ms | none | no number on their side, so 10000x names no target |
 | Held-out GSM8K answered sub-token (nanosecond classes) | no number on their side | 0.5 percent | none | no number on their side, so 10000x names no target |
-| HumanEval pass@1, organism, records both arms graded (ours MultiPL-E JavaScript) | 88.4 percent | 89.7435897436 percent | 1.131x (their error divided by our error (100 minus each percent)) | error 0.00116 percent, a score of 99.99884 percent (their error / 10000) |
-| HumanEval control: the same model alone, records both arms graded | no number on their side | 64.1025641026 percent | none | no number on their side, so 10000x names no target |
-| HumanEval pass@1, organism, held-out records both arms graded | no number on their side | 82.5 percent | none | no number on their side, so 10000x names no target |
-| HumanEval control: the same model alone, held-out records both arms graded | no number on their side | 52.5 percent | none | no number on their side, so 10000x names no target |
+| HumanEval pass@1, organism, records both arms graded (ours MultiPL-E JavaScript) | 88.4 percent | 76.397515528 percent | 0.4914736842x (their error divided by our error (100 minus each percent)) | error 0.00116 percent, a score of 99.99884 percent (their error / 10000) |
+| HumanEval control: the same model alone, records both arms graded | no number on their side | 50.9316770186 percent | none | no number on their side, so 10000x names no target |
+| HumanEval pass@1, organism, held-out records both arms graded | no number on their side | 69.4214876033 percent | none | no number on their side, so 10000x names no target |
+| HumanEval control: the same model alone, held-out records both arms graded | no number on their side | 42.1487603306 percent | none | no number on their side, so 10000x names no target |
 | ARC-AGI-1 evaluation, organism, one attempt | no number on their side | 0.25 percent | none | no number on their side, so 10000x names no target |
 | Own code tasks fully solved, organism (self-code bench) | no number on their side | 40 percent | none | no number on their side, so 10000x names no target |
 | Knowledge tier, held-out first sentences, recall@1 | no number on their side | 62.5 percent | none | no number on their side, so 10000x names no target |
 | Held-out facts answered by ask() with the model off, recall@1 | no number on their side | 122 count of 200 | none | no number on their side, so 10000x names no target |
 | Conceived prompts, every kind: share answered natively, organism, model off | no number on their side | 12.37 percent | none | no number on their side, so 10000x names no target |
 | Conceived prompts, every kind: share of the gradeable passing their rubric, organism, model off | no number on their side | 6.08 percent | none | no number on their side, so 10000x names no target |
-| Conceived prompts, every kind: median per ask, organism, model off | no number on their side | 672500 ns | none | no number on their side, so 10000x names no target |
-| Conceived prompts, every kind: median per native answer, organism, model off | no number on their side | 83500 ns | none | no number on their side, so 10000x names no target |
+| Conceived prompts, every kind: median per ask, organism, model off | no number on their side | 775500 ns | none | no number on their side, so 10000x names no target |
+| Conceived prompts, every kind: median per native answer, organism, model off | no number on their side | 87600 ns | none | no number on their side, so 10000x names no target |
 | Conceived prompts, every kind: share answered natively, knowledge tier off as on dilation.dev | no number on their side | 9.28 percent | none | no number on their side, so 10000x names no target |
 | Terminal-Bench 4.0 (Grok 4.7) | 37.6 percent | no number on our side yet | none | error 0.00624 percent, a score of 99.99376 percent (their error / 10000) |
 | DeepSWE v1.1 (Grok 4.7) | 71 percent | no number on our side yet | none | error 0.0029 percent, a score of 99.9971 percent (their error / 10000) |
@@ -174,15 +174,15 @@ Cheaper and faster (lower is better): the ratio is theirs divided by ours, and 1
 | FrontierCode v1.1 Extended (Grok 4.6) | 61.3 percent | no number on our side yet | none | error 0.00387 percent, a score of 99.99613 percent (their error / 10000) |
 | APEX-SWE (Grok 4.6) | 56.4 percent | no number on our side yet | none | error 0.00436 percent, a score of 99.99564 percent (their error / 10000) |
 | Computer-use tasks at once per Bot | 1 tasks | no number on our side yet | none | 10000 tasks (theirs x 10000) |
-| Authored code lines in the tree | no number on their side | 178639 lines | none | no number on their side, so 10000x names no target |
-| Generated organism lines | no number on their side | 10990921 lines | none | no number on their side, so 10000x names no target |
+| Authored code lines in the tree | no number on their side | 220395 lines | none | no number on their side, so 10000x names no target |
+| Generated organism lines | no number on their side | 10986227 lines | none | no number on their side, so 10000x names no target |
 
-What "10000x better and cheaper" would take on the 3 measures that have a number on both sides, from the verdicts only. Speed: 10000x under their 51.22 s time to first token is 0.005122 s for the same prompts. Our hosted round trip is 0.2278 s, of which the server's own compute is 253 microseconds (the same site-ask.json row), so the server is already under 0.005122 s and the other 227.5 ms is the trip between the bench host and the hosted server; the tab answers "hey" in 1074 ns with no trip at all. The prompts are not theirs: where our answers are graded, GSM8K, the organism takes a mean 25818.61 ms a task through the model cell, 1.984x under their first token and 5041x slower than the 10000x target. GSM8K accuracy: their error is 10 percent, so 10000x means an error of 0.001 percent; ours is 9.856 percent (130 wrong of 1319). One wrong answer in 1319 is already 0.07582 percent, and even 0 wrong of 1319 bounds the error only below 0.2274 percent at 95 percent (the rule of three, 3 of n), so the test set cannot show 10000x at all: showing 0.001 percent takes about 300000 graded records with none wrong, and the largest ratio 1319 records can certify is 43.97x. HumanEval: their error is 11.6 percent, the 10000x target 0.00116 percent, ours 10.26 percent on the records both arms graded (bench/verdicts/public-humaneval-partial.json); the set has 161 records, whose rule of three bound is 1.863 percent, so the most it can certify is 6.225x, and 0.00116 percent takes about 258621 tasks with none failed. Cheaper: none of the three has a dollar number on our side (no verdict prints dollars), so the ratio is not computable; their entry price of $20 a month puts 10000x at $0.002 a month.
+What "10000x better and cheaper" would take on the 3 measures that have a number on both sides, from the verdicts only. Speed: 10000x under their 51.22 s time to first token is 0.005122 s for the same prompts. Our hosted round trip is 0.2118 s, of which the server's own compute is 1275 microseconds (the same site-ask.json row), so the server is already under 0.005122 s and the other 210.5 ms is the trip between the bench host and the hosted server; the tab answers "hey" in 1367 ns with no trip at all. The prompts are not theirs: where our answers are graded, GSM8K, the organism takes a mean 25818.61 ms a task through the model cell, 1.984x under their first token and 5041x slower than the 10000x target. GSM8K accuracy: their error is 10 percent, so 10000x means an error of 0.001 percent; ours is 9.856 percent (130 wrong of 1319). One wrong answer in 1319 is already 0.07582 percent, and even 0 wrong of 1319 bounds the error only below 0.2274 percent at 95 percent (the rule of three, 3 of n), so the test set cannot show 10000x at all: showing 0.001 percent takes about 300000 graded records with none wrong, and the largest ratio 1319 records can certify is 43.97x. HumanEval: their error is 11.6 percent, the 10000x target 0.00116 percent, ours 23.6 percent on the records both arms graded (bench/verdicts/public-humaneval.json); the set has 161 records, whose rule of three bound is 1.863 percent, so the most it can certify is 6.225x, and 0.00116 percent takes about 258621 tasks with none failed. Cheaper: none of the three has a dollar number on our side (no verdict prints dollars), so the ratio is not computable; their entry price of $20 a month puts 10000x at $0.002 a month.
 
 ## 8. Where our next number moves the ratio most
 
 1. Dollars per answered prompt on the hosted endpoint (cheaper): their side prints $20 a month, $6 per million output tokens and $3.74 per task; no verdict here prints dollars. The server compute per response (section 6) is the number a dollar figure would be computed from, and a dollar column is the next number.
-2. Latency and coverage on the prompts a person asks (faster, and on their population): the only speed row with a number on their side compares different prompts. bench/verdicts/conceive.json (VISION order 42, at 2026-09-27T23:47:08.737Z) asks 291 prompts over 41 kinds: the organism with its model off answered 12.37 percent natively at a median 672500 ns per ask (83500 ns per native answer) and passed 6.08 percent of the gradeable ones; its own bar is not met. No Grok page read prints a number on those prompts, so these rows have no ratio; the next number is the organism's native share on them rising, and a Grok time on the same prompts.
+2. Latency and coverage on the prompts a person asks (faster, and on their population): the only speed row with a number on their side compares different prompts. bench/verdicts/conceive.json (VISION order 42, at 2026-09-28T12:18:03.618Z) asks 291 prompts over 41 kinds: the organism with its model off answered 12.37 percent natively at a median 775500 ns per ask (87600 ns per native answer) and passed 6.08 percent of the gradeable ones; its own bar is met. No Grok page read prints a number on those prompts, so these rows have no ratio; the next number is the organism's native share on them rising, and a Grok time on the same prompts.
 3. Agent and coding task success on one of their sets (better): Terminal-Bench 4.0 and DeepSWE v1.1 have no row on our side. bench/code.mjs and bench/public.mjs --set humaneval are the nearest benches, and neither runs a set a Grok 4.x page publishes, so a ratio there needs one of their sets added to bench/public.mjs.
 
 ## Sources (24, 20 loaded; read instants are when each fetch returned)

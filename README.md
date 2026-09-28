@@ -10,7 +10,7 @@ So this page promises only what a command prints. `node bench/developers.mjs` ru
 
 ## Where it stands
 
-The ladder's line, from `bench/verdicts/ladder.json` at `2026-09-27T23:12:56.647Z`:
+The ladder's line, from `bench/verdicts/ladder.json` at `2026-09-28T01:41:41.300Z`:
 
 > day over day: composite +6.15 percent, target 5 to 10 percent: met
 
@@ -21,10 +21,10 @@ Each number here equals the field named beside it in the verdict file that measu
 <!-- sources -->
 | what | number | verdict file | field | at |
 | --- | --- | --- | --- | --- |
-| the ladder, composite day over day | +6.15 percent | `bench/verdicts/ladder.json` | `lastDelta` | `2026-09-27T23:12:56.647Z` |
+| the ladder, composite day over day | +6.15 percent | `bench/verdicts/ladder.json` | `lastDelta` | `2026-09-28T01:41:41.300Z` |
 | the packed tarball | 238 files, 1729955 bytes packed, 5713504 bytes unpacked | `bench/verdicts/install.json` | `files`, `tarballBytes`, `unpackedBytes` | `2026-09-28T01:14:09.037Z` |
 | his bare prompts answered by the installed copy | 4 of 5 | `bench/verdicts/install.json` | `prompts[answered=true].length`, `prompts.length` | `2026-09-28T01:14:09.037Z` |
-| his probe prompts answered by the site | 2 of 5 | `bench/verdicts/site-probe.json` | `ok`, `n` | `2026-09-27T19:02:04.005Z` |
+| his probe prompts answered by the site | 3 of 5 | `bench/verdicts/site-probe.json` | `ok`, `n` | `2026-09-28T01:24:06.785Z` |
 
 ## The command line
 

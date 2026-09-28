@@ -440,7 +440,10 @@ const norm = (s) => s.replace(/\s+/g, ' ').trim();
 // Quoted text is compared with markdown emphasis markers removed on both sides: a note
 // writes a file name in backticks and the page shows it without them, and that is the only
 // difference the page is allowed to introduce into a quotation.
-export const qnorm = (s) => norm(s).replace(/[`*_]/g, '');
+// strip the marks first, then collapse whitespace: noteFor cleans a paragraph in that order, and a
+// fenced block (three backticks on a line of their own) collapsed first leaves a double space the
+// quote never had (2026-09-28: two cards quoting notes/self-queries.md past its fence failed the trace)
+export const qnorm = (s) => norm(s.replace(/[`*_]/g, ''));
 
 /**
  * Re-parse the finished page and resolve every digit on it. Throws on the first value that

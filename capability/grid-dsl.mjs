@@ -931,6 +931,200 @@ prim('topColor', 'grid', 'color', 2, (g) => { const c = uniqueTop(byFreq(g, true
 prim('rareColor', 'grid', 'color', 2, (g) => { const c = uniqueBottom(byFreq(g, true)); return c === null ? null : { t: 'color', c }; }, 'the least frequent colour');
 prim('pixel', 'color', 'grid', 1, (v) => { const o = grid(1, 1); o.cells[0] = v.c; return o; }, 'a 1x1 grid of the colour');
 
+// ---------------------------------------------------------------- Board 34, item arc-vocab: new words
+// The families notes/grid-vocab.md found in the unsolved TRAINING tasks, each word pure and typed.
+// THE LATE WORDS: these thirteen are primitives (grid to grid, pure, costed) registered by name, so
+// applyStep, byName and the grid.dsl cell run them like any other word, but they are NOT appended to
+// PRIMS. PRIMS is what the uniform cost search expands at every state and what
+// capability/grid-invent.mjs mines and seeds its imagination with: appended there, they changed that
+// seeded draw (test/imagine.test.mjs failed on plantedV) and made every expansion of the search pay
+// for thirteen more words. So they live in LATE_PRIMS, and the search meets them through the
+// fallback learner lateWord (below, with the other Board 34 learners): on the task's input, the word
+// alone, the word then a colour map, or the word then one base word. Nothing in PRIMS moved.
+// The smallest line period of n lines (rows or columns): p when line i equals line i - p for every i
+// from p on, else n. By default a period longer than half the lines is no repetition and counts as n;
+// maxP n - 1 takes a period that repeats only in part (extendPeriod, whose train pairs check it).
+function minPeriod(n, same, maxP = n >> 1) {
+  for (let p = 1; p <= maxP; p++) { let ok = true; for (let i = p; i < n && ok; i++) if (!same(i, i - p)) ok = false; if (ok) return p; }
+  return n;
+}
+const rowsSame = (g) => (a, b) => { for (let x = 0; x < g.w; x++) if (g.cells[a * g.w + x] !== g.cells[b * g.w + x]) return false; return true; };
+const colsSame = (g) => (a, b) => { for (let y = 0; y < g.h; y++) if (g.cells[y * g.w + a] !== g.cells[y * g.w + b]) return false; return true; };
+function periodTile(g) {
+  const px = minPeriod(g.w, colsSame(g)), py = minPeriod(g.h, rowsSame(g));
+  return px === g.w && py === g.h ? null : sub(g, 0, 0, px, py);
+}
+function monochrome(g) {
+  const f = byFreq(g, true);
+  if (f.length < 2) return copy(g);
+  const c = uniqueTop(f);
+  if (c === null) return null;
+  const o = copy(g);
+  for (let i = 0; i < o.cells.length; i++) if (o.cells[i] !== BG) o.cells[i] = c;
+  return o;
+}
+const NDIAG = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
+function fillColorBoxes(g) {
+  const o = copy(g);
+  const owner = new Int16Array(g.cells.length).fill(-1);
+  for (const [c, n] of colorCounts(g)) {
+    if (c === BG || n < 2) continue;
+    const b = bboxWhere(g, (v) => v === c);
+    for (let y = b.y0; y <= b.y1; y++) for (let x = b.x0; x <= b.x1; x++) {
+      const i = y * g.w + x;
+      if (g.cells[i] !== BG) continue;
+      if (owner[i] >= 0 && owner[i] !== c) return null;   // two colours claim one cell: not this family
+      owner[i] = c; o.cells[i] = c;
+    }
+  }
+  return o;
+}
+// k x k blocks to one cell each: the block's one non background colour, background when it has none;
+// a block holding two colours refuses (downUniform needs a block of one colour, background included)
+function downAny(g, k) {
+  if (g.w % k || g.h % k) return null;
+  const o = grid(g.w / k, g.h / k);
+  for (let by = 0; by < o.h; by++) for (let bx = 0; bx < o.w; bx++) {
+    let c = BG;
+    for (let y = 0; y < k; y++) for (let x = 0; x < k; x++) {
+      const v = g.cells[(by * k + y) * g.w + bx * k + x];
+      if (v === BG) continue;
+      if (c === BG) c = v; else if (c !== v) return null;
+    }
+    o.cells[by * o.w + bx] = c;
+  }
+  return o;
+}
+// the inside of the largest rectangle whose whole border is one colour (and whose inside is not)
+function cropFrame(g) {
+  let best = null, bestArea = 0, tie = false;
+  for (const ob of components(g, 'c4')) {
+    const w = ob.x1 - ob.x0 + 1, h = ob.y1 - ob.y0 + 1;
+    if (w < 3 || h < 3 || w * h < bestArea) continue;
+    const c = g.cells[ob.idx[0]];
+    let ring = true;
+    for (let x = ob.x0; x <= ob.x1 && ring; x++) if (g.cells[ob.y0 * g.w + x] !== c || g.cells[ob.y1 * g.w + x] !== c) ring = false;
+    for (let y = ob.y0; y <= ob.y1 && ring; y++) if (g.cells[y * g.w + ob.x0] !== c || g.cells[y * g.w + ob.x1] !== c) ring = false;
+    if (!ring) continue;
+    let inner = false;
+    for (let y = ob.y0 + 1; y < ob.y1 && !inner; y++) for (let x = ob.x0 + 1; x < ob.x1; x++) if (g.cells[y * g.w + x] !== c) { inner = true; break; }
+    if (!inner) continue;
+    if (w * h > bestArea) { best = ob; bestArea = w * h; tie = false; } else tie = true;
+  }
+  return best && !tie ? sub(g, best.x0 + 1, best.y0 + 1, best.x1 - best.x0 - 1, best.y1 - best.y0 - 1) : null;
+}
+// the one colour with exactly four cells, standing on the corners of a rectangle at least 3 x 3
+function cornerRect(g) {
+  let found = null;
+  for (const [c, n] of colorCounts(g)) {
+    if (c === BG || n !== 4) continue;
+    const b = bboxWhere(g, (v) => v === c);
+    if (b.x1 - b.x0 < 2 || b.y1 - b.y0 < 2) continue;
+    if (![[b.x0, b.y0], [b.x1, b.y0], [b.x0, b.y1], [b.x1, b.y1]].every(([x, y]) => g.cells[y * g.w + x] === c)) continue;
+    if (found) return null;
+    found = { c, x0: b.x0, y0: b.y0, x1: b.x1, y1: b.y1 };
+  }
+  return found;
+}
+function cropCorners(g, paint) {
+  const r = cornerRect(g);
+  if (!r) return null;
+  const o = sub(g, r.x0 + 1, r.y0 + 1, r.x1 - r.x0 - 1, r.y1 - r.y0 - 1);
+  if (o && paint) for (let i = 0; i < o.cells.length; i++) if (o.cells[i] !== BG) o.cells[i] = r.c;
+  return o;
+}
+// Two parts of one size: the part of one colour is the shape, the part of several colours the layout;
+// every layout cell of colour c becomes a copy of the shape painted c, a background cell a blank.
+function kronParts(g, horizontal) {
+  const p = twoParts(g, horizontal);
+  if (!sameSize(p)) return null;
+  const nc = p.map((q) => byFreq(q, true).length);
+  let shape, layout;
+  if (nc[0] === 1 && nc[1] > 1) { shape = p[0]; layout = p[1]; } else if (nc[1] === 1 && nc[0] > 1) { shape = p[1]; layout = p[0]; } else return null;
+  const W = layout.w * shape.w, H = layout.h * shape.h;
+  if (W > MAX_SIDE || H > MAX_SIDE) return null;
+  const o = grid(W, H);
+  for (let by = 0; by < layout.h; by++) for (let bx = 0; bx < layout.w; bx++) {
+    const c = layout.cells[by * layout.w + bx];
+    if (c === BG) continue;
+    for (let y = 0; y < shape.h; y++) for (let x = 0; x < shape.w; x++) if (shape.cells[y * shape.w + x] !== BG) o.cells[(by * shape.h + y) * W + bx * shape.w + x] = c;
+  }
+  return o;
+}
+// Every object that lies beside the anchor (the cells of the most frequent, or the rarest, colour)
+// on a row or column band moves straight toward it until it touches it or an object that already
+// arrived; an object that would pass the anchor, or that no band links to it, stays where it is.
+function pullTo(g, which) {
+  const f = byFreq(g, true);
+  if (f.length < 2) return null;
+  const a = which === 'top' ? uniqueTop(f) : uniqueBottom(f);
+  if (a === null) return null;
+  const ab = bboxWhere(g, (v) => v === a);
+  const o = grid(g.w, g.h);
+  const filled = new Uint8Array(g.cells.length);
+  const movers = [];
+  for (const ob of components(g, 'm8')) {
+    let anchor = false;
+    for (const i of ob.idx) if (g.cells[i] === a) { anchor = true; break; }
+    let dx = 0, dy = 0, gap = 0;
+    if (!anchor) {
+      if (ob.x1 >= ab.x0 && ob.x0 <= ab.x1) { if (ob.y1 < ab.y0) { dy = 1; gap = ab.y0 - ob.y1; } else if (ob.y0 > ab.y1) { dy = -1; gap = ob.y0 - ab.y1; } }
+      else if (ob.y1 >= ab.y0 && ob.y0 <= ab.y1) { if (ob.x1 < ab.x0) { dx = 1; gap = ab.x0 - ob.x1; } else if (ob.x0 > ab.x1) { dx = -1; gap = ob.x0 - ab.x1; } }
+    }
+    if (!dx && !dy) { for (const i of ob.idx) { o.cells[i] = g.cells[i]; filled[i] = 1; } continue; }
+    movers.push({ ob, dx, dy, gap });
+  }
+  movers.sort((p, q) => p.gap - q.gap);
+  for (const { ob, dx, dy } of movers) {
+    let k = 0, hit = false;
+    for (;;) {
+      let free = true;
+      for (const i of ob.idx) {
+        const x = i % g.w + dx * (k + 1), y = ((i / g.w) | 0) + dy * (k + 1);
+        if (x < 0 || y < 0 || x >= g.w || y >= g.h) { free = false; break; }
+        if (filled[y * g.w + x]) { free = false; hit = true; break; }
+      }
+      if (!free) break;
+      k++;
+    }
+    if (!hit) k = 0;
+    for (const i of ob.idx) { const j = i + dx * k + dy * k * g.w; o.cells[j] = g.cells[i]; filled[j] = 1; }
+  }
+  return o;
+}
+// one more ring round the grid, each ring cell the colour of the edge cell beside it, corners background
+function padEdge(g) {
+  if (g.w + 2 > MAX_SIDE || g.h + 2 > MAX_SIDE) return null;
+  const o = grid(g.w + 2, g.h + 2);
+  place(o, g, 1, 1);
+  for (let x = 0; x < g.w; x++) { o.cells[x + 1] = g.cells[x]; o.cells[(o.h - 1) * o.w + x + 1] = g.cells[(g.h - 1) * g.w + x]; }
+  for (let y = 0; y < g.h; y++) { o.cells[(y + 1) * o.w] = g.cells[y * g.w]; o.cells[(y + 1) * o.w + o.w - 1] = g.cells[y * g.w + g.w - 1]; }
+  return o;
+}
+/** The late words (Board 34): primitives by name, not in PRIMS; see THE LATE WORDS above. */
+export const LATE_PRIMS = [];
+function latePrim(name, cost, fn, doc) {
+  const p = Object.freeze({ name, from: 'grid', to: 'grid', cost, apply: (g) => fit(fn(g)), doc, learned: false, late: true });
+  if (BY_NAME.has(name)) throw new Error('grid-dsl: duplicate primitive ' + name);
+  LATE_PRIMS.push(p); BY_NAME.set(name, p);
+}
+latePrim('cropPeriod', 2, periodTile, 'the smallest rectangle the grid repeats, one period of its rows by one period of its columns');
+latePrim('monochrome', 2, monochrome, 'every coloured cell painted the most frequent non background colour');
+latePrim('outlineDiag', 2, (g) => outline(g, NDIAG), 'background touching a coloured cell only at a corner direction is painted placeholder');
+latePrim('fillColorBoxes', 3, fillColorBoxes, 'the background inside each colour\'s bounding box painted that colour');
+for (const k of [2, 3]) latePrim('downAny' + k, 2, (g) => downAny(g, k), 'scale down by ' + k + ', each block to its one non background colour');
+latePrim('cropFrame', 2, cropFrame, 'the inside of the largest rectangle whose whole border is one colour');
+latePrim('cropCorners', 2, (g) => cropCorners(g, false), 'the inside of the rectangle marked by four cells of one colour at its corners');
+latePrim('cropCornersPaint', 2, (g) => cropCorners(g, true), 'the inside of the rectangle marked by four corner cells, painted their colour');
+latePrim('kronHalves', 3, (g) => {
+  if (g.w !== g.h) return kronParts(g, g.w > g.h);
+  const a = kronParts(g, true), b = kronParts(g, false);
+  return a && !b ? a : b && !a ? b : null;
+}, 'the one colour half (left or right of a wide grid, top or bottom of a tall one) as a shape, copied onto every cell of the other half in that cell\'s colour');
+latePrim('pullToTop', 3, (g) => pullTo(g, 'top'), 'every object moves straight to the cells of the most frequent colour until it touches');
+latePrim('pullToRare', 3, (g) => pullTo(g, 'rare'), 'every object moves straight to the cells of the rarest colour until it touches');
+latePrim('padEdge', 3, padEdge, 'a ring added round the grid, each ring cell copying the edge cell beside it, corners background');
+
 // ---------------------------------------------------------------- learned last steps
 // Each learner reads its parameters off the train pairs, or refuses with null. The search
 // calls learn() with the grids a program prefix produced for the train inputs, the wanted
@@ -1568,6 +1762,814 @@ export const FALLBACK_LEARNERS = [];
   if (BY_NAME.has(l.name)) throw new Error('grid-dsl: duplicate primitive ' + l.name);
   FALLBACK_LEARNERS.push(l); BY_NAME.set(l.name, l);
 }
+
+// ---------------------------------------------------------------- Board 34, item arc-vocab: fallback learners
+// The learned families of notes/grid-vocab.md. They join cellRule in FALLBACK_LEARNERS, after it, not
+// LEARNERS: the fallback phase of grid-search.mjs runs them in the last quarter of a task's clock, and
+// each refuses in one pass when its kind of task is absent. The fallback's second pass (opts.maxK 3)
+// widens cellRule's keys; these have no keys, so they answer on the first pass only.
+// THE INPUT ONLY: each runs on the task's own input and on no other prefix. On the TRAINING split
+// every right answer these learners gave came from the input (notes/grid-vocab.md), and every prefix
+// more is clock taken from cellRule. grid-search.mjs hands the fallback learners the input first (its
+// prefixes are the input, then the depth 1 states), with one array of wanted outputs per search, and
+// one states array per prefix shared by every learner; so the first states a learner here meets for
+// one wanted array are the input's, and it refuses any other states for that array. Called directly
+// (a test, another caller) the first call for a wanted array is always answered.
+// An answer is taken the moment the search takes it, inside the task's clock, as every answer is:
+// nothing here is held back or graded after the clock.
+const FIRST_STATES = new WeakMap();
+function onInput(states, wanted) {
+  if (!wanted || typeof wanted !== 'object') return true;
+  const f = FIRST_STATES.get(wanted);
+  if (f === undefined) { FIRST_STATES.set(wanted, states); return true; }
+  return f === states;
+}
+function fallbackLearner(name, cost, learn, apply, doc) {
+  const inputOnly = (states, wanted, tests, opts) => (onInput(states, wanted) ? learn(states, wanted, tests, opts) : null);
+  const l = Object.freeze({ name, from: 'grid', to: 'grid', cost, learn: inputOnly, apply, doc, learned: true, fallback: true, inputOnly: true });
+  if (BY_NAME.has(name)) throw new Error('grid-dsl: duplicate primitive ' + name);
+  FALLBACK_LEARNERS.push(l); BY_NAME.set(name, l);
+}
+const repeatPass = (opts) => !!(opts && opts.maxK > 2);
+let fbDeadline = Infinity;   // set by symComplete from opts.deadline; bestCentre stops at it
+const clockOut = () => typeof performance !== 'undefined' && performance.now() > fbDeadline;
+const sizeOf = (g) => g.w + 'x' + g.h;
+const uniform = (g) => { for (let i = 1; i < g.cells.length; i++) if (g.cells[i] !== g.cells[0]) return false; return true; };
+// the index of the one item with the largest (dir max) or smallest (dir min) score, -1 on a tie
+function argOne(n, score, dir) {
+  let best = -1, bs = 0, tie = false;
+  for (let k = 0; k < n; k++) {
+    const s = score(k);
+    if (s === null || s === undefined || Number.isNaN(s)) return -1;
+    if (best < 0 || (dir === 'max' ? s > bs : s < bs)) { best = k; bs = s; tie = false; } else if (s === bs) tie = true;
+  }
+  return tie ? -1 : best;
+}
+// a learned colour map from one grid to another, extended over pairs; null on a conflict
+function mapInto(map, a, b) {
+  for (let i = 0; i < a.cells.length; i++) {
+    const s = map.get(a.cells[i]);
+    if (s === undefined) map.set(a.cells[i], b.cells[i]); else if (s !== b.cells[i]) return null;
+  }
+  return map;
+}
+const mapCovers = (map, g) => { for (let i = 0; i < g.cells.length; i++) if (!map.has(g.cells[i])) return false; return true; };
+const mapApply = (g, obj) => { const o = copy(g); for (let i = 0; i < o.cells.length; i++) { const v = obj[o.cells[i]]; if (v === undefined) return null; o.cells[i] = v; } return o; };
+
+// SOLID COLOUR (icecuber majCol; Hodel mostcolor + canvas). Every output one colour that moves between
+// pairs (constant covers one that does not), read as a statistic of the input; the size fixed or the input's.
+function objColor(g, pick, dir) {
+  const l = components(g, 'c8');
+  const k = argOne(l.length, (i) => pick(l[i]), dir);
+  return k < 0 ? null : l[k].color;
+}
+function colorByObjects(g, dir) {
+  const n = new Map();
+  for (const o of components(g, 'c8')) n.set(o.color, (n.get(o.color) || 0) + 1);
+  const e = [...n];
+  const k = argOne(e.length, (i) => e[i][1], dir);
+  return k < 0 ? null : e[k][0];
+}
+const SOLID_STATS = Object.freeze({
+  top: (g) => uniqueTop(byFreq(g, true)),
+  majority: (g) => { const f = byFreq(g, false); return f.length > 1 && f[0][1] === f[1][1] ? null : f[0][0]; },
+  rare: (g) => uniqueBottom(byFreq(g, true)),
+  largestObject: (g) => objColor(g, (o) => o.size, 'max'),
+  largestBox: (g) => objColor(g, (o) => (o.x1 - o.x0 + 1) * (o.y1 - o.y0 + 1), 'max'),
+  smallestObject: (g) => objColor(g, (o) => o.size, 'min'),
+  mostObjects: (g) => colorByObjects(g, 'max'),
+  fewestObjects: (g) => colorByObjects(g, 'min'),
+});
+fallbackLearner('solidColor', 2, (states, wanted, tests, opts) => {
+  if (repeatPass(opts) || !wanted.every(uniform)) return null;
+  const cols = wanted.map((o) => o.cells[0]);
+  if (cols.every((c) => c === cols[0])) return null;
+  const fixed = wanted.every((o) => o.w === wanted[0].w && o.h === wanted[0].h);
+  const same = states.every((s, d) => s.w === wanted[d].w && s.h === wanted[d].h);
+  const size = fixed ? { w: wanted[0].w, h: wanted[0].h } : same ? 'input' : null;
+  if (!size) return null;
+  for (const [stat, f] of Object.entries(SOLID_STATS)) {
+    if (!states.every((s, d) => f(s) === cols[d])) continue;
+    if (!tests.every((t) => f(t) !== null)) continue;
+    return { stat, size };
+  }
+  return null;
+}, (g, p) => {
+  const c = SOLID_STATS[p.stat](g);
+  if (c === null) return null;
+  const o = p.size === 'input' ? grid(g.w, g.h) : grid(p.size.w, p.size.h);
+  o.cells.fill(c);
+  return o;
+}, 'a grid of one colour, the colour a statistic of the input (most or least frequent, of the largest or smallest object, of the most or fewest objects), read off the train pairs');
+
+// COUNT (icecuber count + broadcast; Hodel size + canvas). A count of the input made into a grid: n
+// cells of one colour in a row, a column, a diagonal, a square, or the first n of a fixed grid.
+const COUNT_SOURCES = (() => {
+  const s = [
+    ['objectsC8', (g) => components(g, 'c8').length],
+    ['objectsC4', (g) => components(g, 'c4').length],
+    ['objectsM8', (g) => components(g, 'm8').length],
+    ['colors', (g) => byFreq(g, true).length],
+    ['bigObjects', (g) => components(g, 'c8').filter((o) => o.size > 1).length],
+  ];
+  for (let c = 1; c <= 9; c++) {
+    s.push(['cells' + c, (g) => colorCounts(g).get(c) || 0]);
+    s.push(['objects' + c, (g) => components(g, 'c8').filter((o) => o.color === c).length]);
+    s.push(['bigObjects' + c, (g) => components(g, 'c8').filter((o) => o.color === c && o.size > 1).length]);
+  }
+  return s;
+})();
+const COUNT_BY_NAME = new Map(COUNT_SOURCES);
+function countGrid(layout, n, k, W, H) {
+  if (n < 1 || n > MAX_SIDE * MAX_SIDE) return null;
+  let o;
+  if (layout === 'row') { if (n > MAX_SIDE) return null; o = grid(n, 1); o.cells.fill(k); }
+  else if (layout === 'col') { if (n > MAX_SIDE) return null; o = grid(1, n); o.cells.fill(k); }
+  else if (layout === 'diag') { if (n > MAX_SIDE) return null; o = grid(n, n); for (let i = 0; i < n; i++) o.cells[i * n + i] = k; }
+  else if (layout === 'square') { if (n > MAX_SIDE) return null; o = grid(n, n); o.cells.fill(k); }
+  else if (layout === 'fixed' || layout === 'fixedCols') {
+    if (n > W * H) return null;
+    o = grid(W, H);
+    for (let i = 0; i < n; i++) o.cells[layout === 'fixed' ? i : (i % H) * W + ((i / H) | 0)] = k;
+  } else return null;
+  return o;
+}
+fallbackLearner('countOut', 2, (states, wanted, tests, opts) => {
+  if (repeatPass(opts)) return null;
+  let k = -1;
+  for (const o of wanted) for (const v of o.cells) if (v !== BG) { if (k < 0) k = v; else if (v !== k) return null; }
+  if (k < 0) return null;
+  if (states.every((s, d) => s.w === wanted[d].w && s.h === wanted[d].h)) return null;
+  const fixed = wanted.every((o) => o.w === wanted[0].w && o.h === wanted[0].h);
+  const layouts = fixed ? ['fixed', 'fixedCols', 'row', 'col', 'diag', 'square'] : ['row', 'col', 'diag', 'square'];
+  for (const [source, f] of COUNT_SOURCES) {
+    const ns = states.map(f);
+    for (const layout of layouts) {
+      if (!ns.every((n, d) => { const g = countGrid(layout, n, k, wanted[0].w, wanted[0].h); return g && sameGrid(g, wanted[d]); })) continue;
+      if (!tests.every((t) => countGrid(layout, f(t), k, wanted[0].w, wanted[0].h))) continue;
+      return { source, layout, k, w: wanted[0].w, h: wanted[0].h };
+    }
+  }
+  return null;
+}, (g, p) => countGrid(p.layout, COUNT_BY_NAME.get(p.source)(g), p.k, p.w, p.h), 'a count of the input (objects, colours, cells of a colour) drawn as that many cells of one colour in a row, column, diagonal, square or fixed grid, read off the train pairs');
+
+// THE 1D PERIOD EXTENDED (Hodel hperiod/vperiod; icecuber getRegular). The input's smallest row period
+// and column period continued to the output size (fixed, or a fixed multiple of the input), then a
+// colour map read off the train pairs (the identity when nothing is recoloured).
+function periodExtend1(g, W, H) {
+  if (W < 1 || H < 1 || W > MAX_SIDE || H > MAX_SIDE) return null;
+  const px = minPeriod(g.w, colsSame(g), g.w - 1), py = minPeriod(g.h, rowsSame(g), g.h - 1);
+  const o = grid(W, H);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) o.cells[y * W + x] = g.cells[(y % py) * g.w + (x % px)];
+  return o;
+}
+function extendSize(g, p) {
+  if (p.size === 'fixed') return [p.w, p.h];
+  const W = g.w * p.rx, H = g.h * p.ry;
+  return Number.isInteger(W) && Number.isInteger(H) ? [W, H] : [0, 0];
+}
+fallbackLearner('extendPeriod', 2, (states, wanted, tests, opts) => {
+  if (repeatPass(opts)) return null;
+  if (!states.some((s, d) => wanted[d].w > s.w || wanted[d].h > s.h)) return null;
+  const rules = [];
+  if (wanted.every((o) => o.w === wanted[0].w && o.h === wanted[0].h)) rules.push({ size: 'fixed', w: wanted[0].w, h: wanted[0].h });
+  const rx = wanted[0].w / states[0].w, ry = wanted[0].h / states[0].h;
+  if (states.every((s, d) => wanted[d].w === s.w * rx && wanted[d].h === s.h * ry)) rules.push({ size: 'ratio', rx, ry });
+  for (const rule of rules) {
+    const map = new Map();
+    let ok = true;
+    for (let d = 0; d < states.length && ok; d++) {
+      const [W, H] = extendSize(states[d], rule);
+      const e = periodExtend1(states[d], W, H);
+      if (!e || e.w !== wanted[d].w || e.h !== wanted[d].h || !mapInto(map, e, wanted[d])) ok = false;
+    }
+    if (!ok) continue;
+    const tex = tests.map((t) => { const [W, H] = extendSize(t, rule); return periodExtend1(t, W, H); });
+    if (!tex.every((e) => e && mapCovers(map, e))) continue;
+    return { ...rule, map: Object.fromEntries(map) };
+  }
+  return null;
+}, (g, p) => { const [W, H] = extendSize(g, p); const e = periodExtend1(g, W, H); return e && mapApply(e, p.map); }, 'the input\'s row period and column period continued to the output size (fixed, or a fixed multiple of the input), then a colour map, read off the train pairs');
+
+// PICK AN OBJECT BY A MEASURE (icecuber pickMax; Hodel argmax over objects). The input split into
+// objects one of five ways; the one object with the largest or smallest measure, cropped alone or with
+// what lies in its box. Measures: size, box, colours, the cells not of its own colour, the cells of a
+// colour, the cells of a colour that touch it, its colour, how many share its shape or colour, its place.
+const PICK_MODES = ['c8', 'c4', 'm8', 'col', 'm4'];
+function objColorCounts(g, o) {
+  if (o._cc10) return o._cc10;
+  const a = new Int32Array(10);
+  for (const i of o.idx) { const v = g.cells[i]; if (v < 10) a[v]++; }
+  Object.defineProperty(o, '_cc10', { value: a, enumerable: false });
+  return a;
+}
+function objTouchCounts(g, o) {
+  if (o._tc10) return o._tc10;
+  const mine = new Set(o.idx);
+  const seen = new Set();
+  const a = new Int32Array(10);
+  for (const i of o.idx) {
+    const x = i % g.w, y = (i / g.w) | 0;
+    for (const [dx, dy] of N8) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= g.w || ny >= g.h) continue;
+      const j = ny * g.w + nx;
+      if (mine.has(j) || seen.has(j)) continue;
+      seen.add(j);
+      const v = g.cells[j];
+      if (v < 10) a[v]++;
+    }
+  }
+  Object.defineProperty(o, '_tc10', { value: a, enumerable: false });
+  return a;
+}
+const PICK_CRITERIA = (() => {
+  const both = ['max', 'min'], up = ['max'];
+  const c = [
+    ['size', (g, o) => o.size, both],
+    ['box', (g, o) => (o.x1 - o.x0 + 1) * (o.y1 - o.y0 + 1), both],
+    ['colors', (g, o) => o.ncolors, both],
+    ['minority', (g, o) => o.size - objColorCounts(g, o)[o.color < 10 ? o.color : 0], both],
+    ['density', (g, o) => o.size / ((o.x1 - o.x0 + 1) * (o.y1 - o.y0 + 1)), both],
+    ['width', (g, o) => o.x1 - o.x0 + 1, both],
+    ['height', (g, o) => o.y1 - o.y0 + 1, both],
+    ['hole', (g, o) => (hasHole(g, o) ? 1 : 0), both],
+  ];
+  for (let col = 1; col <= 9; col++) c.push(['cells' + col, (g, o) => objColorCounts(g, o)[col], both]);
+  for (let col = 0; col <= 9; col++) c.push(['touch' + col, (g, o) => objTouchCounts(g, o)[col], up]);
+  for (let col = 1; col <= 9; col++) c.push(['is' + col, (g, o) => (o.color === col ? 1 : 0), up]);
+  c.push(['shapeShared', (g, o, l) => { const k = objShapeKey(g, o); return l.filter((q) => objShapeKey(g, q) === k).length; }, both]);
+  c.push(['colorShared', (g, o, l) => l.filter((q) => q.color === o.color).length, both]);
+  c.push(['top', (g, o) => o.y0, ['min']], ['bottom', (g, o) => o.y1, up], ['left', (g, o) => o.x0, ['min']], ['right', (g, o) => o.x1, up]);
+  return c;
+})();
+const PICK_BY_NAME = new Map(PICK_CRITERIA.map(([n, f]) => [n, f]));
+function pickCrop(g, o, kind) {
+  const w = o.x1 - o.x0 + 1, h = o.y1 - o.y0 + 1;
+  if (kind === 'region') return sub(g, o.x0, o.y0, w, h);
+  const out = grid(w, h);
+  for (const i of o.idx) out.cells[(((i / g.w) | 0) - o.y0) * w + (i % g.w - o.x0)] = g.cells[i];
+  return out;
+}
+const pickIndex = (g, list, f, dir) => argOne(list.length, (k) => f(g, list[k], list), dir);
+fallbackLearner('pickObject', 2, (states, wanted, tests, opts) => {
+  if (repeatPass(opts)) return null;
+  for (let d = 0; d < states.length; d++) if (wanted[d].w > states[d].w || wanted[d].h > states[d].h) return null;
+  if (states.every((s, d) => s.w === wanted[d].w && s.h === wanted[d].h)) return null;
+  for (const mode of PICK_MODES) {
+    const lists = states.map((s) => components(s, mode));
+    if (lists.every((l) => l.length < 2) || lists.some((l) => l.length > 120)) continue;
+    const match = { alone: [], region: [] };
+    for (let d = 0; d < states.length; d++) {
+      const W = wanted[d], m = { alone: new Set(), region: new Set() };
+      lists[d].forEach((o, k) => {
+        if (o.x1 - o.x0 + 1 !== W.w || o.y1 - o.y0 + 1 !== W.h) return;
+        for (const kind of ['alone', 'region']) if (sameGrid(pickCrop(states[d], o, kind), W)) m[kind].add(k);
+      });
+      match.alone.push(m.alone); match.region.push(m.region);
+    }
+    for (const kind of ['alone', 'region']) {
+      if (!match[kind].every((m) => m.size)) continue;
+      for (const [crit, f, dirs] of PICK_CRITERIA) for (const dir of dirs) {
+        if (!states.every((s, d) => match[kind][d].has(pickIndex(s, lists[d], f, dir)))) continue;
+        if (!tests.every((t) => pickIndex(t, components(t, mode), f, dir) >= 0)) continue;
+        return { mode, kind, crit, dir };
+      }
+    }
+  }
+  return null;
+}, (g, p) => {
+  const list = components(g, p.mode);
+  const k = pickIndex(g, list, PICK_BY_NAME.get(p.crit), p.dir);
+  return k < 0 ? null : pickCrop(g, list[k], p.kind);
+}, 'the one object (of five ways to split the grid) with the largest or smallest of a measure, cropped alone or with its box, read off the train pairs');
+
+// PARTS (icecuber cut + pickMax and compose; Hodel hsplit, vsplit, partition). The input split into
+// parts by its separator lines, or into equal blocks, as many across and down in every pair; then
+// one part picked by a measure (partsPick), or the parts laid over one another (partsOverlay).
+// The separator lines whose cells are all one size, the most cells first (partition() takes the
+// lowest colour with full lines, which a stray full column of another colour can capture); when no
+// colour cuts equal cells, partition()'s own cut.
+function partitionEqual(g) {
+  if (g._partEq !== undefined) return g._partEq;
+  const cand = new Set();
+  for (let y = 0; y < g.h; y++) { const v = g.cells[y * g.w]; let full = true; for (let x = 1; x < g.w; x++) if (g.cells[y * g.w + x] !== v) { full = false; break; } if (full) cand.add(v); }
+  for (let x = 0; x < g.w; x++) { const v = g.cells[x]; let full = true; for (let y = 1; y < g.h; y++) if (g.cells[y * g.w + x] !== v) { full = false; break; } if (full) cand.add(v); }
+  let best = null;
+  for (const c of [...cand].sort((a, b) => a - b)) {
+    const row = [], col = [];
+    for (let y = 0; y < g.h; y++) { let full = true; for (let x = 0; x < g.w; x++) if (g.cells[y * g.w + x] !== c) { full = false; break; } row.push(full); }
+    for (let x = 0; x < g.w; x++) { let full = true; for (let y = 0; y < g.h; y++) if (g.cells[y * g.w + x] !== c) { full = false; break; } col.push(full); }
+    const bands = (flags) => { const out = []; let st = -1; for (let i = 0; i <= flags.length; i++) { if (i < flags.length && !flags[i]) { if (st < 0) st = i; } else if (st >= 0) { out.push([st, i - st]); st = -1; } } return out; };
+    const rb = bands(row), cb = bands(col);
+    if (rb.length * cb.length < 2 || !rb.every((b) => b[1] === rb[0][1]) || !cb.every((b) => b[1] === cb[0][1])) continue;
+    if (!best || rb.length * cb.length > best.n) best = { n: rb.length * cb.length, parts: rb.flatMap(([y, h]) => cb.map(([x, w]) => sub(g, x, y, w, h))) };
+  }
+  const res = best ? best.parts : partition(g) ? partGrids(g) : null;
+  Object.defineProperty(g, '_partEq', { value: res, enumerable: false });
+  return res;
+}
+function splitParts(g, how, nx, ny) {
+  if (how === 'part') return partitionEqual(g);
+  if (g.w % nx || g.h % ny) return null;
+  const bw = g.w / nx, bh = g.h / ny, parts = [];
+  for (let by = 0; by < ny; by++) for (let bx = 0; bx < nx; bx++) parts.push(sub(g, bx * bw, by * bh, bw, bh));
+  return parts;
+}
+function blockCounts(states, wanted) {
+  let nx = 0, ny = 0;
+  for (let d = 0; d < states.length; d++) {
+    const s = states[d], o = wanted[d];
+    if (s.w % o.w || s.h % o.h) return null;
+    const a = s.w / o.w, b = s.h / o.h;
+    if (!nx) { nx = a; ny = b; } else if (a !== nx || b !== ny) return null;
+  }
+  return nx * ny >= 2 ? { nx, ny } : null;
+}
+function splits(states, wanted) {
+  const out = [{ how: 'part', nx: 0, ny: 0 }];
+  const b = blockCounts(states, wanted);
+  if (b) out.push({ how: 'blocks', ...b });
+  return out;
+}
+const isSym = (q, f) => { const t = f(q); return t.w === q.w && t.h === q.h && sameGrid(t, q); };
+const PART_CRITERIA = (() => {
+  const both = ['max', 'min'];
+  const nonBg = (q) => { let n = 0; for (const v of q.cells) if (v !== BG) n++; return n; };
+  const maskKey = (q) => { let s = q.w + ':'; for (const v of q.cells) s += v === BG ? '0' : '1'; return s; };
+  const c = [
+    ['cells', (q) => nonBg(q), both],
+    ['colors', (q) => byFreq(q, true).length, both],
+    ['same', (q, ps) => ps.filter((r) => sameGrid(r, q)).length, both],
+    ['sameMask', (q, ps) => { const k = maskKey(q); return ps.filter((r) => maskKey(r) === k).length; }, both],
+    ['symH', (q) => (isSym(q, flipH) ? 1 : 0), both],
+    ['symV', (q) => (isSym(q, flipV) ? 1 : 0), both],
+    ['symT', (q) => (isSym(q, transpose) ? 1 : 0), both],
+    ['symR', (q) => (isSym(q, rot180) ? 1 : 0), both],
+    ['symAny', (q) => (isSym(q, flipH) || isSym(q, flipV) || isSym(q, transpose) || isSym(q, antiTranspose) || isSym(q, rot180) ? 1 : 0), both],
+  ];
+  for (let col = 1; col <= 9; col++) c.push(['cells' + col, (q) => colorCounts(q).get(col) || 0, both]);
+  return c;
+})();
+const PART_BY_NAME = new Map(PART_CRITERIA.map(([n, f]) => [n, f]));
+fallbackLearner('partsPick', 2, (states, wanted, tests, opts) => {
+  if (repeatPass(opts)) return null;
+  if (states.every((s, d) => s.w === wanted[d].w && s.h === wanted[d].h)) return null;
+  for (const sp of splits(states, wanted)) {
+    const parts = states.map((s) => splitParts(s, sp.how, sp.nx, sp.ny));
+    if (parts.some((p) => !p || p.length < 2)) continue;
+    const match = parts.map((p, d) => new Set(p.map((q, k) => (sameGrid(q, wanted[d]) ? k : -1)).filter((k) => k >= 0)));
+    if (match.some((m) => !m.size)) continue;
+    const testParts = tests.map((t) => splitParts(t, sp.how, sp.nx, sp.ny));
+    if (testParts.some((p) => !p || p.length < 2)) continue;
+    for (const [crit, f, dirs] of PART_CRITERIA) for (const dir of dirs) {
+      if (!parts.every((p, d) => match[d].has(argOne(p.length, (k) => f(p[k], p), dir)))) continue;
+      if (!testParts.every((p) => argOne(p.length, (k) => f(p[k], p), dir) >= 0)) continue;
+      return { how: sp.how, nx: sp.nx, ny: sp.ny, crit, dir };
+    }
+  }
+  return null;
+}, (g, p) => {
+  const parts = splitParts(g, p.how, p.nx, p.ny);
+  if (!parts || parts.length < 2) return null;
+  const f = PART_BY_NAME.get(p.crit);
+  const k = argOne(parts.length, (i) => f(parts[i], parts), p.dir);
+  return k < 0 ? null : parts[k];
+}, 'the input cut by its separator lines or into equal blocks, and the one part with the largest or smallest of a measure (cells, colours, how many parts are like it, whether it is symmetric), read off the train pairs');
+
+// Overlay: every output cell is the colour that wins among the parts' colours at that cell, by one
+// order of the colours read off the train pairs ("priority"), or the colour a table gives for which
+// parts are coloured there ("mask", the learned and, or, xor of up to four parts).
+function beatsFrom(pairs) {
+  const beats = Array.from({ length: 10 }, () => new Uint8Array(10));
+  for (const [vals, out] of pairs) { if (!vals.includes(out)) return null; for (const u of vals) if (u !== out) beats[out][u] = 1; }
+  for (let k = 0; k < 10; k++) for (let i = 0; i < 10; i++) if (beats[i][k]) for (let j = 0; j < 10; j++) if (beats[k][j]) beats[i][j] = 1;
+  for (let i = 0; i < 10; i++) if (beats[i][i]) return null;
+  return beats;
+}
+function overlayPriority(parts, beats) {
+  const o = grid(parts[0].w, parts[0].h);
+  for (let i = 0; i < o.cells.length; i++) {
+    const vals = [...new Set(parts.map((q) => q.cells[i]))];
+    let win = -1;
+    for (const v of vals) if (v < 10 && vals.every((u) => u === v || (u < 10 && beats[v][u]))) { win = v; break; }
+    if (win < 0) return null;
+    o.cells[i] = win;
+  }
+  return o;
+}
+function overlayOrder(parts, order) {
+  const o = grid(parts[0].w, parts[0].h);
+  for (let i = 0; i < o.cells.length; i++) for (const k of order) { const v = parts[k].cells[i]; if (v !== BG) { o.cells[i] = v; break; } }
+  return o;
+}
+function permutations(n) {
+  if (n <= 1) return [[0]];
+  const out = [];
+  for (const p of permutations(n - 1)) for (let k = 0; k <= p.length; k++) out.push(p.slice(0, k).concat([n - 1], p.slice(k)));
+  return out;
+}
+const maskOf = (parts, i) => { let m = 0; for (let k = 0; k < parts.length; k++) if (parts[k].cells[i] !== BG) m |= 1 << k; return m; };
+fallbackLearner('partsOverlay', 2, (states, wanted, tests, opts) => {
+  if (repeatPass(opts)) return null;
+  if (states.every((s, d) => s.w === wanted[d].w && s.h === wanted[d].h)) return null;
+  for (const sp of splits(states, wanted)) {
+    const parts = states.map((s) => splitParts(s, sp.how, sp.nx, sp.ny));
+    if (parts.some((p, d) => !sameSize(p) || p[0].w !== wanted[d].w || p[0].h !== wanted[d].h)) continue;
+    const testParts = tests.map((t) => splitParts(t, sp.how, sp.nx, sp.ny));
+    if (testParts.some((p) => !sameSize(p))) continue;
+    // order: the first part in a learned order that is coloured at the cell, for up to four parts
+    const n = parts[0].length;
+    if (n <= 4 && parts.every((p) => p.length === n) && testParts.every((p) => p.length === n)) {
+      for (const order of permutations(n)) if (parts.every((p, d) => sameGrid(overlayOrder(p, order), wanted[d]))) return { how: sp.how, nx: sp.nx, ny: sp.ny, mode: 'order', order };
+    }
+    // priority
+    const pairs = [];
+    parts.forEach((p, d) => { for (let i = 0; i < wanted[d].cells.length; i++) pairs.push([[...new Set(p.map((q) => q.cells[i]))], wanted[d].cells[i]]); });
+    const beats = beatsFrom(pairs);
+    if (beats && testParts.every((p) => overlayPriority(p, beats))) return { how: sp.how, nx: sp.nx, ny: sp.ny, mode: 'priority', beats: beats.map((r) => Array.from(r)) };
+    // mask
+    if (parts.some((p) => p.length > 4) || parts.some((p, d) => p.length !== parts[0].length)) continue;
+    const table = {};
+    let ok = true;
+    parts.forEach((p, d) => { for (let i = 0; i < wanted[d].cells.length && ok; i++) { const m = maskOf(p, i), v = wanted[d].cells[i]; if (table[m] === undefined) table[m] = v; else if (table[m] !== v) ok = false; } });
+    if (!ok || new Set(Object.values(table)).size < 2) continue;
+    if (!testParts.every((p) => p.length === parts[0].length && p[0].cells.every((_, i) => table[maskOf(p, i)] !== undefined))) continue;
+    return { how: sp.how, nx: sp.nx, ny: sp.ny, mode: 'mask', table };
+  }
+  return null;
+}, (g, p) => {
+  const parts = splitParts(g, p.how, p.nx, p.ny);
+  if (!sameSize(parts)) return null;
+  if (p.mode === 'order') return parts.length === p.order.length ? overlayOrder(parts, p.order) : null;
+  if (p.mode === 'priority') return overlayPriority(parts, p.beats);
+  const o = grid(parts[0].w, parts[0].h);
+  for (let i = 0; i < o.cells.length; i++) { const v = p.table[maskOf(parts, i)]; if (v === undefined) return null; o.cells[i] = v; }
+  return o;
+}, 'the parts (by separator lines or equal blocks) laid over one another, each cell the colour of the first coloured part in a learned order of the parts, or the colour that wins by an order of colours, or the colour a table gives for which parts are coloured there, read off the train pairs');
+
+// PARTITION CELLS MAPPED (icecuber cut + majCol per piece). Each cell between the separator lines,
+// described by its count of coloured pixels (or whether that count is the largest or smallest, or its
+// number of colours), becomes one output pixel, or is filled whole in place, by a table read off the
+// train pairs: a colour, its own dominant colour ("D"), or kept as it is ("K", filling only).
+const CELL_DESCR = Object.freeze({
+  n: (q) => { let n = 0; for (const v of q.cells) if (v !== BG) n++; return n; },
+  isMax: (q, all) => { const n = CELL_DESCR.n(q); return all.every((r) => CELL_DESCR.n(r) <= n) ? 1 : 0; },
+  isMin: (q, all) => { const n = CELL_DESCR.n(q); return all.every((r) => CELL_DESCR.n(r) >= n) ? 1 : 0; },
+  colors: (q) => byFreq(q, true).length,
+});
+const cellDom = (q) => { const f = byFreq(q, true); return f.length ? f[0][0] : BG; };
+function cellsLayout(g) {
+  const p = partition(g);
+  if (!p || p.cells.length < 2) return null;
+  return { p, parts: p.cells.map((r) => sub(g, r.x, r.y, r.w, r.h)) };
+}
+fallbackLearner('cellsMap', 2, (states, wanted, tests, opts) => {
+  if (repeatPass(opts)) return null;
+  const lays = states.map(cellsLayout);
+  if (lays.some((l) => !l)) return null;
+  const tlays = tests.map(cellsLayout);
+  if (tlays.some((l) => !l)) return null;
+  const kind = lays.every((l, d) => wanted[d].w === l.p.cols && wanted[d].h === l.p.rows) ? 'pixels'
+    : states.every((s, d) => s.w === wanted[d].w && s.h === wanted[d].h) ? 'fill' : null;
+  if (!kind) return null;
+  // what each train cell became: its possible targets
+  const seen = [];
+  for (let d = 0; d < states.length; d++) {
+    const { p, parts } = lays[d], o = wanted[d];
+    if (kind === 'fill') for (let i = 0; i < o.cells.length; i++) if (states[d].cells[i] === p.sep && o.cells[i] !== p.sep) return null;
+    for (let k = 0; k < parts.length; k++) {
+      const q = parts[k], r = p.cells[k];
+      const t = new Set();
+      if (kind === 'pixels') {
+        const v = o.cells[((k / p.cols) | 0) * o.w + (k % p.cols)];
+        t.add('c' + v); if (v === cellDom(q)) t.add('D');
+      } else {
+        const blk = sub(o, r.x, r.y, r.w, r.h);
+        if (uniform(blk)) { t.add('c' + blk.cells[0]); if (blk.cells[0] === cellDom(q)) t.add('D'); }
+        if (sameGrid(blk, q)) t.add('K');
+        if (!t.size) return null;
+      }
+      seen.push({ d, q, all: parts, t });
+    }
+  }
+  for (const [descr, f] of Object.entries(CELL_DESCR)) {
+    const groups = new Map();
+    for (const e of seen) { const key = String(f(e.q, e.all)); if (!groups.has(key)) groups.set(key, []); groups.get(key).push(e); }
+    const table = {};
+    let ok = true;
+    for (const [key, es] of groups) {
+      let common = null;
+      for (const e of es) common = common ? new Set([...common].filter((x) => e.t.has(x))) : new Set(e.t);
+      if (!common.size) { ok = false; break; }
+      const rank = (x) => (x === 'D' ? 0 : x[0] === 'c' ? 1 : 2);
+      const pick = [...common].sort((a, b) => rank(a) - rank(b))[0];
+      table[key] = pick;
+    }
+    if (!ok) continue;
+    if (!Object.values(table).some((v) => v !== 'K')) continue;
+    if (!tlays.every((l) => l.parts.every((q) => table[String(f(q, l.parts))] !== undefined))) continue;
+    return { kind, descr, table };
+  }
+  return null;
+}, (g, p) => {
+  const l = cellsLayout(g);
+  if (!l) return null;
+  const f = CELL_DESCR[p.descr];
+  const o = p.kind === 'pixels' ? grid(l.p.cols, l.p.rows) : copy(g);
+  for (let k = 0; k < l.parts.length; k++) {
+    const q = l.parts[k], r = l.p.cells[k];
+    const t = p.table[String(f(q, l.parts))];
+    if (t === undefined) return null;
+    if (p.kind === 'pixels') { o.cells[((k / l.p.cols) | 0) * o.w + (k % l.p.cols)] = t === 'D' ? cellDom(q) : +t.slice(1); continue; }
+    if (t === 'K') continue;
+    const v = t === 'D' ? cellDom(q) : +t.slice(1);
+    for (let y = 0; y < r.h; y++) for (let x = 0; x < r.w; x++) o.cells[(r.y + y) * o.w + r.x + x] = v;
+  }
+  return o;
+}, 'each cell between separator lines, by its count of coloured pixels (or whether it is the fullest or emptiest), made one pixel or filled whole with a colour, its own dominant colour, or kept, read off the train pairs');
+
+// BACKGROUND REGIONS RECOLOURED (Hodel objects over the background + sizefilter + fill). Every
+// 4-connected region of background is painted one colour, or its enclosing colour, or left, by a
+// table from one description of it (is it a square, a rectangle, its size, its width, its size's
+// parity, the one colour round it), with or without whether it touches the border.
+function bgRegions(g) {
+  if (g._bgr) return g._bgr;
+  const lab = new Int32Array(g.cells.length).fill(-1);
+  const list = [];
+  for (let s = 0; s < g.cells.length; s++) {
+    if (lab[s] >= 0 || g.cells[s] !== BG) continue;
+    const idx = [], st = [s];
+    lab[s] = list.length;
+    let x0 = g.w, y0 = g.h, x1 = -1, y1 = -1;
+    const around = new Set();
+    while (st.length) {
+      const i = st.pop(); idx.push(i);
+      const x = i % g.w, y = (i / g.w) | 0;
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+      for (const [dx, dy] of N4) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= g.w || ny >= g.h) continue;
+        const j = ny * g.w + nx;
+        if (g.cells[j] !== BG) { around.add(g.cells[j]); continue; }
+        if (lab[j] < 0) { lab[j] = list.length; st.push(j); }
+      }
+    }
+    const w = x1 - x0 + 1, h = y1 - y0 + 1;
+    list.push({ idx, size: idx.length, w, h, border: x0 === 0 || y0 === 0 || x1 === g.w - 1 || y1 === g.h - 1, rect: idx.length === w * h, enc: around.size === 1 ? [...around][0] : -1 });
+  }
+  Object.defineProperty(g, '_bgr', { value: list, enumerable: false });
+  return list;
+}
+const REGION_DESCR = (() => {
+  const base = [
+    ['all', () => 1],
+    ['square', (r) => (r.rect && r.w === r.h ? 1 : 0)],
+    ['rect', (r) => (r.rect ? 1 : 0)],
+    ['sizeParity', (r) => r.size % 2],
+    ['widthParity', (r) => r.w % 2],
+    ['size', (r) => r.size],
+    ['width', (r) => r.w],
+    ['height', (r) => r.h],
+    ['box', (r) => r.w + 'x' + r.h],
+    ['enc', (r) => r.enc],
+  ];
+  const out = [];
+  for (const [n, f] of base) { out.push([n, f]); out.push(['border+' + n, (r) => (r.border ? 'B' : 'I') + f(r)]); }
+  return out;
+})();
+const REGION_BY_NAME = new Map(REGION_DESCR);
+fallbackLearner('regionRecolor', 2, (states, wanted, tests, opts) => {
+  if (repeatPass(opts)) return null;
+  const seen = [];
+  let changed = false;
+  for (let d = 0; d < states.length; d++) {
+    const s = states[d], o = wanted[d];
+    if (s.w !== o.w || s.h !== o.h) return null;
+    for (let i = 0; i < s.cells.length; i++) if (s.cells[i] !== BG && o.cells[i] !== s.cells[i]) return null;
+    for (const r of bgRegions(s)) {
+      const v = o.cells[r.idx[0]];
+      for (const i of r.idx) if (o.cells[i] !== v) return null;
+      if (v !== BG) changed = true;
+      seen.push({ r, t: v });
+    }
+  }
+  if (!changed) return null;
+  for (const [descr, f] of REGION_DESCR) {
+    const groups = new Map();
+    for (const e of seen) { const k = String(f(e.r)); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(e); }
+    const rule = {};
+    let ok = true;
+    for (const [k, es] of groups) {
+      // the enclosing colour first (it holds when that colour moves), then one constant colour
+      if (es.every((e) => e.t !== BG && e.t === e.r.enc)) rule[k] = 'E';
+      else if (es.every((e) => e.t === es[0].t)) rule[k] = es[0].t;
+      else { ok = false; break; }
+    }
+    if (!ok) continue;
+    if (!tests.every((t) => bgRegions(t).every((r) => rule[String(f(r))] !== undefined))) continue;
+    return { descr, rule };
+  }
+  return null;
+}, (g, p) => {
+  const f = REGION_BY_NAME.get(p.descr);
+  const o = copy(g);
+  for (const r of bgRegions(g)) {
+    const t = p.rule[String(f(r))];
+    if (t === undefined) return null;
+    const v = t === 'E' ? r.enc : t;
+    if (v < 0) return null;
+    if (v !== BG) for (const i of r.idx) o.cells[i] = v;
+  }
+  return o;
+}, 'every region of background painted a colour, its enclosing colour, or left, by one description of it (square, rectangle, size, width, parity, the colour round it, with or without touching the border), read off the train pairs');
+
+// SYMMETRY ABOUT A LOCAL CENTRE (Hodel mirror and rotate + paint; icecuber mirror + Fill). Every
+// coloured cell copied to its images under a group (H, V, HV, R2, R4, D4, T, A) about a centre: the
+// centre of the content, of the grid, of the most frequent or rarest colour, or the centre the cells
+// agree with most, or the centre of the one object that is itself symmetric under the group.
+// Background only is painted, in the source colour or in one learned colour.
+// the largest group first: when the train outputs have the larger symmetry, the test is completed under it
+const SYM_GROUPS = Object.freeze({ D4: ['h', 'v', 'r', 't', 'a', 'r1', 'r3'], R4: ['r1', 'r', 'r3'], HV: ['h', 'v', 'r'], R2: ['r'], H: ['h'], V: ['v'], T: ['t'], A: ['a'] });
+function symImage(m, cx2, cy2, x, y) {
+  const dx = 2 * x - cx2, dy = 2 * y - cy2;
+  let ex, ey;
+  if (m === 'h') { ex = -dx; ey = dy; } else if (m === 'v') { ex = dx; ey = -dy; } else if (m === 'r') { ex = -dx; ey = -dy; }
+  else if (m === 't') { ex = dy; ey = dx; } else if (m === 'a') { ex = -dy; ey = -dx; } else if (m === 'r1') { ex = -dy; ey = dx; } else { ex = dy; ey = -dx; }
+  const X = cx2 + ex, Y = cy2 + ey;
+  if ((X & 1) || (Y & 1)) return null;
+  return [X / 2, Y / 2];
+}
+function symPredict(g, kind, c, paint) {
+  if (!c) return null;
+  const maps = SYM_GROUPS[kind];
+  const o = copy(g);
+  let added = false;
+  for (let y = 0; y < g.h; y++) for (let x = 0; x < g.w; x++) {
+    const v = g.cells[y * g.w + x];
+    if (v === BG) continue;
+    for (const m of maps) {
+      const p = symImage(m, c[0], c[1], x, y);
+      if (!p) return null;
+      const [X, Y] = p;
+      if (X < 0 || Y < 0 || X >= g.w || Y >= g.h) continue;
+      const j = Y * g.w + X;
+      if (g.cells[j] !== BG) continue;
+      const nv = paint < 0 ? v : paint;
+      if (o.cells[j] !== BG && o.cells[j] !== nv) return null;
+      o.cells[j] = nv; added = true;
+    }
+  }
+  return added ? o : null;
+}
+function boxCentre(b) { return b ? [b.x0 + b.x1, b.y0 + b.y1] : null; }
+function bestCentre(g, kind) {
+  const key = '_symc' + kind;
+  if (g[key] !== undefined) return g[key];
+  let res = null;
+  const cells = [];
+  for (let i = 0; i < g.cells.length; i++) if (g.cells[i] !== BG) cells.push(i);
+  const b = bboxWhere(g, (v) => v !== BG);
+  if (b && cells.length <= 150) {
+    const maps = SYM_GROUPS[kind];
+    let bs = 0, tie = false;
+    for (let cy = 2 * b.y0; cy <= 2 * b.y1 && res !== undefined; cy++) for (let cx = 2 * b.x0; cx <= 2 * b.x1; cx++) {
+      if (clockOut()) { res = undefined; break; }
+      let score = 0, bad = false;
+      for (const i of cells) {
+        const x = i % g.w, y = (i / g.w) | 0, v = g.cells[i];
+        for (const m of maps) {
+          const p = symImage(m, cx, cy, x, y);
+          if (!p) { bad = true; break; }
+          if (p[0] < 0 || p[1] < 0 || p[0] >= g.w || p[1] >= g.h) continue;
+          const u = g.cells[p[1] * g.w + p[0]];
+          if (u === v) score++; else if (u !== BG) { bad = true; break; }
+        }
+        if (bad) break;
+      }
+      if (bad) continue;
+      if (score > bs) { bs = score; res = [cx, cy]; tie = false; } else if (score === bs && res) tie = true;
+    }
+    if (res === undefined) return null;   // out of clock: no answer, and nothing cached
+    if (tie) res = null;
+  }
+  Object.defineProperty(g, key, { value: res, enumerable: false });
+  return res;
+}
+const SYM_CENTRES = Object.freeze({
+  content: (g) => boxCentre(bboxWhere(g, (v) => v !== BG)),
+  grid: (g) => [g.w - 1, g.h - 1],
+  top: (g) => { const c = uniqueTop(byFreq(g, true)); return c === null ? null : boxCentre(bboxWhere(g, (v) => v === c)); },
+  rare: (g) => { const c = uniqueBottom(byFreq(g, true)); return c === null ? null : boxCentre(bboxWhere(g, (v) => v === c)); },
+  symObject: (g, kind) => {
+    // the largest object (8-connected, one colour) that is itself symmetric under the group about its
+    // own centre; none when two tie
+    let found = null, size = 0, tie = false;
+    for (const o of components(g, 'c8')) {
+      if (o.size < 2 || o.size < size) continue;
+      const c = [o.x0 + o.x1, o.y0 + o.y1];
+      let sym = true;
+      for (const i of o.idx) {
+        const x = i % g.w, y = (i / g.w) | 0;
+        for (const m of SYM_GROUPS[kind]) { const p = symImage(m, c[0], c[1], x, y); if (!p || g.cells[p[1] * g.w + p[0]] !== g.cells[i]) { sym = false; break; } }
+        if (!sym) break;
+      }
+      if (!sym) continue;
+      if (o.size === size) { tie = true; continue; }
+      found = c; size = o.size; tie = false;
+    }
+    return tie ? null : found;
+  },
+  best: (g, kind) => bestCentre(g, kind),
+});
+function learnSymComplete(states, wanted, tests) {
+  let added = 0, paintC = -2;
+  for (let d = 0; d < states.length; d++) {
+    const s = states[d], o = wanted[d];
+    if (s.w !== o.w || s.h !== o.h) return null;
+    for (let i = 0; i < s.cells.length; i++) {
+      const a = s.cells[i], b = o.cells[i];
+      if (a !== BG) { if (b !== a) return null; } else if (b !== BG) { added++; paintC = paintC === -2 ? b : paintC === b ? b : -1; }
+    }
+  }
+  if (!added) return null;
+  const paints = paintC >= 0 ? [-1, paintC] : [-1];
+  for (const centre of Object.keys(SYM_CENTRES)) for (const kind of Object.keys(SYM_GROUPS)) for (const paint of paints) {
+    const f = SYM_CENTRES[centre];
+    if (!states.every((s, d) => { const g = symPredict(s, kind, f(s, kind), paint); return g && sameGrid(g, wanted[d]); })) continue;
+    if (!tests.every((t) => symPredict(t, kind, f(t, kind), paint))) continue;
+    return { centre, kind, paint };
+  }
+  return null;
+}
+fallbackLearner('symComplete', 3, (states, wanted, tests, opts) => {
+  if (repeatPass(opts)) return null;
+  fbDeadline = opts && typeof opts.deadline === 'number' ? opts.deadline : Infinity;
+  try { return learnSymComplete(states, wanted, tests); } finally { fbDeadline = Infinity; }
+}, (g, p) => symPredict(g, p.kind, SYM_CENTRES[p.centre](g, p.kind), p.paint), 'every coloured cell copied onto its mirror or rotated images about a centre (of the content, the grid, a colour, the one symmetric object, or the one the cells agree with most), painting background only, in its own colour or one colour, read off the train pairs');
+
+// THE LATE WORDS AS A LAST STEP (see THE LATE WORDS above). On the task's input: each late word in its
+// order, first alone, then followed by a colour map read off the train pairs (a placeholder colour a
+// word paints must map to a real one), then followed by one base grid word (PRIMS, cheapest first,
+// each tried on the first train pair before the others); a word that changes no train input is
+// skipped. The first that fits every train pair and
+// answers every test input is the answer; the clock (opts.deadline) stops it between words.
+const THEN_WORDS = PRIMS.filter((p) => p.from === 'grid' && p.to === 'grid').sort((a, b) => a.cost - b.cost);
+const identityMap = (map) => { for (const [a, b] of map) if (a !== b) return false; return true; };
+function lateMap(g, p) {
+  const o = copy(g);
+  for (let i = 0; i < o.cells.length; i++) {
+    const v = p.map[o.cells[i]];
+    if (v !== undefined) o.cells[i] = v;
+    else if (!(p.keep && o.cells[i] < 10)) return null;
+  }
+  return o;
+}
+fallbackLearner('lateWord', 2, (states, wanted, tests, opts) => {
+  if (repeatPass(opts)) return null;
+  if (states.every((g, d) => sameGrid(g, wanted[d]))) return null; // a task that changes nothing is not a late word's
+  const dl = opts && typeof opts.deadline === 'number' ? opts.deadline : Infinity;
+  const late = () => typeof performance !== 'undefined' && performance.now() > dl;
+  for (const W of LATE_PRIMS) {
+    if (late()) return null;
+    const outs = states.map((g) => W.apply(g));
+    if (outs.some((g) => !g)) continue;
+    if (outs.every((g, d) => sameGrid(g, states[d]))) continue; // the word changes nothing here: not this word's task
+    const touts = tests.map((g) => W.apply(g));
+    if (touts.some((g) => !g)) continue;
+    if (outs.every((g, d) => sameGrid(g, wanted[d]))) return { word: W.name };
+    if (outs.every((g, d) => g.w === wanted[d].w && g.h === wanted[d].h)) {
+      let map = new Map();
+      for (let d = 0; d < outs.length && map; d++) map = mapInto(map, outs[d], wanted[d]);
+      // keep: the map only names placeholder colours (every real colour it saw maps to itself), so a
+      // real colour no train pair showed keeps itself too; otherwise every test colour must be seen
+      const keep = !!map && [...map].every(([a, b]) => a >= 10 || a === b);
+      if (map && !identityMap(map) && (keep || touts.every((g) => mapCovers(map, g)))) {
+        const p = { word: W.name, map: Object.fromEntries(map), ...(keep ? { keep: true } : {}) };
+        const res = touts.map((g) => lateMap(g, p));
+        if (res.every((g) => g && isAnswerGrid(g))) return p;
+      }
+    }
+    for (const Q of THEN_WORDS) {
+      if (late()) return null;
+      const g0 = Q.apply(outs[0]);
+      if (!g0 || !sameGrid(g0, wanted[0])) continue;
+      let fits = true;
+      for (let d = 1; d < outs.length && fits; d++) { const g = Q.apply(outs[d]); if (!g || !sameGrid(g, wanted[d])) fits = false; }
+      if (!fits || !touts.every((g) => { const t = Q.apply(g); return t && isAnswerGrid(t); })) continue;
+      return { word: W.name, then: Q.name };
+    }
+  }
+  return null;
+}, (g, p) => {
+  const W = BY_NAME.get(p.word);
+  if (!W || !W.late) return null;
+  let o = W.apply(g);
+  if (!o) return null;
+  if (p.map) o = lateMap(o, p);
+  if (o && p.then) { const Q = BY_NAME.get(p.then); o = Q && !Q.learned && !Q.late ? Q.apply(o) : null; }
+  return o;
+}, 'one late word (LATE_PRIMS) on the input, alone, then a colour map, or then one base grid word, read off the train pairs');
 
 export function byName(name) { return BY_NAME.get(name) || null; }
 export const VOCABULARY_SIZE = PRIMS.length + LEARNERS.length;

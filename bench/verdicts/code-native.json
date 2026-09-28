@@ -1,0 +1,253 @@
+{
+  "at": "2026-09-28T13:45:32.780Z",
+  "command": "node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir bench/verdicts -- node --max-old-space-size=4000 bench/code-native.mjs",
+  "node": "v24.15.0",
+  "isTheBar": true,
+  "barMet": true,
+  "bar": {
+    "heldOutShare": 0.5,
+    "heldOutCodeShare": 0.5,
+    "devWrongMax": 2,
+    "controlAnswers": 0,
+    "checks": {
+      "heldOutShare": true,
+      "heldOutCodeShare": true,
+      "devWrong": true,
+      "control": true,
+      "tests": true
+    }
+  },
+  "split": {
+    "development": {
+      "source": "bench/conceive-prompts.json",
+      "kinds": [
+        "code",
+        "code-reading",
+        "sql",
+        "command",
+        "format"
+      ],
+      "rows": 35,
+      "contaminated": "development: the readers were built and tuned on these rows"
+    },
+    "heldOut": {
+      "source": "bench/code-native-heldout.jsonl",
+      "rows": 51,
+      "sha256": "2857dc7f035d73ac1e1f6439c6669a66c794da6c5740d6159959d19022260d41",
+      "pinnedSha256": "2857dc7f035d73ac1e1f6439c6669a66c794da6c5740d6159959d19022260d41",
+      "written": "2026-09-28T13:09:10.504Z",
+      "contaminated": "same author: the held-out rows were written (stamp 2026-09-28T13:09:10.504Z) before any reader, by the author of the readers, who knew the rows while writing them"
+    },
+    "firstHeldOutRun": {
+      "at": "2026-09-28T13:42:28.326Z",
+      "codeSha256": "811195fa15135baabc69305c425c9b875ceb900f3c42f210155d67d50ca1228c"
+    }
+  },
+  "catalogue": {
+    "operations": 98,
+    "entries": 97,
+    "primitives": 75,
+    "codeSha256": "811195fa15135baabc69305c425c9b875ceb900f3c42f210155d67d50ca1228c"
+  },
+  "development": {
+    "total": {
+      "asked": 35,
+      "answered": 34,
+      "correct": 34,
+      "wrong": 0,
+      "refused": 1,
+      "correctShare": 0.9714,
+      "medianNs": 467200,
+      "p95Ns": 18029800
+    },
+    "byKind": {
+      "code": {
+        "asked": 12,
+        "answered": 12,
+        "correct": 12,
+        "wrong": 0,
+        "refused": 0,
+        "correctShare": 1,
+        "medianNs": 770500,
+        "p95Ns": 18029800
+      },
+      "code-reading": {
+        "asked": 5,
+        "answered": 4,
+        "correct": 4,
+        "wrong": 0,
+        "refused": 1,
+        "correctShare": 0.8,
+        "medianNs": 17321500,
+        "p95Ns": 19174600
+      },
+      "sql": {
+        "asked": 5,
+        "answered": 5,
+        "correct": 5,
+        "wrong": 0,
+        "refused": 0,
+        "correctShare": 1,
+        "medianNs": 468400,
+        "p95Ns": 1887700
+      },
+      "command": {
+        "asked": 6,
+        "answered": 6,
+        "correct": 6,
+        "wrong": 0,
+        "refused": 0,
+        "correctShare": 1,
+        "medianNs": 50400,
+        "p95Ns": 5811900
+      },
+      "format": {
+        "asked": 7,
+        "answered": 7,
+        "correct": 7,
+        "wrong": 0,
+        "refused": 0,
+        "correctShare": 1,
+        "medianNs": 249500,
+        "p95Ns": 1854300
+      }
+    },
+    "wrongRows": [],
+    "refusedRows": [
+      {
+        "id": "read-02",
+        "kind": "code-reading",
+        "why": "code reading runs JavaScript only (python asked)"
+      }
+    ]
+  },
+  "heldOut": {
+    "total": {
+      "asked": 51,
+      "answered": 46,
+      "correct": 46,
+      "wrong": 0,
+      "refused": 5,
+      "correctShare": 0.902,
+      "medianNs": 231300,
+      "p95Ns": 17042900
+    },
+    "byKind": {
+      "code": {
+        "asked": 24,
+        "answered": 21,
+        "correct": 21,
+        "wrong": 0,
+        "refused": 3,
+        "correctShare": 0.875,
+        "medianNs": 291200,
+        "p95Ns": 17147800
+      },
+      "code-reading": {
+        "asked": 7,
+        "answered": 6,
+        "correct": 6,
+        "wrong": 0,
+        "refused": 1,
+        "correctShare": 0.8571,
+        "medianNs": 16635400,
+        "p95Ns": 16782500
+      },
+      "sql": {
+        "asked": 6,
+        "answered": 5,
+        "correct": 5,
+        "wrong": 0,
+        "refused": 1,
+        "correctShare": 0.8333,
+        "medianNs": 164900,
+        "p95Ns": 273200
+      },
+      "command": {
+        "asked": 7,
+        "answered": 7,
+        "correct": 7,
+        "wrong": 0,
+        "refused": 0,
+        "correctShare": 1,
+        "medianNs": 21500,
+        "p95Ns": 117000
+      },
+      "format": {
+        "asked": 7,
+        "answered": 7,
+        "correct": 7,
+        "wrong": 0,
+        "refused": 0,
+        "correctShare": 1,
+        "medianNs": 33200,
+        "p95Ns": 435400
+      }
+    },
+    "wrongRows": [],
+    "refusedRows": [
+      {
+        "id": "h-code-01",
+        "kind": "code",
+        "why": "no operation reads the prompt completely"
+      },
+      {
+        "id": "h-code-20",
+        "kind": "code",
+        "why": "synthesis: ambiguous: with two examples, a different behaviour of depth 2 also fits (sortAsc then mapDouble)"
+      },
+      {
+        "id": "h-code-21",
+        "kind": "code",
+        "why": "synthesis: ambiguous: with two examples, a different behaviour of depth 2 also fits (lower then lastChar)"
+      },
+      {
+        "id": "h-read-05",
+        "kind": "code-reading",
+        "why": "code reading runs JavaScript only (python asked)"
+      },
+      {
+        "id": "h-sql-02",
+        "kind": "sql",
+        "why": "words the SQL reader cannot read: get"
+      }
+    ]
+  },
+  "control": {
+    "asked": 256,
+    "kinds": 36,
+    "answered": 0,
+    "answeredRows": [],
+    "what": "codeNative on every census prompt of the other kinds; it must answer none"
+  },
+  "tests": {
+    "command": "node --test test/code-native.test.mjs test/act-prompt.test.mjs",
+    "exitCode": 0,
+    "tally": [
+      "ℹ tests 37",
+      "ℹ suites 0",
+      "ℹ pass 37",
+      "ℹ fail 0",
+      "ℹ cancelled 0",
+      "ℹ skipped 0",
+      "ℹ todo 0"
+    ],
+    "pass": 37,
+    "fail": 0,
+    "tests": 37,
+    "ok": true
+  },
+  "wrongRows": [],
+  "ns": {
+    "development": {
+      "median": 467200,
+      "p95": 18029800
+    },
+    "heldOut": {
+      "median": 231300,
+      "p95": 17042900
+    },
+    "what": "nanoseconds inside codeNative per answered prompt (process.hrtime.bigint), prompt in, answer out, including the act/run.mjs runs of stated examples"
+  },
+  "statement": "The organism answered code, code-reading, sql, command and format prompts with no model: on the held-out rows it was right on 46 of 51 (90.2%), 21 of 24 on code, wrong on 0 and refused 5; on the development census rows it was right on 34 of 35 and wrong on 0; the control answered 0 of 256 census prompts of 36 other kinds; the tests exited 0. The held-out rows share an author with the readers, so they measure generalisation to prompts that author wrote, not to strangers. The bar is met."
+}

@@ -1,10 +1,10 @@
 {
- "at": "2026-09-27T18:55:46.184Z",
+ "at": "2026-09-28T12:48:24.330Z",
  "command": "node tools/budget.mjs --ram-mb 4000 --disk-mb 2000 --dir state/boundary --record state/boundary/budget-bar.json --wait-free-ram-mb 16384 -- node --max-old-space-size=4000 tools/boundary-audit.mjs --bar",
  "node": "v24.15.0",
  "isTheBar": true,
- "barMet": false,
- "statement": "tools/boundary-audit.mjs found 82 boundaries by static scan (60 postMessage, 16 workerData, 5 send, 1 structuredClone) and ran 31 drivers under the preload probe, which wrote 1706 message records (a busy site is sampled, so records are fewer than messages) and counted 2239 messages at the boundaries they came from; 79 boundaries were measured live, 2 from their literal value, 1 not at all, and 0 measured sites matched no boundary. The cap is 16777216 copied bytes in one message. The tree was hashed at the static scan and again after the probe: 539 source files, 2 changed while the bar ran, 0 of them holding a boundary, with 0 orphan sites in them. Before the fix 0 boundaries reached it and 0 carried a view on a wasm heap (largest copied 1048576 bytes at tools/boundary-audit.mjs:126); after it 0 and 0, the largest copied 1048576 bytes at tools/boundary-audit.mjs:126. Fixed: 0. On the wire (strings included; reported, not the cap measure) 1 boundaries reached the cap, the largest 28041254 bytes at runtime/shard.mjs:474 via driver live-shards-bench, and the wire estimate read 1.0911 of v8.serialize on a sample. The allowlist lists 80 boundaries (unlisted 5, stale 3, over cap 0). Tests re-run by the bar: test/boundary.test.mjs 15 of 16 pass. calibrate: the clone delivered 1048576 bytes for an 8192 byte view, the walker said 1048576. The bar is not met: a boundary was not measured; a boundary is missing from the allowlist; an allowlist entry names a boundary the scan no longer finds; a test the bar re-ran did not pass.",
+ "barMet": true,
+ "statement": "tools/boundary-audit.mjs found 106 boundaries by static scan (66 postMessage, 18 workerData, 5 send, 17 structuredClone) and ran 38 drivers under the preload probe, which wrote 1810 message records (a busy site is sampled, so records are fewer than messages) and counted 2467 messages at the boundaries they came from; 104 boundaries were measured live, 2 from their literal value, 0 not at all, and 0 measured sites matched no boundary. The cap is 16777216 copied bytes in one message. The tree was hashed at the static scan and again after the probe: 558 source files, 1 changed while the bar ran, 0 of them holding a boundary, with 0 orphan sites in them. Before the fix 0 boundaries reached it and 0 carried a view on a wasm heap (largest copied 1048576 bytes at tools/boundary-audit.mjs:126); after it 0 and 0, the largest copied 1048576 bytes at tools/boundary-audit.mjs:126. Fixed: 0. On the wire (strings included; reported, not the cap measure) 1 boundaries reached the cap, the largest 28041254 bytes at runtime/shard.mjs:474 via driver live-shards-bench, and the wire estimate read 1.0911 of v8.serialize on a sample. The allowlist lists 106 boundaries (unlisted 0, stale 0, over cap 0). Tests re-run by the bar: test/boundary.test.mjs 16 of 16 pass. calibrate: the clone delivered 1048576 bytes for an 8192 byte view, the walker said 1048576. The bar is met.",
  "statementFields": {
   "numbers": [
    "summary.static",
@@ -52,11 +52,7 @@
    "summary.largest.file",
    "summary.largestWire.file",
    "summary.largestWire.driver",
-   "tests.0.test",
-   "why.0",
-   "why.1",
-   "why.2",
-   "why.3"
+   "tests.0.test"
   ]
  },
  "statementAudit": {
@@ -65,17 +61,12 @@
   "unprinted": [],
   "touchedClaim": false
  },
- "why": [
-  "a boundary was not measured",
-  "a boundary is missing from the allowlist",
-  "an allowlist entry names a boundary the scan no longer finds",
-  "a test the bar re-ran did not pass"
- ],
+ "why": [],
  "split": {
   "development": {
    "what": "the whole source tree this tool scans, its DRIVERS and its ALLOWLIST, written against the same boundaries the bar measures",
-   "boundaries": 82,
-   "drivers": 31
+   "boundaries": 106,
+   "drivers": 38
   },
   "heldOut": {
    "what": "none: an audit of every boundary in the tree has no set it was not written against",
@@ -98,26 +89,25 @@
   "owned": 8192
  },
  "stillTree": {
-  "files": 539,
+  "files": 558,
   "moved": [
-   "bench/site-ask.mjs",
-   "test/imagine.test.mjs"
+   "act/solve.mjs"
   ],
   "boundaryMoved": [],
   "orphansInMoved": 0
  },
  "summary": {
-  "static": 82,
+  "static": 106,
   "kinds": {
-   "postMessage": 60,
-   "workerData": 16,
+   "postMessage": 66,
+   "workerData": 18,
    "send": 5,
-   "structuredClone": 1
+   "structuredClone": 17
   },
-  "boundaries": 82,
-  "probe": 79,
+  "boundaries": 106,
+  "probe": 104,
   "literal": 2,
-  "unexercised": 1,
+  "unexercised": 0,
   "overCap": 0,
   "overCapWire": 1,
   "overCapWireRows": [
@@ -148,7 +138,7 @@
    "bytes": 28041254,
    "driver": "live-shards-bench"
   },
-  "messages": 2239,
+  "messages": 2467,
   "fixed": 0,
   "before": {
    "boundaries": 76,
@@ -189,61 +179,45 @@
   }
  },
  "probe": {
-  "measured": 1706,
-  "boots": 228
+  "measured": 1810,
+  "boots": 253
  },
  "allowlist": {
-  "listed": 80,
-  "unlisted": [
-   "bench/imagine.mjs|postMessage|{kind:'libs',libraries}",
-   "bench/imagine.mjs|postMessage|{kind:'libs',libraries:lane.libraries}",
-   "bench/imagine.mjs|workerData|{inventUrl:pathToFileURL(path.join(ROOT,'capability','grid-invent.mjs')).href}",
-   "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,mined:r.mined||[],baseline:r.b~b797539946f2",
-   "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,solved:r.solved,names:r.names,~6677a500e4b2"
-  ],
-  "stale": [
-   "bench/imagine.mjs|workerData|{inventUrl:pathToFileURL(path.join(ROOT,'capability','grid-invent.mjs')).href,libraries}",
-   "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,mined:r.mined||[],baseline:r.baseline}}",
-   "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,solved:r.solved,names:r.names,~d0b942e54d00"
-  ],
+  "listed": 106,
+  "unlisted": [],
+  "stale": [],
   "overCap": []
  },
  "touched": [],
  "tests": [
   {
    "test": "test/boundary.test.mjs",
-   "code": 1,
+   "code": 0,
    "timedOut": false,
-   "ms": 833,
+   "ms": 666,
    "tests": 16,
    "suites": 0,
-   "pass": 15,
-   "fail": 1,
+   "pass": 16,
+   "fail": 0,
    "cancelled": 0,
    "skipped": 0,
    "todo": 0,
-   "duration_ms": 785.9937
+   "duration_ms": 634.1944
   }
  ],
  "printed": [
-  "boundary bar: 82 boundaries in 24 files (postMessage 60, workerData 16, send 5, structuredClone 1)",
+  "boundary bar: 106 boundaries in 28 files (postMessage 66, workerData 18, send 5, structuredClone 17)",
   "cap: a message whose copied buffers reach 16777216 bytes (CAP_BYTES) fails the bar",
   "calibrate: an 8192 byte view on a 1048576 byte buffer: walker 1048576 B, the clone delivered 1048576 B; shared 0 B, arrived shared true; wire estimate 699437 B vs v8.serialize 641040 B (ratio 1.0911)",
-  "probe after: 31 drivers, 228 threads and processes booted, 1706 message records written (the first 32 messages of a site on each thread, then every power of two, any larger one and any new wasm view), 2239 messages counted at the boundaries they came from",
+  "probe after: 38 drivers, 253 threads and processes booted, 1810 message records written (the first 32 messages of a site on each thread, then every power of two, any larger one and any new wasm view), 2467 messages counted at the boundaries they came from",
   "before: over cap 0, rows with a wasm view 0, largest copied 1048576 B at tools/boundary-audit.mjs:126, over cap on the wire 1",
-  "after: over cap 0, rows with a wasm view 0, unexercised 1, measured by probe 79, by literal 2, orphan sites 0, largest copied 1048576 B at tools/boundary-audit.mjs:126",
+  "after: over cap 0, rows with a wasm view 0, unexercised 0, measured by probe 104, by literal 2, orphan sites 0, largest copied 1048576 B at tools/boundary-audit.mjs:126",
   "the wire (strings included, reported, not the cap measure): over cap 1, largest 28041254 B at runtime/shard.mjs:474 via live-shards-bench",
-  "still tree: 539 source files hashed at the static scan and again after the probe, changed 2 (bench/site-ask.mjs, test/imagine.test.mjs), holding a boundary 0, orphan sites in them 0",
+  "still tree: 558 source files hashed at the static scan and again after the probe, changed 1 (act/solve.mjs), holding a boundary 0, orphan sites in them 0",
   "fixed: 0 boundaries (over the cap or carrying a wasm view before, neither after)",
-  "UNEXERCISED bench/imagine.mjs:240 postMessage { kind: 'libs', libraries: lane.libraries } | unexercised msgs 0 copied null B wire null B wasm 0",
   "OVER CAP ON THE WIRE runtime/shard.mjs:474 postMessage { type: 'snapshot', id: msg.id, shard: ME, t: brain.clock.t, cells,... | probe msgs 26 copied 0 B wire 28041254 B wasm 0 via live-shards,live-shards-bench,test-runtime",
-  "allowlist: 80 listed, unlisted 5, stale 3, over cap 0",
-  "  unlisted bench/imagine.mjs:232 postMessage { kind: 'libs', libraries }",
-  "  unlisted bench/imagine.mjs:240 postMessage { kind: 'libs', libraries: lane.libraries }",
-  "  unlisted bench/imagine.mjs:195 workerData { inventUrl: pathToFileURL(path.join(ROOT, 'capability', 'grid-invent.mjs'))....",
-  "  unlisted bench/imagine.mjs:174 postMessage { type: \"done\", id: msg.id, wallMs: performance.now() - t0, r: { status: r.st...",
-  "  unlisted bench/imagine.mjs:185 postMessage { type: \"done\", id: msg.id, wallMs: performance.now() - t0, r: { status: r.st...",
-  "node --test test/boundary.test.mjs: tests 16 pass 15 fail 1 cancelled 0 (exit 1, 0.8 s)",
+  "allowlist: 106 listed, unlisted 0, stale 0, over cap 0",
+  "node --test test/boundary.test.mjs: tests 16 pass 16 fail 0 cancelled 0 (exit 0, 0.7 s)",
   "statement: 39 numbers quoted, each read from a verdict field: unsourced 0, unprinted 0, touched claim false"
  ],
  "drivers": [
@@ -252,7 +226,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 1916,
+   "ms": 1486,
    "log": "state/boundary/after/logs/test-code.log",
    "tests": {
     "tests": 20,
@@ -262,7 +236,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 1860.7837
+    "duration_ms": 1444.5635
    }
   },
   {
@@ -270,7 +244,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 19276,
+   "ms": 10961,
    "log": "state/boundary/after/logs/test-public.log",
    "tests": {
     "tests": 18,
@@ -280,7 +254,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 19219.8685
+    "duration_ms": 10923.2524
    }
   },
   {
@@ -288,7 +262,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 3653,
+   "ms": 2541,
    "log": "state/boundary/after/logs/test-generations.log",
    "tests": {
     "tests": 16,
@@ -298,7 +272,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 3598.0039
+    "duration_ms": 2502.2775
    }
   },
   {
@@ -306,7 +280,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 4946,
+   "ms": 3372,
    "log": "state/boundary/after/logs/test-velocity.log",
    "tests": {
     "tests": 19,
@@ -316,7 +290,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 4892.5663
+    "duration_ms": 3331.206
    }
   },
   {
@@ -324,7 +298,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 10706,
+   "ms": 9079,
    "log": "state/boundary/after/logs/test-years.log",
    "tests": {
     "tests": 18,
@@ -334,7 +308,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 10649.875
+    "duration_ms": 9040.5194
    }
   },
   {
@@ -342,7 +316,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 327,
+   "ms": 255,
    "log": "state/boundary/after/logs/test-knowledge.log",
    "tests": {
     "tests": 8,
@@ -352,7 +326,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 275.4891
+    "duration_ms": 213.2496
    }
   },
   {
@@ -360,7 +334,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 491,
+   "ms": 375,
    "log": "state/boundary/after/logs/test-native.log",
    "tests": {
     "tests": 7,
@@ -370,7 +344,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 436.1599
+    "duration_ms": 334.1866
    }
   },
   {
@@ -378,7 +352,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 1876,
+   "ms": 1336,
    "log": "state/boundary/after/logs/test-runtime.log",
    "tests": {
     "tests": 5,
@@ -388,7 +362,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 1822.9546
+    "duration_ms": 1296.2631
    }
   },
   {
@@ -396,7 +370,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 11377,
+   "ms": 10202,
    "log": "state/boundary/after/logs/test-cloud.log",
    "tests": {
     "tests": 7,
@@ -406,7 +380,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 11323.9949
+    "duration_ms": 10162.4395
    }
   },
   {
@@ -414,7 +388,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 1399,
+   "ms": 1089,
    "log": "state/boundary/after/logs/test-self-code.log",
    "tests": {
     "tests": 17,
@@ -424,7 +398,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 1349.3397
+    "duration_ms": 1050.6048
    }
   },
   {
@@ -432,7 +406,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 242,
+   "ms": 194,
    "log": "state/boundary/after/logs/test-web-daemon.log",
    "tests": {
     "tests": 4,
@@ -442,7 +416,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 192.6186
+    "duration_ms": 155.8819
    }
   },
   {
@@ -450,7 +424,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 9294,
+   "ms": 8736,
    "log": "state/boundary/after/logs/test-multiply.log",
    "tests": {
     "tests": 15,
@@ -460,7 +434,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 9245.4268
+    "duration_ms": 8696.2883
    }
   },
   {
@@ -468,7 +442,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 8210,
+   "ms": 7191,
    "log": "state/boundary/after/logs/test-autopilot.log",
    "tests": {
     "tests": 35,
@@ -478,7 +452,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 8158.0448
+    "duration_ms": 7150.5432
    }
   },
   {
@@ -486,7 +460,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 11382,
+   "ms": 6682,
    "log": "state/boundary/after/logs/test-plateau.log",
    "tests": {
     "tests": 34,
@@ -496,7 +470,43 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 11329.941
+    "duration_ms": 6643.4091
+   }
+  },
+  {
+   "name": "test-grok-bot",
+   "fault": null,
+   "code": 1,
+   "timedOut": false,
+   "ms": 177,
+   "log": "state/boundary/after/logs/test-grok-bot.log",
+   "tests": {
+    "tests": 9,
+    "suites": 0,
+    "pass": 7,
+    "fail": 2,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 135.6259
+   }
+  },
+  {
+   "name": "test-vision-coverage",
+   "fault": null,
+   "code": 0,
+   "timedOut": false,
+   "ms": 10982,
+   "log": "state/boundary/after/logs/test-vision-coverage.log",
+   "tests": {
+    "tests": 13,
+    "suites": 0,
+    "pass": 13,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 10885.3691
    }
   },
   {
@@ -504,7 +514,7 @@
    "fault": "url",
    "code": 1,
    "timedOut": false,
-   "ms": 8229,
+   "ms": 7254,
    "log": "state/boundary/after/logs/test-autopilot-url.log",
    "tests": {
     "tests": 35,
@@ -514,7 +524,7 @@
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "duration_ms": 8173.5191
+    "duration_ms": 7214.9674
    }
   },
   {
@@ -522,15 +532,23 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 55,
+   "ms": 46,
    "log": "state/boundary/after/logs/calibrate.log"
+  },
+  {
+   "name": "conceive",
+   "fault": null,
+   "code": 0,
+   "timedOut": false,
+   "ms": 299,
+   "log": "state/boundary/after/logs/conceive.log"
   },
   {
    "name": "act-extra",
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 194,
+   "ms": 159,
    "log": "state/boundary/after/logs/act-extra.log"
   },
   {
@@ -538,7 +556,7 @@
    "fault": null,
    "code": 1,
    "timedOut": false,
-   "ms": 800,
+   "ms": 770,
    "log": "state/boundary/after/logs/grid.log"
   },
   {
@@ -546,7 +564,7 @@
    "fault": "url",
    "code": 0,
    "timedOut": false,
-   "ms": 78,
+   "ms": 70,
    "log": "state/boundary/after/logs/grid-url.log"
   },
   {
@@ -554,15 +572,39 @@
    "fault": "poison",
    "code": 0,
    "timedOut": false,
-   "ms": 125,
+   "ms": 105,
    "log": "state/boundary/after/logs/grid-poison.log"
+  },
+  {
+   "name": "grid-curve",
+   "fault": null,
+   "code": 0,
+   "timedOut": false,
+   "ms": 486,
+   "log": "state/boundary/after/logs/grid-curve.log"
+  },
+  {
+   "name": "grid-curve-url",
+   "fault": "url",
+   "code": 0,
+   "timedOut": false,
+   "ms": 69,
+   "log": "state/boundary/after/logs/grid-curve-url.log"
+  },
+  {
+   "name": "grid-curve-poison",
+   "fault": "poison",
+   "code": 0,
+   "timedOut": false,
+   "ms": 112,
+   "log": "state/boundary/after/logs/grid-curve-poison.log"
   },
   {
    "name": "imagine",
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 12063,
+   "ms": 7472,
    "log": "state/boundary/after/logs/imagine.log",
    "jailLeaks": []
   },
@@ -571,7 +613,7 @@
    "fault": "url",
    "code": 0,
    "timedOut": false,
-   "ms": 152,
+   "ms": 163,
    "log": "state/boundary/after/logs/imagine-url.log",
    "jailLeaks": []
   },
@@ -580,8 +622,17 @@
    "fault": "poison",
    "code": 0,
    "timedOut": false,
-   "ms": 1689,
+   "ms": 1508,
    "log": "state/boundary/after/logs/imagine-poison.log",
+   "jailLeaks": []
+  },
+  {
+   "name": "imagine-kill",
+   "fault": null,
+   "code": 0,
+   "timedOut": false,
+   "ms": 104276,
+   "log": "state/boundary/after/logs/imagine-kill.log",
    "jailLeaks": []
   },
   {
@@ -589,7 +640,7 @@
    "fault": "url",
    "code": 0,
    "timedOut": false,
-   "ms": 208,
+   "ms": 158,
    "log": "state/boundary/after/logs/public-url.log"
   },
   {
@@ -597,7 +648,7 @@
    "fault": "poison",
    "code": 0,
    "timedOut": false,
-   "ms": 212,
+   "ms": 177,
    "log": "state/boundary/after/logs/public-poison.log"
   },
   {
@@ -605,7 +656,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 2475,
+   "ms": 1967,
    "log": "state/boundary/after/logs/live-shards.log"
   },
   {
@@ -613,7 +664,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 5235,
+   "ms": 3991,
    "log": "state/boundary/after/logs/live-shards-bench.log"
   },
   {
@@ -621,7 +672,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 414,
+   "ms": 326,
    "log": "state/boundary/after/logs/generations-worker.log"
   },
   {
@@ -629,7 +680,7 @@
    "fault": null,
    "code": 0,
    "timedOut": false,
-   "ms": 3818,
+   "ms": 2992,
    "log": "state/boundary/after/logs/self-code.log"
   },
   {
@@ -637,7 +688,7 @@
    "fault": "url",
    "code": 0,
    "timedOut": false,
-   "ms": 4303,
+   "ms": 3103,
    "log": "state/boundary/after/logs/self-code-url.log"
   },
   {
@@ -645,7 +696,7 @@
    "fault": "poison",
    "code": 0,
    "timedOut": false,
-   "ms": 4408,
+   "ms": 3031,
    "log": "state/boundary/after/logs/self-code-poison.log"
   }
  ],
@@ -922,6 +973,202 @@
    "drivers": []
   },
   {
+   "key": "bench/conceive.mjs|workerData|{sources:live,entry,tests,ms}",
+   "file": "bench/conceive.mjs",
+   "line": 262,
+   "kind": "workerData",
+   "where": "code",
+   "expr": "{ sources: live, entry, tests, ms }",
+   "transfer": null,
+   "how": "probe",
+   "messages": 2,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 187,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "conceive",
+   "drivers": [
+    "conceive"
+   ]
+  },
+  {
+   "key": "bench/conceive.mjs|postMessage|worker-source:best",
+   "file": "bench/conceive.mjs",
+   "line": 251,
+   "kind": "postMessage",
+   "where": "string",
+   "expr": "best",
+   "transfer": null,
+   "how": "probe",
+   "messages": 2,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 100,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "conceive",
+   "drivers": [
+    "conceive"
+   ]
+  },
+  {
+   "key": "bench/grid-curve.mjs|postMessage|{id,task}",
+   "file": "bench/grid-curve.mjs",
+   "line": 279,
+   "kind": "postMessage",
+   "where": "code",
+   "expr": "{ id, task }",
+   "transfer": null,
+   "how": "probe",
+   "messages": 2,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 16035,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "grid-curve",
+   "drivers": [
+    "grid-curve",
+    "grid-curve-poison"
+   ]
+  },
+  {
+   "key": "bench/grid-curve.mjs|workerData|{searchUrl:pathToFileURL(path.join(ROOT,'capability','grid-search.mjs')).href,budgetMs,maxDepth:DEPT~7b9ca7c213ba",
+   "file": "bench/grid-curve.mjs",
+   "line": 259,
+   "kind": "workerData",
+   "where": "code",
+   "expr": "{ searchUrl: pathToFileURL(path.join(ROOT, 'capability', 'grid-search.mjs')).href, budgetMs, maxDepth: DEPTH, attempts: cfg.attempts }",
+   "transfer": null,
+   "how": "probe",
+   "messages": 4,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 179,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "grid-curve",
+   "drivers": [
+    "grid-curve",
+    "grid-curve-poison",
+    "grid-curve-url"
+   ]
+  },
+  {
+   "key": "bench/grid-curve.mjs|postMessage|worker-source:{type:\"ready\"}",
+   "file": "bench/grid-curve.mjs",
+   "line": 243,
+   "kind": "postMessage",
+   "where": "string",
+   "expr": "{ type: \"ready\" }",
+   "transfer": null,
+   "how": "probe",
+   "messages": 3,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 19,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "grid-curve",
+   "drivers": [
+    "grid-curve",
+    "grid-curve-poison"
+   ]
+  },
+  {
+   "key": "bench/grid-curve.mjs|postMessage|worker-source:{type:\"bootFailed\",error:String(e&&e.stack||e)}",
+   "file": "bench/grid-curve.mjs",
+   "line": 243,
+   "kind": "postMessage",
+   "where": "string",
+   "expr": "{ type: \"bootFailed\", error: String(e && e.stack || e) }",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 781,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "grid-curve-url",
+   "drivers": [
+    "grid-curve-url"
+   ]
+  },
+  {
+   "key": "bench/grid-curve.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,solved:r.solved,solvedFirst:r.~4b4a3a0dbebe",
+   "file": "bench/grid-curve.mjs",
+   "line": 249,
+   "kind": "postMessage",
+   "where": "string",
+   "expr": "{ type: \"done\", id: msg.id, wallMs: performance.now() - t0, r: { status: r.status, solved: r.solved, solvedFirst: r.solvedFirst, names: r.names, depth: r.dep...",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 436,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "grid-curve",
+   "drivers": [
+    "grid-curve"
+   ]
+  },
+  {
+   "key": "bench/grid-curve.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:\"error\",solved:false,error:String(e&&e.message||e)}}",
+   "file": "bench/grid-curve.mjs",
+   "line": 251,
+   "kind": "postMessage",
+   "where": "string",
+   "expr": "{ type: \"done\", id: msg.id, wallMs: performance.now() - t0, r: { status: \"error\", solved: false, error: String(e && e.message || e) } }",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 160,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "grid-curve-poison",
+   "drivers": [
+    "grid-curve-poison"
+   ]
+  },
+  {
    "key": "bench/grid.mjs|postMessage|{id,task}",
    "file": "bench/grid.mjs",
    "line": 257,
@@ -1035,7 +1282,7 @@
    "beforeWire": 423,
    "beforeWasmViews": 0,
    "afterBytes": 0,
-   "afterWire": 425,
+   "afterWire": 444,
    "afterWasmViews": 0,
    "underCap": true,
    "wireUnderCap": true,
@@ -1072,85 +1319,89 @@
   {
    "key": "bench/imagine.mjs|postMessage|msg",
    "file": "bench/imagine.mjs",
-   "line": 214,
+   "line": 222,
    "kind": "postMessage",
    "where": "code",
    "expr": "msg",
    "transfer": null,
    "how": "probe",
-   "messages": 40,
+   "messages": 50,
    "beforeBytes": 0,
    "beforeWire": 1910,
    "beforeWasmViews": 0,
    "afterBytes": 0,
-   "afterWire": 1969,
+   "afterWire": 81370,
    "afterWasmViews": 0,
    "underCap": true,
    "wireUnderCap": true,
    "fixed": false,
-   "worstDriver": "imagine",
+   "worstDriver": "imagine-kill",
    "drivers": [
     "imagine",
+    "imagine-kill",
     "imagine-poison"
    ]
   },
   {
    "key": "bench/imagine.mjs|postMessage|{kind:'libs',libraries}",
    "file": "bench/imagine.mjs",
-   "line": 232,
+   "line": 240,
    "kind": "postMessage",
    "where": "code",
    "expr": "{ kind: 'libs', libraries }",
    "transfer": null,
    "how": "probe",
-   "messages": 12,
+   "messages": 18,
    "beforeBytes": null,
    "beforeWire": null,
    "beforeWasmViews": null,
    "afterBytes": 0,
-   "afterWire": 122746,
+   "afterWire": 771041,
    "afterWasmViews": 0,
    "underCap": true,
    "wireUnderCap": true,
    "fixed": false,
-   "worstDriver": "imagine",
+   "worstDriver": "imagine-kill",
    "drivers": [
     "imagine",
+    "imagine-kill",
     "imagine-poison"
    ]
   },
   {
    "key": "bench/imagine.mjs|postMessage|{kind:'libs',libraries:lane.libraries}",
    "file": "bench/imagine.mjs",
-   "line": 240,
+   "line": 248,
    "kind": "postMessage",
    "where": "code",
    "expr": "{ kind: 'libs', libraries: lane.libraries }",
    "transfer": null,
-   "how": "unexercised",
-   "messages": 0,
+   "how": "probe",
+   "messages": 9,
    "beforeBytes": null,
    "beforeWire": null,
    "beforeWasmViews": null,
-   "afterBytes": null,
-   "afterWire": null,
+   "afterBytes": 0,
+   "afterWire": 771041,
    "afterWasmViews": 0,
-   "underCap": false,
-   "wireUnderCap": false,
+   "underCap": true,
+   "wireUnderCap": true,
    "fixed": false,
-   "worstDriver": null,
-   "drivers": []
+   "worstDriver": "imagine-kill",
+   "drivers": [
+    "imagine-kill"
+   ]
   },
   {
    "key": "bench/imagine.mjs|workerData|{inventUrl:pathToFileURL(path.join(ROOT,'capability','grid-invent.mjs')).href}",
    "file": "bench/imagine.mjs",
-   "line": 195,
+   "line": 203,
    "kind": "workerData",
    "where": "code",
    "expr": "{ inventUrl: pathToFileURL(path.join(ROOT, 'capability', 'grid-invent.mjs')).href }",
    "transfer": null,
    "how": "probe",
-   "messages": 3,
+   "messages": 13,
    "beforeBytes": null,
    "beforeWire": null,
    "beforeWasmViews": null,
@@ -1163,6 +1414,7 @@
    "worstDriver": "imagine",
    "drivers": [
     "imagine",
+    "imagine-kill",
     "imagine-poison",
     "imagine-url"
    ]
@@ -1170,13 +1422,13 @@
   {
    "key": "bench/imagine.mjs|postMessage|worker-source:{type:\"ready\"}",
    "file": "bench/imagine.mjs",
-   "line": 165,
+   "line": 173,
    "kind": "postMessage",
    "where": "string",
    "expr": "{ type: \"ready\" }",
    "transfer": null,
    "how": "probe",
-   "messages": 2,
+   "messages": 12,
    "beforeBytes": 0,
    "beforeWire": 19,
    "beforeWasmViews": 0,
@@ -1189,13 +1441,14 @@
    "worstDriver": "imagine",
    "drivers": [
     "imagine",
+    "imagine-kill",
     "imagine-poison"
    ]
   },
   {
    "key": "bench/imagine.mjs|postMessage|worker-source:{type:\"bootFailed\",error:String(e&&e.stack||e)}",
    "file": "bench/imagine.mjs",
-   "line": 166,
+   "line": 174,
    "kind": "postMessage",
    "where": "string",
    "expr": "{ type: \"bootFailed\", error: String(e && e.stack || e) }",
@@ -1219,13 +1472,13 @@
   {
    "key": "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,mined:r.mined||[],baseline:r.b~b797539946f2",
    "file": "bench/imagine.mjs",
-   "line": 174,
+   "line": 182,
    "kind": "postMessage",
    "where": "string",
    "expr": "{ type: \"done\", id: msg.id, wallMs: performance.now() - t0, r: { status: r.status, mined: r.mined || [], baseline: r.baseline, searched: r.searched, states: ...",
    "transfer": null,
    "how": "probe",
-   "messages": 2,
+   "messages": 3,
    "beforeBytes": null,
    "beforeWire": null,
    "beforeWasmViews": null,
@@ -1237,13 +1490,14 @@
    "fixed": false,
    "worstDriver": "imagine",
    "drivers": [
-    "imagine"
+    "imagine",
+    "imagine-kill"
    ]
   },
   {
    "key": "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:r.status,solved:r.solved,names:r.names,~6677a500e4b2",
    "file": "bench/imagine.mjs",
-   "line": 185,
+   "line": 193,
    "kind": "postMessage",
    "where": "string",
    "expr": "{ type: \"done\", id: msg.id, wallMs: performance.now() - t0, r: { status: r.status, solved: r.solved, names: r.names, depth: r.depth, used: r.used, searched: ...",
@@ -1267,7 +1521,7 @@
   {
    "key": "bench/imagine.mjs|postMessage|worker-source:{type:\"done\",id:msg.id,wallMs:performance.now()-t0,r:{status:\"error\",solved:false,error:String(e&&e.stack||e)}}",
    "file": "bench/imagine.mjs",
-   "line": 187,
+   "line": 195,
    "kind": "postMessage",
    "where": "string",
    "expr": "{ type: \"done\", id: msg.id, wallMs: performance.now() - t0, r: { status: \"error\", solved: false, error: String(e && e.stack || e) } }",
@@ -1519,7 +1773,7 @@
    "expr": "{ type: 'status', t: lastT, tps: lastTps, rssMb: Math.round(mu.rss / 1048576), maxRssMb: Math.round((process.resourceUsage().maxRSS || 0) / 1024), heapUsedMb...",
    "transfer": null,
    "how": "probe",
-   "messages": 12,
+   "messages": 11,
    "beforeBytes": null,
    "beforeWire": null,
    "beforeWasmViews": null,
@@ -1571,12 +1825,12 @@
    "expr": "{ id, ok: true, row, best: elite(), summary: epochs.summary() }",
    "transfer": null,
    "how": "probe",
-   "messages": 16,
+   "messages": 14,
    "beforeBytes": 0,
    "beforeWire": 5094,
    "beforeWasmViews": 0,
    "afterBytes": 0,
-   "afterWire": 5089,
+   "afterWire": 5085,
    "afterWasmViews": 0,
    "underCap": true,
    "wireUnderCap": true,
@@ -1699,7 +1953,7 @@
    "expr": "m",
    "transfer": null,
    "how": "probe",
-   "messages": 324,
+   "messages": 388,
    "beforeBytes": 0,
    "beforeWire": 76,
    "beforeWasmViews": 0,
@@ -1723,7 +1977,7 @@
    "expr": "m",
    "transfer": null,
    "how": "probe",
-   "messages": 356,
+   "messages": 419,
    "beforeBytes": 0,
    "beforeWire": 1236,
    "beforeWasmViews": 0,
@@ -1771,7 +2025,7 @@
    "expr": "{ id, op, ...args }",
    "transfer": null,
    "how": "probe",
-   "messages": 31,
+   "messages": 29,
    "beforeBytes": 0,
    "beforeWire": 50,
    "beforeWasmViews": 0,
@@ -2364,7 +2618,7 @@
    "expr": "{ type: 'stopped', shard: ME }",
    "transfer": null,
    "how": "probe",
-   "messages": 21,
+   "messages": 20,
    "beforeBytes": 0,
    "beforeWire": 40,
    "beforeWasmViews": 0,
@@ -2374,9 +2628,8 @@
    "underCap": true,
    "wireUnderCap": true,
    "fixed": false,
-   "worstDriver": "live-shards",
+   "worstDriver": "test-runtime",
    "drivers": [
-    "live-shards",
     "test-runtime"
    ]
   },
@@ -2470,7 +2723,7 @@
    "beforeWire": null,
    "beforeWasmViews": null,
    "afterBytes": 0,
-   "afterWire": 18089,
+   "afterWire": 18082,
    "afterWasmViews": 0,
    "underCap": true,
    "wireUnderCap": true,
@@ -2529,6 +2782,366 @@
    ]
   },
   {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict",
+   "file": "test/grok-bot.test.mjs",
+   "line": 306,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 53308,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict#2",
+   "file": "test/grok-bot.test.mjs",
+   "line": 310,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 53308,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict#3",
+   "file": "test/grok-bot.test.mjs",
+   "line": 313,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 53308,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict#4",
+   "file": "test/grok-bot.test.mjs",
+   "line": 316,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 53308,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict#5",
+   "file": "test/grok-bot.test.mjs",
+   "line": 321,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 53308,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict#6",
+   "file": "test/grok-bot.test.mjs",
+   "line": 324,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 53308,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict#7",
+   "file": "test/grok-bot.test.mjs",
+   "line": 327,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 53308,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict#8",
+   "file": "test/grok-bot.test.mjs",
+   "line": 330,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 53308,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict#9",
+   "file": "test/grok-bot.test.mjs",
+   "line": 333,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 53308,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict#10",
+   "file": "test/grok-bot.test.mjs",
+   "line": 338,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 53308,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict.pairs.find((p)=>p.set==='gsm8k'&&p.population==='heldOut').organism",
+   "file": "test/grok-bot.test.mjs",
+   "line": 340,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict.pairs.find((p) => p.set === 'gsm8k' && p.population === 'heldOut').organism",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 36,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict#11",
+   "file": "test/grok-bot.test.mjs",
+   "line": 343,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 53308,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict#12",
+   "file": "test/grok-bot.test.mjs",
+   "line": 349,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 53308,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict#13",
+   "file": "test/grok-bot.test.mjs",
+   "line": 349,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 53308,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
+   "key": "test/grok-bot.test.mjs|structuredClone|verdict#14",
+   "file": "test/grok-bot.test.mjs",
+   "line": 349,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "verdict",
+   "transfer": null,
+   "how": "probe",
+   "messages": 1,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 53308,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-grok-bot",
+   "drivers": [
+    "test-grok-bot"
+   ]
+  },
+  {
    "key": "test/plateau.test.mjs|structuredClone|matrixToWire(a.searched)",
    "file": "test/plateau.test.mjs",
    "line": 95,
@@ -2550,6 +3163,30 @@
    "worstDriver": "test-plateau",
    "drivers": [
     "test-plateau"
+   ]
+  },
+  {
+   "key": "test/vision-coverage.test.mjs|structuredClone|V",
+   "file": "test/vision-coverage.test.mjs",
+   "line": 249,
+   "kind": "structuredClone",
+   "where": "code",
+   "expr": "V",
+   "transfer": null,
+   "how": "probe",
+   "messages": 30,
+   "beforeBytes": null,
+   "beforeWire": null,
+   "beforeWasmViews": null,
+   "afterBytes": 0,
+   "afterWire": 61815,
+   "afterWasmViews": 0,
+   "underCap": true,
+   "wireUnderCap": true,
+   "fixed": false,
+   "worstDriver": "test-vision-coverage",
+   "drivers": [
+    "test-vision-coverage"
    ]
   },
   {
