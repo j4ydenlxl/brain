@@ -1,0 +1,437 @@
+{
+ "at": "2026-09-28T19:29:03.605Z",
+ "command": "node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir state/board35/self-learn --record state/board35/self-learn/budget-last.json -- node --max-old-space-size=4000 bench/self-learn.mjs",
+ "author": "board 35 builder (item self-learn)",
+ "isTheBar": true,
+ "barMet": false,
+ "bar": {
+  "gain": 8,
+  "wrong": 0,
+  "tests": "pass",
+  "sockets": 0,
+  "contradicted": 0,
+  "outOfSampleWrong": 0,
+  "testWrong": 0
+ },
+ "checks": {
+  "gain": false,
+  "wrong": true,
+  "tests": true,
+  "sockets": true,
+  "noLeak": true,
+  "noContradiction": true,
+  "outOfSampleWrong": true,
+  "testWrong": true
+ },
+ "split": {
+  "development": {
+   "rows": 7613,
+   "ledgerDevelopment": 21,
+   "mathDevelopment": 179,
+   "train": 7413,
+   "idsSha256": "3955825dc7618eafd7e0b1ea6cfd9386820dff80d5c9a46c35c3e7b6671c9aac",
+   "what": "the GSM8K ledger rows among the 200 bench/verdicts/math.json development ids, the other ids of those 200, and every train-split row not held out; the kept store bench/verdicts/induce-programs.json was induced on the 200 development ids only"
+  },
+  "heldOut": {
+   "file": "bench/verdicts/self-learn-heldout.jsonl",
+   "rows": 60,
+   "of": "the 7473 train-split rows",
+   "seed": "self-learn/heldout/1",
+   "idsSha256": "b30d66935dce3e3cb419762cf41113249c11f340c7943c05a12a20e24538fa16",
+   "writtenBefore": "self/learn.mjs",
+   "opened": 0,
+   "inProvenance": 0
+  },
+  "ledgerTest": {
+   "rows": 109,
+   "gradedOnce": true,
+   "what": "the ledger GSM8K rows outside the 200 development ids, read by this bench only after the learner ran, graded once per bar run and never iterated on"
+  },
+  "testPopulation": {
+   "rows": 1119,
+   "idsSha256": "cc897cc8d68f6b9aef8786f79a4c7ff42a232256134ede5e4b98d13fdfbe828c",
+   "gradedOnce": true,
+   "what": "every GSM8K test record outside the 200 development ids (the ledger test rows among them), read by this bench only after the learner ran, graded once per bar run and never iterated on"
+  },
+  "contaminated": "the held-out list and the learner were written by the same board 35 builder, and the learner was revised (the strict contradiction rule, the retractions, the support gate) after the (b) and (c) held-out counts of earlier runs were printed and read (the loop the item allows: edit and re-run on (b) and (c) only); one scratch check during the first design parsed the first 2000 train questions, held-out included (no gold read, nothing learned). The learner never opens a held-out record (its record spy counts 0) and no held-out id is in the store. The design choices of this revision were measured on the development 2-fold (e) and on scratch development-only 2-fold runs (a required fit of 3 to 12 rows of the lesson, fits per question form, fits that follow the worked chain), not on the held-out rows; the skeptic report of learned programs answering the test population was read before the support gate was written, and the test population (d) is graded once, by this run."
+ },
+ "learn": {
+  "rows": 7613,
+  "mistakes": 7466,
+  "programs": 0,
+  "entries": 0,
+  "patterns": 0,
+  "inducedFrom": 0,
+  "byLevel": {},
+  "byLesson": {},
+  "tally": {
+   "others": null,
+   "sources": 7466,
+   "searched": 6457,
+   "withCandidates": 5013,
+   "candidates": 65689,
+   "judged": 127460,
+   "kept": 0,
+   "refusedContradiction": 56812,
+   "refusedSupport": 70602,
+   "searchMs": 28,
+   "ms": 249,
+   "refusedGate": 15
+  },
+  "levels": [
+   "role",
+   "cue"
+  ],
+  "floor": 0.1046,
+  "before": {
+   "asked": 7613,
+   "right": 147,
+   "wrong": 222,
+   "refused": 7244
+  },
+  "after": {
+   "asked": 7613,
+   "right": 81,
+   "wrong": 0,
+   "refused": 7532
+  },
+  "outcomes": {
+   "refused": 7244,
+   "withdrawn": 222,
+   "kept-right": 81,
+   "lost": 66
+  },
+  "learnedAnswered": {
+   "right": 0,
+   "wrong": 0
+  },
+  "gate": {
+   "on": true,
+   "others": null,
+   "tried": [
+    {
+     "others": 2,
+     "entries": 19,
+     "asked": 85,
+     "right": 31,
+     "wrong": 8,
+     "wrongRows": [
+      "gsm8k-train.3843",
+      "gsm8k-train.5008",
+      "gsm8k-train.5121",
+      "gsm8k-train.5984",
+      "gsm8k-train.6839",
+      "gsm8k-train.6842",
+      "gsm8k-train.7411",
+      "gsm8k-train.874"
+     ]
+    },
+    {
+     "others": 3,
+     "entries": 8,
+     "asked": 37,
+     "right": 21,
+     "wrong": 7,
+     "wrongRows": [
+      "gsm8k-train.3843",
+      "gsm8k-train.5008",
+      "gsm8k-train.5121",
+      "gsm8k-train.6839",
+      "gsm8k-train.6842",
+      "gsm8k-train.7411",
+      "gsm8k-train.874"
+     ]
+    },
+    {
+     "others": 4,
+     "entries": 4,
+     "asked": 26,
+     "right": 16,
+     "wrong": 6,
+     "wrongRows": [
+      "gsm8k-train.3843",
+      "gsm8k-train.5008",
+      "gsm8k-train.5121",
+      "gsm8k-train.6839",
+      "gsm8k-train.6842",
+      "gsm8k-train.7411"
+     ]
+    },
+    {
+     "others": 5,
+     "entries": 1,
+     "asked": 3,
+     "right": 1,
+     "wrong": 1,
+     "wrongRows": [
+      "gsm8k-train.5008"
+     ]
+    },
+    {
+     "others": 6,
+     "entries": 1,
+     "asked": 3,
+     "right": 1,
+     "wrong": 1,
+     "wrongRows": [
+      "gsm8k-train.5008"
+     ]
+    },
+    {
+     "others": 7,
+     "entries": 0,
+     "asked": 0,
+     "right": 0,
+     "wrong": 0,
+     "wrongRows": []
+    }
+   ],
+   "ms": 12590
+  },
+  "retracted": {
+   "entries": 22,
+   "forms": 29,
+   "wrongRows": 222,
+   "rightRows": 66
+  },
+  "merged": {
+   "kept": "2026-09-27T23:38:22.860Z",
+   "learned": "2026-09-28T19:29:03.605Z",
+   "added": 0,
+   "retracted": 29,
+   "unapplied": 0
+  },
+  "refusedByReason": {
+   "a GSM8K test record: not one of the 200 development ids bench/verdicts/math.json lists, so nothing that learns may read it": 109,
+   "not a development record: only GSM8K rows (the math.json development ids or the train split) carry a gold number the learner may read": 288,
+   "an ARC row: a grid task, not a prompt with a gold number": 309
+  },
+  "opened": {
+   "total": 7613,
+   "heldOut": 0,
+   "test": 0
+  },
+  "file": "bench/verdicts/learned-programs.json",
+  "sha256": "d3957238b85eba39f24b2da74b56ad1e7323e3d2e2d50019a26e568519271060",
+  "bytes": 15695,
+  "recount": {
+   "entries": 0,
+   "minFit": 3,
+   "rows": 0,
+   "contradicted": 0,
+   "ownLesson": 0,
+   "entriesContradicting": 0,
+   "fitsBelowRule": 0
+  }
+ },
+ "heldOut": {
+  "merged": {
+   "answered": 0,
+   "correct": 0,
+   "wrong": 0,
+   "refused": 60,
+   "learnedRight": 0,
+   "learnedWrong": 0,
+   "wrongRows": []
+  },
+  "production": {
+   "answered": 2,
+   "correct": 0,
+   "wrong": 2,
+   "refused": 58,
+   "learnedRight": 0,
+   "learnedWrong": 0,
+   "wrongRows": [
+    {
+     "id": "gsm8k-train.209",
+     "got": "336",
+     "gold": 80,
+     "from": "program",
+     "by": "kept",
+     "program": "mul(div(q2,q0),q1)",
+     "level": "cue"
+    },
+    {
+     "id": "gsm8k-train.5502",
+     "got": "120",
+     "gold": 240,
+     "from": "program",
+     "by": "kept",
+     "program": "grow(q0,f0)",
+     "level": "role"
+    }
+   ],
+   "loader": {
+    "loads": 1,
+    "learned": 0,
+    "learnedRefused": 0,
+    "learnedFailures": 0,
+    "learnedContradicted": 0,
+    "learnedUnchecked": 0
+   },
+   "what": "ask() with no opts.programs: act/prompt.mjs loads the default store and appends learned-programs.json entries; it does not apply the retract list"
+  },
+  "control": {
+   "answered": 2,
+   "correct": 0,
+   "wrong": 2,
+   "refused": 58,
+   "wrongRows": [
+    {
+     "id": "gsm8k-train.209",
+     "got": "336",
+     "gold": 80,
+     "from": "program",
+     "by": "kept",
+     "program": "mul(div(q2,q0),q1)",
+     "level": "cue"
+    },
+    {
+     "id": "gsm8k-train.5502",
+     "got": "120",
+     "gold": 240,
+     "from": "program",
+     "by": "kept",
+     "program": "grow(q0,f0)",
+     "level": "role"
+    }
+   ]
+  },
+  "gain": 0,
+  "gained": [],
+  "lost": [],
+  "withdrawn": [
+   "gsm8k-train.209",
+   "gsm8k-train.5502"
+  ]
+ },
+ "ledger": {
+  "rows": 130,
+  "split": {
+   "development": {
+    "merged": {
+     "rows": 21,
+     "correct": 0,
+     "wrong": 0,
+     "refused": 21
+    },
+    "control": {
+     "rows": 21,
+     "correct": 0,
+     "wrong": 1,
+     "refused": 20
+    }
+   },
+   "test": {
+    "merged": {
+     "rows": 109,
+     "correct": 1,
+     "wrong": 0,
+     "refused": 108
+    },
+    "control": {
+     "rows": 109,
+     "correct": 1,
+     "wrong": 0,
+     "refused": 108
+    }
+   }
+  },
+  "learnedRight": 0,
+  "learnedWrong": 0,
+  "gradedOnce": true
+ },
+ "testPopulation": {
+  "rows": 1119,
+  "ledgerTest": 109,
+  "merged": {
+   "rows": 1119,
+   "correct": 22,
+   "wrong": 0,
+   "refused": 1097
+  },
+  "control": {
+   "rows": 1119,
+   "correct": 55,
+   "wrong": 27,
+   "refused": 1037
+  },
+  "learnedRight": 0,
+  "learnedWrong": 0,
+  "wrongNow": [],
+  "learnedWrongRows": [],
+  "idsSha256": "cc897cc8d68f6b9aef8786f79a4c7ff42a232256134ede5e4b98d13fdfbe828c",
+  "gradedOnce": true
+ },
+ "crossValidation": {
+  "folds": 2,
+  "rows": 7613,
+  "keptRight": 147,
+  "keptWrong": 222,
+  "mergedRight": 85,
+  "mergedWrong": 15,
+  "learnedRight": 0,
+  "learnedWrong": 0,
+  "fixed": 0,
+  "learned": 0,
+  "withdrawn": 207,
+  "wrongNow": 0,
+  "lost": 62,
+  "learnedEntries": 0,
+  "retractedForms": 48,
+  "ceiling": 769,
+  "others": [
+   null,
+   null
+  ],
+  "ms": 8119
+ },
+ "tests": {
+  "pass": 7,
+  "fail": 0,
+  "exit": 0
+ },
+ "sockets": 0,
+ "statement": "BAR NOT MET (gain): with the model off the organism asked 7613 development rows, learned 0 programs from its 7466 mistakes by the rule (fits at least the support the gate validates of other development rows of the same lesson and contradicts none of its pattern; the gate asks 0 wrong and at least 60 right from programs learned on one half and asked on the other: at 2 others right 31 wrong 8, at 3 others right 21 wrong 7, at 4 others right 16 wrong 6, at 5 others right 1 wrong 1, at 6 others right 1 wrong 1, at 7 others right 0 wrong 0, so no support was validated and nothing is kept; recount contradicted 0) and retracted 29 question forms of 22 kept entries on 222 wrong development answers; on 60 held-out rows it never saw the merged store answered 0 right and 0 wrong against the kept store's 0 right and 2 wrong (gain 0, the bar 8; wrong the bar 0); the production loader (retractions not applied) 0 right and 2 wrong; a learned program answered 0 held-out rows right and 0 wrong; on development rows the learner did not see (2-fold) a learned program answered 0 right and 0 wrong of 7613, the retractions withdrew 207 wrong answers and lost 62 right ones, and the ceiling of any rule over this store shape is 769 of 7613; on the 1119 GSM8K test records outside the 200, graded once, a learned program answered 0 right and 0 wrong; tests 7 pass 0 fail; sockets 0.",
+ "printed": [
+  "SELF-LEARN (a) rows: ledger 727 (development 21, refused 706), the other math.json development ids 179, train 7413 (held out 60 never opened), by limit 0; opened 7613, held-out ids among them 0, test ids outside the 200 0",
+  "SELF-LEARN (a) self-query before (the kept store): asked 7613, right 147, wrong 222, refused 7244; sockets 0; 8327 ms",
+  "SELF-LEARN (a) support gate (0 wrong and at least 60 right on the other halves): others 2 kept 19 entries on the halves, asked 85, learned right 31, wrong 8; others 3 kept 8 entries on the halves, asked 37, learned right 21, wrong 7; others 4 kept 4 entries on the halves, asked 26, learned right 16, wrong 6; others 5 kept 1 entries on the halves, asked 3, learned right 1, wrong 1; others 6 kept 1 entries on the halves, asked 3, learned right 1, wrong 1; others 7 kept 0 entries on the halves, asked 0, learned right 0, wrong 0; no support validated: nothing is kept (12590 ms)",
+  "SELF-LEARN (a) learned: 0 programs under 0 patterns (levels role, cue), from 7466 mistakes (5013 with a candidate, 65689 candidates, 127460 judged, refused 56812 for a contradiction and 70602 for support, and 15 entries the rule keeps at 2 others refused by the gate); retracted 29 question forms of 22 kept entries on 222 wrong development answers (the cost: 66 right answers in those forms); bench/verdicts/learned-programs.json written (15695 bytes)",
+  "SELF-LEARN (a) self-query after (the merged store, 0 learned entries added, 29 forms retracted, 0 retractions unapplied): right 81, wrong 0, refused 7532; outcomes kept-right 81, lost 66, refused 7244, withdrawn 222; answered by a learned program: right 0, wrong 0; sockets 0",
+  "SELF-LEARN (a) kept 0 distinct programs in 0 entries under 0 patterns; induced from 0 development rows; by level none; by lesson none",
+  "SELF-LEARN (a) retracted 29 question forms of 22 kept entries on 222 wrong development answers (cost 66 right answers in those forms); merged: 29 forms removed, 0 unapplied",
+  "SELF-LEARN (a)   retract role n3|q|x|rn,n,n sub(q0,add(q1,q2)) forms 1 wrong 29 right 16",
+  "SELF-LEARN (a)   retract cue n3|q|x mul(div(q2,q0),q1) forms 2 wrong 28 right 3",
+  "SELF-LEARN (a)   retract cue n4|qtotal|x add(mul(q0,q1),mul(q2,q3)) forms 1 wrong 27 right 6",
+  "SELF-LEARN (a)   retract role n1|q|xf0,f1|rn shrink(shrink(q0,f0),f1) forms 1 wrong 25 right 10",
+  "SELF-LEARN (a)   retract cue n3|qleft|x sub(add(q0,q1),q2) forms 2 wrong 22 right 4",
+  "SELF-LEARN (a)   retract cue n3|qtime|x div(mul(q0,q2),q1) forms 2 wrong 16 right 8",
+  "SELF-LEARN (a)   retract cue n4|qmoney|x add(mul(q0,q2),mul(q1,q3)) forms 2 wrong 12 right 1",
+  "SELF-LEARN (a)   retract cue n3|q|x mul(div(q2,q1),q0) forms 1 wrong 9 right 1",
+  "SELF-LEARN (a)   retract cue n2|qtime|xm0 add(mul(m0,q0),q1) forms 1 wrong 8 right 1",
+  "SELF-LEARN (a)   retract cue n3|qtime|x sub(q1,div(q0,q2)) forms 2 wrong 8 right 0",
+  "SELF-LEARN (a)   retract role n3|q|x|rnD,nD,nQ add(q0,sub(q2,q1)) forms 1 wrong 8 right 1",
+  "SELF-LEARN (a)   retract role n2|qtotal|xf0,m0|rn,n add(grow(q0,m0),grow(q1,f0)) forms 1 wrong 6 right 0",
+  "SELF-LEARN (a)   retract ... 10 more entries in bench/verdicts/learned-programs.json",
+  "SELF-LEARN (a) provenance names 296 ids; held-out ids among them 0; held-out records the learner opened 0; test records outside the 200 it opened 0",
+  "SELF-LEARN (a) recount from the file over 7613 development rows (opened held-out 0): learned entries 0, rows of their patterns they answer 0, contradicted 0 (of their own lesson 0), entries contradicting any 0, entries fitting fewer than 3 of their lesson 0",
+  "SELF-LEARN (b) merged (kept, its retracted forms removed, + learned): asked 60, answered 0, correct 0, wrong 0, refused 60; by a learned program right 0, wrong 0; 63 ms",
+  "SELF-LEARN (b2) production loader (act/prompt.mjs default store, learned entries appended, retractions not applied): asked 60, answered 2, correct 0, wrong 2, refused 58; by a learned program right 0, wrong 0; 63 ms",
+  "SELF-LEARN (b2)   wrong gsm8k-train.209 got 336 gold 80 from program by kept cue mul(div(q2,q0),q1)",
+  "SELF-LEARN (b2)   wrong gsm8k-train.5502 got 120 gold 240 from program by kept role grow(q0,f0)",
+  "SELF-LEARN (b2) the production loader read the stores 1 time(s): learned entries loaded 0, refused for provenance 0, refused by its devRows check 0, unchecked 0, unreadable 0",
+  "SELF-LEARN (c) control (kept alone): asked 60, answered 2, correct 0, wrong 2, refused 58; by a learned program right 0, wrong 0; 60 ms",
+  "SELF-LEARN (c)   wrong gsm8k-train.209 got 336 gold 80 from program by kept cue mul(div(q2,q0),q1)",
+  "SELF-LEARN (c)   wrong gsm8k-train.5502 got 120 gold 240 from program by kept role grow(q0,f0)",
+  "SELF-LEARN (b-c) held-out 60 rows (ids sha256 b30d66935dce3e3cb419762cf41113249c11f340c7943c05a12a20e24538fa16): merged correct 0 vs control 0 (gain 0, the bar 8); merged wrong 0 vs control 2 (the bar 0); right only with the learned store 0; right only without it 0; control wrong now refused 2 gsm8k-train.209 gsm8k-train.5502",
+  "SELF-LEARN (d) ledger development 21 rows: merged correct 0, wrong 0, refused 21; control correct 0, wrong 1, refused 20",
+  "SELF-LEARN (d) ledger test 109 rows: merged correct 1, wrong 0, refused 108; control correct 1, wrong 0, refused 108",
+  "SELF-LEARN (d) ledger 130 rows: by a learned program right 0, wrong 0",
+  "SELF-LEARN (d) test population 1119 rows (every GSM8K test record outside the 200 development ids, the ledger's 109 among them; ids sha256 cc897cc8d68f6b9aef8786f79a4c7ff42a232256134ede5e4b98d13fdfbe828c): merged correct 22, wrong 0, refused 1097; control correct 55, wrong 27, refused 1037; by a learned program right 0, wrong 0; a refusal now wrong 0",
+  "SELF-LEARN (e) development 2-fold, 7613 rows each graded once by the half it was not in: kept alone right 147, wrong 222; merged right 85, wrong 15; by a learned program right 0, wrong 0; outcomes fixed 0, learned 0, withdrawn 207, wrong-now 0, lost 62; learned entries 0, forms retracted 48; the support gate validated others none and none on the halves; ceiling of any rule over role-pattern programs 769; 8119 ms",
+  "SELF-LEARN tests node --test test/self-learn.test.mjs: pass 7, fail 0, exit 0",
+  "SELF-LEARN BAR NOT MET (gain): with the model off the organism asked 7613 development rows, learned 0 programs from its 7466 mistakes by the rule (fits at least the support the gate validates of other development rows of the same lesson and contradicts none of its pattern; the gate asks 0 wrong and at least 60 right from programs learned on one half and asked on the other: at 2 others right 31 wrong 8, at 3 others right 21 wrong 7, at 4 others right 16 wrong 6, at 5 others right 1 wrong 1, at 6 others right 1 wrong 1, at 7 others right 0 wrong 0, so no support was validated and nothing is kept; recount contradicted 0) and retracted 29 question forms of 22 kept entries on 222 wrong development answers; on 60 held-out rows it never saw the merged store answered 0 right and 0 wrong against the kept store's 0 right and 2 wrong (gain 0, the bar 8; wrong the bar 0); the production loader (retractions not applied) 0 right and 2 wrong; a learned program answered 0 held-out rows right and 0 wrong; on development rows the learner did not see (2-fold) a learned program answered 0 right and 0 wrong of 7613, the retractions withdrew 207 wrong answers and lost 62 right ones, and the ceiling of any rule over this store shape is 769 of 7613; on the 1119 GSM8K test records outside the 200, graded once, a learned program answered 0 right and 0 wrong; tests 7 pass 0 fail; sockets 0.",
+  "SELF-LEARN 40677 ms"
+ ]
+}

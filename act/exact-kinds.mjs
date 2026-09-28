@@ -216,6 +216,9 @@ const UNIT_FRAMES = [
   new RegExp('^express (?<q>.+?) in (?<u>' + UNIT_WORD + ')$', 'i'),
   new RegExp('^(?:what is|what\'s|how much is) (?<q>.+?) (?:in|into|converted to|converted into|expressed in) (?<u>' + UNIT_WORD + ')$', 'i'),
   new RegExp('^(?<q>.+?) (?:equals|is equal to|is|equal|makes) how many (?<u>' + UNIT_WORD + ')$', 'i'),
+  // board 35 (readers-2), added: "Tell me how many milliliters there are in 788 centiliters.", "How many minutes does an hour have?"
+  new RegExp('^(?:tell me|can you tell me|do you know|say) how many (?<u>' + UNIT_WORD + ') (?:there are|there is|are there|are|is) in(?:to)? (?<q>.+)$', 'i'),
+  new RegExp('^how many (?<u>' + UNIT_WORD + ') (?:does|do) (?<q>.+?) (?:have|contain|hold)$', 'i'),
 ];
 const THERE_ARE_RE = new RegExp('^there (?:are|is) (?<n>\\S+) (?<a>' + UNIT_WORD + ') in (?:a|an|one|1) (?<b>' + UNIT_WORD + ')$', 'i');
 const THING_IS_RE = /^(?:a|an|the) [a-z]+(?: [a-z]+){0,2} is (?<q>.+?)(?: (?:long|tall|wide|high|deep|away|heavy|in length|in height))?$/i;
@@ -270,6 +273,8 @@ const NEXT_FRAMES = [
   new RegExp('^L(?: \\.\\.\\.)?[,:.]? (?:what is the next(?: ' + SW + ')?|what(?: ' + SW + ')? comes next|what is next|what\'s next)$'),
   new RegExp('^(?:which|what) ' + SW + ' (?:follows|comes after) L$'),
   new RegExp('^(?:complete|finish|continue) (?:the |this )?' + SS + ':? L$'),
+  // board 35 (readers-2), added: "Tell me the number that follows 3, 4, 7, 11, 18, 29."
+  new RegExp('^(?:tell me|give me|find|name|state) the ' + SW + ' (?:that )?(?:follows|comes after|comes next in) L$'),
 ];
 const SEQ_NTH_RE = new RegExp('^what is the (?<o>' + ORD_SRC + ')(?: ' + SW + ')? (?:of|in) (?:the |this )?' + SS + ':? L$');
 const SEQ_AFTER_RE = new RegExp('^what comes (?:next )?after (?<x>' + SEQ_NUM + ') in (?:the |this )?' + SS + ':? L$');
@@ -314,7 +319,7 @@ function seqRules(ts) {
   return H.filter((h) => h.checks >= 2);
 }
 
-function readSequence(t) {
+function readSequenceList(t) {
   const low = t.toLowerCase();
   const nums = [...t.matchAll(SEQ_LIST_RE)], lets = [...t.matchAll(LETTER_LIST_RE)];
   if (nums.length + lets.length !== 1) return null;
@@ -360,6 +365,151 @@ function readSequence(t) {
   ]);
 }
 
+// ---------------------------------------------------------------- board 35 (readers-2): a named rule, a numbered kind, a missing term
+// The question may NAME its rule: "the arithmetic sequence 38, 34, 30, ...", "the geometric sequence 2, 6, 18, ...",
+// "where each term adds the same amount", "The Fibonacci sequence starts 1, 1, 2, 3, 5". Then only the named rule is
+// read, and three terms are enough when it fits every term given (two fix its parameters, the third checks them); a
+// named rule the terms do not fit is a refusal. "the 29th square number" names a sequence with no terms at all, counted
+// from 1 (1, 4, 9, ...). A missing term ("2, 4, _, 8, 10") is filled only when a rule fits the terms around it with two
+// checks beyond its own parameters, and every rule that fits fills the same value.
+const NAMED_SEQ = {
+  arithmetic(ts) {
+    const d = E.qSub(ts[1], ts[0]), at = (i) => E.qAdd(ts[0], E.qMul(qInt(i), d));
+    return ts.every((x, i) => E.qEq(x, at(i))) ? { rule: 'arithmetic, difference ' + fmtNum(d) + ', the rule the question names', at } : null;
+  },
+  geometric(ts) {
+    if (ts[0].n === 0n) return null;
+    const r = E.qDiv(ts[1], ts[0]);
+    if (r.n === 0n || !ts.every((x, i) => i === 0 || E.qEq(x, E.qMul(ts[i - 1], r)))) return null;
+    return { rule: 'geometric, ratio ' + fmtNum(r) + ', the rule the question names', at: (i) => (i > KIND_CAPS.geometricIndex ? null : E.qMul(ts[0], E.qPow(r, BigInt(i)))) };
+  },
+  fibonacci(ts) {
+    // the Fibonacci sequence named with the start 1, 1: its nth term by position in the terms given is F(n) as well.
+    // board 35 (readers-2), fix: a start 0, 1 (the 10th term by position is 34, F(10) is 55) or 1, 2 (89 by position,
+    // 55 as F(10)) has two readings, and another start is another sequence; all three are refused.
+    const [a, b] = [ts[0], ts[1]].map((x) => (x.d === 1n ? x.n : null));
+    if (!(a === 1n && b === 1n)) return null;
+    if (!ts.every((x, i) => i < 2 || E.qEq(x, E.qAdd(ts[i - 1], ts[i - 2])))) return null;
+    return { rule: 'each term the sum of the two before it, the rule the question names', at: (i) => { let a = ts[0], b = ts[1]; if (i === 0) return a; for (let j = 1; j < i; j++) { const c = E.qAdd(a, b); a = b; b = c; } return b; } };
+  },
+};
+const SEQ_ASK = '(?:what is|what\'s|find|give|tell me|state|determine|work out|name)';
+const SEQ_POS = (det) => '(?:' + det + ' (?:(?<o>' + ORD_SRC + ')|(?<nx>next))(?: ' + SW + ')?|(?:term|element|item) (?:number |no\\.? )?(?<k>\\d+))';
+const SEQ_CLAUSE = '(?:where|in which) each term (?:(?<add>adds the same amount|goes up by the same amount|increases by the same amount|is the one before plus the same amount)|(?<mul>is multiplied by the same (?:amount|number)|is the one before times the same (?:amount|number)))';
+const NAMED_FRAMES = [
+  new RegExp('^' + SEQ_ASK + ' ' + SEQ_POS('the') + ' (?:of|in) (?:the |this |an |a )?(?<r>arithmetic|geometric) ' + SS + ':? L$'),
+  new RegExp('^in (?:the |this |an |a )?(?:(?<r>arithmetic|geometric) )?' + SS + ':? L(?:,? ' + SEQ_CLAUSE + ')?,? ' + SEQ_ASK + ' ' + SEQ_POS('the') + '$'),
+  new RegExp('^(?:the )?(?<r>fibonacci) ' + SS + ' (?:starts|begins|goes)(?: with)?:? L[.,;]? ' + SEQ_ASK + ' ' + SEQ_POS('(?:its|the)') + '$'),
+];
+const SEQ_NUMBERED_RE = new RegExp('^' + SEQ_ASK + ' the (?<o>' + ORD_SRC + ') (?<r>square|cube|triangular) number$');
+const SEQ_BLANK = '(?:_+|\\?)';
+const GAP_LIST_RE = new RegExp('((?:' + SEQ_NUM + '|' + SEQ_BLANK + ')(?:\\s*,\\s*(?:' + SEQ_NUM + '|' + SEQ_BLANK + ')){3,})', 'g');
+const MISSING_FRAMES = [
+  new RegExp('^(?:what is|what\'s|find|name|give|tell me) the missing ' + SW + '(?: (?:in|of) (?:the |this )?' + SS + ')?:? L$'),
+  new RegExp('^(?:what|which) ' + SW + ' is missing(?: (?:in|from) (?:the |this )?' + SS + ')?:? L$'),
+  new RegExp('^(?:what|which) ' + SW + ' (?:goes in|fills|belongs in) the (?:blank|gap)(?: (?:in|of) (?:the |this )?' + SS + ')?:? L$'),
+  new RegExp('^fill in the (?:blank|gap|missing ' + SW + '):? L$'),
+];
+function seqTerms(raw) {
+  if (raw.length > KIND_CAPS.listItems || raw.some((x) => /^-?0\d/.test(x))) return null;
+  const ts = raw.map((x) => numQ(x));
+  return ts.some((x) => !x) ? null : ts;
+}
+const seqPrint = (v, raw) => (raw.some((x) => x.includes('.')) ? fmtNum(v) : (v.d === 1n ? v.n.toString() : E.qToString(v)));
+const listFrame = (low, m) => (low.slice(0, m.index) + ' L ' + low.slice(m.index + m[0].length)).replace(/\s+/g, ' ').replace(/\s+([,:.?!])/g, '$1').trim().replace(/\s*[?.!]+$/, '').trim();
+
+function readSequenceNamed(t) {
+  const low = t.toLowerCase();
+  const sq = SEQ_NUMBERED_RE.exec(bare(low));
+  if (sq) {
+    const n = ordN(sq.groups.o);
+    if (!n) return null;
+    const N = BigInt(n), kind = sq.groups.r;
+    const v = kind === 'square' ? N * N : kind === 'cube' ? N * N * N : (N * (N + 1n)) / 2n;
+    return out('sequence', v.toString(), ['the ' + kind + ' numbers counted from the first, 1: term n is ' + (kind === 'square' ? 'n x n' : kind === 'cube' ? 'n x n x n' : 'n(n + 1)/2'), 'n = ' + n + ' gives ' + v]);
+  }
+  const nums = [...t.matchAll(SEQ_LIST_RE)];
+  if (nums.length !== 1) return null;
+  const m = nums[0], f = listFrame(low, m);
+  let g = null;
+  for (const re of NAMED_FRAMES) { const x = re.exec(f); if (x) { g = x.groups; break; } }
+  if (!g) return null;
+  // the rule the words name: arithmetic, geometric or fibonacci, or the clause; two names must agree
+  const names = [...new Set([g.r, g.add ? 'arithmetic' : null, g.mul ? 'geometric' : null].filter(Boolean))];
+  if (names.length > 1) return null;
+  const raw = m[1].split(/\s*,\s*/), ts = seqTerms(raw);
+  if (!ts) return null;
+  const pos = g.nx !== undefined ? ts.length + 1 : g.o !== undefined ? ordN(g.o) : Number(g.k);
+  if (!pos || pos < 1 || pos > KIND_CAPS.sequenceIndex) return null;
+  let hs;
+  if (names.length) { if (ts.length < 3) return null; const h = NAMED_SEQ[names[0]](ts); if (!h) return null; hs = [h]; }
+  else { if (ts.length < 4) return null; hs = seqRules(ts); if (!hs.length) return null; }
+  const vals = hs.map((h) => h.at(pos - 1));
+  if (vals.some((v) => v === null) || !vals.every((v) => E.qEq(v, vals[0]))) return null;
+  return out('sequence', seqPrint(vals[0], raw), [
+    ts.length + ' terms given',
+    (names.length ? 'the question names the rule and it fits every term given: ' : 'every rule that fits was checked on at least two terms beyond its own parameters: ') + hs.map((h) => h.rule).join('; '),
+    'term ' + pos + ' by that rule',
+  ]);
+}
+
+function readSequenceMissing(t) {
+  if (!/\b(?:missing|blank|gap)\b/i.test(t)) return null;
+  const low = t.toLowerCase();
+  const lists = [...t.matchAll(GAP_LIST_RE)];
+  if (lists.length !== 1) return null;
+  const m = lists[0], f = listFrame(low, m);
+  if (!MISSING_FRAMES.some((re) => re.test(f))) return null;
+  const items = m[1].split(/\s*,\s*/);
+  const blanks = items.map((x, i) => (/^(?:_+|\?)$/.test(x) ? i : -1)).filter((i) => i >= 0);
+  if (blanks.length !== 1) return null;
+  const b = blanks[0], raw = items.filter((x, i) => i !== b), known = seqTerms(raw);
+  if (!known || known.length < 4) return null;
+  const pos = items.map((x, i) => i).filter((i) => i !== b);
+  const val = new Map(pos.map((p, j) => [p, known[j]]));
+  const fills = [];
+  // arithmetic: the first two known terms fix the start and the difference, the others check them
+  {
+    const [p, q] = pos, d = E.qDiv(E.qSub(val.get(q), val.get(p)), qInt(q - p)), at = (i) => E.qAdd(val.get(p), E.qMul(qInt(i - p), d));
+    if (pos.every((i) => E.qEq(val.get(i), at(i)))) fills.push({ rule: 'arithmetic, difference ' + fmtNum(d), v: at(b) });
+  }
+  // geometric: the first two neighbouring known terms fix the ratio
+  {
+    const p = pos.find((i) => val.has(i + 1) && val.get(i).n !== 0n);
+    if (p !== undefined) {
+      const r = E.qDiv(val.get(p + 1), val.get(p));
+      const at = (i) => (Math.abs(i - p) > KIND_CAPS.geometricIndex ? null : E.qMul(val.get(p), E.qPow(r, BigInt(i - p))));
+      if (r.n !== 0n && pos.every((i) => { const v = at(i); return v !== null && E.qEq(val.get(i), v); })) { const v = at(b); if (v) fills.push({ rule: 'geometric, ratio ' + fmtNum(r), v }); }
+    }
+  }
+  // each term the sum of the two before it: one equation gives the missing term, the others check it
+  {
+    const n = items.length;
+    let x = null;
+    if (b >= 2) x = E.qAdd(val.get(b - 1), val.get(b - 2));
+    else if (b + 2 < n) x = E.qSub(val.get(b + 2), val.get(b + 1));
+    if (x) { const ts = items.map((_, i) => (i === b ? x : val.get(i))); if (ts.every((y, i) => i < 2 || E.qEq(y, E.qAdd(ts[i - 1], ts[i - 2])))) fills.push({ rule: 'each term the sum of the two before it', v: x }); }
+  }
+  if (!fills.length || !fills.every((h) => E.qEq(h.v, fills[0].v))) return null;
+  return out('sequence', seqPrint(fills[0].v, raw), [
+    known.length + ' terms given around one missing term, term ' + (b + 1),
+    'every rule that fits the given terms, each checked on at least two terms beyond its own parameters: ' + fills.map((h) => h.rule).join('; '),
+    'every such rule fills the same value',
+  ]);
+}
+
+/** The sequence reading: the list reader above, a named rule and a missing term; two readings that disagree are null. */
+function readSequence(t) {
+  let got = null;
+  for (const read of [readSequenceList, readSequenceNamed, readSequenceMissing]) {
+    const r = read(t);
+    if (!r) continue;
+    if (got && got.answer !== r.answer) return null;
+    if (!got) got = r;
+  }
+  return got;
+}
+
 // ================================================================ COUNTING
 const OPN = '(?:(?:the|this) (?:word|phrase|sentence|string|text|name):? )?(?:§(?<q>\\d+)|the word (?<w>[A-Za-z]+))';
 const COUNT_T = '(?<t>letters|vowels|consonants|words|(?<l>[a-z])\'s)';
@@ -371,6 +521,14 @@ const COUNT_FRAMES = [
   new RegExp('^what is the (?:number|count|total number) of ' + COUNT_T + ' in ' + OPN + '$', 'i'),
   new RegExp('^' + OPN + ' (?:has|contains) how many ' + COUNT_T + '$', 'i'),
   new RegExp('^how many times (?:does|do) (?:the letter )?(?:(?<l>[a-z])|§(?<lq>\\d+)) (?:appear|occur|show up|come up) in ' + OPN + '$', 'i'),
+  // board 35 (readers-2), added: 'Count the words in: "..."', 'Tell me how many words the sentence "..." has.'. The casual
+  // "how many e's are in lemon" is NOT read (fix after the skeptic): a bare word after "in" is a mention or an idiom ("How
+  // many A's are in total?", "in all", "in stock", "in each"), and no list of idioms is complete, so the operand must be
+  // quoted or named ("the word lemon") as before.
+  new RegExp('^count (?:the |all the |all of the )?' + COUNT_T + ' in: ' + OPN + '$', 'i'),
+  new RegExp('^how many ' + COUNT_T + ' (?:are|are there|is|is there) in: ' + OPN + '$', 'i'),
+  new RegExp('^(?:tell me|can you tell me|say) how many ' + COUNT_T + ' ' + OPN + ' (?:has|contains|have)$', 'i'),
+  new RegExp('^(?:tell me|can you tell me|say) how many ' + COUNT_T + ' (?:are|are there|there are|is|is there|there is) in:? ' + OPN + '$', 'i'),
 ];
 const DIGIT_FRAMES = [
   /^how many digits (?:does|do) (?:the (?:number|integer) )?(?<n>-?[\d,]+) (?:have|contain)$/i,
@@ -443,6 +601,10 @@ const REV_FRAMES = [
   new RegExp('^reverse (?:the (?:letters|spelling) of )?' + OPN + '$', 'i'),
   new RegExp('^what is ' + OPN + ' (?:spelled|spelt|written) (?:backwards?|in reverse)$', 'i'),
   new RegExp('^how do you spell ' + OPN + ' backwards?$', 'i'),
+  // board 35 (readers-2), added: 'Write "paper" in reverse, just the word.'. "reverse the letters of ferret" is NOT read
+  // (fix after the skeptic): a bare word after "of" is a mention or points elsewhere ("of each", "of all", "of words"),
+  // so the operand must be quoted or named ("the word ferret") as before.
+  new RegExp('^(?:spell|write) ' + OPN + ' (?:backwards?|in reverse(?: order)?),? (?:just|only) the (?:word|letters)$', 'i'),
 ];
 const SP_ORD = '(?<o>' + ORD_SRC + '|last)';
 const NTH_FRAMES = [
@@ -450,6 +612,12 @@ const NTH_FRAMES = [
   new RegExp('^(?:give|name|state|find|write) the ' + SP_ORD + ' letter (?:of|in) ' + OPN + '$', 'i'),
   new RegExp('^in ' + OPN + ',? (?:which|what) letter (?:comes|is) (?:the )?' + SP_ORD + '$', 'i'),
   new RegExp('^(?:which|what) letter (?:comes|is) (?:the )?' + SP_ORD + ' in ' + OPN + '$', 'i'),
+  // board 35 (readers-2), added: "What's the last letter of "broccoli"?"
+  new RegExp('^what\'s the ' + SP_ORD + ' letter (?:of|in) ' + OPN + '$', 'i'),
+];
+// board 35 (readers-2), added: "Tell me letter number 5 of the word 'kayak'.": the position as a number, counted from 1
+const LETTER_NO_FRAMES = [
+  new RegExp('^(?:tell me|give me|give|name|find|state|what is|what\'s) letter (?:number )?(?<n>\\d+) (?:of|in) ' + OPN + '$', 'i'),
 ];
 const PREFIX_FRAMES = [
   new RegExp('^(?:what are|give|write|name|list) the (?<fl>first|last) (?<n>\\d+|' + SMALL.slice(2, 13).join('|') + ') letters (?:of|in) ' + OPN + '$', 'i'),
@@ -498,6 +666,16 @@ function readSpelling(t) {
     const cs = [...s];
     const o = m.groups.o.toLowerCase() === 'last' ? cs.length : ordN(m.groups.o);
     if (!o || o > cs.length) return null;
+    return out('spelling', cs[o - 1], ['letter ' + o + ' of ' + cs.length + ' in "' + s + '", counting from the first']);
+  }
+  // board 35 (readers-2), added: the position as a number ("letter number 5")
+  for (const re of LETTER_NO_FRAMES) {
+    const m = re.exec(f);
+    if (!m) continue;
+    const s = operandOf(m.groups, quotes);
+    if (!oneWord(s)) return null;
+    const cs = [...s], o = Number(m.groups.n);
+    if (!(o >= 1 && o <= cs.length)) return null;
     return out('spelling', cs[o - 1], ['letter ' + o + ' of ' + cs.length + ' in "' + s + '", counting from the first']);
   }
   for (const re of PREFIX_FRAMES) {
@@ -558,6 +736,17 @@ const MONTH_SRC = '(?:' + MONTHS.join('|') + ')';
 const isLeap = (y) => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
 const monthDays = (y, m) => [31, isLeap(y) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m - 1];
 const yearOk = (y) => Number.isInteger(y) && y >= KIND_CAPS.yearMin && y <= KIND_CAPS.yearMax;
+// board 35 (readers-2), added. A date written YYYY-MM-DD is an ISO 8601 date, and ISO 8601 names the Gregorian calendar
+// for every year from 1583 (the first whole Gregorian year), so an ISO date from 1583 names one day; a date written in words
+// before 1753 still names two (Julian in Britain, Gregorian elsewhere) and stays refused. A leap year before 1753 is
+// answered only in the years the Julian and Gregorian rules agree on (every year but 1700 from 1583 to 1752).
+const ISO_YEAR_MIN = 1583;
+const isoYearOk = (y, style) => style === 'iso' && Number.isInteger(y) && y >= ISO_YEAR_MIN && y <= KIND_CAPS.yearMax;
+const leapAgrees = (y) => Number.isInteger(y) && y >= ISO_YEAR_MIN && y < KIND_CAPS.yearMin && (y % 100 !== 0 || y % 400 === 0);
+// board 35 (readers-2): a month from 1583 to 1752 has one length in both calendars except February of a year the leap
+// rules disagree on (1700); September 1752 (the month Britain dropped eleven days) and the length of the year 1752 stay refused.
+const monthAgrees = (y, mo) => Number.isInteger(y) && y >= ISO_YEAR_MIN && y < KIND_CAPS.yearMin && !(y === 1752 && mo === 9) && (mo !== 2 || leapAgrees(y));
+const yearLengthAgrees = (y) => leapAgrees(y) && y !== 1752;
 
 // days since 1970-01-01 of a proleptic Gregorian date, and back (the civil day algorithms, integer only)
 function daysFromCivil(y, m, d) {
@@ -594,7 +783,7 @@ function parseDate(s) {
   else if ((m = new RegExp('^(' + MONTH_SRC + ') (\\d{1,2})(?:st|nd|rd|th)?,? (\\d{4})$').exec(w))) { y = +m[3]; mo = MONTHS.indexOf(m[1]) + 1; d = +m[2]; style = 'mdy'; }
   else if ((m = new RegExp('^(?:the )?(\\d{1,2})(?:st|nd|rd|th)? (?:of )?(' + MONTH_SRC + '),? (\\d{4})$').exec(w))) { y = +m[3]; mo = MONTHS.indexOf(m[2]) + 1; d = +m[1]; style = 'dmy'; }
   else return null;
-  if (!yearOk(y) || mo < 1 || mo > 12 || d < 1 || d > monthDays(y, mo)) return null;
+  if (!(yearOk(y) || isoYearOk(y, style)) || mo < 1 || mo > 12 || d < 1 || d > monthDays(y, mo)) return null;
   return { y, m: mo, d, style };
 }
 function fmtDate(dt, style) {
@@ -627,22 +816,22 @@ function calendarQuestion(q) {
   let m;
   // a leap year
   if ((m = /^(?:is|was|will) (?:the year )?(\d{4}) (?:be )?a leap year$/.exec(q))) {
-    const y = +m[1]; if (!yearOk(y)) return null;
-    return [isLeap(y) ? 'yes' : 'no', y + (isLeap(y) ? ' is' : ' is not') + ' a leap year: divisible by 4, and not by 100 unless by 400 (Gregorian)'];
+    const y = +m[1]; if (!yearOk(y) && !leapAgrees(y)) return null;
+    return [isLeap(y) ? 'yes' : 'no', y + (isLeap(y) ? ' is' : ' is not') + ' a leap year: divisible by 4, and not by 100 unless by 400 (Gregorian)' + (yearOk(y) ? '' : '; before 1753 the Julian rule (divisible by 4) gives the same answer')];
   }
   if ((m = /^how many days (?:are|are there|is|is there) in (?:a|one) (leap|common|non-leap|non leap|normal|regular) year$/.exec(q)) || (m = /^how many days (?:does|do) (?:a|one) (leap|common|non-leap|non leap) year have$/.exec(q))) {
     const leap = m[1] === 'leap';
     return [leap ? '366' : '365', 'a ' + (leap ? 'leap' : 'common') + ' year has ' + (leap ? '366' : '365') + ' days'];
   }
   if ((m = /^how many days (?:are|are there|is|is there) in (?:the year )?(\d{4})$/.exec(q)) || (m = /^how many days (?:does|did|will) (?:the year )?(\d{4}) have$/.exec(q))) {
-    const y = +m[1]; if (!yearOk(y)) return null;
+    const y = +m[1]; if (!yearOk(y) && !yearLengthAgrees(y)) return null;
     return [isLeap(y) ? '366' : '365', y + (isLeap(y) ? ' is' : ' is not') + ' a leap year'];
   }
   // the days of a month
   if ((m = new RegExp('^how many days (?:are|are there|is|is there) in (?:the month of )?(' + MONTH_SRC + ')(?: (\\d{4}))?$').exec(q)) || (m = new RegExp('^how many days (?:does|did|will) (' + MONTH_SRC + ')(?: (\\d{4}))? have$').exec(q))) {
     const mo = MONTHS.indexOf(m[1]) + 1;
     if (mo === 2 && !m[2]) return null;
-    if (m[2] && !yearOk(+m[2])) return null;
+    if (m[2] && !yearOk(+m[2]) && !monthAgrees(+m[2], mo)) return null;
     const n = monthDays(m[2] ? +m[2] : 2001, mo);
     return [String(n), cap1(m[1]) + (m[2] ? ' ' + m[2] : '') + ' has ' + n + ' days'];
   }
@@ -690,7 +879,7 @@ function calendarQuestion(q) {
     if (k === null || k > 1000000n || !dt) return null;
     const n = Number(k) * (m[2].startsWith('week') ? 7 : 1) * (m[3] === 'before' ? -1 : 1);
     const r = civilFromDays(daysFromCivil(dt.y, dt.m, dt.d) + n);
-    if (!yearOk(r.y)) return null;
+    if (!(yearOk(r.y) || isoYearOk(r.y, dt.style))) return null;
     return [fmtDate(r, dt.style), fmtDate(dt, 'iso') + ' is day ' + daysFromCivil(dt.y, dt.m, dt.d) + ' counted from 1970-01-01; ' + (n >= 0 ? 'plus ' : 'minus ') + Math.abs(n) + ' is ' + fmtDate(r, 'iso')];
   }
   // days between two dates
@@ -705,6 +894,26 @@ function calendarQuestion(q) {
     const diff = daysFromCivil(b.y, b.m, b.d) - daysFromCivil(a.y, a.m, a.d);
     if (diff < 0) return null;
     return [String(diff + (exclusive ? 0 : 1)), 'the difference of the two day counts' + (exclusive ? ' (the end date is not counted)' : ', plus one because both dates are counted')];
+  }
+  // board 35 (readers-2), added: the phrasings of the self-queries generator no frame above read. "From A to B" and
+  // "how many days after A is B" are read as "between" is read above: the difference of the two day counts, B after A.
+  if ((m = new RegExp('^how many days (?:does|did|will) (' + MONTH_SRC + ') have in (\\d{4})$').exec(q)) || (m = new RegExp('^(?:tell me|give me|what is|what\'s|find) the number of days in (?:the month of )?(' + MONTH_SRC + ')(?:,? (?:of |in )?(\\d{4}))?$').exec(q))) {
+    const mo = MONTHS.indexOf(m[1]) + 1;
+    if (mo === 2 && !m[2]) return null;
+    if (m[2] && !yearOk(+m[2]) && !monthAgrees(+m[2], mo)) return null;
+    const n = monthDays(m[2] ? +m[2] : 2001, mo);
+    return [String(n), cap1(m[1]) + (m[2] ? ' ' + m[2] : '') + ' has ' + n + ' days'];
+  }
+  if ((m = /^on (?:what|which) (?:day of the week|weekday|day) (?:did|does|will) (.+?) fall$/.exec(q)) || (m = /^(?:tell me|give me|name|state|find|what is|what's) the (?:weekday|day of the week) (?:of|for|on) (.+)$/.exec(q))) {
+    const dt = parseDate(m[1]); if (!dt) return null;
+    const w = weekdayOf(dt.y, dt.m, dt.d); if (w === null) return null;
+    return [cap1(DAYS[w]), 'Zeller\'s congruence on the Gregorian date ' + fmtDate(dt, 'iso') + ', checked against the day count from 1970-01-01 (a Thursday)'];
+  }
+  if ((m = /^how many days (?:are there |are |is it |pass |elapse )?from (.+?) (?:to|until|till) (.+)$/.exec(q)) || (m = /^how many days (?:after|later than) (.+?) (?:is|was|will be|comes) (.+)$/.exec(q))) {
+    const a = parseDate(m[1]), b = parseDate(m[2]); if (!a || !b) return null;
+    const diff = daysFromCivil(b.y, b.m, b.d) - daysFromCivil(a.y, a.m, a.d);
+    if (diff < 0) return null;
+    return [String(diff), 'the difference of the two day counts: ' + fmtDate(b, 'iso') + ' is ' + diff + ' days after ' + fmtDate(a, 'iso')];
   }
   // the nth month
   if ((m = new RegExp('^(?:what|which) (?:is|month is) the (' + ORD_SRC + '|last) month(?: of the year)?$').exec(q)) || (m = new RegExp('^name the (' + ORD_SRC + '|last) month(?: of the year)?$').exec(q))) {
@@ -758,6 +967,8 @@ const CHOOSE_FRAMES = [
   new RegExp('^which (?:one )?(?<vp>weighs more|weighs less|lasts longer|takes longer)[,:]? (?<a>.+?),? or (?<b>.+)$', 'i'),
   new RegExp('^of (?<a>.+?) and (?<b>.+?),? which (?:one )?is (?:the )?' + ADJ_SRC + '$', 'i'),
   new RegExp('^is (?<a>.+?) or (?<b>.+?) (?:the )?' + ADJ_SRC + '(?: number| one| value| quantity| amount)?$', 'i'),
+  // board 35 (readers-2), added: "What's the larger of 17.17 and 17.5?"
+  new RegExp('^(?:what is|what\'s|find|give|name|tell me|state) the ' + ADJ_SRC + '(?: number| one| value| quantity| amount)? of (?<a>.+?),? and (?<b>.+)$', 'i'),
 ];
 const YESNO_FRAMES = [
   new RegExp('^is (?<a>.+?) ' + ADJ_SRC + ' than (?<b>.+)$', 'i'),
@@ -866,16 +1077,24 @@ function probClause(c) {
       if (!it) return null;
       const n = countOf(it.groups.n);
       if (n === null || colors.has(it.groups.c)) return null;
-      if (it.groups.noun) { if (noun && noun !== it.groups.noun) return null; noun = it.groups.noun; }
+      if (it.groups.noun) { if (noun && singular(noun) !== singular(it.groups.noun)) return null; if (!noun || singular(it.groups.noun) !== it.groups.noun) noun = it.groups.noun; }   // "1 red ball and 3 blue balls": one noun, either number
       else if (i === items.length - 1) return null;
       colors.set(it.groups.c, n);
     }
     if (!noun) return null;
     const total = [...colors.values()].reduce((a, b) => a + b, 0n);
-    return total > 0n ? { kind: 'urn', colors, noun: singular(noun), nouns: noun, total, draws: 1, replace: null } : null;
+    return total > 0n ? { kind: 'urn', colors, noun: singular(noun), nouns: singular(noun) === noun ? noun + 's' : noun, total, draws: 1, replace: null } : null;
   }
   if ((m = new RegExp('^(?:if )?(?<n>one|a|an|two|\\d+) (?<noun>[a-z]+) (?:is|are) (?:picked|drawn|chosen|taken|selected|pulled out|removed)(?: out)?(?: at random)?(?: from the ' + CONTAINERS + ')?(?:,? (?<rep>with|without) replacement)?(?: at random)?$').exec(c))) {
     const n = countOf(m.groups.n); return n && n <= 2n ? { kind: 'draw', n: Number(n), noun: singular(m.groups.noun), replace: m.groups.rep ? m.groups.rep === 'with' : null } : null;
+  }
+  // board 35 (readers-2): "you pick one at random" (the thing the container holds), cards numbered 1 to N, a letter of a word
+  if ((m = new RegExp('^(?:you )?(?:pick|draw|choose|take|select|pull out) (?:one|(?:a|an|one) (?<noun>[a-z]+))(?: out)?(?: at random)?(?: from the ' + CONTAINERS + ')?(?: at random)?$').exec(c))) return { kind: 'draw', n: 1, noun: m.groups.noun ? singular(m.groups.noun) : null, replace: null };
+  if ((m = /^(?<k>cards|tickets|tiles|chips|slips|discs|counters) numbered (?:from )?1 (?:to|through) (?<m>\d+) are (?:shuffled|mixed|mixed up|placed in a [a-z]+|put in a [a-z]+) and one is (?:drawn|picked|chosen|selected|taken|pulled out)(?: at random)?$/.exec(c))) {
+    const n = BigInt(m.groups.m); return n >= 2n && n <= 10000n ? { kind: 'dice', n: 1, s: Number(n), numbered: m.groups.k } : null;
+  }
+  if ((m = /^(?:(?:a|one) letter is (?:picked|chosen|drawn|selected|taken)(?: at random)?|(?:you )?(?:pick|choose|draw|select|take) (?:a|one) letter(?: at random)?) from the word (?<q>['"]?)(?<w>[a-z]+)\k<q>(?: at random)?$/.exec(c))) {
+    return m.groups.w.length <= KIND_CAPS.stringChars ? { kind: 'letters', word: m.groups.w } : null;
   }
   if ((m = /^a spinner has (?<n>\S+) equal (?:sections|parts|sectors|segments|regions) numbered (?:from )?1 to (?<m>\d+)$/.exec(c))) {
     const n = countOf(m.groups.n); return n && n >= 2n && n <= 100n && n === BigInt(m.groups.m) ? { kind: 'dice', n: 1, s: Number(n), spinner: true } : null;
@@ -884,7 +1103,7 @@ function probClause(c) {
 }
 function merge(exp, c) {
   if (!c) return null;
-  if (c.kind === 'draw') { if (!exp || exp.kind !== 'urn' || exp.drawSet || (c.noun !== exp.noun)) return null; return { ...exp, draws: c.n, replace: c.replace, drawSet: true }; }
+  if (c.kind === 'draw') { if (!exp || exp.kind !== 'urn' || exp.drawSet || (c.noun !== null && c.noun !== exp.noun)) return null; return { ...exp, draws: c.n, replace: c.replace, drawSet: true }; }
   return exp ? null : c;
 }
 const PRIMES = (s) => { const out2 = []; for (let x = 2; x <= s; x++) { let p = true; for (let d = 2; d * d <= x; d++) if (x % d === 0) { p = false; break; } if (p) out2.push(x); } return out2; };
@@ -929,7 +1148,7 @@ function probability(exp, ev) {
       let num = 0n; for (let j = 0; j <= n; j++) if (ok(j)) num += binom(n, j);
       return { p: E.Q(num, 2n ** BigInt(n)), how: n + ' fair coins: ' + num + ' of the 2^' + n + ' equally likely outcomes have ' + rel + ' ' + K + ' ' + face(m[3]) + ' (binomial counts)' };
     }
-    if ((m = /^(all|both) (?:coins |of them )?(?:land |landing |show |showing |come up |coming up |are |being )?(?:on )?(heads|tails)$/.exec(e))) {
+    if ((m = /^(?:they |the coins )?(all|both) (?:coins |of them )?(?:land |landing |show |showing |come up |coming up |are |being )?(?:on )?(heads|tails)$/.exec(e))) {
       if (m[1] === 'both' && n !== 2) return null;
       return { p: E.Q(1n, 2n ** BigInt(n)), how: n + ' fair coins: 1 of the 2^' + n + ' outcomes is all ' + m[2] };
     }
@@ -942,7 +1161,7 @@ function probability(exp, ev) {
       const e = pre(ev).replace(/^(?:the result is |the number rolled is |the number shown is |the number is |the score is |the die shows |it shows |it lands on |it is |the spinner lands on )/, '');
       const r = predicate(e, 1, s);
       if (!r) return null;
-      return { p: E.Q(BigInt(r.keep.length), BigInt(s)), how: (exp.spinner ? 'a spinner of ' + s + ' equal sections' : 'one fair ' + s + '-sided die') + ': ' + r.how + ' are ' + (r.keep.join(', ') || 'none') + ', ' + r.keep.length + ' of ' + s };
+      return { p: E.Q(BigInt(r.keep.length), BigInt(s)), how: (exp.spinner ? 'a spinner of ' + s + ' equal sections' : exp.numbered ? exp.numbered + ' numbered 1 to ' + s + ', one drawn' : 'one fair ' + s + '-sided die') + ': ' + r.how + ' are ' + (r.keep.join(', ') || 'none') + ', ' + r.keep.length + ' of ' + s };
     }
     let e = pre(ev);
     if (/^(?:a )?doubles?$/.test(e)) return { p: E.Q(1n, BigInt(s)), how: 'two fair ' + s + '-sided dice: ' + s + ' doubles of ' + s * s + ' outcomes' };
@@ -965,7 +1184,7 @@ function probability(exp, ev) {
       e = pre(e);
       let c = null;
       if ((m = /^(?:a|an|one) ([a-z]+)(?: ([a-z]+))?$/.exec(e)) && nounOk(m[2])) c = m[1];
-      else if ((m = /^(?:it|the ([a-z]+)) is (not )?([a-z]+)$/.exec(e)) && nounOk(m[1])) { c = m[3]; if (m[2]) neg = !neg; }
+      else if ((m = /^(?:it|the ([a-z]+))(?: is|'s) (not )?([a-z]+)$/.exec(e)) && nounOk(m[1])) { c = m[3]; if (m[2]) neg = !neg; }
       if (!c) return null;
       const p = colorP(c);
       if (!p) return null;
@@ -980,6 +1199,19 @@ function probability(exp, ev) {
       if (exp.replace) return { p: E.qMul(E.Q(k, T), E.Q(k, T)), how: k + '/' + T + ' twice, with replacement' };
       if (T < 2n) return null;
       return { p: E.qMul(E.Q(k, T), E.Q(k > 0n ? k - 1n : 0n, T - 1n)), how: k + '/' + T + ' then ' + (k > 0n ? k - 1n : 0n) + '/' + (T - 1n) + ', without replacement' };
+    }
+    return null;
+  }
+  if (exp.kind === 'letters') {   // board 35 (readers-2): one letter of a word, each position equally likely
+    const w = exp.word;
+    const e = pre(ev).replace(/^(?:it is |it's |the letter (?:picked |chosen |drawn |selected )?is |the (?:picked|chosen|drawn|selected) letter is )/, '');
+    if ((m = /^(?:the letter |an? )?(?<q>['"]?)(?<c>[a-z])\k<q>$/.exec(e))) {
+      const k = [...w].filter((x) => x === m.groups.c).length;
+      return { p: E.Q(BigInt(k), BigInt(w.length)), how: '"' + m.groups.c + '" is ' + k + ' of the ' + w.length + ' letters of "' + w + '"' };
+    }
+    if (/^a vowel$/.test(e) && !w.includes('y')) {
+      const k = [...w].filter((x) => 'aeiou'.includes(x)).length;
+      return { p: E.Q(BigInt(k), BigInt(w.length)), how: k + ' of the ' + w.length + ' letters of "' + w + '" are a, e, i, o or u' };
     }
     return null;
   }
@@ -1008,7 +1240,7 @@ const PQ_FRAMES = [
   /^(?:(?<if>if .+?),? )?(?:what is|what's|find|calculate|work out|determine) the (?:probability|chance|likelihood)(?: of| that)? (?<ev>.+?)(?:,? (?:as|in the form of|expressed as|written as) (?:a |an )?(?<fmt>fraction|decimal|percentage|percent))?$/,
   /^(?:(?<if>if .+?),? )?what are the chances(?: of| that)? (?<ev>.+?)(?:,? (?:as|in the form of|expressed as) (?:a |an )?(?<fmt>fraction|decimal|percentage|percent))?$/,
 ];
-const PFMT_RE = /^(?:give|express|write|state|present|leave)(?: it| the answer| your answer| the probability| this| the result)?(?: as| in the form of| in)? (?:a |an )?(?<fmt>fraction|decimal|percentage|percent)(?: form)?$/;
+const PFMT_RE = /^(?:give|express|write|state|present|leave)(?: it| the answer| your answer| the probability| this| the result)?(?: as| in the form of| in)? (?:a |an )?(?<fmt>fraction|decimal|percentage|percent)(?: form)?(?:(?<=fraction) in (?:its )?(?:lowest|simplest) (?:terms|form))?$/;
 
 function readProbability(t) {
   if (!/\b(?:probability|chances?|likelihood)\b/i.test(t) || /\bodds\b/i.test(t)) return null;
@@ -1419,7 +1651,23 @@ function categorical(ps, question) {
 }
 
 // ================================================================ the entry point
-const READERS = Object.freeze([['units', readUnits], ['sequence', readSequence], ['counting', readCounting], ['spelling', readSpelling], ['calendar', readCalendar], ['comparison', readComparison], ['probability', readProbability], ['geometry', readGeometry], ['logic', readLogic]]);
+// board 35 (readers-2), added: "Is 3 less than 10? Answer yes or no." A last sentence that asks for yes or no is set
+// aside when the reader read the question before it and its answer IS yes or no; any other answer does not meet it.
+const YESNO_TAIL_RE = /(?<=[?.!])\s*(?:please\s+)?(?:(?:answer|reply|respond)(?:\s+(?:with|only\s+with|just\s+with|just|only))?(?:\s+(?:a|a\s+simple|simply))?\s+(?:yes\s+or\s+no|"yes"\s+or\s+"no")|(?:just\s+|only\s+)?yes\s+or\s+no)\s*[.!?]?\s*$/i;
+function yesNoTail(read) {
+  return (t) => {
+    const r = read(t);
+    if (r) return r;
+    const m = YESNO_TAIL_RE.exec(String(t ?? ''));
+    if (!m || m.index === 0) return null;
+    const head = String(t).slice(0, m.index).trim();
+    const h = head ? read(head) : null;
+    if (!h || (h.answer !== 'yes' && h.answer !== 'no')) return null;
+    h.steps.unshift('set aside the instruction "' + m[0].trim() + '": the answer below is yes or no');
+    return h;
+  };
+}
+const READERS = Object.freeze([['units', readUnits], ['sequence', readSequence], ['counting', readCounting], ['spelling', readSpelling], ['calendar', readCalendar], ['comparison', readComparison], ['probability', readProbability], ['geometry', readGeometry], ['logic', readLogic]].map(([kind, read]) => [kind, yesNoTail(read)]));
 export const READ = Object.freeze(Object.fromEntries(READERS));
 
 /**

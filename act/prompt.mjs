@@ -86,6 +86,8 @@ import { codeNative, codeNativeShape } from './code-native.mjs'; // code, code-r
 // The program tier (board 26 builder, item wire-induce): programs bench/induce.mjs induced from development GSM8K records.
 // Importing it opens nothing: the kept store is read by programStore() on the first question that reaches the tier.
 import { answerFromPrograms, leafNames, leavesOf, parse as parseQuantities, readProgram } from '../reason/induce.mjs';
+import { LEVELS as INDUCE_LEVELS, questionForm } from '../reason/induce.mjs'; // the program guard (board 35, item program-guard)
+import { acceptable as programAcceptable, compile as compileProgram, patternAt } from '../reason/induce.mjs'; // the learned load's development check (board 35, item program-guard)
 
 /** The ledger event one ask writes. It carries a HASH of the prompt and never the prompt. */
 export const ASK_EVENT = 'act.ask';
@@ -1111,12 +1113,54 @@ function answerFromKnowledge(brain, text, k, opts, started) {
 // (bench/verdicts/induce.json at 2026-09-27, development 1090 from ns.json rows.development) and re-read the number.
 // It is a number the bench printed, chosen on development only; held out was not read to choose it. opts.programFloor
 // replaces it for a sweep.
+//
+// THE GUARD (board 35, item program-guard; rule 6 of the board: a wrong exact answer is worse than a refusal). The five
+// gates above read the SHAPE OF NUMBERS, and bench/verdicts/self-queries.json (at 2026-09-28T17:51:40.859Z) printed what
+// that costs: 113 card-probability prompts and 16 ISO-weekday prompts answered with integers, gsm8k.991 answered 42, the
+// census rows alg-01, alg-02, alg-04 and word-08 answered before the exact solver. Two more gates, both off only under
+// PROGRAM_GUARD.on false (the bench's control arm); PROGRAM_GUARD.kind or PROGRAM_GUARD.form false turns one off alone,
+// so the bench prints what each gate refuses by itself:
+//   6. THE KIND (PROGRAM_TIER.kind, and PROGRAM_KINDS by name): every kept program was induced from GSM8K word problems,
+//      so a prompt whose cue words name another kind of question (a weekday, a date, a card, a die, a coin, a probability
+//      or a percent chance, a letter, a word count, a unit conversion, a sequence term, a comparison, an equation, a
+//      fraction asked for as a fraction) is refused before any program is asked. Those kinds are the exact path's
+//      (act/exact-kinds.mjs and the linear solver run BEFORE the tier); when it READ such a prompt and refused it, that
+//      refusal stands, and the tier never answers over it;
+//   7. THE FORM (PROGRAM_TIER.form): a kept entry carries the question forms of the development rows it fit (forms.roles,
+//      reason/induce.mjs questionForm: the question's cue classes and the role of every quantity, written into the store
+//      by node bench/program-guard.mjs --forms, add-only), and the tier answers only a prompt whose form is one of them.
+//      A store that declares its forms (a top-level forms object) and the default store refuse an entry that carries
+//      none (PROGRAM_TIER.unformed); a store with no forms at all (a test's planted one, an older file) skips this gate.
+// bench/verdicts/learned-programs.json (the self-learn item's store) is loaded once beside the default store, after its
+// entries and add-only (PROGRAM_TIER.learned); a missing file is a no-op that counts nothing; an unreadable one counts
+// PROGRAM_TIER.learnedFailures; an entry without provenance (a non-empty records list, learned.inducedFrom, and a
+// program the DSL reads) is never loaded (PROGRAM_TIER.learnedRefused). A learned entry meets gates 6 and 7 like any.
+// THE LEARNED LOAD'S DEVELOPMENT CHECK (rule 6 again: nothing added may answer wrong where the tier refused before). The
+// default store carries devRows, an index of the development records its entries fit (id, role form, leaf table,
+// gold; written by node bench/program-guard.mjs --forms, add-only). A learned entry that would answer one of those
+// rows wrong (the row's pattern at the entry's level is the entry's pattern, the row's form is one of the entry's forms,
+// the program's value passes the store's invariant and is not the gold) is never loaded
+// (PROGRAM_TIER.learnedContradicted). A store that declares forms and carries no devRows cannot be checked, so none of
+// its learned entries is loaded (PROGRAM_TIER.learnedUnchecked). PROGRAM_GUARD.learnedCheck false turns the check off
+// for the bench's control; it is read when a store is loaded, so a caller that flips it calls resetPrograms() first.
 /** Where bench/induce.mjs writes the kept programs (reason/induce.mjs abstract, per cue level and pattern). */
 export const PROGRAM_STORE = path.resolve(HERE, '..', 'bench', 'verdicts', 'induce-programs.json');
+/** Where the self-learn item writes programs it learned (same shape as PROGRAM_STORE); absent is a no-op. */
+export const LEARNED_STORE = path.resolve(HERE, '..', 'bench', 'verdicts', 'learned-programs.json');
+/** The guard's switch (gates 6 and 7): the bench's control arm turns it off, in process, like ASK_FAST; kind and form
+ * turn one gate off alone. */
+export const PROGRAM_GUARD = { on: true, kind: true, form: true, learnedCheck: true };
+/** The learned overlay the DEFAULT store loads: LEARNED_STORE. A test plants another file here to reach the default
+ * load's own code path (programStore() with no argument); a caller's { learned } option names a file for any store. */
+export const PROGRAM_LEARNED = { file: LEARNED_STORE };
+/** Turn the program guard on or off, or read it with no argument. @param {boolean} [on] @returns {boolean} the previous state */
+export function programGuard(on) { const was = PROGRAM_GUARD.on; if (on !== undefined) PROGRAM_GUARD.on = !!on; return was; }
+/** Gate 6's refusals by kind name (a bench reads which kind each refusal named). */
+export const PROGRAM_KINDS = {};
 /** floor: the least development leave-one-out precision of the answering level; maxLeaves: reason/induce.mjs search()'s leaf window. */
 export const PROGRAM = Object.freeze({ floor: 0.1046, floorFrom: 'bench/verdicts/induce.json development.leaveOneOut.byLevel.cue 16/153', maxLeaves: 12 });
 /** The tier's running counts, read by tests and benches: asked counts the prompts that passed QUANTITY_CUE and reached the kept programs. */
-export const PROGRAM_TIER = { loads: 0, loadFailures: 0, asked: 0, answered: 0, deferred: 0, noQuantity: 0, shape: 0, missed: 0, partial: 0, lastNs: 0 };
+export const PROGRAM_TIER = { loads: 0, loadFailures: 0, asked: 0, answered: 0, deferred: 0, noQuantity: 0, shape: 0, missed: 0, partial: 0, lastNs: 0, kind: 0, form: 0, unformed: 0, learned: 0, learnedRefused: 0, learnedFailures: 0, learnedContradicted: 0, learnedUnchecked: 0 };
 /** The code-native readers' running counts (board 34 item code-native): asked counts the prompts codeNativeShape() gave a reader. */
 export const CODE_NATIVE = { asked: 0, answered: 0, refused: 0, lastNs: 0 };
 const PSTORES = new Map();
@@ -1127,18 +1171,87 @@ const PTREES = new Map();
  * @param {string|object|boolean} [spec] a path, a store object (a test's planted one), false for none; absent: PROGRAM_STORE
  * @returns {object|null}
  */
-export function programStore(spec) {
+export function programStore(spec, { learned } = {}) {
   if (spec === false) return null;
   if (spec && typeof spec === 'object') return spec.levels && typeof spec.levels === 'object' ? spec : null;
   const file = spec === undefined || spec === null || spec === true ? PROGRAM_STORE : path.resolve(String(spec));
-  const c = PSTORES.get(file);
+  // the learned store (board 35, item program-guard): LEARNED_STORE beside the default store, a caller's path beside any
+  const learnedFile = learned !== undefined && learned !== null && learned !== false ? path.resolve(String(learned)) : (learned === undefined && file === PROGRAM_STORE && PROGRAM_LEARNED.file ? path.resolve(String(PROGRAM_LEARNED.file)) : null);
+  const key = learnedFile ? file + '|' + learnedFile : file;
+  const c = PSTORES.get(key);
   if (c) return c.kept;
   if (!fs.existsSync(file)) return null; // absent: not remembered, and probed without a throw
   let kept = null;
   try { const j = JSON.parse(fs.readFileSync(file, 'utf8')); kept = j && j.levels && typeof j.levels === 'object' ? j : null; } catch { kept = null; }
   if (kept) PROGRAM_TIER.loads++; else PROGRAM_TIER.loadFailures++;
-  PSTORES.set(file, { kept });
+  if (kept && learnedFile) learnedInto(kept, learnedFile); // the one guarded load, after the induced store: absent is a no-op
+  PSTORES.set(key, { kept });
   return kept;
+}
+
+// An entry of a learned store is loaded only with provenance: a non-empty list of the record ids it fit (records), a
+// provenance object naming the ids it was induced from (learned.inducedFrom, the shape self/learn.mjs writes) and a
+// program the DSL reads. It is appended after the induced entries of its pattern (the induced rank first) and never
+// replaces one; the same program under the same pattern is not added twice.
+const idList = (a) => Array.isArray(a) && a.length > 0 && a.every((r) => typeof r === 'string' && r.length > 0);
+function provenanced(e) {
+  if (!e || typeof e !== 'object' || typeof e.program !== 'string' || !e.program) return false;
+  if (!idList(e.records)) return false;
+  if (!e.learned || typeof e.learned !== 'object' || !idList(e.learned.inducedFrom)) return false;
+  try { readProgram(e.program); } catch { return false; }
+  return true;
+}
+// The base store's development rows as [id, role form, leaf table, gold], or null when it carries none.
+function devRowsOf(kept) {
+  const d = kept && kept.devRows;
+  if (!d || typeof d !== 'object' || !Array.isArray(d.rows)) return null;
+  return d.rows.filter((r) => Array.isArray(r) && typeof r[1] === 'string' && r[2] && typeof r[2] === 'object' && Number.isFinite(r[3]))
+    .map(([id, role, L, gold]) => [id, role, Object.assign(Object.create(null), L), gold]);
+}
+/**
+ * The first development row a learned entry would answer wrong, or null: the row's pattern at the entry's level is
+ * the entry's pattern, the row's role form is one of the entry's forms (when it carries forms: gate 7 lets no other
+ * form reach it), and the program's value passes the invariant and is not the row's gold.
+ * @returns {string|null} the row id
+ */
+function contradicted(e, level, pattern, rows, invariant) {
+  let run = null;
+  try { run = compileProgram(readProgram(e.program)); } catch { return 'unreadable program'; }
+  const forms = e.forms && Array.isArray(e.forms.roles) ? new Set(e.forms.roles) : null;
+  for (const [id, role, L, gold] of rows) {
+    if (patternAt(role, level) !== pattern) continue;
+    if (forms && !forms.has(role)) continue;
+    const v = run(L);
+    if (!programAcceptable(v, L, invariant)) continue;
+    if (Math.round(v) !== gold) return String(id);
+  }
+  return null;
+}
+function learnedInto(kept, file) {
+  if (!fs.existsSync(file)) return; // absent (the file today): nothing read, nothing counted
+  let j = null;
+  try { j = JSON.parse(fs.readFileSync(file, 'utf8')); } catch { j = null; }
+  if (!j || !j.levels || typeof j.levels !== 'object') { PROGRAM_TIER.learnedFailures++; return; }
+  const check = PROGRAM_GUARD.learnedCheck !== false;
+  const rows = devRowsOf(kept);
+  const unchecked = check && !rows && !!(kept.forms && typeof kept.forms === 'object');
+  for (const lv of INDUCE_LEVELS) {
+    const pats = j.levels[lv];
+    if (!pats || typeof pats !== 'object') continue;
+    for (const [pat, list] of Object.entries(pats)) {
+      if (!Array.isArray(list)) continue;
+      for (const e of list) {
+        if (!provenanced(e)) { PROGRAM_TIER.learnedRefused++; continue; }
+        if (unchecked) { PROGRAM_TIER.learnedUnchecked++; continue; }
+        if (check && rows && contradicted(e, lv, pat, rows, kept.invariant)) { PROGRAM_TIER.learnedContradicted++; continue; }
+        const into = kept.levels[lv] && typeof kept.levels[lv] === 'object' ? kept.levels[lv] : (kept.levels[lv] = {});
+        const arr = Array.isArray(into[pat]) ? into[pat] : (into[pat] = []);
+        if (arr.some((x) => x.program === e.program)) continue;
+        arr.push({ ...e });
+        PROGRAM_TIER.learned++;
+      }
+    }
+  }
 }
 /** Forget every store read (a store rewritten on disk is read again by the next question). */
 export function resetPrograms() { PSTORES.clear(); }
@@ -1177,6 +1290,52 @@ function wholeParse(text, hit) {
 // digits is a date or a range (2026-05-01, 3-4), and a slash between digits is a fraction a word problem may carry,
 // so neither is an operator here.
 export const EXPRESSION_RE = /(?:\d|\))(?:\s*[+*\u00d7\u00f7^]\s*|\s+-\s+)(?:\d|\()/;
+// Gate 6, THE KIND (the guard): cue words that name a kind of question no kept program was induced for. Each is the
+// kind's own vocabulary, never a lone number shape or a lone weekday name (a word problem may say "on Monday"). The
+// first that matches names the refusal in PROGRAM_KINDS. A kind here is one the exact path owns (act/exact-kinds.mjs
+// units, sequence, counting, spelling, calendar, comparison, probability, and the linear solver's equations), so a
+// prompt it READ and refused is refused here too, and the tier never answers over that refusal.
+const MONTH = '(?:january|february|march|april|may|june|july|august|september|october|november|december)';
+const UNIT_WORD = '(?:inches|feet|foot|yards|miles|millimet(?:er|re)s|centimet(?:er|re)s|met(?:er|re)s|kilomet(?:er|re)s|ounces|pounds|grams|kilograms|tons|cups|pints|quarts|gallons|lit(?:er|re)s|millilit(?:er|re)s|seconds|minutes|hours|days|weeks|months|years|decades|centuries|dozens?)';
+export const PROGRAM_KIND_CUES = Object.freeze([
+  ['weekday', /\b(?:what|which) (?:weekday|day of the week)\b|\bweekday (?:is|was|will|would|does|did)\b|\bwhat day (?:is|was|will|would)\b|\b(?:falls?|fell|lands?|landed) on an? (?:mon|tues|wednes|thurs|fri|satur|sun)day\b/i],
+  ['date', new RegExp(String.raw`\b\d{3,4}-\d{1,2}-\d{1,2}\b|\b\d{1,2}/\d{1,2}/\d{2,4}\b|\b` + MONTH + String.raw` \d{1,2}(?:st|nd|rd|th)?,? \d{3,4}\b|\bleap years?\b|\bdays (?:are )?in ` + MONTH + String.raw`\b`, 'i')],
+  ['card', /\bdecks? of (?:playing )?cards\b|\b(?:standard|shuffled|full) deck\b|\bplaying cards?\b|\bface cards?\b|\bjokers?\b|\bcards?\b[^.?!]*\b(?:shuffled|drawn|dealt|at random)\b|\b(?:shuffled?|draws?|drawn|dealt)\b[^.?!]*\bcards?\b/i],
+  ['die', /\bdice\b|\b\d+-sided\b|\b(?:six|eight|ten|twelve|twenty)-sided\b|\b(?:a|one|the|fair) die\b|\bdie (?:is|was) (?:rolled|thrown|tossed)\b/i],
+  ['coin', /\bfair coins?\b|\bcoins?\b[^.?!]*\b(?:flip|flips|flipped|toss|tosses|tossed|heads|tails)\b|\b(?:flip|flips|flipped|toss|tosses|tossed)\b[^.?!]*\bcoins?\b/i],
+  ['probability', /\bprobabilit(?:y|ies)\b|\blikelihood\b|\bodds\b|\bchances?\b|\bhow likely\b|\b(?:un)?likely (?:is it|that)\b|\bat random\b|\brandomly\b/i],
+  ['letter', /\bvowels?\b|\bconsonants?\b|\balphabet(?:ical)?\b|\bspell(?:s|ed|ing)?\b|\bpalindrom(?:e|es|ic)\b|\banagrams?\b|\b\d+(?:st|nd|rd|th) letter\b|\bletters? (?:are |is )?(?:in|of) (?:the |this |that )?(?:word|name|phrase|sentence)\b|\bhow many letters (?:does|do|are in|is in) (?:it|the word|this word|that word|the number|the name)\b|\b(?:the )?letter ['"\u2018\u201c][a-z]['"\u2019\u201d]/i],
+  ['word-count', /\b(?:how many|number of|count(?:s|ing)? (?:the )?)words (?:are |is )?in (?:the |this |that )?(?:sentence|phrase|text|string|quote|line|title)\b|\bword count\b/i],
+  ['unit', new RegExp(String.raw`\bconvert(?:s|ed|ing)?\b|^\s*how many ` + UNIT_WORD + String.raw` (?:are )?(?:there )?in (?:a|an|one|[\d,.]+) \w+\s*\??\s*$`, 'i')],
+  ['sequence', /\bsequences?\b|\bfibonacci\b|\b(?:arithmetic|geometric) (?:progression|series)\b|\b(?:triangular|prime|perfect|cube) numbers?\b|\b\d+(?:st|nd|rd|th) term\b|\bnext term\b|\bcomes? next\b/i],
+  ['comparison', /\byes or no\b|\btrue or false\b|^\s*is [^?]*\b(?:less|greater|more|bigger|smaller|larger|fewer) than\b[^?]*\?\s*$|\bwhich (?:is|number is|one is) (?:larger|greater|bigger|smaller|less|the larger|the greater|the smaller)\b/i],
+  ['equation', /=|\bsolve for\b|\bsolve (?:the |this )?equation\b|\b\d+[a-z]\s*[+\-]\s*\d/i],
+  ['fraction-form', /\bas a (?:fraction|decimal|ratio)\b|\b(?:lowest|simplest) (?:terms|form)\b/i],
+]);
+// Gate 7's check: 'form' when the matching entry carries forms and the prompt's form is not one of them, 'unformed'
+// when it carries none in a store that declares forms (or in the default store), null when the prompt may be answered.
+function formGate(text, kept, hit, spec) {
+  const list = kept.levels[hit.level] && kept.levels[hit.level][hit.pattern];
+  const entry = Array.isArray(list) ? list.find((x) => x.program === hit.program) : null;
+  const forms = entry && entry.forms && Array.isArray(entry.forms.roles) ? entry.forms.roles : null;
+  if (!forms) {
+    const declared = !!(kept.forms && typeof kept.forms === 'object');
+    const isDefault = spec === undefined || spec === null || spec === true || (typeof spec === 'string' && path.resolve(spec) === PROGRAM_STORE);
+    return declared || isDefault ? 'unformed' : null;
+  }
+  let form = null;
+  try { form = questionForm(text).role; } catch { form = null; }
+  return form && forms.includes(form) ? null : 'form';
+}
+/**
+ * The kind a prompt's cue words name that no kept program was induced for (gate 6), or null.
+ * @param {string} text @returns {string|null} a PROGRAM_KIND_CUES name
+ */
+export function otherKind(text) {
+  const t = String(text ?? '');
+  for (const [name, re] of PROGRAM_KIND_CUES) if (re.test(t)) return name;
+  return null;
+}
 export function programAnswer(text, opts = {}) {
   if (opts.programs === false) return null;
   const kept = programStore(opts.programs);
@@ -1190,6 +1349,11 @@ export function programAnswer(text, opts = {}) {
   if (!mathShape(text)) { PROGRAM_TIER.shape++; return null; }
   // gate 3, model off, the other half: an explicit expression is the exact path's, computed or not (never a word problem)
   if (EXPRESSION_RE.test(text)) { PROGRAM_TIER.shape++; return null; }
+  // gate 6, THE KIND (the guard): cue words that name a kind no kept program was induced for
+  if (PROGRAM_GUARD.on && PROGRAM_GUARD.kind !== false) {
+    const k = otherKind(text);
+    if (k) { PROGRAM_TIER.kind++; PROGRAM_KINDS[k] = (PROGRAM_KINDS[k] || 0) + 1; return null; }
+  }
   PROGRAM_TIER.asked++;
   let hit = null;
   try { hit = answerFromPrograms(text, kept, { minPrecision: floor }); } catch { hit = null; }
@@ -1199,6 +1363,11 @@ export function programAnswer(text, opts = {}) {
   const ns = Math.round((performance.now() - t0) * 1e6);
   if (g && g.quantities === 0) { PROGRAM_TIER.noQuantity++; return null; }
   if (!g || !g.whole) { PROGRAM_TIER.partial++; return null; }
+  // gate 7, THE FORM (the guard): the prompt's question form is one the matching program fit in development
+  if (PROGRAM_GUARD.on && PROGRAM_GUARD.form !== false) {
+    const fr = formGate(text, kept, hit, opts.programs);
+    if (fr) { PROGRAM_TIER[fr]++; return null; }
+  }
   PROGRAM_TIER.answered++;
   PROGRAM_TIER.lastNs = ns;
   const lv = kept.devLoo && kept.devLoo[hit.level];

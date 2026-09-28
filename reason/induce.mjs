@@ -716,3 +716,34 @@ export function induce(reader, devIds, opts = {}) {
   const kept = abstract(found, { ...opts, records });
   return { found, rows, kept, covered };
 }
+
+// ---------------------------------------------------------------- the question form (board 35, item program-guard)
+/**
+ * THE QUESTION FORM of a prompt (or of its parse): the role-level pattern, which names the count of positional
+ * quantities, the question sentence's cue classes (left, more, total, each, money, time, pct), the named quantities
+ * and every positional quantity's role tag (its kind, and the each / times / more-or-less / in-the-question cues
+ * beside it), plus the unit word after each positional quantity. act/prompt.mjs gate 7 answers only a prompt whose
+ * role form is one the matching program fit in development; bench/program-guard.mjs --forms writes those forms.
+ * @param {string|object} textOrParse
+ * @returns {{role: string, units: string[]}}
+ */
+export function questionForm(textOrParse) {
+  const p = typeof textOrParse === 'string' ? parse(textOrParse) : textOrParse;
+  return { role: patterns(p).role, units: p.pos.map((q) => (q.next && q.next[0]) || '') };
+}
+
+/**
+ * THE PATTERN AT A LEVEL of a role form (board 35, item program-guard): the role form is 'n|q|x|r' (patterns(p).role),
+ * and the coarser levels are its parts: cue 'n|q|x', named 'n|x', count 'n'. No part holds a '|' (the question cues,
+ * the named leaves and the role tags are words and letters), so patternAt(patterns(p).role, lv) === patterns(p)[lv];
+ * bench/program-guard.mjs --forms checks that on every development row it indexes before it writes the index.
+ * @param {string} role @param {string} level one of LEVELS @returns {string}
+ */
+export function patternAt(role, level) {
+  const p = String(role).split('|');
+  if (level === 'role') return String(role);
+  if (level === 'cue') return p.slice(0, 3).join('|');
+  if (level === 'named') return p[0] + '|' + p[2];
+  if (level === 'count') return p[0];
+  throw new Error('not a level: ' + level);
+}

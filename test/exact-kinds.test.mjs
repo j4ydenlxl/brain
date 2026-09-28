@@ -255,3 +255,62 @@ test('the verdict: its shape, and the held-out row count and sha256 it states ar
   assert.equal(createHash('sha256').update(buf).digest('hex'), v.split.heldOut.sha256, 'the held-out sha256 the verdict states');
   assert.equal(KINDS.reduce((s, k) => s + v.heldOut.byKind[k].asked, 0), rows.length, 'every held-out row was asked');
 });
+
+// board 35 (readers-2): the eight kinds the organism asks itself (self/queries.mjs). Each test asks phrasings copied from
+// the generator's templates (seed 38 and 39 rows, their values kept) and at least one near miss that must stay refused.
+const arith = (rows) => { for (const [q, want] of rows) { const r = solve(q); assert.ok(r, 'arithmetic read nothing: ' + q); assert.equal(r.answer, want, q); assert.equal(r.method, 'exact.arith', q); } };
+
+test('self-queries arithmetic: product, left over, add every number, a fraction tail; a negative difference and a non-number refused', () => {
+  arith([["What's the product of 922 and 90?", '82980'], ["What's left over when you divide 2042 by 52?", '14'], ['If you add every number from 96 to 353, what do you get?', '57921'], ["What's 3/5 - 1/4? Give the answer as a fraction.", '7/20'], ['What is 7 more than 8?', '15']]);
+  for (const q of ['What is the difference of 3 and 10?', "What's the product of 922 and the moon?"]) assert.equal(solve(q), null, 'must refuse: ' + q);
+  // fix after the skeptic: a difference whose first operand is the smaller is -7 or 7, refused in every phrasing; the other order reads
+  for (const q of ['the difference of 3 and 10', 'Compute the difference of 3 and 10.', 'What is the difference between 3 and 10?', 'What is 5 plus the difference of 3 and 10?', 'What is the difference between x and 3?']) assert.equal(solve(q), null, 'must refuse: ' + q);
+  arith([['What is the difference between 10 and 3?', '7'], ['the difference of 10 and 3', '7'], ['What is the difference between 3 times 4 and 10?', '2']]);
+});
+// a near miss refused by the kinds AND by every other reader solve() runs
+const refusesAll = (rows) => { for (const q of rows) { assert.equal(exactKinds(q), null, 'kinds must refuse: ' + q); assert.equal(solve(q), null, 'solve must refuse: ' + q); } };
+
+test('self-queries sequence: nth of a named rule, a numbered term, the number that follows; a false Fibonacci start refused', () => {
+  reads('sequence', [['What is the 9th term of the geometric sequence 3, 9, 27, ...?', '19683'], ['The Fibonacci sequence starts 1, 1, 2, 3, 5. What is its 36th term?', '14930352'], ['In the sequence 21, 23, 25, 27, where each term adds the same amount, what is term number 6?', '31'], ['Tell me the number that follows 256, 289, 324, 361, 400.', '441'], ['What is the 13th square number?', '169']]);
+  refuses(['The Fibonacci sequence starts 2, 1, 3, 4. What is its 10th term?']);
+  // fix: a start of 0, 1 (34 by position, 55 as F(10)) or 1, 2 (89 by position, 55 as F(10)) has two readings
+  refusesAll(['The Fibonacci sequence starts 0, 1, 1, 2. What is its 10th term?', 'The Fibonacci sequence starts 1, 2, 3, 5. What is its 10th term?']);
+  reads('sequence', [['The Fibonacci sequence starts 1, 1, 2, 3, 5. What is its 10th term?', '55']]);
+});
+
+test('self-queries units: tell me how many, is how many, an abbreviation; a unit that depends on the country refused', () => {
+  reads('units', [['Tell me how many liters there are in 643 milliliters.', '0.643'], ['33 millimeters is how many kilometers?', '0.000033'], ["what's 77.3 m in km", '0.0773']]);
+  refuses(['Tell me how many gallons there are in 3 liters.']);
+});
+
+test('self-queries counting: times does the letter appear, words after a colon, tell me how many words; a bare word after "in" refused', () => {
+  reads('counting', [["How many times does the letter r appear in 'shark'?", '1'], ['Count the words in: "Ocean slow picture today quick behind your"', '7'], ['Tell me how many words the sentence "Writes elephant blanket orange banana sandwich kind student telephone" has.', '9']]);
+  // fix after the skeptic: a bare word after "in" is a mention or an idiom, so the casual form is refused whole
+  refusesAll(["how many r's are in it", "how many r's are in shark", "How many A's are in total?", "How many l's are in all?", "How many t's are in stock?", "How many s's are there in each?"]);
+  reads('counting', [["how many r's are in the word shark", '1']]);
+});
+
+test('self-queries spelling: last letter, letter number n, in reverse just the word; a letter past the end and a bare word refused', () => {
+  reads('spelling', [["What's the last letter of \"broccoli\"?", 'i'], ["Tell me letter number 4 of the word 'anchor'.", 'h'], ['Write "noon" in reverse, just the word.', 'noon']]);
+  refuses(["Tell me letter number 9 of the word 'anchor'."]);
+  // fix after the skeptic: a bare word after "of" is a mention or points elsewhere ("of each", "of all")
+  refusesAll(['reverse the letters of kettle', 'reverse the letters of each', 'reverse the letters of all']);
+  reads('spelling', [['reverse the letters of the word kettle', 'elttek']]);
+});
+
+test('self-queries calendar: days after, did fall on, leap with a yes or no tail, a month before 1753; the ambiguous refused', () => {
+  reads('calendar', [['How many days after 2 August 1946 is 10 December 1947?', '495'], ['On what day of the week did December 13, 1810 fall?', 'Thursday'], ['Was 2348 a leap year? Answer yes or no.', 'yes'], ['How many days does January have in 1618?', '31'], ['What weekday is 2343-02-15?', 'Monday']]);
+  refuses(['On what day of the week did October 21, 1708 fall?', 'How many days does September have in 1752?', 'How many days are in the year 1752?', 'Was 1700 a leap year? Answer yes or no.']);
+});
+
+test('self-queries comparison: less than with a yes or no tail, the larger just the number, the smallest of three; a non-number refused', () => {
+  reads('comparison', [['Is 11.02 less than 11.29? Answer yes or no.', 'yes'], ['Which is bigger: 79653 or 79614?', '79653'], ['Which is the smallest of 41034, 41024 and 40972?', '40972']]);
+  const tail = solve("What's the larger of 2/3 and 9/10? just the number");   // the tail is set aside by solve(), then the reader reads the head
+  assert.ok(tail && tail.answer === '9/10' && tail.method === 'exact.comparison');
+  refuses(["What's the larger of 2/3 and the moon? just the number"]);
+});
+
+test('self-queries probability: lowest terms, numbered cards, all alike, a three-colour jar, a letter of a word; the unread refused', () => {
+  reads('probability', [['A bag has 19 red balls and 2 blue balls. What is the probability of drawing a red ball? Give a fraction in lowest terms.', '19/21'], ['Cards numbered 1 to 86 are shuffled and one is drawn. What is the probability it is a multiple of 9?', '9/86'], ['Five fair coins are flipped. What is the probability they all land heads? Give a fraction.', '1/32'], ["A jar holds 9 red, 4 green and 8 blue marbles. If you pick one at random, what's the chance it's blue?", '8/21'], ["A letter is picked at random from the word 'city'. What is the probability it is the letter y?", '1/4'], ['A bag has 1 red ball and 1 blue ball. What is the probability of drawing a red ball? Give a decimal.', '0.5']]);
+  refuses(['Five coins are flipped. What is the probability they all land heads? Give a fraction.', "A letter is picked at random from the word 'city'. What is the probability it is a vowel?", "A jar holds 9 red, 4 green and 8 blue marbles. If you pick two at random, what's the chance they are both blue?", 'Cards numbered 1 to 86 are shuffled and one is drawn. What are the odds it is a multiple of 9?', 'A bag has 1 red ball and 2 blue balls. What is the probability of drawing a red ball? Give a decimal.']);
+});

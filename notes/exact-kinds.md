@@ -54,3 +54,55 @@ The seven development rows refused by design: count-06 (legs of spiders), logic-
 - "EXACT-KINDS isTheBar true barMet true: held-out answered share 1.0000 (bar 0.75), wrong solve 0 ask 0, other kinds kept true, tests true".
 
 What was read before building: tasks/exact.mjs, act/exact-read.mjs, act/solve.mjs, act/word.mjs, act/prompt.mjs, bench/conceive.mjs, bench/conceive-prompts.json, bench/verdicts/conceive.json, bench/fixtures/answer-questions.json, test/solve.test.mjs, test/answer.test.mjs, notes/word.md, and the published algorithms used for the calendar: Zeller's congruence and the days-from-civil algorithm.
+
+## 2026-09-28: board 35, readers-2: the readers cover what the organism asks itself
+
+What was built. Every template of the eight self-query kinds (self/queries.mjs) now reaches a reader; nothing from self/queries.mjs is imported by a reader.
+- arithmetic (act/exact-read.mjs, add-only): "A more than B" is B + A and "A less than B" is B - A; "the product / sum / total / difference / quotient of" a plain list of numbers is read as that operation. A difference that would be negative ("the difference of 3 and 10" is 7 or -7) and a product, difference or quotient of anything but plain numbers return null (as built, the negative difference was refused only after "What is"; every other phrasing read -7 until the fix section below). act/solve.mjs (add-only): "if you add every number from A to B", "what's left over when you divide A by B", and a "Give the answer as a fraction" tail that is answered only when exact arithmetic already prints that form.
+- sequence: the nth term of a named arithmetic, geometric or Fibonacci sequence (as built, Fibonacci from the starts 0, 1 or 1, 1 or 1, 2; after the fix section below, only from 1, 1), the nth square, cube and triangular number, "term number n" of a list, "the number that follows", and a single missing term. Every reading must agree or the answer is null.
+- units, counting, spelling, comparison: the phrasings the generator uses and no frame read (tell me how many U there are in Q, how many U does Q have, count the words in: "...", how many r's are in the word shark, reverse the letters of the word W (as built, also the bare "how many r's are in shark" and "reverse the letters of W", both refused after the fix section below), letter number n of W, the larger / smaller of A and B).
+- calendar: ISO dates from 1583 (ISO 8601 names the Gregorian calendar there); "on what day of the week did X fall", "tell me the weekday of X", "how many days from A to B", "how many days after A is B" (read as the difference of the day counts, B at or after A). A month length or a leap year from 1583 to 1752 is answered only where the Julian and Gregorian rules agree; February 1700, September 1752 and the length of the year 1752 stay refused, and a weekday of a date written in words before 1753 stays refused (two calendars name two days).
+- probability: singular nouns in a container ("1 red ball"), "Give a fraction in lowest terms", "Five fair coins are flipped ... they all land heads", "If you pick one at random, what's the chance it's C", cards numbered 1 to N with one drawn, and a letter picked from a word (a vowel is refused when the word holds a y). "Odds", a coin not said to be fair, two draws with replacement unstated and a decimal that does not terminate stay refused.
+- A trailing "Answer yes or no." is set aside only when the reader of the head answers yes or no.
+
+How to run.
+- The bar: node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir <scratch> -- node --max-old-space-size=4000 bench/self-queries.mjs --n 5000 --seed 36 --seed 37
+- Development (never writes): the same with --seed 34 --seed 35 --nowrite --json
+- Tests: node --test test/exact-kinds.test.mjs test/solve.test.mjs (one test per self-query kind: generator phrasings plus near misses that must refuse)
+- The held-out and census control of this module: bench/exact-kinds.mjs under the same budget.
+
+What the numbers say for the first build, before the fix section below (each line printed by a command).
+- Before any change, development seeds 34+35: "answered 6898 (68.98%), of which 6733 were correct and 165 wrong, and refused 3102".
+- After, development seeds 34+35: "answered 9916 (99.16%), of which 9916 were correct and 0 wrong, and refused 84".
+- The bar, seeds 36+37, run once (bench/verdicts/self-queries.json at 2026-09-28T18:45:16.256Z): "total asked 10000 answered 9932 (99.32%) correct 9932 wrong 0 refused 68 answered share 0.9932"; "controls: 90000 checks on 10000 rows, 0 failed; second opinion agree 10000 disagree 0 none 0; sockets 0; instrument e518e66d99079df8 -> e518e66d99079df8"; "isTheBar true barMet true".
+- Every kind but calendar: 1250 correct, 0 wrong, 0 refused of 1250. Calendar: "asked 1250 answered 1182 correct 1182 wrong 0 refused 68"; the 68 are weekdays of word dates before 1753 (27 + 23 + 14) and the leap year 1700 (2 + 2).
+- bench/exact-kinds.mjs: "EXACT-KINDS heldOut total: solve asked 106 answered 106 correct 106 wrong 0 refused 0 (answered share 1.0000)"; "EXACT-KINDS isTheBar true barMet true: held-out answered share 1.0000 (bar 0.75), wrong solve 0 ask 0, other kinds kept true, tests true"; its test line "tests 55 | pass 55 | fail 0".
+- Census control, before: "organism native 41.58% refused 58.42% correct 101/263"; after: "organism native 40.21% refused 59.79% correct 101/263". Every kind outside the eight keeps its correct share. The four fewer native answers are the route program/program (4 before, 0 after: alg-01, alg-02, alg-04, word-08, all four graded wrong before); act/prompt.mjs, which this item does not own, was modified at 2026-09-28T18:36:14.936Z between the two runs, and direct/exact stayed 63.
+- Control of the tests: the nine new tests run against the readers at HEAD (a scratch copy) all fail.
+
+What remains.
+- The 68 calendar refusals are refusals by rule; answering them needs a stated calendar (Julian or Gregorian) in the question.
+- The bar's seeds are fresh values of the same templates the readers were developed on, so the share measures template coverage, not unseen phrasings. The self-queries verdict's split.development text still names seeds 7, 8, 9 (bench/self-queries.mjs is not this item's file); this item developed on seeds 34 and 35 and never ran 36 or 37 before the bar.
+
+## 2026-09-28: board 35, readers-2, fix after the skeptic: five readings refused, none added
+
+What was wrong in the first build, and what changed (each a reading HEAD refused and the build answered).
+- Counting, act/exact-kinds.mjs COUNT_FRAMES: the bare casual frame "how many e's are in W" read W as a word even when W is an idiom ("How many A's are in total?", "in all", "in stock", "in each"). The bare frame is removed; "how many r's are in the word shark" still reads.
+- Spelling, act/exact-kinds.mjs REV_FRAMES: the bare "reverse the letters of W" read "of each", "of all" and "of words" as words. The bare frame is removed; "reverse the letters of the word kettle" still reads.
+- Arithmetic, act/exact-read.mjs (add-only): a negative difference was refused only after "What is"; "the difference of 3 and 10", "Compute the difference of 3 and 10." and "What is 5 plus the difference of 3 and 10?" read -7. SPOKEN_DIFF_RE and a guard in spokenRewrite value each operand on its own and refuse when either has no value or the first is the smaller, in every phrasing.
+- Arithmetic, act/exact-read.mjs (add-only): a comma between two digits in an operand list ("the product of 1,000 and 2") was read as a list of three numbers. The operand-lead block now refuses any operand text holding a digit, a comma and a digit (a thousands separator, a decimal comma or a list).
+- Sequence, act/exact-kinds.mjs NAMED_SEQ.fibonacci: the starts 0, 1 and 1, 2 give two readings of "the 10th term" (by position or as F(10)); only the start 1, 1, where both agree, is read.
+- Kept as built: "how many days from A to B" is the plain difference of the day counts, the date-calculator convention the "between" frame at HEAD already uses.
+
+What the numbers say (each line printed by a command).
+- Development seeds 34+35 after the fix: "total asked 10000 answered 9676 (96.76%) correct 9676 wrong 0 refused 324 answered share 0.9676".
+- Control, the same seeds with the three reader files swapped to their HEAD copies by a resolve hook: "total asked 10000 answered 6769 (67.69%) correct 6733 wrong 36 refused 3231 answered share 0.6769".
+- The bar, seeds 36+37, run a second time for this fix (bench/verdicts/self-queries.json at 2026-09-28T19:09:58.897Z): "total asked 10000 answered 9679 (96.79%) correct 9679 wrong 0 refused 321 answered share 0.9679"; "controls: 90000 checks on 10000 rows, 0 failed; second opinion agree 10000 disagree 0 none 0; sockets 0; instrument d6c23f74e18c8cc2 -> d6c23f74e18c8cc2"; "isTheBar true barMet true".
+- Per kind at the bar: "seeds 36+37 counting     asked 1250 answered 1135 correct 1135 wrong 0 refused 115", "seeds 36+37 spelling     asked 1250 answered 1112 correct 1112 wrong 0 refused 138", calendar unchanged at "asked 1250 answered 1182 correct 1182 wrong 0 refused 68"; the other five 1250 of 1250 correct, 0 wrong. The new refusals are the miss groups "counting.occurrences.casual-how-many: 115 (0 wrong, 115 refused)" and "spelling.backwards.reverse-the-letters: 138 (0 wrong, 138 refused)", the bare frames removed above.
+- bench/exact-kinds.mjs after the fix: "EXACT-KINDS heldOut total: solve asked 106 answered 106 correct 106 wrong 0 refused 0 (answered share 1.0000)"; "EXACT-KINDS isTheBar true barMet true: held-out answered share 1.0000 (bar 0.75), wrong solve 0 ask 0, other kinds kept true, tests true"; its test line "tests 56 | pass 56 | fail 0".
+- Census control (bench/conceive.mjs --limit 0 --nowrite --json), the fixed readers and the HEAD readers print the same line: "organism native 40.21% refused 59.79% correct 101/263".
+- Tests: node --test test/exact-kinds.test.mjs test/solve.test.mjs printed "tests 40", "pass 40", "fail 0"; against the HEAD readers the same files printed "tests 40", "pass 30", "fail 10".
+
+What remains.
+- "how many U's are in W" and "reverse the letters of W" with a bare word W are refused by design: a reader cannot tell a word from an idiom without a lexicon, so the phrasing has to name "the word".
+- The bar's seeds 36 and 37 have now been run twice, once per build; the fix was written from the skeptic's findings and probes on seeds 34 and 35, not from the bar's misses.

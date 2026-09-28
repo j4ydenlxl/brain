@@ -44,6 +44,14 @@
 // The bar (model OFF; launched through the RAM and disk budget):
 //   node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir bench/verdicts -- node --max-old-space-size=4000 bench/self-queries.mjs --n 5000 --seed 34 --seed 35
 // Flags: --n N (default 5000), --seed S (repeatable; default 34 and 35), --nowrite, --json, --quiet, --no-selftest.
+// Board 35 builder (item self-loop), add-only: --group G asks only the rows of miss group G (a group is a template id,
+// bench/self-queries-misses.jsonl "group"), --template T only the rows whose template is T or starts with "T." (a kind
+// or a family); rows keep their ids at the seed, so a filtered run asks exactly the rows a whole run at that seed and
+// --n asked of that group. A filtered run is never the bar (checks.wholeRun is false; ranToTheEnd reads the rows it
+// selected, so a filtered run that asked all of them is not called cut), and it prints one more line, its own count:
+//   SELECTED <group G|template T> asked N answered N correct N wrong N refused N
+// (self/gaps.mjs PARSERS.selfQueryGroup reads it: wrong plus refused). A selection that matches no row has no controls
+// checked, so controlsHeld is false and the run exits 1.
 
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -88,6 +96,8 @@ export function parseArgs(argv) {
     else if (k === '--json') a.json = true;
     else if (k === '--quiet') a.quiet = true;
     else if (k === '--no-selftest') a.selfTest = false;
+    else if (k === '--group') a.group = val(); // board 35 builder (item self-loop)
+    else if (k === '--template') a.template = val(); // board 35 builder (item self-loop)
     else throw new Error('unknown flag ' + k);
   }
   if (!a.seeds.length) a.seeds = [...DEFAULT_SEEDS];
@@ -95,6 +105,21 @@ export function parseArgs(argv) {
   for (const s of a.seeds) if (!Number.isInteger(s) || s < 0 || s > 0xFFFFFFFF) throw new Error('--seed must be an integer in [0, 2^32)');
   if (new Set(a.seeds).size !== a.seeds.length) throw new Error('a seed was given twice');
   return a;
+}
+
+// ---------------------------------------------------------------- the selection (board 35 builder, item self-loop)
+/** The rows a --group or --template run asks: every row when neither is set. */
+export function selectRows(rows, cfg = {}) {
+  const g = cfg.group ?? null, t = cfg.template ?? null;
+  if (g === null && t === null) return rows;
+  return rows.filter((r) => (g === null || r.template === g) && (t === null || r.template === t || r.template.startsWith(t + '.')));
+}
+/** The label of the selection, or null for a whole run. */
+export function selectionOf(cfg = {}) {
+  const parts = [];
+  if (cfg.group !== undefined && cfg.group !== null) parts.push('group ' + cfg.group);
+  if (cfg.template !== undefined && cfg.template !== null) parts.push('template ' + cfg.template);
+  return parts.length ? parts.join(' ') : null;
 }
 
 // ---------------------------------------------------------------- the second opinion (independent of the generator)
@@ -307,7 +332,7 @@ export async function run(cfg = {}) {
 
   try {
     for (const seed of seeds) {
-      const rows = generate({ seed, n });
+      const rows = selectRows(generate({ seed, n }), cfg);
       const rowsSha = sha256(rows.map((r) => JSON.stringify([r.id, r.template, r.prompt, r.truth, r.gradeRule])).join('\n'));
       for (const r of rows) {
         control.rows++;
@@ -354,7 +379,7 @@ export async function run(cfg = {}) {
       const byKind = Object.fromEntries(KINDS.map((k) => [k, finishCell(cells[k], ns[k])]));
       const tot = emptyCell();
       for (const k of KINDS) for (const f of Object.keys(tot)) tot[f] += cells[k][f];
-      perSeed.push({ seed, n, ran: done, complete: done === n, rowsSha256: rowsSha, wallMs, byKind, total: finishCell(tot) });
+      perSeed.push({ seed, n, ran: done, complete: done === rows.length, rowsSha256: rowsSha, wallMs, byKind, total: finishCell(tot) });
       for (const k of KINDS) {
         const c = byKind[k];
         log('seed ' + seed + ' ' + k.padEnd(12) + ' asked ' + c.asked + ' answered ' + c.answered + ' correct ' + c.correct + ' wrong ' + c.wrong + ' refused ' + c.refused + ' median ' + c.medianNs + ' ns p95 ' + c.p95Ns + ' ns');
@@ -429,6 +454,7 @@ export async function run(cfg = {}) {
     modelOff: socketAttempts === 0,
     instrumentStable: instrumentStart.sha === instrumentEnd.sha && instrumentStart.missing.length === 0,
     refusalHeadsEqual: headsEqual,
+    wholeRun: selectionOf(cfg) === null, // board 35 builder (item self-loop): a --group or --template run is never the bar
   };
   const isTheBar = Object.values(checks).every(Boolean);
   const wrongByKind = Object.fromEntries(KINDS.map((k) => [k, byKind[k].wrong]));
@@ -487,6 +513,9 @@ export async function run(cfg = {}) {
   }
   log('total asked ' + totals.asked + ' answered ' + totals.answered + ' (' + (answeredShare === null ? 'absent' : (answeredShare * 100).toFixed(2) + '%') + ') correct ' + totals.correct + ' wrong ' + totals.wrong + ' refused ' + totals.refused + ' answered share ' + r4(answeredShare) + '; median ' + verdict.ns.median + ' ns p95 ' + verdict.ns.p95 + ' ns; qps ' + qps + ' (in ask), ' + wallQps + ' (wall)');
   log('statement: ' + statement);
+  // board 35 builder (item self-loop): the selection's own count, the line PARSERS.selfQueryGroup reads
+  const selection = selectionOf(cfg);
+  if (selection) { verdict.selection = selection; log('SELECTED ' + selection + ' asked ' + totals.asked + ' answered ' + totals.answered + ' correct ' + totals.correct + ' wrong ' + totals.wrong + ' refused ' + totals.refused); }
   for (const g of groups.slice(0, 10)) log('  miss group ' + g.template + ': ' + g.count + ' (' + g.wrong + ' wrong, ' + g.refused + ' refused)');
 
   if (cfg.write) {

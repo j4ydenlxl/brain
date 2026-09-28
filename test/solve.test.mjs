@@ -435,3 +435,18 @@ test('solve() reaches the nine kinds last, and a number tail is not met by a wor
   // an older reader still answers first: the arithmetic of a word problem is not re-read as a kind
   assert.equal(solve('What is 17 * 23?').method, 'exact.arith');
 });
+
+test('board 35 (readers-2): the product of two numbers and "A more than B" read exactly; a negative difference refused', () => {
+  for (const [q, want] of [['the product of 7 and 8', '56'], ["What's the product of 7 and 8?", '56'], ['7 more than 8', '15'], ['What is 7 more than 8?', '15']]) {
+    const r = solve(q);
+    assert.ok(r, 'read nothing: ' + q);
+    assert.equal(r.answer, want, q);
+    assert.equal(r.method, 'exact.arith', q);
+  }
+  assert.equal(solve('What is the difference of 3 and 10?'), null, 'the difference of 3 and 10 is 7 or -7: refused');
+});
+
+test('board 35 (readers-2) fix: a negative difference is refused in every phrasing, with or without a lead; the other order reads', () => {
+  for (const q of ['the difference of 3 and 10', 'Compute the difference of 3 and 10.', 'What is the difference between 3 and 10?', 'What is the difference of 3 and 10?']) assert.equal(solve(q), null, 'must refuse: ' + q);
+  for (const [q, want] of [['What is the difference between 10 and 3?', '7'], ['the difference of 10 and 3', '7'], ['the product of 7 and 8', '56'], ['7 more than 8', '15']]) assert.equal(solve(q)?.answer, want, q);
+});

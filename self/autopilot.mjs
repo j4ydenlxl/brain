@@ -604,10 +604,12 @@ export function imagineCandidates({ root = ROOT, timeoutMs = 60_000 } = {}) {
  */
 export function collectCandidates({
   root = ROOT, verdicts = null, run = true, max = 5, timeoutMs = DEFAULT_TIMEOUT_MS, slowMs = SLOW_MS,
-  sources = null, imagineTimeoutMs = 60_000,
+  sources = null, imagineTimeoutMs = 60_000, loopDir = null,
 } = {}) {
   const v = verdicts || path.join(root, 'bench', 'verdicts');
   const want = new Set(Array.isArray(sources) && sources.length ? sources : [...SOURCE_ORDER, BOARDS_SOURCE]);
+  // board 35 builder (item self-loop): the loop source is read by default; with no loop record it yields nothing
+  if (!(Array.isArray(sources) && sources.length)) want.add(LOOP_SOURCE);
   const detail = {}, lists = {};
   if (want.has('gate')) {
     const g = gateCandidates({ verdicts: v, root, run, max, timeoutMs });
@@ -625,6 +627,11 @@ export function collectCandidates({
     lists.mutants = m.candidates.map((c) => ({ ...c, source: 'mutants', where: m.file, evidence: 'fix', evidenceData: c.evidence ?? null }));
   }
   if (want.has(BOARDS_SOURCE)) { const n = boardsCandidates({ root }); const { candidates, ...rest } = n; detail.boards = { ...rest, candidates: candidates.length }; lists.boards = candidates; }
+  if (want.has(LOOP_SOURCE)) {
+    // board 35 builder (item self-loop): the open miss groups of the newest self/loop.mjs record, ranked by count, after every other source
+    const n = loopCandidates({ root, dir: loopDir }); const { candidates, ...rest } = n; detail.loop = { ...rest, candidates: candidates.length };
+    return { sources: detail, candidates: [...[...SOURCE_ORDER, BOARDS_SOURCE].filter((s) => want.has(s)).flatMap((s) => lists[s] || []), ...candidates] };
+  }
   return { sources: detail, candidates: [...SOURCE_ORDER, BOARDS_SOURCE].filter((s) => want.has(s)).flatMap((s) => lists[s] || []) };
 }
 
@@ -1056,7 +1063,7 @@ function verificationSummary(v) {
   };
 }
 const gateSummary = (g) => (g ? { cmd: g.cmd, exit: g.exit, timedOut: g.timedOut, summary: g.summary, red: g.red, ms: g.ms, hash: gateHash(g) } : null);
-const sourceClass = (s) => (SOURCE_ORDER.includes(s) || s === BOARDS_SOURCE ? s : 'given');
+const sourceClass = (s) => (SOURCE_ORDER.includes(s) || s === BOARDS_SOURCE || s === LOOP_SOURCE ? s : 'given');
 const evidenceMode = (c) => (c.evidence === 'preserve' || c.evidence === 'faster' || c.evidence === BRIEF_EVIDENCE ? c.evidence : 'fix');
 
 /**
@@ -1147,6 +1154,7 @@ export function runAutopilot({
 
     let baseline = null;
     let modelCalls = 0;
+    const loopBudget = { left: LOOP_TRIALS_PER_RUN }; // board 35 builder (item self-loop): loop trials this run may run
     const briefBudget = { left: BRIEFS_PER_RUN }; // the boards source: briefs this run may start
     // one run of a test per tree state: several OPEN lines naming one test run it once, and a write
     // to the tree empties the memo, so a test is never judged on bytes it did not run against
@@ -1159,6 +1167,8 @@ export function runAutopilot({
         candidate: true, key: c.key ?? null, source: c.source ?? null, where: c.where ?? null, kind: c.kind ?? null, evidence: mode,
         origin: c.origin || 'self', file: c.file ?? null, test: c.test ?? null, why: c.why ? String(c.why).slice(0, 300) : null,
       };
+      // the loop source (Board 35, item self-loop): a miss group goes to its trial, never to the walls below
+      if (c.source === LOOP_SOURCE) { record({ ...base, evidence: LOOP_EVIDENCE, ...loopRound(c, { root, dry, budget: loopBudget }) }); continue; }
       // the boards source (Board 15): a board item goes to the brief operator, never to the walls below
       if (mode === BRIEF_EVIDENCE) {
         const gates = { baseline };
@@ -1351,7 +1361,8 @@ export function renderRun(r, st = plain) {
   if (s.census) lines.push(st.grey('  census: ' + (s.census.read ? (s.census.deadEdges ?? 0) + ' dead edges of ' + (s.census.edges ?? '?') + ' in ' + (s.census.seed || '?') + (s.census.deadCells != null ? ', ' + s.census.deadCells + ' dead cells (many-file, not proposed)' : '') + (s.census.pinned ? ', pinned' : '') + (s.census.reason ? ' (' + s.census.reason + ')' : '') : s.census.reason)));
   const by = r.bySource || {};
   if (s.boards) lines.push(st.grey('  boards: ' + s.boards.items + ' undone board items from ' + s.boards.where + ' (' + s.boards.withTrial + ' with a trial, ' + s.boards.needsModel + ' need the model); brief operator ' + (s.boards.brief && s.boards.brief.landed ? s.boards.brief.operator + '() landed' : 'NOT landed: ' + ((s.boards.brief && s.boards.brief.reason) || BRIEF_NOT_LANDED)) + (s.boards.reason ? ' (' + s.boards.reason + ')' : '')));
-  for (const name of [...SOURCE_ORDER, BOARDS_SOURCE, 'given']) {
+  if (s.loop) lines.push(st.grey('  loop: ' + (s.loop.read ? s.loop.open + ' open miss groups in ' + s.loop.where + '/' + s.loop.record + ' (date ' + s.loop.date + ', seed ' + s.loop.seed + '), ' + s.loop.candidates + ' with a trial' : 'no candidate (' + s.loop.reason + ')'))); // board 35 builder (item self-loop)
+  for (const name of [...SOURCE_ORDER, BOARDS_SOURCE, LOOP_SOURCE, 'given']) {
     const t = by[name];
     if (!t) continue;
     const per = t.modelMs.length ? t.modelMs.join(', ') + ' ms' : '-';
@@ -1375,6 +1386,152 @@ export function renderRun(r, st = plain) {
   if (r.ledgerFile && r.decisions.length) lines.push(st.grey('  ledger ' + r.ledgerFile));
   if (r.authoredFile) lines.push(st.grey('  authored ' + r.authoredFile + ' (+' + r.authoredLines + ')'));
   return lines.join('\n');
+}
+
+// ================================================================ THE LOOP SOURCE (Board 35)
+// Author: board 35 builder (item self-loop). self/loop.mjs, one tick a morning, asks the organism
+// fresh questions at the day's seed and writes state/self/loop/<date>.json: every miss group open at
+// that tick, with its gap row and its trial (self/gaps.mjs FORMS 'self-query-group': bench/self-queries.mjs
+// at the tick's seed and n, filtered to the group). When such a record exists, its open groups are
+// candidates of source "loop", evidence "trial", ranked by count (most missed rows first); with no
+// record the source yields nothing, so a planted tree and every earlier caller see what they saw
+// before. A dry run never runs a trial ("would-run-trial"); a live run runs at most
+// LOOP_TRIALS_PER_RUN, synchronously, under tools/budget.mjs, and records the group's count before
+// (the record) and after (the trial's own parser, self/gaps.mjs PARSERS). A trial changes no file:
+// closing a group is the readers' work (the gap row names them), and the next tick's diff is what
+// says closed. The source is registered OUTSIDE SOURCE_ORDER, like boards, so a soak's Board 10 pass
+// never reads it.
+export const LOOP_SOURCE = 'loop';
+export const LOOP_EVIDENCE = 'trial';
+export const LOOP_REL = 'state/self/loop';
+export const LOOP_TRIALS_PER_RUN = 1;
+const LOOP_RECORD_RE = /^(\d{4}-\d{2}-\d{2})\.json$/;
+
+/** The newest loop record under dir (default state/self/loop of root): its open groups with a trial, as candidates ranked by count. */
+export function loopCandidates({ root = ROOT, dir = null } = {}) {
+  const d = dir ? path.resolve(root, dir) : path.join(root, ...LOOP_REL.split('/'));
+  const where = relOf(root, d) || '.';
+  const none = (reason) => ({ read: false, where, record: null, date: null, seed: null, open: 0, withoutTrial: 0, reason });
+  try {
+    if (!existsSync(d)) return { ...none('no loop record: ' + where + ' is absent'), candidates: [] };
+    const names = readdirSync(d).filter((n) => LOOP_RECORD_RE.test(n)).sort();
+    if (!names.length) return { ...none('no loop record in ' + where), candidates: [] };
+    const name = names[names.length - 1];
+    const rj = readJsonFile(path.join(d, name));
+    if (!rj.ok || !rj.j || rj.j.kind !== 'self.loop') return { ...none(where + '/' + name + ' is not a loop record' + (rj.ok ? '' : ': ' + rj.reason)), candidates: [] };
+    const rec = rj.j;
+    const byGroup = new Map((Array.isArray(rec.gapRows) ? rec.gapRows : []).map((g) => [g.group, g]));
+    const open = (Array.isArray(rec.groups && rec.groups.open) ? rec.groups.open : []).slice()
+      .sort((a, b) => b.count - a.count); // stable: a tie keeps the record's own rank (self/loop.mjs ranks ties by name)
+    const candidates = [];
+    for (const o of open) {
+      const g = byGroup.get(o.group);
+      if (!g || !g.trial) continue;
+      candidates.push({
+        key: LOOP_SOURCE + ':' + o.group, id: g.id, source: LOOP_SOURCE, where: where + '/' + name, kind: g.kind, evidence: LOOP_EVIDENCE,
+        file: null, test: null, gap: g, trial: g.trial, files: Array.isArray(g.files) ? g.files : [], count: o.count, rank: candidates.length + 1,
+        why: 'self/loop.mjs ' + rec.date + ': group ' + o.group + ' missed ' + o.count + ' of ' + o.asked + ' at seed ' + rec.seed + ' (' + o.wrong + ' wrong, ' + o.refused + ' refused)',
+      });
+    }
+    return { read: true, where, record: name, date: rec.date ?? null, seed: rec.seed ?? null, open: open.length, withoutTrial: open.length - candidates.length, reason: null, candidates };
+  } catch (e) { return { ...none('the loop record is unreadable: ' + String((e && e.message) || e).split('\n')[0]), candidates: [] }; }
+}
+
+export const LOOP_TRIAL_MARK = '@@LOOP-TRIAL@@';
+/**
+ * One loop candidate. Dry: would-run-trial. Live: its trial, at most LOOP_TRIALS_PER_RUN per run, in a child process
+ * through bench/gaps.mjs runTrial (the budget wrapper, the free-RAM wait and the ledger's own parser, exactly as the
+ * ledger's trials run). A child, not an import: self/gaps.mjs imports this file while its own top-level await runs.
+ */
+export function loopRound(c, { root = ROOT, dry = false, budget = { left: LOOP_TRIALS_PER_RUN }, spawn = spawnSync } = {}) {
+  const t = c && c.trial;
+  const before = c && c.gap && Number.isFinite(c.gap.measured) ? c.gap.measured : null;
+  if (!t || !Array.isArray(t.argv) || !t.argv.length) return { decision: 'refused', wall: 'trial', reason: 'the loop candidate carries no trial' };
+  const out = { trial: t.command, before };
+  if (dry) return { ...out, decision: 'would-run-trial', reason: 'dry: the trial is named, never run' };
+  if (!(budget.left > 0)) return { ...out, decision: 'refused', wall: 'budget', reason: 'the loop runs at most ' + LOOP_TRIALS_PER_RUN + ' trial per autopilot run' };
+  budget.left--;
+  const t0 = Date.now();
+  const script = [
+    'const G = await import(process.argv[1]);',
+    'const r = await G.runTrial(JSON.parse(process.argv[2]), { root: process.argv[3] });',
+    'console.log(' + JSON.stringify(LOOP_TRIAL_MARK) + ' + JSON.stringify({ completed: r.completed, exitCode: r.exitCode, metric: r.metric, printedMetric: r.printedMetric, seconds: r.seconds, firstLine: r.firstLine }));',
+  ].join('\n');
+  const r = spawn(process.execPath, ['--input-type=module', '-e', script, pathToFileURL(path.join(root, 'bench', 'gaps.mjs')).href, JSON.stringify(t), root], {
+    cwd: root, encoding: 'utf8', env: cleanEnv(), windowsHide: true, timeout: Math.max(1, Number(t.minutes) || 2) * 3 * 60_000, maxBuffer: 64 * 1024 * 1024,
+  });
+  const line = String(r.stdout || '').split(/\r?\n/).reverse().find((l) => l.startsWith(LOOP_TRIAL_MARK));
+  let res = null;
+  try { res = line ? JSON.parse(line.slice(LOOP_TRIAL_MARK.length)) : null; } catch { res = null; }
+  const after = res && res.printedMetric && Number.isFinite(res.metric) ? res.metric : null;
+  const ran = { ...out, exit: res ? res.exitCode : r.status, ms: Date.now() - t0, after };
+  if (!res || res.exitCode !== 0 || after === null) return { ...ran, decision: 'refused', wall: 'trial', reason: 'the trial ' + (!res ? 'child printed no result (exit ' + r.status + ')' : res.exitCode !== 0 ? 'exited ' + res.exitCode + (res.firstLine ? ': ' + res.firstLine : '') : 'printed no reading for its parser ' + t.parser) };
+  return { ...ran, decision: after === 0 ? 'trial-closed' : 'trial-open', reason: 'the trial read ' + after + ' (the record: ' + before + '); a trial changes no file, the next self/loop.mjs tick says closed' };
+}
+
+// THE LOOP TICK (board 35 builder, item self-loop). The 05:00 BrainAutopilot task runs a SOAK
+// (tools/schedule-autopilot.mjs tickArgv: bin/brain.mjs self-code --auto --soak 90), and a soak reads the
+// gap ledger, never the loop source above. So the soak itself runs `node self/loop.mjs` once a day, BEFORE
+// it reads the ledger: the tick rewrites state/self/gaps.jsonl (a fresh self/gaps.mjs rebuild plus one row
+// per open miss group, each with its trial), and the gap queue of that same soak plans those rows like any
+// other. Guarded: never in a dry soak, never when --sources leaves gaps out, never on a root that is not
+// this tree (self/loop.mjs ticks this tree; a planted test root never spawns it), never twice a day (the
+// record state/self/loop/<today>.json is the mark), and --loop-tick off turns it off.
+export const LOOP_TICK_TIMEOUT_MS = 20 * 60_000;
+const localDay = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+/** Whether a soak on root runs the loop tick now: { run, date, record, why }. */
+export function loopTickPlan({ root = ROOT, tree = ROOT, dir = null, dry = false, wantGaps = true, off = false, now = new Date() } = {}) {
+  const date = localDay(now);
+  const d = dir ? path.resolve(root, dir) : path.join(root, ...LOOP_REL.split('/'));
+  const record = relOf(root, path.join(d, date + '.json'));
+  const no = (why) => ({ run: false, date, record, why });
+  if (off) return no('--loop-tick off');
+  if (dry) return no('a dry soak writes nothing');
+  if (!wantGaps) return no('--sources leaves gaps out');
+  if (path.resolve(root) !== path.resolve(tree)) return no('the soak root is not this tree; self/loop.mjs ticks this tree only');
+  if (existsSync(path.join(d, date + '.json'))) return no(record + ' exists: today ticked already');
+  return { run: true, date, record, why: 'no record for ' + date };
+}
+/** One loop tick in a child process (self/loop.mjs re-executes itself under its socket guard): its LOOP line and exit. */
+export function runLoopTick({ root = ROOT, date, spawn = spawnSync } = {}) {
+  const t0 = Date.now();
+  const r = spawn(process.execPath, ['--max-old-space-size=4000', path.join(root, 'self', 'loop.mjs'), '--date', date], {
+    cwd: root, encoding: 'utf8', env: cleanEnv(), windowsHide: true, timeout: LOOP_TICK_TIMEOUT_MS, maxBuffer: 64 * 1024 * 1024,
+  });
+  const out = String(r.stdout || '').split(/\r?\n/);
+  const line = out.find((l) => /^LOOP \d{4}-\d{2}-\d{2}: asked /.test(l)) || null;
+  const err = String(r.stderr || '').split(/\r?\n/).find((l) => l.trim()) || null;
+  return { exit: r.status, line, ms: Date.now() - t0, error: r.error ? String(r.error.message || r.error) : err };
+}
+
+/**
+ * node self/autopilot.mjs --dry [--sources a,b] [--loop-dir DIR] [--json]: every source's candidate count, then one line
+ * per loop candidate with the decision a dry autopilot takes on it and its trial command. Nothing runs, nothing is written;
+ * a live run is bin/brain.mjs self-code --auto (runFromCli), as before. Returns the exit code.
+ */
+export function autopilotDryCli(argv, { root = ROOT, print = (s) => console.log(s) } = {}) {
+  const val = (f) => { const i = argv.indexOf(f); return i >= 0 && i + 1 < argv.length ? argv[i + 1] : null; };
+  if (!argv.includes('--dry')) { print('usage: node self/autopilot.mjs --dry [--sources a,b] [--loop-dir DIR] [--json]  (lists the candidates; a live run is bin/brain.mjs self-code --auto)'); return 2; }
+  const sources = val('--sources') ? val('--sources').split(',').map((s) => s.trim()).filter(Boolean) : null;
+  const col = collectCandidates({ root, run: false, sources, loopDir: val('--loop-dir') });
+  const loop = col.candidates.filter((c) => c.source === LOOP_SOURCE);
+  const r = loop.length ? runAutopilot({ root, dry: true, candidates: loop, rerun: false, lock: false }) : null;
+  const decided = new Map((r ? r.decisions : []).filter((d) => d.candidate === true).map((d) => [d.key, d]));
+  const per = Object.entries(col.sources).map(([k, v]) => k + ' ' + (v && Number.isFinite(v.candidates) ? v.candidates : 0));
+  if (argv.includes('--json')) {
+    print(JSON.stringify({ dry: true, root, candidates: col.candidates.length, sources: col.sources, loop: loop.map((c) => ({ rank: c.rank, key: c.key, count: c.count, decision: decided.has(c.key) ? decided.get(c.key).decision : null, trial: c.trial.command })) }, null, 1));
+    return 0;
+  }
+  print('self-code autopilot --dry: ' + col.candidates.length + ' candidates (' + per.join(', ') + '); nothing run, nothing written');
+  const s = col.sources.loop;
+  if (s) print('  loop: ' + (s.read ? s.open + ' open miss groups in ' + s.where + '/' + s.record + ' (date ' + s.date + ', seed ' + s.seed + '), ' + s.candidates + ' candidates ranked by count' : 'no candidate (' + s.reason + ')'));
+  const lp = loopTickPlan({ root, dir: val('--loop-dir') });
+  print('  loop tick: a live soak on this tree now ' + (lp.run ? 'WOULD RUN node self/loop.mjs --date ' + lp.date + ' before reading the ledger (' + lp.why + ')' : 'would not run it (' + lp.why + ')'));
+  for (const c of loop) {
+    const d = decided.get(c.key);
+    print('  LOOP CANDIDATE ' + c.rank + ' ' + c.key + ' count ' + c.count + ' (' + c.gap.measuredWrong + ' wrong, ' + c.gap.measuredRefused + ' refused of ' + c.gap.asked + ' asked) ' + (d ? String(d.decision).toUpperCase() : 'UNDECIDED') + ': ' + c.trial.command);
+  }
+  return 0;
 }
 
 // ================================================================ THE SOAK (Board 14)
@@ -1769,6 +1926,18 @@ export async function runSoak(o = {}) {
     const s0 = sweep('from a segment of this soak that was killed');
     st.copies.swept += s0.removed;
     mkdirSync(tmpRoot, { recursive: true });
+
+    // board 35 builder (item self-loop): THE LOOP TICK, once a day on this tree, before the ledger is read
+    // (loopTickPlan above), so the morning's open miss groups are rows of the gap queue below. Seams: loopTickFn, loopTree.
+    const loopPlan = loopTickPlan({ root, tree: typeof o.loopTree === 'string' ? o.loopTree : ROOT, dry: cfg.dry, wantGaps, off: /^(off|false|0|no)$/i.test(String(o['loop-tick'] ?? '')) });
+    if (loopPlan.run) {
+      say('LOOP tick ' + loopPlan.date + ': node self/loop.mjs --date ' + loopPlan.date + ' (' + loopPlan.why + ')');
+      let lt;
+      try { lt = await (o.loopTickFn || runLoopTick)({ root, date: loopPlan.date }); } catch (e) { lt = { exit: null, line: null, ms: null, error: firstLine(e) }; }
+      st.loopTick = { date: loopPlan.date, at: new Date().toISOString(), exit: lt.exit ?? null, line: lt.line ?? null, ms: lt.ms ?? null, error: lt.exit === 0 ? null : lt.error ?? null };
+      save();
+      say('  ' + (lt.line || 'no LOOP line') + '  (exit ' + lt.exit + (lt.ms !== null && lt.ms !== undefined ? ', ' + lt.ms + ' ms' : '') + (lt.exit !== 0 && lt.error ? ': ' + String(lt.error).slice(0, 200) : '') + ')');
+    } else if (path.resolve(root) === path.resolve(typeof o.loopTree === 'string' ? o.loopTree : ROOT)) say('LOOP tick: not run (' + loopPlan.why + ')');
 
     // 3. the ledger: rebuilt when it is older than 24 h
     let lines = [];
@@ -2591,4 +2760,8 @@ async function childMain(mode, args) {
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === SELF_FILE && process.argv[2] === '--child') {
   childMain(process.argv[3], process.argv.slice(4)).catch((e) => childOut({ ok: false, reason: String(e && e.message || e).split('\n')[0] }));
+}
+// board 35 builder (item self-loop): node self/autopilot.mjs --dry lists the candidates, the loop ones with their trial
+if (process.argv[1] && path.resolve(process.argv[1]) === SELF_FILE && process.argv[2] !== '--child') {
+  process.exitCode = autopilotDryCli(process.argv.slice(2));
 }

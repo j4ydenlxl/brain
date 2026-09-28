@@ -903,3 +903,235 @@ test('the code-native readers answer a code prompt with provider null, and a poe
   assert.notEqual(off.route, 'code-native', 'opts.codeNative false skips the readers');
   assert.equal(P.CODE_NATIVE.answered, mid.answered);
 });
+
+// ---------------------------------------------------------------- the program guard (board 35, item program-guard)
+// A planted store at the count level (every prompt with three quantities matches it) whose program fit a money word
+// problem: the same number shape (6, 8, 5) asked as a weekday question. With the guard off (the control) the tier
+// answers the weekday prompt 43; with it on, gate 6 refuses it by name and the money problem is still answered.
+const GUARD_MONEY = 'Tom earns 6 dollars each day for 8 days and spends 5 dollars. How many dollars does he have left?';
+const GUARD_WEEK = 'Tom works 6 hours each day for 8 days, starting on a Monday, then rests 5 days. What day of the week does he rest last?';
+async function guardStore(forms) {
+  const I = await import('../reason/induce.mjs');
+  const store = await plantedStore(GUARD_MONEY, 'sub(mul(q0,q1),q2)', 1, 'count');
+  if (forms) {
+    const [entry] = Object.values(store.levels.count)[0];
+    entry.forms = { roles: [I.questionForm(GUARD_MONEY).role], rows: 3 };
+  }
+  return store;
+}
+
+test('the program guard: a planted money program is refused on a weekday prompt with the same number shape, and still answers the money problem', async (t) => {
+  const P = await import('../act/prompt.mjs');
+  const { brain } = newBrain(t, { name: 'program-guard-kind' });
+  const store = await guardStore(false);
+  assert.equal(P.otherKind(GUARD_MONEY), null, 'the money problem names no other kind');
+  assert.equal(P.otherKind(GUARD_WEEK), 'weekday');
+  const wasOn = P.programGuard();
+  try {
+    // the control: with the guard off the tier answers the weekday prompt from the money program (so the test can fail)
+    P.programGuard(false);
+    const off = await ask(brain, GUARD_WEEK, { provider: 'null', programs: store });
+    assert.equal(off.from, 'program');
+    assert.equal(off.text.split('\n').at(-1), '43', 'the money program over 6, 8 and 5 is 43');
+    // the guard: refused by gate 6, and the money problem still answered by the same program
+    P.programGuard(true);
+    const before = { ...P.PROGRAM_TIER };
+    const kinds = { ...P.PROGRAM_KINDS };
+    const week = await ask(brain, GUARD_WEEK, { provider: 'null', programs: store });
+    assert.notEqual(week.from, 'program', 'the weekday prompt is not answered by the tier');
+    assert.notEqual(week.text.split('\n').at(-1), '43');
+    const money = await ask(brain, GUARD_MONEY, { provider: 'null', programs: store });
+    assert.equal(money.from, 'program');
+    assert.equal(money.text.split('\n').at(-1), '43');
+    assert.equal(money.program.text, 'sub(mul(q0,q1),q2)');
+    // PROGRAM_TIER counts the refusal under its named counter, and PROGRAM_KINDS names the kind
+    assert.ok(P.PROGRAM_TIER.kind > before.kind, 'PROGRAM_TIER.kind counts the refusal');
+    assert.ok((P.PROGRAM_KINDS.weekday || 0) > (kinds.weekday || 0), 'PROGRAM_KINDS.weekday counts it by name');
+    assert.equal(P.PROGRAM_TIER.answered - before.answered, 1, 'only the money problem was answered');
+  } finally { P.programGuard(wasOn); }
+});
+
+test('the program guard: gate 7 answers only a form the program fit, counts form and unformed, and a formless planted store skips it', async (t) => {
+  const P = await import('../act/prompt.mjs');
+  const I = await import('../reason/induce.mjs');
+  // BAKER has the same three quantities (6, 8, 5), names no other kind, and has another question form
+  assert.equal(P.otherKind(BAKER), null);
+  assert.notEqual(I.questionForm(BAKER).role, I.questionForm(GUARD_MONEY).role);
+  const formed = await guardStore(true);
+  // 1. a formless planted store (no forms anywhere): gate 7 is skipped, BAKER is answered
+  const formless = await guardStore(false);
+  assert.ok(P.programAnswer(BAKER, { provider: 'null', programs: formless }), 'a store with no forms at all skips gate 7');
+  // 2. the entry carries the money problem's form: BAKER is refused under PROGRAM_TIER.form, the money problem answered
+  let before = { ...P.PROGRAM_TIER };
+  assert.equal(P.programAnswer(BAKER, { provider: 'null', programs: formed }), null);
+  assert.equal(P.PROGRAM_TIER.form - before.form, 1, 'PROGRAM_TIER.form counts the refusal');
+  assert.equal(P.PROGRAM_TIER.answered, before.answered);
+  const hit = P.programAnswer(GUARD_MONEY, { provider: 'null', programs: formed });
+  assert.ok(hit);
+  assert.equal(hit.hit.answer, '43');
+  // the control: the form gate alone off answers BAKER from the same store
+  const was = P.PROGRAM_GUARD.form;
+  try { P.PROGRAM_GUARD.form = false; assert.ok(P.programAnswer(BAKER, { provider: 'null', programs: formed }), 'with gate 7 off the program answers BAKER'); }
+  finally { P.PROGRAM_GUARD.form = was; }
+  // 3. a store that declares forms but whose entry carries none fails closed under PROGRAM_TIER.unformed
+  const declared = { ...(await guardStore(false)), forms: { version: 1 } };
+  before = { ...P.PROGRAM_TIER };
+  assert.equal(P.programAnswer(GUARD_MONEY, { provider: 'null', programs: declared }), null);
+  assert.equal(P.PROGRAM_TIER.unformed - before.unformed, 1, 'PROGRAM_TIER.unformed counts the refusal');
+  // 4. the kind gate runs before a program is asked: the weekday prompt never counts as asked
+  before = { ...P.PROGRAM_TIER };
+  assert.equal(P.programAnswer(GUARD_WEEK, { provider: 'null', programs: formed }), null);
+  assert.equal(P.PROGRAM_TIER.kind - before.kind, 1);
+  assert.equal(P.PROGRAM_TIER.asked, before.asked, 'gate 6 refuses before any program is asked');
+});
+
+test('the program guard: a learned-programs.json planted in a temp dir loads only entries with provenance; a missing one is a no-op', async (t) => {
+  const P = await import('../act/prompt.mjs');
+  const I = await import('../reason/induce.mjs');
+  const { writeFileSync } = await import('node:fs');
+  const dir = mkdtempSync(path.join(tmpdir(), 'program-guard-'));
+  t.after(() => { rmSync(dir, { recursive: true, force: true }); P.resetPrograms(); });
+  const base = path.join(dir, 'base.json');
+  writeFileSync(base, JSON.stringify(await plantedStore(BAKER, 'sub(mul(q0,q1),q2)', 1)));
+  const pat = I.patterns(I.parse(KITES)).cue;
+  const prov = { inducedFrom: ['gsm8k.1'], lesson: 'planted', level: 'cue', pattern: pat, date: '2026-09-28' };
+  const learnedFile = path.join(dir, 'learned-programs.json');
+  writeFileSync(learnedFile, JSON.stringify({
+    at: '2026-09-28T00:00:00.000Z',
+    levels: { cue: { [pat]: [
+      { program: 'add(q0,q1)', ops: 1, support: 2, chain: 2, records: ['gsm8k.1', 'gsm8k.2'], chainRecords: ['gsm8k.1', 'gsm8k.2'], tried: 2, learned: prov },
+      { program: 'mul(q0,q1)', ops: 1, support: 2, chain: 2, records: [], chainRecords: [], tried: 2, learned: prov },
+      { program: 'sub(q1,q0)', ops: 1, support: 2, chain: 2, records: ['gsm8k.3', 'gsm8k.4'], chainRecords: [], tried: 2 },
+      { program: 'nope(q0', ops: 1, support: 2, chain: 2, records: ['gsm8k.5', 'gsm8k.6'], chainRecords: [], tried: 2, learned: prov },
+    ] } },
+  }));
+  const before = { ...P.PROGRAM_TIER };
+  const store = P.programStore(base, { learned: learnedFile });
+  assert.ok(store);
+  assert.equal(P.PROGRAM_TIER.learned - before.learned, 1, 'one entry has provenance');
+  assert.equal(P.PROGRAM_TIER.learnedRefused - before.learnedRefused, 3, 'no records, no learned.inducedFrom, an unreadable program');
+  assert.deepEqual(store.levels.cue[pat].map((e) => e.program), ['add(q0,q1)']);
+  assert.deepEqual(store.levels.cue[pat][0].learned, prov, 'the provenance is kept on the loaded entry');
+  // the induced entries come first and are unchanged
+  assert.deepEqual(Object.keys(store.levels.cue).sort(), [I.patterns(I.parse(BAKER)).cue, pat].sort());
+  const { brain } = newBrain(t, { name: 'program-guard-learned' });
+  const a = await ask(brain, KITES, { provider: 'null', programs: store });
+  assert.equal(a.from, 'program');
+  assert.equal(a.text.split('\n').at(-1), '18');
+  // a missing learned file is a no-op: nothing counted, the store is the base store
+  const base2 = path.join(dir, 'base2.json');
+  writeFileSync(base2, JSON.stringify(await plantedStore(BAKER, 'sub(mul(q0,q1),q2)', 1)));
+  const mid = { ...P.PROGRAM_TIER };
+  const plain = P.programStore(base2, { learned: path.join(dir, 'absent.json') });
+  assert.ok(plain);
+  for (const k of ['learned', 'learnedRefused', 'learnedFailures']) assert.equal(P.PROGRAM_TIER[k], mid[k], k + ' unchanged');
+  assert.equal(plain.levels.cue[pat], undefined);
+  // an unreadable learned file is counted once and loads nothing
+  const base3 = path.join(dir, 'base3.json');
+  writeFileSync(base3, JSON.stringify(await plantedStore(BAKER, 'sub(mul(q0,q1),q2)', 1)));
+  const badLearned = path.join(dir, 'bad-learned.json');
+  writeFileSync(badLearned, '{ not json');
+  const b3 = P.programStore(base3, { learned: badLearned });
+  assert.ok(b3);
+  assert.equal(P.PROGRAM_TIER.learnedFailures - mid.learnedFailures, 1);
+  assert.equal(b3.levels.cue[pat], undefined);
+  // the default load names bench/verdicts/learned-programs.json
+  assert.equal(path.relative(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'), P.LEARNED_STORE).replaceAll('\\', '/'), 'bench/verdicts/learned-programs.json');
+});
+
+// ---------------------------------------------------------------- the learned load's development check (board 35, item program-guard, the fix)
+// A learned entry is loaded only when it answers none of its base store's development rows (devRows) wrong; the default
+// store reaches its overlay through PROGRAM_LEARNED.file, so a planted file there exercises the default load itself.
+const learnedEntry = (program, pat, extra = {}) => ({ program, ops: 1, support: 2, chain: 2, records: ['gsm8k.1', 'gsm8k.2'], chainRecords: ['gsm8k.1', 'gsm8k.2'], tried: 2, learned: { inducedFrom: ['gsm8k.1', 'gsm8k.2'], lesson: 'planted', level: 'cue', pattern: pat, date: '2026-09-28' }, ...extra });
+
+test('the program guard: the default store loads its learned overlay through PROGRAM_LEARNED.file, and a missing one is a no-op', async (t) => {
+  const P = await import('../act/prompt.mjs');
+  const I = await import('../reason/induce.mjs');
+  const { writeFileSync } = await import('node:fs');
+  const dir = mkdtempSync(path.join(tmpdir(), 'program-guard-default-'));
+  const was = P.PROGRAM_LEARNED.file;
+  t.after(() => { P.PROGRAM_LEARNED.file = was; P.resetPrograms(); rmSync(dir, { recursive: true, force: true }); });
+  assert.equal(was, P.LEARNED_STORE, 'the default overlay is bench/verdicts/learned-programs.json');
+  const SPARROWS = 'Mia paid $4 for tea with a 9% tip, waited 13 minutes, sold 21 cups each day and 30 more cups. How many cups did she sell?';
+  const form = I.questionForm(SPARROWS).role;
+  const pat = I.patterns(I.parse(SPARROWS)).cue;
+  const program = 'add(add(add(add(q0,q1),q2),q3),q4)';
+  // a missing overlay: the default store loads, nothing is counted
+  P.PROGRAM_LEARNED.file = path.join(dir, 'absent.json');
+  P.resetPrograms();
+  let before = { ...P.PROGRAM_TIER };
+  const base = P.programStore();
+  assert.ok(base && base.levels, 'the default store loads');
+  for (const k of ['learned', 'learnedRefused', 'learnedFailures', 'learnedContradicted', 'learnedUnchecked']) assert.equal(P.PROGRAM_TIER[k], before[k], k + ' unchanged with no overlay');
+  assert.ok(base.devRows && Array.isArray(base.devRows.rows) && base.devRows.rows.length > 0, 'the default store carries its development index');
+  assert.ok(!base.devRows.rows.some((r) => r[1] === form), 'precondition: no development row carries the planted form');
+  assert.ok(!((base.levels.cue[pat] || []).some((e) => e.program === program)), 'the planted program is not in the store without the overlay');
+  // the planted overlay at the default path: loaded by programStore() with no argument, after the induced entries
+  const file = path.join(dir, 'learned.json');
+  writeFileSync(file, JSON.stringify({ levels: { cue: { [pat]: [learnedEntry(program, pat, { forms: { roles: [form] } })] } } }));
+  P.PROGRAM_LEARNED.file = file;
+  P.resetPrograms();
+  before = { ...P.PROGRAM_TIER };
+  const s = P.programStore();
+  assert.equal(P.PROGRAM_TIER.learned - before.learned, 1, 'the default load read the overlay');
+  assert.equal(P.PROGRAM_TIER.learnedContradicted - before.learnedContradicted, 0);
+  assert.equal(s.levels.cue[pat].at(-1).program, program, 'appended after the induced entries of its pattern');
+  // a path store is not the default store: it loads no overlay unless the caller names one
+  P.resetPrograms();
+  before = { ...P.PROGRAM_TIER };
+  const other = path.join(dir, 'copy.json');
+  writeFileSync(other, JSON.stringify(await plantedStore(BAKER, 'sub(mul(q0,q1),q2)', 1)));
+  P.programStore(other);
+  assert.equal(P.PROGRAM_TIER.learned, before.learned, 'a path store loads no overlay by default');
+});
+
+test('the program guard: a learned entry that answers a development row of its base store wrong is never loaded; the control loads it', async (t) => {
+  const P = await import('../act/prompt.mjs');
+  const I = await import('../reason/induce.mjs');
+  const { writeFileSync } = await import('node:fs');
+  const dir = mkdtempSync(path.join(tmpdir(), 'program-guard-dev-'));
+  t.after(() => { P.PROGRAM_GUARD.learnedCheck = true; P.resetPrograms(); rmSync(dir, { recursive: true, force: true }); });
+  const pat = I.patterns(I.parse(KITES)).cue;
+  const form = I.questionForm(KITES).role;
+  const L = { ...I.leafTable(I.parse(KITES)) }; // 7 and 11: add(q0,q1) is 18
+  const learnedFile = path.join(dir, 'learned.json');
+  writeFileSync(learnedFile, JSON.stringify({ levels: { cue: { [pat]: [learnedEntry('add(q0,q1)', pat, { forms: { roles: [form] } })] } } }));
+  const baseWith = async (name, rows, extra = {}) => {
+    const f = path.join(dir, name);
+    writeFileSync(f, JSON.stringify({ ...(await plantedStore(BAKER, 'sub(mul(q0,q1),q2)', 1)), ...extra, ...(rows ? { devRows: { version: 1, rows } } : {}) }));
+    return f;
+  };
+  const delta = (b) => Object.fromEntries(['learned', 'learnedContradicted', 'learnedUnchecked'].map((k) => [k, P.PROGRAM_TIER[k] - b[k]]));
+  // 1. a development row of the entry's form whose gold is not 18: contradicted, not loaded, and the tier does not answer
+  let before = { ...P.PROGRAM_TIER };
+  const s1 = P.programStore(await baseWith('b1.json', [['dev.1', form, L, 99]]), { learned: learnedFile });
+  assert.deepEqual(delta(before), { learned: 0, learnedContradicted: 1, learnedUnchecked: 0 });
+  assert.equal(s1.levels.cue[pat], undefined);
+  const { brain } = newBrain(t, { name: 'program-guard-devrows' });
+  assert.notEqual((await ask(brain, KITES, { provider: 'null', programs: s1 })).from, 'program', 'no learned entry answers KITES');
+  // 2. the same row with the gold 18: the entry agrees with it and loads (the check does not refuse every entry)
+  before = { ...P.PROGRAM_TIER };
+  const s2 = P.programStore(await baseWith('b2.json', [['dev.1', form, L, 18]]), { learned: learnedFile });
+  assert.deepEqual(delta(before), { learned: 1, learnedContradicted: 0, learnedUnchecked: 0 });
+  const a2 = await ask(brain, KITES, { provider: 'null', programs: s2 });
+  assert.equal(a2.from, 'program');
+  assert.equal(a2.text.split('\n').at(-1), '18');
+  // 3. a row of the same cue pattern but another form (gate 7 never lets it reach the entry) does not contradict it
+  const otherForm = form + ',n';
+  assert.equal(I.patternAt(otherForm, 'cue'), pat);
+  before = { ...P.PROGRAM_TIER };
+  P.programStore(await baseWith('b3.json', [['dev.3', otherForm, L, 99]]), { learned: learnedFile });
+  assert.deepEqual(delta(before), { learned: 1, learnedContradicted: 0, learnedUnchecked: 0 });
+  // 4. the control: with PROGRAM_GUARD.learnedCheck false the contradicted entry loads (so the check is what refused it)
+  P.PROGRAM_GUARD.learnedCheck = false;
+  before = { ...P.PROGRAM_TIER };
+  const s4 = P.programStore(await baseWith('b4.json', [['dev.1', form, L, 99]]), { learned: learnedFile });
+  assert.deepEqual(delta(before), { learned: 1, learnedContradicted: 0, learnedUnchecked: 0 });
+  assert.equal(s4.levels.cue[pat][0].program, 'add(q0,q1)');
+  P.PROGRAM_GUARD.learnedCheck = true;
+  // 5. a base store that declares forms and carries no devRows cannot be checked: nothing loads, learnedUnchecked counts it
+  before = { ...P.PROGRAM_TIER };
+  const s5 = P.programStore(await baseWith('b5.json', null, { forms: { version: 1 } }), { learned: learnedFile });
+  assert.deepEqual(delta(before), { learned: 0, learnedContradicted: 0, learnedUnchecked: 1 });
+  assert.equal(s5.levels.cue[pat], undefined);
+});

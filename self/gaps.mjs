@@ -453,6 +453,14 @@ export const FORMS = Object.freeze({
     minutes: 3, needsModel: false, where: 'tree', writes: [], parser: 'selfQueries', diskMb: 64,
     doc: 'bench/self-queries.mjs --n N --nowrite: N generated questions at each held-out seed (34, 35), model off, the self test and every control first; nothing written',
   },
+  // board 35 builder (item self-loop): one miss group of a self/loop.mjs tick measured again. self/loop.mjs appends
+  // '--seed', S, '--group', G (the tick's own seed and the group's template id) through trialOf(key, form), so the
+  // trial asks exactly the rows of that group the tick asked; the metric is wrong plus refused (bar 0)
+  'self-query-group': {
+    bench: 'bench/self-queries.mjs', argv: ['--max-old-space-size=4000', 'bench/self-queries.mjs', '--n', '2000', '--nowrite'],
+    minutes: 2, needsModel: false, where: 'tree', writes: [], parser: 'selfQueryGroup', diskMb: 64,
+    doc: 'bench/self-queries.mjs --n N --nowrite --seed S --group G: the rows of miss group G among N generated questions at seed S, model off, the self test and every control first; nothing written',
+  },
 });
 
 /** Which form measures a missed or unreadable verdict again, by stem. */
@@ -582,6 +590,9 @@ export const PARSERS = Object.freeze({
   soak: { name: 'gap attempts of the soak', file: () => 'bench/verdicts/soak-partial.json', read: (v) => num(get(v, 'totals.gapsOnly.attempts')) ?? num(get(v, 'totals.attempts')) },
   visionCount: { name: 'orders MET', file: () => 'bench/verdicts/vision-count.json', read: (v) => num(get(v, 'counts.MET')) },
   selfQueries: { name: 'wrong exact answers over every kind', stdout: true, read: (out) => { const m = String(out).match(/^total asked \d+ answered \d+ correct \d+ wrong (\d+)/m); return m ? num(Number(m[1])) : null; } },
+  // board 35 builder (item self-loop): the FORMS 'self-query-group' trial's metric, from the line bench/self-queries.mjs
+  // prints for a --group or --template run; null when that line is absent or asked 0 (a group not drawn is not a 0)
+  selfQueryGroup: { name: 'wrong plus refused rows of the group', stdout: true, read: (out) => { const m = String(out).match(/^SELECTED .*? asked (\d+) answered \d+ correct \d+ wrong (\d+) refused (\d+)\r?$/m); return m && Number(m[1]) > 0 ? num(Number(m[2]) + Number(m[3])) : null; } },
   test: { name: 'wall ms', row: true },
 });
 

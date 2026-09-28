@@ -261,6 +261,15 @@ const REMAINDER_RES = [
   new RegExp('^' + ASK_LEAD + 'the remainder of ' + INT_SRC + ' (?:divided by|over) ' + INT_SRC + '\\s*[?.!]?$', 'i'),
   new RegExp("^(?:what is |what's |compute |calculate |evaluate |find )?" + INT_SRC + ' (?:mod|modulo) ' + INT_SRC + '\\s*[?.!]?$', 'i'),
 ];
+// board 35 (readers-2), added: two more phrasings of the same two gaps, from self/queries.mjs's question forms.
+// "If you add every number from 1 to 10, what do you get?" names the same range sum, both ends counted; "What's
+// left over when you divide 17 by 5?" names the same remainder. Group 1 is the noun, groups 2 and 3 the ends.
+SUM_RANGE_RES.push(new RegExp('^if you add (?:up )?(?:every|each|all(?: of)?(?: the)?) (?<noun>whole numbers?|integers?|numbers?) from ' + INT_SRC + ' (?:to|through) ' + INT_SRC + '(?:,? inclusive)?,? what do you get\\s*[?.!]?$', 'i'));
+REMAINDER_RES.push(new RegExp("^(?:what is|what's) left(?: over)? when you divide " + INT_SRC + ' by ' + INT_SRC + '\\s*[?.!]?$', 'i'));
+// "Give the answer as a fraction." asks for the form exact.arith already prints: qToString gives a whole number or a
+// fraction in lowest terms, never a decimal. Only that form is met here; a decimal or rounding tail stays refused.
+const FRACTION_TAIL_RE = /(?<=[?.!])\s*(?:please\s+)?(?:(?:(?:give|write|express|state|leave|return|put)\s+(?:the\s+|your\s+)?(?:answer|result|value|it)\s+|answer\s+)?(?:as\s+(?:a\s+)?(?:(?:common|simple|simplified|reduced)\s+)?fraction(?:\s+in\s+(?:lowest|simplest)\s+terms)?|in\s+(?:lowest|simplest)\s+terms))\s*[.!]?\s*$/i;
+const FRACTION_ANSWER_RE = /^-?\d+(?:\/\d+)?$/;
 // "exactly" as the last word of a question asks for the exact value, and says nothing about its form
 const EXACTLY_RE = /,?\s+exactly(?=\s*[?.!]?\s*$)/i;
 const bigOf = (s) => (s.length <= CAPS.exponent ? BigInt(s.replace(/,/g, '')) : null);
@@ -366,6 +375,15 @@ export function solve(prompt) {
       // an answer from the nine kinds that is not a number does not meet a tail that asks for a number
       const unmet = r && KIND_METHODS.includes(r.method) && NUMBER_TAIL_RE.test(tail[0]) && !NUMBER_ANSWER_RE.test(r.answer);
       if (r && !unmet) { r.steps.unshift('set aside the instruction "' + tail[0].trim() + '" and read "' + head + '"'); return r; }
+    }
+  }
+  // board 35 (readers-2), added: a fraction asked for after an arithmetic head (FRACTION_TAIL_RE above)
+  const ftail = FRACTION_TAIL_RE.exec(text);
+  if (ftail && ftail.index > 0) {
+    const head = text.slice(0, ftail.index).replace(/[ ,;:]+$/, '').trim();
+    if (head && head !== text.trim()) {
+      const r = solve(head);
+      if (r && r.method === 'exact.arith' && FRACTION_ANSWER_RE.test(r.answer)) { r.steps.unshift('the instruction "' + ftail[0].trim() + '" asks for the form exact arithmetic prints; read "' + head + '"'); return r; }
     }
   }
   return null;
