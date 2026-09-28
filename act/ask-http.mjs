@@ -50,6 +50,15 @@ import { seedBasic } from '../seeds/basic.mjs';
 import { installGuard, DEFAULT_MODEL_URL } from '../bin/serve.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+// The knowledge store the function answers from: the full store when the host has it (this machine),
+// else the 200 MB pack tools/knowledge-pack.mjs wrote in the same format (bench/verdicts/knowledge-pack.json:
+// recall first 62, top five 78 on 200 held-out questions), which vercel.json includeFiles ships with the
+// function (order 42 clause d). undefined means act/prompt.mjs's default, KNOWLEDGE_DIR.
+export const PACK_DIR = path.join(ROOT, 'bench', 'fixtures', 'wiki', 'pack-200');
+export function knowledgeDir() {
+  if (knowledgeReady().ok) return undefined;
+  return knowledgeReady(PACK_DIR).ok ? PACK_DIR : undefined;
+}
 export const BASE_NAME = 'BRAIN_LLM_BASE';
 export const KEY_NAME = 'BRAIN_LLM_KEY';
 export const MODEL_NAME = 'BRAIN_LLM_MODEL';
@@ -170,8 +179,9 @@ export function createHandler(o = {}) {
     solve('what is 17 times 23'); solve('write a poem about the sea');
     const warm = seedBasic({ name: 'warm', ledger: 'off' });
     for (const q of ['what is 17 times 23', 'write a poem about the sea']) await ask(warm, q, { provider: 'null', k: 5, events: [] });
-    const k = knowledgeReady();
-    const knowledge = { ready: Boolean(k.ok), why: rel(k.ok ? 'the knowledge store is ingested and open to the tier' : k.reason) };
+    const kdir = knowledgeDir();
+    const k = knowledgeReady(kdir);
+    const knowledge = { ready: Boolean(k.ok), why: rel(k.ok ? (kdir ? 'the 200 MB knowledge pack is open to the tier' : 'the knowledge store is ingested and open to the tier') : k.reason), dir: kdir ? rel(kdir) : null };
     stats.coldStartMs = Number((performance.now() - t0).toFixed(3));
     return { brain, knowledge, guard };
   }
@@ -251,6 +261,7 @@ export function createHandler(o = {}) {
     const opts = configured
       ? { provider: 'env', envBase: BASE_NAME, envKey: keyNameFor(env), model: env[MODEL_NAME] || undefined, k: 5, events: [], timeoutMs: LIMITS.modelMs }
       : { provider: 'null', k: 5, events: [] };
+    if (s.knowledge.dir) opts.knowledge = PACK_DIR;
     const t0 = process.hrtime.bigint();
     let a;
     try { a = await ask(s.brain, prompt, opts); } catch (e) {

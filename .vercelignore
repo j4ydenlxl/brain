@@ -8,7 +8,13 @@
 /.github
 /.claude
 /state
-/bench/fixtures
+# bench/fixtures stays home except the 200 MB knowledge pack the function reads on the host (order 42 clause d,
+# bench/verdicts/knowledge-pack.json): gitignore syntax cannot re-include a file under an excluded directory,
+# so each level is excluded with /* and the one child re-included.
+/bench/fixtures/*
+!/bench/fixtures/wiki
+/bench/fixtures/wiki/*
+!/bench/fixtures/wiki/pack-200
 /bench/verdicts
 /bench/*.jsonl
 /organism
