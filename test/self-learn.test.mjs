@@ -462,3 +462,118 @@ test('cause (4) names its window part: a whole 8-operation chain over a parse of
   assert.equal(I.leavesOf(plain.parse).length, 9);
   assert.equal(L.causeOf(plain, { groupSize: 3, chain: true }).sub, 'sharedForm');
 });
+
+// ---------------------------------------------------------------- the six mutants board 36's skeptic ran that 13 of 13 let live (checkpoint 4)
+// M4 a row may reach itself in ceilingByCause; M6 the chain program replaces the search programs; M12 a fold of
+// ceilingTwoFold reads its own rows; M13 the CHAIN.maxOps guard removed from chainCandidate; M14 its whole guard
+// removed; M15 its gold fit removed. Each test below turns red under its mutant (scratch runner, checkpoint 4) and holds
+// a control that shows the ruler can move the other way.
+
+test('M4: ceilingByCause is leave-one-out: a row whose own programs give its gold is unreachable when the other row of its form offers nothing (the control: two rows sharing the program reach each other)', () => {
+  // A offers two programs for 17; B, gold 100, offers none (no whole program over 6, 7, 2 gives 100 within MAX_OPS)
+  const A = L.prepare(mkRow('m4a', Q(3, 4, 5), '3*4=<<3*4=12>>12\n12+5=<<12+5=17>>17\n#### 17'));
+  const B = L.prepare(mkRow('m4b', Q(6, 7, 2), '6*7=<<6*7=42>>42\n42+2=<<42+2=44>>44\n#### 100'));
+  assert.equal(A.pats.role, B.pats.role);
+  assert.deepEqual(L.offersOf(A).map((p) => p.text), ['add(mul(q0,q1),q2)', 'sub(mul(q1,q2),q0)']);
+  assert.deepEqual(L.offersOf(B).map((p) => p.text), []);
+  // A's own offers give A's gold: only its own row could reach it, and the leave-one-out never asks its own row
+  assert.ok(L.offersOf(A).every((p) => L.fitsGold(I.compile(I.readProgram(p.text))(A.L), A.gold)));
+  const t = L.ceilingByCause([A, B]);
+  assert.equal(t.reachable, 0);
+  assert.equal(t.unreachable, 2);
+  assert.equal(Object.values(t.causes).reduce((a, b) => a + b, 0), 2);
+  const on = L.ceilingByCause([A, B], { chain: true });
+  assert.equal(on.reachable, 0);
+  // the control: B with the gold its chain computes shares A's program, and both are reached through the other
+  const B2 = L.prepare(mkRow('m4c', Q(6, 7, 2), '6*7=<<6*7=42>>42\n42+2=<<42+2=44>>44\n#### 44'));
+  assert.equal(L.ceilingByCause([A, B2]).reachable, 2);
+});
+
+test('M6: with the chain programs on a row offers its search programs AND its chain program: the search set is kept whole, the chain text is appended once, and a chain the search already found adds nothing', () => {
+  // the chain 4*5-3 is one of the two search programs: on equals off
+  const C = L.prepare(mkRow('m6a', Q(3, 4, 5), '4*5=<<4*5=20>>20\n20-3=<<20-3=17>>17\n#### 17'));
+  assert.equal(L.chainOf(C).text, 'sub(mul(q1,q2),q0)');
+  const offC = L.offersOf(C).map((p) => p.text);
+  const onC = L.offersOf(C, { chain: true }).map((p) => p.text);
+  assert.deepEqual(offC, ['add(mul(q0,q1),q2)', 'sub(mul(q1,q2),q0)']);
+  assert.deepEqual(onC, offC);
+  assert.deepEqual(L.chainedCandidatesOf(C).programs.map((p) => p.text), offC);
+  // the chain (2+3)*4/2 is not a search program: on is off plus it, last, marked fromChain
+  const D = L.prepare(mkRow('m6b', Q(2, 3, 4), '2+3=<<2+3=5>>5\n5*4=<<5*4=20>>20\n20/2=<<20/2=10>>10\n#### 10'));
+  assert.equal(L.chainOf(D).text, 'div(mul(add(q0,q1),q2),q0)');
+  const offD = L.offersOf(D).map((p) => p.text);
+  const onD = L.offersOf(D, { chain: true });
+  assert.equal(offD.length, 3);
+  assert.ok(!offD.includes('div(mul(add(q0,q1),q2),q0)'));
+  assert.deepEqual(onD.map((p) => p.text), [...offD, 'div(mul(add(q0,q1),q2),q0)']);
+  assert.equal(onD[onD.length - 1].fromChain, true);
+  assert.ok(onD.slice(0, -1).every((p) => !p.fromChain));
+  const cc = L.chainedCandidatesOf(D);
+  assert.deepEqual(cc.programs.map((p) => p.text), onD.map((p) => p.text));
+  assert.equal(cc.searched, true);
+  // the control: with the chain programs off, neither row offers its chain beyond what the search found
+  assert.deepEqual(L.offersOf(D, { chain: false }).map((p) => p.text), offD);
+});
+
+test('M12: ceilingTwoFold reads the OTHER folds only: two rows of one fold that share a program are not reached by each other (the control: the same two rows in different folds are)', () => {
+  // ids chosen by foldOf itself, never by hand: two of fold 0, one of fold 1
+  const ids = Array.from({ length: 64 }, (_, i) => 'm12-' + i);
+  const f0 = ids.filter((id) => L.foldOf(id, 2) === 0).slice(0, 2);
+  const f1 = ids.filter((id) => L.foldOf(id, 2) === 1).slice(0, 1);
+  assert.equal(f0.length, 2);
+  assert.equal(f1.length, 1);
+  const a = L.prepare(mkRow(f0[0], Q(3, 4, 5), '3*4=<<3*4=12>>12\n12+5=<<12+5=17>>17\n#### 17'));
+  const b = L.prepare(mkRow(f0[1], Q(6, 7, 2), '6*7=<<6*7=42>>42\n42+2=<<42+2=44>>44\n#### 44'));
+  const c = L.prepare(mkRow(f1[0], Q(5, 9, 8), '5+9=<<5+9=14>>14\n14+8=<<14+8=22>>22\n#### 22'));
+  assert.equal(a.pats.role, b.pats.role);
+  assert.equal(a.pats.role, c.pats.role);
+  // a and b share add(mul(q0,q1),q2); c's programs give 22 on 5, 9, 8 and neither 17 nor 44 on a and b
+  assert.ok(L.offersOf(a).some((p) => p.text === 'add(mul(q0,q1),q2)') && L.offersOf(b).some((p) => p.text === 'add(mul(q0,q1),q2)'));
+  assert.ok(L.offersOf(c).length >= 1);
+  for (const p of L.offersOf(c)) for (const r of [a, b]) assert.ok(!L.fitsGold(I.compile(I.readProgram(p.text))(r.L), r.gold));
+  for (const p of [...L.offersOf(a), ...L.offersOf(b)]) assert.ok(!L.fitsGold(I.compile(I.readProgram(p.text))(c.L), c.gold));
+  assert.equal(L.ceilingTwoFold([a, b, c]), 0);
+  assert.equal(L.ceilingTwoFold([a, b, c], { chain: true }), 0);
+  // the control: a in fold 0 and b2 in fold 1 reach each other across the folds
+  const b2 = L.prepare(mkRow(f1[0], Q(6, 7, 2), '6*7=<<6*7=42>>42\n42+2=<<42+2=44>>44\n#### 44'));
+  assert.equal(L.ceilingTwoFold([a, b2]), 2);
+});
+
+test('M13, M14, M15: chainCandidate refuses a chain past CHAIN.maxOps, a chain that is not whole, and a chain whose steps never compute the gold; each refusal is the one guard, shown by the chain fields', () => {
+  // M13: ten quantities summed, a 9-operation chain, ok and whole, past CHAIN.maxOps (8)
+  const vals = [3, 4, 5, 6, 7, 8, 9, 2, 11, 12];
+  const colours = ['red', 'blue', 'green', 'black', 'pink', 'gray', 'white', 'brown', 'gold', 'teal'];
+  const steps = [];
+  let acc = vals[0];
+  for (const v of vals.slice(1)) { steps.push(`${acc}+${v}=<<${acc}+${v}=${acc + v}>>${acc + v}`); acc += v; }
+  const nine = L.prepare(mkRow('m13', 'Ann has ' + vals.map((v, i) => v + ' ' + colours[i] + ' pens').join(', ') + '. How many pens does Ann have?', steps.join('\n') + '\n#### ' + acc));
+  const c9 = L.chainOf(nine);
+  assert.equal(c9.ok, true);
+  assert.equal(c9.whole, true);
+  assert.equal(c9.ops, 9);
+  assert.ok(c9.ops > L.CHAIN.maxOps);
+  assert.ok(I.leavesOf(nine.parse).length <= L.CHAIN.maxLeaves);
+  assert.ok(L.fitsGold(I.compile(I.readProgram(c9.text))(nine.L), nine.gold));
+  assert.equal(L.chainCandidate(nine), null);
+  assert.deepEqual(L.offersOf(nine, { chain: true }).map((p) => p.text), L.offersOf(nine).map((p) => p.text));
+  // M14: the chain 3*4 computes the gold 12 and reads no q2: ok, one operation, not whole
+  const part = L.prepare(mkRow('m14', Q(3, 4, 5), '3*4=<<3*4=12>>12\n#### 12'));
+  const cp = L.chainOf(part);
+  assert.equal(cp.ok, true);
+  assert.equal(cp.whole, false);
+  assert.equal(cp.text, 'mul(q0,q1)');
+  assert.ok(I.acceptable(I.compile(I.readProgram(cp.text))(part.L), part.L, 'whole'));
+  assert.equal(L.chainCandidate(part), null);
+  assert.deepEqual(L.offersOf(part, { chain: true }).map((p) => p.text), L.offersOf(part).map((p) => p.text));
+  // M15: the same steps against a gold no step computes: the chain itself is refused with the exact reason, so the
+  // gold fit in chainCandidate is a second lock on the door chainProgram already locks (the mutant alone is silent;
+  // this pins the first lock, and the pair)
+  const off = L.prepare(mkRow('m15', Q(3, 4, 5), '3*4=<<3*4=12>>12\n12+5=<<12+5=17>>17\n#### 18'));
+  const co = L.chainOf(off);
+  assert.equal(co.ok, false);
+  assert.equal(co.reason, 'no step of the chain computes the gold on the prompt numbers');
+  assert.equal(L.chainCandidate(off), null);
+  // the control: the whole 2-operation chain that computes its gold is the candidate, by its exact fields
+  const good = L.prepare(mkRow('m15c', Q(3, 4, 5), '3*4=<<3*4=12>>12\n12+5=<<12+5=17>>17\n#### 17'));
+  assert.deepEqual(L.chainCandidate(good), { text: 'add(mul(q0,q1),q2)', ops: 2, chain: true, fromChain: true });
+});
