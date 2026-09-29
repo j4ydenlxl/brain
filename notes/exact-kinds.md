@@ -106,3 +106,52 @@ What the numbers say (each line printed by a command).
 What remains.
 - "how many U's are in W" and "reverse the letters of W" with a bare word W are refused by design: a reader cannot tell a word from an idiom without a lexicon, so the phrasing has to name "the word".
 - The bar's seeds 36 and 37 have now been run twice, once per build; the fix was written from the skeptic's findings and probes on seeds 34 and 35, not from the bar's misses.
+
+## 2026-09-28: board 36, item pins: three readings pinned, the split made true, the control's second arm
+
+What was pinned (tests only; no reader changed, each case already printed this before the tests were written).
+- test/solve.test.mjs and test/exact-kinds.test.mjs (add-only): "What's the product of 1,000 and 2?", "Which is bigger, 3 or 5? Answer yes or no." and "the difference of 3 and 5" refuse in solve() and exactKinds(); their controls answer: "What is the product of 1000 and 2?" 2000 (exact.arith), "Is 7 greater than 3? Answer yes or no." yes (exact.comparison), "the difference of 5 and 3" 2 (exact.arith). A pin whose control refuses too would pin nothing.
+
+The split (bench/self-queries.mjs, the split text and the seed constants only). The seed-38/39 run was first asked at 2026-09-28T22:58:54.216Z, before the split text was edited; it printed the same totals as the runs after. Then a count showed that board 35 readers-2 had copied rows of seeds 38 and 39 into test/exact-kinds.test.mjs (its own comment says so):
+- (This count came from a one-off script that is not in the tree, so nothing re-prints it; the board 36 second verify re-counted the same 73f0293 diff by hand and printed 127 literals, 38:38/31 and 39:17/15, the same ranking with different numbers. The conclusion below rests on the ranking, which both counts share.) "OVERLAP literals added to test/exact-kinds.test.mjs by 73f0293: 101; rows matched/distinct prompts matched at n 5000 per seed: 7:22/9 8:18/5 9:12/5 34:13/7 35:17/8 36:15/7 37:14/7 38:30/23 39:15/13 40:12/7 41:12/8 42:13/5"
+- Seeds 38 and 39 stand out (23 and 13 distinct prompts; every other seed 5 to 9, the fixed-text templates). So DEV_SEEDS is 7, 8, 9, 34, 35; READ_BEFORE_FIX_SEEDS 36, 37; COPIED_INTO_TESTS_SEEDS 38, 39. A run at any of them is marked contaminated in the split, with the reason, and its statement says so (the gate's contamination rule reads the statement).
+
+What the numbers say (each line printed by a command).
+- node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir bench/verdicts -- node --max-old-space-size=4000 bench/self-queries.mjs --n 5000 --seed 38 --seed 39 (verdict at 2026-09-28T23:20:14.466Z): "total asked 10000 answered 9658 (96.58%) correct 9658 wrong 0 refused 342 answered share 0.9658"; "controls: 90000 checks on 10000 rows, 0 failed; second opinion agree 10000 disagree 0 none 0; sockets 0; instrument 2fd60882d76050b5 -> 2fd60882d76050b5"; "self test: node --test --test-reporter=tap test/self-queries.test.mjs: # tests 17 # pass 17 # fail 0"; "isTheBar true barMet true"; split.contaminated true.
+- Per kind: arithmetic, sequence, units, comparison, probability "asked 1250 answered 1250 correct 1250 wrong 0 refused 0"; "seeds 38+39 calendar     asked 1250 answered 1182 correct 1182 wrong 0 refused 68"; "seeds 38+39 counting     asked 1250 answered 1119 correct 1119 wrong 0 refused 131"; "seeds 38+39 spelling     asked 1250 answered 1107 correct 1107 wrong 0 refused 143".
+- Two templates answer nothing, by design: "miss group spelling.backwards.reverse-the-letters: 143 (0 wrong, 143 refused)" and "miss group counting.occurrences.casual-how-many: 131 (0 wrong, 131 refused)" at seeds 38 and 39, as 138 and 115 at seeds 36 and 37 above. Their bare frames were removed by the readers-2 fix: a bare word cannot be told from an idiom ("in total", "of each") without a lexicon.
+- The census control's second arm (bench/exact-kinds.mjs --unplug-spoken, add-only): the first arm unplugged only kindsReader, so the spoken rewrites of act/exact-read.mjs stayed plugged. The flag serves act/exact-read.mjs as it stood before 73f0293 through a registerHooks load hook, in a preload given to the census child. The probe proves the unplug took. node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir state/board36/pins -- node --max-old-space-size=4000 bench/exact-kinds.mjs --unplug-spoken printed:
+  - "EXACT-KINDS heldOut total: solve asked 106 answered 106 correct 106 wrong 0 refused 0 (answered share 1.0000) ns median 40000 p95 284200; ask asked 106 answered 106 correct 106 wrong 0 refused 0"
+  - "EXACT-KINDS control probe (kinds and spoken unplugged): "what's the product of 7 and 8" unplugged reads "7 + 8", the tree reads "(7) * (8)", old source served 1 time(s): the unplug took"
+  - "EXACT-KINDS control (kinds only unplugged): 32 other kinds, kept by this item: true; other kinds moved by this item: none"
+  - "EXACT-KINDS control (kinds and spoken unplugged): 32 other kinds, kept by this item and the spoken rewrites together: true; other kinds they moved: none; kinds moved by the spoken rewrites alone (kinds only vs kinds and spoken unplugged): none"
+  - child lines: kinds only unplugged and kinds and spoken unplugged both "organism native 22.68% refused 77.32% correct 50/263"; as is "organism native 40.21% refused 59.79% correct 101/263"
+  - "EXACT-KINDS tests: node --test test/solve.test.mjs test/answer.test.mjs test/exact-kinds.test.mjs -> ℹ tests 58 | ℹ pass 58 | ℹ fail 0"
+  - "EXACT-KINDS isTheBar true barMet true: held-out answered share 1.0000 (bar 0.75), wrong solve 0 ask 0, other kinds kept true, tests true"
+
+What remains.
+- bench/self-queries.mjs DEFAULT_SEEDS and its BAR_COMMAND still name seeds 34 and 35 (development now), so a run with no --seed is marked contaminated; the next clean bar needs fresh seeds (40 and 41 printed 7 and 8 distinct prompt matches above, the baseline), and choosing them is the owner's call, not this item's.
+- act/solve.mjs FRACTION_TAIL_RE (board 35) is not gated by kindsReader(false), so neither control arm unplugs it: a blind spot the census control still has.
+- The spoken rewrites moved no census kind on their own (the two unplugged arms print the same line): the census cannot see what they change, so their evidence is the tests and the self-queries bar, not the census.
+
+### Board 36 item pins, the fix after the skeptic (2026-09-28)
+
+- The second control arm now rules: `checks.spokenOtherKindsKept` (bench/exact-kinds.mjs, add-only, with --unplug-spoken)
+  joins `spokenControlRan`, so barMet is false when an other census kind moves with kindsReader AND the spoken rewrites
+  unplugged. A planted move through control() (state/board36/pins, removed after) printed "PLANT planted (arithmetic
+  moved) otherKindsKept false -> checks.spokenOtherKindsKept false moved arithmetic" and the genuine counts "otherKindsKept
+  true".
+- The self-queries statement carried the stem "contaminat" on every run, clean ones included, so the gate's label check
+  could never fail for that bench. The contamination sentence is now written only when the split marks the run
+  contaminated; at two unused seeds (777001, 777002, n 5, nothing written) it printed "split.contaminated false statement
+  has contaminat false" and "This run is clean: seeds 777001 and 777002 are none of the development seeds (7, 8, 9, 34,
+  35), the seeds read before the readers-2 fix".
+- The task named the difference probes bare. Re-probed: "difference of 3 and 5" and "difference of 5 and 3" both print
+  null (bare frame, both orders); "What is the difference of 5 and 3?" 2 exact.arith, "What is the difference of 3 and
+  5?" null. Pinned as printed in test/solve.test.mjs (add-only).
+
+Printed by the re-runs:
+- self-queries (verdict at 2026-09-28T23:42:39.759Z): "total asked 10000 answered 9658 (96.58%) correct 9658 wrong 0 refused 342 answered share 0.9658"; "verdict bench/verdicts/self-queries.json isTheBar true barMet true"; split.contaminated true and the statement says so.
+- exact-kinds (node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir bench/verdicts -- node --max-old-space-size=4000 bench/exact-kinds.mjs --unplug-spoken, verdict at 2026-09-28T23:43:49.138Z, the command the verdict states): "EXACT-KINDS heldOut total: solve asked 106 answered 106 correct 106 wrong 0 refused 0 (answered share 1.0000)"; both control lines "kept ... true" and "moved: none"; "EXACT-KINDS tests: node --test test/solve.test.mjs test/answer.test.mjs test/exact-kinds.test.mjs -> ℹ tests 59 | ℹ pass 59 | ℹ fail 0"; "EXACT-KINDS isTheBar true barMet true".
+
+The verdict this note is the card of, as the pins fix round re-ran it: bench/verdicts/exact-kinds.json at 2026-09-28T23:43:49.138Z (isTheBar true, barMet true) printed development 58 census rows with solve answered 51, correct 51, wrong 0 and ask (model off) answered 51, correct 51, wrong 0; held out 106 rows with solve answered 106 (share 1.0000), correct 106, wrong 0 and ask answered 106, correct 106, wrong 0; the other 32 census kinds kept true; tests 59 pass 59 fail 0; the second control arm (--unplug-spoken) kept every other kind (moved: none).

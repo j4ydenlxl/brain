@@ -36,12 +36,18 @@
 // --soak 90), and the soak runs this tick once a day before it reads the gap ledger (self/autopilot.mjs loopTickPlan
 // and runLoopTick), so every open group of the morning is a row of the queue the soak works on.
 //
-// MODEL OFF, COUNTED: the CLI re-executes itself once under a preload (GUARD_SOURCE, a data: URL passed to --import)
-// that refuses and counts every net.Socket connect and fetch in EVERY thread of the process, the re-ask worker
-// included (a preload runs in worker threads too); a worker's attempt reaches the main thread's count over a
-// BroadcastChannel and is also written synchronously to stderr as a line starting "LOOP SOCKET REFUSED", so a caller
-// can count it without trusting this file. A child process the tick spawns (the generator's self test) is not
-// covered and says so in the record.
+// MODEL OFF, COUNTED WHERE THE PRELOAD RUNS: the CLI re-executes itself once under a preload (GUARD_SOURCE, a data: URL
+// passed to --import) that refuses and counts every net.Socket connect and fetch in the main thread and in every worker
+// started from a FILE that inherits the process's execArgv (the --import rides on it; no Worker in this tree passes its
+// own execArgv), measured at depth one and two (the re-ask worker of self/mistakes.mjs is one); a worker's attempt reaches the main
+// thread's count over a BroadcastChannel and is also written synchronously to stderr as a line starting "LOOP SOCKET
+// REFUSED", so a caller can count it without trusting this file. NOT COVERED (NOT_COVERED, in the record as
+// sockets.notCovered): an eval:true worker (a Worker built from a source string) at any depth starts WITHOUT the preload
+// under this file-main shape (measured by board 36, test/self-loop.test.mjs and bench/self-loop.mjs grade it), so the
+// program and test workers act/run.mjs starts (near lines 155 and 386), nested inside the re-ask worker through
+// self/mistakes.mjs runTests on a humaneval row, can connect uncounted (a skeptic measured one print ECONNREFUSED
+// 127.0.0.1:9 with the count unchanged, as docs/boards/board-36.js item pins (P4) records); and every child process the
+// tick spawns (the generator's self test).
 //
 //   node self/loop.mjs [--dry] [--n 2000] [--seed <s>] [--json]
 //     [--date YYYY-MM-DD] [--state-dir DIR] [--gaps-root DIR] [--plant-closed <group>]
@@ -50,7 +56,8 @@
 //   --state-dir   where records and misses files live (default state/self/loop); the bar uses a scratch copy
 //   --gaps-root   the root whose state/self/gaps.jsonl receives the gap rows (default this tree)
 //   --plant-closed G   a control: group G, open in the previous record, is treated as answered now; the diff must
-//                 then print closed 1 for G (refused when G was not open in the previous record)
+//                 then print closed 1 for G (refused when G was not open in the previous record); needs --dry, and
+//                 without it the CLI prints the refusal and exits 2 (a planted closure in a real record is a lie)
 //   --learn       on (default), dry (learn({dry:true}); --dry implies it) or off (skipped with a line)
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync, renameSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -71,8 +78,8 @@ export const FORM_KEY = 'self-query-group';
 export const GAP_ID_PREFIX = 'self-query-group:';
 export const RECORD_KIND = 'self.loop';
 export const LEARN_MODES = Object.freeze(['on', 'dry', 'off']);
-/** The self-queries held-out seeds (bench/self-queries.mjs DEFAULT_SEEDS): the loop feeds learning, so it never asks them. */
-export const REFUSED_SEEDS = Object.freeze([34, 35]);
+/** The self-queries held-out seeds: 34 and 35 (bench/self-queries.mjs DEFAULT_SEEDS, now marked development by its split) and 40 and 41 (the first clean bar run, 2026-09-29, after seeds 36 to 39 were contaminated by board 35): the loop feeds learning, so it never asks them. */
+export const REFUSED_SEEDS = Object.freeze([34, 35, 40, 41]);
 /** The readers a group's fix would change, per kind (only the ones on disk are named in a gap row). */
 export const KIND_FILES = Object.freeze({
   arithmetic: ['act/exact-read.mjs', 'act/solve.mjs', 'act/word.mjs'],
@@ -81,6 +88,11 @@ export const KIND_FILES = Object.freeze({
   probability: ['act/exact-kinds.mjs'],
 });
 export const SOCKET_LINE = 'LOOP SOCKET REFUSED';
+/** What the preload does not reach (record.sockets.notCovered): graded against the code by the test and the bench. */
+export const NOT_COVERED = 'eval:true workers at any depth (the program and test workers act/run.mjs starts, nested inside the re-ask worker, start without the preload) and child processes (the generator self test)';
+/** What an in-process tick with no preload (a test's) does not reach: its guard is the main thread's only. */
+export const NOT_COVERED_IN_PROCESS = 'every worker thread (an in-process tick with no preload guards the main thread only) and child processes';
+export const PLANT_NEEDS_DRY = '--plant-closed needs --dry: a planted closure written into a real record is a lie';
 const DAY_MS = 86_400_000;
 const DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
 const RECORD_RE = /^(\d{4}-\d{2}-\d{2})\.json$/;
@@ -90,7 +102,7 @@ const sha256 = (s) => createHash('sha256').update(s).digest('hex');
 const byName = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 const firstLine = (e) => String((e && e.message) || e).split('\n')[0].slice(0, 300);
 
-// ---------------------------------------------------------------- the model-off guard (every thread)
+// ---------------------------------------------------------------- the model-off guard (the main thread and file workers)
 /** The preload: refuse and count every socket connect and fetch in the thread it runs in. */
 export const GUARD_SOURCE = [
   "import net from 'node:net';",
@@ -100,7 +112,7 @@ export const GUARD_SOURCE = [
   "const ch = new BroadcastChannel('brain-loop-sockets');",
   "if (isMainThread) { ch.onmessage = () => { g.workers++; }; }",
   "ch.unref();",
-  "const hit = (what) => { if (isMainThread) g.main++; else { try { ch.postMessage(1); } catch {} }",
+  "const hit = (what) => { if (isMainThread) g.main++; else { try { ch.postMessage({ hit: true }); } catch {} }",
   "  try { writeSync(2, '" + SOCKET_LINE + " ' + what + ' thread ' + threadId + '\\n'); } catch {} };",
   "net.Socket.prototype.connect = function refusedByLoop() { hit('net.Socket.connect'); throw new Error('self/loop.mjs runs model off: a socket was refused'); };",
   "if (typeof globalThis.fetch === 'function') globalThis.fetch = async () => { hit('fetch'); throw new Error('self/loop.mjs runs model off: a fetch was refused'); };",
@@ -110,11 +122,11 @@ export const GUARD_URL = 'data:text/javascript,' + encodeURIComponent(GUARD_SOUR
 /** A main-thread guard for an in-process tick with no preload (a test's): the same refusal, this thread only. */
 function mainGuard() {
   const pre = globalThis.__BRAIN_LOOP_GUARD;
-  if (pre && pre.preload) return { how: 'preload in every thread of this process', read: () => ({ main: pre.main, workers: pre.workers }), remove: () => {} };
+  if (pre && pre.preload) return { how: 'preload in the main thread and every file worker of this process that inherits its execArgv (not eval:true workers, not child processes)', notCovered: NOT_COVERED, read: () => ({ main: pre.main, workers: pre.workers }), remove: () => {} };
   const g = { main: 0 };
   let net = null, connect = null, fetch0 = null;
   return {
-    how: 'main thread only (no preload: the re-ask worker is not covered)',
+    how: 'main thread only (no preload: the re-ask worker is not covered)', notCovered: NOT_COVERED_IN_PROCESS,
     async install() {
       net = (await import('node:net')).default;
       connect = net.Socket.prototype.connect;
@@ -169,6 +181,7 @@ export function parseArgs(argv) {
   if (a.learn !== null && !LEARN_MODES.includes(a.learn)) throw new Error('--learn is one of ' + LEARN_MODES.join(', '));
   if (a.learnLimit !== null && !(Number.isInteger(a.learnLimit) && a.learnLimit > 0)) throw new Error('--learn-limit must be a positive integer');
   if (a.date !== null) seedOfDay(a.date);
+  if (a.plantClosed !== null && !a.dry) throw new Error(PLANT_NEEDS_DRY);
   return a;
 }
 
@@ -309,6 +322,7 @@ export async function tick(opts = {}) {
   const dry = opts.dry === true;
   const learnMode = dry && opts.learn === 'on' ? 'dry' : opts.learn || (dry ? 'dry' : 'on'); // dry writes nothing, learn() included
   const log = typeof opts.log === 'function' ? opts.log : () => {};
+  if (opts.plantClosed && !dry) throw new Error(PLANT_NEEDS_DRY);
   if (REFUSED_SEEDS.includes(seed)) throw new Error('seed ' + seed + ' is a self-queries held-out seed (' + REFUSED_SEEDS.join(', ') + '); the loop feeds learning, so it never asks one');
   const at = new Date().toISOString();
   const t0 = Date.now();
@@ -390,11 +404,11 @@ export async function tick(opts = {}) {
     for (const g of open) rows.push(await gapRowOf(g, { date, seed, n, recordRel, root }));
     record.gaps = { rows: rows.length, written: 0, file: record.gapsFile, ids: rows.map((r) => r.id) };
     record.gapRows = rows;
-    // sockets: this process's guard, every thread, and the self-queries run's own count
+    // sockets: this process's guard (the threads it reaches: guard.how, guard.notCovered) and the self-queries run's own count
     await new Promise((r) => setTimeout(r, 50)); // a worker's BroadcastChannel message is delivered before the count is read
     const s = guard.read();
     const learnSockets = ledger.learn && Number.isFinite(ledger.learn.sockets) ? ledger.learn.sockets : 0;
-    record.sockets = { total: (s.main || 0) + (s.workers || 0) + (v.sockets || 0) + learnSockets, main: s.main, workers: s.workers, selfQueries: v.sockets ?? null, learn: ledger.learn && ledger.learn.ran ? learnSockets : null, guard: guard.how, notCovered: 'child processes (the generator self test)' };
+    record.sockets = { total: (s.main || 0) + (s.workers || 0) + (v.sockets || 0) + learnSockets, main: s.main, workers: s.workers, selfQueries: v.sockets ?? null, learn: ledger.learn && ledger.learn.ran ? learnSockets : null, guard: guard.how, notCovered: guard.notCovered };
     record.wallMs = Date.now() - t0;
     const lb = ledger.before && Number.isFinite(ledger.before.learned) ? ledger.before.learned : 'n/a';
     const la = ledger.after && Number.isFinite(ledger.after.learned) ? ledger.after.learned : 'n/a';
@@ -441,7 +455,8 @@ const isMain = process.argv[1] && path.resolve(process.argv[1]) === SELF_FILE;
 if (isMain) {
   const argv = process.argv.slice(2);
   if (!(globalThis.__BRAIN_LOOP_GUARD && globalThis.__BRAIN_LOOP_GUARD.preload)) {
-    // once, under the preload that refuses and counts sockets in every thread (the re-ask worker included)
+    // once, under the preload that refuses and counts sockets in the main thread and every file worker (the re-ask
+    // worker included; not eval:true workers, not child processes: NOT_COVERED)
     const r = spawnSync(process.execPath, [...process.execArgv, '--import', GUARD_URL, SELF_FILE, ...argv], { stdio: 'inherit', windowsHide: true });
     process.exit(r.status ?? 1);
   }

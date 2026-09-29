@@ -50,7 +50,7 @@ The prompts were probed on gsm8k.0 to gsm8k.2, outside the slice.
 `node bench/math.mjs --limit 200 --seed 1`, through tools/budget.mjs: wall 14131.59 s, peak ram
 95.5MB). The 200 records are DEVELOPMENT records (test split, seed 1; see above). Latencies were
 measured on one Ollama queue shared with other builders (another builder had qwen3:30b-a3b loaded
-for part of the run, so records took from 16 s to over 300 s); read them as an upper bound.
+for part of the run, so records took from 16 s to over 300 s); read them as an upper bound. The verdict prints, on qwen3:1.7b, exact integer accuracy: program of thought k=5 with verify 180 of 200 = 90.00%, k=5 179 of 200 = 89.50% (95 percent interval 84.48% to 93.03%), k=1 177 of 200 = 88.50%, the model alone in prose 164 of 200 = 82.00% (76.09% to 86.71%), null 0 of 200; the bar (the k=5 interval wholly above the alone interval) is MISSED, gap 7.5 points, clearance -0.0222, paired McNemar p 0.0041 (20 records only k=5 got, 5 only alone got); mean seconds per record k=5 verify 52.81, k=5 42.26, k=1 8.73, alone 10.59; model calls per record 6.225, 5.02, 1.06 and 1; the verifier accepted 186, rejected 9, said neither 1, and re-sampling changed 3 answers. On qwen3:30b-a3b, the first 60 of these records under the 25 min wall clock cap (24.61 min spent): PoT k=1 40 of 40 = 100.00%, alone 39 of 40 = 97.50%, mean 22.23 s and 14.68 s per record.
 
 | arm (qwen3:1.7b, n 200) | exact accuracy | 95% interval | s/record | calls/record | all programs failed |
 |---|---|---|---|---|---|

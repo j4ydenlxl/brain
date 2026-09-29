@@ -300,6 +300,11 @@ const SPOKEN_TAIL_RE = /\s*(?:(?:,|\s)\s*please)?\s*(?:(?:is\s+)?(?:equal\s+to\s
 // Each rule is [pattern, replacement], applied in order, on the lower-cased text. A rule with
 // two operands keeps their order unless the words say otherwise ("subtract 3 from 10" is 10 - 3).
 const SPOKEN_RULES = [
+  // board 35 (readers-2), added: "7 more than 8" is 8 + 7 and "3 less than 10" is 10 - 3, read only when the whole
+  // remainder is two numbers around the phrase (the general "less" rule below would leave "than" and refuse).
+  [/^(-?\d+(?:\.\d+)?(?:\/\d+)?)\s+more\s+than\s+(-?\d+(?:\.\d+)?(?:\/\d+)?)$/i, '($2) + ($1)'],
+  [/^(-?\d+(?:\.\d+)?(?:\/\d+)?)\s+less\s+than\s+(-?\d+(?:\.\d+)?(?:\/\d+)?)$/i, '($2) - ($1)'],
+
   [/\bthe\s+(?:sum|total)\s+of\s+(.+?)\s+and\s+(.+)$/i, '($1) + ($2)'],
   [/\bthe\s+difference\s+(?:between|of)\s+(.+?)\s+and\s+(.+)$/i, '($1) - ($2)'],
   [/\bthe\s+product\s+of\s+(.+?)\s+and\s+(.+)$/i, '($1) * ($2)'],
@@ -332,15 +337,50 @@ const SPOKEN_RULES = [
   [/\bsqrt\s+(\d[\d.,/]*)/gi, 'sqrt($1)'],
 ];
 const SPOKEN_LETTERS_RE = /[A-Za-z]+/g;
+// board 35 (readers-2), added: the operator a lead ended on, and plain numbers joined by commas or "and"
+const SPOKEN_OP_LEAD_RE = /\bthe\s+(product|sum|total|difference|quotient)\s+(?:of|to|for)\s+$/i;
+const SPOKEN_LIST_RE = /^-?\d+(?:\.\d+)?(?:\/\d+)?(?:(?:\s*,\s*(?:and\s+)?|\s+and\s+)-?\d+(?:\.\d+)?(?:\/\d+)?)+$/i;
+const SPOKEN_LIST_SEP_RE = /\s*,\s*(?:and\s+)?|\s+and\s+/i;
+const SPOKEN_OP_SIGN = { sum: ' + ', total: ' + ', product: ' * ', difference: ' - ', quotient: ' / ' };
+// board 35 (readers-2), fix after the skeptic: "the difference of 3 and 10" is -7 to the rule below and 7 to most
+// readers, in every phrasing ("the difference of 3 and 10", "Compute the difference of 3 and 10.", "What is the
+// difference between 3 and 10?"). Each operand is valued on its own; an operand with no value (a word, an unknown) or a
+// first operand smaller than the second is a refusal, so a difference is read only where both readings give one number.
+const SPOKEN_DIFF_RE = /\bthe\s+difference\s+(?:between|of)\s+(.+?)\s+and\s+(.+)$/i;
+function spokenValue(x) {
+  const t = String(x ?? '').trim();
+  let ts = tokenize(t);
+  if (!ts) { const e = spokenExpression(t); ts = e ? tokenize(e) : null; }
+  const node = ts ? parseWhole(ts) : null;
+  return node && !hasUnknown(node) ? evalExact(node) : null;
+}
 
 /** The spoken rewrite before the refusal check: the text with every known shape replaced, or null. */
 function spokenRewrite(text) {
   let s = String(text ?? '').replace(/\s+/g, ' ').trim();
   if (!s || s.length > CAPS.chars) return null;
   const lead = SPOKEN_LEAD_RE.exec(s);
+  // board 35 (readers-2), added: the lead above swallows "the product of", so "what's the product of 7 and 8" was
+  // left as "7 and 8" and read as 7 + 8. The operator word is put back in front of the operands, where the rules
+  // below read it; a difference of two numbers is read only when it is not negative (its order has two readings).
+  const opLead = lead && lead[0] ? SPOKEN_OP_LEAD_RE.exec(lead[0]) : null;
   if (lead && lead[0]) s = s.slice(lead[0].length);
+  if (opLead) {
+    const op = opLead[1].toLowerCase(), rest = s.replace(SPOKEN_TAIL_RE, '');
+    // board 35 (readers-2), fix: a comma between two digits ("1,000", "7,8") is a thousands separator, a decimal comma
+    // or a list; "What's the product of 1,000 and 2?" was read as 1 x 0 x 2 = 0, so such operands are refused
+    if (/\d,\d/.test(rest)) return null;
+    const list = SPOKEN_LIST_RE.test(rest) ? rest.split(SPOKEN_LIST_SEP_RE) : null;
+    if (list && (list.length === 2 || op === 'sum' || op === 'total' || op === 'product')) {
+      if (op === 'difference') { const a = E.qFromString(list[0]), b = E.qFromString(list[1]); if (!a || !b || E.qCmp(a, b) < 0) return null; }
+      s = list.map((x) => '(' + x + ')').join(SPOKEN_OP_SIGN[op]);
+    } else if (op !== 'sum' && op !== 'total') return null;   // a sum of other operands reads as it always did
+  }
   s = s.replace(SPOKEN_TAIL_RE, '');
   if (!s) return null;
+  // board 35 (readers-2), fix: a difference is read only when its first operand is not the smaller (SPOKEN_DIFF_RE above)
+  const dm = SPOKEN_DIFF_RE.exec(s);
+  if (dm) { const a = spokenValue(dm[1]), b = spokenValue(dm[2]); if (a === null || b === null || E.qCmp(a, b) < 0) return null; }
   for (const [re, to] of SPOKEN_RULES) s = s.replace(re, to);
   return s.replace(/\s+/g, ' ').trim();
 }

@@ -13,7 +13,10 @@
 //                                          only ids of bench/verdicts/ns.json rows.development), and the store gets a
 //                                          top-level forms descriptor, and devRows (the development index: the fit
 //                                          records as [id, role form, leaf table, gold], for the learned load's
-//                                          check). Nothing else in the store changes.
+//                                          check). Nothing else in the store changes. devRows.split (board 36, item
+//                                          learn, add-only beside devRows.rows): the index's records counted against
+//                                          the 200 development ids of bench/verdicts/math.json and ns.json's split, and
+//                                          the wording that every measure on them is development, never held out.
 //   node bench/program-guard.mjs           THE BAR, through ask() with provider null and the real store, in process,
 //                                          sockets and fetch refused and counted, a fresh Brain per prompt:
 //     (a) the 60 must-refuse prompts of bench/verdicts/program-guard-heldout.jsonl: the tier answers 0
@@ -50,6 +53,7 @@ const STORE = V('induce-programs.json');
 const MISSES = V('self-queries-misses.jsonl');
 const LEDGER = V('mistakes-ledger.jsonl');
 const NS = V('ns.json');
+const MATH = V('math.json');
 const GSM = path.join(ROOT, 'bench', 'fixtures', 'public', 'gsm8k', 'test.jsonl');
 const TEST_FILE = 'test/act-prompt.test.mjs';
 const rel = (p) => path.relative(ROOT, p).replaceAll('\\', '/');
@@ -149,6 +153,7 @@ export async function writeForms({ write = true, log = console.log } = {}) {
   }
   if (idx.derived !== idx.rows) throw new Error('development index control failed: patterns derived from the role form ' + idx.derived + ' of ' + idx.rows);
   const at = new Date().toISOString();
+  const rowsSha0 = store.devRows && Array.isArray(store.devRows.rows) ? sha(JSON.stringify(store.devRows.rows)) : null;
   if (!store.devRows) {
     const ids = devRows.map((r) => r[0]);
     store.devRows = {
@@ -159,6 +164,23 @@ export async function writeForms({ write = true, log = console.log } = {}) {
     };
     idx.added = true;
   }
+  // THE SPLIT DESCRIPTOR (board 36, item learn; the rule 7 disclosure), add-only beside devRows.rows: the index's records
+  // counted here against the 200 development ids of bench/verdicts/math.json and ns.json's split. No row changes.
+  if (store.devRows && Array.isArray(store.devRows.rows) && !store.devRows.split) {
+    const math = new Set(((JSON.parse(fs.readFileSync(MATH, 'utf8')).records || {}).ids || []).map(String));
+    const ids = store.devRows.rows.map((r) => r[0]);
+    const inMath = ids.filter((id) => math.has(id)).length;
+    store.devRows.split = {
+      at, by: 'node bench/program-guard.mjs --forms (board 36, item learn)',
+      rows: ids.length, inMathDevelopment: inMath, outsideMathDevelopment: ids.length - inMath,
+      inNsDevelopment: ids.filter((id) => dev.has(id)).length, inNsHeldOut: ids.filter((id) => held.has(id)).length,
+      wording: 'the store was fit on these ' + ids.length + ' records before board 35 (bench/induce.mjs on ' + rel(NS) + ' rows.development); ' + (ids.length - inMath) + ' of them are GSM8K test records outside the ' + math.size + ' development ids of ' + rel(MATH) + ' (' + inMath + ' inside), so every measure on them is development, never held out',
+    };
+    idx.split = true;
+  }
+  const rowsSame = rowsSha0 === null || sha(JSON.stringify(store.devRows.rows)) === rowsSha0;
+  if (!rowsSame) throw new Error('devRows.rows changed: the index is add-only');
+  const sp = store.devRows && store.devRows.split;
   if (t.added > 0 || !store.forms) {
     store.forms = {
       version: 1, at, by: 'node bench/program-guard.mjs --forms (board 35, item program-guard)',
@@ -170,7 +192,7 @@ export async function writeForms({ write = true, log = console.log } = {}) {
   }
   const outText = JSON.stringify(store) + '\n';
   if (write && (t.added > 0 || outText !== text)) fs.writeFileSync(STORE, outText);
-  const line = 'forms: entries ' + t.entries + ' added ' + t.added + ' had ' + t.had + '; development records opened ' + opened.length + ' (outside development ' + outside + ', unreadable ' + t.missing + '); controls: role entries whose form is their own pattern ' + t.roleOwn + ' of ' + t.roleEntries + ', cue entries whose forms carry their cue pattern ' + t.cuePrefix + ' of ' + t.cueEntries + '; development index ' + (idx.added ? 'added' : 'had') + ': rows ' + store.devRows.count + ' (records ' + idx.rows + ', without a gold ' + idx.noGold + ', patterns derived from the role form ' + idx.derived + ' of ' + idx.rows + '); store bytes ' + Buffer.byteLength(text) + ' -> ' + Buffer.byteLength(outText) + ', sha256 ' + sha(outText).slice(0, 16) + (write ? '' : ' (not written: --no-write)');
+  const line = 'forms: entries ' + t.entries + ' added ' + t.added + ' had ' + t.had + '; development records opened ' + opened.length + ' (outside development ' + outside + ', unreadable ' + t.missing + '); controls: role entries whose form is their own pattern ' + t.roleOwn + ' of ' + t.roleEntries + ', cue entries whose forms carry their cue pattern ' + t.cuePrefix + ' of ' + t.cueEntries + '; development index ' + (idx.added ? 'added' : 'had') + ': rows ' + store.devRows.count + ' (records ' + idx.rows + ', without a gold ' + idx.noGold + ', patterns derived from the role form ' + idx.derived + ' of ' + idx.rows + ', rows unchanged ' + rowsSame + '); split descriptor ' + (sp ? (idx.split ? 'added' : 'had') + ': rows ' + sp.rows + ', in math.json development ' + sp.inMathDevelopment + ', outside ' + sp.outsideMathDevelopment + ', in ns development ' + sp.inNsDevelopment + ', in ns heldOut ' + sp.inNsHeldOut : 'absent') + '; store bytes ' + Buffer.byteLength(text) + ' -> ' + Buffer.byteLength(outText) + ', sha256 ' + sha(outText).slice(0, 16) + (write ? '' : ' (not written: --no-write)');
   log(line);
   return { ...t, opened: opened.length, outside, index: idx, bytesBefore: Buffer.byteLength(text), bytesAfter: Buffer.byteLength(outText), storeSha256: sha(outText), line };
 }
@@ -272,8 +294,14 @@ export async function run({ write = true, tests = true, log = console.log } = {}
   const store = P.programStore();
   let formed = 0, entries = 0;
   for (const lv of Object.keys(store.levels)) for (const list of Object.values(store.levels[lv])) for (const e of list) { entries++; if (e.forms && Array.isArray(e.forms.roles)) formed++; }
-  const storeInfo = { file: rel(STORE), sha256: sha(fs.readFileSync(STORE)), formsDeclared: !!store.forms, entries, formed, learnedLoaded: P.PROGRAM_TIER.learned, learnedRefused: P.PROGRAM_TIER.learnedRefused, learnedContradicted: P.PROGRAM_TIER.learnedContradicted, learnedUnchecked: P.PROGRAM_TIER.learnedUnchecked, devRows: store.devRows && Array.isArray(store.devRows.rows) ? store.devRows.rows.length : 0, learnedFile: rel(P.LEARNED_STORE), learnedPresent: fs.existsSync(P.LEARNED_STORE) };
-  say('store: ' + storeInfo.file + ' sha256 ' + storeInfo.sha256.slice(0, 16) + ', entries ' + entries + ', with forms ' + formed + ', forms declared ' + storeInfo.formsDeclared + ', development rows indexed ' + storeInfo.devRows + '; learned store ' + storeInfo.learnedFile + (storeInfo.learnedPresent ? ' present, loaded ' + storeInfo.learnedLoaded + ', refused ' + storeInfo.learnedRefused + ', contradicted by a development row ' + storeInfo.learnedContradicted + ', unchecked ' + storeInfo.learnedUnchecked : ' absent (no-op)'));
+  const storeInfo = { file: rel(STORE), sha256: sha(fs.readFileSync(STORE)), formsDeclared: !!store.forms, entries, formed, learnedLoaded: P.PROGRAM_TIER.learned, learnedRefused: P.PROGRAM_TIER.learnedRefused, learnedContradicted: P.PROGRAM_TIER.learnedContradicted, learnedUnchecked: P.PROGRAM_TIER.learnedUnchecked, retracted: P.PROGRAM_TIER.retracted, retractUnapplied: P.PROGRAM_TIER.retractUnapplied, devRows: store.devRows && Array.isArray(store.devRows.rows) ? store.devRows.rows.length : 0, learnedFile: rel(P.LEARNED_STORE), learnedPresent: fs.existsSync(P.LEARNED_STORE) };
+  say('store: ' + storeInfo.file + ' sha256 ' + storeInfo.sha256.slice(0, 16) + ', entries ' + entries + ', with forms ' + formed + ', forms declared ' + storeInfo.formsDeclared + ', development rows indexed ' + storeInfo.devRows + '; learned store ' + storeInfo.learnedFile + (storeInfo.learnedPresent ? ' present, loaded ' + storeInfo.learnedLoaded + ', refused ' + storeInfo.learnedRefused + ', contradicted by a development row ' + storeInfo.learnedContradicted + ', unchecked ' + storeInfo.learnedUnchecked + ', forms retracted ' + storeInfo.retracted + ', retractions unapplied ' + storeInfo.retractUnapplied : ' absent (no-op)'));
+  // the rule 7 disclosure (board 36, item learn): the development index's split descriptor, written by --forms
+  const dsp = store.devRows && store.devRows.split ? store.devRows.split : null;
+  const mathIds = new Set(((JSON.parse(fs.readFileSync(MATH, 'utf8')).records || {}).ids || []).map(String));
+  const keepOutsideMath = keep.filter((r) => !mathIds.has(String(r.id))).length;
+  storeInfo.devRowsSplit = dsp;
+  say('development index split (devRows.split, written by --forms): ' + (dsp ? 'rows ' + dsp.rows + ', in math.json development ' + dsp.inMathDevelopment + ', outside ' + dsp.outsideMathDevelopment + ', in ns development ' + dsp.inNsDevelopment + ', in ns heldOut ' + dsp.inNsHeldOut : 'absent') + '; must-keep rows (b) outside the ' + mathIds.size + ' math.json development ids ' + keepOutsideMath + ' of ' + keep.length);
 
   const sets = {
     a: refuse.map((r) => ({ id: r.id, prompt: r.prompt, truth: r.truth, kind: r.kind })),
@@ -347,7 +375,7 @@ export async function run({ write = true, tests = true, log = console.log } = {}
     uncheckedStore = P.programStore();
     uncheckedCounts = { learned: P.PROGRAM_TIER.learned - c0.learned, contradicted: P.PROGRAM_TIER.learnedContradicted - c0.learnedContradicted };
   } finally { P.PROGRAM_GUARD.learnedCheck = checkWas; P.resetPrograms(); }
-  const checkedCounts = { learned: storeInfo.learnedLoaded, contradicted: storeInfo.learnedContradicted, unchecked: storeInfo.learnedUnchecked };
+  const checkedCounts = { learned: storeInfo.learnedLoaded, contradicted: storeInfo.learnedContradicted, unchecked: storeInfo.learnedUnchecked, retracted: storeInfo.retracted, retractUnapplied: storeInfo.retractUnapplied };
   const fArm = async (programs) => {
     const out = [];
     for (const r of fRows) {
@@ -373,7 +401,16 @@ export async function run({ write = true, tests = true, log = console.log } = {}
     addedRight: fChecked.filter((r) => r.tier && r.right && !fInduced.find((x) => x.id === r.id && x.tier && x.right)).map((r) => r.id),
   };
   const fLine = (s) => 'tier ' + s.tier + ' right ' + s.right + ' wrong ' + s.wrong;
-  say('(f) the learned overlay on the ' + F.rows + ' development rows of the store (devRows, ids sha256 ' + F.idsSha256.slice(0, 16) + '), guard on: induced only ' + fLine(F.induced) + '; with the overlay, development check on (loaded ' + checkedCounts.learned + ', contradicted ' + checkedCounts.contradicted + ', unchecked ' + checkedCounts.unchecked + ') ' + fLine(F.checked) + ', added wrong ' + F.addedWrong.length + (F.addedWrong.length ? ' ' + F.addedWrong.join(', ') : '') + ', added right ' + F.addedRight.length + '; control, check off (loaded ' + uncheckedCounts.learned + ') ' + fLine(F.control) + ', added wrong ' + F.addedWrongControl.length + (F.addedWrongControl.length ? ' ' + F.addedWrongControl.join(', ') : ''));
+  say('(f) the learned overlay on the ' + F.rows + ' development rows of the store (devRows, ids sha256 ' + F.idsSha256.slice(0, 16) + '), guard on: induced only ' + fLine(F.induced) + '; with the overlay, development check on (loaded ' + checkedCounts.learned + ', contradicted ' + checkedCounts.contradicted + ', unchecked ' + checkedCounts.unchecked + ', forms retracted ' + checkedCounts.retracted + ', unapplied ' + checkedCounts.retractUnapplied + ') ' + fLine(F.checked) + ', added wrong ' + F.addedWrong.length + (F.addedWrong.length ? ' ' + F.addedWrong.join(', ') : '') + ', added right ' + F.addedRight.length + '; control, check off (loaded ' + uncheckedCounts.learned + ') ' + fLine(F.control) + ', added wrong ' + F.addedWrongControl.length + (F.addedWrongControl.length ? ' ' + F.addedWrongControl.join(', ') : ''));
+  // (b) beside the store the tier loads (board 36, item learn; printed, not a bar): the must-keep rows with the guard on,
+  // as shipped, and the induced store alone (no learned overlay, so no retraction applied)
+  const bInduced = [];
+  for (const r of sets.b) {
+    const brain = new Brain({ name: 'program-guard', ledger: 'off' });
+    let a = null;
+    try { a = await P.ask(brain, r.prompt, { provider: 'null', programs: inducedOnly }); } catch (e) { a = { from: 'threw', text: String(e && e.message) }; }
+    bInduced.push({ id: r.id, ...graded(a, r.truth) });
+  }
   const sockets = guard.sockets + guard.fetches - socketsBefore;
 
   const sum = (rs) => ({ asked: rs.length, tier: rs.filter((r) => r.tier).length, right: rs.filter((r) => r.tier && r.right).length, wrong: rs.filter((r) => r.tier && !r.right).length, routes: tallyFrom(rs) });
@@ -399,6 +436,39 @@ export async function run({ write = true, tests = true, log = console.log } = {}
   say('(b) must keep: before ' + before + ' (the held-out file, answered right by the tier before the guard), control arm now ' + C.b.right + ', after (guard) ' + G.b.right + ', drop ' + drop + ' (exact kinds unplugged: after ' + GX.b.right + ', drop ' + dropX + '; bar: at most ' + BAR.maxKeepDrop + '); routes after ' + routeLine(G.b.routes));
   const lostKeep = arms['guard.real'].rows.b.filter((r) => !(r.tier && r.right)).map((r) => r.id);
   if (lostKeep.length) say('(b) not answered right by the tier after: ' + lostKeep.join(', '));
+  const bInducedRight = bInduced.filter((r) => r.tier && r.right).length;
+  const bLostToOverlay = bInduced.filter((r) => r.tier && r.right && lostKeep.includes(r.id)).map((r) => r.id);
+  say('(b) beside it, the guard on and the induced store alone (no learned overlay, no retraction applied): answered right by the tier ' + bInducedRight + ' of ' + keep.length + ', drop ' + (before - bInducedRight) + '; right there and not with the store the tier loads (the overlay: forms retracted ' + storeInfo.retracted + ') ' + bLostToOverlay.length);
+  // (b) WHICH RETRACTION (board 36, item learn, the skeptic's re-run; printed, not a bar): every must-keep row the induced
+  // store alone answers is matched to the learned file's retract list by (level, pattern, program, question form), the
+  // key gate 7 refuses on. Its control can fail: a row still answered right as shipped must match no retraction (a
+  // matcher that matched everything would print it above 0), and the rows lost must all match one for the drop to be
+  // the retractions'.
+  const learnedJ = (() => { try { return JSON.parse(fs.readFileSync(P.LEARNED_STORE, 'utf8')); } catch { return null; } })();
+  const retractList = learnedJ && Array.isArray(learnedJ.retract) ? learnedJ.retract : [];
+  const retractOf = (prompt) => {
+    let a = null;
+    try { a = P.programAnswer(prompt, { provider: 'null', programs: inducedOnly }); } catch { a = null; }
+    if (!a || !a.hit) return null;
+    const form = I.questionForm(prompt).role;
+    return retractList.find((x) => x.level === a.hit.level && x.pattern === a.hit.pattern && x.program === a.hit.program && Array.isArray(x.forms) && x.forms.includes(form)) || null;
+  };
+  const promptOf = new Map(sets.b.map((r) => [r.id, r.prompt]));
+  const keptRightNow = arms['guard.real'].rows.b.filter((r) => r.tier && r.right).map((r) => r.id);
+  const bEntries = new Map();
+  let bMatched = 0;
+  for (const id of bLostToOverlay) {
+    const x = retractOf(promptOf.get(id));
+    if (!x) continue;
+    bMatched++;
+    const k = x.level + ' ' + x.pattern + ' ' + x.program;
+    const e = bEntries.get(k) || { level: x.level, pattern: x.pattern, program: x.program, forms: x.forms.length, devWrong: x.wrongRows.length, devRight: x.rightRows.length, keepRows: [] };
+    e.keepRows.push(id);
+    bEntries.set(k, e);
+  }
+  const bKeptMatched = keptRightNow.filter((id) => retractOf(promptOf.get(id))).length;
+  const bRetract = { file: rel(P.LEARNED_STORE), lost: bLostToOverlay.length, matched: bMatched, entries: bEntries.size, devWrong: [...bEntries.values()].reduce((n, e) => n + e.devWrong, 0), devRight: [...bEntries.values()].reduce((n, e) => n + e.devRight, 0), keptRightNow: keptRightNow.length, keptRightNowMatched: bKeptMatched, byEntry: [...bEntries.values()].sort((p, q) => q.keepRows.length - p.keepRows.length) };
+  say('(b) the ' + bRetract.lost + ' rows lost to the overlay, each matched to a retraction of ' + bRetract.file + ' by (level, pattern, program, question form): matched ' + bRetract.matched + ' of ' + bRetract.lost + ', in ' + bRetract.entries + ' retraction entries of ' + retractList.length + ', which the self-query saw answer ' + bRetract.devWrong + ' development rows wrong and ' + bRetract.devRight + ' right in their retracted forms; control: rows still answered right as shipped ' + bRetract.keptRightNow + ', matched to a retraction ' + bRetract.keptRightNowMatched);
   const kindLine = (m) => Object.entries(m).map(([k, v]) => k + ' ' + v.asked + '/' + v.tier + '/' + v.wrong).join(', ');
   say('(c) the ' + wrongRows.length + ' wrong rows of ' + rel(MISSES) + ' (' + Object.entries(wrongByKind).map(([k, v]) => k + ' ' + v).join(', ') + '), by kind asked/tier/wrong-by-tier: guard ' + kindLine(G.cByKind) + '; guard unplugged ' + kindLine(GX.cByKind) + '; control ' + kindLine(C.cByKind) + '; control unplugged ' + kindLine(CX.cByKind));
   say('(c) wrong by the tier: guard ' + G.c.wrong + ', guard unplugged ' + GX.c.wrong + ', control ' + C.c.wrong + ', control unplugged ' + CX.c.wrong + '; routes with the guard ' + routeLine(G.c.routes) + '; unplugged ' + routeLine(GX.c.routes));
@@ -436,7 +506,7 @@ export async function run({ write = true, tests = true, log = console.log } = {}
     at, command, isTheBar: true, barMet, met,
     item: 'board 35 program-guard', model: 'off (provider null, in process; sockets and fetch refused and counted)',
     split: {
-      development: { rows: keep.length, what: 'the must-keep rows (b): development GSM8K records, fits of ' + rel(STORE) + ' (ids of ' + rel(NS) + ' rows.development); the forms were read from the development records the store fit', ids: keep.map((r) => r.id) },
+      development: { rows: keep.length, what: 'the must-keep rows (b): development GSM8K records, fits of ' + rel(STORE) + ' (ids of ' + rel(NS) + ' rows.development); the forms were read from the development records the store fit. ' + (dsp ? 'The rule 7 disclosure (board 36): ' + dsp.wording + ' (devRows.split: in ns.json development ' + dsp.inNsDevelopment + ', in its heldOut ' + dsp.inNsHeldOut + '); ' : 'devRows.split is absent; ') + keepOutsideMath + ' of the ' + keep.length + ' must-keep rows are outside the ' + mathIds.size + ' math.json development ids. Every measure on them, (b) and (f), is development, never held out', ids: keep.map((r) => r.id), devRowsSplit: dsp, keepOutsideMathDevelopment: keepOutsideMath },
       heldOut: { rows: refuse.length, what: 'the must-refuse rows (a), written before the guard code; (c) and (d) are the files named', idsSha256: held.idsSha256, fileSha256: held.fileSha256 },
       contaminated: 'yes, for (a) and (c): the kind cues of act/prompt.mjs gate 6 were written after the held-out file and checked against its must-refuse rows and the misses templates, so they measure the cues on the phrasings they were written beside, not on unseen phrasings; the form gate (7) was not tuned on them, and the per-gate arms print what each refuses alone. (b) is development by construction. (f) is development by construction too: its rows are the devRows index the learned load checks against, so with the check on it measures that the check and the tier agree (the level, the forms, the invariant), and its control (the check off) prints the wrong answers the check refused; neither is a held-out measure.',
     },
@@ -444,7 +514,7 @@ export async function run({ write = true, tests = true, log = console.log } = {}
     store: storeInfo,
     exposures: 'real: ask() as shipped; exposed: act/solve.mjs kindsReader(false), the nine exact-kind readers unplugged so the tier meets every prompt they would catch',
     a: { guard: G.a, guardExposed: GX.a, control: C.a, controlExposed: CX.a, refusedByKind: arms['guard.real'].kinds, refusedByKindExposed: arms['guard.exposed'].kinds },
-    b: { before, controlNow: C.b.right, after: G.b.right, drop, afterExposed: GX.b.right, dropExposed: dropX, maxDrop: BAR.maxKeepDrop, notRightAfter: lostKeep, routesAfter: G.b.routes },
+    b: { before, controlNow: C.b.right, after: G.b.right, drop, afterExposed: GX.b.right, dropExposed: dropX, maxDrop: BAR.maxKeepDrop, notRightAfter: lostKeep, routesAfter: G.b.routes, inducedAlone: { right: bInducedRight, drop: before - bInducedRight, lostToOverlay: bLostToOverlay }, retractions: bRetract },
     c: { file: rel(MISSES), pinned: { ...MISSES_AT, ok: pinned.ok, bytes: pinned.bytes, error: pinned.error, wrong: pinnedWrong.length, byKind: pinnedByKind, asNamed: pinnedMet }, onDiskNowWrong: nowWrong.length, newerThanPinned: newer.length, rows: wrongRows.length, byKind: wrongByKind, guard: { ...G.c, byKind: G.cByKind }, guardExposed: { ...GX.c, byKind: GX.cByKind }, control: { ...C.c, byKind: C.cByKind }, controlExposed: { ...CX.c, byKind: CX.cByKind } },
     d: { guard: rowsOf('guard.real'), guardExposed: rowsOf('guard.exposed'), control: rowsOf('control.real'), holds: dHolds },
     f: F,
@@ -456,7 +526,7 @@ export async function run({ write = true, tests = true, log = console.log } = {}
     tests: test,
     code,
     ms: Date.now() - t0,
-    statement: 'With the guard on, the program tier answered ' + G.a.tier + ' of the ' + G.a.asked + ' must-refuse prompts (' + GX.a.tier + ' with the exact-kind readers unplugged), answered right ' + G.b.right + ' of the ' + keep.length + ' must-keep development problems it answered right before (drop ' + drop + ', the bar allows ' + BAR.maxKeepDrop + '), and answered wrong ' + G.c.wrong + ' of the ' + wrongRows.length + ' wrong rows of the self-queries misses (' + GX.c.wrong + ' unplugged); alg-01, alg-02, alg-04, word-08 and gsm8k.991 went to ' + rowsOf('guard.real').map((r) => r.id + ' ' + r.from).join(', ') + ' (no wrong tier answer, both exposures: ' + dHolds + '). The control arm, the same prompts with the guard off and the exact-kind readers unplugged, answered ' + CX.a.wrong + ' must-refuse prompts and ' + CX.c.wrong + ' misses rows wrong by the tier (as shipped: ' + C.a.wrong + ' and ' + C.c.wrong + ', because the exact readers now answer those prompts first). The learned overlay on the ' + F.rows + ' development rows of the store: induced only wrong ' + F.induced.wrong + ', with the overlay and its development check wrong ' + F.checked.wrong + ' (added wrong ' + F.addedWrong.length + ', added right ' + F.addedRight.length + '), the control with the check off added wrong ' + F.addedWrongControl.length + '. Sockets attempted ' + sockets + '. Tests: ' + test.tally + '. ' + (barMet ? 'BAR MET.' : 'BAR NOT MET.'),
+    statement: 'With the guard on, the program tier answered ' + G.a.tier + ' of the ' + G.a.asked + ' must-refuse prompts (' + GX.a.tier + ' with the exact-kind readers unplugged), answered right ' + G.b.right + ' of the ' + keep.length + ' must-keep development problems it answered right before (drop ' + drop + ', the bar allows ' + BAR.maxKeepDrop + (bLostToOverlay.length ? '; the induced store alone, guard on, answered right ' + bInducedRight + ' (drop ' + (before - bInducedRight) + '), and the ' + bRetract.lost + ' rows lost sit in forms the retract list of ' + bRetract.file + ' retracts, which the production loader applies since board 36: matched ' + bRetract.matched + ' of ' + bRetract.lost + ' in ' + bRetract.entries + ' retraction entries that answered ' + bRetract.devWrong + ' development rows wrong and ' + bRetract.devRight + ' right in those forms, and ' + bRetract.keptRightNowMatched + ' of the ' + bRetract.keptRightNow + ' rows still right match one' : '') + '), and answered wrong ' + G.c.wrong + ' of the ' + wrongRows.length + ' wrong rows of the self-queries misses (' + GX.c.wrong + ' unplugged); alg-01, alg-02, alg-04, word-08 and gsm8k.991 went to ' + rowsOf('guard.real').map((r) => r.id + ' ' + r.from).join(', ') + ' (no wrong tier answer, both exposures: ' + dHolds + '). The control arm, the same prompts with the guard off and the exact-kind readers unplugged, answered ' + CX.a.wrong + ' must-refuse prompts and ' + CX.c.wrong + ' misses rows wrong by the tier (as shipped: ' + C.a.wrong + ' and ' + C.c.wrong + ', because the exact readers now answer those prompts first). The learned overlay on the ' + F.rows + ' development rows of the store: induced only wrong ' + F.induced.wrong + ', with the overlay and its development check wrong ' + F.checked.wrong + ' (added wrong ' + F.addedWrong.length + ', added right ' + F.addedRight.length + '), the control with the check off added wrong ' + F.addedWrongControl.length + '. Sockets attempted ' + sockets + '. Tests: ' + test.tally + '. ' + (barMet ? 'BAR MET.' : 'BAR NOT MET.'),
     printed,
   };
   if (write) fs.writeFileSync(OUT, JSON.stringify(verdict, null, 2) + '\n');

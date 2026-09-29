@@ -1160,7 +1160,7 @@ export const PROGRAM_KINDS = {};
 /** floor: the least development leave-one-out precision of the answering level; maxLeaves: reason/induce.mjs search()'s leaf window. */
 export const PROGRAM = Object.freeze({ floor: 0.1046, floorFrom: 'bench/verdicts/induce.json development.leaveOneOut.byLevel.cue 16/153', maxLeaves: 12 });
 /** The tier's running counts, read by tests and benches: asked counts the prompts that passed QUANTITY_CUE and reached the kept programs. */
-export const PROGRAM_TIER = { loads: 0, loadFailures: 0, asked: 0, answered: 0, deferred: 0, noQuantity: 0, shape: 0, missed: 0, partial: 0, lastNs: 0, kind: 0, form: 0, unformed: 0, learned: 0, learnedRefused: 0, learnedFailures: 0, learnedContradicted: 0, learnedUnchecked: 0 };
+export const PROGRAM_TIER = { loads: 0, loadFailures: 0, asked: 0, answered: 0, deferred: 0, noQuantity: 0, shape: 0, missed: 0, partial: 0, lastNs: 0, kind: 0, form: 0, unformed: 0, learned: 0, learnedRefused: 0, learnedFailures: 0, learnedContradicted: 0, learnedUnchecked: 0, retracted: 0, retractUnapplied: 0 };
 /** The code-native readers' running counts (board 34 item code-native): asked counts the prompts codeNativeShape() gave a reader. */
 export const CODE_NATIVE = { asked: 0, answered: 0, refused: 0, lastNs: 0 };
 const PSTORES = new Map();
@@ -1231,7 +1231,23 @@ function learnedInto(kept, file) {
   if (!fs.existsSync(file)) return; // absent (the file today): nothing read, nothing counted
   let j = null;
   try { j = JSON.parse(fs.readFileSync(file, 'utf8')); } catch { j = null; }
-  if (!j || !j.levels || typeof j.levels !== 'object') { PROGRAM_TIER.learnedFailures++; return; }
+  // board 36, item learn: the file's `retract` list is applied too, exactly as self/learn.mjs mergeStores applies it and
+  // in its order (the retractions first, then the learned entries): each retracted question form is removed from the
+  // kept entry's forms.roles and recorded in forms.retracted, so gate 7 refuses that form; the entry is never removed,
+  // so a retraction only refuses (rule 6). A retraction whose entry is absent or carries no forms is counted unapplied.
+  // A file that holds only `retract` is read, not counted as a failure.
+  const hasLevels = !!(j && j.levels && typeof j.levels === 'object');
+  const hasRetract = !!(j && Array.isArray(j.retract));
+  if (!hasLevels && !hasRetract) { PROGRAM_TIER.learnedFailures++; return; }
+  for (const x of hasRetract ? j.retract : []) {
+    const list = x && kept.levels && kept.levels[x.level] && kept.levels[x.level][x.pattern];
+    const e = Array.isArray(list) ? list.find((y) => y.program === x.program) : null;
+    if (!e || !e.forms || !Array.isArray(e.forms.roles) || !Array.isArray(x.forms)) { PROGRAM_TIER.retractUnapplied++; continue; }
+    const had = e.forms.roles.length;
+    e.forms = { ...e.forms, roles: e.forms.roles.filter((f) => !x.forms.includes(f)), retracted: [...new Set([...(e.forms.retracted || []), ...x.forms])].sort() };
+    PROGRAM_TIER.retracted += had - e.forms.roles.length;
+  }
+  if (!hasLevels) return;
   const check = PROGRAM_GUARD.learnedCheck !== false;
   const rows = devRowsOf(kept);
   const unchecked = check && !rows && !!(kept.forms && typeof kept.forms === 'object');

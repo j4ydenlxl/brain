@@ -10,14 +10,15 @@ A wrong exact answer is worse than a refusal. The program tier (act/prompt.mjs `
   - A store with no forms at all, such as a planted test store, skips this gate.
 - **The learned store**: `programStore()` loads bench/verdicts/learned-programs.json after induce-programs.json, add-only.
   - A missing file is a no-op that counts nothing. An unreadable file counts `learnedFailures`.
+  - Since board 36 (item learn) `learnedInto()` also applies the file's `retract` list, first and exactly as self/learn.mjs `mergeStores` does: each retracted question form leaves the kept entry's `forms.roles` and is recorded in `forms.retracted`, so gate 7 refuses it; the entry is never removed. `PROGRAM_TIER.retracted` counts the forms removed and `PROGRAM_TIER.retractUnapplied` a retraction whose entry is absent or has no forms. A file that holds only `retract` is read, not counted as a failure.
   - An entry is refused (`learnedRefused`) unless it has a non-empty `records` list, `learned.inducedFrom`, and a program the DSL reads.
   - `programStore(path, { learned })` loads a learned file beside any store.
-- **The learned load's development check** (the fix after the skeptic): a learned entry loaded into the default store answered two development rows wrong that the tier had refused before (gsm8k.841 and gsm8k.906). So the default store now carries `devRows`, an index of the 533 development records its entries fit, each as [id, role form, leaf table, gold]. `learnedInto()` refuses a learned entry that would answer one of those rows wrong (`PROGRAM_TIER.learnedContradicted`): the row's pattern at the entry's level (reason/induce.mjs `patternAt()`) is the entry's pattern, the row's form is one of the entry's forms, and the program's value passes the invariant and is not the gold.
+- **The learned load's development check** (the fix after the skeptic): a learned entry loaded into the default store answered two development rows wrong that the tier had refused before (gsm8k.841 and gsm8k.906). So the default store now carries `devRows`, an index of the 533 development records its entries fit, each as [id, role form, leaf table, gold]. Its `devRows.split` (board 36, the rule 7 disclosure) says the store was fit on these 533 records before board 35: 95 are among the 200 development ids of bench/verdicts/math.json and 438 are GSM8K test records outside them (533 in ns.json rows.development, 0 in its heldOut), so every measure on them is development, never held out. `learnedInto()` refuses a learned entry that would answer one of those rows wrong (`PROGRAM_TIER.learnedContradicted`): the row's pattern at the entry's level (reason/induce.mjs `patternAt()`) is the entry's pattern, the row's form is one of the entry's forms, and the program's value passes the invariant and is not the gold.
   - A store that declares forms and carries no `devRows` cannot be checked, so none of its learned entries loads (`PROGRAM_TIER.learnedUnchecked`).
   - `PROGRAM_GUARD.learnedCheck` false turns the check off for the bench's control. It is read at load time, so a caller that flips it calls `resetPrograms()`.
   - `PROGRAM_LEARNED.file` is the overlay the default store loads (bench/verdicts/learned-programs.json). A test plants a file there to run the default load's own code path.
 - **Switches**: `PROGRAM_GUARD.on` (or `programGuard(false)`) turns both gates off, which is the control arm. `PROGRAM_GUARD.kind` and `PROGRAM_GUARD.form` each turn one gate off alone.
-- **The forms data**: `node bench/program-guard.mjs --forms` wrote forms into bench/verdicts/induce-programs.json, add-only, and then the `devRows` index, also add-only. It read the development records through reason/induce.mjs `makeRecordReader`, using only ids of bench/verdicts/ns.json rows.development. The index is written only if a control passes: every level's pattern derived from the role form must equal the parsed pattern on every row.
+- **The forms data**: `node bench/program-guard.mjs --forms` wrote forms into bench/verdicts/induce-programs.json, add-only, and then the `devRows` index, also add-only. It read the development records through reason/induce.mjs `makeRecordReader`, using only ids of bench/verdicts/ns.json rows.development. The index is written only if a control passes: every level's pattern derived from the role form must equal the parsed pattern on every row. A later run (board 36, item learn) printed forms had 814 and wrote only `devRows.split` beside the rows (rows unchanged true): rows 533, in math.json development 95, outside 438, in ns development 533, in ns heldOut 0.
 - **The misses as the task named them**: bench/verdicts/self-queries-misses.jsonl is rewritten whenever self-queries re-runs. Another item re-ran it and its wrong rows went from 165 to 0, so the bar read (c) as empty and the control (e) failed. The draw and (c) now read the file as it was at 2026-09-28T17:51:40.859Z, from git blob 490740d3 (commit 718e358), and check its object id. Rows that are wrong on disk now are asked as well.
 
 ## How to run
@@ -32,7 +33,7 @@ node --test test/act-prompt.test.mjs
 
 The first `--forms` run printed forms: entries 814 added 814 had 0; development records opened 533 (outside development 0, unreadable 0); role entries whose form is their own pattern 19 of 19, cue entries whose forms carry their cue pattern 48 of 48. The second run printed: development index added: rows 533 (records 533, without a gold 0, patterns derived from the role form 533 of 533); store bytes 223163 -> 266405.
 
-The bar (bench/verdicts/program-guard.json, at 2026-09-28T19:07:07.399Z) printed the lines below. "Unplugged" means act/solve.mjs `kindsReader(false)`: the nine exact-kind readers are off, so the tier meets every prompt they would catch.
+The bar at 2026-09-28T19:07:07.399Z (board 35, before the loader applied `retract`) printed the lines below; the board 36 run that replaced it is the next section. "Unplugged" means act/solve.mjs `kindsReader(false)`: the nine exact-kind readers are off, so the tier meets every prompt they would catch.
 
 - held out: rows 112 (refuse 60, keep 52), same as written first true, draw reproduces true
 - (c) rows: as of 2026-09-28T17:51:40.859Z (git blob 490740d3, commit 718e358, object id checked true) wrong 165 (probability 113, arithmetic 36, calendar 16), as named true; on disk now wrong 0
@@ -55,8 +56,27 @@ Mutants, applied through a loader hook with the source file untouched, each made
 
 With the contradiction check a no-op, the bar printed (f) false.
 
+## The board 36 run (item learn: the loader applies `retract`)
+
+`node bench/program-guard.mjs --forms` printed: forms: entries 814 added 0 had 814; development index had: rows 533 (records 533, without a gold 0, patterns derived from the role form 533 of 533, rows unchanged true); split descriptor added: rows 533, in math.json development 95, outside 438, in ns development 533, in ns heldOut 0; store bytes 266405 -> 266909.
+
+The (f) line before the change (`bench/program-guard.mjs --no-write --no-test`, same tree): induced only tier 70 right 52 wrong 18; with the overlay, development check on (loaded 0, contradicted 0, unchecked 0) tier 70 right 52 wrong 18, added wrong 0, added right 0; control, check off (loaded 0) tier 70 right 52 wrong 18, added wrong 0.
+
+The bar at 2026-09-28T23:25:11.438Z (the re-run after the skeptic; the 23:10:02 run printed the same counts without the attribution line) printed:
+- store: learned store present, loaded 0, refused 0, contradicted 0, unchecked 0, forms retracted 29, retractions unapplied 0
+- development index split: rows 533, in math.json development 95, outside 438, in ns development 533, in ns heldOut 0; must-keep rows (b) outside the 200 math.json development ids 48 of 52
+- (f) induced only tier 70 right 52 wrong 18; with the overlay (loaded 0, contradicted 0, unchecked 0, forms retracted 29, unapplied 0) tier 16 right 16 wrong 0, added wrong 0, added right 0; control, check off (loaded 0) tier 16 right 16 wrong 0, added wrong 0
+- (a) guard: answered by the tier 0, wrong 0 (unplugged 0, 0)
+- (b) must keep: before 52, control arm now 52, after (guard) 16, drop 36 (unplugged: after 16, drop 36; bar: at most 2)
+- (b) beside it, the guard on and the induced store alone: right 52 of 52, drop 0; right there and not with the store the tier loads 36
+- (b) the 36 rows lost to the overlay, each matched to a retraction of bench/verdicts/learned-programs.json by (level, pattern, program, question form): matched 36 of 36, in 18 retraction entries of 22, which the self-query saw answer 200 development rows wrong and 64 right in their retracted forms; control: rows still answered right as shipped 16, matched to a retraction 0
+- (c) wrong by the tier: guard 0, guard unplugged 0, control 0, control unplugged 129
+- sockets and fetches attempted: 0; tests: tests 33 pass 33 fail 0
+- BAR NOT MET: (a) true, (b) false, (c) true, (d) true, (e) true, (f) true, held out as written true, sockets 0 true, tests true; wrong by the tier with the guard (a+c+d, both exposures) 0
+
 ## What remains
 
+- BAR NOT MET since board 36, on (b) alone: with the retractions applied in the production loader, (b) prints after (guard) 16, drop 36 (bar: at most 2); the induced store alone, guard on, prints right 52, drop 0, and the attribution line matches each of the 36 to a retraction entry by the key gate 7 refuses on (36 of 36, 18 entries, 200 development rows wrong and 64 right in those forms; 0 of the 16 rows still right match one). Every retracted form answered at least 1 development row wrong (self/learn.mjs RETRACT.wrong 1), so giving back any of the 36 gives back a wrong answer: no retraction threshold meets (b) under rule 6. Rule 6 (a wrong answer is worse than a refusal) and the (b) bar disagree here; which one gives way is the orchestrator's call, not this item's.
 - The must-keep set has 52 rows, not 60: only 52 development fits were answered right by the tier through ask() before the guard.
 - The kind cues were written after the held-out file and checked against its must-refuse rows, so (a) and (c) measure the cues on phrasings they were written beside. The form gate alone also refuses all of (a) and (c) unplugged, and it was not tuned on them.
 - (f) is development by construction: its rows are the index the check reads. With the check on it shows that the check and the tier agree; the control shows what the check refused.

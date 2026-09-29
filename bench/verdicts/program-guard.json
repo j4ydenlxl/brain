@@ -1,11 +1,11 @@
 {
-  "at": "2026-09-28T19:07:07.399Z",
+  "at": "2026-09-28T23:25:11.438Z",
   "command": "node bench/program-guard.mjs",
   "isTheBar": true,
-  "barMet": true,
+  "barMet": false,
   "met": {
     "a": true,
-    "b": true,
+    "b": false,
     "c": true,
     "d": true,
     "e": true,
@@ -19,7 +19,7 @@
   "split": {
     "development": {
       "rows": 52,
-      "what": "the must-keep rows (b): development GSM8K records, fits of bench/verdicts/induce-programs.json (ids of bench/verdicts/ns.json rows.development); the forms were read from the development records the store fit",
+      "what": "the must-keep rows (b): development GSM8K records, fits of bench/verdicts/induce-programs.json (ids of bench/verdicts/ns.json rows.development); the forms were read from the development records the store fit. The rule 7 disclosure (board 36): the store was fit on these 533 records before board 35 (bench/induce.mjs on bench/verdicts/ns.json rows.development); 438 of them are GSM8K test records outside the 200 development ids of bench/verdicts/math.json (95 inside), so every measure on them is development, never held out (devRows.split: in ns.json development 533, in its heldOut 0); 48 of the 52 must-keep rows are outside the 200 math.json development ids. Every measure on them, (b) and (f), is development, never held out",
       "ids": [
         "gsm8k.388",
         "gsm8k.258",
@@ -73,7 +73,18 @@
         "gsm8k.387",
         "gsm8k.929",
         "gsm8k.345"
-      ]
+      ],
+      "devRowsSplit": {
+        "at": "2026-09-28T23:08:25.578Z",
+        "by": "node bench/program-guard.mjs --forms (board 36, item learn)",
+        "rows": 533,
+        "inMathDevelopment": 95,
+        "outsideMathDevelopment": 438,
+        "inNsDevelopment": 533,
+        "inNsHeldOut": 0,
+        "wording": "the store was fit on these 533 records before board 35 (bench/induce.mjs on bench/verdicts/ns.json rows.development); 438 of them are GSM8K test records outside the 200 development ids of bench/verdicts/math.json (95 inside), so every measure on them is development, never held out"
+      },
+      "keepOutsideMathDevelopment": 48
     },
     "heldOut": {
       "rows": 60,
@@ -101,17 +112,29 @@
   },
   "store": {
     "file": "bench/verdicts/induce-programs.json",
-    "sha256": "da5d002591154cd82ef91d504dcdade80fd5d1a92bb1e17b6a927d769cb89ad8",
+    "sha256": "a46f5094781cbe600c0f0ca673ee6497508b4eeaa00cc4e0d0ec77625b3368b6",
     "formsDeclared": true,
-    "entries": 827,
-    "formed": 827,
-    "learnedLoaded": 13,
+    "entries": 814,
+    "formed": 814,
+    "learnedLoaded": 0,
     "learnedRefused": 0,
-    "learnedContradicted": 1,
+    "learnedContradicted": 0,
     "learnedUnchecked": 0,
+    "retracted": 29,
+    "retractUnapplied": 0,
     "devRows": 533,
     "learnedFile": "bench/verdicts/learned-programs.json",
-    "learnedPresent": true
+    "learnedPresent": true,
+    "devRowsSplit": {
+      "at": "2026-09-28T23:08:25.578Z",
+      "by": "node bench/program-guard.mjs --forms (board 36, item learn)",
+      "rows": 533,
+      "inMathDevelopment": 95,
+      "outsideMathDevelopment": 438,
+      "inNsDevelopment": 533,
+      "inNsHeldOut": 0,
+      "wording": "the store was fit on these 533 records before board 35 (bench/induce.mjs on bench/verdicts/ns.json rows.development); 438 of them are GSM8K test records outside the 200 development ids of bench/verdicts/math.json (95 inside), so every measure on them is development, never held out"
+    }
   },
   "exposures": "real: ask() as shipped; exposed: act/solve.mjs kindsReader(false), the nine exact-kind readers unplugged so the tier meets every prompt they would catch",
   "a": {
@@ -175,14 +198,322 @@
   "b": {
     "before": 52,
     "controlNow": 52,
-    "after": 52,
-    "drop": 0,
-    "afterExposed": 52,
-    "dropExposed": 0,
+    "after": 16,
+    "drop": 36,
+    "afterExposed": 16,
+    "dropExposed": 36,
     "maxDrop": 2,
-    "notRightAfter": [],
+    "notRightAfter": [
+      "gsm8k.388",
+      "gsm8k.103",
+      "gsm8k.656",
+      "gsm8k.329",
+      "gsm8k.373",
+      "gsm8k.285",
+      "gsm8k.817",
+      "gsm8k.508",
+      "gsm8k.663",
+      "gsm8k.27",
+      "gsm8k.136",
+      "gsm8k.1",
+      "gsm8k.730",
+      "gsm8k.379",
+      "gsm8k.418",
+      "gsm8k.232",
+      "gsm8k.623",
+      "gsm8k.773",
+      "gsm8k.376",
+      "gsm8k.595",
+      "gsm8k.488",
+      "gsm8k.269",
+      "gsm8k.220",
+      "gsm8k.149",
+      "gsm8k.824",
+      "gsm8k.370",
+      "gsm8k.975",
+      "gsm8k.197",
+      "gsm8k.797",
+      "gsm8k.419",
+      "gsm8k.121",
+      "gsm8k.684",
+      "gsm8k.306",
+      "gsm8k.1051",
+      "gsm8k.761",
+      "gsm8k.345"
+    ],
     "routesAfter": {
-      "program": 52
+      "memory": 36,
+      "program": 16
+    },
+    "inducedAlone": {
+      "right": 52,
+      "drop": 0,
+      "lostToOverlay": [
+        "gsm8k.388",
+        "gsm8k.103",
+        "gsm8k.656",
+        "gsm8k.329",
+        "gsm8k.373",
+        "gsm8k.285",
+        "gsm8k.817",
+        "gsm8k.508",
+        "gsm8k.663",
+        "gsm8k.27",
+        "gsm8k.136",
+        "gsm8k.1",
+        "gsm8k.730",
+        "gsm8k.379",
+        "gsm8k.418",
+        "gsm8k.232",
+        "gsm8k.623",
+        "gsm8k.773",
+        "gsm8k.376",
+        "gsm8k.595",
+        "gsm8k.488",
+        "gsm8k.269",
+        "gsm8k.220",
+        "gsm8k.149",
+        "gsm8k.824",
+        "gsm8k.370",
+        "gsm8k.975",
+        "gsm8k.197",
+        "gsm8k.797",
+        "gsm8k.419",
+        "gsm8k.121",
+        "gsm8k.684",
+        "gsm8k.306",
+        "gsm8k.1051",
+        "gsm8k.761",
+        "gsm8k.345"
+      ]
+    },
+    "retractions": {
+      "file": "bench/verdicts/learned-programs.json",
+      "lost": 36,
+      "matched": 36,
+      "entries": 18,
+      "devWrong": 200,
+      "devRight": 64,
+      "keptRightNow": 16,
+      "keptRightNowMatched": 0,
+      "byEntry": [
+        {
+          "level": "role",
+          "pattern": "n1|q|xf0,f1|rn",
+          "program": "shrink(shrink(q0,f0),f1)",
+          "forms": 1,
+          "devWrong": 25,
+          "devRight": 10,
+          "keepRows": [
+            "gsm8k.136",
+            "gsm8k.773",
+            "gsm8k.376",
+            "gsm8k.488",
+            "gsm8k.269",
+            "gsm8k.306"
+          ]
+        },
+        {
+          "level": "cue",
+          "pattern": "n3|qtime|x",
+          "program": "div(mul(q0,q2),q1)",
+          "forms": 2,
+          "devWrong": 16,
+          "devRight": 8,
+          "keepRows": [
+            "gsm8k.103",
+            "gsm8k.730",
+            "gsm8k.1051"
+          ]
+        },
+        {
+          "level": "cue",
+          "pattern": "n3|qmore|x",
+          "program": "sub(sub(q0,q1),q2)",
+          "forms": 2,
+          "devWrong": 4,
+          "devRight": 7,
+          "keepRows": [
+            "gsm8k.817",
+            "gsm8k.975",
+            "gsm8k.684"
+          ]
+        },
+        {
+          "level": "role",
+          "pattern": "n3|q|x|rn,n,n",
+          "program": "sub(q0,add(q1,q2))",
+          "forms": 1,
+          "devWrong": 29,
+          "devRight": 16,
+          "keepRows": [
+            "gsm8k.663",
+            "gsm8k.197",
+            "gsm8k.419"
+          ]
+        },
+        {
+          "level": "role",
+          "pattern": "n1|qtotal|xf0|rn",
+          "program": "grow(q0,f0)",
+          "forms": 1,
+          "devWrong": 1,
+          "devRight": 3,
+          "keepRows": [
+            "gsm8k.388",
+            "gsm8k.1"
+          ]
+        },
+        {
+          "level": "cue",
+          "pattern": "n3|qtime|x",
+          "program": "sub(q1,div(q0,q2))",
+          "forms": 2,
+          "devWrong": 8,
+          "devRight": 0,
+          "keepRows": [
+            "gsm8k.656",
+            "gsm8k.623"
+          ]
+        },
+        {
+          "level": "cue",
+          "pattern": "n3|qleft|x",
+          "program": "sub(add(q0,q1),q2)",
+          "forms": 2,
+          "devWrong": 22,
+          "devRight": 4,
+          "keepRows": [
+            "gsm8k.329",
+            "gsm8k.379"
+          ]
+        },
+        {
+          "level": "role",
+          "pattern": "n2|qtotal,money|xpct100|rm,p",
+          "program": "shrink(q0,q1)",
+          "forms": 1,
+          "devWrong": 1,
+          "devRight": 0,
+          "keepRows": [
+            "gsm8k.373",
+            "gsm8k.370"
+          ]
+        },
+        {
+          "level": "role",
+          "pattern": "n2|qtime|xm0|rnQ,nQ",
+          "program": "add(mul(m0,q0),q1)",
+          "forms": 1,
+          "devWrong": 3,
+          "devRight": 1,
+          "keepRows": [
+            "gsm8k.285",
+            "gsm8k.797"
+          ]
+        },
+        {
+          "level": "role",
+          "pattern": "n2|qtotal|xf0,m0|rn,n",
+          "program": "add(grow(q0,m0),grow(q1,f0))",
+          "forms": 1,
+          "devWrong": 6,
+          "devRight": 0,
+          "keepRows": [
+            "gsm8k.508",
+            "gsm8k.121"
+          ]
+        },
+        {
+          "level": "role",
+          "pattern": "n1|q|xf0,f1|rnQ",
+          "program": "div(div(q0,f1),f0)",
+          "forms": 1,
+          "devWrong": 5,
+          "devRight": 2,
+          "keepRows": [
+            "gsm8k.418",
+            "gsm8k.761"
+          ]
+        },
+        {
+          "level": "cue",
+          "pattern": "n4|qmoney,time|x",
+          "program": "mul(div(mul(q0,q3),q1),q2)",
+          "forms": 1,
+          "devWrong": 1,
+          "devRight": 0,
+          "keepRows": [
+            "gsm8k.27"
+          ]
+        },
+        {
+          "level": "cue",
+          "pattern": "n1|qtotal|xf0",
+          "program": "grow(q0,f0)",
+          "forms": 1,
+          "devWrong": 3,
+          "devRight": 1,
+          "keepRows": [
+            "gsm8k.232"
+          ]
+        },
+        {
+          "level": "cue",
+          "pattern": "n2|qtime|xm0",
+          "program": "add(mul(m0,q0),q1)",
+          "forms": 1,
+          "devWrong": 8,
+          "devRight": 1,
+          "keepRows": [
+            "gsm8k.595"
+          ]
+        },
+        {
+          "level": "cue",
+          "pattern": "n4|qmoney|x",
+          "program": "add(mul(q0,q2),mul(q1,q3))",
+          "forms": 2,
+          "devWrong": 12,
+          "devRight": 1,
+          "keepRows": [
+            "gsm8k.220"
+          ]
+        },
+        {
+          "level": "cue",
+          "pattern": "n3|q|x",
+          "program": "mul(div(q2,q0),q1)",
+          "forms": 2,
+          "devWrong": 28,
+          "devRight": 3,
+          "keepRows": [
+            "gsm8k.149"
+          ]
+        },
+        {
+          "level": "cue",
+          "pattern": "n4|qmore|x",
+          "program": "sub(mul(q0,q2),mul(q1,q3))",
+          "forms": 1,
+          "devWrong": 1,
+          "devRight": 1,
+          "keepRows": [
+            "gsm8k.824"
+          ]
+        },
+        {
+          "level": "cue",
+          "pattern": "n4|qtotal|x",
+          "program": "add(mul(q0,q1),mul(q2,q3))",
+          "forms": 1,
+          "devWrong": 27,
+          "devRight": 6,
+          "keepRows": [
+            "gsm8k.345"
+          ]
+        }
+      ]
     }
   },
   "c": {
@@ -488,33 +819,30 @@
     },
     "checked": {
       "asked": 533,
-      "tier": 72,
-      "right": 54,
-      "wrong": 18,
+      "tier": 16,
+      "right": 16,
+      "wrong": 0,
       "loaded": {
-        "learned": 13,
-        "contradicted": 1,
-        "unchecked": 0
+        "learned": 0,
+        "contradicted": 0,
+        "unchecked": 0,
+        "retracted": 29,
+        "retractUnapplied": 0
       }
     },
     "control": {
       "asked": 533,
-      "tier": 73,
-      "right": 54,
-      "wrong": 19,
+      "tier": 16,
+      "right": 16,
+      "wrong": 0,
       "loaded": {
-        "learned": 14,
+        "learned": 0,
         "contradicted": 0
       }
     },
     "addedWrong": [],
-    "addedWrongControl": [
-      "gsm8k.906=7/10"
-    ],
-    "addedRight": [
-      "gsm8k.302",
-      "gsm8k.723"
-    ]
+    "addedWrongControl": [],
+    "addedRight": []
   },
   "e": {
     "controlExposedWrongA": 51,
@@ -576,11 +904,12 @@
       },
       "b": {
         "asked": 52,
-        "tier": 52,
-        "right": 52,
+        "tier": 16,
+        "right": 16,
         "wrong": 0,
         "routes": {
-          "program": 52
+          "memory": 36,
+          "program": 16
         }
       },
       "c": {
@@ -607,9 +936,9 @@
   "counters": {
     "guard.real": {
       "asked": 54,
-      "answered": 52,
+      "answered": 16,
       "kind": 11,
-      "form": 2,
+      "form": 38,
       "unformed": 0,
       "missed": 0,
       "partial": 0,
@@ -657,9 +986,9 @@
     },
     "formOnly.real": {
       "asked": 65,
-      "answered": 52,
+      "answered": 16,
       "kind": 0,
-      "form": 6,
+      "form": 42,
       "unformed": 0,
       "missed": 7,
       "partial": 0,
@@ -669,9 +998,9 @@
     },
     "guard.exposed": {
       "asked": 54,
-      "answered": 52,
+      "answered": 16,
       "kind": 191,
-      "form": 2,
+      "form": 38,
       "unformed": 0,
       "missed": 0,
       "partial": 0,
@@ -719,9 +1048,9 @@
     },
     "formOnly.exposed": {
       "asked": 245,
-      "answered": 52,
+      "answered": 16,
       "kind": 0,
-      "form": 185,
+      "form": 221,
       "unformed": 0,
       "missed": 8,
       "partial": 0,
@@ -735,45 +1064,49 @@
   "tests": {
     "command": "node --test test/act-prompt.test.mjs",
     "exit": 0,
-    "tests": 32,
-    "pass": 32,
+    "tests": 33,
+    "pass": 33,
     "fail": 0,
     "ok": true,
-    "tally": "tests 32 pass 32 fail 0"
+    "tally": "tests 33 pass 33 fail 0"
   },
   "code": {
-    "act/prompt.mjs": "72ac732c6265cfeb",
+    "act/prompt.mjs": "ec4102d8a42ee284",
     "reason/induce.mjs": "4b92c344b2534e72",
-    "bench/program-guard.mjs": "d6adb9fe838a46bb",
+    "bench/program-guard.mjs": "a1cb8b4479bdaab5",
     "act/solve.mjs": "0ebdb5771d13dde7",
     "act/exact-kinds.mjs": "8120cf89f2b6c508"
   },
-  "ms": 4545,
-  "statement": "With the guard on, the program tier answered 0 of the 60 must-refuse prompts (0 with the exact-kind readers unplugged), answered right 52 of the 52 must-keep development problems it answered right before (drop 0, the bar allows 2), and answered wrong 0 of the 165 wrong rows of the self-queries misses (0 unplugged); alg-01, alg-02, alg-04, word-08 and gsm8k.991 went to alg-01 memory, alg-02 memory, alg-04 memory, word-08 memory, gsm8k.991 memory (no wrong tier answer, both exposures: true). The control arm, the same prompts with the guard off and the exact-kind readers unplugged, answered 51 must-refuse prompts and 129 misses rows wrong by the tier (as shipped: 1 and 0, because the exact readers now answer those prompts first). The learned overlay on the 533 development rows of the store: induced only wrong 18, with the overlay and its development check wrong 18 (added wrong 0, added right 2), the control with the check off added wrong 1. Sockets attempted 0. Tests: tests 32 pass 32 fail 0. BAR MET.",
+  "ms": 4775,
+  "statement": "With the guard on, the program tier answered 0 of the 60 must-refuse prompts (0 with the exact-kind readers unplugged), answered right 16 of the 52 must-keep development problems it answered right before (drop 36, the bar allows 2; the induced store alone, guard on, answered right 52 (drop 0), and the 36 rows lost sit in forms the retract list of bench/verdicts/learned-programs.json retracts, which the production loader applies since board 36: matched 36 of 36 in 18 retraction entries that answered 200 development rows wrong and 64 right in those forms, and 0 of the 16 rows still right match one), and answered wrong 0 of the 165 wrong rows of the self-queries misses (0 unplugged); alg-01, alg-02, alg-04, word-08 and gsm8k.991 went to alg-01 memory, alg-02 memory, alg-04 memory, word-08 memory, gsm8k.991 memory (no wrong tier answer, both exposures: true). The control arm, the same prompts with the guard off and the exact-kind readers unplugged, answered 51 must-refuse prompts and 129 misses rows wrong by the tier (as shipped: 1 and 0, because the exact readers now answer those prompts first). The learned overlay on the 533 development rows of the store: induced only wrong 18, with the overlay and its development check wrong 0 (added wrong 0, added right 0), the control with the check off added wrong 0. Sockets attempted 0. Tests: tests 33 pass 33 fail 0. BAR NOT MET.",
   "printed": [
     "held out: bench/verdicts/program-guard-heldout.jsonl rows 112 (refuse 60, keep 52), ids sha256 10192e08c2bfd0e1, file sha256 eb9c56f4183b76df, same as written first true, draw reproduces true",
     "(c) rows: bench/verdicts/self-queries-misses.jsonl as of 2026-09-28T17:51:40.859Z (git blob 490740d3, commit 718e358, 1044239 bytes, object id checked true) wrong 165 (probability 113, arithmetic 36, calendar 16), as named true; on disk now wrong 0, not in the pinned set 0; asked 165",
-    "store: bench/verdicts/induce-programs.json sha256 da5d002591154cd8, entries 827, with forms 827, forms declared true, development rows indexed 533; learned store bench/verdicts/learned-programs.json present, loaded 13, refused 0, contradicted by a development row 1, unchecked 0",
-    "(f) the learned overlay on the 533 development rows of the store (devRows, ids sha256 65144ffa359f2130), guard on: induced only tier 70 right 52 wrong 18; with the overlay, development check on (loaded 13, contradicted 1, unchecked 0) tier 72 right 54 wrong 18, added wrong 0, added right 2; control, check off (loaded 14) tier 73 right 54 wrong 19, added wrong 1 gsm8k.906=7/10",
-    "arm guard.real (guard on, kind gate on, form gate on, exact kinds on): (a) asked 60 answered by the tier 0 wrong 0; (b) asked 52 answered right by the tier 52 wrong 0; (c) asked 165 answered by the tier 0 wrong by the tier 0; (d) asked 5 answered by the tier 0 wrong by the tier 0; tier counters: asked 54 answered 52 kind 11 form 2 unformed 0 missed 0 partial 0",
+    "store: bench/verdicts/induce-programs.json sha256 a46f5094781cbe60, entries 814, with forms 814, forms declared true, development rows indexed 533; learned store bench/verdicts/learned-programs.json present, loaded 0, refused 0, contradicted by a development row 0, unchecked 0, forms retracted 29, retractions unapplied 0",
+    "development index split (devRows.split, written by --forms): rows 533, in math.json development 95, outside 438, in ns development 533, in ns heldOut 0; must-keep rows (b) outside the 200 math.json development ids 48 of 52",
+    "(f) the learned overlay on the 533 development rows of the store (devRows, ids sha256 65144ffa359f2130), guard on: induced only tier 70 right 52 wrong 18; with the overlay, development check on (loaded 0, contradicted 0, unchecked 0, forms retracted 29, unapplied 0) tier 16 right 16 wrong 0, added wrong 0, added right 0; control, check off (loaded 0) tier 16 right 16 wrong 0, added wrong 0",
+    "arm guard.real (guard on, kind gate on, form gate on, exact kinds on): (a) asked 60 answered by the tier 0 wrong 0; (b) asked 52 answered right by the tier 16 wrong 0; (c) asked 165 answered by the tier 0 wrong by the tier 0; (d) asked 5 answered by the tier 0 wrong by the tier 0; tier counters: asked 54 answered 16 kind 11 form 38 unformed 0 missed 0 partial 0",
     "arm control.real (guard OFF, kind gate off, form gate off, exact kinds on): (a) asked 60 answered by the tier 1 wrong 1; (b) asked 52 answered right by the tier 52 wrong 0; (c) asked 165 answered by the tier 0 wrong by the tier 0; (d) asked 5 answered by the tier 5 wrong by the tier 5; tier counters: asked 65 answered 58 kind 0 form 0 unformed 0 missed 7 partial 0",
     "arm kindOnly.real (guard on, kind gate on, form gate off, exact kinds on): (a) asked 60 answered by the tier 0 wrong 0; (b) asked 52 answered right by the tier 52 wrong 0; (c) asked 165 answered by the tier 0 wrong by the tier 0; (d) asked 5 answered by the tier 2 wrong by the tier 2; tier counters: asked 54 answered 54 kind 11 form 0 unformed 0 missed 0 partial 0",
-    "arm formOnly.real (guard on, kind gate off, form gate on, exact kinds on): (a) asked 60 answered by the tier 0 wrong 0; (b) asked 52 answered right by the tier 52 wrong 0; (c) asked 165 answered by the tier 0 wrong by the tier 0; (d) asked 5 answered by the tier 0 wrong by the tier 0; tier counters: asked 65 answered 52 kind 0 form 6 unformed 0 missed 7 partial 0",
-    "arm guard.exposed (guard on, kind gate on, form gate on, exact kinds unplugged): (a) asked 60 answered by the tier 0 wrong 0; (b) asked 52 answered right by the tier 52 wrong 0; (c) asked 165 answered by the tier 0 wrong by the tier 0; (d) asked 5 answered by the tier 0 wrong by the tier 0; tier counters: asked 54 answered 52 kind 191 form 2 unformed 0 missed 0 partial 0",
+    "arm formOnly.real (guard on, kind gate off, form gate on, exact kinds on): (a) asked 60 answered by the tier 0 wrong 0; (b) asked 52 answered right by the tier 16 wrong 0; (c) asked 165 answered by the tier 0 wrong by the tier 0; (d) asked 5 answered by the tier 0 wrong by the tier 0; tier counters: asked 65 answered 16 kind 0 form 42 unformed 0 missed 7 partial 0",
+    "arm guard.exposed (guard on, kind gate on, form gate on, exact kinds unplugged): (a) asked 60 answered by the tier 0 wrong 0; (b) asked 52 answered right by the tier 16 wrong 0; (c) asked 165 answered by the tier 0 wrong by the tier 0; (d) asked 5 answered by the tier 0 wrong by the tier 0; tier counters: asked 54 answered 16 kind 191 form 38 unformed 0 missed 0 partial 0",
     "arm control.exposed (guard OFF, kind gate off, form gate off, exact kinds unplugged): (a) asked 60 answered by the tier 51 wrong 51; (b) asked 52 answered right by the tier 52 wrong 0; (c) asked 165 answered by the tier 129 wrong by the tier 129; (d) asked 5 answered by the tier 5 wrong by the tier 5; tier counters: asked 245 answered 237 kind 0 form 0 unformed 0 missed 8 partial 0",
     "arm kindOnly.exposed (guard on, kind gate on, form gate off, exact kinds unplugged): (a) asked 60 answered by the tier 0 wrong 0; (b) asked 52 answered right by the tier 52 wrong 0; (c) asked 165 answered by the tier 0 wrong by the tier 0; (d) asked 5 answered by the tier 2 wrong by the tier 2; tier counters: asked 54 answered 54 kind 191 form 0 unformed 0 missed 0 partial 0",
-    "arm formOnly.exposed (guard on, kind gate off, form gate on, exact kinds unplugged): (a) asked 60 answered by the tier 0 wrong 0; (b) asked 52 answered right by the tier 52 wrong 0; (c) asked 165 answered by the tier 0 wrong by the tier 0; (d) asked 5 answered by the tier 0 wrong by the tier 0; tier counters: asked 245 answered 52 kind 0 form 185 unformed 0 missed 8 partial 0",
+    "arm formOnly.exposed (guard on, kind gate off, form gate on, exact kinds unplugged): (a) asked 60 answered by the tier 0 wrong 0; (b) asked 52 answered right by the tier 16 wrong 0; (c) asked 165 answered by the tier 0 wrong by the tier 0; (d) asked 5 answered by the tier 0 wrong by the tier 0; tier counters: asked 245 answered 16 kind 0 form 221 unformed 0 missed 8 partial 0",
     "(a) must refuse, guard: asked 60, answered by the tier 0, wrong 0 (exact kinds unplugged: answered by the tier 0, wrong 0); routes exact 52, memory 8; refused by kind {\"weekday\":2,\"card\":2,\"die\":1,\"probability\":1,\"letter\":2,\"equation\":3}, unplugged {\"weekday\":26,\"card\":157,\"die\":2,\"probability\":1,\"letter\":2,\"equation\":3}",
     "(a) must refuse, control (guard off): answered by the tier 1, wrong 1 (exact kinds unplugged: answered by the tier 51, wrong 51)",
-    "(b) must keep: before 52 (the held-out file, answered right by the tier before the guard), control arm now 52, after (guard) 52, drop 0 (exact kinds unplugged: after 52, drop 0; bar: at most 2); routes after program 52",
+    "(b) must keep: before 52 (the held-out file, answered right by the tier before the guard), control arm now 52, after (guard) 16, drop 36 (exact kinds unplugged: after 16, drop 36; bar: at most 2); routes after memory 36, program 16",
+    "(b) not answered right by the tier after: gsm8k.388, gsm8k.103, gsm8k.656, gsm8k.329, gsm8k.373, gsm8k.285, gsm8k.817, gsm8k.508, gsm8k.663, gsm8k.27, gsm8k.136, gsm8k.1, gsm8k.730, gsm8k.379, gsm8k.418, gsm8k.232, gsm8k.623, gsm8k.773, gsm8k.376, gsm8k.595, gsm8k.488, gsm8k.269, gsm8k.220, gsm8k.149, gsm8k.824, gsm8k.370, gsm8k.975, gsm8k.197, gsm8k.797, gsm8k.419, gsm8k.121, gsm8k.684, gsm8k.306, gsm8k.1051, gsm8k.761, gsm8k.345",
+    "(b) beside it, the guard on and the induced store alone (no learned overlay, no retraction applied): answered right by the tier 52 of 52, drop 0; right there and not with the store the tier loads (the overlay: forms retracted 29) 36",
+    "(b) the 36 rows lost to the overlay, each matched to a retraction of bench/verdicts/learned-programs.json by (level, pattern, program, question form): matched 36 of 36, in 18 retraction entries of 22, which the self-query saw answer 200 development rows wrong and 64 right in their retracted forms; control: rows still answered right as shipped 16, matched to a retraction 0",
     "(c) the 165 wrong rows of bench/verdicts/self-queries-misses.jsonl (probability 113, arithmetic 36, calendar 16), by kind asked/tier/wrong-by-tier: guard probability 113/0/0, arithmetic 36/0/0, calendar 16/0/0; guard unplugged probability 113/0/0, arithmetic 36/0/0, calendar 16/0/0; control probability 113/0/0, arithmetic 36/0/0, calendar 16/0/0; control unplugged probability 113/113/113, arithmetic 36/0/0, calendar 16/16/16",
     "(c) wrong by the tier: guard 0, guard unplugged 0, control 0, control unplugged 129; routes with the guard exact 165; unplugged memory 129, exact 36",
     "(d) guard: alg-01 memory; alg-02 memory; alg-04 memory; word-08 memory; gsm8k.991 memory; unplugged: alg-01 memory; alg-02 memory; alg-04 memory; word-08 memory; gsm8k.991 memory; holds true",
     "(d) control: alg-01 program 151 (WRONG); alg-02 program 20 (WRONG); alg-04 program 10 (WRONG); word-08 program 11 (WRONG); gsm8k.991 program 42 (WRONG)",
     "(e) control answers wrong: exact kinds unplugged (a) 51, (c) 129; as shipped (a) 1, (c) 0; guard (a) 0 and 0, (c) 0 and 0; holds true",
-    "each gate alone, exact kinds unplugged: kind only (a) tier 0 (c) wrong 0 (b) right 52 (d) tier 2; form only (a) tier 0 (c) wrong 0 (b) right 52 (d) tier 0",
+    "each gate alone, exact kinds unplugged: kind only (a) tier 0 (c) wrong 0 (b) right 52 (d) tier 2; form only (a) tier 0 (c) wrong 0 (b) right 16 (d) tier 0",
     "sockets and fetches attempted: 0",
-    "tests: node --test test/act-prompt.test.mjs: tests 32 pass 32 fail 0",
-    "BAR MET: (a) true, (b) true, (c) true, (d) true, (e) true, (f) true, held out as written true, sockets 0 true, tests true; wrong by the tier with the guard (a+c+d, both exposures) 0; 4.5 s"
+    "tests: node --test test/act-prompt.test.mjs: tests 33 pass 33 fail 0",
+    "BAR NOT MET: (a) true, (b) false, (c) true, (d) true, (e) true, (f) true, held out as written true, sockets 0 true, tests true; wrong by the tier with the guard (a+c+d, both exposures) 0; 4.8 s"
   ]
 }

@@ -27,10 +27,15 @@
 // barMet only when: wrong is 0 on both populations in both arms; the held-out answered share over the nine kinds is
 // at least 0.75 (the solve arm); every other census kind keeps its organism native and correct counts; and
 // `node --test test/solve.test.mjs test/answer.test.mjs test/exact-kinds.test.mjs` passes.
+// With --unplug-spoken (board 36, item pins) two more checks rule: the second arm ran and its probe proved the unplug
+// took (spokenControlRan), and every other census kind kept its counts with kindsReader AND the spoken rewrites of
+// act/exact-read.mjs unplugged (spokenOtherKindsKept).
 //
 // MODEL OFF: provider null, no socket, no model call. Run it through the budget:
 //   node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir bench/verdicts -- node --max-old-space-size=4000 bench/exact-kinds.mjs
 import { readFileSync, writeFileSync, statSync, renameSync } from 'node:fs';
+import { mkdtempSync, rmSync } from 'node:fs'; // board 36 (item pins): the --unplug-spoken scratch
+import os from 'node:os'; // board 36 (item pins)
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -153,6 +158,70 @@ export function census({ unplugged = false } = {}) {
   return { ok: true, status: r.status, ms: Date.now() - t0, line: out.slice(i + 1).trim(), v };
 }
 
+// ---------------------------------------------------------------- board 36 (item pins), add-only: the second unplug
+// kindsReader(false) switches off act/exact-kinds.mjs and the gap readers in act/solve.mjs, but not the spoken rewrites
+// board 35 readers-2 added to act/exact-read.mjs ("the product of 7 and 8", "7 more than 8", the difference guard), so a
+// census kind those rewrites moved looked "kept by this item" in both arms. With --unplug-spoken the census runs a third
+// time with kindsReader(false) AND act/exact-read.mjs served as it was before board 35 (git show SPOKEN_BEFORE_REV, the
+// parent of the commit that landed readers-2; that commit only added 40 lines to the file). A load hook
+// (node:module registerHooks) serves the old source under the file's own URL, so its relative imports resolve as they do
+// in the tree. The child prints a probe on stderr: the old reader reads "what's the product of 7 and 8" as 7 + 8 and the
+// tree reads it as 7 * 8, so a probe equal to the tree's reading means the hook did not take and the arm is not a control.
+export const SPOKEN_FLAG = '--unplug-spoken';
+export const SPOKEN_FILE = 'act/exact-read.mjs';
+export const SPOKEN_BEFORE_REV = '73f0293^';
+export const SPOKEN_PROBE = "what's the product of 7 and 8";
+const SPOKEN_PROBE_RE = /^UNPLUG-SPOKEN probe (.*) served (\d+)$/m;
+
+/** The preload that serves act/exact-read.mjs at SPOKEN_BEFORE_REV and then calls kindsReader(false); { ok, dir, file } or { ok: false, why }. */
+export function spokenPreload() {
+  const g = spawnSync('git', ['show', SPOKEN_BEFORE_REV + ':' + SPOKEN_FILE], { cwd: ROOT, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+  if (g.status !== 0 || !g.stdout) return { ok: false, why: 'git show ' + SPOKEN_BEFORE_REV + ':' + SPOKEN_FILE + ' failed: ' + String(g.stderr || '').slice(0, 200) };
+  const dir = mkdtempSync(path.join(os.tmpdir(), 'exact-kinds-spoken-'));
+  const oldFile = path.join(dir, 'exact-read.before.mjs');
+  writeFileSync(oldFile, g.stdout);
+  const target = pathToFileURL(path.join(ROOT, SPOKEN_FILE)).href;
+  const solveUrl = pathToFileURL(path.join(ROOT, 'act', 'solve.mjs')).href;
+  const src = [
+    "import { registerHooks } from 'node:module';",
+    "import { readFileSync } from 'node:fs';",
+    'const TARGET = ' + JSON.stringify(target.toLowerCase()) + ';',
+    'const SRC = readFileSync(' + JSON.stringify(oldFile) + ", 'utf8');",
+    'let served = 0;',
+    'registerHooks({ load(url, context, nextLoad) { if (String(url).toLowerCase() === TARGET) { served++; return { format: \'module\', source: SRC, shortCircuit: true }; } return nextLoad(url, context); } });',
+    'const m = await import(' + JSON.stringify(target) + ');',
+    'const s = await import(' + JSON.stringify(solveUrl) + ');',
+    's.kindsReader(false);',
+    "process.stderr.write('UNPLUG-SPOKEN probe ' + JSON.stringify(m.spokenExpression(" + JSON.stringify(SPOKEN_PROBE) + ")) + ' served ' + served + '\\n');",
+  ].join('\n');
+  const file = path.join(dir, 'unplug-spoken.mjs');
+  writeFileSync(file, src + '\n');
+  return { ok: true, dir, file, oldBytes: Buffer.byteLength(g.stdout), oldSha256: sha256(g.stdout) };
+}
+
+/** The census as a child with kindsReader(false) and the pre-board-35 act/exact-read.mjs; the probe read from stderr. */
+export async function censusSpokenUnplugged() {
+  const pre = spokenPreload();
+  if (!pre.ok) return { ok: false, why: pre.why };
+  try {
+    const { spokenExpression } = await import('../act/exact-read.mjs');
+    const treeReads = spokenExpression(SPOKEN_PROBE);
+    const t0 = Date.now();
+    const r = spawnSync(process.execPath, ['--max-old-space-size=4000', '--import', pathToFileURL(pre.file).href, ...CENSUS_ARGS], { cwd: ROOT, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, timeout: 600000 });
+    const pm = SPOKEN_PROBE_RE.exec(String(r.stderr || ''));
+    const probe = pm ? { prompt: SPOKEN_PROBE, unplugged: JSON.parse(pm[1]), tree: treeReads, served: Number(pm[2]) } : null;
+    const probeHeld = !!probe && probe.served > 0 && probe.unplugged !== probe.tree;
+    const out = String(r.stdout || '');
+    const i = out.lastIndexOf('\nCONCEIVE ');
+    if (i < 0) return { ok: false, probe, probeHeld, status: r.status, why: 'no CONCEIVE line on stdout: ' + String(r.stderr || '').slice(0, 300) };
+    let v;
+    try { v = JSON.parse(out.slice(0, i)); } catch (e) { return { ok: false, probe, probeHeld, status: r.status, why: 'stdout before the CONCEIVE line is not JSON: ' + String(e.message).slice(0, 120) }; }
+    return { ok: true, probe, probeHeld, rev: SPOKEN_BEFORE_REV, oldSha256: pre.oldSha256, oldBytes: pre.oldBytes, status: r.status, ms: Date.now() - t0, line: out.slice(i + 1).trim(), v };
+  } finally {
+    rmSync(pre.dir, { recursive: true, force: true });
+  }
+}
+
 // a row's text prints the time its answer took ("1644500 ns"), which no two runs share; the rest must be the same
 export const untimed = (t) => String(t || '').replace(/\b\d+(?:\.\d+)?\s*(?:ns|\u00B5s|us|ms)\b/g, '<time>');
 const pair = (o) => (o ? { native: o.native, correct: o.correct } : null);
@@ -253,6 +322,34 @@ export async function run({ say = console.log } = {}) {
     say('EXACT-KINDS control child line (as is): ' + ctl.lines.asIs);
   } else say('EXACT-KINDS control FAILED: ' + ctl.why);
 
+  // board 36 (item pins), add-only: the second unplug (--unplug-spoken), printed beside the first
+  const unplugSpoken = process.argv.slice(2).includes(SPOKEN_FLAG);
+  let ctlSpoken = null;
+  if (unplugSpoken) {
+    const off2 = await censusSpokenUnplugged();
+    if (!off2.ok || !on.ok) ctlSpoken = { ok: false, probe: off2.probe ?? null, probeHeld: off2.probeHeld ?? false, why: (off2.ok ? '' : 'kinds and spoken unplugged: ' + off2.why + ' ') + (on.ok ? '' : 'as is: ' + on.why) };
+    else {
+      const c2 = control(committed, off2, on);
+      const byKind = Object.fromEntries(Object.keys(on.v.kinds).map((k) => [k, { kindsOnly: pair(off.ok && off.v.kinds[k] ? off.v.kinds[k].organism : null), kindsAndSpoken: pair(off2.v.kinds[k] ? off2.v.kinds[k].organism : null) }]));
+      const movedBySpoken = Object.keys(byKind).filter((k) => !same(byKind[k].kindsOnly, byKind[k].kindsAndSpoken));
+      ctlSpoken = { ok: true, probe: off2.probe, probeHeld: off2.probeHeld, rev: off2.rev, oldSha256: off2.oldSha256, ms: off2.ms, ...c2, unpluggedCommand: 'node --import <preload: act/exact-read.mjs served at ' + SPOKEN_BEFORE_REV + ', then kindsReader(false)> ' + CENSUS_ARGS.join(' '), kindsMovedBySpoken: movedBySpoken, spokenByKind: byKind };
+    }
+    say('EXACT-KINDS control probe (kinds and spoken unplugged): ' + (ctlSpoken.probe ? JSON.stringify(ctlSpoken.probe.prompt) + ' unplugged reads ' + JSON.stringify(ctlSpoken.probe.unplugged) + ', the tree reads ' + JSON.stringify(ctlSpoken.probe.tree) + ', old source served ' + ctlSpoken.probe.served + ' time(s): the unplug ' + (ctlSpoken.probeHeld ? 'took' : 'DID NOT TAKE') : 'no probe line on stderr'));
+    if (ctlSpoken.ok) {
+      const f = (p) => (p ? p.native + ',' + p.correct : '-');
+      say('EXACT-KINDS control, second arm (organism native,correct: kinds only unplugged | kinds and spoken unplugged | as is):');
+      for (const [k, c] of Object.entries(ctlSpoken.kinds)) {
+        const moved = ctlSpoken.kindsMovedBySpoken.includes(k);
+        if (c.nine || moved || !c.keptByThisItem) say('EXACT-KINDS control2 ' + (c.nine ? 'nine ' : 'other ') + k + ': ' + f(ctlSpoken.spokenByKind[k].kindsOnly) + ' | ' + f(c.unplugged) + ' | ' + f(c.asIs) + (moved ? ' (moved by the spoken rewrites)' : ''));
+      }
+      say('EXACT-KINDS control (kinds only unplugged): ' + (ctl.ok ? ctl.otherKinds + ' other kinds, kept by this item: ' + ctl.otherKindsKept + '; other kinds moved by this item: ' + (ctl.otherKindsMovedByThisItem.join(', ') || 'none') : 'FAILED'));
+      say('EXACT-KINDS control (kinds and spoken unplugged): ' + ctlSpoken.otherKinds + ' other kinds, kept by this item and the spoken rewrites together: ' + ctlSpoken.otherKindsKept + '; other kinds they moved: ' + (ctlSpoken.otherKindsMovedByThisItem.join(', ') || 'none') + '; kinds moved by the spoken rewrites alone (kinds only vs kinds and spoken unplugged): ' + (ctlSpoken.kindsMovedBySpoken.join(', ') || 'none'));
+      say('EXACT-KINDS control child line (kinds only unplugged): ' + (ctl.ok ? ctl.lines.unplugged : 'n/a'));
+      say('EXACT-KINDS control child line (kinds and spoken unplugged): ' + ctlSpoken.lines.unplugged);
+      say('EXACT-KINDS control child line (as is): ' + ctlSpoken.lines.asIs);
+    } else say('EXACT-KINDS control, second arm FAILED: ' + ctlSpoken.why);
+  }
+
   const wrongRows = [...solveDev.wrong, ...solveHeld.wrong, ...askDev.wrong, ...askHeld.wrong];
   const heldShare = solveHeld.total.answeredShare;
   const checks = {
@@ -265,6 +362,10 @@ export async function run({ say = console.log } = {}) {
     otherKindsKept: ctl.ok === true && ctl.otherKindsKept === true,
     tests: null,
   };
+  if (unplugSpoken) checks.spokenControlRan = ctlSpoken !== null && ctlSpoken.ok === true && ctlSpoken.probeHeld === true; // board 36 (item pins)
+  // board 36 (item pins, fix): the second arm rules like the first: every other census kind keeps its organism native and
+  // correct counts with the spoken rewrites unplugged too, or the bar is not met (a printed control that cannot fail the bar is not a control)
+  if (unplugSpoken) checks.spokenOtherKindsKept = ctlSpoken !== null && ctlSpoken.ok === true && ctlSpoken.otherKindsKept === true;
   const base = {
     at, command: COMMAND, argv: process.argv.slice(2), node: process.version,
     isTheBar: true, barMet: false,
@@ -281,6 +382,7 @@ export async function run({ say = console.log } = {}) {
     methods: KIND_METHODS,
     checks,
   };
+  if (unplugSpoken) { base.command = COMMAND + ' ' + SPOKEN_FLAG; base.controlSpoken = ctlSpoken; } // board 36 (item pins)
   // the verdict is written before the tests run (test/exact-kinds.test.mjs reads its shape and its held-out sha), marked
   // not the bar; the tests' own result then decides, and the file is written again with it
   writeVerdict({ ...base, isTheBar: false, notTheBarBecause: 'written before the tests ran; the run rewrites this file with their result', statement: 'pending the tests' });
@@ -292,6 +394,9 @@ export async function run({ say = console.log } = {}) {
     + ' (share ' + heldShare.toFixed(4) + '), correct ' + solveHeld.total.correct + ', wrong ' + solveHeld.total.wrong + '; ask answered ' + askHeld.total.answered + ', correct ' + askHeld.total.correct + ', wrong ' + askHeld.total.wrong
     + '. Control: ' + (ctl.ok ? ctl.otherKinds + ' other census kinds kept by this item ' + ctl.otherKindsKept + ' (moved since the commit by other work: ' + (ctl.otherKindsMovedSinceCommit.filter((k) => !ctl.otherKindsMovedByThisItem.includes(k)).join(', ') || 'none') + ')' : 'FAILED') + '. Tests ' + (tests.passed ? 'passed' : 'FAILED') + ' (' + tests.tally.join('; ') + ').';
   const v = { ...base, barMet, tests, statement };
+  // board 36 (item pins): the second arm in the statement, in the words its lines printed
+  if (unplugSpoken) v.statement += ' Second control arm (' + SPOKEN_FLAG + ', act/exact-read.mjs as at ' + SPOKEN_BEFORE_REV + ' and kindsReader off): '
+    + (ctlSpoken && ctlSpoken.ok ? 'the unplug ' + (ctlSpoken.probeHeld ? 'took' : 'did not take') + ' (the probe read ' + JSON.stringify(ctlSpoken.probe ? ctlSpoken.probe.unplugged : null) + ' against the tree\'s ' + JSON.stringify(ctlSpoken.probe ? ctlSpoken.probe.tree : null) + '); other kinds kept by this item and the spoken rewrites together ' + ctlSpoken.otherKindsKept + ' (moved: ' + (ctlSpoken.otherKindsMovedByThisItem.join(', ') || 'none') + '); kinds moved by the spoken rewrites alone: ' + (ctlSpoken.kindsMovedBySpoken.join(', ') || 'none') + '.' : 'FAILED (' + (ctlSpoken ? ctlSpoken.why : 'not run') + ').');
   writeVerdict(v);
   say('EXACT-KINDS tests: ' + tests.command + ' -> ' + tests.tally.join(' | ') + (tests.failing.length ? ' FAILING ' + tests.failing.join(' | ') : ''));
   say('EXACT-KINDS isTheBar true barMet ' + barMet + ': held-out answered share ' + heldShare.toFixed(4) + ' (bar ' + HELDOUT_SHARE_BAR + '), wrong solve ' + (solveDev.total.wrong + solveHeld.total.wrong) + ' ask ' + (askDev.total.wrong + askHeld.total.wrong)

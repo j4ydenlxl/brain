@@ -29,9 +29,11 @@
 //              isolation, the rules); its pass and fail counts are recorded
 //
 // THE SPLIT: the development set is the census wording (bench/conceive-prompts.json) the templates were written from,
-// and dev seeds 7, 8, 9 (the smoke runs and the test file). The held out rows are seeds 34 and 35: never generated or
-// read while self/queries.mjs was written; the verdict records the sha256 of each seed's rows and the generator's sha
-// and write stamp.
+// dev seeds 7, 8, 9 (the smoke runs and the test file), and seeds 34 and 35 (board 35 readers-2 developed the readers
+// on them). Seeds 36 and 37 were read once before the readers-2 fix (the first bar run of board 35), and rows of seeds
+// 38 and 39 were copied, values kept, into test/exact-kinds.test.mjs by board 35 readers-2 while it wrote the readers
+// (the comment above that file's board 35 block says so), so a run at any of these seeds is marked contaminated and its
+// statement says why. The verdict records the sha256 of each seed's rows and the generator's sha and write stamp.
 //
 // THE BAR (board 34, item self-queries): isTheBar when --n 5000 ran to the end at each of two seeds, the self test
 // passed with 0 failures, and every control above held; barMet when wrong is 0 on every kind AND the answered share
@@ -68,7 +70,14 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, '..');
 export const BAR = Object.freeze({ n: 5000, seeds: 2, answeredShare: 0.5 });
 export const DEFAULT_SEEDS = Object.freeze([34, 35]);
-export const DEV_SEEDS = Object.freeze([7, 8, 9]);
+// board 36 (item pins): 7, 8, 9 are the smoke runs and the test file; 34 and 35 are the seeds board 35 readers-2
+// developed the readers on (notes/exact-kinds.md). READ_BEFORE_FIX_SEEDS: 36 and 37 were the board 35 bar seeds, asked
+// once before the readers-2 fix (2026-09-28T18:45:16.256Z) and once after (2026-09-28T19:09:58.897Z), so a run at them
+// is contaminated. COPIED_INTO_TESTS_SEEDS: rows of 38 and 39 were copied into test/exact-kinds.test.mjs by board 35
+// readers-2 while it wrote the readers. All three lists mark a run contaminated.
+export const DEV_SEEDS = Object.freeze([7, 8, 9, 34, 35]);
+export const READ_BEFORE_FIX_SEEDS = Object.freeze([36, 37]);
+export const COPIED_INTO_TESTS_SEEDS = Object.freeze([38, 39]);
 export const VERDICTS = Object.freeze({
   bar: 'bench/verdicts/self-queries.json', misses: 'bench/verdicts/self-queries-misses.jsonl',
   partial: 'bench/verdicts/self-queries-partial.json', missesPartial: 'bench/verdicts/self-queries-misses-partial.jsonl',
@@ -465,6 +474,20 @@ export async function run(cfg = {}) {
   const qps = askNsSum > 0 ? r4(totals.asked / (askNsSum / 1e9)) : null;
   const wallQps = wallMs > 0 ? r4(totals.asked / (wallMs / 1000)) : null;
 
+  // board 36 (item pins): the contamination of this run's seeds, in words the statement carries
+  const devHit = seeds.filter((s) => DEV_SEEDS.includes(s)), readHit = seeds.filter((s) => READ_BEFORE_FIX_SEEDS.includes(s)), copiedHit = seeds.filter((s) => COPIED_INTO_TESTS_SEEDS.includes(s));
+  const seedsWord = (xs, verb) => (xs.length > 1 ? 'seeds ' : 'seed ') + xs.join(' and ') + (xs.length > 1 ? ' were ' : ' was ') + verb;
+  const contaminated = devHit.length > 0 || readHit.length > 0 || copiedHit.length > 0;
+  const contaminatedBecause = contaminated
+    ? [devHit.length ? seedsWord(devHit, 'development (7, 8, 9 the smoke runs and test/self-queries.test.mjs; 34 and 35 the seeds board 35 readers-2 developed the readers on)') : null,
+      readHit.length ? seedsWord(readHit, 'read once before the board 35 readers-2 fix (the first bar run, 2026-09-28T18:45:16.256Z)') : null,
+      copiedHit.length ? seedsWord(copiedHit, 'read by board 35 readers-2 while it wrote the readers (test/exact-kinds.test.mjs says its board 35 phrasings were copied from seed 38 and 39 rows, values kept)') : null].filter(Boolean).join('; ')
+    : null;
+  // the stem "contaminat" appears in the statement ONLY when the split marks the run contaminated, so the gate's
+  // CONTAMINATION label check (bench/gate.mjs CONTAMINATION_WORD) can fail for this bench: a clean run's words avoid it
+  const contaminationWords = contaminated
+    ? ' Seeds 34 and 35 were development for the readers, seeds 36 and 37 were read once before the readers-2 fix, and rows of seeds 38 and 39 were copied into test/exact-kinds.test.mjs by board 35 readers-2, so a run at any of them is contaminated. This run is contaminated: ' + contaminatedBecause + '.'
+    : ' This run is clean: ' + (seeds.length > 1 ? 'seeds ' + seeds.join(' and ') + ' are' : 'seed ' + seeds.join('') + ' is') + ' none of the development seeds (' + DEV_SEEDS.join(', ') + '), the seeds read before the readers-2 fix (' + READ_BEFORE_FIX_SEEDS.join(', ') + ') or the seeds copied into the tests (' + COPIED_INTO_TESTS_SEEDS.join(', ') + ').';
   const kindWords = KINDS.map((k) => k + ' ' + byKind[k].correct + ' correct, ' + byKind[k].wrong + ' wrong, ' + byKind[k].refused + ' refused of ' + byKind[k].asked).join('; ');
   const statement = 'The organism, model off, was asked ' + totals.asked + ' generated questions (' + n + ' at each of seeds ' + seeds.join(' and ')
     + ') whose truths self/queries.mjs computed without importing anything under act/ or reason/. It answered ' + totals.answered + ' ('
@@ -473,7 +496,8 @@ export async function run(cfg = {}) {
     + (totals.wrong === 0 ? 'no row was answered wrong.' : totals.wrong + ' rows were answered wrong, every one listed in wrongRows with the whole given text.')
     + ' The grading rules were checked on every row first: the stated truth graded correct ' + (control.byName.oracle0 ? 'on all ' + control.byName.oracle0.checks + ' rows in three styles' : '') + ', a perturbed answer graded wrong and a refusal graded refused, with '
     + control.failed + ' failures in ' + control.checks + ' checks, and an independent second computation agreed with ' + cross.agree + ' of ' + control.rows + ' truths.'
-    + (isTheBar ? ' This run is the bar; barMet is ' + barMet + (barMet ? '.' : ' because ' + [!wrongZeroEveryKind ? 'wrong is not 0 on every kind' : null, answeredShare !== null && answeredShare < BAR.answeredShare ? 'the answered share is under ' + BAR.answeredShare : null].filter(Boolean).join(' and ') + '.') : ' This run is not the bar (' + notTheBarBecause + ').');
+    + (isTheBar ? ' This run is the bar; barMet is ' + barMet + (barMet ? '.' : ' because ' + [!wrongZeroEveryKind ? 'wrong is not 0 on every kind' : null, answeredShare !== null && answeredShare < BAR.answeredShare ? 'the answered share is under ' + BAR.answeredShare : null].filter(Boolean).join(' and ') + '.') : ' This run is not the bar (' + notTheBarBecause + ').')
+    + contaminationWords;
 
   const verdict = {
     at, command, node: process.version, host: { platform: process.platform, cpus: os.cpus().length, freeMbAtEnd: Math.round(os.freemem() / 1048576) },
@@ -481,9 +505,12 @@ export async function run(cfg = {}) {
     isTheBar, barMet, notTheBarBecause, bar: { n: BAR.n, seeds: BAR.seeds, wrongOnEveryKind: 0, answeredShareAtLeast: BAR.answeredShare, answeredShare: r4(answeredShare), wrongByKind },
     checks,
     split: {
-      development: { what: 'the census wording of bench/conceive-prompts.json the templates were written from, and dev seeds ' + DEV_SEEDS.join(', ') + ' (the smoke runs and test/self-queries.test.mjs)', seeds: [...DEV_SEEDS] },
-      heldOut: { seeds: [...seeds], rowsSha256: Object.fromEntries(perSeed.map((p) => [p.seed, p.rowsSha256])), generatorSha: generator.sha, generatorWrittenAt: generator.mtime, note: 'rows at these seeds were never generated or read while self/queries.mjs was written; the sha256 is over each row\'s id, template, prompt, truth and rule' },
-      contaminated: seeds.some((s) => DEV_SEEDS.includes(s)),
+      development: { what: 'the census wording of bench/conceive-prompts.json the templates were written from, dev seeds 7, 8, 9 (the smoke runs and test/self-queries.test.mjs), and seeds 34 and 35 (board 35 readers-2 developed the readers on them)', seeds: [...DEV_SEEDS] },
+      readBeforeFix: { what: 'seeds 36 and 37, the board 35 readers-2 bar seeds: asked once before the fix (2026-09-28T18:45:16.256Z) and once after (2026-09-28T19:09:58.897Z), so a run at them is contaminated', seeds: [...READ_BEFORE_FIX_SEEDS] },
+      copiedIntoTests: { what: 'seeds 38 and 39: board 35 readers-2 copied rows of them, values kept, into test/exact-kinds.test.mjs while it wrote the readers (the comment above that file\'s board 35 block), so a run at them is contaminated', seeds: [...COPIED_INTO_TESTS_SEEDS] },
+      heldOut: { seeds: [...seeds], rowsSha256: Object.fromEntries(perSeed.map((p) => [p.seed, p.rowsSha256])), generatorSha: generator.sha, generatorWrittenAt: generator.mtime, note: 'rows at these seeds were never generated or read while self/queries.mjs was written; the sha256 is over each row\'s id, template, prompt, truth and rule', firstAsked: Object.fromEntries(seeds.filter((x) => x === 38 || x === 39).map((x) => [x, '2026-09-28T22:58:54.216Z (board 36 item pins, before the split text of this bench was edited)'])) },
+      contaminated,
+      contaminatedBecause,
     },
     generator,
     selfTest,

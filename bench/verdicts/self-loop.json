@@ -1,9 +1,9 @@
 {
- "at": "2026-09-28T19:15:36.161Z",
+ "at": "2026-09-28T23:46:11.416Z",
  "command": "node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir state/board35/self-loop -- node --max-old-space-size=4000 bench/self-loop.mjs --state-dir state/board35/self-loop",
  "isTheBar": true,
  "barMet": true,
- "author": "board 35 builder (item self-loop)",
+ "author": "board 35 builder (item self-loop); board 36 item pins",
  "split": {
   "development": {
    "seeds": [
@@ -23,9 +23,15 @@
    "selfQueriesDevSeeds": [
     7,
     8,
-    9
+    9,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39
    ],
-   "what": "the seeds self/loop.mjs, its tests and its smoke runs asked while it was built"
+   "what": "the seeds self/loop.mjs, its tests and its smoke runs asked while it was built; selfQueriesDevSeeds are the bench/self-queries.mjs seeds a reader was developed on or that were read before a bar (DEV_SEEDS, READ_BEFORE_FIX_SEEDS, COPIED_INTO_TESTS_SEEDS), none of them a held-out seed here"
   },
   "heldOut": {
    "dates": [
@@ -41,17 +47,19 @@
     "268": "206bb18053d368dfc5001ce1dee9d120256d538e06d7c7cea638cc0c838e91dc",
     "269": "089d2ca9c3d486135b3b3158630b4fd554e60f610a88d5365fa20d3d35ef69f2"
    },
-   "declared": "bench/self-loop.mjs HELD_OUT and notes/self-loop.md, fixed before any run at these seeds",
-   "matchesDeclared": true
+   "declared": "the constant HELD_OUT in bench/self-loop.mjs (sha256 of JSON.stringify(generate({ seed, n: 2000 })) per seed), fixed before any run at these seeds; notes/self-loop.md lists the same hashes",
+   "matchesDeclared": true,
+   "firstAsked": "the first bar run of board 35 item self-loop at 2026-09-28T18:52:15Z asked seeds 268 and 269 (refused 20 and 11, recorded in notes/self-loop.md); this run re-asks the same rows",
+   "reRun": true
   },
   "contaminated": false
  },
- "statement": "Two ticks of self/loop.mjs at 2026-09-26 and 2026-09-27 (seeds 268 and 269, n 2000, learn dry) asked 2000 and 2000 questions, wrong 0 and 0, refused 74 and 53; tick 2 named tick 1 as previous and its diff (closed 1, opened 1, stayed 6) equalled the bench's own diff of the two misses files; --plant-closed calendar.leap.is printed closed 1 for it and the same dry tick without the plant closed 0; 7 of 7 gap-row trials exited 0 and 7 read the count their record holds; the autopilot listed 7 loop candidates; the 05:00 command is a soak true and its loop tick plan held true; sockets 0; tests 12 of 12.",
- "wallS": 88.2,
+ "statement": "Two ticks of self/loop.mjs at 2026-09-26 and 2026-09-27 (seeds 268 and 269, n 2000, learn dry) asked 2000 and 2000 questions, wrong 0 and 0, refused 74 and 53; tick 2 named tick 1 as previous and its diff (closed 1, opened 1, stayed 6) equalled the bench's own diff of the two misses files, and the bench copy with one group dropped (differs true) and with one group renamed at the same counts (differs true) both differed from it; --plant-closed calendar.leap.is printed closed 1 for it and the same dry tick without the plant closed 0, and without --dry the plant exited 2 refused; the guard covered the main thread and file workers and not eval:true workers in the loop shape, as the words say (true); 7 of 7 gap-row trials exited 0 and 7 read the count their record holds; the autopilot listed 7 loop candidates; the 05:00 command is a soak true and its loop tick plan held true; sockets 0; tests 14 of 14. Held out: the first bar run of board 35 item self-loop at 2026-09-28T18:52:15Z asked seeds 268 and 269 (refused 20 and 11, recorded in notes/self-loop.md); this run re-asks the same rows.",
+ "wallS": 91.2,
  "tests": {
   "exit": 0,
-  "tests": 12,
-  "pass": 12,
+  "tests": 14,
+  "pass": 14,
   "fail": 0
  },
  "ticks": [
@@ -59,7 +67,7 @@
    "date": "2026-09-26",
    "seed": 268,
    "exit": 0,
-   "ms": 32951,
+   "ms": 34453,
    "line": "LOOP 2026-09-26: asked 2000 answered 1926 correct 1926 wrong 0 refused 74; groups open 7 closed 0 opened 7; ledger learned before 85 after 85; gaps written 7",
    "socketLines": 0,
    "record": "state/board35/self-loop/loop/2026-09-26.json"
@@ -68,7 +76,7 @@
    "date": "2026-09-27",
    "seed": 269,
    "exit": 0,
-   "ms": 33905,
+   "ms": 33686,
    "line": "LOOP 2026-09-27: asked 2000 answered 1947 correct 1947 wrong 0 refused 53; groups open 7 closed 1 opened 1; ledger learned before 85 after 85; gaps written 7",
    "socketLines": 0,
    "record": "state/board35/self-loop/loop/2026-09-27.json"
@@ -120,22 +128,22 @@
     "ledgerRows": 727,
     "asked": 418,
     "fixed": 87,
-    "still": 5,
-    "refused": 326,
+    "still": 4,
+    "refused": 327,
     "wrongNow": 0,
     "learned": 85,
     "timedOut": 0,
     "skippedArc": 309,
     "workerStarts": 1,
-    "wallMs": 1519
+    "wallMs": 1475
    },
    "learn": {
     "ran": true,
-    "kept": 12,
+    "kept": 0,
     "tried": 127460,
-    "shapes": 5,
-    "programs": 12,
-    "patterns": 15,
+    "shapes": 0,
+    "programs": 0,
+    "patterns": 0,
     "rows": 7613,
     "mistakes": 7466,
     "before": {
@@ -146,34 +154,33 @@
     },
     "after": {
      "asked": 7613,
-     "right": 136,
+     "right": 81,
      "wrong": 0,
-     "refused": 7477
+     "refused": 7532
     },
     "outcomes": {
-     "refused": 7189,
+     "refused": 7244,
      "withdrawn": 222,
      "kept-right": 81,
-     "learned": 55,
      "lost": 66
     },
     "sockets": 0,
     "file": null,
     "dry": true,
-    "ms": 28589
+    "ms": 30086
    },
    "after": {
     "ledgerRows": 727,
     "asked": 418,
     "fixed": 87,
-    "still": 5,
-    "refused": 326,
+    "still": 4,
+    "refused": 327,
     "wrongNow": 0,
     "learned": 85,
     "timedOut": 0,
     "skippedArc": 309,
     "workerStarts": 1,
-    "wallMs": 1455
+    "wallMs": 1504
    }
   },
   {
@@ -181,22 +188,22 @@
     "ledgerRows": 727,
     "asked": 418,
     "fixed": 87,
-    "still": 5,
-    "refused": 326,
+    "still": 4,
+    "refused": 327,
     "wrongNow": 0,
     "learned": 85,
     "timedOut": 0,
     "skippedArc": 309,
     "workerStarts": 1,
-    "wallMs": 1502
+    "wallMs": 1490
    },
    "learn": {
     "ran": true,
-    "kept": 12,
-    "tried": 127460,
-    "shapes": 5,
-    "programs": 12,
-    "patterns": 15,
+    "kept": 0,
+    "tried": 131212,
+    "shapes": 0,
+    "programs": 0,
+    "patterns": 0,
     "rows": 7613,
     "mistakes": 7466,
     "before": {
@@ -207,34 +214,33 @@
     },
     "after": {
      "asked": 7613,
-     "right": 136,
+     "right": 81,
      "wrong": 0,
-     "refused": 7477
+     "refused": 7532
     },
     "outcomes": {
-     "refused": 7189,
+     "refused": 7244,
      "withdrawn": 222,
      "kept-right": 81,
-     "learned": 55,
      "lost": 66
     },
     "sockets": 0,
     "file": null,
     "dry": true,
-    "ms": 29555
+    "ms": 29302
    },
    "after": {
     "ledgerRows": 727,
     "asked": 418,
     "fixed": 87,
-    "still": 5,
-    "refused": 326,
+    "still": 4,
+    "refused": 327,
     "wrongNow": 0,
     "learned": 85,
     "timedOut": 0,
     "skippedArc": 309,
     "workerStarts": 1,
-    "wallMs": 1449
+    "wallMs": 1444
    }
   }
  ],
@@ -276,6 +282,17 @@
    "stayed": 5,
    "differs": true
   },
+  "controlRenamed": {
+   "renamed": "counting.occurrences.casual-how-many",
+   "to": "counting.occurrences.casual-how-many.renamed-by-the-bench",
+   "groups": 7,
+   "rows": 53,
+   "sameCounts": true,
+   "closed": 2,
+   "opened": 2,
+   "stayed": 5,
+   "differs": true
+  },
   "ok": true
  },
  "plant": {
@@ -298,6 +315,12 @@
    "printedLoopLine": false,
    "ok": true
   },
+  "noDry": {
+   "exit": 2,
+   "said": "self/loop.mjs: --plant-closed needs --dry: a planted closure written into a real record is a lie",
+   "printedLoopLine": false,
+   "ok": true
+  },
   "ok": true
  },
  "trials": {
@@ -306,7 +329,7 @@
   "exit0": 7,
   "printed": 7,
   "agree": 7,
-  "seconds": 5.77,
+  "seconds": 5.781,
   "failed": []
  },
  "autopilot": {
@@ -372,8 +395,8 @@
    "workers": 0,
    "selfQueries": 0,
    "learn": 0,
-   "guard": "preload in every thread of this process",
-   "notCovered": "child processes (the generator self test)"
+   "guard": "preload in the main thread and every file worker of this process that inherits its execArgv (not eval:true workers, not child processes)",
+   "notCovered": "eval:true workers at any depth (the program and test workers act/run.mjs starts, nested inside the re-ask worker, start without the preload) and child processes (the generator self test)"
   },
   "tick2": {
    "total": 0,
@@ -381,14 +404,40 @@
    "workers": 0,
    "selfQueries": 0,
    "learn": 0,
-   "guard": "preload in every thread of this process",
-   "notCovered": "child processes (the generator self test)"
+   "guard": "preload in the main thread and every file worker of this process that inherits its execArgv (not eval:true workers, not child processes)",
+   "notCovered": "eval:true workers at any depth (the program and test workers act/run.mjs starts, nested inside the re-ask worker, start without the preload) and child processes (the generator self test)"
   },
   "stderrLines": 0,
   "canary": {
    "main": 1,
    "workers": 1,
    "lines": 2,
+   "ok": true
+  },
+  "coverage": {
+   "shape": "a file main under the preload, as self/loop.mjs runs",
+   "exit": 0,
+   "threads": {
+    "main": true,
+    "eval": false,
+    "file": true,
+    "evalInFile": false,
+    "fileInFile": true
+   },
+   "control": {
+    "what": "the same probe with no preload: every thread must read unguarded",
+    "exit": 0,
+    "threads": {
+     "main": false,
+     "eval": false,
+     "file": false,
+     "evalInFile": false,
+     "fileInFile": false
+    },
+    "allUnguarded": true
+   },
+   "notCovered": "eval:true workers at any depth (the program and test workers act/run.mjs starts, nested inside the re-ask worker, start without the preload) and child processes (the generator self test)",
+   "recordsName": true,
    "ok": true
   }
  },

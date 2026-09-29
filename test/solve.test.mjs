@@ -133,6 +133,42 @@ test('a prose question is null, and so is an expression it does not fully parse'
   assert.equal(solve('2 ^ 2').answer, '4');
 });
 
+// board 36 (item pins): six probes re-run with node on 2026-09-28 and pinned as they printed. Each refusal sits beside
+// the one-edit control that answers, so the refusal is the rule (the comma guard, the order of a difference, a choice
+// question with a yes or no tail) and not a reader unable to read any of it.
+test('board 36 pins: a comma inside an operand, a choice with a yes or no tail and a negative difference refuse; their controls answer', () => {
+  assert.equal(solve("What's the product of 1,000 and 2?"), null, 'the comma guard: 1,000 is a thousands separator, a decimal comma or a list');
+  const p = solve('What is the product of 1000 and 2?');
+  assert.ok(p, 'the control without the comma reads');
+  assert.equal(p.answer, String(1000n * 2n));
+  assert.equal(p.method, 'exact.arith');
+  assert.equal(solve('Which is bigger, 3 or 5? Answer yes or no.'), null, 'a choice question is not answered yes or no');
+  const c = solve('Is 7 greater than 3? Answer yes or no.');
+  assert.ok(c, 'the control, a yes or no question, reads');
+  assert.equal(c.answer, 7n > 3n ? 'yes' : 'no');
+  assert.equal(c.method, 'exact.comparison');
+  assert.equal(solve('the difference of 3 and 5'), null, 'the difference of 3 and 5 is 2 or -2: refused');
+  const d = solve('the difference of 5 and 3');
+  assert.ok(d, 'the control in the other order reads');
+  assert.equal(d.answer, String(5n - 3n));
+  assert.equal(d.method, 'exact.arith');
+});
+
+// board 36 (item pins, fix): the task named the difference probes bare ("difference of 3 and 5", "of 5 and 3"). Re-probed
+// with node on 2026-09-28 they printed: bare, BOTH orders null; with "the", 3 and 5 null and 5 and 3 2 (the pins above);
+// as a question, "What is the difference of 5 and 3?" 2 (exact.arith) and "What is the difference of 3 and 5?" null.
+// Pinned as printed: the negative order refuses in every frame; a reader that learns the bare frame must answer 2 for
+// 5 and 3 and move this pin, never answer the 3 and 5 order.
+test('board 36 pins: the difference probes in the bare frame and as a question, as printed', () => {
+  assert.equal(solve('difference of 3 and 5'), null, 'bare, the negative order: refused');
+  assert.equal(solve('difference of 5 and 3'), null, 'bare, printed null on 2026-09-28 (no frame reads it)');
+  assert.equal(solve('What is the difference of 3 and 5?'), null, 'the question, the negative order: refused');
+  const q = solve('What is the difference of 5 and 3?');
+  assert.ok(q, 'the question in the other order reads');
+  assert.equal(q.answer, String(5n - 3n));
+  assert.equal(q.method, 'exact.arith');
+});
+
 test('solve reads text and never runs it', () => {
   // A prompt that is a program, an injection and a url is text like any other text: it does
   // not parse as an expression, so it is refused, and nothing in this file could run it if

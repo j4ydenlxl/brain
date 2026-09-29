@@ -466,6 +466,18 @@ Followed by a 125-row prompt-to-idea map written by another model from this sect
 
 (Read as: the loop by which the organism improves itself and fills its own gaps is the top priority of what remains, and the banked week's pool stands at 73 percent, so what is left is spent on that loop first. Board 34b closes board 34's two open stages (a second fix of the mistakes item, the missing second verify of arc-vocab); board 35 is the gap-filling loop itself, cut from the mistakes ledger and the self-queries misses in the order their counts rank them.)
 
+### His words, verbatim (2026-09-28, the session start, before the 18:50:08 EDT clock read; the message opened with the previous session's handoff list pasted back, then this)
+
+> Signed in right now. 86 percent weekly
+
+(Read as: his sign-in is the one thing the last RED gate row waited on (the BrainAutopilot task is Interactive only and fires at 05:00 while he is signed in); the banked week's pool stands at 86 percent used. Board 36 was written from the handoff's five measured leftovers of board 35 and from the self-learn verdict's gain 0.)
+
+### His words, verbatim (2026-09-28, arrived mid-turn after the 18:50:08 EDT clock read and before the 18:52:16 EDT one; the same message invoked the /workflow-authoring skill; Ultracode on)
+
+> LOCK THE FUCK IN!!!!
+
+(Read as: a board now, not hand fixes one at a time: the leftovers and the gain go up together as board 36, docs/boards/board-36.js, two lanes on disjoint files, Opus 5.5 builders with his CONCISE directive, a skeptic per item; the checkpoint chain follows its landing.)
+
 ## §B. OBJECTIVES + PROGRESS (mine; terse; updated only after re-reading §A)
 
 Rules for this section (P9, his 2026-09-23 order on cache reads): objectives are his WHAT in order; STATE is the whole live picture in under 40 lines and is rewritten whole at every checkpoint; the full history is `brain/docs/LOG.md` (append-only, one line per checkpoint, never read in full at session start; the hook prints its last 3 lines). Numbers live in bench/verdicts and docs/NUMBERS.md, not here. Every fact I need survives on disk, none of it needs my context.

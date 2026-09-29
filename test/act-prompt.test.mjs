@@ -1135,3 +1135,51 @@ test('the program guard: a learned entry that answers a development row of its b
   assert.deepEqual(delta(before), { learned: 0, learnedContradicted: 0, learnedUnchecked: 1 });
   assert.equal(s5.levels.cue[pat], undefined);
 });
+
+// ---------------------------------------------------------------- the retractions in the production loader (board 36, item learn)
+// learnedInto() applies the learned file's `retract` list as self/learn.mjs mergeStores does: the retracted form leaves
+// the kept entry's forms.roles, the entry stays, and gate 7 refuses that form. A retraction only refuses (rule 6).
+test('the program guard: a learned file that holds only retract refuses the planted form, keeps the entry and counts retracted 1; a retraction of a program the store does not hold is unapplied and the form is still answered (the control)', async (t) => {
+  const P = await import('../act/prompt.mjs');
+  const I = await import('../reason/induce.mjs');
+  const { writeFileSync } = await import('node:fs');
+  const dir = mkdtempSync(path.join(tmpdir(), 'program-guard-retract-'));
+  t.after(() => { P.resetPrograms(); rmSync(dir, { recursive: true, force: true }); });
+  const program = 'sub(mul(q0,q1),q2)';
+  const form = I.questionForm(BAKER).role;
+  const planted = await plantedStore(BAKER, program, 1);
+  const pat = Object.keys(planted.levels.cue)[0];
+  planted.levels.cue[pat][0].forms = { roles: [form] };
+  const base = path.join(dir, 'base.json');
+  writeFileSync(base, JSON.stringify(planted));
+  // without a learned file the planted form is answered 43 (so the refusal below is the retraction's)
+  const plain = P.programStore(base, { learned: false });
+  assert.equal(P.programAnswer(BAKER, { provider: 'null', programs: plain }).hit.answer, '43');
+  const retraction = (prog) => ({ retract: [{ level: 'cue', pattern: pat, program: prog, forms: [form], wrongRows: ['planted.1'], rightRows: [], date: '2026-09-28', by: 'test' }] });
+  const delta = (b) => Object.fromEntries(['retracted', 'retractUnapplied', 'learned', 'learnedFailures'].map((k) => [k, P.PROGRAM_TIER[k] - b[k]]));
+  // a learned file that holds only `retract`: read (not a failure), the form retracted, the entry kept
+  const retractFile = path.join(dir, 'retract.json');
+  writeFileSync(retractFile, JSON.stringify(retraction(program)));
+  let before = { ...P.PROGRAM_TIER };
+  const s = P.programStore(base, { learned: retractFile });
+  assert.deepEqual(delta(before), { retracted: 1, retractUnapplied: 0, learned: 0, learnedFailures: 0 });
+  assert.equal(s.levels.cue[pat].length, 1, 'the entry stays');
+  assert.equal(s.levels.cue[pat][0].program, program);
+  assert.deepEqual(s.levels.cue[pat][0].forms.roles, []);
+  assert.deepEqual(s.levels.cue[pat][0].forms.retracted, [form]);
+  before = { ...P.PROGRAM_TIER };
+  assert.equal(P.programAnswer(BAKER, { provider: 'null', programs: s }), null, 'the planted form is refused');
+  assert.equal(P.PROGRAM_TIER.form - before.form, 1, 'by gate 7');
+  assert.equal(P.PROGRAM_TIER.answered, before.answered);
+  const { brain } = newBrain(t, { name: 'program-guard-retract' });
+  assert.notEqual((await ask(brain, BAKER, { provider: 'null', programs: s })).from, 'program', 'ask() does not answer it from the tier');
+  // the control that can fail: a retraction naming a program the store does not hold is counted unapplied, and the
+  // planted form is still answered 43
+  const absentFile = path.join(dir, 'retract-absent.json');
+  writeFileSync(absentFile, JSON.stringify(retraction('add(q0,q1)')));
+  before = { ...P.PROGRAM_TIER };
+  const s2 = P.programStore(base, { learned: absentFile });
+  assert.deepEqual(delta(before), { retracted: 0, retractUnapplied: 1, learned: 0, learnedFailures: 0 });
+  assert.deepEqual(s2.levels.cue[pat][0].forms.roles, [form]);
+  assert.equal(P.programAnswer(BAKER, { provider: 'null', programs: s2 }).hit.answer, '43');
+});

@@ -10,11 +10,13 @@
 //      its one LOOP line; the record of each is read back
 //   3. the second record names the first as previous
 //   4. closed, opened and stayed of the second record equal this bench's own diff of the two misses files (the drawn
-//      templates recomputed from self/queries.mjs generate(), not from self/loop.mjs), side by side, with a control:
-//      the bench's copy of the second file without one group must differ
+//      templates recomputed from self/queries.mjs generate(), not from self/loop.mjs), side by side, with two controls:
+//      the bench's copy of the second file without one group must differ, and its copy with that group renamed (the
+//      same group rows at the same counts, board 36) must differ too
 //   5. --plant-closed <a group open in the first tick that did not close at the second, by the bench's own diff> prints
-//      closed 1 for that group, in dry mode, writing nothing; the control: the same dry tick without the plant closes it 0,
-//      and a group never open at tick 1 is refused with its own line
+//      closed 1 for that group, in dry mode, writing nothing (names and contents); the control: the same dry tick without
+//      the plant closes it 0, a group never open at tick 1 is refused with its own line, and the plant without --dry is
+//      refused by the CLI with exit 2 (board 36)
 //   6. every gap row of the second tick: its trial resolves through self/gaps.mjs trialOf() to the same command, and
 //      runs (bench/gaps.mjs runTrial, the budget wrapper) to exit 0, prints the reading its parser reads, and that reading
 //      equals the count the record holds (the same rows at the same seed); the counts are printed
@@ -23,14 +25,19 @@
 //      (self/autopilot.mjs loopTickPlan) runs on a day with no record and not on a ticked day, a dry soak, a planted root
 //      or --loop-tick off (that the soak calls it before reading the ledger is graded by the tests)
 //   8. sockets 0 across both ticks (each record's count and the stderr refusal lines), with a control: the guard's
-//      canary counts a planted connect in the main thread and in a worker
+//      canary counts a planted connect in the main thread and in an eval:true worker (its main runs from -e)
+//   8b. (board 36) the words are true of the code: in the loop's own shape (a file main under the preload) the guard is
+//      read in the main thread, a file worker, a file worker nested in it, an eval:true worker and an eval:true worker
+//      nested in the file worker (no socket opened); the first three must be covered, the eval:true two must not, and
+//      both records must carry self/loop.mjs NOT_COVERED as sockets.notCovered; the control: the same probe with no
+//      preload must read all five unguarded
 //   9. wrong 0 at both ticks (a wrong exact answer is worse than a refusal)
 // Bar met = all of it. The verdict bench/verdicts/self-loop.json is written only when the run is the bar (n 2000, the
 // held-out dates, learn dry). MODEL OFF: no provider is ever named; the ticks count their own sockets.
 //
 //   node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir state/board35/self-loop -- node --max-old-space-size=4000 bench/self-loop.mjs --state-dir state/board35/self-loop
 //   flags: --state-dir DIR (a scratch dir under state/, never state/self), --n N, --dates D1,D2, --learn dry|off, --nowrite
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, renameSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync, renameSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import os from 'node:os';
@@ -39,20 +46,25 @@ import { fileURLToPath } from 'node:url';
 import { generate } from '../self/queries.mjs';
 import { FORMS, trialOf } from '../self/gaps.mjs';
 import { runTrial } from './gaps.mjs';
-import { GUARD_URL, SOCKET_LINE, seedOfDay } from '../self/loop.mjs';
+import { DEV_SEEDS as SQ_DEV_SEEDS, READ_BEFORE_FIX_SEEDS as SQ_READ_BEFORE_FIX_SEEDS, COPIED_INTO_TESTS_SEEDS as SQ_COPIED_INTO_TESTS_SEEDS } from './self-queries.mjs';
+import { GUARD_URL, SOCKET_LINE, NOT_COVERED, seedOfDay } from '../self/loop.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const VERDICT_REL = 'bench/verdicts/self-loop.json';
 export const BAR_N = 2000;
 export const BAR_DATES = Object.freeze(['2026-09-26', '2026-09-27']);
-/** The held-out rows, fixed before any run at these seeds (also in notes/self-loop.md): sha256 of JSON.stringify(generate({seed, n: 2000})). */
+/** The held-out rows, a constant of this bench fixed before any run at these seeds (notes/self-loop.md lists the same hashes): sha256 of JSON.stringify(generate({seed, n: 2000})). */
 export const HELD_OUT = Object.freeze({
   268: '206bb18053d368dfc5001ce1dee9d120256d538e06d7c7cea638cc0c838e91dc',
   269: '089d2ca9c3d486135b3b3158630b4fd554e60f610a88d5365fa20d3d35ef69f2',
 });
+/** The first bar run at the held-out seeds (board 35 item self-loop, its numbers as notes/self-loop.md records them): every bar run after it re-asks the same rows, and the split says so. */
+export const FIRST_BAR_RUN = Object.freeze({ at: '2026-09-28T18:52:15Z', seeds: Object.freeze([268, 269]), refused: Object.freeze([20, 11]), recordedIn: 'notes/self-loop.md' });
 /** The seeds asked while self/loop.mjs was built: its smoke runs, its tests and this bench's development runs (dates 2026-01-11 to 2026-01-14). */
 export const DEV_SEEDS = Object.freeze([900001, 900002, 900003, 900010, 900011, 900012, 900013, 900014, 10, 11, 12, 13]);
-export const SELF_QUERIES_DEV_SEEDS = Object.freeze([7, 8, 9]);
+// board 36 (item pins): the self-queries seeds a reader was developed on or that were read before a bar (bench/self-queries.mjs
+// DEV_SEEDS, READ_BEFORE_FIX_SEEDS, COPIED_INTO_TESTS_SEEDS), read from that file so the two splits cannot drift apart
+export const SELF_QUERIES_DEV_SEEDS = Object.freeze([...SQ_DEV_SEEDS, ...SQ_READ_BEFORE_FIX_SEEDS, ...SQ_COPIED_INTO_TESTS_SEEDS]);
 export const FREE_RAM_MB = 8000;
 const LOOP_LINE_RE = /^LOOP \d{4}-\d{2}-\d{2}: asked \d+ answered \d+ correct \d+ wrong \d+ refused \d+; groups open \d+ closed \d+ opened \d+; ledger learned before \S+ after \S+; gaps written \d+$/;
 
@@ -73,6 +85,10 @@ async function waitRam(minMb, maxS = 1800) {
   return Math.round((Date.now() - t0) / 1000);
 }
 function listing(dir) { return existsSync(dir) ? readdirSync(dir, { recursive: true }).map(String).sort() : []; }
+/** Every file under dir with the sha256 of its bytes: a rewrite that keeps the names is still seen. */
+function snapshot(dir) {
+  return listing(dir).map((f) => { const p = path.join(dir, f); try { return f + ':' + (statSync(p).isFile() ? createHash('sha256').update(readFileSync(p)).digest('hex') : 'dir'); } catch { return f + ':gone'; } }).join('\n');
+}
 
 function parseArgs(argv) {
   const a = { stateDir: 'state/board35/self-loop', n: BAR_N, dates: [...BAR_DATES], learn: 'dry', write: true };
@@ -176,15 +192,25 @@ async function main() {
   const sum2 = [...m2.values()].reduce((s, g) => s + g.count, 0);
   say('  misses file 2: ' + m2.size + ' group rows holding ' + sum2 + ' rows; tick 2 wrong plus refused ' + (r2.queries.wrong + r2.queries.refused) + '; drawn templates loop ' + r2.groups.drawn + ', bench ' + drawn2.size);
   const pick = [...m2.keys()][0];
-  let control = null;
+  let control = null, renamed = null;
   if (pick) {
     const m2c = new Map(m2); m2c.delete(pick);
     const c = benchDiff(m1, m2c, drawn2);
     const differs = !(same(c.closed, r2.groups.closed) && same(c.opened, r2.groups.opened) && same(c.stayed, r2.groups.stayed));
     control = { dropped: pick, closed: c.closed.length, opened: c.opened.length, stayed: c.stayed.length, differs };
     say('  control: the bench copy of misses file 2 without ' + pick + ': closed ' + c.closed.length + ' opened ' + c.opened.length + ' stayed ' + c.stayed.length + '; differs from the loop ' + yes(differs));
-  } else say('  control: misses file 2 holds no group, nothing to drop');
-  const diffOk = rows.every((x) => x.equal) && sum2 === r2.queries.wrong + r2.queries.refused && drawn2.size === r2.groups.drawn && !!control && control.differs;
+    // the renamed-group control (board 36): the same group rows with the same counts, one group under a new name; a
+    // diff that read only counts would not see it, the names must
+    const to = pick + '.renamed-by-the-bench';
+    const m2r = new Map([...m2].map(([g, o]) => (g === pick ? [to, { ...o, group: to }] : [g, o])));
+    const rRows = [...m2r.values()].reduce((s, g) => s + g.count, 0);
+    const sameCounts = m2r.size === m2.size && rRows === sum2 && m2r.get(to).count === m2.get(pick).count && !m1.has(to) && !drawn2.has(to);
+    const cr = benchDiff(m1, m2r, drawn2);
+    const rDiffers = !(same(cr.closed, r2.groups.closed) && same(cr.opened, r2.groups.opened) && same(cr.stayed, r2.groups.stayed));
+    renamed = { renamed: pick, to, groups: m2r.size, rows: rRows, sameCounts, closed: cr.closed.length, opened: cr.opened.length, stayed: cr.stayed.length, differs: rDiffers };
+    say('  control: the bench copy of misses file 2 with ' + pick + ' renamed ' + to + ' (' + m2r.size + ' group rows holding ' + rRows + ' rows, the same counts ' + yes(sameCounts) + '): closed ' + cr.closed.length + ' opened ' + cr.opened.length + ' stayed ' + cr.stayed.length + '; differs from the loop ' + yes(rDiffers));
+  } else say('  control: misses file 2 holds no group, nothing to drop or rename');
+  const diffOk = rows.every((x) => x.equal) && sum2 === r2.queries.wrong + r2.queries.refused && drawn2.size === r2.groups.drawn && !!control && control.differs && !!renamed && renamed.sameCounts && renamed.differs;
 
   // 5. the plant
   // a group open in tick 1 that did NOT close at tick 2, chosen from the bench's own diff (stayed first, then open at
@@ -194,7 +220,7 @@ async function main() {
   const plantGroup = bd.stayed[0] || undrawnBench[0] || null;
   let plant = { group: plantGroup, ok: false, reason: plantGroup ? null : 'no group of tick 1 stayed open or went undrawn at tick 2: nothing a plant could move' };
   if (plantGroup) {
-    const before = listing(a.abs);
+    const before = listing(a.abs), snap0 = snapshot(a.abs);
     const pr = runNode(['self/loop.mjs', '--dry', '--date', a.dates[1], '--n', String(a.n), '--state-dir', loopDir, '--gaps-root', gapsRoot, '--no-reask', '--plant-closed', plantGroup]);
     const pl = linesOf(pr.stdout);
     const pline = pl.find((l) => l.startsWith('LOOP plant: ')) || null;
@@ -219,10 +245,16 @@ async function main() {
       refusal.ok = cr.status === 1 && !!refusal.said && !refusal.printedLoopLine;
     }
     plant.refusal = refusal;
-    plant.wroteNothing = wroteNothing && same(listing(a.abs), before);
-    plant.ok = pr.status === 0 && plant.closedFor === 1 && plant.forGroup === plantGroup && !!plant.loopLine && plant.wroteNothing && !!refusal && refusal.ok && nr.status === 0 && plant.movedAnOutcome;
-    say('  closed ' + plant.closedFor + ' for ' + plant.forGroup + ' (the bench diff of tick 2 has it ' + was + ', the dry tick without the plant closed ' + plant.closedWithout + '); dry wrote nothing ' + yes(plant.wroteNothing)
-      + '; control: --plant-closed ' + (refusal ? refusal.group + ' (never open at tick 1) exit ' + refusal.exit + ', refused ' + yes(refusal.ok) : 'none: every drawn group was open at tick 1') + ': ' + yes(plant.ok));
+    // control (board 36): the same plant WITHOUT --dry is refused by the CLI (the refusal printed, exit 2) before any
+    // tick runs; run last, so the content snapshot below would see a record it rewrote
+    const ndr = runNode(['self/loop.mjs', '--date', a.dates[1], '--n', String(a.n), '--state-dir', loopDir, '--gaps-root', gapsRoot, '--no-reask', '--plant-closed', plantGroup]);
+    plant.noDry = { exit: ndr.status, said: linesOf(ndr.stderr).find((l) => /--plant-closed needs --dry/.test(l)) || null, printedLoopLine: linesOf(ndr.stdout).some((l) => LOOP_LINE_RE.test(l)) };
+    plant.noDry.ok = ndr.status === 2 && !!plant.noDry.said && !plant.noDry.printedLoopLine;
+    plant.wroteNothing = wroteNothing && same(listing(a.abs), before) && snapshot(a.abs) === snap0;
+    plant.ok = pr.status === 0 && plant.closedFor === 1 && plant.forGroup === plantGroup && !!plant.loopLine && plant.wroteNothing && !!refusal && refusal.ok && nr.status === 0 && plant.movedAnOutcome && plant.noDry.ok;
+    say('  closed ' + plant.closedFor + ' for ' + plant.forGroup + ' (the bench diff of tick 2 has it ' + was + ', the dry tick without the plant closed ' + plant.closedWithout + '); dry wrote nothing (names and contents) ' + yes(plant.wroteNothing)
+      + '; control: --plant-closed ' + (refusal ? refusal.group + ' (never open at tick 1) exit ' + refusal.exit + ', refused ' + yes(refusal.ok) : 'none: every drawn group was open at tick 1')
+      + '; control: --plant-closed ' + plantGroup + ' without --dry exit ' + plant.noDry.exit + ', refused ' + yes(plant.noDry.ok) + (plant.noDry.said ? ' (' + plant.noDry.said + ')' : '') + ': ' + yes(plant.ok));
   } else say('plant: ' + plant.reason + ': NO');
 
   // 6. every gap row's trial
@@ -293,6 +325,37 @@ async function main() {
   const canaryOk = !!canary && canary.main === 1 && canary.workers === 1 && canaryLines === 2;
   say('sockets: tick 1 ' + sk(r1).total + ' (main ' + sk(r1).main + ', workers ' + sk(r1).workers + ', self-queries ' + sk(r1).selfQueries + ', learn ' + sk(r1).learn + '), tick 2 ' + sk(r2).total + ' (main ' + sk(r2).main + ', workers ' + sk(r2).workers + ', self-queries ' + sk(r2).selfQueries + ', learn ' + sk(r2).learn + '), stderr refusal lines ' + (k1.socketLines + k2.socketLines + (plant.socketLines || 0)) + '; total ' + socketsTotal);
   say('  control: the guard canary counted a planted connect main ' + (canary && canary.main) + ' workers ' + (canary && canary.workers) + ' with ' + canaryLines + ' refusal lines: ' + yes(canaryOk));
+  // 8b (board 36). The canary above runs its main from an ESM -e (--input-type=module), a shape under which an eval:true worker DOES get the preload (a CommonJS -e main does not: the board 36 second verify printed eval false there);
+  // self/loop.mjs runs its main from a FILE, and there it does not. The words (self/loop.mjs, its record's
+  // sockets.notCovered, notes/self-loop.md) must be true of the loop's own shape: this probe starts a file main under
+  // the same preload, with a file worker, a file worker nested in it, an eval:true worker and an eval:true worker nested
+  // in the file worker, and reads in each whether the guard is installed. No socket is opened.
+  const coverage = (() => {
+    const d = mkdtempSync(path.join(os.tmpdir(), 'self-loop-coverage-'));
+    try {
+      const has = "net.Socket.prototype.connect.name === 'refusedByLoop' && !!(globalThis.__BRAIN_LOOP_GUARD && globalThis.__BRAIN_LOOP_GUARD.preload)";
+      const evalSrc = (where) => "const net = process.getBuiltinModule('node:net'); const fs = process.getBuiltinModule('node:fs'); setTimeout(() => fs.appendFileSync(process.env.BRAIN_LOOP_COVERAGE_OUT, JSON.stringify({ where: '" + where + "', guarded: " + has + " }) + '\\n'), 50);";
+      // no worker posts a message: every thread appends one JSON line to the file main names in its env (workers copy the env), so the probe adds no message boundary to the tree
+      const collect = "const run = (spec, opts) => new Promise((res) => { const w = new Worker(spec, opts); w.on('error', (e) => { try { appendFileSync(process.env.BRAIN_LOOP_COVERAGE_OUT, JSON.stringify({ where: 'error', error: String(e) }) + '\\n'); } catch {} }); w.on('exit', () => res()); });";
+      writeFileSync(path.join(d, 'leaf.mjs'), "import net from 'node:net';\nimport { appendFileSync } from 'node:fs';\nappendFileSync(process.env.BRAIN_LOOP_COVERAGE_OUT, JSON.stringify({ where: 'fileInFile', guarded: " + has + " }) + '\\n');\n");
+      writeFileSync(path.join(d, 'file-worker.mjs'), "import net from 'node:net';\nimport { appendFileSync } from 'node:fs';\nimport { Worker } from 'node:worker_threads';\n" + collect + "\nappendFileSync(process.env.BRAIN_LOOP_COVERAGE_OUT, JSON.stringify({ where: 'file', guarded: " + has + " }) + '\\n');\nawait run(" + JSON.stringify(evalSrc('evalInFile')) + ", { eval: true });\nawait run(new URL('./leaf.mjs', import.meta.url));\n");
+      writeFileSync(path.join(d, 'main.mjs'), "import net from 'node:net';\nimport { appendFileSync, readFileSync, writeFileSync } from 'node:fs';\nimport { fileURLToPath } from 'node:url';\nimport { Worker } from 'node:worker_threads';\nconst OUT = fileURLToPath(new URL('./coverage.jsonl', import.meta.url));\nprocess.env.BRAIN_LOOP_COVERAGE_OUT = OUT;\nwriteFileSync(OUT, '');\n" + collect + "\nconst out = { main: " + has + " };\nawait run(" + JSON.stringify(evalSrc('eval')) + ", { eval: true });\nawait run(new URL('./file-worker.mjs', import.meta.url));\nfor (const l of readFileSync(OUT, 'utf8').split('\\n').filter(Boolean)) { const m = JSON.parse(l); out[m.where] = m.guarded ?? m.error; }\nconsole.log(JSON.stringify(out));\n");
+      const r = runNode(['--import', GUARD_URL, path.join(d, 'main.mjs')], 60_000);
+      let got = null; try { got = JSON.parse(linesOf(r.stdout).pop()); } catch { got = null; }
+      // the control: the same probe with no preload must read every thread unguarded, so a true above is the preload's
+      const r0 = runNode([path.join(d, 'main.mjs')], 60_000);
+      let got0 = null; try { got0 = JSON.parse(linesOf(r0.stdout).pop()); } catch { got0 = null; }
+      return { exit: r.status, got, stderrHead: linesOf(r.stderr).slice(0, 2), control: { exit: r0.status, got: got0 } };
+    } finally { rmSync(d, { recursive: true, force: true }); }
+  })();
+  const cg = coverage.got || {};
+  const coveredAsSaid = cg.main === true && cg.file === true && cg.fileInFile === true;
+  const uncoveredAsSaid = cg.eval === false && cg.evalInFile === false;
+  const wordsName = /eval:true workers/.test(NOT_COVERED) && /child process/.test(NOT_COVERED) && [r1, r2].every((r) => r.sockets && r.sockets.notCovered === NOT_COVERED);
+  const c0 = (coverage.control && coverage.control.got) || {};
+  const controlAllFalse = coverage.control && coverage.control.exit === 0 && ['main', 'eval', 'file', 'evalInFile', 'fileInFile'].every((k) => c0[k] === false);
+  const coverageOk = coverage.exit === 0 && coveredAsSaid && uncoveredAsSaid && wordsName && controlAllFalse;
+  say('  coverage in the loop shape (a file main under the preload, no socket opened): main ' + cg.main + ', file worker ' + cg.file + ', file worker nested in a file worker ' + cg.fileInFile + ', eval:true worker ' + cg.eval + ', eval:true worker nested in a file worker ' + cg.evalInFile + '; both records name what is not covered ("' + NOT_COVERED + '") ' + yes(wordsName) + '; control, the same probe with no preload: main ' + c0.main + ', file worker ' + c0.file + ', nested file worker ' + c0.fileInFile + ', eval:true ' + c0.eval + ', nested eval:true ' + c0.evalInFile + ', all unguarded ' + yes(!!controlAllFalse) + '; the words are true of the code ' + yes(coverageOk));
 
   // 9. wrong
   const wrong = [r1.queries.wrong, r2.queries.wrong];
@@ -305,28 +368,31 @@ async function main() {
   const overlap = heldSeeds.filter((s) => DEV_SEEDS.includes(s) || SELF_QUERIES_DEV_SEEDS.includes(s));
   const shaMatch = isTheBar ? heldSeeds.every((s) => HELD_OUT[s] === shaNow[s]) : null;
   const contaminated = overlap.length ? 'held-out seeds also asked in development: ' + overlap.join(', ') : shaMatch === false ? 'the generated rows at a held-out seed changed since notes/self-loop.md declared them' : false;
-  say('split: development seeds ' + DEV_SEEDS.join(', ') + ' (self-queries dev seeds ' + SELF_QUERIES_DEV_SEEDS.join(', ') + '); held out ' + heldSeeds.join(', ') + ' at n ' + a.n + ', rows sha256 equal to the declared ' + (shaMatch === null ? 'n/a (not the bar)' : yes(shaMatch)) + '; contaminated ' + contaminated);
+  const firstAsked = isTheBar ? 'the first bar run of board 35 item self-loop at ' + FIRST_BAR_RUN.at + ' asked seeds ' + FIRST_BAR_RUN.seeds.join(' and ') + ' (refused ' + FIRST_BAR_RUN.refused.join(' and ') + ', recorded in ' + FIRST_BAR_RUN.recordedIn + '); this run re-asks the same rows' : null;
+  say('split: development seeds ' + DEV_SEEDS.join(', ') + ' (self-queries seeds read in development or before a bar ' + SELF_QUERIES_DEV_SEEDS.join(', ') + '); held out ' + heldSeeds.join(', ') + ' at n ' + a.n + ', rows sha256 equal to the declared constant HELD_OUT of bench/self-loop.mjs ' + (shaMatch === null ? 'n/a (not the bar)' : yes(shaMatch)) + (firstAsked ? '; ' + firstAsked : '') + '; contaminated ' + contaminated);
 
-  const barMet = testsOk && ticksOk && prevOk && diffOk && plant.ok && trialsOk && apOk && morningOk && socketsTotal === 0 && canaryOk && wrong.every((w) => w === 0) && controlsOk && contaminated === false;
+  const barMet = testsOk && ticksOk && prevOk && diffOk && plant.ok && trialsOk && apOk && morningOk && socketsTotal === 0 && canaryOk && coverageOk && wrong.every((w) => w === 0) && controlsOk && contaminated === false;
   const wallS = Math.round((Date.now() - t0) / 100) / 10;
   const statement = 'Two ticks of self/loop.mjs at ' + a.dates.join(' and ') + ' (seeds ' + heldSeeds.join(' and ') + ', n ' + a.n + ', learn ' + a.learn + ') asked ' + r1.queries.asked + ' and ' + r2.queries.asked + ' questions, wrong ' + wrong.join(' and ') + ', refused ' + r1.queries.refused + ' and ' + r2.queries.refused
     + '; tick 2 named tick 1 as previous and its diff (closed ' + r2.groups.closed.length + ', opened ' + r2.groups.opened.length + ', stayed ' + r2.groups.stayed.length + ') equalled the bench\'s own diff of the two misses files'
-    + '; --plant-closed ' + plant.group + ' printed closed ' + plant.closedFor + ' for it and the same dry tick without the plant closed ' + plant.closedWithout + '; ' + tri.exit0 + ' of ' + tri.rows + ' gap-row trials exited 0 and ' + tri.agree + ' read the count their record holds; the autopilot listed ' + cands.length + ' loop candidates; the 05:00 command is a soak ' + isSoak + ' and its loop tick plan held ' + morningOk + '; sockets ' + socketsTotal + '; tests ' + tests.pass + ' of ' + tests.tests + '.';
+    + ', and the bench copy with one group dropped (differs ' + !!(control && control.differs) + ') and with one group renamed at the same counts (differs ' + !!(renamed && renamed.differs) + ') both differed from it'
+    + '; --plant-closed ' + plant.group + ' printed closed ' + plant.closedFor + ' for it and the same dry tick without the plant closed ' + plant.closedWithout + ', and without --dry the plant exited ' + (plant.noDry ? plant.noDry.exit : null) + ' refused'
+    + '; the guard covered the main thread and file workers and not eval:true workers in the loop shape, as the words say (' + coverageOk + '); ' + tri.exit0 + ' of ' + tri.rows + ' gap-row trials exited 0 and ' + tri.agree + ' read the count their record holds; the autopilot listed ' + cands.length + ' loop candidates; the 05:00 command is a soak ' + isSoak + ' and its loop tick plan held ' + morningOk + '; sockets ' + socketsTotal + '; tests ' + tests.pass + ' of ' + tests.tests + '.' + (firstAsked ? ' Held out: ' + firstAsked + '.' : '');
   const verdict = {
     at: new Date().toISOString(), command: 'node tools/budget.mjs --ram-mb 4000 --disk-mb 200 --dir ' + path.relative(ROOT, a.abs).split(path.sep).join('/') + ' -- node --max-old-space-size=4000 ' + command.slice(5),
-    isTheBar, barMet, author: 'board 35 builder (item self-loop)',
-    split: { development: { seeds: DEV_SEEDS, selfQueriesDevSeeds: SELF_QUERIES_DEV_SEEDS, what: 'the seeds self/loop.mjs, its tests and its smoke runs asked while it was built' }, heldOut: { dates: a.dates, seeds: heldSeeds, n: a.n, rowsSha256: shaNow, declared: 'bench/self-loop.mjs HELD_OUT and notes/self-loop.md, fixed before any run at these seeds', matchesDeclared: shaMatch }, contaminated },
+    isTheBar, barMet, author: 'board 35 builder (item self-loop); board 36 item pins',
+    split: { development: { seeds: DEV_SEEDS, selfQueriesDevSeeds: SELF_QUERIES_DEV_SEEDS, what: 'the seeds self/loop.mjs, its tests and its smoke runs asked while it was built; selfQueriesDevSeeds are the bench/self-queries.mjs seeds a reader was developed on or that were read before a bar (DEV_SEEDS, READ_BEFORE_FIX_SEEDS, COPIED_INTO_TESTS_SEEDS), none of them a held-out seed here' }, heldOut: { dates: a.dates, seeds: heldSeeds, n: a.n, rowsSha256: shaNow, declared: 'the constant HELD_OUT in bench/self-loop.mjs (sha256 of JSON.stringify(generate({ seed, n: 2000 })) per seed), fixed before any run at these seeds; notes/self-loop.md lists the same hashes', matchesDeclared: shaMatch, firstAsked, reRun: isTheBar }, contaminated },
     statement, wallS,
     tests, ticks: ticks.map((t) => ({ date: t.date, seed: t.rec ? t.rec.seed : null, exit: t.exit, ms: t.ms, line: t.line, socketLines: t.socketLines, record: loopRel + '/' + t.date + '.json' })),
     queries: [r1.queries, r2.queries], ledger: [r1.ledger, r2.ledger],
     previous: { tick2: r2.previous, tick1: r1.previous, ok: prevOk },
-    diff: { rows: rows.map((x) => ({ name: x.k, loop: x.loop.length, bench: x.bench.length, equal: x.equal })), missesRows: sum2, wrongPlusRefused: r2.queries.wrong + r2.queries.refused, drawnLoop: r2.groups.drawn, drawnBench: drawn2.size, undrawn: r2.groups.undrawn.length, control, ok: diffOk },
+    diff: { rows: rows.map((x) => ({ name: x.k, loop: x.loop.length, bench: x.bench.length, equal: x.equal })), missesRows: sum2, wrongPlusRefused: r2.queries.wrong + r2.queries.refused, drawnLoop: r2.groups.drawn, drawnBench: drawn2.size, undrawn: r2.groups.undrawn.length, control, controlRenamed: renamed, ok: diffOk },
     plant, trials: tri, autopilot: { exit: ap.status, lines: shown, listed: cands.length, wanted: wantOrder.length, ok: apOk },
     morning: { command: 'node ' + morningArgv.join(' '), isSoak, plans, ok: morningOk },
-    sockets: { total: socketsTotal, tick1: sk(r1), tick2: sk(r2), stderrLines: k1.socketLines + k2.socketLines + (plant.socketLines || 0), canary: { ...canary, lines: canaryLines, ok: canaryOk } },
+    sockets: { total: socketsTotal, tick1: sk(r1), tick2: sk(r2), stderrLines: k1.socketLines + k2.socketLines + (plant.socketLines || 0), canary: { ...canary, lines: canaryLines, ok: canaryOk }, coverage: { shape: 'a file main under the preload, as self/loop.mjs runs', exit: coverage.exit, threads: coverage.got, control: { what: 'the same probe with no preload: every thread must read unguarded', exit: coverage.control ? coverage.control.exit : null, threads: coverage.control ? coverage.control.got : null, allUnguarded: !!controlAllFalse }, notCovered: NOT_COVERED, recordsName: wordsName, ok: coverageOk } },
     wrong: { tick1: wrong[0], tick2: wrong[1] }, controlsHeld: controlsOk, gapsFile: gapsRel + '/state/self/gaps.jsonl',
   };
-  say('BAR self-loop: barMet ' + barMet + ' (tests ' + testsOk + ', ticks ' + ticksOk + ', previous ' + prevOk + ', diff ' + diffOk + ', plant ' + plant.ok + ', trials ' + trialsOk + ', autopilot ' + apOk + ', morning ' + morningOk + ', sockets ' + socketsTotal + ', canary ' + canaryOk + ', wrong ' + wrong.join('/') + ', controls ' + controlsOk + ', contaminated ' + contaminated + '); ' + wallS + ' s');
+  say('BAR self-loop: barMet ' + barMet + ' (tests ' + testsOk + ', ticks ' + ticksOk + ', previous ' + prevOk + ', diff ' + diffOk + ', plant ' + plant.ok + ', trials ' + trialsOk + ', autopilot ' + apOk + ', morning ' + morningOk + ', sockets ' + socketsTotal + ', canary ' + canaryOk + ', coverage words ' + coverageOk + ', wrong ' + wrong.join('/') + ', controls ' + controlsOk + ', contaminated ' + contaminated + '); ' + wallS + ' s');
   say('statement: ' + statement);
   if (isTheBar && a.write) {
     const f = path.join(ROOT, ...VERDICT_REL.split('/'));

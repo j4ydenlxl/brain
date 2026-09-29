@@ -1,5 +1,5 @@
 // test/self-loop.test.mjs: self/loop.mjs, one tick of the organism filling its own gaps (board 35 builder, item self-loop).
-// Every test runs on planted data or a temp dir; none asks the self-queries held-out seeds (34, 35) or the bar's (268, 269).
+// Every test runs on planted data or a temp dir; none asks the self-queries held-out seeds (34, 35, 40, 41) or the bar's (268, 269).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, existsSync, readdirSync, writeFileSync, mkdirSync, readFileSync } from 'node:fs';
@@ -312,4 +312,58 @@ test('the soak runs the loop tick once a day BEFORE it reads the ledger, so the 
     assert.equal(calls.length, 1);
     assert.ok(!logs4.some((l) => l.startsWith('LOOP tick')));
   } finally { rmSync(base, { recursive: true, force: true }); }
+});
+
+test('board 36 pins: --plant-closed without --dry is refused (parseArgs, tick() and the CLI: the refusal printed, exit 2, nothing written); with --dry it parses', async () => {
+  assert.throws(() => L.parseArgs(['--plant-closed', 'calendar.a']), /--plant-closed needs --dry/);
+  assert.throws(() => L.parseArgs(['--date', '2026-01-04', '--plant-closed', 'calendar.a']), /a planted closure written into a real record is a lie/);
+  // the control: the same flag with --dry parses, before or after it
+  assert.equal(L.parseArgs(['--dry', '--plant-closed', 'calendar.a']).plantClosed, 'calendar.a');
+  assert.equal(L.parseArgs(['--plant-closed', 'calendar.a', '--dry']).plantClosed, 'calendar.a');
+  await assert.rejects(L.tick({ date: '2026-01-03', seed: 900013, n: 10, stateDir: path.join(tmpdir(), 'never-written'), reask: false, plantClosed: 'calendar.a', runQueries: async () => fakeVerdict(CUR, DRAWN_NOW) }), /--plant-closed needs --dry/);
+  const d = tmp('nodry');
+  try {
+    const state = path.join(d, 'loop'), groot = path.join(d, 'root');
+    mkdirSync(state, { recursive: true });
+    writeFileSync(path.join(state, '2026-01-02.json'), JSON.stringify({ kind: L.RECORD_KIND, date: '2026-01-02', seed: 1, groups: { open: PREV } }));
+    const before = listAll(d);
+    const c = spawnSync(process.execPath, ['self/loop.mjs', '--n', '40', '--seed', '900003', '--date', '2026-01-03', '--state-dir', state, '--gaps-root', groot, '--no-reask', '--no-selftest', '--plant-closed', 'calendar.a'], { cwd: ROOT, encoding: 'utf8', timeout: 120_000 });
+    assert.equal(c.status, 2, c.stdout + c.stderr);
+    assert.match(c.stderr, /^self\/loop\.mjs: --plant-closed needs --dry: a planted closure written into a real record is a lie\r?$/m);
+    assert.doesNotMatch(c.stdout, /^LOOP /m, 'no tick ran');
+    assert.deepEqual(listAll(d), before, 'nothing written');
+  } finally { rmSync(d, { recursive: true, force: true }); }
+});
+
+test('board 36 pins: in the loop shape (a file main under the preload) the guard covers the main thread and file workers, not eval:true workers; the record says so', async () => {
+  const d = tmp('coverage');
+  try {
+    const has = "net.Socket.prototype.connect.name === 'refusedByLoop' && !!(globalThis.__BRAIN_LOOP_GUARD && globalThis.__BRAIN_LOOP_GUARD.preload)";
+    const evalSrc = (where) => "const net = process.getBuiltinModule('node:net'); const fs = process.getBuiltinModule('node:fs'); setTimeout(() => fs.appendFileSync(process.env.BRAIN_LOOP_COVERAGE_OUT, JSON.stringify({ where: '" + where + "', guarded: " + has + " }) + '\\n'), 50);";
+    // no worker posts a message: every thread appends one JSON line to the file main names in its env (workers copy the env), so the probe adds no message boundary to the tree
+    const collect = "const run = (spec, opts) => new Promise((res) => { const w = new Worker(spec, opts); w.on('error', (e) => { try { appendFileSync(process.env.BRAIN_LOOP_COVERAGE_OUT, JSON.stringify({ where: 'error', error: String(e) }) + '\\n'); } catch {} }); w.on('exit', () => res()); });";
+    writeFileSync(path.join(d, 'leaf.mjs'), "import net from 'node:net';\nimport { appendFileSync } from 'node:fs';\nappendFileSync(process.env.BRAIN_LOOP_COVERAGE_OUT, JSON.stringify({ where: 'fileInFile', guarded: " + has + " }) + '\\n');\n");
+    writeFileSync(path.join(d, 'file-worker.mjs'), "import net from 'node:net';\nimport { appendFileSync } from 'node:fs';\nimport { Worker } from 'node:worker_threads';\n" + collect + "\nappendFileSync(process.env.BRAIN_LOOP_COVERAGE_OUT, JSON.stringify({ where: 'file', guarded: " + has + " }) + '\\n');\nawait run(" + JSON.stringify(evalSrc('evalInFile')) + ", { eval: true });\nawait run(new URL('./leaf.mjs', import.meta.url));\n");
+    writeFileSync(path.join(d, 'main.mjs'), "import net from 'node:net';\nimport { appendFileSync, readFileSync, writeFileSync } from 'node:fs';\nimport { fileURLToPath } from 'node:url';\nimport { Worker } from 'node:worker_threads';\nconst OUT = fileURLToPath(new URL('./coverage.jsonl', import.meta.url));\nprocess.env.BRAIN_LOOP_COVERAGE_OUT = OUT;\nwriteFileSync(OUT, '');\n" + collect + "\nconst out = { main: " + has + " };\nawait run(" + JSON.stringify(evalSrc('eval')) + ", { eval: true });\nawait run(new URL('./file-worker.mjs', import.meta.url));\nfor (const l of readFileSync(OUT, 'utf8').split('\\n').filter(Boolean)) { const m = JSON.parse(l); out[m.where] = m.guarded ?? m.error; }\nconsole.log(JSON.stringify(out));\n");
+    const r = spawnSync(process.execPath, ['--import', L.GUARD_URL, path.join(d, 'main.mjs')], { cwd: ROOT, encoding: 'utf8', timeout: 60_000 });
+    assert.equal(r.status, 0, r.stderr);
+    const got = JSON.parse(r.stdout.trim().split(/\r?\n/).pop());
+    assert.deepEqual(got, { main: true, eval: false, file: true, evalInFile: false, fileInFile: true });
+    // the control: the same probe with no preload reads every thread unguarded, so a true above is the preload's
+    const r0 = spawnSync(process.execPath, [path.join(d, 'main.mjs')], { cwd: ROOT, encoding: 'utf8', timeout: 60_000 });
+    assert.deepEqual(JSON.parse(r0.stdout.trim().split(/\r?\n/).pop()), { main: false, eval: false, file: false, evalInFile: false, fileInFile: false });
+    // the words: what is not covered is named in the constant and in a record
+    assert.match(L.NOT_COVERED, /eval:true workers at any depth/);
+    assert.match(L.NOT_COVERED, /child processes/);
+    // the CLI (the preload shape) names NOT_COVERED; an in-process tick with no preload names every worker thread
+    const c = spawnSync(process.execPath, ['self/loop.mjs', '--dry', '--json', '--n', '40', '--seed', '900003', '--date', '2026-01-04', '--state-dir', path.join(d, 'loop'), '--gaps-root', path.join(d, 'root'), '--no-reask', '--no-selftest'], { cwd: ROOT, encoding: 'utf8', timeout: 120_000 });
+    assert.equal(c.status, 0, c.stderr);
+    const cli = JSON.parse(c.stdout);
+    assert.equal(cli.sockets.notCovered, L.NOT_COVERED);
+    assert.match(cli.sockets.guard, /^preload in the main thread and every file worker/);
+    const rec = await L.tick({ dry: true, date: '2026-01-03', seed: 900013, n: 10, stateDir: path.join(d, 'loop'), reask: false, runQueries: async () => fakeVerdict(CUR, DRAWN_NOW) });
+    assert.equal(rec.sockets.notCovered, L.NOT_COVERED_IN_PROCESS);
+    assert.match(rec.sockets.guard, /^main thread only/);
+    assert.doesNotMatch(readFileSync(path.join(ROOT, 'self', 'loop.mjs'), 'utf8'), /EVERY thread|every thread of the process|preload in every thread/, 'no word claims every thread');
+  } finally { rmSync(d, { recursive: true, force: true }); }
 });

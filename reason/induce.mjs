@@ -747,3 +747,170 @@ export function patternAt(role, level) {
   if (level === 'count') return p[0];
   throw new Error('not a level: ' + level);
 }
+
+// ---------------------------------------------------------------- the worked chain as a program (board 36, item learn-2)
+/**
+ * THE WORD QUANTITIES: numbers a question means but does not write (a dozen is 12, a week 7 days, a year 52 weeks). The
+ * reader admits one ONLY when one of its words is a word of the prompt (wordQuantities); each is a leaf of its own name,
+ * never one parse() puts in the leaf table or the patterns (the kept store, its devRows and gate 7 read those unchanged).
+ * self/learn.mjs uses them to measure cause (1) of the ceiling (a gold that needs a number the prompt does not write).
+ */
+export const WORD_QUANTITIES = Object.freeze([
+  { name: 'wdozen', v: 12, words: ['dozen', 'dozens'] },
+  { name: 'wweek', v: 7, words: ['week', 'weeks', 'weekly'] },
+  { name: 'wweekend', v: 2, words: ['weekend', 'weekends'] },
+  { name: 'wworkweek', v: 5, words: ['weekday', 'weekdays', 'workday', 'workdays'] },
+  { name: 'wfortnight', v: 14, words: ['fortnight', 'fortnights'] },
+  { name: 'wyearm', v: 12, words: ['year', 'years', 'yearly', 'annual', 'annually'] },
+  { name: 'wyearw', v: 52, words: ['year', 'years', 'yearly', 'annual', 'annually'] },
+  { name: 'wyeard', v: 365, words: ['year', 'years', 'yearly', 'annual', 'annually'] },
+  { name: 'wmonthd', v: 30, words: ['month', 'months', 'monthly'] },
+  { name: 'wmonthw', v: 4, words: ['month', 'months', 'monthly'] },
+  { name: 'wdayh', v: 24, words: ['day', 'days', 'daily'] },
+  { name: 'whourm', v: 60, words: ['hour', 'hours', 'hourly'] },
+  { name: 'wminutes', v: 60, words: ['minute', 'minutes'] },
+  { name: 'wdecade', v: 10, words: ['decade', 'decades'] },
+  { name: 'wcentury', v: 100, words: ['century', 'centuries'] },
+  { name: 'wpct', v: 100, words: ['percent', 'percentage', '%'] },
+  { name: 'whalf', v: 2, words: ['half', 'halves', 'halve', 'halved'] },
+  { name: 'wtwice', v: 2, words: ['twice', 'double', 'doubled', 'doubles'] },
+  { name: 'wtriple', v: 3, words: ['triple', 'tripled', 'triples', 'thrice'] },
+  { name: 'wquadruple', v: 4, words: ['quadruple', 'quadrupled'] },
+  { name: 'wquarter', v: 4, words: ['quarter', 'quarters'] },
+  { name: 'wquartercoin', v: 25, words: ['quarter', 'quarters'] },
+  { name: 'wdime', v: 10, words: ['dime', 'dimes'] },
+  { name: 'wnickel', v: 5, words: ['nickel', 'nickels'] },
+  { name: 'wcent', v: 100, words: ['cent', 'cents', 'penny', 'pennies'] },
+  { name: 'wpair', v: 2, words: ['pair', 'pairs', 'both', 'couple', 'twins'] },
+  { name: 'wfoot', v: 12, words: ['foot', 'feet'] },
+  { name: 'wyard', v: 3, words: ['yard', 'yards'] },
+  { name: 'wpound', v: 16, words: ['pound', 'pounds'] },
+]);
+/**
+ * The word quantities a prompt admits: every WORD_QUANTITIES entry one of whose words is a word of the text (a '%' sign
+ * admits the percent one). A word absent from the prompt admits nothing.
+ * @param {string} text @returns {{name: string, v: number, word: string}[]}
+ */
+export function wordQuantities(text) {
+  const t = String(text ?? '').toLowerCase();
+  const words = new Set(t.match(/[a-z]+/g) || []);
+  if (t.includes('%')) words.add('%');
+  const out = [];
+  for (const q of WORD_QUANTITIES) { const w = q.words.find((x) => words.has(x)); if (w) out.push({ name: q.name, v: q.v, word: w }); }
+  return out;
+}
+
+/**
+ * The annotated steps of a GSM8K worked answer: every <<expression=result>>, in order, the expression as written (the
+ * $, % and thousands commas removed, x between numbers read as *) and the result as a number (NaN when it is not one).
+ * @param {string} answerText @returns {{expr: string, result: number}[]}
+ */
+export function chainSteps(answerText) {
+  const out = [];
+  const clean = (s) => s.replace(/(\d),(\d{3})/g, '$1$2').replace(/(\d),(\d{3})/g, '$1$2').replace(/[$%\s]/g, '');
+  for (const m of String(answerText ?? '').matchAll(/<<([^<>=]*)=([^<>]*)>>/g)) {
+    out.push({ expr: clean(m[1]).replace(/(\d|\))[x×](\d|\()/g, '$1*$2').replace(/−/g, '-'), result: Number(clean(m[2])) });
+  }
+  return out;
+}
+
+const CHAIN_OP = { '+': 'add', '-': 'sub', '*': 'mul', '/': 'div' };
+const near = (a, b) => Math.abs(a - b) <= 1e-6 * Math.max(1, Math.abs(a), Math.abs(b));
+/**
+ * THE WORKED CHAIN AS A STRAIGHT-LINE PROGRAM. Each annotated step's expression is read with + - * / and parentheses
+ * (left to right, * and / first); each number in it is taken, in this order, from: an earlier step's result not yet used
+ * (the latest first), a positional quantity of the parse not yet used (q0 first), a named leaf of the parse (f0, m0,
+ * dozen, week, pct100, two, ...), opts.words (wordQuantities, when the caller admits them), a positional quantity
+ * already used, an earlier step already used; a percent written as its points (20 for a 20% quantity) is mul(q, pct100)
+ * when the parse holds pct100; a divisor or factor that is the inverse of a fraction leaf and no other source's number
+ * (2 for half) turns / into mul and * into div with that leaf. A number none of these gives is a number from the text
+ * (unmatched): the chain fails. The program is the last step whose value is the gold, its earlier steps inlined; ops
+ * counts each step's operations once (the straight-line length), treeOps the inlined tree's.
+ * @param {string} answerText the worked answer
+ * @param {object} p the question's parse
+ * @param {{gold?: number, words?: {name: string, v: number}[]}} [opts]
+ * @returns {{ok: boolean, reason: string|null, text: string|null, tree: object|null, ops: number, treeOps: number, steps: number, whole: boolean, unmatched: number[], words: string[]}}
+ */
+export function chainProgram(answerText, p, opts = {}) {
+  const steps = chainSteps(answerText);
+  const res = { ok: false, reason: null, text: null, tree: null, ops: 0, treeOps: 0, steps: steps.length, whole: false, unmatched: [], words: [] };
+  if (!steps.length) { res.reason = 'no annotated step'; return res; }
+  const L = leafTable(p);
+  const pos = p.pos.map((q, i) => ({ name: 'q' + i, v: q.v, kind: q.kind }));
+  const named = p.namedList.map((x) => ({ name: x.name, v: x.v }));
+  const words = (opts.words || []).map((x) => ({ name: x.name, v: x.v }));
+  const fracs = named.filter((x) => /^f\d+$/.test(x.name));
+  const hasPct100 = named.some((x) => x.name === 'pct100');
+  const usedQ = new Set(), usedS = new Set();
+  const done = []; // { node, value, written, ops }
+  const leafOf = (a) => {
+    for (let j = done.length - 1; j >= 0; j--) if (!usedS.has(j) && (near(done[j].written, a) || near(done[j].value, a))) { usedS.add(j); return { step: j }; }
+    for (const q of pos) if (!usedQ.has(q.name) && near(q.v, a)) { usedQ.add(q.name); return { leaf: q.name }; }
+    for (const x of named) if (near(x.v, a)) return { leaf: x.name };
+    for (const x of words) if (near(x.v, a)) return { leaf: x.name };
+    for (const q of pos) if (near(q.v, a)) return { leaf: q.name };
+    for (let j = done.length - 1; j >= 0; j--) if (near(done[j].written, a) || near(done[j].value, a)) return { step: j };
+    if (hasPct100) for (const q of pos) if (q.kind === 'pct' && near(q.v * 100, a)) { usedQ.add(q.name); return { op: 'mul', a: { leaf: q.name }, b: { leaf: 'pct100' } }; }
+    return null;
+  };
+  // the inverse of a fraction leaf that is no other source's number (2 for half, when no quantity, leaf or step is 2), else of any named leaf (0.01 for pct100)
+  const invFrac = (a) => {
+    if (pos.some((q) => near(q.v, a)) || named.some((x) => near(x.v, a)) || words.some((x) => near(x.v, a)) || done.some((d) => near(d.written, a) || near(d.value, a))) return null;
+    return fracs.find((f) => near(1 / f.v, a)) || named.find((f) => f.v !== 0 && near(1 / f.v, a)) || null;
+  };
+  for (const st of steps) {
+    const toks = st.expr.match(/\d*\.?\d+|[-+*/()]/g);
+    if (!toks || toks.join('') !== st.expr || !Number.isFinite(st.result)) { res.reason = 'an annotated step is not plain arithmetic'; return res; }
+    let i = 0;
+    const bind = (n) => {
+      if (n.num === undefined) return n;
+      const l = leafOf(n.num);
+      if (!l) { res.unmatched.push(n.num); throw new Error('unmatched'); }
+      return l;
+    };
+    const binary = (op, a, b) => {
+      if ((op === 'div' || op === 'mul') && b.num !== undefined) { const f = invFrac(b.num); if (f) return { op: op === 'div' ? 'mul' : 'div', a: bind(a), b: { leaf: f.name } }; }
+      if (op === 'mul' && a.num !== undefined) { const f = invFrac(a.num); if (f) return { op: 'div', a: bind(b), b: { leaf: f.name } }; }
+      return { op, a: bind(a), b: bind(b) };
+    };
+    const atom = () => {
+      const x = toks[i];
+      if (x === '(') { i++; const v = sum(); if (toks[i] !== ')') throw new Error('paren'); i++; return v; }
+      if (x === '+') { i++; return atom(); }
+      if (x === undefined || !/\d/.test(x)) throw new Error('number');
+      i++;
+      return { num: parseFloat(x) };
+    };
+    const product = () => { let acc = atom(); while (toks[i] === '*' || toks[i] === '/') { const op = CHAIN_OP[toks[i++]]; acc = binary(op, acc, atom()); } return acc; };
+    const sum = () => { let acc = product(); while (toks[i] === '+' || toks[i] === '-') { const op = CHAIN_OP[toks[i++]]; acc = binary(op, acc, product()); } return acc; };
+    let node;
+    try { node = sum(); if (i !== toks.length) throw new Error('trailing'); node = bind(node); } catch {
+      res.reason = res.unmatched.length ? 'a number of the chain is not a quantity of the prompt nor an earlier step' : 'an annotated step is not plain arithmetic';
+      return res;
+    }
+    const ev = (n) => (n.leaf !== undefined ? (n.leaf in L ? L[n.leaf] : (words.find((x) => x.name === n.leaf) || { v: NaN }).v) : n.step !== undefined ? done[n.step].value : OP_FN[n.op](ev(n.a), ev(n.b)));
+    let ops = 0;
+    const count = (n) => { if (n.op) { ops++; count(n.a); count(n.b); } };
+    count(node);
+    done.push({ node, value: ev(node), written: st.result, ops });
+  }
+  let last = done.length - 1;
+  if (Number.isFinite(opts.gold)) { while (last >= 0 && !near(done[last].value, opts.gold)) last--; }
+  if (last < 0) { res.reason = 'no step of the chain computes the gold on the prompt numbers'; return res; }
+  // inline the steps the chosen one reads; the straight-line length counts each step once
+  const need = new Set([last]);
+  const mark = (n) => { if (n.step !== undefined) { if (!need.has(n.step)) { need.add(n.step); mark(done[n.step].node); } } else if (n.op) { mark(n.a); mark(n.b); } };
+  mark(done[last].node);
+  const inline = (n) => (n.step !== undefined ? inline(done[n.step].node) : n.leaf !== undefined ? { leaf: n.leaf } : { op: n.op, a: inline(n.a), b: inline(n.b) });
+  const tree = inline(done[last].node);
+  if (tree.leaf !== undefined) { res.reason = 'the gold is a quantity of the prompt'; return res; }
+  res.ok = true;
+  res.tree = tree;
+  res.text = show(tree);
+  res.ops = [...need].reduce((s, j) => s + done[j].ops, 0);
+  res.treeOps = opsOf(tree);
+  const used = leafNames(tree);
+  res.whole = p.pos.every((_, k) => used.has('q' + k));
+  res.words = [...used].filter((x) => words.some((w) => w.name === x)).sort();
+  return res;
+}

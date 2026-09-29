@@ -1352,6 +1352,7 @@ export const ALLOWLIST = [
   { key: "runtime/shard.mjs|postMessage|{type:'ready',shard:ME,cells:myCells.length,edges:brain.connectome.live(),ghosts:ghostLocal.length,c~0d1a73ab8adf", bytes: 0, wire: 118, how: "probe" },
   { key: "runtime/shard.mjs|postMessage|{type:'snapshot',id:msg.id,shard:ME,t:brain.clock.t,cells,stats:{...brain.stats},inflight,outbox:bra~eb391f1e3d6e", bytes: 0, wire: 28041254, how: "probe" },
   { key: "runtime/shard.mjs|postMessage|{type:'stopped',shard:ME}", bytes: 0, wire: 40, how: "probe" },
+  { key: "self/loop.mjs|postMessage|worker-source:{hit:true}", bytes: 0, wire: 9, how: "literal" },
   { key: "self/mistakes.mjs|postMessage|{fatal:String((e&&e.stack)||e).slice(0,600)}", bytes: 0, wire: 560, how: "probe" },
   { key: "self/mistakes.mjs|postMessage|{id,prompt:String(prompt??''),holdMs:holdMs>0?holdMs:0}", bytes: 0, wire: 82, how: "probe" },
   { key: "self/mistakes.mjs|postMessage|{id:m.id,text:a&&typeofa.text==='string'?a.text:'',route:a?a.route??null:null,provenance:typeofpv===~8864af5a9ee5", bytes: 0, wire: 293, how: "probe" },

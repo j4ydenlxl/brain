@@ -66,14 +66,14 @@ Where each one comes from:
 - A model cell answers what is left, when one is configured (see below).
 - `miss` is the memory miss: the answer says it does not carry that yet and suggests what to ask. It is never an invented answer.
 
-### Known wrong answers
+### A wrong answer now refused
 
-The program tier answers this one wrong today; the correct answer is `4`, which `2*x+3=11` gets from the exact tier. It is listed so the bar notices the day it changes:
+The program tier used to answer this one wrong (`31`; the correct answer is `4`, which `2*x+3=11` gets from the exact tier above). The program guard (`programGuard` in `act/prompt.mjs`) now keeps it from the program tier, so it is the memory miss. It is listed so the bar notices the day it changes:
 
 <!-- claims: no-store -->
 | prompt | provenance | answer or kind |
 | --- | --- | --- |
-| `solve 2x + 3 = 11` | `program` | `31` |
+| `solve 2x + 3 = 11` | `miss` | `none` |
 
 ## What needs the knowledge store
 

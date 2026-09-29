@@ -314,3 +314,15 @@ test('self-queries probability: lowest terms, numbered cards, all alike, a three
   reads('probability', [['A bag has 19 red balls and 2 blue balls. What is the probability of drawing a red ball? Give a fraction in lowest terms.', '19/21'], ['Cards numbered 1 to 86 are shuffled and one is drawn. What is the probability it is a multiple of 9?', '9/86'], ['Five fair coins are flipped. What is the probability they all land heads? Give a fraction.', '1/32'], ["A jar holds 9 red, 4 green and 8 blue marbles. If you pick one at random, what's the chance it's blue?", '8/21'], ["A letter is picked at random from the word 'city'. What is the probability it is the letter y?", '1/4'], ['A bag has 1 red ball and 1 blue ball. What is the probability of drawing a red ball? Give a decimal.', '0.5']]);
   refuses(['Five coins are flipped. What is the probability they all land heads? Give a fraction.', "A letter is picked at random from the word 'city'. What is the probability it is a vowel?", "A jar holds 9 red, 4 green and 8 blue marbles. If you pick two at random, what's the chance they are both blue?", 'Cards numbered 1 to 86 are shuffled and one is drawn. What are the odds it is a multiple of 9?', 'A bag has 1 red ball and 2 blue balls. What is the probability of drawing a red ball? Give a decimal.']);
 });
+
+// board 36 (item pins): the same six probes as test/solve.test.mjs, through this file's refuses and reads helpers, as
+// they printed on 2026-09-28. exactKinds() refuses every arithmetic phrasing (arithmetic is exact.arith in solve());
+// the comparison reader answers the yes or no question and refuses the choice question with a yes or no tail.
+test('board 36 pins: the comma product, the choice with a yes or no tail and a negative difference refuse; the yes or no comparison reads', () => {
+  refuses(["What's the product of 1,000 and 2?", 'What is the product of 1000 and 2?', 'Which is bigger, 3 or 5? Answer yes or no.', 'the difference of 3 and 5', 'the difference of 5 and 3']);
+  reads('comparison', [['Is 7 greater than 3? Answer yes or no.', 'yes']]);
+  // the controls in solve(): the comma-free product and the other order of the difference read as exact.arith
+  refusesAll(["What's the product of 1,000 and 2?", 'Which is bigger, 3 or 5? Answer yes or no.', 'the difference of 3 and 5']);
+  assert.equal(solve('What is the product of 1000 and 2?')?.answer, '2000');
+  assert.equal(solve('the difference of 5 and 3')?.answer, '2');
+});

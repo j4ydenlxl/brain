@@ -68,6 +68,24 @@ test('the rule: a 2-op program that fits 5 of 6 rows of one lesson and contradic
   assert.equal(r.before.refused, 6); // every row is a mistake: the planted asker has no program yet
   assert.equal(r.programs, 0, 'a program that contradicts a development row it could answer is never kept');
   assert.ok(r.tally.refusedContradiction >= 1);
+  // the control that can fail (board 36, item learn): the same six rows with the 6th row's gold written right (26). The
+  // program fits all six and contradicts none (its own contradictions 0), the run's contradiction refusals fall by its
+  // two (under the role and the cue pattern; the ones left are other candidate programs of the same rows), the gate
+  // refuses it instead, and with the gate off the rule keeps it: so the refusal above is the contradiction's
+  const FIT6 = [...FIVE, rec(4, 5, 6)];
+  const rootFit = plant({ test: FIT6, devIds: ids, ledger: ids.map((id) => ledgerRow(id)) });
+  const rf = await run(rootFit);
+  assert.equal(rf.programs, 0, 'the support gate validates nothing on six rows');
+  assert.equal(r.tally.refusedContradiction - rf.tally.refusedContradiction, 2, 'contradiction refusals ' + r.tally.refusedContradiction + ' then ' + rf.tally.refusedContradiction);
+  assert.equal(rf.tally.refusedGate, 2);
+  const fitRows = L.collect({ root: rootFit }).rows.map(L.prepare);
+  const jfit = L.judge('add(mul(q0,q1),q2)', fitRows, fitRows[0].lesson);
+  assert.equal(jfit.kept, true);
+  assert.equal(jfit.fits.length, 6);
+  const rootFitRule = plant({ test: FIT6, devIds: ids, ledger: ids.map((id) => ledgerRow(id)) });
+  const rfr = await runRule(rootFitRule);
+  assert.deepEqual(programsOf(readStore(rootFitRule)), ['add(mul(q0,q1),q2)']);
+  assert.equal(rfr.programs, 1);
   // the judge itself, on the same six rows: fits 5, contradicts gsm8k.5, refused for the contradiction
   const rows = L.collect({ root }).rows.map(L.prepare);
   assert.equal(new Set(rows.map((x) => x.lesson)).size, 1);
@@ -276,4 +294,171 @@ test('mergeStores: the kept entries first, a learned program appended once, a re
   assert.equal(mr.merged.retracted, 1);
   assert.equal(mr.merged.unapplied, 1);
   assert.equal(JSON.stringify(kf), kf0);
+});
+
+// ---- board 36, item learn-2: the ceiling by cause and the straight-line programs read from the worked chains
+const mkRow = (id, question, answer) => ({ id, question, answer, gold: Number(answer.split('####')[1].trim()), lesson: 'planted' });
+const CAUSE_ROWS = () => [
+  mkRow('c1', 'A tree grows 3 inches each year. How many inches does it grow in 2 decades?', '3*10=<<3*10=30>>30\n30*2=<<30*2=60>>60\n#### 60'),
+  mkRow('c2', 'Ann has 3 red pens, 4 blue pens, 5 green pens, 6 black pens, 7 pink pens and 8 gray pens. How many pens does Ann have?', '3+4=<<3+4=7>>7\n7+5=<<7+5=12>>12\n12+6=<<12+6=18>>18\n18+7=<<18+7=25>>25\n25+8=<<25+8=33>>33\n#### 33'),
+  mkRow('c3', 'Lea has 5 marbles. Her friend gives her some more. How many marbles does Lea have now?', '5+9=<<5+9=14>>14\n#### 14'),
+  mkRow('c4', Q(3, 4, 5), '3*4=<<3*4=12>>12\n12+5=<<12+5=17>>17\n#### 17'),
+  mkRow('c5', 'Bo has 3 pens and 4 pencils. How many things does Bo have?', 'He has 7.\n#### 7'),
+];
+
+test('the cause classifier: five planted rows, one per cause, each filed under its own; ceilingByCause sums its causes to its unreachable count', () => {
+  const rows = CAUSE_ROWS().map(L.prepare);
+  const got = rows.map((r) => L.causeOf(r, { groupSize: 1 }));
+  assert.deepEqual(got.map((k) => k.cause), [1, 2, 3, 4, 5]);
+  assert.deepEqual(got.map((k) => k.name), ['word quantity', 'chain too long', 'number from the text', 'pattern', 'other']);
+  assert.equal(got[3].sub, 'ownForm');
+  // the chain behind causes 2, 3 and 5, by its exact fields
+  assert.equal(L.chainOf(rows[1]).text, 'add(add(add(add(add(q0,q1),q2),q3),q4),q5)');
+  assert.equal(L.chainOf(rows[1]).ops, 5);
+  assert.ok(L.chainOf(rows[1]).ops > I.MAX_OPS);
+  assert.deepEqual(L.chainOf(rows[2]).unmatched, [9]);
+  assert.equal(L.chainOf(rows[4]).reason, 'no annotated step');
+  const t = L.ceilingByCause(CAUSE_ROWS());
+  assert.equal(t.rows, 5);
+  assert.equal(t.reachable, 0);
+  assert.equal(t.unreachable, 5);
+  assert.deepEqual(t.causes, { 1: 1, 2: 1, 3: 1, 4: 1, 5: 1 });
+  assert.equal(Object.values(t.causes).reduce((a, b) => a + b, 0), t.unreachable);
+  assert.deepEqual(t.ids, { 1: ['c1'], 2: ['c2'], 3: ['c3'], 4: ['c4'], 5: ['c5'] });
+  // the control: two rows of one role form that share the one program reach each other, and nothing is filed
+  const two = L.ceilingByCause([mkRow('s1', Q(3, 4, 5), '3*4=<<3*4=12>>12\n12+5=<<12+5=17>>17\n#### 17'), mkRow('s2', Q(6, 7, 2), '6*7=<<6*7=42>>42\n42+2=<<42+2=44>>44\n#### 44')]);
+  assert.equal(two.reachable, 2);
+  assert.equal(two.unreachable, 0);
+  assert.deepEqual(two.causes, { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 });
+});
+
+test('a planted train record with 3 annotated steps yields the asserted straight-line program text', () => {
+  const question = 'Ben has 12 apples. He buys 3 bags with 4 apples in each bag. Then he gives 5 apples away. How many apples does Ben have now?';
+  const answer = 'He buys 3*4=<<3*4=12>>12 apples.\nHe has 12+12=<<12+12=24>>24 apples.\nHe has 24-5=<<24-5=19>>19 apples left.\n#### 19';
+  assert.deepEqual(I.chainSteps(answer).map((s) => s.expr + '=' + s.result), ['3*4=12', '12+12=24', '24-5=19']);
+  const c = I.chainProgram(answer, I.parse(question + L.SUFFIX), { gold: 19 });
+  assert.equal(c.ok, true);
+  assert.equal(c.text, 'sub(add(mul(q1,q2),q0),q3)');
+  assert.equal(c.steps, 3);
+  assert.equal(c.ops, 3);
+  assert.equal(c.whole, true);
+  // the control: the same chain against a gold no step computes is refused with the exact reason
+  const w = I.chainProgram(answer, I.parse(question + L.SUFFIX), { gold: 20 });
+  assert.equal(w.ok, false);
+  assert.equal(w.reason, 'no step of the chain computes the gold on the prompt numbers');
+});
+
+test('a planted word quantity is read only when its word is in the prompt', () => {
+  assert.deepEqual(I.wordQuantities('How many inches does it grow in 2 decades?').map((w) => w.name + '=' + w.v), ['wdecade=10']);
+  assert.equal(I.wordQuantities('How many inches does it grow in 2 springs?').some((w) => w.name === 'wdecade'), false);
+  const withWord = L.prepare(CAUSE_ROWS()[0]);
+  assert.equal(L.causeOf(withWord, { groupSize: 1 }).cause, 1);
+  const noWord = L.prepare(mkRow('c1b', 'A tree grows 3 inches each spring. How many inches does it grow in 2 springs?', '3*10=<<3*10=30>>30\n30*2=<<30*2=60>>60\n#### 60'));
+  const k = L.causeOf(noWord, { groupSize: 1 });
+  assert.notEqual(k.cause, 1);
+  assert.equal(k.cause, 3);
+  // the word leaf never enters the chain program a row offers: with the word admitted the chain runs, without it not
+  const p = I.parse(CAUSE_ROWS()[0].question + L.SUFFIX);
+  const ans = CAUSE_ROWS()[0].answer;
+  assert.equal(I.chainProgram(ans, p, { gold: 60 }).ok, false);
+  const ww = I.chainProgram(ans, p, { gold: 60, words: I.wordQuantities(CAUSE_ROWS()[0].question) });
+  assert.equal(ww.ok, true);
+  assert.deepEqual(ww.words, ['wdecade']);
+  assert.equal(L.chainCandidate(withWord), null);
+});
+
+test('the chain programs never change what the old rule keeps on the board 35 planted ledger; six quantities are kept only with them (the control)', async () => {
+  const ids5 = FIVE.map((_, i) => 'gsm8k.' + i);
+  const on = plant({ test: FIVE, devIds: ids5, ledger: ids5.map((id) => ledgerRow(id)) });
+  const off = plant({ test: FIVE, devIds: ids5, ledger: ids5.map((id) => ledgerRow(id)) });
+  const ron = await runRule(on, { chain: true });
+  const roff = await runRule(off, { chain: false });
+  const son = readStore(on);
+  const soff = readStore(off);
+  assert.deepEqual(programsOf(son), ['add(mul(q0,q1),q2)']);
+  assert.deepEqual(programsOf(soff), ['add(mul(q0,q1),q2)']);
+  assert.deepEqual(son.levels, soff.levels);
+  assert.equal(ron.programs, 1);
+  assert.equal(roff.programs, 1);
+  assert.equal(ron.tally.fromChain, 0);
+  assert.equal(son.chain.on, true);
+  assert.equal(soff.chain.on, false);
+  // six quantities summed: 5 operations, past the search's MAX_OPS; the chain program is kept and answers all five right
+  const S = (a, b, c, d, e, f) => `Ann has ${a} red pens, ${b} blue pens, ${c} green pens, ${d} black pens, ${e} pink pens and ${f} gray pens. How many pens does Ann have?`;
+  const six = (...v) => { const st = []; let s = v[0]; for (const x of v.slice(1)) { st.push(`${s}+${x}=<<${s}+${x}=${s + x}>>${s + x}`); s += x; } return { question: S(...v), answer: st.join('\n') + '\n#### ' + s }; };
+  const SIX = [six(3, 4, 5, 6, 7, 8), six(2, 9, 4, 11, 3, 6), six(5, 1, 7, 2, 9, 4), six(8, 6, 3, 5, 2, 10), six(4, 7, 9, 3, 6, 12)];
+  const ids6 = SIX.map((_, i) => 'gsm8k.' + i);
+  const on6 = plant({ test: SIX, devIds: ids6, ledger: ids6.map((id) => ledgerRow(id)) });
+  const off6 = plant({ test: SIX, devIds: ids6, ledger: ids6.map((id) => ledgerRow(id)) });
+  const r6 = await runRule(on6, { chain: true });
+  const r6off = await runRule(off6, { chain: false });
+  assert.deepEqual(programsOf(readStore(on6)), ['add(add(add(add(add(q0,q1),q2),q3),q4),q5)']);
+  assert.equal(r6.programs, 1);
+  assert.equal(r6.after.right, 5);
+  assert.equal(r6.learnedAnswered.wrong, 0);
+  const e6 = readStore(on6).levels.role['n6|q|x|rn,n,n,n,n,n'][0];
+  assert.equal(e6.learned.fromChain, true);
+  assert.equal(e6.learned.contradictions, 0);
+  assert.deepEqual(programsOf(readStore(off6)), []);
+  assert.equal(r6off.programs, 0);
+  assert.equal(r6off.after.refused, 5);
+});
+
+test('the cause classifier by each arm\'s own limit: a 5-operation chain is (2) with the search programs only and (4) with the chain programs on, a 9-operation chain is (2) in both, and a row whose own chain gives its gold needs no word quantity with the chain programs on', () => {
+  // the 5-operation chain (six quantities summed): past MAX_OPS (4), within CHAIN.maxOps (8)
+  const five = L.prepare(CAUSE_ROWS()[1]);
+  assert.equal(L.causeOf(five, { groupSize: 1 }).cause, 2);
+  const on5 = L.causeOf(five, { groupSize: 1, chain: true });
+  assert.equal(on5.cause, 4);
+  assert.equal(on5.sub, 'ownForm');
+  assert.equal(L.causeOf(five, { groupSize: 2, chain: true }).sub, 'sharedForm');
+  // ten quantities summed: a 9-operation chain, past CHAIN.maxOps too
+  const vals = [3, 4, 5, 6, 7, 8, 9, 2, 11, 12];
+  const colours = ['red', 'blue', 'green', 'black', 'pink', 'gray', 'white', 'brown', 'gold', 'teal'];
+  const steps = [];
+  let acc = vals[0];
+  for (const v of vals.slice(1)) { steps.push(`${acc}+${v}=<<${acc}+${v}=${acc + v}>>${acc + v}`); acc += v; }
+  const nine = L.prepare(mkRow('c9', 'Ann has ' + vals.map((v, i) => v + ' ' + colours[i] + ' pens').join(', ') + '. How many pens does Ann have?', steps.join('\n') + '\n#### ' + acc));
+  assert.equal(L.chainOf(nine).ops, 9);
+  assert.equal(L.causeOf(nine, { groupSize: 1 }).cause, 2);
+  assert.equal(L.causeOf(nine, { groupSize: 1, chain: true }).cause, 2);
+  // a planted word fit on the 5-operation row: (1) with the search programs only, not (1) once its own chain program counts
+  const planted = L.prepare(CAUSE_ROWS()[1]);
+  planted.wordFit = true;
+  assert.equal(L.causeOf(planted, { groupSize: 1 }).cause, 1);
+  assert.notEqual(L.chainCandidate(planted), null);
+  assert.equal(L.causeOf(planted, { groupSize: 1, chain: true }).cause, 4);
+  // the word row whose chain needs the decade (10) stays (1) in both arms: its own chain does not run on the prompt numbers
+  const word = L.prepare(CAUSE_ROWS()[0]);
+  assert.equal(L.causeOf(word, { groupSize: 1 }).cause, 1);
+  assert.equal(L.causeOf(word, { groupSize: 1, chain: true }).cause, 1);
+  // the table with the chain programs on: the 5-operation row moves from (2) to (4), and the sum still equals the unreachable count
+  const t = L.ceilingByCause(CAUSE_ROWS(), { chain: true });
+  assert.equal(t.unreachable, 5);
+  assert.deepEqual(t.causes, { 1: 1, 2: 0, 3: 1, 4: 2, 5: 1 });
+  assert.deepEqual(t.ids[4], ['c2', 'c4']);
+  assert.deepEqual(t.pattern, { ownForm: 2, sharedForm: 0, notWhole: 0, window: 0 });
+});
+
+test('cause (4) names its window part: a whole 8-operation chain over a parse of more than 12 leaves is (4) window with the chain programs on (gate 5 refuses such a parse) and (2) with the search programs only', () => {
+  const vals = [3, 4, 5, 6, 7, 8, 9, 2, 11];
+  const colours = ['red', 'blue', 'green', 'black', 'pink', 'gray', 'white', 'brown', 'gold'];
+  const steps = [];
+  let acc = vals[0];
+  for (const v of vals.slice(1)) { steps.push(`${acc}+${v}=<<${acc}+${v}=${acc + v}>>${acc + v}`); acc += v; }
+  const q = 'Ann has ' + vals.map((v, i) => v + ' ' + colours[i] + ' pens').join(', ') + '. She keeps them in dozens of boxes for both her week and her day, each hour and each minute. How many pens does Ann have?';
+  const row = L.prepare(mkRow('cw', q, steps.join('\n') + '\n#### ' + acc));
+  assert.equal(row.n, 9);
+  assert.ok(I.leavesOf(row.parse).length > 12);
+  assert.equal(L.chainOf(row).ops, 8);
+  assert.equal(L.chainOf(row).whole, true);
+  assert.equal(L.chainCandidate(row), null);
+  const on = L.causeOf(row, { groupSize: 3, chain: true });
+  assert.equal(on.cause, 4);
+  assert.equal(on.sub, 'window');
+  assert.equal(L.causeOf(row, { groupSize: 3 }).cause, 2);
+  // the control: the same sum over nine quantities with no named word holds 9 leaves and is (4) sharedForm, not window
+  const plain = L.prepare(mkRow('cp', 'Ann has ' + vals.map((v, i) => v + ' ' + colours[i] + ' pens').join(', ') + '. How many pens does Ann have?', steps.join('\n') + '\n#### ' + acc));
+  assert.equal(I.leavesOf(plain.parse).length, 9);
+  assert.equal(L.causeOf(plain, { groupSize: 3, chain: true }).sub, 'sharedForm');
 });

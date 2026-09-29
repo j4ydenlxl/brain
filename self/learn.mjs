@@ -377,17 +377,19 @@ export function answerableLevels(kept, floor) {
  * INDUCE AND KEEP. sources: the mistake rows; population: every development row (prepared). Returns the learned levels
  * and the per-candidate tallies.
  */
-export function induceAndKeep(sources, population, { levels, invariant = 'whole', at = new Date().toISOString(), others = RULE.others } = {}) {
+export function induceAndKeep(sources, population, { levels, invariant = 'whole', at = new Date().toISOString(), others = RULE.others, chain = CHAIN.on } = {}) {
   const t0 = Date.now();
   for (const r of population) prepare(r);
-  const tally = { others, sources: sources.length, searched: 0, withCandidates: 0, candidates: 0, judged: 0, kept: 0, refusedContradiction: 0, refusedSupport: 0, searchMs: 0 };
+  const tally = { others, sources: sources.length, searched: 0, withCandidates: 0, candidates: 0, judged: 0, kept: 0, refusedContradiction: 0, refusedSupport: 0, searchMs: 0, chain: !!chain, fromChain: 0 };
   // candidates by level and pattern: program -> the source ids it was induced from and its lesson(s)
   const byPat = {};
   for (const lv of levels) byPat[lv] = new Map();
   const s0 = Date.now();
   for (const r of sources) {
-    const c = candidatesOf(r);
+    // board 36, item learn-2: with chain on, the row's worked chain read as a straight-line program is a candidate too
+    const c = chain ? chainedCandidatesOf(r) : candidatesOf(r);
     if (c.searched) tally.searched++;
+    if (chain) tally.fromChain += c.programs.filter((p) => p.fromChain).length;
     if (!c.programs.length) continue;
     tally.withCandidates++;
     tally.candidates += c.programs.length;
@@ -400,6 +402,7 @@ export function induceAndKeep(sources, population, { levels, invariant = 'whole'
         let e = m.get(key);
         if (!e) { e = { program: p.text, ops: p.ops, lesson: r.lesson, from: [] }; m.set(key, e); }
         e.from.push(r.id);
+        if (p.fromChain) e.fromChain = true;
       }
     }
   }
@@ -429,6 +432,7 @@ export function induceAndKeep(sources, population, { levels, invariant = 'whole'
           learned: {
             inducedFrom: [...new Set(e.from)], lesson: e.lesson, level: lv, pattern: pat, fitsLesson: j.sameLesson.length,
             checkedRows: j.checked, contradictions: 0, date: today(at), at, by: AUTHOR,
+            fromChain: !!e.fromChain,
           },
         };
         if (j.forms) entry.forms = { roles: j.forms };
@@ -581,7 +585,7 @@ export function outcomeOf(before, after) {
  * @param {{root?: string, dry?: boolean, limit?: number, askFn?: Function, log?: Function, at?: string}} [opts]
  *   askFn(store) -> ask(prompt): a test's asker factory, in place of act/prompt.mjs ask()
  */
-export async function learn({ root = ROOT, dry = false, limit = 0, askFn = null, log = null, at = new Date().toISOString(), floor = null, gate = true } = {}) {
+export async function learn({ root = ROOT, dry = false, limit = 0, askFn = null, log = null, at = new Date().toISOString(), floor = null, gate = true, chain = CHAIN.on } = {}) {
   const say = typeof log === 'function' ? log : () => {};
   const t0 = Date.now();
   const keptFile = abs(root, FILES.kept);
@@ -599,9 +603,9 @@ export async function learn({ root = ROOT, dry = false, limit = 0, askFn = null,
   say(`self-query before (the kept store): asked ${before.counts.asked}, right ${before.counts.right}, wrong ${before.counts.wrong}, refused ${before.counts.refused}; sockets ${before.sockets}; ${before.ms} ms`);
   const mistakes = c.rows.filter((r) => before.states.get(r.id).state !== 'right');
   // the support gate, then induce and keep with its support, then the retractions
-  const g = gate ? await supportGate({ rows: c.rows, states: before.states, kept, levels, askFn, invariant: kept.invariant || 'whole', at }) : { others: RULE.others, tried: [], ms: 0, off: true };
+  const g = gate ? await supportGate({ rows: c.rows, states: before.states, kept, levels, askFn, invariant: kept.invariant || 'whole', at, chain }) : { others: RULE.others, tried: [], ms: 0, off: true };
   say(g.off ? 'support gate: off (the control), support ' + RULE.others + ' others' : 'support gate (0 wrong and at least ' + GATE.minRight + ' right on the other halves): ' + g.tried.map((t) => 'others ' + t.others + ' kept ' + t.entries + ' entries on the halves, asked ' + t.asked + ', learned right ' + t.right + ', wrong ' + t.wrong).join('; ') + '; ' + (g.others === null ? 'no support validated: nothing is kept' : 'the rule keeps with ' + g.others + ' others') + ' (' + g.ms + ' ms)');
-  const res = keepByGate(g, mistakes, c.rows, { levels, invariant: kept.invariant || 'whole', at });
+  const res = keepByGate(g, mistakes, c.rows, { levels, invariant: kept.invariant || 'whole', at, chain });
   const retract = retractionsOf(c.rows, before.states).map((x) => ({ ...x, date: today(at), by: AUTHOR }));
   const heldSet = heldOutIds(root), devSet = developmentIds(root);
   const store = {
@@ -609,7 +613,7 @@ export async function learn({ root = ROOT, dry = false, limit = 0, askFn = null,
     what: 'programs the organism learned from its own mistakes on development GSM8K records (self/learn.mjs): induced from a row it answered wrong or refused, kept only when it fits at least as many other development rows as the support gate validated (2 or more; nothing is kept when it validates none) of the same lesson, and contradicts none of the development rows of its pattern; and the question forms retracted from kept entries of bench/verdicts/induce-programs.json that answered a development row wrong (retract). An overlay of bench/verdicts/induce-programs.json: its retracted forms removed, then the learned entries appended after its entries (self/learn.mjs mergeStores)',
     dsl: kept.dsl || null, maxOps: I.MAX_OPS, version: 2,
     minSupport: g.others === null ? null : g.others + 1, keepBy: 'support', rankBy: 'support', invariant: kept.invariant || 'whole',
-    rule: RULE, retractRule: RETRACT, levelsAnswerable: levels, floor: F,
+    rule: RULE, retractRule: RETRACT, levelsAnswerable: levels, floor: F, chain: { ...CHAIN, on: !!chain },
     gate: { rule: GATE, on: !g.off, others: g.others, tried: g.tried },
     development: {
       ledger: FILES.ledger, ledgerRows: c.counts.ledger, ledgerDevelopment: c.counts.ledgerDevelopment, mathDevelopment: c.counts.mathDevelopment,
@@ -654,7 +658,7 @@ export async function learn({ root = ROOT, dry = false, limit = 0, askFn = null,
     levels, floor: F, mistakes: mistakes.length, tally: res.tally,
     programs: store.programs, patterns: store.patterns, byLevel, byLesson,
     inducedFrom: [...new Set(Object.values(store.levels).flatMap((o) => Object.values(o).flatMap((l) => l.flatMap((e) => e.learned.inducedFrom))))].length,
-    retracted: rt, mergedCounts: merged.merged, gate: { on: !g.off, others: g.others, tried: g.tried, ms: g.ms },
+    retracted: rt, mergedCounts: merged.merged, gate: { on: !g.off, others: g.others, tried: g.tried, ms: g.ms }, chain: !!chain,
     before: before.counts, after: after.counts, outcomes, learnedAnswered,
     sockets: before.sockets + after.sockets, ms: Date.now() - t0,
     store, merged, keptStore: kept, population: c.rows, beforeStates: before.states,
@@ -674,7 +678,7 @@ export const foldOf = (id, folds = 2, salt = '') => parseInt(sha256(salt ? salt 
  * ids. It always ends: a support above every pattern's rows keeps nothing.
  * @returns {Promise<{others: number|null, tried: object[], ms: number}>}
  */
-export async function supportGate({ rows, states, kept, levels, askFn = null, invariant = 'whole', at = new Date().toISOString(), folds = GATE.folds, salt = GATE.salt }) {
+export async function supportGate({ rows, states, kept, levels, askFn = null, invariant = 'whole', at = new Date().toISOString(), folds = GATE.folds, salt = GATE.salt, chain = CHAIN.on }) {
   const t0 = Date.now();
   for (const r of rows) prepare(r);
   const halves = [];
@@ -683,7 +687,7 @@ export async function supportGate({ rows, states, kept, levels, askFn = null, in
   for (let others = RULE.others; ; others++) {
     const t = { others, entries: 0, asked: 0, right: 0, wrong: 0, wrongRows: [] };
     for (const { A, B } of halves) {
-      const res = induceAndKeep(A.filter((r) => states.get(r.id).state !== 'right'), A, { levels, invariant, at, others });
+      const res = induceAndKeep(A.filter((r) => states.get(r.id).state !== 'right'), A, { levels, invariant, at, others, chain });
       let n = 0;
       for (const lv of I.LEVELS) for (const l of Object.values(res.learned[lv])) n += l.length;
       t.entries += n;
@@ -717,16 +721,16 @@ export async function supportGate({ rows, states, kept, levels, askFn = null, in
  * forms) answers right.
  * @param {{rows: object[], states: Map, kept: object, levels: string[], folds?: number, askFn?: Function, invariant?: string}} o
  */
-export async function crossValidate({ rows, states, kept, levels, folds = 2, askFn = null, invariant = 'whole', at = new Date().toISOString(), gate = true }) {
+export async function crossValidate({ rows, states, kept, levels, folds = 2, askFn = null, invariant = 'whole', at = new Date().toISOString(), gate = true, chain = CHAIN.on }) {
   const t0 = Date.now();
-  const tot = { folds, rows: 0, keptRight: 0, keptWrong: 0, mergedRight: 0, mergedWrong: 0, learnedRight: 0, learnedWrong: 0, fixed: 0, learned: 0, withdrawn: 0, wrongNow: 0, lost: 0, learnedEntries: 0, retractedForms: 0, ceiling: 0, others: [] };
+  const tot = { chain: !!chain, folds, rows: 0, keptRight: 0, keptWrong: 0, mergedRight: 0, mergedWrong: 0, learnedRight: 0, learnedWrong: 0, fixed: 0, learned: 0, withdrawn: 0, wrongNow: 0, lost: 0, learnedEntries: 0, retractedForms: 0, ceiling: 0, others: [] };
   for (const r of rows) prepare(r);
   for (let f = 0; f < folds; f++) {
     const A = rows.filter((r) => foldOf(r.id, folds) !== f), B = rows.filter((r) => foldOf(r.id, folds) === f);
     const mistakes = A.filter((r) => states.get(r.id).state !== 'right');
-    const g = gate ? await supportGate({ rows: A, states, kept, levels, askFn, invariant, at, salt: GATE.salt + ' ' + f }) : { others: RULE.others };
+    const g = gate ? await supportGate({ rows: A, states, kept, levels, askFn, invariant, at, salt: GATE.salt + ' ' + f, chain }) : { others: RULE.others };
     tot.others.push(g.others);
-    const res = keepByGate(g, mistakes, A, { levels, invariant, at });
+    const res = keepByGate(g, mistakes, A, { levels, invariant, at, chain });
     const store = { at, levels: res.learned, retract: retractionsOf(A, states) };
     for (const lv of I.LEVELS) for (const l of Object.values(store.levels[lv])) tot.learnedEntries += l.length;
     const merged = mergeStores(kept, store);
@@ -734,7 +738,7 @@ export async function crossValidate({ rows, states, kept, levels, folds = 2, ask
     const q = await selfQuery(B, merged, { askFn: askFn ? askFn(merged) : null, learnedKeys: learnedKeysOf(kept, store) });
     // the ceiling: every other-fold row's candidates, by role pattern
     const byRole = new Map();
-    for (const r of A) { const s = byRole.get(r.pats.role) || byRole.set(r.pats.role, new Set()).get(r.pats.role); for (const p of candidatesOf(r).programs) s.add(p.text); }
+    for (const r of A) { const s = byRole.get(r.pats.role) || byRole.set(r.pats.role, new Set()).get(r.pats.role); for (const p of offersOf(r, { chain })) s.add(p.text); }
     for (const r of B) {
       const b = states.get(r.id).state, a = q.states.get(r.id);
       tot.rows++;
@@ -753,6 +757,144 @@ export async function crossValidate({ rows, states, kept, levels, folds = 2, ask
   return tot;
 }
 function tallyBy(xs, k) { const o = {}; for (const x of xs) o[x[k]] = (o[x[k]] || 0) + 1; return o; }
+
+// ---------------------------------------------------------------- the ceiling by cause (board 36, item learn-2)
+/** The five causes a development row no role-pattern program reaches is filed under, the first that holds, in this order. */
+export const CAUSES = Object.freeze([
+  { k: 1, name: 'word quantity', what: 'the gold needs a number the prompt does not write: no whole program over its own leaves gives the gold (search, at most MAX_OPS operations; with the chain programs on, not its own chain program either), and one does once the word quantities its prompt admits (reason/induce.mjs wordQuantities) are added as leaves' },
+  { k: 2, name: 'chain too long', what: 'the worked chain, read as a straight-line program over the prompt numbers and earlier steps (reason/induce.mjs chainProgram), runs on the prompt numbers to the gold but needs more operations than the arm admits: MAX_OPS (4) with the search programs only, CHAIN.maxOps (8) with the chain programs on' },
+  { k: 3, name: 'number from the text', what: 'a number of the worked chain is not a quantity of the prompt, a named leaf or an earlier step (it comes from the text), so the chain does not run on the prompt numbers' },
+  { k: 4, name: 'pattern', what: 'the chain runs on the prompt numbers to the gold within the operations the arm admits, yet no program of another development row of its role pattern gives its gold: the parse reads a quantity the chain never uses (gate 5 refuses such a program), the parse holds more leaves than the search window (12, gate 5 again), its role form is its own (no other development row shares it; gate 7 answers a learned entry only in a form it fit), or the rows that share it offer no program that gives its gold' },
+  { k: 5, name: 'other', what: 'the answer has no annotated step, a step is not plain arithmetic, the gold is a quantity the prompt writes, or the chain reads every number yet no step of it computes the gold on the prompt numbers' },
+]);
+
+/** The chain program of a prepared row (reason/induce.mjs chainProgram on its parse, its gold), computed once. */
+export function chainOf(row) {
+  prepare(row);
+  if (!row.chainProg) row.chainProg = I.chainProgram(row.answer, row.parse, { gold: row.gold });
+  return row.chainProg;
+}
+/** CHAIN.maxOps: the longest straight-line program read from a worked chain that a row may offer (8 operations). */
+export const CHAIN = Object.freeze({ on: true, maxOps: 8, maxLeaves: 12, what: 'a straight-line program read from the worked chain of a development row (reason/induce.mjs chainProgram): at most 8 operations, it reads every positional quantity, and it runs on the row\'s own leaves to its gold' });
+/** The chain program a row offers as a candidate: ok, whole, at most CHAIN.maxOps operations, and it gives the row's gold. */
+export function chainCandidate(row) {
+  const c = chainOf(row);
+  if (!c.ok || !c.whole || c.ops > CHAIN.maxOps || c.words.length || I.leavesOf(row.parse).length > CHAIN.maxLeaves) return null;
+  const v = run(c.text, row.L);
+  if (!I.acceptable(v, row.L, 'whole') || !fitsGold(v, row.gold)) return null;
+  return { text: c.text, ops: c.treeOps, chain: true, fromChain: true };
+}
+
+/** The candidates of a row with its chain program (chainCandidate) added when search() did not find it: the shape candidatesOf returns. */
+export function chainedCandidatesOf(row) {
+  const c = candidatesOf(row);
+  const k = chainCandidate(row);
+  if (!k || c.programs.some((p) => p.text === k.text)) return c;
+  return { programs: [...c.programs, k], searched: true };
+}
+
+/**
+ * The programs a row offers: its whole search candidates (at most MAX_OPS operations) and, with opts.chain, its chain
+ * program (chainCandidate) when that is not one of them.
+ */
+export function offersOf(row, { chain = false } = {}) {
+  const c = candidatesOf(row).programs;
+  if (!chain) return c;
+  const k = chainCandidate(row);
+  if (!k || c.some((p) => p.text === k.text)) return c;
+  return [...c, k];
+}
+
+/**
+ * THE CEILING BY CAUSE over prepared development rows. A row is reachable when a program another development row of
+ * its role pattern offers (offersOf, opts.chain) gives its gold (the leave-one-out form of crossValidate's ceiling);
+ * every other row is filed under the first CAUSES entry that holds. The counts sum to the unreachable count.
+ * @param {object[]} rows @param {{chain?: boolean, words?: boolean}} [opts]
+ * @returns {{rows: number, reachable: number, unreachable: number, causes: object, pattern: object, ids: object, ms: number}}
+ */
+export function ceilingByCause(rows, { chain = false, words = true } = {}) {
+  const t0 = Date.now();
+  for (const r of rows) prepare(r);
+  const byRole = new Map();
+  for (const r of rows) { const a = byRole.get(r.pats.role); if (a) a.push(r); else byRole.set(r.pats.role, [r]); }
+  const reach = new Set();
+  for (const a of byRole.values()) {
+    if (a.length < 2) continue;
+    const offers = a.map((r) => offersOf(r, { chain }).map((p) => p.text));
+    for (let i = 0; i < a.length; i++) {
+      const r = a[i];
+      let ok = false;
+      for (let j = 0; j < a.length && !ok; j++) {
+        if (j === i) continue;
+        for (const t of offers[j]) { const v = run(t, r.L); if (I.acceptable(v, r.L, 'whole') && fitsGold(v, r.gold)) { ok = true; break; } }
+      }
+      if (ok) reach.add(r.id);
+    }
+  }
+  const causes = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  const pattern = { ownForm: 0, sharedForm: 0, notWhole: 0, window: 0 };
+  const ids = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+  for (const r of rows) {
+    if (reach.has(r.id)) continue;
+    const k = causeOf(r, { groupSize: byRole.get(r.pats.role).length, words, chain });
+    causes[k.cause]++;
+    ids[k.cause].push(r.id);
+    if (k.cause === 4) pattern[k.sub]++;
+  }
+  return { rows: rows.length, reachable: reach.size, unreachable: rows.length - reach.size, causes, pattern, ids, chain, ms: Date.now() - t0 };
+}
+
+/**
+ * The ceiling on crossValidate's ruler (its (e) line): the rows of each fold that a program some row of the other folds
+ * of the same role pattern offers (offersOf, opts.chain) answers right. Development rows only; nothing is asked.
+ */
+export function ceilingTwoFold(rows, { folds = 2, chain = false, invariant = 'whole' } = {}) {
+  for (const r of rows) prepare(r);
+  let n = 0;
+  for (let f = 0; f < folds; f++) {
+    const byRole = new Map();
+    for (const r of rows) { if (foldOf(r.id, folds) === f) continue; const s = byRole.get(r.pats.role) || byRole.set(r.pats.role, new Set()).get(r.pats.role); for (const p of offersOf(r, { chain })) s.add(p.text); }
+    for (const r of rows) {
+      if (foldOf(r.id, folds) !== f) continue;
+      const s = byRole.get(r.pats.role);
+      if (s && [...s].some((p) => { const v = run(p, r.L); return I.acceptable(v, r.L, invariant) && fitsGold(v, r.gold); })) n++;
+    }
+  }
+  return n;
+}
+
+/**
+ * THE CAUSE of one unreachable row (CAUSES, the first that holds). groupSize: the development rows of its role form
+ * (itself included); chain: the arm (false: the search programs only, at most MAX_OPS operations; true: with the chain
+ * programs, at most CHAIN.maxOps). Returns { cause, name, sub } (sub names the pattern cause's part: notWhole, window,
+ * ownForm, sharedForm).
+ */
+export function causeOf(row, { groupSize = 1, words = true, chain = false } = {}) {
+  prepare(row);
+  const own = candidatesOf(row);
+  if (words && !own.programs.length && row.n >= 1 && row.n <= RULE.maxQuantities && row.wordFit === undefined) {
+    row.wordFit = false;
+    const wq = I.wordQuantities(row.question + SUFFIX).filter((w) => !(w.name in row.L));
+    if (wq.length) {
+      const p2 = { ...row.parse, namedList: [...row.parse.namedList, ...wq.map((w) => ({ name: w.name, v: w.v, cue: w.word }))] };
+      if (I.leavesOf(p2).length <= 12) {
+        const s = I.search(p2, row.gold, { programCap: RULE.programCap, maxLeaves: 12 });
+        const whole = s.programs.some((pr) => { const u = I.leafNames(pr.tree); for (let k = 0; k < row.n; k++) if (!u.has('q' + k)) return false; return [...u].some((x) => wq.some((w) => w.name === x)); });
+        row.wordFit = whole;
+      }
+    }
+  }
+  // board 36, item learn-2 (the fix): each arm by its own limit. With the chain programs on, a row whose own chain program
+  // gives its gold on the prompt's own leaves does not need a word quantity, and a chain is too long only past CHAIN.maxOps
+  const ownChain = chain ? chainCandidate(row) : null;
+  if (words && row.wordFit === true && !ownChain) return { cause: 1, name: CAUSES[0].name, sub: null };
+  const c = chainOf(row);
+  const maxOps = chain ? CHAIN.maxOps : I.MAX_OPS;
+  if (c.ok && c.ops > maxOps) return { cause: 2, name: CAUSES[1].name, sub: null };
+  if (!c.ok && c.unmatched.length) return { cause: 3, name: CAUSES[2].name, sub: null };
+  if (c.ok) return { cause: 4, name: CAUSES[3].name, sub: !c.whole ? 'notWhole' : I.leavesOf(row.parse).length > CHAIN.maxLeaves ? 'window' : groupSize < 2 ? 'ownForm' : 'sharedForm' };
+  return { cause: 5, name: CAUSES[4].name, sub: null };
+}
 
 // ---------------------------------------------------------------- CLI
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
