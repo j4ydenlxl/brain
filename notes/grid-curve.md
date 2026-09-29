@@ -158,6 +158,8 @@ line is a CPU price and says so; at 300000 ms fewer lanes fit under the 6000 MB 
 several times the printed price, and expect rows with status error where a task passes its heap limit.
 Run it alone on the machine, with `--resume` so a kill loses only the tasks in flight.
 
+Run at checkpoint 4 (2026-09-28, 21:16 to 21:23 EDT, under --ram-mb 34000 --admit-mb 24000 --preempt-mb 30000, 12 workers): the memory rule held (0 preemptions, ram 15968 MB at 60 s, peak 27622 MB) and the heap rule did not. Every row that ended was killed at 304000 ms with ERR_WORKER_OUT_OF_MEMORY (15 rows, 15 errors, 0 solved, largest heap 2007 MB against the 2048 MB --heap-mb), and at 437 s the process itself aborted (exit 134, FATAL ERROR CALL_AND_RETRY_LAST Allocation failed: a lane isolate at 2007 MB after last-resort mark-compacts at 211 s and 212 s), so the journal held no clean row and was set aside. A lane heap grows through its clock and passes 2 GB near 210 s, so the 300000 ms point needs a heap above what 300 s of search allocates, at fewer lanes: the next attempt is --workers 6 --heap-mb 4096 (24.6 GB of old generation at most, under the 34000 MB cap), priced at 271 tasks times 300 s over 6 lanes, about 226 minutes of wall. The first launch of the evening, under the default rule, preempted 6 tasks in its first minute and was killed by hand at 21:15, as this note said it would.
+
 ## Measured (what was read before building)
 
 - `notes/grid.md` (the vocabulary, the cell rule fallback, the split and contamination rules), `bench/grid.mjs`
