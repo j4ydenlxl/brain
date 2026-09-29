@@ -40,6 +40,7 @@
 import fs from 'node:fs';
 import net from 'node:net';
 import path from 'node:path';
+import os from 'node:os';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -302,6 +303,17 @@ export async function run({ write = true, tests = true, log = console.log } = {}
   const keepOutsideMath = keep.filter((r) => !mathIds.has(String(r.id))).length;
   storeInfo.devRowsSplit = dsp;
   say('development index split (devRows.split, written by --forms): ' + (dsp ? 'rows ' + dsp.rows + ', in math.json development ' + dsp.inMathDevelopment + ', outside ' + dsp.outsideMathDevelopment + ', in ns development ' + dsp.inNsDevelopment + ', in ns heldOut ' + dsp.inNsHeldOut : 'absent') + '; must-keep rows (b) outside the ' + mathIds.size + ' math.json development ids ' + keepOutsideMath + ' of ' + keep.length);
+  // THE RECOUNT (checkpoint 4; the skeptic of board 36: the descriptor above is printed as stored, so a stale one would
+  // print unchanged). The same five counts taken now from the index's ids against math.json and ns.json, printed beside
+  // the stored ones; the bar row split holds only when they are equal.
+  const nsR = JSON.parse(fs.readFileSync(NS, 'utf8'));
+  const nsDevR = new Set(nsR.rows.development.map((r) => r.id)), nsHeldR = new Set(nsR.split.heldOut.ids);
+  const idsR = store.devRows && Array.isArray(store.devRows.rows) ? store.devRows.rows.map((r) => String(r[0])) : [];
+  const splitRecount = { rows: idsR.length, inMathDevelopment: idsR.filter((id) => mathIds.has(id)).length, outsideMathDevelopment: idsR.filter((id) => !mathIds.has(id)).length, inNsDevelopment: idsR.filter((id) => nsDevR.has(id)).length, inNsHeldOut: idsR.filter((id) => nsHeldR.has(id)).length };
+  const SPLIT_KEYS = ['rows', 'inMathDevelopment', 'outsideMathDevelopment', 'inNsDevelopment', 'inNsHeldOut'];
+  const splitEqual = !!dsp && SPLIT_KEYS.every((k) => dsp[k] === splitRecount[k]);
+  storeInfo.devRowsSplitRecount = { at, against: [rel(MATH), rel(NS)], ...splitRecount, equalsStored: splitEqual };
+  say('development index split recounted now against ' + rel(MATH) + ' and ' + rel(NS) + ': ' + SPLIT_KEYS.map((k) => k + ' ' + splitRecount[k] + (dsp && dsp[k] !== splitRecount[k] ? ' (stored ' + dsp[k] + ')' : '')).join(', ') + '; equals the stored descriptor: ' + splitEqual);
 
   const sets = {
     a: refuse.map((r) => ({ id: r.id, prompt: r.prompt, truth: r.truth, kind: r.kind })),
@@ -402,6 +414,64 @@ export async function run({ write = true, tests = true, log = console.log } = {}
   };
   const fLine = (s) => 'tier ' + s.tier + ' right ' + s.right + ' wrong ' + s.wrong;
   say('(f) the learned overlay on the ' + F.rows + ' development rows of the store (devRows, ids sha256 ' + F.idsSha256.slice(0, 16) + '), guard on: induced only ' + fLine(F.induced) + '; with the overlay, development check on (loaded ' + checkedCounts.learned + ', contradicted ' + checkedCounts.contradicted + ', unchecked ' + checkedCounts.unchecked + ', forms retracted ' + checkedCounts.retracted + ', unapplied ' + checkedCounts.retractUnapplied + ') ' + fLine(F.checked) + ', added wrong ' + F.addedWrong.length + (F.addedWrong.length ? ' ' + F.addedWrong.join(', ') : '') + ', added right ' + F.addedRight.length + '; control, check off (loaded ' + uncheckedCounts.learned + ') ' + fLine(F.control) + ', added wrong ' + F.addedWrongControl.length + (F.addedWrongControl.length ? ' ' + F.addedWrongControl.join(', ') : ''));
+  // (f) THE CONTROL THAT CAN FAIL (checkpoint 4; the skeptic of board 36: while the learned file loads 0 entries the (f)
+  // row above holds for any result). A planted overlay file of one entry at the role level of one development row the
+  // induced store does not answer, whose program gives a whole value that is not the row's gold: with the development
+  // check off the loader loads it (1) and the row is answered wrong by the tier (added wrong 1, that row); with the
+  // check on the loader refuses it (contradicted 1, loaded 0, added wrong 0). The file is removed before the verdict is
+  // written and never sits beside the store. The bar row f holds only when the plant moves both ways.
+  const fPlant = await (async () => {
+    const out = { row: null, program: null, tried: 0, off: null, on: null };
+    const byId = new Map((store.devRows && Array.isArray(store.devRows.rows) ? store.devRows.rows : []).map((r) => [String(r[0]), r]));
+    const tmp = path.join(os.tmpdir(), 'program-guard-plant-' + process.pid + '.json');
+    const wholeNotGold = (v, gold) => Number.isFinite(v) && v > 0 && Math.abs(v - Math.round(v)) < 1e-6 && Math.round(v) !== gold;
+    const arm = async (checkOn, id, prompt, truth) => {
+      const was = P.PROGRAM_GUARD.learnedCheck;
+      try {
+        P.PROGRAM_GUARD.learnedCheck = checkOn;
+        P.resetPrograms();
+        const c0 = { ...P.PROGRAM_TIER };
+        const s = P.programStore(STORE, { learned: tmp });
+        const loaded = P.PROGRAM_TIER.learned - c0.learned, contradicted = P.PROGRAM_TIER.learnedContradicted - c0.learnedContradicted, refused = P.PROGRAM_TIER.learnedRefused - c0.learnedRefused;
+        const brain = new Brain({ name: 'program-guard', ledger: 'off' });
+        let a = null;
+        try { a = await P.ask(brain, prompt, { provider: 'null', programs: s }); } catch (e) { a = { from: 'threw', text: String(e && e.message) }; }
+        const g = graded(a, truth);
+        return { loaded, contradicted, refused, tier: !!g.tier, right: !!g.right, answer: g.answer, program: g.program, addedWrong: g.tier && !g.right && !baseWrong.has(id) ? 1 : 0 };
+      } finally { P.PROGRAM_GUARD.learnedCheck = was; P.resetPrograms(); }
+    };
+    try {
+      for (const r of fInduced) {
+        if (r.tier || out.tried >= 40) continue;
+        const row = byId.get(String(r.id));
+        if (!row) continue;
+        const [id, role, L, gold] = row;
+        // the program reads every positional quantity (gate 5 refuses one that does not): their sum, doubled or tripled
+        // when the sum is the gold or not whole
+        const qs = Object.keys(L).filter((k) => /^q[0-9]+$/.test(k)).sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
+        if (!qs.length) continue;
+        const sumText = qs.slice(1).reduce((t, k) => 'add(' + t + ',' + k + ')', qs[0]);
+        const sum = qs.reduce((t, k) => t + L[k], 0);
+        let program = null;
+        for (const [text, v] of [[sumText, sum], ['add(' + sumText + ',' + sumText + ')', 2 * sum], ['add(add(' + sumText + ',' + sumText + '),' + sumText + ')', 3 * sum]]) if (wholeNotGold(v, gold)) { program = text; break; }
+        if (!program) continue;
+        out.tried++;
+        const entry = { program, records: [String(id)], learned: { inducedFrom: [String(id)], by: 'bench/program-guard.mjs, the (f) control, planted at ' + at }, forms: { roles: [role] } };
+        fs.writeFileSync(tmp, JSON.stringify({ at, by: 'bench/program-guard.mjs (f) control (planted, removed after the read, never kept)', levels: { role: { [role]: [entry] } } }));
+        const rec = fRows.find((x) => String(x.id) === String(id));
+        const off = await arm(false, String(id), rec.prompt, rec.truth);
+        if (!(off.tier && !off.right)) continue; // a gate refused the prompt before any program answered: not the row for this plant
+        const on = await arm(true, String(id), rec.prompt, rec.truth);
+        out.row = String(id); out.program = program; out.off = off; out.on = on;
+        break;
+      }
+    } finally { fs.rmSync(tmp, { force: true }); }
+    return out;
+  })();
+  F.planted = fPlant;
+  const fPlantOk = !!(fPlant.row && fPlant.off && fPlant.on && fPlant.off.loaded === 1 && fPlant.off.addedWrong === 1 && fPlant.on.contradicted === 1 && fPlant.on.loaded === 0 && fPlant.on.addedWrong === 0);
+  const fPlantLine = fPlant.row ? 'one entry ' + fPlant.program + ' at the role level of development row ' + fPlant.row + ' (rows tried ' + fPlant.tried + '): check off loaded ' + fPlant.off.loaded + ', the tier answered ' + fPlant.off.answer + ' by ' + fPlant.off.program + ', added wrong ' + fPlant.off.addedWrong + '; check on contradicted ' + fPlant.on.contradicted + ', loaded ' + fPlant.on.loaded + ', tier ' + fPlant.on.tier + ', added wrong ' + fPlant.on.addedWrong + (fPlantOk ? ' (the control moves both ways)' : ' (THE CONTROL DOES NOT MOVE)') : 'NO ROW TOOK THE PLANT among ' + fPlant.tried + ' tried (THE CONTROL DOES NOT MOVE)';
+  say('(f) the control that can fail, a planted overlay: ' + fPlantLine);
   // (b) beside the store the tier loads (board 36, item learn; printed, not a bar): the must-keep rows with the guard on,
   // as shipped, and the induced store alone (no learned overlay, so no retraction applied)
   const bInduced = [];
@@ -491,7 +561,8 @@ export async function run({ write = true, tests = true, log = console.log } = {}
     c: G.c.wrong === 0 && GX.c.wrong === 0 && pinnedMet,
     d: dHolds,
     e: eHolds,
-    f: F.addedWrong.length === 0 && F.rows > 0,
+    f: F.addedWrong.length === 0 && F.rows > 0 && fPlantOk,
+    split: splitEqual,
     heldOut: held.sameAsWritten && held.drawReproduces,
     sockets: sockets === 0,
     tests: test.ok,
@@ -526,7 +597,7 @@ export async function run({ write = true, tests = true, log = console.log } = {}
     tests: test,
     code,
     ms: Date.now() - t0,
-    statement: 'With the guard on, the program tier answered ' + G.a.tier + ' of the ' + G.a.asked + ' must-refuse prompts (' + GX.a.tier + ' with the exact-kind readers unplugged), answered right ' + G.b.right + ' of the ' + keep.length + ' must-keep development problems it answered right before (drop ' + drop + ', the bar allows ' + BAR.maxKeepDrop + (bLostToOverlay.length ? '; the induced store alone, guard on, answered right ' + bInducedRight + ' (drop ' + (before - bInducedRight) + '), and the ' + bRetract.lost + ' rows lost sit in forms the retract list of ' + bRetract.file + ' retracts, which the production loader applies since board 36: matched ' + bRetract.matched + ' of ' + bRetract.lost + ' in ' + bRetract.entries + ' retraction entries that answered ' + bRetract.devWrong + ' development rows wrong and ' + bRetract.devRight + ' right in those forms, and ' + bRetract.keptRightNowMatched + ' of the ' + bRetract.keptRightNow + ' rows still right match one' : '') + '), and answered wrong ' + G.c.wrong + ' of the ' + wrongRows.length + ' wrong rows of the self-queries misses (' + GX.c.wrong + ' unplugged); alg-01, alg-02, alg-04, word-08 and gsm8k.991 went to ' + rowsOf('guard.real').map((r) => r.id + ' ' + r.from).join(', ') + ' (no wrong tier answer, both exposures: ' + dHolds + '). The control arm, the same prompts with the guard off and the exact-kind readers unplugged, answered ' + CX.a.wrong + ' must-refuse prompts and ' + CX.c.wrong + ' misses rows wrong by the tier (as shipped: ' + C.a.wrong + ' and ' + C.c.wrong + ', because the exact readers now answer those prompts first). The learned overlay on the ' + F.rows + ' development rows of the store: induced only wrong ' + F.induced.wrong + ', with the overlay and its development check wrong ' + F.checked.wrong + ' (added wrong ' + F.addedWrong.length + ', added right ' + F.addedRight.length + '), the control with the check off added wrong ' + F.addedWrongControl.length + '. Sockets attempted ' + sockets + '. Tests: ' + test.tally + '. ' + (barMet ? 'BAR MET.' : 'BAR NOT MET.'),
+    statement: 'With the guard on, the program tier answered ' + G.a.tier + ' of the ' + G.a.asked + ' must-refuse prompts (' + GX.a.tier + ' with the exact-kind readers unplugged), answered right ' + G.b.right + ' of the ' + keep.length + ' must-keep development problems it answered right before (drop ' + drop + ', the bar allows ' + BAR.maxKeepDrop + (bLostToOverlay.length ? '; the induced store alone, guard on, answered right ' + bInducedRight + ' (drop ' + (before - bInducedRight) + '), and the ' + bRetract.lost + ' rows lost sit in forms the retract list of ' + bRetract.file + ' retracts, which the production loader applies since board 36: matched ' + bRetract.matched + ' of ' + bRetract.lost + ' in ' + bRetract.entries + ' retraction entries that answered ' + bRetract.devWrong + ' development rows wrong and ' + bRetract.devRight + ' right in those forms, and ' + bRetract.keptRightNowMatched + ' of the ' + bRetract.keptRightNow + ' rows still right match one' : '') + '), and answered wrong ' + G.c.wrong + ' of the ' + wrongRows.length + ' wrong rows of the self-queries misses (' + GX.c.wrong + ' unplugged); alg-01, alg-02, alg-04, word-08 and gsm8k.991 went to ' + rowsOf('guard.real').map((r) => r.id + ' ' + r.from).join(', ') + ' (no wrong tier answer, both exposures: ' + dHolds + '). The control arm, the same prompts with the guard off and the exact-kind readers unplugged, answered ' + CX.a.wrong + ' must-refuse prompts and ' + CX.c.wrong + ' misses rows wrong by the tier (as shipped: ' + C.a.wrong + ' and ' + C.c.wrong + ', because the exact readers now answer those prompts first). The learned overlay on the ' + F.rows + ' development rows of the store: induced only wrong ' + F.induced.wrong + ', with the overlay and its development check wrong ' + F.checked.wrong + ' (added wrong ' + F.addedWrong.length + ', added right ' + F.addedRight.length + '), the control with the check off added wrong ' + F.addedWrongControl.length + '. The (f) control that can fail, a planted overlay: ' + fPlantLine + '. The development index split recounted against math.json and ns.json ' + (splitEqual ? 'equals' : 'DIFFERS FROM') + ' the stored descriptor. Sockets attempted ' + sockets + '. Tests: ' + test.tally + '. ' + (barMet ? 'BAR MET.' : 'BAR NOT MET.'),
     printed,
   };
   if (write) fs.writeFileSync(OUT, JSON.stringify(verdict, null, 2) + '\n');

@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-28T23:25:11.438Z",
+  "at": "2026-09-29T01:43:59.387Z",
   "command": "node bench/program-guard.mjs",
   "isTheBar": true,
   "barMet": false,
@@ -10,6 +10,7 @@
     "d": true,
     "e": true,
     "f": true,
+    "split": true,
     "heldOut": true,
     "sockets": true,
     "tests": true
@@ -134,6 +135,19 @@
       "inNsDevelopment": 533,
       "inNsHeldOut": 0,
       "wording": "the store was fit on these 533 records before board 35 (bench/induce.mjs on bench/verdicts/ns.json rows.development); 438 of them are GSM8K test records outside the 200 development ids of bench/verdicts/math.json (95 inside), so every measure on them is development, never held out"
+    },
+    "devRowsSplitRecount": {
+      "at": "2026-09-29T01:43:59.387Z",
+      "against": [
+        "bench/verdicts/math.json",
+        "bench/verdicts/ns.json"
+      ],
+      "rows": 533,
+      "inMathDevelopment": 95,
+      "outsideMathDevelopment": 438,
+      "inNsDevelopment": 533,
+      "inNsHeldOut": 0,
+      "equalsStored": true
     }
   },
   "exposures": "real: ask() as shipped; exposed: act/solve.mjs kindsReader(false), the nine exact-kind readers unplugged so the tier meets every prompt they would catch",
@@ -842,7 +856,32 @@
     },
     "addedWrong": [],
     "addedWrongControl": [],
-    "addedRight": []
+    "addedRight": [],
+    "planted": {
+      "row": "gsm8k.0",
+      "program": "add(add(add(q0,q1),q2),q3)",
+      "tried": 1,
+      "off": {
+        "loaded": 1,
+        "contradicted": 0,
+        "refused": 0,
+        "tier": true,
+        "right": false,
+        "answer": "25",
+        "program": "add(add(add(q0,q1),q2),q3)",
+        "addedWrong": 1
+      },
+      "on": {
+        "loaded": 0,
+        "contradicted": 1,
+        "refused": 0,
+        "tier": false,
+        "right": false,
+        "answer": "Try asking: who are you, what can you do, hello.",
+        "program": null,
+        "addedWrong": 0
+      }
+    }
   },
   "e": {
     "controlExposedWrongA": 51,
@@ -1072,19 +1111,21 @@
   },
   "code": {
     "act/prompt.mjs": "ec4102d8a42ee284",
-    "reason/induce.mjs": "4b92c344b2534e72",
-    "bench/program-guard.mjs": "a1cb8b4479bdaab5",
+    "reason/induce.mjs": "71b96d538df29fbf",
+    "bench/program-guard.mjs": "cc0814244ad89c28",
     "act/solve.mjs": "0ebdb5771d13dde7",
     "act/exact-kinds.mjs": "8120cf89f2b6c508"
   },
-  "ms": 4775,
-  "statement": "With the guard on, the program tier answered 0 of the 60 must-refuse prompts (0 with the exact-kind readers unplugged), answered right 16 of the 52 must-keep development problems it answered right before (drop 36, the bar allows 2; the induced store alone, guard on, answered right 52 (drop 0), and the 36 rows lost sit in forms the retract list of bench/verdicts/learned-programs.json retracts, which the production loader applies since board 36: matched 36 of 36 in 18 retraction entries that answered 200 development rows wrong and 64 right in those forms, and 0 of the 16 rows still right match one), and answered wrong 0 of the 165 wrong rows of the self-queries misses (0 unplugged); alg-01, alg-02, alg-04, word-08 and gsm8k.991 went to alg-01 memory, alg-02 memory, alg-04 memory, word-08 memory, gsm8k.991 memory (no wrong tier answer, both exposures: true). The control arm, the same prompts with the guard off and the exact-kind readers unplugged, answered 51 must-refuse prompts and 129 misses rows wrong by the tier (as shipped: 1 and 0, because the exact readers now answer those prompts first). The learned overlay on the 533 development rows of the store: induced only wrong 18, with the overlay and its development check wrong 0 (added wrong 0, added right 0), the control with the check off added wrong 0. Sockets attempted 0. Tests: tests 33 pass 33 fail 0. BAR NOT MET.",
+  "ms": 6058,
+  "statement": "With the guard on, the program tier answered 0 of the 60 must-refuse prompts (0 with the exact-kind readers unplugged), answered right 16 of the 52 must-keep development problems it answered right before (drop 36, the bar allows 2; the induced store alone, guard on, answered right 52 (drop 0), and the 36 rows lost sit in forms the retract list of bench/verdicts/learned-programs.json retracts, which the production loader applies since board 36: matched 36 of 36 in 18 retraction entries that answered 200 development rows wrong and 64 right in those forms, and 0 of the 16 rows still right match one), and answered wrong 0 of the 165 wrong rows of the self-queries misses (0 unplugged); alg-01, alg-02, alg-04, word-08 and gsm8k.991 went to alg-01 memory, alg-02 memory, alg-04 memory, word-08 memory, gsm8k.991 memory (no wrong tier answer, both exposures: true). The control arm, the same prompts with the guard off and the exact-kind readers unplugged, answered 51 must-refuse prompts and 129 misses rows wrong by the tier (as shipped: 1 and 0, because the exact readers now answer those prompts first). The learned overlay on the 533 development rows of the store: induced only wrong 18, with the overlay and its development check wrong 0 (added wrong 0, added right 0), the control with the check off added wrong 0. The (f) control that can fail, a planted overlay: one entry add(add(add(q0,q1),q2),q3) at the role level of development row gsm8k.0 (rows tried 1): check off loaded 1, the tier answered 25 by add(add(add(q0,q1),q2),q3), added wrong 1; check on contradicted 1, loaded 0, tier false, added wrong 0 (the control moves both ways). The development index split recounted against math.json and ns.json equals the stored descriptor. Sockets attempted 0. Tests: tests 33 pass 33 fail 0. BAR NOT MET.",
   "printed": [
     "held out: bench/verdicts/program-guard-heldout.jsonl rows 112 (refuse 60, keep 52), ids sha256 10192e08c2bfd0e1, file sha256 eb9c56f4183b76df, same as written first true, draw reproduces true",
     "(c) rows: bench/verdicts/self-queries-misses.jsonl as of 2026-09-28T17:51:40.859Z (git blob 490740d3, commit 718e358, 1044239 bytes, object id checked true) wrong 165 (probability 113, arithmetic 36, calendar 16), as named true; on disk now wrong 0, not in the pinned set 0; asked 165",
     "store: bench/verdicts/induce-programs.json sha256 a46f5094781cbe60, entries 814, with forms 814, forms declared true, development rows indexed 533; learned store bench/verdicts/learned-programs.json present, loaded 0, refused 0, contradicted by a development row 0, unchecked 0, forms retracted 29, retractions unapplied 0",
     "development index split (devRows.split, written by --forms): rows 533, in math.json development 95, outside 438, in ns development 533, in ns heldOut 0; must-keep rows (b) outside the 200 math.json development ids 48 of 52",
+    "development index split recounted now against bench/verdicts/math.json and bench/verdicts/ns.json: rows 533, inMathDevelopment 95, outsideMathDevelopment 438, inNsDevelopment 533, inNsHeldOut 0; equals the stored descriptor: true",
     "(f) the learned overlay on the 533 development rows of the store (devRows, ids sha256 65144ffa359f2130), guard on: induced only tier 70 right 52 wrong 18; with the overlay, development check on (loaded 0, contradicted 0, unchecked 0, forms retracted 29, unapplied 0) tier 16 right 16 wrong 0, added wrong 0, added right 0; control, check off (loaded 0) tier 16 right 16 wrong 0, added wrong 0",
+    "(f) the control that can fail, a planted overlay: one entry add(add(add(q0,q1),q2),q3) at the role level of development row gsm8k.0 (rows tried 1): check off loaded 1, the tier answered 25 by add(add(add(q0,q1),q2),q3), added wrong 1; check on contradicted 1, loaded 0, tier false, added wrong 0 (the control moves both ways)",
     "arm guard.real (guard on, kind gate on, form gate on, exact kinds on): (a) asked 60 answered by the tier 0 wrong 0; (b) asked 52 answered right by the tier 16 wrong 0; (c) asked 165 answered by the tier 0 wrong by the tier 0; (d) asked 5 answered by the tier 0 wrong by the tier 0; tier counters: asked 54 answered 16 kind 11 form 38 unformed 0 missed 0 partial 0",
     "arm control.real (guard OFF, kind gate off, form gate off, exact kinds on): (a) asked 60 answered by the tier 1 wrong 1; (b) asked 52 answered right by the tier 52 wrong 0; (c) asked 165 answered by the tier 0 wrong by the tier 0; (d) asked 5 answered by the tier 5 wrong by the tier 5; tier counters: asked 65 answered 58 kind 0 form 0 unformed 0 missed 7 partial 0",
     "arm kindOnly.real (guard on, kind gate on, form gate off, exact kinds on): (a) asked 60 answered by the tier 0 wrong 0; (b) asked 52 answered right by the tier 52 wrong 0; (c) asked 165 answered by the tier 0 wrong by the tier 0; (d) asked 5 answered by the tier 2 wrong by the tier 2; tier counters: asked 54 answered 54 kind 11 form 0 unformed 0 missed 0 partial 0",
@@ -1107,6 +1148,6 @@
     "each gate alone, exact kinds unplugged: kind only (a) tier 0 (c) wrong 0 (b) right 52 (d) tier 2; form only (a) tier 0 (c) wrong 0 (b) right 16 (d) tier 0",
     "sockets and fetches attempted: 0",
     "tests: node --test test/act-prompt.test.mjs: tests 33 pass 33 fail 0",
-    "BAR NOT MET: (a) true, (b) false, (c) true, (d) true, (e) true, (f) true, held out as written true, sockets 0 true, tests true; wrong by the tier with the guard (a+c+d, both exposures) 0; 4.8 s"
+    "BAR NOT MET: (a) true, (b) false, (c) true, (d) true, (e) true, (f) true, held out as written true, sockets 0 true, tests true; wrong by the tier with the guard (a+c+d, both exposures) 0; 6.1 s"
   ]
 }
