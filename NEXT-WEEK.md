@@ -64,8 +64,10 @@ That is how "opus 4 level yesterday, opus 5 level today" happens here:
   2. Say yes to the session creating the private repo j4ydenlxl/brain-cells.
   3. Pick: Vercel-to-GitHub auto-deploy, or a Vercel token in the routine environment.
   4. Optional: the three BRAIN_LLM variables on Vercel.
+  5. For the miss log: SUPABASE_URL and SUPABASE_SERVICE_KEY on Vercel (the session makes the table).
   - Never paste a key or a token into chat.
-- DAY 1, 9/30: IT LIVES.
+- DAY 1, 9/30 from 16:03 EDT: IT LIVES.
+  - Step 0: read the routine facts (push to master, environment variables, hourly), ten minutes, then choose the heartbeat.
   - Build:
     - GROW.md (the generation, steps 1 to 8);
     - grow/: the cell contract, the sandbox runner, the locked selector, the cell-store writer, the miss-log reader and the site's growing reply.
@@ -82,10 +84,19 @@ That is how "opus 4 level yesterday, opus 5 level today" happens here:
   - Then stop building. The routine keeps growing after the session ends.
 - LAST, not these days: commercial use.
 
+## Checked by hand, 2026-09-30 16:03 EDT (the four subagent checks of 9/29 never ran: the weekly limit stopped all four at 0 of 4 done)
+
+- web/dist IS tracked (git ls-files web/dist: 57 files), so a push can deploy it, but a generation must run `node web/build.mjs` before it commits.
+- No miss log exists anywhere (grep SUPABASE, missLog, logMiss over api act bin tools: nothing). A Vercel function cannot write its own disk, so the miss log needs a store: a Supabase table (cloud.yml already names SUPABASE_URL and SUPABASE_SERVICE_KEY) with the two variables on Vercel, his hand.
+- generations/archive.mjs already is the Darwin Godel archive: every evaluated genome kept with fitness and lineage, a MAP-Elites grid, islands. generations/mutate.mjs mutates circuit structure (add-edge, add-cell). The shift is exactly one operator: a Claude arm that writes a code cell.
+- gh is logged in as j4ydenlxl. The Vercel link (.vercel/project.json, project dilation) is in place.
+- NOT verified: whether a Claude Code routine (/schedule) can push to master, hold environment variables and run hourly. Day 1 step 0 reads that first (one documentation read), and falls back to cloud.yml plus claude-code-action if it cannot.
+- Day 1 begins at 16:03 EDT on 9/30, not in the morning.
+
 ## Reuse, do not rebuild
 
 - generations/: archive, mutate, crossover, evaluate, engine. The machinery stays; its mutation operator becomes a Claude arm that writes code.
-- cells/: 15 families. self/learn.mjs: learns programs from its own mistakes. mind/dream.mjs: dreaming.
+- cells/: 13 families. self/learn.mjs: learns programs from its own mistakes. mind/dream.mjs: dreaming.
 - The tab layer: act/converse.mjs (greetings), act/exact-read.mjs and act/word.mjs, built into web/dist/organism by web/build.mjs.
 - The model slot: api/ask.mjs and act/ask-http.mjs (BRAIN_LLM_*).
 - .github/workflows/cloud.yml: a daily job in a Docker sandbox, capped at 512 MB and 1 CPU with every capability dropped, stopped by committing state-cloud/STOP. It becomes the fallback heartbeat and sandbox runner.
@@ -104,6 +115,6 @@ That is how "opus 4 level yesterday, opus 5 level today" happens here:
 
 ## Daily
 
-- 9/30:
+- 9/30: pool reset; 16:02 EDT his "Paradigm shift time. Research, iterations, and my vision to be done this week"; handoff checked by hand, 8b05a27 and this commit.
 - 10/1:
 - 10/2:
