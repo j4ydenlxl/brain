@@ -1,7 +1,8 @@
 // test/grow-cortex.test.mjs: the CORTEX-POINTER RULE (grow/cortex.mjs) against stub roots. Every test builds a temporary
 // root holding only what the rule reads: grown/cortex.json (the ledger), grown/generations.json (the recorded
 // tournaments), work/grow/gen-<n>/plan.json shaped like prepare's (two lanes, the parent with two arms per class, ids from
-// grow/generation.mjs armId) and the verdict.json files the locked judge would write. The CLI runs as a child with
+// grow/generation.mjs armId) and, per judged arm, its cell.mjs and the verdict.json the locked judge would write (judge
+// counts a pair only when plan.json planned it and both sides hold a cell.mjs). The CLI runs as a child with
 // --root <tmp>, the verbs also in process through main(); nothing here reaches the real grown/ or work/. Roots are removed
 // in process.on('exit'), so a failing test leaves nothing behind.
 // Author: Day 3 board, cortex-pointer builder, 2026-10-01.
@@ -12,7 +13,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { main, Fail, aliasOf, neverWhy, wellFormed, readLedger, recordedOf, DEFAULT_POINTER, MIN_PAIRS, KNOWN, LEDGER, SENSE_BY, USAGE } from '../grow/cortex.mjs';
+import { main, Fail, aliasOf, neverWhy, wellFormed, readLedger, recordedOf, pairsOf, DEFAULT_POINTER, MIN_PAIRS, KNOWN, LEDGER, SENSE_BY, USAGE } from '../grow/cortex.mjs';
 import { armId } from '../grow/generation.mjs';
 
 const BRAIN = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -50,7 +51,11 @@ function writePlan(root, n, { classes = CLASSES, lanes = ['direct', 'baked'], pa
   putJson(root, 'work/grow/gen-' + n + '/plan.json', { generation: n, at: '2026-10-01T00:00:00.000Z', lanes, parent, missSource: 'seed', classes: cls, builds: [], blocked: [] });
   return cls;
 }
-const verdict = (root, n, lane, id, survived, score) => putJson(root, 'work/grow/gen-' + n + '/' + lane + '/' + id + '/verdict.json', { candidate: id, id, class: 'stub', survived, why: survived ? [] : ['held-out score under the baseline'], lockOk: true, heldout: { n: 10, ok: Math.round(score * 10), score } });
+/** A judged candidate: the arm's cell.mjs (finish runs only a directory holding one) and the verdict.json judge/select.mjs writes; cell false plants the verdict alone. */
+const verdict = (root, n, lane, id, survived, score, { cell = true } = {}) => {
+  if (cell) put(root, 'work/grow/gen-' + n + '/' + lane + '/' + id + '/cell.mjs', 'export const meta = { id: ' + JSON.stringify(id) + ' };\n');
+  return putJson(root, 'work/grow/gen-' + n + '/' + lane + '/' + id + '/verdict.json', { candidate: id, id, class: 'stub', survived, why: survived ? [] : ['held-out score under the baseline'], lockOk: true, heldout: { n: 10, ok: Math.round(score * 10), score } });
+};
 /** A trial of NEW at generation n: plan.json, the challenger, plan, then one row [incSurvived, incScore, chSurvived, chScore] per pair (null: no verdicts). */
 async function trial(root, n, rows, { classes = CLASSES, recorded = true, register = true } = {}) {
   writePlan(root, n, { classes });
@@ -459,6 +464,89 @@ test('judge none: no challenger; no cortex.json; one naming another challenger; 
   j = await run(other, 'judge', '--gen', '3');
   assert.equal(j.verdict, 'moved');
   assert.equal(j.pairs, 4, 'an unsafe pair and a repeated pair are never counted');
+});
+
+test('judge, the FORGE: a cortex.json rewritten to pair the -2 arms with planted weak incumbents moves nothing; the challenger stays (CLI)', async () => {
+  for (const withCell of [false, true]) {
+    const root = mkroot();
+    const cj = await trial(root, 3, []);
+    // the arm rewrites cortex.json: its own strong -2 arms against fabricated incumbents (a verdict.json, with or without a cell.mjs)
+    const forged = cj.pairs.map((p, i) => ({ class: p.class, lane: p.lane, incumbent: 'fakeinc' + i, challenger: p.challenger }));
+    putJson(root, 'work/grow/gen-3/cortex.json', { ...cj, pairs: forged });
+    for (const p of forged) {
+      verdict(root, 3, p.lane, p.incumbent, false, 0, { cell: withCell });
+      verdict(root, 3, p.lane, p.challenger, true, 0.9);
+    }
+    const before = ledgerText(root);
+    const r = cli(root, 'judge', '--gen', '3');
+    assert.equal(r.code, 0, r.err.join('\n'));
+    assert.equal(r.json.verdict, 'none', 'cell ' + withCell + ': ' + JSON.stringify(r.json));
+    assert.equal(r.json.pointer, DEFAULT_POINTER);
+    assert.equal(r.json.pairs, 0);
+    assert.match(r.json.reason, /names no pair that work\/grow\/gen-3\/plan\.json planned for claude-nova-1/);
+    assert.equal(ledgerText(root), before, 'a forged file writes nothing');
+    assert.equal(ledger(root).challenger.model, NEW);
+    assert.equal(ledger(root).pointer, DEFAULT_POINTER);
+    // a forged pair beside the real ones is dropped, the real ones count
+    putJson(root, 'work/grow/gen-3/cortex.json', { ...cj, pairs: [...forged, ...cj.pairs] });
+    cj.pairs.forEach((p) => verdict(root, 3, p.lane, p.incumbent, true, 0.5));
+    const j = await run(root, 'judge', '--gen', '3');
+    assert.deepEqual([j.verdict, j.pairs, j.incumbentScore, j.challengerScore], ['moved', 4, 2, 3.6], 'cell ' + withCell);
+  }
+});
+
+test('judge counts a pair only when both directories hold a cell.mjs beside the verdict.json; a pair across lanes or classes is not planned', async () => {
+  const half = mkroot();
+  const cj = await trial(half, 3, []);
+  cj.pairs.forEach((p) => { verdict(half, 3, p.lane, p.incumbent, false, 0, { cell: false }); verdict(half, 3, p.lane, p.challenger, true, 0.9); });
+  let before = ledgerText(half);
+  let j = await run(half, 'judge', '--gen', '3');
+  assert.deepEqual([j.verdict, j.pairs], ['pending', 0], 'an incumbent with no cell.mjs is no candidate');
+  assert.match(j.reason, /0 of 4 pairs/);
+  assert.equal(ledgerText(half), before);
+  cj.pairs.forEach((p) => { verdict(half, 3, p.lane, p.incumbent, true, 0.5); verdict(half, 3, p.lane, p.challenger, true, 0.9, { cell: false }); fs.rmSync(path.join(half, 'work/grow/gen-3', p.lane, p.challenger, 'cell.mjs')); });
+  j = await run(half, 'judge', '--gen', '3');
+  assert.deepEqual([j.verdict, j.pairs], ['pending', 0], 'a challenger with no cell.mjs is no candidate');
+  // a cell.mjs that is a directory is not a file
+  cj.pairs.forEach((p) => fs.mkdirSync(path.join(half, 'work/grow/gen-3', p.lane, p.challenger, 'cell.mjs')));
+  assert.equal((await run(half, 'judge', '--gen', '3')).pairs, 0);
+  // pairs prepare never planned: another lane's arm, another class's incumbent
+  const mixed = mkroot();
+  const mj = await trial(mixed, 3, four([true, 0.1, true, 0.9]));
+  const odd = [
+    { ...mj.pairs[0], lane: 'baked', incumbent: armId('math', 'baked', 3) },
+    { ...mj.pairs[1], incumbent: mj.pairs[0].incumbent },
+    { ...mj.pairs[2], incumbent: armId('code', 'baked', 3) },
+    mj.pairs[3],
+  ];
+  for (const p of odd) { verdict(mixed, 3, p.lane, p.incumbent, true, 0.1); verdict(mixed, 3, p.lane, p.challenger, true, 0.9); }
+  putJson(mixed, 'work/grow/gen-3/cortex.json', { ...mj, pairs: odd });
+  before = ledgerText(mixed);
+  j = await run(mixed, 'judge', '--gen', '3');
+  assert.deepEqual([j.verdict, j.pairs], ['pending', 1], 'only the planned pair counts: ' + j.reason);
+  assert.equal(ledgerText(mixed), before);
+});
+
+test('judge none without the plan it checks against: plan.json missing, unparsable or another generation\'s; pairsOf is exactly what plan names', async () => {
+  const root = mkroot();
+  const cj = await trial(root, 3, four([true, 0.5, true, 0.9]));
+  const planFile = path.join(root, 'work/grow/gen-3/plan.json');
+  const planText = fs.readFileSync(planFile, 'utf8');
+  assert.deepEqual(pairsOf(JSON.parse(planText)), cj.pairs);
+  assert.deepEqual(cj.pairs.map((p) => [p.incumbent, p.challenger]), CLASSES.map((c) => [armId(c, 'direct', 3), armId(c, 'direct', 3, 2)]));
+  const before = ledgerText(root);
+  for (const text of [null, '{ not json', JSON.stringify({ ...JSON.parse(planText), generation: 2 })]) {
+    if (text === null) fs.rmSync(planFile); else fs.writeFileSync(planFile, text);
+    const j = await run(root, 'judge', '--gen', '3');
+    assert.equal(j.verdict, 'none', String(text).slice(0, 20));
+    assert.match(j.reason, /plan\.json is missing or not generation 3/);
+    assert.equal(ledgerText(root), before);
+  }
+  fs.writeFileSync(planFile, planText);
+  assert.equal((await run(root, 'judge', '--gen', '3')).verdict, 'moved');
+  // no parent lane: every lane with a second arm pairs, as plan has always read it
+  assert.deepEqual(pairsOf({ classes: [{ class: 'm', arms: [{ lane: 'a', id: 'm-a-g1' }, { lane: 'a', id: 'm-a-g1-2' }, { lane: 'b', id: 'm-b-g1' }] }] }), [{ class: 'm', lane: 'a', incumbent: 'm-a-g1', challenger: 'm-a-g1-2' }]);
+  for (const bad of [null, {}, { classes: 7 }, { parent: 'a', classes: [null, { class: 3, arms: [] }, { class: 'm', arms: [{ lane: '..', id: 'x-2' }, { lane: 'a', id: '../y' }] }] }]) assert.deepEqual(pairsOf(bad), []);
 });
 
 test('judging the same generation twice is idempotent: the second call finds no challenger (CLI)', async () => {

@@ -16,6 +16,11 @@
 // live under grown/self/ only while the trial is pending; git keeps them after the verdict).
 // The judge of a trial trusts the locked judge, not the driver: the rate in grown/generations.json must agree with the
 // verdict.json files judge/select.mjs wrote for that generation, or the edit goes back.
+// A target is the file ON DISK: check and apply resolve it (the native realpath, so a case-insensitive filesystem gives
+// the stored name) and run the target rule, NEVER and judge/LOCK.json against the resolved path, so grow/Contract.mjs
+// can never write over the locked grow/contract.mjs. The NEO tier (grow/NEO.md, his words: "keep the cells you have, the
+// NEO cells generated per task and kept and alters the code") adds grow/neo.mjs and grow/teach.mjs to NEVER: they select
+// and admit what the organism grows, and the organism may not edit what grades it; grow/neo-kernel.mjs stays a target.
 // Success prints ONE JSON line; a failure one stderr line and a non-zero exit (2: usage); check that finds errors
 // prints its JSON line and exits 1. --gen defaults to the last recorded tournament.
 //   node grow/self.mjs status [--gen <n>] [--root <dir>]
@@ -35,16 +40,19 @@ import { nextGeneration, conciseDirective, DEFAULT_ROOT, redact, TRAILER, SUITES
 export const LEDGER = 'grown/self.json';
 export const KEEP_DIR = 'grown/self';
 export const TARGET_RE = /^(GROW\.md|grow\/[A-Za-z0-9][A-Za-z0-9_.-]*\.(mjs|md))$/;
-/** Never a candidate: this file (it judges the trial) and the two that produce the result.json the locked judge reads
- *  (an edit there could grade itself up). neverOf adds every file judge/LOCK.json names. */
-export const NEVER = Object.freeze(['grow/self.mjs', 'grow/cortex.mjs', 'grow/sandbox.mjs', 'grow/probe.mjs']);
+/** Never a candidate: this file (it judges the trial), the cortex rule, the two that produce the result.json the locked
+ *  judge reads (an edit there could grade itself up), and the two that select and admit the NEO tier (grow/NEO.md: the
+ *  organism may not edit what grades it). neverOf adds every file judge/LOCK.json names. */
+export const NEVER = Object.freeze(['grow/self.mjs', 'grow/cortex.mjs', 'grow/sandbox.mjs', 'grow/probe.mjs', 'grow/neo.mjs', 'grow/teach.mjs']);
 export const MAX_BYTES = 300 * 1024;
 export const MAX_TEXT = 2000;
-/** A GROW.md candidate keeps these (the lock, the self step, his directive and the finish line are the procedure's spine). */
-export const KEEP = Object.freeze(['## Done', 'judge/verify.mjs', 'LOCK OK', 'grow/self.mjs', 'grow/cortex.mjs', 'CONCISE']);
+/** A GROW.md candidate keeps these (the lock, the self step, the cortex rule, the NEO selector and teacher, his directive and the finish line are the procedure's spine). */
+export const KEEP = Object.freeze(['## Done', 'judge/verify.mjs', 'LOCK OK', 'grow/self.mjs', 'grow/cortex.mjs', 'grow/neo.mjs', 'grow/teach.mjs', 'CONCISE']);
 /** A candidate module may not name the files an arm never opens (the judge's held-out truth). */
 export const FORBID = Object.freeze(['judge/heldout', 'judge/control.jsonl', 'state/grow/baseline']);
-export const SELF_SUITES = Object.freeze([...SUITES, 'test/grow-generation.test.mjs', 'test/grow-dream.test.mjs', 'test/grow-build.test.mjs', 'test/grow-self.test.mjs', 'test/grow-cortex.test.mjs']);
+/** The suites a candidate must keep green; suitesWith runs those the checked root holds (a NEO suite not written yet is no failure). */
+export const SELF_SUITES = Object.freeze([...SUITES, 'test/grow-generation.test.mjs', 'test/grow-dream.test.mjs', 'test/grow-build.test.mjs', 'test/grow-self.test.mjs', 'test/grow-cortex.test.mjs',
+  'test/neo-kernel.test.mjs', 'test/neo.test.mjs', 'test/grow-teach.test.mjs']);
 /** Path segments a scratch copy never carries, and the heavy prefixes no grow suite reads. */
 export const COPY_SKIP = new Set(['.git', 'node_modules', 'state', 'work', '.vercel']);
 export const COPY_SKIP_PREFIX = Object.freeze(['bench/verdicts/', 'site/', 'web/screenshots/', 'viz/', 'docs/boards/']);
@@ -176,6 +184,41 @@ export function targetsOf(root) {
   return out;
 }
 
+// ---- the target on disk
+/** The target as candidate.json names it: forward slashes, no leading ./ (check and apply read it the same way). */
+const namedOf = (cand) => (cand && typeof cand.target === 'string' ? cand.target.replace(/\\/g, '/').replace(/^\.\//, '') : '');
+/** The identity of a file (device and inode), or null: no file, or a filesystem with no inode numbers. */
+const idOf = (f) => { try { const s = fs.statSync(f, { bigint: true }); return s.ino ? s.dev + ':' + s.ino : null; } catch { return null; } };
+/**
+ * A candidate target as it is on disk: the native realpath of the root and of the joined path (on a case-insensitive
+ * filesystem it returns the stored name; the JS realpath keeps the case it was given), relative in posix form; then
+ * TARGET_RE, NEVER and judge/LOCK.json on THAT path, compared without case and by file identity. check and apply read
+ * and write `abs` only and record `rel`.
+ * @param {string} root the tree root
+ * @param {string} named the target as candidate.json names it (namedOf)
+ * @returns {{ rel: string|null, abs: string|null, error: string|null }} error is null when the target may be edited
+ */
+export function resolveTarget(root, named) {
+  const fail = (error) => ({ rel: null, abs: null, error });
+  let base, abs;
+  try { base = fs.realpathSync.native(root); } catch (e) { return fail('target: the tree root does not resolve (' + ((e && e.code) || 'error') + ')'); }
+  try { abs = fs.realpathSync.native(path.join(root, named)); } catch (e) {
+    const code = (e && e.code) || 'error';
+    return fail(code === 'ENOENT' || code === 'ENOTDIR' ? 'target: ' + named + ' does not exist in the tree (an edit, not a new file)' : 'target: ' + named + ' does not resolve on disk (' + code + ')');
+  }
+  const r = path.relative(base, abs);
+  if (!r || r === '..' || r.startsWith('..' + path.sep) || path.isAbsolute(r)) return fail('target: ' + named + ' resolves outside the tree');
+  const rel = posix(r);
+  const shown = rel === named ? rel : named + ' (on disk ' + rel + ')';
+  if (!TARGET_RE.test(rel)) return fail('target: ' + shown + ' is not GROW.md or an .mjs or .md under grow/');
+  const me = idOf(abs), low = rel.toLowerCase();
+  const same = (f) => f.toLowerCase() === low || (me !== null && idOf(path.join(base, f)) === me);
+  if (NEVER.some(same)) return fail('target: ' + shown + ' is never a candidate (it judges the trial or produces what the judge reads)');
+  if (lockedOf(root).some(same)) return fail('target: ' + shown + ' is locked (judge/LOCK.json names it; only a human session re-locks)');
+  if (!fs.statSync(abs).isFile()) return fail('target: ' + shown + ' is not a file');
+  return { rel, abs, error: null };
+}
+
 // ---- status
 function status(root, flags) {
   const n = genOf(flags, root);
@@ -295,24 +338,27 @@ export function check(root, n, { env = process.env, suites = SELF_SUITES } = {})
   const out = { ok: false, errors, generation: n, target: null, bytes: 0, changed: null, suites: null, sha: null, at: null };
   const cand = readJson(path.join(dir, 'candidate.json'));
   if (!cand || typeof cand !== 'object') { errors.push('candidate.json: missing or not JSON at work/grow/gen-' + n + '/self/candidate.json'); return out; }
-  const target = typeof cand.target === 'string' ? cand.target.replace(/\\/g, '/').replace(/^\.\//, '') : '';
-  out.target = target || null;
-  if (!TARGET_RE.test(target)) errors.push('target: "' + clip(cand.target, 80) + '" is not GROW.md or an .mjs or .md under grow/');
-  else if (NEVER.includes(target)) errors.push('target: ' + target + ' is never a candidate (it judges the trial or produces what the judge reads)');
-  else if (lockedOf(root).includes(target)) errors.push('target: ' + target + ' is locked (judge/LOCK.json names it; only a human session re-locks)');
-  else if (!fs.existsSync(path.join(root, target))) errors.push('target: ' + target + ' does not exist in the tree (an edit, not a new file)');
+  const named = namedOf(cand);
+  out.target = named || null;
+  // the name first (the same lines as ever), then the file on disk: the guards bind the RESOLVED path
+  let t = null;
+  if (!TARGET_RE.test(named)) errors.push('target: "' + clip(cand.target, 80) + '" is not GROW.md or an .mjs or .md under grow/');
+  else if (NEVER.includes(named)) errors.push('target: ' + named + ' is never a candidate (it judges the trial or produces what the judge reads)');
+  else if (lockedOf(root).includes(named)) errors.push('target: ' + named + ' is locked (judge/LOCK.json names it; only a human session re-locks)');
+  else { t = resolveTarget(root, named); if (t.error) errors.push(t.error); else out.target = t.rel; }
   for (const k of ['why', 'hypothesis']) {
     if (typeof cand[k] !== 'string' || !cand[k].trim()) errors.push(k + ': a non-empty string is required in candidate.json');
     else if (cand[k].length > MAX_TEXT) errors.push(k + ': ' + cand[k].length + ' characters, over ' + MAX_TEXT);
   }
   if (errors.length) return out;
-  const file = path.join(dir, 'file', target);
-  if (!fs.existsSync(file)) { errors.push('file: the whole new file is missing at work/grow/gen-' + n + '/self/file/' + target); return out; }
+  const target = t.rel;
+  const file = path.join(dir, 'file', named);
+  if (!fs.existsSync(file)) { errors.push('file: the whole new file is missing at work/grow/gen-' + n + '/self/file/' + named); return out; }
   const content = fs.readFileSync(file);
   out.bytes = content.length;
   out.sha = sha256(content);
   if (content.length > MAX_BYTES) errors.push('file: ' + content.length + ' bytes, over ' + MAX_BYTES);
-  const before = fs.readFileSync(path.join(root, target));
+  const before = fs.readFileSync(t.abs);
   out.changed = !before.equals(content);
   if (!out.changed) errors.push('file: identical to the tree\'s ' + target + ' (no edit)');
   const text = content.toString('utf8'), beforeText = before.toString('utf8');
@@ -361,25 +407,29 @@ function apply(root, flags, env) {
   if (ledger.trial) return { generation: n, applied: false, blocked: ['self: a trial is pending (generation ' + ledger.trial.generation + ', ' + ledger.trial.target + '); judge it first'], at: new Date().toISOString() };
   const baseline = baselineOf(root, n);
   if (!baseline) return { generation: n, applied: false, blocked: ['self: no tournament to beat yet (no generation with candidates in grown/generations.json)'], at: new Date().toISOString() };
-  // a fresh check, or the recorded one when it graded exactly this file
+  // ALWAYS a fresh check: check.json sits where the self arm writes, so a recorded ok proves nothing (a forged
+  // { ok: true, target, sha, generation } would skip node --check and the suites)
   const cand = readJson(path.join(dir, 'candidate.json'));
-  const recorded = readJson(path.join(dir, 'check.json'));
-  const target = cand && typeof cand.target === 'string' ? cand.target.replace(/\\/g, '/').replace(/^\.\//, '') : null; // as check names it
-  const file = target ? path.join(dir, 'file', target) : null;
-  const sha = file && fs.existsSync(file) ? sha256(fs.readFileSync(file)) : null;
-  const c = recorded && recorded.ok === true && recorded.target === target && recorded.sha === sha && recorded.generation === n ? recorded : check(root, n, { env });
+  const named = namedOf(cand); // as check reads it; the arm's file sits under self/file/ by this name
+  const file = named ? path.join(dir, 'file', named) : null;
+  const c = check(root, n, { env });
   if (!c.ok) return { generation: n, applied: false, target: c.target, blocked: c.errors.map((e) => 'self: ' + e), at: new Date().toISOString() };
+  // resolved again right before the write: the file check graded is the file written, read and recorded
+  const t = resolveTarget(root, named);
   const after = fs.readFileSync(file);
-  const before = fs.readFileSync(path.join(root, target));
+  const moved = t.error || (t.rel !== c.target ? 'target: ' + named + ' now resolves to ' + t.rel + ', not the ' + c.target + ' check graded' : sha256(after) !== c.sha ? 'file: changed since its check' : null);
+  if (moved) return { generation: n, applied: false, target: c.target, blocked: ['self: ' + moved], at: new Date().toISOString() };
+  const target = t.rel;
+  const before = fs.readFileSync(t.abs);
   const base = path.basename(target);
   const keepBefore = KEEP_DIR + '/trial-' + n + '.before.' + base, keepAfter = KEEP_DIR + '/trial-' + n + '.after.' + base;
   fs.mkdirSync(path.join(root, KEEP_DIR), { recursive: true });
   fs.writeFileSync(path.join(root, keepBefore), before);
   fs.writeFileSync(path.join(root, keepAfter), after);
-  fs.writeFileSync(path.join(root, target), after);
+  fs.writeFileSync(t.abs, after);
   // next: the first generation that runs wholly under the edit; the first recorded tournament from it on judges the trial
   const trial = {
-    generation: n, next: Math.max(n + 1, nextGeneration(root)), target, why: clip(cand.why, MAX_TEXT), hypothesis: clip(cand.hypothesis, MAX_TEXT), baseline,
+    generation: n, next: Math.max(n + 1, nextGeneration(root)), target, ...(named !== target ? { named } : {}), why: clip(cand.why, MAX_TEXT), hypothesis: clip(cand.hypothesis, MAX_TEXT), baseline,
     before: { file: keepBefore, sha: sha256(before), bytes: before.length }, after: { file: keepAfter, sha: sha256(after), bytes: after.length },
     check: { suites: c.suites ? { files: c.suites.files, pass: c.suites.pass, fail: c.suites.fail, exitCode: c.suites.exitCode } : null, at: c.at }, appliedAt: new Date().toISOString(),
   };

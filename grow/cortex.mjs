@@ -9,6 +9,9 @@
 // class, same lane, same brief, two models, one tournament). judge, run by finish right after it records the tournament,
 // sums the held-out scores the locked judge wrote for the paired arms: the pointer moves only when the challenger scores
 // higher over at least MIN_PAIRS pairs without fewer survivors; anything else, a tie included, holds the pointer.
+// cortex.json sits where the arms write, so judge never trusts its pairs: a pair counts only when prepare's plan.json
+// names it (pairsOf, the same derivation plan uses) and both sides are candidates (a cell.mjs beside the verdict.json),
+// so an arm that rewrites cortex.json to pair itself against a planted weak incumbent moves nothing.
 // This file is the RULE, the session obeys it: it never spawns a model, never touches the network, never reads a model id
 // (or anything else) from the environment, and never opens judge/heldout/, judge/control.jsonl or state/.
 // Success prints ONE JSON line; a failure one stderr line and a non-zero exit (2: usage, 1: the rule refused).
@@ -188,6 +191,30 @@ export function challenge(root, model, by) {
 // ---- plan: the model of every arm of generation n
 const genDirOf = (root, n) => path.join(root, 'work', 'grow', 'gen-' + n);
 const roleOf = (model, role) => ({ model, alias: aliasOf(model), role });
+/** The arms of one plan.json class whose id and lane are safe path segments. */
+const armsOf = (c) => (isObj(c) && Array.isArray(c.arms) ? c.arms : []).filter((a) => isObj(a) && SEG_RE.test(String(a.id)) && SEG_RE.test(String(a.lane)));
+const pairKey = (x) => x.lane + '/' + x.incumbent + '/' + x.challenger; // SEG_RE has no '/', so the key is one pair
+/**
+ * The trial pairs of a plan.json exactly as prepare planned them: per class, the parent lane's first arm (the incumbent)
+ * and its second arm, whose id ends "-2" (the challenger; one brief, two models). plan names these pairs and judge counts
+ * no other.
+ * @param {object} p the parsed work/grow/gen-<n>/plan.json
+ * @returns {{ class: string, lane: string, incumbent: string, challenger: string }[]}
+ */
+export function pairsOf(p) {
+  const pairs = [];
+  for (const c of isObj(p) && Array.isArray(p.classes) ? p.classes : []) {
+    if (!isObj(c) || typeof c.class !== 'string') continue;
+    const list = armsOf(c);
+    for (const lane of typeof p.parent === 'string' ? [p.parent] : [...new Set(list.map((a) => a.lane))]) {
+      const inLane = list.filter((a) => a.lane === lane);
+      const second = inLane.find((a) => a.id.endsWith('-2'));
+      const first = second && inLane.find((a) => a !== second && !a.id.endsWith('-2'));
+      if (first) pairs.push({ class: c.class, lane, incumbent: first.id, challenger: second.id });
+    }
+  }
+  return pairs;
+}
 export function plan(root, n) {
   const genDir = genDirOf(root, n);
   const p = readJson(path.join(genDir, 'plan.json'));
@@ -195,23 +222,11 @@ export function plan(root, n) {
   if (p.generation !== undefined && p.generation !== n) throw new Fail('plan: work/grow/gen-' + n + '/plan.json is generation ' + clip(JSON.stringify(p.generation), 32) + ', not ' + n);
   const l = readLedger(root);
   const challenger = l.challenger ? l.challenger.model : null;
-  const arms = {}, pairs = [];
-  for (const c of Array.isArray(p.classes) ? p.classes : []) {
-    const list = (isObj(c) && Array.isArray(c.arms) ? c.arms : []).filter((a) => isObj(a) && SEG_RE.test(String(a.id)) && SEG_RE.test(String(a.lane)));
-    for (const a of list) arms[a.id] = roleOf(l.pointer, 'arm');
-    if (!challenger || typeof c.class !== 'string') continue;
-    // the trial: the parent lane writes two candidates per class from one brief (prepare: the second id ends "-2"); the
-    // second runs under the challenger, so the pair differs in the model and nothing else
-    for (const lane of typeof p.parent === 'string' ? [p.parent] : [...new Set(list.map((a) => a.lane))]) {
-      const inLane = list.filter((a) => a.lane === lane);
-      const second = inLane.find((a) => a.id.endsWith('-2'));
-      const first = second && inLane.find((a) => a !== second && !a.id.endsWith('-2'));
-      if (!first) continue;
-      arms[first.id] = roleOf(l.pointer, 'incumbent');
-      arms[second.id] = roleOf(challenger, 'challenger');
-      pairs.push({ class: c.class, lane, incumbent: first.id, challenger: second.id });
-    }
-  }
+  const arms = {};
+  for (const c of Array.isArray(p.classes) ? p.classes : []) for (const a of armsOf(c)) arms[a.id] = roleOf(l.pointer, 'arm');
+  // the trial: the second arm of each pair runs under the challenger, so the pair differs in the model and nothing else
+  const pairs = challenger ? pairsOf(p) : [];
+  for (const x of pairs) { arms[x.incumbent] = roleOf(l.pointer, 'incumbent'); arms[x.challenger] = roleOf(challenger, 'challenger'); }
   const out = { generation: n, pointer: l.pointer, challenger, arms, pairs, at: new Date().toISOString() };
   writeJson(path.join(genDir, 'cortex.json'), out);
   return out;
@@ -230,12 +245,22 @@ export function judge(root, n) {
   const cj = readJson(path.join(genDir, 'cortex.json'));
   if (!isObj(cj) || cj.generation !== n || cj.challenger !== model) return none('work/grow/gen-' + n + '/cortex.json does not name ' + model + ' (the challenger was not on this generation\'s arms)');
   if (cj.pointer !== l.pointer) return none('work/grow/gen-' + n + '/cortex.json was planned under ' + shown(cj.pointer) + ', not the pointer ' + l.pointer);
+  // cortex.json is arm-writable: its pairs are checked against prepare's plan.json, never trusted
+  const pl = readJson(path.join(genDir, 'plan.json'));
+  if (!isObj(pl) || (pl.generation !== undefined && pl.generation !== n)) return none('work/grow/gen-' + n + '/plan.json is missing or not generation ' + n + ': no pair can be checked against what prepare planned');
+  const legit = new Set(pairsOf(pl).map(pairKey));
   const seen = new Set();
   const planned = (Array.isArray(cj.pairs) ? cj.pairs : []).filter((p) => isObj(p) && SEG_RE.test(String(p.lane)) && SEG_RE.test(String(p.incumbent)) && SEG_RE.test(String(p.challenger))
-    && p.challenger.endsWith('-2') && p.incumbent !== p.challenger && !seen.has(p.challenger) && seen.add(p.challenger));
-  if (!planned.length) return none('work/grow/gen-' + n + '/cortex.json names no pair for ' + model);
-  // what the locked judge (judge/select.mjs) wrote in each arm's directory; a pair counts only when both sides parse
-  const verdictOf = (lane, id) => { const v = readJson(path.join(genDir, lane, id, 'verdict.json')); return isObj(v) ? v : null; };
+    && p.challenger.endsWith('-2') && p.incumbent !== p.challenger && legit.has(pairKey(p)) && !seen.has(p.challenger) && seen.add(p.challenger));
+  if (!planned.length) return none('work/grow/gen-' + n + '/cortex.json names no pair that work/grow/gen-' + n + '/plan.json planned for ' + model);
+  // what the locked judge (judge/select.mjs) wrote in each arm's directory; a pair counts only when both sides are
+  // candidates (a cell.mjs, the file finish runs) and both verdicts parse
+  const isFile = (f) => { try { return fs.statSync(f).isFile(); } catch { return false; } };
+  const verdictOf = (lane, id) => {
+    if (!isFile(path.join(genDir, lane, id, 'cell.mjs'))) return null;
+    const v = readJson(path.join(genDir, lane, id, 'verdict.json'));
+    return isObj(v) ? v : null;
+  };
   let pairs = 0, is = 0, cs = 0, iv = 0, cv = 0;
   for (const p of planned) {
     const a = verdictOf(p.lane, p.incumbent), b = verdictOf(p.lane, p.challenger);
