@@ -44,6 +44,15 @@
 // publishable key (anon may INSERT only), awaited with a 1500 ms deadline, its failure a reason in
 // json.growing and never a thrown error. The guard's allowlist gains that one origin (SUPABASE_URL's) and
 // nothing else. A grown cell's answer (from 'cell') is not a miss, so none of this fires for it.
+//
+// REACH (grow/NEO.md, Order 7, REACH; his words: "It literally should have an octopus hold over the internet and pull
+// up anything"). At that same memory miss, unless the environment holds BRAIN_REACH exactly "0", act/reach.mjs looks
+// the prompt up on the open internet (Wikipedia, and a dictionary for a definition question), beside the miss log and
+// under its own deadline. On a hit the reply's first line is the reached text, its Source line next, then the growing
+// head; json.from is 'reach' and json.reach holds { title, url, ms }; the miss is STILL logged exactly as before (the
+// same row, its reply the growing head), so a cell grows for it. On no hit everything is exactly as without reach.
+// The guard's allowlist gains the two reach origins (act/reach.mjs REACH_ORIGINS) when reach is on at cold start.
+// The judged organism (act/prompt.mjs ask, judge/baseline.mjs) never reaches: only this handler imports reach.
 import fs from 'node:fs';
 import http from 'node:http';
 import https from 'node:https';
@@ -59,6 +68,7 @@ import { seedBasic } from '../seeds/basic.mjs';
 import { installGuard, DEFAULT_MODEL_URL } from '../bin/serve.mjs';
 import { scrubSecrets } from './prompt.mjs'; // the miss row's prompt is scrubbed of credential shapes before it leaves
 import { appAnswer } from '../grown/apps.mjs'; // Day 2, the builder arm: the apps the organism built and serves (grow/build.mjs promote)
+import { reach, reachEnabled, REACH_ORIGINS } from './reach.mjs'; // Order 7, REACH: a memory miss pulled up from the open internet
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // The knowledge store the function answers from: the full store when the host has it (this machine),
@@ -225,6 +235,10 @@ export function createHandler(o = {}) {
   let instance = null;
   let cold = null;
   const stats = { requests: 0, asks: 0, limited: 0, coldStartMs: null };
+  // REACH: on unless BRAIN_REACH is "0" (o.reach false turns it off, a function replaces it, o.reachOpts reaches its
+  // options: tests plant a fetch there, so no test of this handler opens a socket to the internet)
+  const reachOn = (env) => o.reach !== false && reachEnabled(env);
+  const reachFn = typeof o.reach === 'function' ? o.reach : reach;
 
   async function coldStart(env) {
     const t0 = performance.now();
@@ -233,7 +247,9 @@ export function createHandler(o = {}) {
       // the allowlist is the model origin and nothing else (installGuard reads only these names)
       const pre = globalThis.__brainEgressGuard ? null : { fetch: globalThis.fetch, http: http.request, https: https.request };
       // (and the miss log's origin when SUPABASE_URL and SUPABASE_ANON_KEY are both set: board 37, item misses)
-      const g = installGuard({ env: { BRAIN_MODEL_URL: modelOrigin(env) || DEFAULT_MODEL_URL, BRAIN_EGRESS_ALLOW: missOrigin(env) || '' }, stateDir });
+      // (and the two reach origins when reach is on: Order 7, REACH)
+      const extra = [missOrigin(env), ...(reachOn(env) ? REACH_ORIGINS : [])].filter(Boolean).join(',');
+      const g = installGuard({ env: { BRAIN_MODEL_URL: modelOrigin(env) || DEFAULT_MODEL_URL, BRAIN_EGRESS_ALLOW: extra }, stateDir });
       if (pre) ownProcessException(pre);
       guard = { entries: g.allow.entries.length, routed: Boolean(g.allow.route) };
     }
@@ -373,11 +389,19 @@ export function createHandler(o = {}) {
         reply: json.text.split('\n')[0],
         route: { from: a.from, route: a.route || null, provenance: p.answer ?? null, host },
       };
-      let g;
-      try { g = await logMiss(env, row); } catch (e) { g = { logged: false, reason: 'not logged: ' + String((e && e.code) || (e && e.name) || 'error') }; }
+      // REACH runs beside the miss log, each under its own deadline; neither can throw into the reply
+      const logging = (async () => { try { return await logMiss(env, row); } catch (e) { return { logged: false, reason: 'not logged: ' + String((e && e.code) || (e && e.name) || 'error') }; } })();
+      const reaching = reachOn(env) ? (async () => { try { return await reachFn(prompt, o.reachOpts || {}); } catch { return null; } })() : null;
+      const [g, hit] = await Promise.all([logging, reaching]);
       json.growing = { logged: Boolean(g.logged), reason: g.reason };
       // the head says the miss is logged; when it was not, the second line says so (the first line stays the head)
       if (!json.growing.logged) json.text = GROWING_HEAD + '\n(' + g.reason + ')\n' + a.text;
+      // a hit: the reached text first (its Source line last), then the growing head, so a person knows a cell is growing
+      if (hit && typeof hit.text === 'string' && hit.text.trim() && hit.source && typeof hit.source.url === 'string') {
+        json.text = hit.text.trim() + '\n' + GROWING_HEAD + (json.growing.logged ? '' : '\n(' + g.reason + ')');
+        json.from = 'reach';
+        json.reach = { title: String(hit.source.title ?? ''), url: hit.source.url, ms: Number.isFinite(hit.ms) ? hit.ms : null };
+      }
     }
     return done(200, json, {}, { promptHash: a.promptHash, route: json.route, serverUs });
   }

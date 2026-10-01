@@ -22,7 +22,7 @@ const KEY = 'plantedkey-3141592653-not-a-real-key';
 const post = (prompt, extra = {}) => ({ method: 'POST', body: JSON.stringify({ prompt }), ip: '10.0.0.1', env: {}, ...extra });
 
 test('POST "what is 17 times 23" answers 391, route direct, provenance exact, an integer serverUs, the CLI footer fields', async () => {
-  const h = createHandler({ stateDir: path.join(TMP, 'a') });
+  const h = createHandler({ stateDir: path.join(TMP, 'a'), grown: false });
   const r = await h(post('what is 17 times 23'));
   assert.equal(r.status, 200);
   assert.equal(r.json.exact.answer, '391');
@@ -51,7 +51,7 @@ test('POST "what is 17 times 23" answers 391, route direct, provenance exact, an
 });
 
 test('GET returns the usage line with the footer field names; OPTIONS has no star origin; another origin is refused', async () => {
-  const h = createHandler({ stateDir: path.join(TMP, 'b') });
+  const h = createHandler({ stateDir: path.join(TMP, 'b'), grown: false });
   const g = await h({ method: 'GET', env: {} });
   assert.equal(g.status, 200);
   assert.match(g.json.usage, /POST/);
@@ -69,7 +69,7 @@ test('GET returns the usage line with the footer field names; OPTIONS has no sta
 });
 
 test('caps: over 2000 chars is 413, a body that is not JSON is 400, no prompt is 400', async () => {
-  const h = createHandler({ stateDir: path.join(TMP, 'c') });
+  const h = createHandler({ stateDir: path.join(TMP, 'c'), grown: false });
   assert.equal((await h(post('x'.repeat(LIMITS.promptChars)))).status, 200);
   const big = await h(post('x'.repeat(LIMITS.promptChars + 1)));
   assert.equal(big.status, 413);
@@ -82,7 +82,7 @@ test('caps: over 2000 chars is 413, a body that is not JSON is 400, no prompt is
 });
 
 test('the per-IP bucket answers 429 on the 21st ask inside one minute with Retry-After, and refills on a planted clock', async () => {
-  const h = createHandler({ stateDir: path.join(TMP, 'd') });
+  const h = createHandler({ stateDir: path.join(TMP, 'd'), grown: false });
   const T = 1_800_000_000_000;
   for (let i = 0; i < LIMITS.ipPerMin; i++) assert.equal((await h(post('what is 17 times 23', { now: T + i }))).status, 200, 'ask ' + (i + 1));
   const r = await h(post('what is 17 times 23', { now: T + 20 }));
@@ -96,7 +96,7 @@ test('the per-IP bucket answers 429 on the 21st ask inside one minute with Retry
 });
 
 test('the per-instance bucket answers 429 past 300 asks a minute from many clients', async () => {
-  const h = createHandler({ stateDir: path.join(TMP, 'e') });
+  const h = createHandler({ stateDir: path.join(TMP, 'e'), grown: false });
   const T = 1_800_000_000_000;
   let ok = 0, limited = null;
   for (let i = 0; i < LIMITS.instancePerMin + 1; i++) {
@@ -126,7 +126,7 @@ const http = await import('node:http');
 const own = http.createServer((q, s) => s.end('own server'));
 await new Promise((r) => own.listen(0, '127.0.0.1', r));
 const m = await import(${JSON.stringify(HANDLER)});
-const h = m.createHandler({ stateDir: ${JSON.stringify(stateDir)} });
+const h = m.createHandler({ stateDir: ${JSON.stringify(stateDir)}, grown: false });
 const r = await h({ method: 'POST', body: JSON.stringify({ prompt: 'write a poem about the sea' }), ip: 'c' });
 let egress = null;
 try { await fetch('http://example.com/'); egress = 'reached'; } catch (e) { egress = e.code || String(e); }
@@ -457,4 +457,137 @@ test('Day 2, the builder arm: a build request naming a served app is answered wi
   assert.equal(appUrl({ host: 'localhost:3000' }, '/apps/x/'), 'http://localhost:3000/apps/x/');
   assert.equal(appUrl({ 'x-forwarded-host': 'a.example, b.example', 'x-forwarded-proto': 'https' }, '/apps/x/'), 'https://a.example/apps/x/');
   assert.equal(appUrl({}, '/apps/x/'), '/apps/x/');
+});
+
+// ---------------------------------------------------------------- REACH (grow/NEO.md, Order 7, REACH; act/reach.mjs)
+// His words: "It literally should have an octopus hold over the internet and pull up anything". A memory miss is pulled
+// up from the open internet, the reply says where from, and the miss is still logged. Offline: the network reach sees
+// is a planted fetch handed through createHandler's reachOpts, and it counts every call.
+const reachJson = (status, body) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+function reachNet(route) {
+  const calls = [];
+  const f = async (url, init) => { calls.push({ url: String(url), init }); const r = await route(String(url), init); return r === 'hang' ? new Promise(() => {}) : r; };
+  f.calls = calls;
+  return f;
+}
+const ZQ = 'who was zorbulan quexby'; // a lookup the organism holds nothing for (a memory miss with grown cells off)
+const ZQ_EXTRACT = 'Zorbulan Quexby was a <b>planted</b> person &amp; a test fixture with the key ghp_' + 'C'.repeat(30) + '. He never lived.';
+const zqRoute = (url) => {
+  if (url.startsWith('https://en.wikipedia.org/w/rest.php/v1/search/page?')) return reachJson(200, { pages: [{ id: 7, key: 'Zorbulan_Quexby', title: 'Zorbulan Quexby', excerpt: '<span class="searchmatch">Zorbulan</span> Quexby', description: 'a planted page' }] });
+  if (url === 'https://en.wikipedia.org/api/rest_v1/page/summary/Zorbulan_Quexby') return reachJson(200, { type: 'standard', title: 'Zorbulan Quexby', extract: ZQ_EXTRACT });
+  return reachJson(404, {});
+};
+// the clocks of a reply are not its content: serverUs, and llm.ms (Date.now() - started in act/llm.mjs, 0 or 1 by where
+// a millisecond tick falls: 1 in 1 of 300 asks measured by the hardener, which made a deepEqual below flake)
+const strip = (j) => { const { serverUs, ...rest } = j; return rest.llm ? { ...rest, llm: { ...rest.llm, ms: null } } : rest; };
+
+test('REACH hit: the reached text is the first line, its Source line next, then the growing head; from reach, json.reach { title, url, ms }; HTML and the token scrubbed; the miss STILL logged exactly as before', async () => {
+  const { GROWING_HEAD } = await import('../act/ask-http.mjs');
+  const stub = await missStub(201);
+  try {
+    const f = reachNet(zqRoute);
+    const h = createHandler({ stateDir: path.join(TMP, 'reach-hit'), grown: false, reachOpts: { fetch: f } });
+    const env = { SUPABASE_URL: stub.url, SUPABASE_ANON_KEY: 'x' };
+    const r = await h(post(ZQ, { env }));
+    assert.equal(r.status, 200);
+    const lines = r.json.text.split('\n');
+    assert.equal(lines[0], 'Zorbulan Quexby was a planted person & a test fixture with the key [redacted]. He never lived.');
+    assert.equal(lines[1], 'Source: Zorbulan Quexby, https://en.wikipedia.org/wiki/Zorbulan_Quexby');
+    assert.equal(lines[2], GROWING_HEAD, 'the growing line follows the text');
+    assert.equal(lines.length, 3);
+    assert.ok(!r.json.text.includes('<') && !r.json.text.includes('ghp_'), 'HTML or the token reached the reply');
+    assert.equal(r.json.from, 'reach');
+    assert.deepEqual(Object.keys(r.json.reach), ['title', 'url', 'ms']);
+    assert.equal(r.json.reach.title, 'Zorbulan Quexby');
+    assert.equal(r.json.reach.url, 'https://en.wikipedia.org/wiki/Zorbulan_Quexby');
+    assert.ok(Number.isInteger(r.json.reach.ms) && r.json.reach.ms >= 0, 'ms ' + r.json.reach.ms);
+    for (const k of FOOTER) assert.ok(k in r.json, 'footer field ' + k);
+    assert.equal(f.calls.length, 2);
+    for (const c of f.calls) assert.equal(c.init.redirect, 'manual');
+    // the miss is still logged, exactly as before: the same row a BRAIN_REACH=0 run logs
+    assert.equal(r.json.growing.logged, true, r.json.growing.reason);
+    assert.equal(stub.seen.length, 1);
+    const off = await h(post(ZQ, { env: { ...env, BRAIN_REACH: '0' } }));
+    assert.equal(stub.seen.length, 2);
+    assert.deepEqual(stub.seen[0].body, stub.seen[1].body, 'the logged row is the row without reach');
+    assert.deepEqual(Object.keys(stub.seen[0].body).sort(), ['prompt', 'reply', 'route']);
+    assert.equal(stub.seen[0].body.reply, GROWING_HEAD);
+    assert.equal(stub.seen[0].body.route.from, 'memory');
+    assert.equal(off.json.from, 'memory');
+    assert.equal(f.calls.length, 2, 'BRAIN_REACH=0 made no call');
+    // the log refusing the row: the hit stays first, the head next, the reason after it
+    stub.srv.status = 401;
+    const bad = await h(post(ZQ, { env }));
+    assert.equal(bad.json.from, 'reach');
+    assert.equal(bad.json.growing.logged, false);
+    assert.deepEqual(bad.json.text.split('\n').slice(2), [GROWING_HEAD, '(' + bad.json.growing.reason + ')']);
+  } finally { stub.srv.close(); }
+});
+
+test('REACH miss, timeout, refused host and BRAIN_REACH=0: the reply is exactly the reply without reach, and BRAIN_REACH=0 calls nothing', { timeout: 30_000 }, async () => {
+  const cases = {
+    empty: reachNet(() => reachJson(200, { pages: [] })),
+    offTopic: reachNet(() => reachJson(200, { pages: [{ key: 'Zorba_the_Greek', title: 'Zorba the Greek', excerpt: 'a novel' }] })),
+    timeout: reachNet(() => 'hang'),
+    redirect: reachNet(() => new Response(null, { status: 302, headers: { location: 'https://evil.example/' } })),
+    down: reachNet(() => { throw Object.assign(new TypeError('fetch failed'), { code: 'EGRESS_REFUSED' }); }),
+  };
+  const zero = reachNet(zqRoute);
+  const base = createHandler({ stateDir: path.join(TMP, 'reach-off'), grown: false, reachOpts: { fetch: zero } });
+  const want = strip((await base(post(ZQ, { env: { BRAIN_REACH: '0' } }))).json);
+  assert.equal(zero.calls.length, 0, 'BRAIN_REACH=0: no call');
+  assert.equal(want.from, 'memory');
+  assert.ok(want.text.startsWith('I am growing a cell for this'));
+  for (const [name, f] of Object.entries(cases)) {
+    const h = createHandler({ stateDir: path.join(TMP, 'reach-' + name), grown: false, reachOpts: { fetch: f, timeoutMs: 40 } });
+    const got = strip((await h(post(ZQ))).json);
+    assert.deepEqual(got, want, name + ': the reply is not the reply without reach');
+    assert.equal('reach' in got, false, name);
+    assert.ok(f.calls.length >= 1, name + ': reach was asked');
+  }
+  assert.equal(cases.redirect.calls.length, 1, 'the redirect was not followed');
+  // reach turned off by the handler option too
+  const none = reachNet(zqRoute);
+  const h0 = createHandler({ stateDir: path.join(TMP, 'reach-false'), grown: false, reach: false, reachOpts: { fetch: none } });
+  assert.deepEqual(strip((await h0(post(ZQ))).json), want);
+  assert.equal(none.calls.length, 0);
+});
+
+test('REACH is not asked for an answer that is not a memory miss, and none of the miss prompts of this file is reached for (no socket opens in this suite)', async () => {
+  const { reachable } = await import('../act/reach.mjs');
+  // (with 'what is seven times eight': arithmetic in words is a memory miss of the organism, and before the hardener's
+  // fix it reached the network from this handler)
+  const prompts = ['jgkafsjka', 'qzxv ghp_' + 'A'.repeat(30), 'qzxvbnmw', 'x'.repeat(LIMITS.promptChars), 'write a poem about the sea', 'make me a weather app', 'build a todo app', 'make me a todo app', 'hi', 'what is seven times eight', 'seven times eight'];
+  for (const p of prompts) assert.equal(reachable(p).ok, false, p.slice(0, 40));
+  const f = reachNet(zqRoute);
+  const h = createHandler({ stateDir: path.join(TMP, 'reach-none'), grown: false, reachOpts: { fetch: f } });
+  for (const p of [...prompts, 'what is 17 times 23']) assert.equal((await h(post(p, { ip: 'reach-none' }))).status, 200);
+  assert.equal(f.calls.length, 0, 'a prompt of this file reached the network');
+  const x = await h(post('what is 17 times 23', { ip: 'reach-none-2' }));
+  assert.equal(x.json.exact.answer, '391');
+  assert.equal('reach' in x.json, false);
+});
+
+test('REACH: the guard allowlist gains the two reach origins when reach is on and not with BRAIN_REACH=0, in children with their own cold start', async () => {
+  const SERVE = pathToFileURL(path.join(ROOT, 'bin', 'serve.mjs')).href;
+  const code = (dir) => [
+    'const m = await import(' + JSON.stringify(HANDLER) + ');',
+    'const s = await import(' + JSON.stringify(SERVE) + ');',
+    'const h = m.createHandler({ stateDir: ' + JSON.stringify(dir) + ', grown: false });',
+    "const g = await h({ method: 'GET' });",
+    'const allow = globalThis.__brainEgressGuard.allow;',
+    "const check = (u) => s.checkEgress(allow, u).ok;",
+    'let egress = null;',
+    "try { await fetch('http://example.com/'); egress = 'reached'; } catch (e) { egress = e.code || String(e); }",
+    "console.log('RESULT ' + JSON.stringify({ status: g.status, entries: allow.entries.map((e) => e.host + ':' + e.port), wiki: check('https://en.wikipedia.org/w/rest.php/v1/search/page?q=x'), dict: check('https://api.dictionaryapi.dev/api/v2/entries/en/x'), dewiki: check('https://de.wikipedia.org/'), plain: check('http://en.wikipedia.org/'), egress }));",
+    'process.exit(0);',
+  ].join('\n');
+  const on = result(await child(code(path.join(TMP, 'reach-guard-on')), {}));
+  const off = result(await child(code(path.join(TMP, 'reach-guard-off')), { BRAIN_REACH: '0' }));
+  assert.equal(on.status, 200);
+  assert.deepEqual([on.wiki, on.dict, on.dewiki, on.plain], [true, true, false, false]);
+  assert.deepEqual([off.wiki, off.dict], [false, false]);
+  assert.deepEqual(on.entries.filter((e) => !off.entries.includes(e)).sort(), ['api.dictionaryapi.dev:443', 'en.wikipedia.org:443'], 'reach gained the two origins and nothing else');
+  assert.deepEqual(off.entries.filter((e) => !on.entries.includes(e)), []);
+  assert.equal(on.egress, 'EGRESS_REFUSED', 'example.com is still refused with reach on');
 });
