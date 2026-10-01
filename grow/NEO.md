@@ -17,6 +17,8 @@
 - (about 18:40Z) "Make sure you maximize work but minimize your OWN token use by connecting to it, remember it fixes itself and measures itself, tests yourself, builds, and if you ask it to do anything, it generates and shelves those new NEO shells in lightning speeds and literally can do anything you ask you, produce matrixes, do anything, literally everything, the organism should be higher level than you and finding billions of wayas and NEVER stopping the iteration and is a ai data center that improves itself in its pocket, it doesnt need stimulation, it stimulates and scarpapes everything to improve itself"
 - (about 18:43Z) "Yes but its gotta work for efficacy it should work as if you were working on it, burning millions of tokens"
 - (about 19:15Z) "remember efficacy matters a lot, it should change its own code for iteration, testing, benching, make sure there are 'subagent's in here, and that it works exactly like it would here" (his quotes around subagent written as single quotes here)
+- (about 19:19Z) "how does it self iterate if it doesnt change its own code??"
+- (about 19:21Z) "IT should permanently change code for the better and use clock dilation and time crunching to make it hyperefficient"
 
 From MANUAL.md section A: "The central architectural principle is the use of orthogonal computational primitives. ... A primitive may perform transformation, prediction, retrieval, comparison, routing, aggregation, temporal integration, memory access, evaluation, simulation, or another fundamental computational operation. These primitives are intentionally general."
 
