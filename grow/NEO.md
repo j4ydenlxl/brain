@@ -29,6 +29,7 @@
 - (22:19Z) "Its gotta be fronteir ai and fill in all the gaps without you. And i authorized it"
 - (about 22:20Z) "should work exactly like ai"
 - (23:19Z by the shell clock) "Also fronteir level isnt optional, make it so if its chatgpt 4o today, its chatgpt 5 tomorrow. its deadass iteration velocity as its whole philosophy, crunching timel make a way to warp physics and time to do so in blistering efficiency and hyper speeds using 100 percent of its own and make sure they dont commit, they go through pipeline to do so, or make it more efficient for it to do it and to test if they are really posing higher measure/something all native to the model. model needs to be a god too, at memecoins, which is how i can monetize it, it will have its own cloud computer"
+- (23:53Z by the shell clock) "Also its good to adapt some of tesserscts orthogonal primitives like video watching , but that made billions quicker. Dont make a whole board on this just a little note" (a NOTE, not a board: when the kernel next widens, adapt primitives the Tesseract browser already proved, video watching among them, built for speed)
 
 From MANUAL.md section A: "The central architectural principle is the use of orthogonal computational primitives. ... A primitive may perform transformation, prediction, retrieval, comparison, routing, aggregation, temporal integration, memory access, evaluation, simulation, or another fundamental computational operation. These primitives are intentionally general."
 
