@@ -182,7 +182,10 @@ export function classesOf(rows) {
 // ---------------------------------------------------------------- rows
 /** The row shape this CLI prints; a row with no status is open (a seed the driver wrote). */
 export function rowOf(r) {
-  return { id: r.id ?? null, at: r.at ?? null, prompt: r.prompt, reply: r.reply ?? null, route: r.route ?? null, status: r.status ?? 'open' };
+  const row = { id: r.id ?? null, at: r.at ?? null, prompt: r.prompt, reply: r.reply ?? null, route: r.route ?? null, status: r.status ?? 'open' };
+  if (Number.isInteger(r.generation)) row.generation = r.generation; // the mark's generation, so a driver can tell its own mark from an earlier run's
+  if (typeof r.cell === 'string' && r.cell) row.cell = r.cell;
+  return row;
 }
 
 function readFileRows(file) {

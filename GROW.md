@@ -68,7 +68,11 @@ off, and "you only fail if you dont listen to me".
 5. MULTIPLY AND DUPLICATE. Per lane: `node grow/store.mjs shard <n> <lane>` (the whole lane, winners and
    losers, to j4ydenlxl/brain-cells through the contents API; skipped with a reason without `gh` or
    `GITHUB_TOKEN`), then `node grow/store.mjs promote <n> <lane>` (survivors into `grown/cells/`,
-   `grown/index.json`, the regenerated `grown/index.mjs`; proven by import before it counts). Then
+   `grown/index.json`, the regenerated `grown/index.mjs`; proven by import before it counts). ONE cell per
+   class in `grown/`, the champion: a survivor is promoted only when its held-out score is above the class's
+   current cell (the parent lane promotes first and wins ties), the cell it beats is retired to the archive,
+   and every other survivor stays in the archive shard (`archived`, with the id that holds its class); an id
+   `grown/` already holds is skipped, never overwritten, so a re-run of a half-landed generation converges. Then
    `node web/build.mjs` so the tab layer carries them. The TOURNAMENT: the lane with more survivors is the
    parent of the next generation; `finish` records it in `grown/generations.json` (`{ generations: [{
    generation, at, lanes: { <lane>: { candidates, survivors } }, parent, misses }] }`), and `prepare` reads it

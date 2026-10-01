@@ -14,7 +14,7 @@ import zlib from 'node:zlib';
 import crypto from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { renderIndexMjs, GROWN_BODY, NO_TRANSPORT, CLOUD_ENV, makeTransport, conjunctionFailures, candidatesOf, promote } from '../grow/store.mjs';
+import { renderIndexMjs, GROWN_BODY, NO_TRANSPORT, CLOUD_ENV, makeTransport, conjunctionFailures, candidatesOf, promote, answersOf } from '../grow/store.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const STORE = path.join(ROOT, 'grow', 'store.mjs');
@@ -384,7 +384,7 @@ test('promote: one survivor copied with its sibling, the loser not; index.json a
   const g = tempGrown('grown-a');
   const dir = path.join(TMP, 'lanes', 'gen-1', 'alpha');
   const out = json(await run(['promote', '1', 'alpha', '--dir', dir, '--grown', g]));
-  assert.deepEqual(out, { promoted: ['test-echo-cell'], cells: 1, generation: 1 });
+  assert.deepEqual(out, { promoted: ['test-echo-cell'], archived: [], retired: [], cells: 1, generation: 1 });
   assert.deepEqual(fs.readdirSync(path.join(g, 'cells')).sort(), ['.keep', 'test-echo-cell-words.mjs', 'test-echo-cell.mjs']);
   const copied = fs.readFileSync(path.join(g, 'cells', 'test-echo-cell.mjs'), 'utf8');
   assert.match(copied, /^import \{ WORD \} from '\.\/test-echo-cell-words\.mjs';$/m);
@@ -412,17 +412,16 @@ test('promote: one survivor copied with its sibling, the loser not; index.json a
   assert.deepEqual(json(await run(['verify-local', '--grown', g])), { cells: 1, answers: [{ id: 'test-echo-cell', q: 'say the echo word', ok: true }] });
 
   const before = snapshot(g);
-  const dup = await run(['promote', '1', 'alpha', '--dir', dir, '--grown', g]);
-  assert.equal(dup.code, 1);
-  assert.equal(dup.stderr, 'duplicate id test-echo-cell: grown/index.json already holds it, a promote never overwrites a cell');
-  assert.deepEqual(snapshot(g), before, 'the refused promote changed nothing');
+  const dup = json(await run(['promote', '1', 'alpha', '--dir', dir, '--grown', g]));
+  assert.deepEqual(dup, { promoted: [], archived: [{ id: 'test-echo-cell', class: 'echo', score: 1, holds: 'test-echo-cell', why: 'already in grown/ from an earlier promote: a promote never overwrites a cell' }], retired: [], cells: 1, generation: 1 }, 'an id grown/ holds is skipped, never overwritten: a re-run converges');
+  assert.deepEqual(snapshot(g), before, 'the skipped promote changed nothing');
 });
 
-test('promote: a survivor shadowed by an earlier cell fails the proof and grown/ is rolled back; a contract breach is refused before any write', async () => {
+test('promote: a survivor of another class shadowed by an earlier cell fails the proof and grown/ is rolled back; a contract breach is refused before any write', async () => {
   const g = tempGrown('grown-b');
   json(await run(['promote', '1', 'alpha', '--dir', path.join(TMP, 'lanes', 'gen-1', 'alpha'), '--grown', g]));
   const before = snapshot(g);
-  const shadowDir = lane('shadow', [{ id: 'test-shadowed-cell', cls: 'echo', gen: 2, q: 'say the echo word twice', can: '/\\becho word twice\\b/i', reply: 'Twice.', survived: true }], 2);
+  const shadowDir = lane('shadow', [{ id: 'test-shadowed-cell', cls: 'echo-twice', gen: 2, q: 'say the echo word twice', can: '/\\becho word twice\\b/i', reply: 'Twice.', survived: true }], 2);
   const r = await run(['promote', '2', 'shadow', '--dir', shadowDir, '--grown', g]);
   assert.equal(r.code, 1);
   assert.equal(r.stderr, 'test-shadowed-cell does not answer its own examples[0].q through grownAnswer (got test-echo-cell) (rolled back: grown/ is as it was)');
@@ -435,7 +434,7 @@ test('promote: a survivor shadowed by an earlier cell fails the proof and grown/
   assert.deepEqual(snapshot(g), before);
 
   const none = json(await run(['promote', '1', 'beta', '--dir', path.join(TMP, 'lanes', 'gen-1', 'beta'), '--grown', g]));
-  assert.deepEqual(none, { promoted: [], cells: 1, generation: 1 }, 'a lane with no survivor promotes nothing');
+  assert.deepEqual(none, { promoted: [], archived: [], retired: [], cells: 1, generation: 1 }, 'a lane with no survivor promotes nothing');
   assert.deepEqual(snapshot(g), before);
 });
 
@@ -522,7 +521,7 @@ test('promote: a survived:true verdict that fails its own conjunction is refused
 
   const here = one(1, { resultPatch: { backend: 'here' } });
   assert.equal((await run(['promote', '1', here.lane, '--dir', here.dir, '--grown', g])).code, 1, 'a here run refused on this machine');
-  assert.deepEqual(json(await run(['promote', '1', here.lane, '--dir', here.dir, '--grown', g], { env: childEnv({ GITHUB_ACTIONS: 'true' }) })), { promoted: [here.id], cells: 1, generation: 1 }, 'the same run promoted on a cloud VM');
+  assert.deepEqual(json(await run(['promote', '1', here.lane, '--dir', here.dir, '--grown', g], { env: childEnv({ GITHUB_ACTIONS: 'true' }) })), { promoted: [here.id], archived: [], retired: [], cells: 1, generation: 1 }, 'the same run promoted on a cloud VM');
 });
 
 test('promote: survived must be the boolean true; a string "true" is a loser in promote and in the store row', async () => {
@@ -530,7 +529,7 @@ test('promote: survived must be the boolean true; a string "true" is a loser in 
   const before = snapshot(g);
   const c = one(1, { verdictPatch: { survived: 'true' } });
   assert.equal(candidatesOf(c.dir)[0].survived, false);
-  assert.deepEqual(json(await run(['promote', '1', c.lane, '--dir', c.dir, '--grown', g])), { promoted: [], cells: 0, generation: 0 });
+  assert.deepEqual(json(await run(['promote', '1', c.lane, '--dir', c.dir, '--grown', g])), { promoted: [], archived: [], retired: [], cells: 0, generation: 0 });
   assert.deepEqual(snapshot(g), before);
 });
 
@@ -551,16 +550,16 @@ test('store row: a survived:true verdict that fails the conjunction is a loser i
 test('promote: generation is the max, meta.generation must be the promoted one, and generation 0 holds no survivor', async () => {
   const g = tempGrown('grown-gen');
   const late = one(2, { gen: 2 });
-  assert.deepEqual(json(await run(['promote', '2', late.lane, '--dir', late.dir, '--grown', g])), { promoted: [late.id], cells: 1, generation: 2 });
-  const early = one(1, { gen: 1 });
-  assert.deepEqual(json(await run(['promote', '1', early.lane, '--dir', early.dir, '--grown', g])), { promoted: [early.id], cells: 2, generation: 2 }, 'a later promote of an earlier generation keeps the max');
+  assert.deepEqual(json(await run(['promote', '2', late.lane, '--dir', late.dir, '--grown', g])), { promoted: [late.id], archived: [], retired: [], cells: 1, generation: 2 });
+  const early = one(1, { gen: 1, cls: 'guard-early' }); // its own class: one cell per class, a second guard would be archived
+  assert.deepEqual(json(await run(['promote', '1', early.lane, '--dir', early.dir, '--grown', g])), { promoted: [early.id], archived: [], retired: [], cells: 2, generation: 2 }, 'a later promote of an earlier generation keeps the max');
   const idx = JSON.parse(fs.readFileSync(path.join(g, 'index.json'), 'utf8'));
   assert.equal(idx.generation, 2);
   assert.deepEqual(idx.cells.map((c) => [c.id, c.generation]), [[late.id, 2], [early.id, 1]]);
   assert.match(fs.readFileSync(path.join(g, 'index.mjs'), 'utf8'), /Generation 2: 2 cells\.$/m);
 
   const before = snapshot(g);
-  const mix = one(3, { gen: 1 });
+  const mix = one(3, { gen: 1, cls: 'guard-mix' }); // its own class so it is planned, not archived: the meta guard runs on the promoted copy
   const m = await run(['promote', '3', mix.lane, '--dir', mix.dir, '--grown', g]);
   assert.equal(m.code, 1);
   assert.equal(m.stderr, mix.id + ': meta.generation is 1, not the promoted generation 3' + ROLLED);
@@ -612,7 +611,7 @@ test('promote: a verdict or result naming another id, and a meta.class the verdi
 test('promote: the regenerated index.mjs is checked (node --check, cell count, cell order) and a bad one is rolled back', async () => {
   const pairLane = lane('pair', [
     { id: 'test-pair-a-cell', cls: 'pair', q: 'say the first pair word', can: '/\\bfirst pair word\\b/i', reply: 'First.', survived: true },
-    { id: 'test-pair-b-cell', cls: 'pair', q: 'say the second pair word', can: '/\\bsecond pair word\\b/i', reply: 'Second.', survived: true },
+    { id: 'test-pair-b-cell', cls: 'pair-b', q: 'say the second pair word', can: '/\\bsecond pair word\\b/i', reply: 'Second.', survived: true },
   ]);
   const cases = [
     [() => 'export const GROWN = [;\n', (g) => (m) => m.startsWith('node --check ' + path.join(g, 'index.mjs') + ' failed: ') && m.endsWith(ROLLED)],
@@ -629,5 +628,39 @@ test('promote: the regenerated index.mjs is checked (node --check, cell count, c
     assert.deepEqual(snapshot(g), before, 'case ' + i + ' rolled back');
   }
   const g = tempGrown('grown-render-ok');
-  assert.deepEqual(await promote({ gen: 1, lane: 'pair', dir: pairLane, grownDir: g, env: {} }), { promoted: ['test-pair-a-cell', 'test-pair-b-cell'], cells: 2, generation: 1 }, 'the control: the same lane with the real renderer promotes');
+  assert.deepEqual(await promote({ gen: 1, lane: 'pair', dir: pairLane, grownDir: g, env: {} }), { promoted: ['test-pair-a-cell', 'test-pair-b-cell'], archived: [], retired: [], cells: 2, generation: 1 }, 'the control: the same lane with the real renderer promotes');
+});
+
+test('promote: one cell per class (the champion): the better survivor promoted and the other archived, an equal one later archived with its holder, a higher one retires the holder, and a failed retirement rolls back files included', async () => {
+  const g = tempGrown('grown-champion');
+  // one lane, two survivors of one class: the higher held-out score is promoted, the other archived with the holder
+  const twoDir = lane('champ', [
+    { id: 'test-champ-low-cell', cls: 'champ', q: 'say the low champ word', can: '/\\blow champ word\\b/i', reply: 'Low.', survived: true, heldout: { n: 4, ok: 2, score: 0.5 } },
+    { id: 'test-champ-high-cell', cls: 'champ', q: 'say the high champ word', can: '/\\bhigh champ word\\b/i', reply: 'High.', survived: true, heldout: { n: 4, ok: 3, score: 0.75 } },
+  ]);
+  const first = json(await run(['promote', '1', 'champ', '--dir', twoDir, '--grown', g]));
+  assert.deepEqual(first, { promoted: ['test-champ-high-cell'], archived: [{ id: 'test-champ-low-cell', class: 'champ', score: 0.5, holds: 'test-champ-high-cell', why: 'one cell per class: test-champ-high-cell ranks first in this lane' }], retired: [], cells: 1, generation: 1 });
+  assert.deepEqual(fs.readdirSync(path.join(g, 'cells')).sort(), ['.keep', 'test-champ-high-cell.mjs']);
+  // another lane's survivor of the class at the same score: archived, the holder named, grown/ untouched
+  const before = snapshot(g);
+  const tieDir = lane('champ-tie', [{ id: 'test-champ-tie-cell', cls: 'champ', q: 'say the tie champ word', can: '/\\btie champ word\\b/i', reply: 'Tie.', survived: true, heldout: { n: 4, ok: 3, score: 0.75 } }]);
+  assert.deepEqual(json(await run(['promote', '1', 'champ-tie', '--dir', tieDir, '--grown', g])), { promoted: [], archived: [{ id: 'test-champ-tie-cell', class: 'champ', score: 0.75, holds: 'test-champ-high-cell', why: 'one cell per class: test-champ-high-cell holds it at 0.75, and 0.75 is not above that' }], retired: [], cells: 1, generation: 1 });
+  assert.deepEqual(snapshot(g), before, 'an archived survivor writes nothing');
+  // a later generation's survivor above the holder: promoted, the holder retired, its files gone from grown/cells
+  const upDir = lane('champ-up', [{ id: 'test-champ-up-cell', cls: 'champ', gen: 2, q: 'say the up champ word', can: '/\\bup champ word\\b/i', reply: 'Up.', survived: true, sibling: true, heldout: { n: 10, ok: 9, score: 0.9 } }], 2);
+  assert.deepEqual(json(await run(['promote', '2', 'champ-up', '--dir', upDir, '--grown', g])), { promoted: ['test-champ-up-cell'], archived: [], retired: ['test-champ-high-cell'], cells: 1, generation: 2 });
+  assert.deepEqual(fs.readdirSync(path.join(g, 'cells')).sort(), ['.keep', 'test-champ-up-cell-words.mjs', 'test-champ-up-cell.mjs']);
+  const idx = JSON.parse(fs.readFileSync(path.join(g, 'index.json'), 'utf8'));
+  assert.deepEqual(idx.cells.map((c) => [c.id, c.class, c.heldout.score]), [['test-champ-up-cell', 'champ', 0.9]]);
+  const { answers } = await answersOf(path.join(g, 'index.mjs'));
+  assert.deepEqual(answers.map((a) => [a.id, a.ok]), [['test-champ-up-cell', true]], 'the champion answers its own example');
+  // a retirement whose proof fails is rolled back whole: the retired files are back, the index as it was
+  const beforeBad = snapshot(g);
+  const badDir = lane('champ-bad', [{ id: 'test-champ-bad-cell', cls: 'champ', gen: 3, q: 'say the bad champ word', can: '/\\bbad champ word\\b/i', reply: 'Bad.', survived: true, heldout: { n: 10, ok: 10, score: 1 } }], 3);
+  await assert.rejects(promote({ gen: 3, lane: 'champ-bad', dir: badDir, grownDir: g, env: {}, render: () => 'export const GROWN = [;\n' }), (e) => {
+    assert.ok(e.message.endsWith(ROLLED), e.message);
+    return true;
+  });
+  assert.deepEqual(snapshot(g), beforeBad, 'the retired champion is back, files included');
+  assert.deepEqual(fs.readdirSync(path.join(g, 'cells')).sort(), ['.keep', 'test-champ-up-cell-words.mjs', 'test-champ-up-cell.mjs']);
 });

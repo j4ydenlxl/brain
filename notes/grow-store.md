@@ -17,7 +17,15 @@ the site answers natively."
     (generation = max); `grown/index.mjs` regenerated with static imports in index order and the generation-0
     `grownAnswer` body verbatim (`GROWN_BODY`; generation 0 renders to the orchestrator's file byte for byte); then
     `node --check`, import, the cell count and order checked against index.json, and every cell must answer its own
-    `examples[0].q` through `grownAnswer`. Prints `{promoted, cells, generation}`.
+    `examples[0].q` through `grownAnswer`. ONE cell per class, the champion (generation 1 for real, 2026-09-30
+    21:33 EDT: both lanes grew a survivor per class and the baked lane's three could not answer their own example
+    through `grownAnswer` because the direct cell of the same class answered first; the promote rolled back and the
+    generation was not recorded): the lane's survivors are ranked by held-out score, then n, then id; a survivor is
+    promoted only when its score is ABOVE the class's current cell (a tie keeps the holder, so the lane promoted
+    first, the parent, wins ties), the holder it beats is RETIRED (its files leave `grown/cells/`, its row leaves
+    `grown/index.json`; the archive shard keeps it), and every other survivor is listed under `archived` with the id
+    that holds its class. The rollback restores retired files too. Prints `{promoted, archived: [{id, class, score,
+    holds, why}], retired, cells, generation}`.
   - `index`: prints `{shards, cells, survivors}` of the store index (zeros when the repo is readable and has none).
   - `verify-local`: imports grown/index.mjs, prints `{cells, answers: [{id, q, ok}]}`; exits 1 when a cell is shadowed.
 - Transport: `gh api` when gh is present and `gh auth status` exits 0; else fetch to api.github.com with
@@ -35,8 +43,7 @@ the site answers natively."
   fails: <every failing clause>`.
 - Refusals, each one line with exit 1: an id already held by another shard (checked before the shard is PUT); an id
   twice in one lane; a candidate directory that is not an id, or whose verdict/result names another id; a promote of
-  an id grown/ already holds (`duplicate id <id>: grown/index.json already holds it, a promote never overwrites a
-  cell`); a survivor failing `validateCell`, or whose siblings use a FORBIDDEN construct, a non-relative import or an
+  an id whose files `grown/cells/` already holds under another id; a survivor failing `validateCell`, or whose siblings use a FORBIDDEN construct, a non-relative import or an
   import that leaves the cell directory; a meta.class the verdict does not say; a meta.generation that is not the
   promoted generation; a survivor in generation 0; a shard over 100 MB.
 - Promote is a transaction: any failure after the first write (contract of the copy, node --check, cell count or
@@ -104,7 +111,13 @@ removed), ten new ones (conjunction check removed from promote; its lockOk, why,
 backend-here clauses each removed; heldout > baseline made >=; the sibling bare-specifier check removed; the cell
 order check removed; the token sent to plain http api.github.com) and the builder's ten (tar checksum off by one; a
 re-run keeping its old rows; no conflict retry; imports not rewritten; no rollback; the grownAnswer body drifted; a
-loser promoted; a duplicate not refused; the blob path ignored; the token sent to any base).
+loser promoted; a duplicate not refused; the blob path ignored; the token sent to any base). Since the champion
+rule (2026-09-30 night) an id grown/ already holds is SKIPPED, listed under `archived` holding its own class, never
+overwritten and never refused: a re-run of a generation whose first lane landed before the run died converges
+(generation 1 for real: the direct lane's four cells had landed and the baked lane's promote rolled back; the
+re-run would otherwise have been refused forever on `duplicate id`). The contract and sibling guards run for every
+survivor BEFORE the champion decision, so a lane holding a breaching survivor is refused whole even when that
+survivor would only have been archived.
 
 ## The real run (2026-09-30, 17:17:59 EDT, gh transport, against j4ydenlxl/brain-cells, the update path)
 

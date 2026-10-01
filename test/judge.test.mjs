@@ -396,10 +396,11 @@ test('the baseline harness grades a row the organism answers as ok and a row it 
     { q: 'what is 17 times 23', expect: { contains: ['391'], notRefusal: true } },
     { q: 'h', expect: { notRefusal: true, minWords: 6, contains: ['"h"'] } },
   ];
-  const run = await runOrganism(rows, { knowledge: false });
+  const run = await runOrganism(rows, { knowledge: false, grown: false }); // without the grown cells: grown/ grows every generation and a fragment cell answers "h"
   const s = score(rows, run.rows);
   assert.equal(s.n, 2);
   assert.equal(s.ok, 1);
+  assert.equal(run.grown, 0, 'grown false: no cell on the path');
   assert.deepEqual(s.rows.map((r) => r.ok), [true, false]);
   assert.match(run.rows[1].got, /^(?:nothing in memory matches|I do not carry that yet)/);
 });

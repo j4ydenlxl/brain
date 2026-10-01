@@ -264,6 +264,10 @@ function prepare(root, flags, env) {
   if (r.code !== 0 && source === 'supabase') { blocked.push('misses: the Supabase read failed, the seed stands in: ' + why1(r)); source = 'seed'; r = read(SEED); }
   if (r.code !== 0) throw new Fail('misses: node grow/misses.mjs read exited ' + r.code + ': ' + why1(r));
   const rows = rowsOf(r.stdout);
+  // a miss left 'growing' by a run that died before its finish (marked for an earlier generation) is open again here
+  const g = runNode(root, 'grow/misses.mjs', ['read', '--status', 'growing', ...(source === 'supabase' ? [] : ['--file', flags.misses || SEED])], { env });
+  if (g.code !== 0) blocked.push('misses: the growing read failed, a miss stuck at growing stays there: ' + why1(g));
+  else for (const m of rowsOf(g.stdout)) if (m && m.generation !== n && !rows.some((o) => o.id === m.id)) rows.push(m);
   const genMisses = path.join(genDir, 'misses.jsonl');
   fs.writeFileSync(genMisses, jsonl(rows)); // the seed file is never written
   const c = runNode(root, 'grow/misses.mjs', ['classes', '--file', genMisses], { env });
@@ -469,11 +473,12 @@ function finish(root, flags, env) {
   if (ran && unrun) blocked.push('void: ' + unrun + ' of ' + total + ' candidates did not run (a sandbox or select exit that is not 0 is infrastructure, not a loss): generation ' + n + ' is not recorded and runs again');
   else if (ran && !judged) blocked.push('void: no candidate was judged: generation ' + n + ' is not recorded and runs again');
   const parent = block ? null : rankLanes(stats)[0] ?? null;
-  // step 5: per lane, shard (the archive) then promote (survivors into grown/)
+  // step 5: per lane, shard (the archive) then promote (survivors into grown/, one cell per class: the champion);
+  // the parent lane goes first, so it wins a tie for a class (grow/store.mjs promote)
   const store = block ? { all: 'skipped: ' + block } : {};
-  const promotedIds = [];
+  const promotedIds = [], archived = [], retired = [];
   let promoted = flags['no-promote'] ? 'skipped (--no-promote)' : 0, promoteFailed = false;
-  for (const lane of block ? [] : withC) {
+  for (const lane of block ? [] : rankLanes(stats).filter((l) => withC.includes(l))) {
     if (flags['no-store']) store[lane] = 'skipped (--no-store)';
     else {
       const r = runNode(root, 'grow/store.mjs', laneArgs('shard', lane), { env, timeout: 20 * MIN });
@@ -485,8 +490,12 @@ function finish(root, flags, env) {
     const j = lastJson(r.stdout);
     if (r.code !== 0 || !j) { promoteFailed = true; promoted = false; blocked.push('promote: ' + lane + ': exit ' + r.code + ': ' + why1(r)); continue; }
     for (const id of Array.isArray(j.promoted) ? j.promoted : []) promotedIds.push(String(id));
+    for (const a of Array.isArray(j.archived) ? j.archived : []) archived.push({ lane, ...a });
+    for (const id of Array.isArray(j.retired) ? j.retired : []) retired.push(String(id));
     promoted = promotedIds.length;
   }
+  // the ids grown/ holds after step 5: a survivor among them is grown for its misses whether this run or an earlier, half-landed one promoted it
+  const heldIds = new Set((() => { const ix = readJson(path.join(root, 'grown', 'index.json')); return ix && Array.isArray(ix.cells) ? ix.cells.map((c) => String(c.id)) : []; })());
   const record = !block && !promoteFailed;
   if (promoteFailed) block = 'the promote failed';
   let built = block ? 'skipped: ' + block : 'skipped (--no-build)';
@@ -538,7 +547,7 @@ function finish(root, flags, env) {
   let grown = 0;
   const grownIds = new Set();
   for (const pc of (plan && Array.isArray(plan.classes) ? plan.classes : [])) {
-    const cell = block ? null : cands.find((c) => c.survived && c.class === pc.class && promotedIds.includes(c.id));
+    const cell = block ? null : cands.find((c) => c.survived && c.class === pc.class && (promotedIds.includes(c.id) || heldIds.has(c.id)));
     if (!cell) continue;
     grown += markMisses(root, env, { file: genMisses, ids: pc.misses || [], status: 'grown', cell: cell.id, generation: n, supabase }, blocked);
     for (const id of pc.misses || []) grownIds.add(id);
@@ -548,7 +557,7 @@ function finish(root, flags, env) {
   fs.mkdirSync(genDir, { recursive: true });
   fs.writeFileSync(blockedFile, all.map((l) => l + '\n').join(''));
   return {
-    generation: n, lanes: stats, candidates: total, survivors, parent, baseline, store, promoted, built, tests, committed, pushed,
+    generation: n, lanes: stats, candidates: total, survivors, parent, baseline, store, promoted, archived, retired, built, tests, committed, pushed,
     misses: { growing: planMisses.length, grown, reopened }, self: 'not wired', dream: 'not wired', blocked: all, at: new Date().toISOString(),
   };
 }

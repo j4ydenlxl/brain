@@ -267,7 +267,7 @@ test('a memory miss answers "I am growing a cell for this" first and POSTs one r
   const { GROWING_HEAD } = await import('../act/ask-http.mjs');
   const stub = await missStub(201);
   try {
-    const h = createHandler({ stateDir: path.join(TMP, 'grow-a') });
+    const h = createHandler({ stateDir: path.join(TMP, 'grow-a'), grown: false }); // the organism without its grown cells: grown/ holds a mash cell from generation 1 on
     const env = { SUPABASE_URL: stub.url, SUPABASE_ANON_KEY: 'x' };
     // (a) the keyboard mash: 200, the growing head on the first line, logged, one POST with apikey x
     const r = await h(post('jgkafsjka', { env }));
@@ -322,7 +322,7 @@ test('a memory miss answers "I am growing a cell for this" first and POSTs one r
 test('without the SUPABASE names the miss still answers the growing head, logged false with the reason naming SUPABASE_URL, and no request leaves', async () => {
   const stub = await missStub(201);
   try {
-    const h = createHandler({ stateDir: path.join(TMP, 'grow-b') });
+    const h = createHandler({ stateDir: path.join(TMP, 'grow-b'), grown: false });
     const r = await h(post('jgkafsjka'));
     assert.equal(r.status, 200);
     assert.ok(r.json.text.startsWith('I am growing a cell for this'));
@@ -375,7 +375,7 @@ test('the guard allowlist gains the miss log origin and nothing else, in a child
   try {
     const code = [
       'const m = await import(' + JSON.stringify(HANDLER) + ');',
-      'const h = m.createHandler({ stateDir: ' + JSON.stringify(path.join(TMP, 'grow-guard')) + ' });',
+      'const h = m.createHandler({ stateDir: ' + JSON.stringify(path.join(TMP, 'grow-guard')) + ', grown: false });',
       "const r = await h({ method: 'POST', body: JSON.stringify({ prompt: 'jgkafsjka' }), ip: 'c' });",
       'let egress = null;',
       "try { await fetch('http://example.com/'); egress = 'reached'; } catch (e) { egress = e.code || String(e); }",

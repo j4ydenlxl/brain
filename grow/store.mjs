@@ -45,9 +45,12 @@ export const USAGE = [
   '      tar+gzip the lane, PUT shards/gen-<gen>-<lane>.tar.gz and generations/gen-<gen>-<lane>.json, append index.json;',
   '      prints {shard, bytes, candidates, survivors, indexCells}',
   '  promote <gen> <lane> [--dir state/grow/gen-<gen>/<lane>] [--grown grown]',
-  '      copy every verdict.json survived:true cell into grown/cells/, append grown/index.json, regenerate grown/index.mjs,',
-  '      prove it (node --check, import, grownAnswer(examples[0].q) is the cell); prints {promoted, cells, generation}',
-  '      a survived:true verdict whose own fields or result.json fail the CONTRACT conjunction is refused',
+  '      the survivors (verdict.json survived:true AND the whole CONTRACT conjunction, else refused) into grown/cells/,',
+  '      ONE cell per class (the champion): promoted only when its held-out score is above the class\'s current cell',
+  '      (the parent lane promotes first and wins ties), the cell it beats is retired (the archive shard keeps it),',
+  '      the rest stay in the archive; grown/index.json and grown/index.mjs regenerated and proven (node --check,',
+  '      import, grownAnswer(examples[0].q) is the cell); prints {promoted, archived: [{id, class, score, holds, why}],',
+  '      retired, cells, generation}',
   '  index [--repo ' + DEFAULT_REPO + '] [--branch main] [--api-base URL]   prints {shards, cells, survivors}',
   '  verify-local [--grown grown]   prints {cells, answers: [{id, q, ok}]}',
   'transport: gh api when gh is logged in, else GITHUB_TOKEN with fetch, else "' + NO_TRANSPORT + '"',
@@ -486,37 +489,75 @@ function nodeCheck(file) {
   if (r.status !== 0) throw new Fail('node --check ' + file + ' failed: ' + oneLine(r.stderr || r.stdout));
 }
 
+/** The held-out score a verdict or an index row carries; none ranks below every real score. */
+const heldScore = (h) => (h && typeof h.score === 'number' && Number.isFinite(h.score) ? h.score : -1);
+/** The class a cell holds in grown/; a cell without one holds a class of its own. */
+const classKey = (klass, id) => (klass == null ? 'id:' + id : 'class:' + klass);
+
+/**
+ * The survivors of a lane into grown/: ONE cell per class, the champion (generation 1, 2026-09-30: two lanes each
+ * grew a survivor per class, and the second lane's cells could not answer their own example through grownAnswer
+ * because the first lane's cell of the same class answered first). The lane's survivors are ranked by held-out
+ * score, then n, then id; a survivor is promoted only when its score is ABOVE the class's current cell (a tie keeps
+ * the cell already there, so the lane promoted first, the parent, wins ties), and the cell it beats is RETIRED: its
+ * files leave grown/cells/ and its row leaves grown/index.json (the archive shard keeps it). Every other survivor
+ * stays in the archive and is listed under `archived` with the id that holds its class. A transaction: any failure
+ * after the first write restores grown/ exactly, retired files included.
+ */
 export async function promote({ gen, lane, dir, grownDir, now = () => new Date(), env = process.env, render = renderIndexMjs }) {
   const index = readGrownIndex(grownDir);
   const survivors = candidatesOf(dir).filter((c) => c.verdict?.survived === true); // the verdict's own word: the conjunction is re-checked below, clause by clause, so a forged survivor is REFUSED, never skipped
-  if (!survivors.length) return { promoted: [], cells: index.cells.length, generation: index.generation };
+  const idle = { promoted: [], archived: [], retired: [], cells: index.cells.length, generation: index.generation };
+  if (!survivors.length) return idle;
   if (gen < 1) throw new Fail('generation ' + gen + ' holds a survivor but a cell generation is an integer from 1');
   const cellsDir = path.join(grownDir, 'cells');
   const held = new Set(index.cells.map((c) => c.id));
   const planned = new Set();
-  const plan = [];
-  for (const c of survivors) {
+  const plan = [], archived = [], retiring = new Map(), taken = new Map(); // classKey -> the index row this run retires; classKey -> the id this run promotes
+  const ranked = [...survivors].sort((a, b) => (heldScore(b.verdict?.heldout) - heldScore(a.verdict?.heldout))
+    || ((b.verdict?.heldout?.n ?? 0) - (a.verdict?.heldout?.n ?? 0)) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  for (const c of ranked) {
     const broken = conjunctionFailures(c.verdict, c.result, env);
     if (broken.length) throw new Fail(c.id + ': verdict.json says survived true but the conjunction fails: ' + broken.join('; '));
-    if (held.has(c.id)) throw new Fail('duplicate id ' + c.id + ': grown/index.json already holds it, a promote never overwrites a cell');
-    held.add(c.id);
+    if (held.has(c.id)) { // a promote never overwrites a cell: the id is skipped, not refused, so a re-run of a half-landed generation converges
+      archived.push({ id: c.id, class: c.class, score: heldScore(c.verdict?.heldout), holds: c.id, why: 'already in grown/ from an earlier promote: a promote never overwrites a cell' });
+      continue;
+    }
+    // the guards every survivor passes, archived or not: a lane holding a survivor that breaks the contract or whose
+    // siblings break the rules is refused whole, before any write (a defect is refused, never skipped)
     const src = fs.readFileSync(path.join(c.dir, 'cell.mjs'), 'utf8');
     const v = validateCell(src);
     if (!v.ok) throw new Fail(c.id + ': the cell fails the contract: ' + v.errors.join('; '));
     const files = copyPlan(c.dir, c.id);
+    const key = classKey(c.class, c.id), score = heldScore(c.verdict?.heldout);
+    if (taken.has(key)) { archived.push({ id: c.id, class: c.class, score, holds: taken.get(key), why: 'one cell per class: ' + taken.get(key) + ' ranks first in this lane' }); continue; }
+    const current = index.cells.find((row) => classKey(row.class, row.id) === key) ?? null;
+    if (current && !(score > heldScore(current.heldout))) {
+      archived.push({ id: c.id, class: c.class, score, holds: current.id, why: 'one cell per class: ' + current.id + ' holds it at ' + heldScore(current.heldout) + ', and ' + score + ' is not above that' });
+      continue;
+    }
+    if (current) retiring.set(key, current);
+    taken.set(key, c.id);
+    held.add(c.id);
     for (const f of files) {
       if (planned.has(f.to) || fs.existsSync(path.join(cellsDir, f.to))) throw new Fail('duplicate id ' + c.id + ': grown/cells/' + f.to + ' already exists, a promote never overwrites a cell');
       planned.add(f.to);
     }
     plan.push({ c, files });
   }
+  if (!plan.length) return { ...idle, archived };
   const indexPath = path.join(grownDir, 'index.json');
   const mjsPath = path.join(grownDir, 'index.mjs');
   const backup = { json: fs.readFileSync(indexPath), mjs: fs.existsSync(mjsPath) ? fs.readFileSync(mjsPath) : null };
-  const written = [];
+  // the files a retired cell owns in grown/cells/: <id>.mjs and the siblings copyPlan flattened under <id>-
+  const retiredRows = [...retiring.values()];
+  const retiredIds = new Set(retiredRows.map((row) => row.id));
+  const owned = (id) => (fs.existsSync(cellsDir) ? fs.readdirSync(cellsDir) : []).filter((f) => f === id + '.mjs' || f.startsWith(id + '-')).map((f) => path.join(cellsDir, f));
+  const written = [], removed = [];
   try {
     fs.mkdirSync(cellsDir, { recursive: true });
     for (const p of plan) for (const f of p.files) { const to = path.join(cellsDir, f.to); fs.writeFileSync(to, f.data, { flag: 'wx' }); written.push(to); }
+    for (const row of retiredRows) for (const f of owned(row.id)) { removed.push({ file: f, data: fs.readFileSync(f) }); fs.rmSync(f); }
     const at = now().toISOString();
     const rows = [];
     for (const { c } of plan) {
@@ -530,7 +571,7 @@ export async function promote({ gen, lane, dir, grownDir, now = () => new Date()
       const h = c.verdict?.heldout ?? {};
       rows.push({ id: c.id, class: mod.meta.class, generation: gen, lane, file: 'cells/' + c.id + '.mjs', heldout: { score: h.score ?? null, n: h.n ?? null }, promotedAt: at });
     }
-    const next = { ...index, generation: Math.max(index.generation, gen), cells: [...index.cells, ...rows] };
+    const next = { ...index, generation: Math.max(index.generation, gen), cells: [...index.cells.filter((row) => !retiredIds.has(row.id)), ...rows] };
     fs.writeFileSync(indexPath, JSON.stringify(next, null, 2) + '\n');
     fs.writeFileSync(mjsPath, render(next));
     nodeCheck(mjsPath);
@@ -539,9 +580,10 @@ export async function promote({ gen, lane, dir, grownDir, now = () => new Date()
     next.cells.forEach((row, i) => { if (answers[i].id !== row.id) throw new Fail('grown/index.mjs cell ' + i + ' is ' + answers[i].id + ', grown/index.json says ' + row.id); });
     const bad = answers.filter((a) => !a.ok);
     if (bad.length) throw new Fail(bad.map((a) => a.id + ' does not answer its own examples[0].q through grownAnswer (got ' + (a.got ?? 'null') + ')').join('; '));
-    return { promoted: rows.map((r) => r.id), cells: next.cells.length, generation: next.generation };
+    return { promoted: rows.map((r) => r.id), archived, retired: [...retiredIds], cells: next.cells.length, generation: next.generation };
   } catch (e) {
     for (const f of written.reverse()) { try { fs.rmSync(f, { force: true }); } catch { /* best effort */ } }
+    for (const r of removed.reverse()) { try { fs.writeFileSync(r.file, r.data); } catch { /* best effort */ } }
     fs.writeFileSync(indexPath, backup.json);
     if (backup.mjs) fs.writeFileSync(mjsPath, backup.mjs); else fs.rmSync(mjsPath, { force: true });
     const msg = e instanceof Fail ? e.message : 'promote failed: ' + oneLine(e?.message || e);

@@ -69,7 +69,9 @@ if (verb === 'shard' && process.env.STUB_SHARD_FAIL) { console.error('unreachabl
 if (verb === 'shard') { console.log(JSON.stringify({ sharded: lane })); process.exit(0); }
 if (process.env.STUB_PROMOTE_FAIL) { console.error('promote failed: stub'); process.exit(1); }
 const ids = fs.readdirSync(dir).filter((id) => { try { return JSON.parse(fs.readFileSync(path.join(dir, id, 'verdict.json'), 'utf8')).survived === true; } catch { return false; } });
-console.log(JSON.stringify({ promoted: ids, cells: ids.length, generation: Number(n) }));`,
+const held = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'grown/index.json'), 'utf8')).cells.map((c) => c.id); } catch { return []; } })();
+const promoted = ids.filter((id) => !held.includes(id));
+console.log(JSON.stringify({ promoted, archived: ids.filter((id) => held.includes(id)).map((id) => ({ id, holds: id })), retired: [], cells: held.length + promoted.length, generation: Number(n) }));`,
   'web/build.mjs': `log('build');
 if (process.env.STUB_BUILD_FAIL) { console.error('build failed: stub'); process.exit(1); }
 console.log('built');`,
@@ -661,4 +663,46 @@ test('why1: the one line that says why a child failed skips the Node banner, the
   assert.equal(why1({ stderr: 'eyJabc.def token leaked\n', stdout: '' }), '<token> token leaked', 'redacted');
   assert.equal(why1({ stderr: '', stdout: '', error: { code: 'ETIMEDOUT' } }), 'ETIMEDOUT');
   assert.equal(why1({ stderr: '', stdout: '' }), 'no output');
+});
+
+test('prepare: a miss left growing by an earlier generation is planned again; a mark of this generation is not', () => {
+  const root = makeRoot({ parent: 'direct' });
+  try {
+    put(root, 'grow/seed-misses.jsonl', jsonl([...SEED_ROWS,
+      { id: 'seed-5', at: '2026-09-30T21:00:00Z', prompt: 'xq', reply: 'I do not carry that yet', status: 'growing', generation: 0 },
+      { id: 'seed-6', at: '2026-09-30T21:00:00Z', prompt: 'qpwoeiru', reply: 'nothing in memory matches', status: 'growing', generation: 1 },
+    ]));
+    const r = drive(root, ['prepare']);
+    assert.equal(r.code, 0, r.stderr);
+    assert.deepEqual(r.json.misses, { read: 5, growing: 3, skipped: 2, source: 'seed' }, 'the stuck miss is read, the mark of this generation is not');
+    const gen = genMisses(root);
+    const stuck = gen.find((m) => m.id === 'seed-5');
+    assert.ok(stuck, 'the stuck miss is in the gen copy');
+    assert.equal(stuck.status, 'growing');
+    assert.equal(stuck.generation, 1, 'marked for this generation');
+    assert.equal(gen.some((m) => m.id === 'seed-6'), false, 'a growing mark of this generation is another run of it, left alone');
+  } finally { clean(root); }
+});
+
+test('finish: a survivor grown/ already holds is skipped by promote and still grown for its misses (a half-landed generation converges)', () => {
+  const root = makeRoot();
+  try {
+    twoCandidates(root);
+    put(root, 'grown/index.json', JSON.stringify({ generation: 1, cells: [{ id: 'fragment-direct-g1', class: 'fragment', generation: 1, lane: 'direct', file: 'cells/fragment-direct-g1.mjs', heldout: { score: 1, n: 1 }, promotedAt: 'x' }] }));
+    const r = drive(root, ['finish', '--gen', '1', '--no-commit'], { CI: '1' });
+    assert.equal(r.code, 0, r.stderr);
+    const j = r.json;
+    assert.equal(j.survivors, 1);
+    assert.equal(j.promoted, 0, 'nothing promoted: grown/ held it already');
+    assert.deepEqual(j.archived, [{ lane: 'direct', id: 'fragment-direct-g1', holds: 'fragment-direct-g1' }]);
+    assert.deepEqual(j.misses, { growing: 2, grown: 1, reopened: 1 }, 'the held survivor is grown for its class');
+    const gen = genMisses(root);
+    assert.equal(gen[0].status, 'grown');
+    assert.equal(gen[0].cell, 'fragment-direct-g1');
+    assert.equal(gen[1].status, 'open');
+    const gs = JSON.parse(fs.readFileSync(path.join(root, 'grown/generations.json'), 'utf8'));
+    assert.equal(gs.generations.at(-1).generation, 1, 'the tournament is recorded');
+    assert.ok(j.blocked.some((l) => /^no held-out set: capital-of/.test(l)), j.blocked.join(' | '));
+    assert.ok(!j.blocked.some((l) => /promote|duplicate/.test(l)), 'no promote line: ' + j.blocked.join(' | '));
+  } finally { clean(root); }
 });

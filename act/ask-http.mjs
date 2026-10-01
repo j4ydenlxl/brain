@@ -319,6 +319,7 @@ export function createHandler(o = {}) {
       ? { provider: 'env', envBase: BASE_NAME, envKey: keyNameFor(env), model: env[MODEL_NAME] || undefined, k: 5, events: [], timeoutMs: LIMITS.modelMs }
       : { provider: 'null', k: 5, events: [] };
     if (s.knowledge.dir) opts.knowledge = PACK_DIR;
+    if (o.grown === false) opts.grown = false; // the organism without its grown cells (tests only: grown/ grows every generation, so a test never depends on what it holds)
     const t0 = process.hrtime.bigint();
     let a;
     try { a = await ask(s.brain, prompt, opts); } catch (e) {

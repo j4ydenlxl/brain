@@ -28,11 +28,11 @@ const USAGE = 'usage: node judge/baseline.mjs <class> [--out <file>] [--knowledg
 const relPath = (f) => path.relative(ROOT, f).split(path.sep).join('/');
 
 /** Run the organism over rows. @returns {Promise<{ q, got, route, via }[]>} */
-export async function runOrganism(rows, { knowledge } = {}) {
+export async function runOrganism(rows, { knowledge, grown } = {}) {
   const { ask, closeKnowledge } = await import(pathToFileURL(path.join(ROOT, 'act', 'prompt.mjs')).href);
   const { seedBasic } = await import(pathToFileURL(path.join(ROOT, 'seeds', 'basic.mjs')).href);
   let grownAnswer = () => null, grownN = 0;
-  try {
+  if (grown !== false) try { // grown false: the organism without its cells (a test's control; grown/ grows every generation)
     const g = await import(pathToFileURL(path.join(ROOT, 'grown', 'index.mjs')).href);
     if (typeof g.grownAnswer === 'function') grownAnswer = g.grownAnswer;
     grownN = Array.isArray(g.GROWN) ? g.GROWN.length : 0;
@@ -40,7 +40,7 @@ export async function runOrganism(rows, { knowledge } = {}) {
   const brain = seedBasic({ name: 'judge-baseline', ledger: 'off' });
   const out = [];
   for (const row of rows) {
-    const a = await ask(brain, row.q, { provider: 'null', k: 5, events: [], ...(knowledge !== undefined ? { knowledge } : {}) });
+    const a = await ask(brain, row.q, { provider: 'null', k: 5, events: [], ...(knowledge !== undefined ? { knowledge } : {}), ...(grown === false ? { grown: false } : {}) });
     let got = a && typeof a.text === 'string' ? a.text : null;
     let via = 'ask';
     if (got === null || REFUSAL_RE.test(got.trim())) {
