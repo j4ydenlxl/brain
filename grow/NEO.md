@@ -19,6 +19,7 @@
 - (about 19:15Z) "remember efficacy matters a lot, it should change its own code for iteration, testing, benching, make sure there are 'subagent's in here, and that it works exactly like it would here" (his quotes around subagent written as single quotes here)
 - (about 19:19Z) "how does it self iterate if it doesnt change its own code??"
 - (about 19:21Z) "IT should permanently change code for the better and use clock dilation and time crunching to make it hyperefficient"
+- (about 19:27Z) "It should never start , and it should iterate in the cloud, rewrite itself, and iterate its own engine, Remember, its not based on my pc, its based on delocalied cloud computing and it does its own thing, thats the most important.... It needs to be exceptionally effective, that is the most important part, and the ai datacenter and performance self iteration, Do the orthogonal work, it does its own grunt work, you can monitor how it works, its gotta be fronteir level remember"
 
 From MANUAL.md section A: "The central architectural principle is the use of orthogonal computational primitives. ... A primitive may perform transformation, prediction, retrieval, comparison, routing, aggregation, temporal integration, memory access, evaluation, simulation, or another fundamental computational operation. These primitives are intentionally general."
 
