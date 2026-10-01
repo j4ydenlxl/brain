@@ -270,8 +270,15 @@ async function rest(url, init, { key, fetch: f = globalThis.fetch, timeoutMs = L
  * Read misses from the log (the service key) or from a local JSONL.
  * @returns {Promise<{rows: object[], summary: {rows: number, source: string, reason: string}}>}
  */
-export async function readMisses({ env = process.env, status = 'open', limit = LIMIT.dflt, since = null, file = null, apiBase = null, fetch, timeoutMs } = {}) {
+export async function readMisses({ env = process.env, status = 'open', limit = LIMIT.dflt, since = null, file = null, apiBase = null, fetch, timeoutMs, retired } = {}) {
   const sinceMs = since == null ? null : Date.parse(since);
+  // a prompt the locked judge named as held-out (grow/retired.jsonl, grow/retire.mjs) is never read as a miss again:
+  // a cell grown from it dies on the leak rule, whatever it answers (generation 3: 0 of 36)
+  // (a tree that carries this file without grow/retire.mjs, a test root, retires nothing)
+  let isRetired = () => false;
+  try { const m = await import('./retire.mjs'); isRetired = m.isRetired; if (retired === undefined) retired = m.readRetired(); } catch (e) { if (!e || e.code !== 'ERR_MODULE_NOT_FOUND') throw e; }
+  let gone = 0;
+  const live = (row) => { if (!isRetired(retired, row.prompt)) return true; gone++; return false; };
   if (file) {
     const all = readFileRows(file);
     let skipped = 0;
@@ -281,13 +288,14 @@ export async function readMisses({ env = process.env, status = 'open', limit = L
       const row = rowOf(r);
       if (status !== 'any' && row.status !== status) continue;
       if (sinceMs !== null && !(Date.parse(row.at) >= sinceMs)) continue; // a row with no time is not "since"
+      if (!live(row)) continue;
       rows.push(row);
     }
     // newest first, as the log answers; a row with no time keeps its file order after the timed ones
     const t = (r) => { const v = Date.parse(r.at); return Number.isFinite(v) ? v : -Infinity; };
     const order = rows.map((r, i) => [r, i]).sort((a, b) => (t(b[0]) - t(a[0])) || (a[1] - b[1])).map((x) => x[0]);
     const out = order.slice(0, limit);
-    return { rows: out, summary: { rows: out.length, source: 'file', reason: 'read ' + path.basename(file) + ' (' + all.length + ' lines, ' + skipped + ' without a prompt)' } };
+    return { rows: out, summary: { rows: out.length, source: 'file', reason: 'read ' + path.basename(file) + ' (' + all.length + ' lines, ' + skipped + ' without a prompt' + (gone ? ', ' + gone + ' retired' : '') + ')' } };
   }
   const key = env && env[SERVICE_NAME];
   if (!key) return { rows: [], summary: { rows: 0, source: 'supabase', reason: NO_KEY } };
@@ -296,8 +304,8 @@ export async function readMisses({ env = process.env, status = 'open', limit = L
   if (sinceMs !== null) q.set('at', 'gte.' + new Date(sinceMs).toISOString());
   const r = await rest(baseOf(env, apiBase) + '/rest/v1/misses?' + q.toString(), { method: 'GET', headers: headersFor(key) }, { key, fetch, timeoutMs, what: 'GET /rest/v1/misses' });
   if (!Array.isArray(r.body)) throw new Fail('GET /rest/v1/misses answered ' + r.status + ' with a body that is not a list');
-  const rows = r.body.filter((x) => x && typeof x.prompt === 'string').map(rowOf);
-  return { rows, summary: { rows: rows.length, source: 'supabase', reason: 'GET /rest/v1/misses answered ' + r.status } };
+  const rows = r.body.filter((x) => x && typeof x.prompt === 'string').map(rowOf).filter(live);
+  return { rows, summary: { rows: rows.length, source: 'supabase', reason: 'GET /rest/v1/misses answered ' + r.status + (gone ? ' (' + gone + ' retired)' : '') } };
 }
 
 /**

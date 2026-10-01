@@ -103,6 +103,12 @@ off, and "you only fail if you dont listen to me".
 4. SELECT. For every candidate, `node judge/select.mjs <dir>` (the lock first, then the whole conjunction in
    grow/CONTRACT.md; `verdict.json` in the candidate directory; `why` names every failed clause). Losers stay
    in the lane directory and go to the store as the archive (recombination later).
+   RETIRE (`grow/retire.mjs`), right after `finish` returns and before the next trial of step 6:
+   `node grow/retire.mjs collect --gen <n> --commit`. When the judge kills a cell on the leak rule its `why` line NAMES
+   the held-out prompt; collect reads those lines (never the held-out set), appends the sha of each named prompt to
+   `grow/retired.jsonl` (no prompt text) and commits and pushes that file as jayden. `grow/misses.mjs read` never returns
+   a retired prompt, so no later generation plans it, dreams it into a cell or quotes it (generation 3: 0 of 36
+   survived, 19 killed on this rule; two of the prompts it named were the organism's own dreams).
 
 5. MULTIPLY AND DUPLICATE. Per lane: `node grow/store.mjs shard <n> <lane>` (the whole lane, winners and
    losers, to j4ydenlxl/brain-cells through the contents API; skipped with a reason without `gh` or
