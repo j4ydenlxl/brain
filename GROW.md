@@ -16,7 +16,8 @@ off, and "you only fail if you dont listen to me".
 - You may NOT edit `judge/` or `grow/contract.mjs` (the judge is LOCKED; `node judge/verify.mjs` proves it
   every run and a drifted judge stops the generation). You may NOT open `judge/heldout/` or
   `judge/control.jsonl`: the held-out truth is what makes a survivor real. An arm reads `judge/dev/<class>.jsonl`
-  only. Self-modification (step 6) proposes changes to THIS file and `grow/`, never to the judge.
+  only. Self-modification (step 6) proposes changes to THIS file and `grow/`, never to the judge, and never to
+  `grow/neo.mjs` or `grow/teach.mjs` (they select and admit the NEO tier: the organism may not edit what grades it).
 - Candidates run in the cloud sandbox only (`grow/sandbox.mjs`): a Vercel Sandbox when `VERCEL_TOKEN` or
   `VERCEL_OIDC_TOKEN` is set, else the routine's own VM (`--backend here`, allowed only when
   `CLAUDE_CODE_REMOTE`, `GITHUB_ACTIONS`, `VERCEL` or `CI` is set). Never on his PC: on a PC the runner
@@ -60,7 +61,11 @@ off, and "you only fail if you dont listen to me".
    the files it may not open.
 
 2. GROW (the octopus). First `node grow/cortex.mjs plan --gen <n>` (it writes `work/grow/gen-<n>/cortex.json`: the
-   model of every arm). One ARM per brief, all in parallel, each a Claude agent (the Agent tool; the model is
+   model of every arm). A SATURATED class gets NO arm: a class whose baseline is 1 (`baseline.<class>` of the line
+   `prepare` printed, `classes[].baseline.score` of `work/grow/gen-<n>/plan.json`) already answers every row of its
+   locked held-out set, a survivor must score ABOVE the baseline, so no cell of that class can survive and its arms
+   only spend the hour (generation 3: 21 of 36 arms went to 7 saturated classes, none could win). Leave its briefs
+   unanswered; its misses stay open. One ARM per remaining brief, all in parallel, each a Claude agent (the Agent tool; the model is
    `arms[<id>]` of that file, passed as its `alias` when that is not null, else its `model`; never a model the plan
    did not print; prefix its prompt with the CONCISE directive from CLAUDE.md). Every arm runs under the pointer,
    except, while a challenger is pending, the parent lane's SECOND arm of each class: the same brief written by the
@@ -145,7 +150,8 @@ off, and "you only fail if you dont listen to me".
      its `finish` judges it. `node grow/self.mjs status` prints the pending trial and the history.
 
 7. DREAM (Day 2, wired: `grow/dream.mjs`). After step 8, `node grow/dream.mjs propose --gen <n>` writes one DREAM
-   BRIEF per class that has a locked held-out set: `work/grow/gen-<n>/dream/brief-<class>.md`. One arm per brief, as
+   BRIEF per class that has a locked held-out set: `work/grow/gen-<n>/dream/brief-<class>.md`. No dream arm for a
+   saturated class of step 2 (a dream there opens a miss no cell can win on). One arm per remaining brief, as
    in step 2 (an agent under the pointer, the CONCISE directive first, the brief as its whole prompt): the proposer half writes
    4 tasks in the class's shape just past what the organism answers today, the solver half answers each one, into
    `work/grow/gen-<n>/dream/<class>.jsonl` ({ q, expect, answer } a line), checked with `node grow/dream.mjs check <file>`
