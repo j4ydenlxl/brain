@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { validateCell, validateTest, parseJsonl, importsOf, FORBIDDEN } from './contract.mjs';
+import { validateCell, validateTest, parseJsonl, importsOf, FORBIDDEN, REFUSAL_RE } from './contract.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_ROOT = path.resolve(HERE, '..');
@@ -246,7 +246,7 @@ export function armId(cls, lane, n, k = 1) {
 }
 
 // ---- step 1: prepare
-function prepare(root, flags, env) {
+async function prepare(root, flags, env) {
   const n = genOf(flags, root);
   const lanes = flags.lanes ? lanesOf(flags.lanes) : [...DEFAULT_LANES];
   if (flags.parent !== undefined && !lanes.includes(flags.parent)) throw new Fail('--parent ' + flags.parent + ' is not one of the lanes ' + lanes.join(','), 2);
@@ -270,10 +270,28 @@ function prepare(root, flags, env) {
   else for (const m of rowsOf(g.stdout)) if (m && m.generation !== n && !rows.some((o) => o.id === m.id)) rows.push(m);
   const genMisses = path.join(genDir, 'misses.jsonl');
   fs.writeFileSync(genMisses, jsonl(rows)); // the seed file is never written
+  // SENSE proper: a miss the organism answers today (a cell grown since it was logged, or a tier that answers it) is
+  // grown, not planned: without this a class whose champion already answers its misses spends arms every hour and
+  // its misses reopen forever (generation 1 for real, 2026-10-01 02:00Z: the champions scored 1 and nothing could pass them)
+  const answered = new Map(); // miss id -> the cell that answers it, or null when a tier does
+  if (rows.length) {
+    try {
+      const { runOrganism, PACK } = await import(pathToFileURL(path.join(root, 'judge', 'baseline.mjs')).href);
+      const k = PACK && fs.existsSync(PACK) ? PACK : undefined;
+      const run = await runOrganism(rows.map((m) => ({ q: m.prompt })), { knowledge: k });
+      (run && Array.isArray(run.rows) ? run.rows : []).forEach((o, i) => {
+        const got = o && typeof o.got === 'string' ? o.got.trim() : '';
+        if (got && !REFUSAL_RE.test(got) && rows[i].id !== null && rows[i].id !== undefined) answered.set(rows[i].id, typeof o.via === 'string' && o.via.startsWith('grown:') ? o.via.slice(6) : null);
+      });
+    } catch (e) { blocked.push('misses: the organism could not be asked, every miss is planned: ' + String((e && e.message) || e).split('\n')[0]); }
+  }
+  const byCell = new Map();
+  for (const [id, cell] of answered) { const key = cell ?? ''; if (!byCell.has(key)) byCell.set(key, []); byCell.get(key).push(id); }
+  for (const [key, ids] of byCell) markMisses(root, env, { file: genMisses, ids, status: 'grown', cell: key || null, generation: n, supabase: source === 'supabase' }, blocked);
   const c = runNode(root, 'grow/misses.mjs', ['classes', '--file', genMisses], { env });
   if (c.code !== 0) throw new Fail('misses: node grow/misses.mjs classes exited ' + c.code + ': ' + why1(c));
   const byClass = new Map();
-  for (const l of rowsOf(c.stdout)) if (l.class) { if (!byClass.has(l.class)) byClass.set(l.class, []); byClass.get(l.class).push(l); }
+  for (const l of rowsOf(c.stdout)) if (l.class && !answered.has(l.id)) { if (!byClass.has(l.class)) byClass.set(l.class, []); byClass.get(l.class).push(l); }
   const kept = [];
   let skipped = 0;
   for (const [cls, ls] of byClass) {
@@ -314,10 +332,10 @@ function prepare(root, flags, env) {
     }
     classes.push({ class: k.cls, misses: k.ls.map((l) => l.id), prompts, dev: k.devRel, devRows: k.devRows.length, baseline: k.baseline, arms });
   }
-  writeJson(path.join(genDir, 'plan.json'), { generation: n, at, lanes, parent, missSource: source, classes });
+  writeJson(path.join(genDir, 'plan.json'), { generation: n, at, lanes, parent, missSource: source, classes, blocked });
   fs.writeFileSync(path.join(genDir, 'blocked.txt'), blocked.map((l) => l + '\n').join(''));
   return {
-    generation: n, classes: classes.length, briefs: briefs.length, misses: { read: rows.length, growing, skipped, source },
+    generation: n, classes: classes.length, briefs: briefs.length, misses: { read: rows.length, answered: answered.size, growing, skipped, source },
     baseline: Object.fromEntries(kept.map((k) => [k.cls, k.baseline.score])), parent, plan: relOf(root, path.join(genDir, 'plan.json')), blocked, at,
   };
 }
@@ -435,7 +453,8 @@ function finish(root, flags, env) {
   const lock = lockOf(root, env);
   if (!lock.ok) throw new Fail(lock.line, 1);
   const blockedFile = path.join(genDir, 'blocked.txt');
-  const before = (readText(blockedFile) || '').split(/\r?\n/).filter(Boolean);
+  // prepare's lines carry forward (plan.json); a previous finish attempt's lines never do (they would report a run that is not this one)
+  const before = plan && Array.isArray(plan.blocked) ? plan.blocked.map(String) : (readText(blockedFile) || '').split(/\r?\n/).filter(Boolean);
   const blocked = [];
   const stats = Object.fromEntries(lanes.map((l) => [l, { candidates: cands.filter((c) => c.lane === l).length, survivors: 0 }]));
   const total = cands.length, live = b.backend !== 'none' && !b.expired;
@@ -568,7 +587,7 @@ export async function main(argv, env = process.env) {
   if (flags.help || !verb || verb === 'help') return { usage: true };
   const root = flags.root ? path.resolve(flags.root) : DEFAULT_ROOT;
   if (verb === 'status') return status(root, flags, env);
-  if (verb === 'prepare') return prepare(root, flags, env);
+  if (verb === 'prepare') return await prepare(root, flags, env);
   if (verb === 'validate') return validate(root, pos[0]);
   if (verb === 'ask') return askVerb(root, flags, pos.join(' '));
   if (verb === 'finish') return finish(root, flags, env);

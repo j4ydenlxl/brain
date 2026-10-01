@@ -34,7 +34,8 @@ off, and "you only fail if you dont listen to me".
 1. SENSE. `node grow/generation.mjs prepare` does the mechanical part: verifies the lock, fetches the knowledge
    pack (`node tools/fetch-pack.mjs`, from the public store, no token), reads the open misses
    (`node grow/misses.mjs read --status open`, or the seed file `grow/seed-misses.jsonl` when there is no
-   service key), classes them (`node grow/misses.mjs classes`), keeps the classes that have a locked held-out
+   service key), asks the organism each one and marks the misses it already answers `grown` (a cell grown since,
+   or a tier that answers it: never planned again), classes the rest (`node grow/misses.mjs classes`), keeps the classes that have a locked held-out
    set (a class without one is logged "no held-out set: a human session adds truth" and skipped), grades the
    organism before any cell on each class (`node judge/baseline.mjs <class>`), marks those misses `growing`,
    and writes the plan `state/grow/gen-<n>/plan.json` and one BRIEF per class per lane:

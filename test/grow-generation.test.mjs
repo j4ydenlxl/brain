@@ -44,7 +44,7 @@ const STUBS = {
 if (fs.existsSync(path.join(ROOT, 'drift.flag'))) { console.log('LOCK DRIFT judge/select.mjs'); process.exit(1); }
 console.log('LOCK OK 10 files');`,
   'judge/baseline.mjs': `export const PACK = path.join(ROOT, 'no-pack-here');
-export async function runOrganism(rows) { return { rows: rows.map((r) => ({ q: r.q, got: 'stub organism: ' + r.q, route: 'stub-route', via: 'ask' })), grown: 0 }; }
+export async function runOrganism(rows) { const a = (process.env.STUB_ANSWERS || '').split('|'); return { rows: rows.map((r) => ({ q: r.q, got: a.includes(r.q) ? 'stub organism: ' + r.q : 'nothing in memory matches ' + r.q, route: 'stub-route', via: a.includes(r.q) ? (process.env.STUB_VIA || 'ask') : 'ask' })), grown: 0 }; }
 const self = fileURLToPath(import.meta.url).toLowerCase();
 if (process.argv[1] && path.resolve(process.argv[1]).toLowerCase() === self) {
   log('baseline');
@@ -198,7 +198,7 @@ test('(c) prepare: plan, briefs, the parent lane gets a second arm, no held-out 
     assert.equal(r.json.generation, 1);
     assert.equal(r.json.classes, 2);
     assert.equal(r.json.briefs, 6);
-    assert.deepEqual(r.json.misses, { read: 4, growing: 2, skipped: 2, source: 'seed' });
+    assert.deepEqual(r.json.misses, { read: 4, answered: 0, growing: 2, skipped: 2, source: 'seed' });
     assert.deepEqual(r.json.baseline, { fragment: 0, mash: 0 });
     assert.equal(r.json.parent, 'direct');
     assert.ok(r.json.blocked.some((l) => l.startsWith('no held-out set: capital-of')));
@@ -627,7 +627,7 @@ test('(j) the class regex reads both quote styles', () => {
 test('ask runs the organism judge/baseline.mjs exports, one JSON line with its route', () => {
   const root = makeRoot();
   try {
-    const r = drive(root, ['ask', 'What is the capital of France?']);
+    const r = drive(root, ['ask', 'What is the capital of France?'], { STUB_ANSWERS: 'What is the capital of France?' });
     assert.equal(r.code, 0, r.stderr);
     assert.deepEqual(r.json, { q: 'What is the capital of France?', text: 'stub organism: What is the capital of France?', route: 'stub-route', via: 'ask', knowledge: 'act/prompt.mjs KNOWLEDGE_DIR (default)' });
   } finally { clean(root); }
@@ -674,7 +674,7 @@ test('prepare: a miss left growing by an earlier generation is planned again; a 
     ]));
     const r = drive(root, ['prepare']);
     assert.equal(r.code, 0, r.stderr);
-    assert.deepEqual(r.json.misses, { read: 5, growing: 3, skipped: 2, source: 'seed' }, 'the stuck miss is read, the mark of this generation is not');
+    assert.deepEqual(r.json.misses, { read: 5, answered: 0, growing: 3, skipped: 2, source: 'seed' }, 'the stuck miss is read, the mark of this generation is not');
     const gen = genMisses(root);
     const stuck = gen.find((m) => m.id === 'seed-5');
     assert.ok(stuck, 'the stuck miss is in the gen copy');
@@ -704,5 +704,32 @@ test('finish: a survivor grown/ already holds is skipped by promote and still gr
     assert.equal(gs.generations.at(-1).generation, 1, 'the tournament is recorded');
     assert.ok(j.blocked.some((l) => /^no held-out set: capital-of/.test(l)), j.blocked.join(' | '));
     assert.ok(!j.blocked.some((l) => /promote|duplicate/.test(l)), 'no promote line: ' + j.blocked.join(' | '));
+  } finally { clean(root); }
+});
+
+test('prepare: a miss the organism already answers is grown (with the cell that answers it), never planned; the others are planned', () => {
+  const root = makeRoot({ parent: 'direct' });
+  try {
+    const r = drive(root, ['prepare'], { STUB_ANSWERS: 'h|the capital of Peru', STUB_VIA: 'grown:fragment-stub-cell' });
+    assert.equal(r.code, 0, r.stderr);
+    assert.deepEqual(r.json.misses, { read: 4, answered: 2, growing: 1, skipped: 1, source: 'seed' });
+    assert.equal(r.json.classes, 1, 'fragment is answered, only mash is planned');
+    assert.deepEqual(r.json.baseline, { mash: 0 });
+    const gen = genMisses(root);
+    const h = gen.find((m) => m.id === 1);
+    assert.equal(h.status, 'grown');
+    assert.equal(h.cell, 'fragment-stub-cell');
+    assert.equal(h.generation, 1);
+    assert.equal(gen.find((m) => m.id === 4).status, 'grown', 'answered by a tier: grown with no cell');
+    assert.equal(gen.find((m) => m.id === 'seed-2').status, 'growing');
+    const plan = JSON.parse(fs.readFileSync(path.join(root, 'state/grow/gen-1/plan.json'), 'utf8'));
+    assert.deepEqual(plan.classes.map((c) => c.class), ['mash']);
+    assert.ok(Array.isArray(plan.blocked) && plan.blocked.some((l) => /^no held-out set: other/.test(l)), 'prepare records its blocked lines in the plan');
+    // a finish attempt's own lines never carry into the next attempt: only prepare's do
+    fs.writeFileSync(path.join(root, 'state/grow/gen-1/blocked.txt'), plan.blocked.concat(['promote: baked: exit 1: a line from an earlier finish attempt']).join('\n') + '\n');
+    const f = drive(root, ['finish', '--gen', '1', '--no-commit'], { CI: '1' });
+    assert.equal(f.code, 0, f.stderr);
+    assert.ok(!f.json.blocked.some((l) => /earlier finish attempt/.test(l)), f.json.blocked.join(' | '));
+    assert.ok(f.json.blocked.some((l) => /^no held-out set: other/.test(l)));
   } finally { clean(root); }
 });
