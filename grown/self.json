@@ -1,5 +1,38 @@
 {
-  "trial": null,
+  "trial": {
+    "generation": 4,
+    "next": 5,
+    "target": "grow/generation.mjs",
+    "why": "The killed lines \"the cell's files quote held-out prompts\": 17 of 36 candidates, all in the classes whose baseline is below 1 (code 0, math 0, writing 0, conversation 0.0833, mash 0.9167 in plan.json), the only classes a cell can win; the rest are classes at baseline 1 no cell can pass. Most quotes were forced by the brief itself: brief() wrote every miss prompt into the meta line the arm must copy verbatim (grownFrom), and the misses include held-out rows (qazwsx, the sql and debounce prompts, the limerick and slogan prompts are all in plan.json), and the conversation class text carried one too. The rest (gcd of 84 and 36) were invented in test.mjs.",
+    "hypothesis": "One cause, removed at both ends in grow/generation.mjs: (1) brief() puts in meta.grownFrom only the misses that are dev rows and lists the others unquoted with a never-write warning; the held-out phrase leaves the conversation class text; (2) validate fails on every text an arm's file holds whole between quotes that the cell's own can() accepts and that is not a dev row, the same quote shape judge/select.mjs quotedHeldout matches, without reading a held-out row. On the gen-4 cells it flags the leaked strings. So the 15 arms of the winnable classes reach the held-out score instead of the leak kill, and generation 5's survivors over candidates rises above 1 of 36.",
+    "baseline": {
+      "generation": 4,
+      "at": "2026-10-01T17:11:05.670Z",
+      "candidates": 36,
+      "survivors": 1,
+      "rate": 0.0278
+    },
+    "before": {
+      "file": "grown/self/trial-4.before.generation.mjs",
+      "sha": "2975e436d80ed7b32ca29e9b07a4b73d289691137ba267472985edce92aed62a",
+      "bytes": 72140
+    },
+    "after": {
+      "file": "grown/self/trial-4.after.generation.mjs",
+      "sha": "0bef1d9791110f1642bc7df676b71d539a927105c39b9d1bc3074e9d8d099916",
+      "bytes": 76204
+    },
+    "check": {
+      "suites": {
+        "files": 10,
+        "pass": 222,
+        "fail": 0,
+        "exitCode": 0
+      },
+      "at": "2026-10-01T17:22:35.882Z"
+    },
+    "appliedAt": "2026-10-01T17:22:35.886Z"
+  },
   "history": [
     {
       "generation": 3,

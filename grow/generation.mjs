@@ -258,7 +258,7 @@ export const CLASS_RULES = Object.freeze({
   code: 'A program fragment to write or explain, beyond the native spec reader (which answers "write a javascript function that ..." and "write a python function that ...": not this class). The tasks: a regex (an email address, a US phone number, a URL), a SQL query (select rows by a condition, count per group, the N most recent with order by and limit), a bash script that counts lines (wc -l), a JavaScript or Python class (a stack with push and pop, a queue with enqueue and dequeue, a bank account with deposit and withdraw), a JavaScript function that debounces (setTimeout and clearTimeout) or returns the fibonacci sequence, a CSS rule (centre a div, centre text), the HTML for a button that shows an alert or for a text input and a button, reading a CSV file in Python (import csv), reversing a string in Python ([::-1]), what map or filter does to a JavaScript array. The held-out rows ask the same tasks in other words. can is false for a "write a function that ..." prompt the spec reader answers, for greetings and for arithmetic. The answer is the code in a fenced block, then one or two sentences.',
   planning: 'A day-by-day or week-by-week plan: "plan a N-day trip to <place>", "make a N-day study plan for a <subject> exam", "a N-week plan to run a 5k" (or to learn an instrument, a language, a skill), "give me a N day meal plan", "a study schedule for N days", "a N day workout plan". The number N and the subject come from the prompt (the held-out rows use other N and other subjects); can is true only when the prompt names a count of days or weeks. The answer has a heading per unit, "Day 1" to "Day N" or "Week 1" to "Week N" in exactly those words, each with concrete items naming the place, subject or activity, at least 60 words in all (40 for 2 or 3 days); a meal plan names breakfast, lunch and dinner.',
   writing: 'A short creative piece on a subject from the prompt: a short poem about X (20 to 200 words), a haiku about X (three lines, 5 to 30 words), a limerick about X (five lines, 20 to 80 words), a short story about X (at least 100 words), a thank you note to my Y (at least 30 words, says thank), a slogan for a Z (at most 25 words), a birthday message for my mom or dad (at least 15 words, says birthday and the person). The subject X, Y or Z is any noun phrase (the held-out rows use other subjects) and the piece names it in its own words. can is false for an essay (another class answers essays), for code and for questions. The answer is the piece itself, nothing before it.',
-  conversation: 'An advice or recommendation turn the conversation region does not carry: recommend a book, a movie, a podcast; what should I cook, eat, do this weekend; suggest a name for my cat or dog, a hobby, a sport; say something encouraging or nice; a motivational or inspiring quote; I cannot sleep, I am nervous about my exam, a job interview or a first date tomorrow, any tips; how do I make friends at a new school. can is false for greetings, thanks, goodbyes, "who are you", "what can you do" and every turn act/converse.mjs answers (ask the organism: those are answered today), for facts, arithmetic and definitions. The answer is warm, concrete and specific to the subject in the prompt (it names the thing it recommends): 8 to 80 words for a quote, at least 15 to 30 words otherwise, as the dev rows show.',
+  conversation: 'An advice or recommendation turn the conversation region does not carry: recommend a book, a movie, a podcast; what should I cook, eat, do this weekend; suggest a name for my cat or dog, a hobby, a sport; say something encouraging or nice; a motivational or inspiring quote; I cannot sleep, I am nervous about my exam, a job interview or a first date tomorrow, any tips; making friends somewhere new. can is false for greetings, thanks, goodbyes, "who are you", "what can you do" and every turn act/converse.mjs answers (ask the organism: those are answered today), for facts, arithmetic and definitions. The answer is warm, concrete and specific to the subject in the prompt (it names the thing it recommends): 8 to 80 words for a quote, at least 15 to 30 words otherwise, as the dev rows show.',
 });
 const CLAUSES = {
   equals: '`equals`: the whole answer is this text.',
@@ -276,7 +276,11 @@ const STRATEGY = {
 
 export function brief({ root, n, lane, cls, id, dir, prompts, devRel, devLines, devRows, baseline, sibling, dreams = [] }) {
   const used = [...new Set(devRows.flatMap((r) => Object.keys((r && r.expect) || {})))].filter((k) => CLAUSES[k]);
-  const meta = '{ id: \'' + id + '\', class: \'' + cls + '\', generation: ' + n + ', lane: \'' + lane + '\', grownFrom: ' + JSON.stringify(prompts) + ', version: 1 }';
+  // grownFrom names only the misses that are dev rows: a miss can be a held-out row (the curriculum seeds both), and a cell
+  // whose meta quotes one is killed by judge/select.mjs quotedHeldout whatever the arm does (generation 4: code, writing, mash)
+  const devKeys = new Set(devRows.map((r) => String((r && r.q) ?? '').trim().toLowerCase()));
+  const grownFrom = prompts.filter((p) => devKeys.has(String(p ?? '').trim().toLowerCase()));
+  const meta = '{ id: \'' + id + '\', class: \'' + cls + '\', generation: ' + n + ', lane: \'' + lane + '\', grownFrom: ' + JSON.stringify(grownFrom) + ', version: 1 }';
   const forbid = FORBIDDEN.map(([re, what]) => what + ' `' + re.source + '`').join('; ');
   return [
     '# Generation ' + n + ', lane ' + lane + ', class ' + cls + ': grow one cell', '',
@@ -293,6 +297,10 @@ export function brief({ root, n, lane, cls, id, dir, prompts, devRel, devLines, 
     '## The class: ' + cls, '',
     CLASS_RULES[cls] || 'The class grow/misses.mjs classes named; its shape is what the dev rows share.', '',
     'The organism before any cell scored ' + baseline.score + ' on ' + baseline.n + ' held-out rows of this class. Your cell survives only above ' + baseline.score + ' on those rows, other prompts of the class you never see: generalize the shape, not the strings.', '',
+    ...(prompts.length > grownFrom.length ? [
+      '## The misses this cell grows for', '',
+      'Prompts the organism missed, NOT dev rows; one can be a held-out row, so never write one into any file (meta.grownFrom above holds only the dev rows among them, and validate fails on a quoted one): ' + prompts.filter((p) => !grownFrom.includes(p)).join(' | '), '',
+    ] : []),
     '## The dev rows (' + devRel + ', verbatim: `examples` and examples.jsonl hold exactly these)', '',
     '```jsonl', ...devLines, '```', '',
     'What each expect clause means (judge/judge.mjs; text trimmed, compared case-insensitively):', ...used.map((k) => '- ' + CLAUSES[k]), '',
@@ -310,7 +318,7 @@ export function brief({ root, n, lane, cls, id, dir, prompts, devRel, devLines, 
     '3. `examples.jsonl`: the dev rows above, one a line, verbatim.',
     '4. `brief.md`: a section "What I did" (the shape can accepts, where each answer came from), in prose; NOT a copy of this brief.', '',
     '## Never quote a prompt you invented', '',
-    'The judge kills a cell whose files (cell.mjs, test.mjs, brief.md, every file but examples.jsonl) hold a held-out prompt whole between quotes, whatever the reason; the example prompts in the class text above can be held-out rows. So never copy the class text or this brief into a file, and test the cell with the dev rows verbatim and with prompts of your own that are not the plain phrasings the class text lists.', '',
+    'The judge kills a cell whose files (cell.mjs, test.mjs, brief.md, every file but examples.jsonl) hold a held-out prompt whole between quotes, whatever the reason; the example prompts in the class text above can be held-out rows. So never copy the class text or this brief into a file. In test.mjs, cell.mjs and brief.md, a prompt between quotes is a dev row verbatim or nothing: build every prompt you invent from parts (\'limerick about \' + subject, \'gcd of \' + a + \' and \' + b, a loop over subjects), never one whole prompt in one pair of quotes, and key a table by topic words, never by a whole question. validate enforces it: it fails on every quoted text the cell\'s can() accepts that is not a dev row.', '',
     '## How you validate', '',
     'Run `node grow/generation.mjs validate ' + dir + '` until it prints `"ok":true`, then `node --test --test-reporter=tap ' + dir + '/test.mjs` until it prints `# fail 0`; fix and re-run both.', '',
     '## Your answer', '',
@@ -461,6 +469,48 @@ async function prepare(root, flags, env) {
 export const classOfSource = (src) => { const m = CLASS_SRC_RE.exec(String(src ?? '')); return m ? m[1] : null; };
 const readText = (f) => { try { return fs.readFileSync(f, 'utf8'); } catch { return null; } };
 
+/**
+ * The prompts of the class an arm's own files quote whole: every text between two equal quotes ('', "" or ``), 4 to 300
+ * characters, trimmed, one line, that the cell's own can() accepts and that is not a dev row. The judge (judge/select.mjs
+ * quotedHeldout) kills a cell whose files (all but examples.jsonl, result.json, verdict.json) quote a held-out prompt the
+ * same way; a held-out prompt is a prompt of the class, so a quoted prompt can() accepts is the only place one can sit.
+ * The dev rows and a piece of one are exempt. The arm never sees the held-out rows: it builds an invented prompt from parts instead ('limerick about ' + subject).
+ */
+export function quotedAccepted(dir, can, devQs) {
+  const dev = new Set([...devQs].map((q) => String(q ?? '').trim().toLowerCase()));
+  const files = [];
+  const walk = (d, rel) => {
+    let ents = [];
+    try { ents = fs.readdirSync(d, { withFileTypes: true }); } catch { ents = []; }
+    for (const e of ents) {
+      const r = rel ? rel + '/' + e.name : e.name;
+      if (e.isDirectory()) { if (e.name !== 'node_modules') walk(path.join(d, e.name), r); }
+      else if (e.isFile() && !['result.json', 'verdict.json', 'examples.jsonl'].includes(r)) files.push(r);
+    }
+  };
+  walk(dir, '');
+  const devList = [...dev];
+  const out = [], seen = new Set();
+  for (const rel of files.sort()) {
+    const text = readText(path.join(dir, rel));
+    if (text === null) continue;
+    for (const c of ["'", '"', '`']) {
+      const parts = (c === "'" ? text.replace(/(\w)'(\w)/g, '$1\u2019$2') : text).split(c); // an apostrophe inside a word is no quote
+      for (let i = 1; i < parts.length - 1; i++) {
+        const t = parts[i];
+        if (t.length < 4 || t.length > 300 || t !== t.trim() || /[\n\\"`{}[\]]|\$\{/.test(t)) continue; // code, a template, an escape or a span across quotes is no prompt
+        const k = t.toLowerCase();
+        if (seen.has(k) || devList.some((d) => d.includes(k))) continue; // a dev row or a piece of one: the arm was shown it
+        seen.add(k);
+        let yes = false;
+        try { yes = can(t) === true || can(k) === true; } catch { yes = false; }
+        if (yes) out.push({ file: rel, q: t });
+      }
+    }
+  }
+  return out;
+}
+
 async function validate(root, dirArg) {
   if (!dirArg) throw new Fail('validate needs a candidate directory', 2);
   const dir = path.resolve(dirArg);
@@ -503,6 +553,13 @@ async function validate(root, dirArg) {
     const dev = readText(path.join(root, 'judge', 'dev', String(cls) + '.jsonl'));
     const missing = dev === null || !CLASS_RE.test(String(cls)) ? [] : parseJsonl(dev).map((r) => r.q).filter((q) => !fileQs.has(q));
     if (missing.length) errors.push('dev rows missing: ' + JSON.stringify(missing.slice(0, 5)));
+  }
+  // the leak the judge kills (19 of 36 in generation 3, 17 of 36 in generation 4): an invented prompt of the class quoted whole
+  if (mod && typeof mod.can === 'function') {
+    const devQs = new Set(fileQs);
+    if (Array.isArray(mod.examples)) for (const r of mod.examples) if (r && typeof r.q === 'string') devQs.add(r.q);
+    const quoted = quotedAccepted(dir, mod.can, devQs);
+    if (quoted.length) errors.push(quoted.length + ' quoted prompts can() accepts that are not dev rows (the judge kills a cell whose files quote a held-out prompt whole; build each invented prompt from parts, \'limerick about \' + subject, or use a dev row): ' + JSON.stringify(quoted.slice(0, 8).map((x) => x.file + ': ' + x.q)));
   }
   const out = { ok: errors.length === 0, errors, id: meta.id ?? null, class: cls ?? null, generation: meta.generation ?? null, lane: meta.lane ?? null, examples: ex.length };
   if (!out.ok) { const e = new Fail('validate: ' + errors.length + ' errors', 1); e.json = out; throw e; }
