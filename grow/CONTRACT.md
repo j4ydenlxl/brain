@@ -84,6 +84,40 @@ Row: `{ id, at, prompt, reply, route (jsonb), status: open | growing | grown | s
 The site inserts with the anon key (`SUPABASE_URL`, `SUPABASE_ANON_KEY`, header `apikey`); the reader
 reads and updates with `SUPABASE_SERVICE_KEY` (his hand, never in chat, never in the repository).
 
+## The curriculum and the dreams (local files, read as open misses)
+
+`grow/curriculum.jsonl` (a human session writes it; Day 2): `{ id: "cur-<class>-<i>", prompt, class, route: "curriculum", status: "open" }`
+a row; one seed set per domain of "everything" (code, math, writing, science, tools, planning, data, conversation), each
+row the q of a dev row of its class. `grow/dreams.jsonl` (grow/dream.mjs collect appends; never rewritten):
+`{ id: "dream-<n>-<class>-<i>", at, prompt, reply, route: "dream", class, expect, status: "open", generation }` a row, `reply`
+the solver arm's answer and `expect` the proposer's clauses. `node grow/misses.mjs read --file <either>` prints them with
+`class` and `expect` kept; `classes` keeps a row's own class (a-z, 0-9, -) and classifies only a row without one. The
+driver reads both every generation on top of the primary miss source and marks nothing in them: a row is open until the
+organism answers it (SENSE marks it grown in the generation's own misses.jsonl), so a class with unanswered curriculum
+rows or dreams gets an arm every generation.
+
+## An app candidate (the builder arm, grow/build.mjs; Day 2)
+
+A miss of class `build` (grow/misses.mjs BUILD_RE: make/build/create/write/code/generate/develop/design ... app/tool/page/
+game/site/...) becomes an app, not a cell. `grow/app-slug.mjs buildRequest(prompt)` names it ({ name, slug }); the driver
+writes `state/grow/gen-<n>/build/<slug>/app.json` ({ slug, name, prompt, generation, misses }) and the brief
+`state/grow/gen-<n>/build/brief-<slug>.md`. The arm writes, in that directory and nowhere else: `index.html` (self
+contained, loads `./app.mjs`, no other origin), `app.mjs` (exported pure functions plus `mount(doc)`; pure ES module;
+grow/probe-app.mjs APP_FORBIDDEN: no fetch, XMLHttpRequest, WebSocket, EventSource, sendBeacon, import(), require(), eval,
+new Function, process, node:, child_process, worker_threads, http(s)://, document.cookie, indexedDB), `test.mjs` (at
+least MIN_TESTS = 3 tests over ./app.mjs, imports only ./x.mjs, node:test, node:assert, node:assert/strict) and `brief.md`.
+Top-level files only, NAME_RE names, APP_EXTS extensions, each under 512 KB, the app under 2 MB.
+`node grow/sandbox.mjs run <dir> --app --out <dir>/result.json` runs grow/probe-app.mjs INSIDE the sandbox: result.json is
+{ candidate, kind: "app", slug, backend, node, validate: { ok, errors }, tests: { passed, failed, exitCode }, files, exitCode,
+error, probeMs }. `node grow/build.mjs judge <dir>` writes verdict.json { candidate, slug, kind: "app", survived, why,
+validate, tests, exitCode, error, at }: survived iff validate ok, tests.failed 0, tests.exitCode 0, tests.passed >= 3,
+exitCode 0, error null. `node grow/build.mjs promote <n> <slug>` serves a survivor: its files (never result.json,
+verdict.json, app.json, brief.md, test.mjs) to `web/dist/apps/<slug>/`, a row in `grown/apps.json` ({ slug, name,
+prompt, generation, path: "/apps/<slug>/", at }), the generated `grown/apps.mjs` (APPS and appAnswer(prompt)) and
+`web/dist/apps/index.html`. The site (act/ask-http.mjs) answers a build request naming a served app with its URL, from
+`app`; the driver marks the misses grown with the cell `app:<slug>`, and a served app grows its misses in every later
+generation without an arm.
+
 ## Tokens the loop reads by NAME (never by value)
 
 `VERCEL_TOKEN` or `VERCEL_OIDC_TOKEN` (the sandbox; `.env.local` from `npx -y vercel@latest env pull .env.local --yes`

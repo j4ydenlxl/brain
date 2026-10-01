@@ -57,7 +57,7 @@ test('the four seed misses and two controls land in fragment, mash, capital-of, 
   assert.deepEqual(c.lines.map((l) => l.class), ['fragment', 'mash', 'capital-of', 'essay-ocean-salt', 'other', 'essay']);
   assert.deepEqual(c.lines[0], { id: 1, prompt: 'h', class: 'fragment' });
   assert.deepEqual(Object.keys(c.summary.byClass), CLASSES.slice());
-  assert.deepEqual(Object.values(c.summary.byClass), [1, 1, 1, 1, 1, 1]);
+  assert.deepEqual(Object.values(c.summary.byClass), CLASSES.map((k) => (['fragment', 'mash', 'capital-of', 'essay-ocean-salt', 'other', 'essay'].includes(k) ? 1 : 0)));
   assert.equal(c.summary.rows, 6);
   // a summary line (no prompt) in the input is skipped, so `read | classes` works
   assert.equal(classesOf([{ rows: 0, source: 'supabase', reason: NO_KEY }, { prompt: 'h' }]).summary.rows, 1);
@@ -108,7 +108,7 @@ test('each rule holds on its own shape and fails on the shape next to it', () =>
   assert.equal(classify('an essay on salt in seawater'), 'essay-ocean-salt');
   assert.equal(classify('Essay: why is the SEA salty'), 'essay-ocean-salt');
   assert.equal(classify('an essay on the ocean'), 'essay', 'no salt: the plain essay class');
-  assert.equal(classify('why is the ocean salty'), 'other', 'no essay: not an essay class');
+  assert.equal(classify('why is the ocean salty'), 'science', 'no essay: not an essay class (a why question is science since Day 2)');
   assert.equal(classify(''), 'other');
   assert.equal(classify(null), 'other');
 });
@@ -317,4 +317,45 @@ test('a refused or silent log is a one-line reason and exit 1, and the key never
   await assert.rejects(readMisses({ env: { SUPABASE_SERVICE_KEY: SVC }, fetch: hang, timeoutMs: 30 }), /did not answer in 30 ms/);
   await assert.rejects(readMisses({ env: { SUPABASE_SERVICE_KEY: SVC }, fetch: async () => { throw Object.assign(new TypeError('fetch failed'), { cause: { code: 'ECONNREFUSED' } }); } }), /could not be reached \(ECONNREFUSED\)/);
   await assert.rejects(readMisses({ env: { SUPABASE_SERVICE_KEY: SVC }, fetch: async () => new Response('{"a":1}', { status: 200 }) }), /not a list/);
+});
+
+// ---------------------------------------------------------------- Day 2: the octopus classes
+const DAY2 = [
+  ['make me a todo app', 'build'], ['build a calculator app', 'build'], ['create a pomodoro timer', 'build'], ['write me a tip calculator app please', 'build'],
+  ['what is 6 factorial', 'math'], ['gcd of 48 and 18', 'math'], ['is 97 a prime number', 'math'], ['prime factors of 360', 'math'], ['the 10th fibonacci number', 'math'], ['sum of 1 to 100', 'math'], ['12 choose 3', 'math'],
+  ['the mean of 4, 8, 15, 16, 23, 42', 'data'], ['median of 3, 9, 1, 7', 'data'], ['sort these numbers descending: 5, 2, 9, 1', 'data'], ['convert to json: name=Ann, age=30', 'data'], ['count the words in: the cat sat on the mat', 'data'], ['sum of 1.5, 2.5, 3', 'data'],
+  ['the git command to undo the last commit but keep the changes', 'tools'], ['how do I list files sorted by size in bash', 'tools'], ['curl command to download a file', 'tools'], ['bash command to sort files by size', 'tools'],
+  ['a regex that matches an email address', 'code'], ['a sql query to select all users older than 30', 'code'], ['write a bash script that counts the lines in a file', 'code'], ['write a css rule that centers a div', 'code'], ['what does map do in javascript', 'code'],
+  ['plan a 3-day trip to Rome', 'planning'], ['make a 5-day study plan for a biology exam', 'planning'], ['a 4-week plan to run a 5k', 'planning'], ['give me a 7 day meal plan', 'planning'], ['a study schedule for 3 days', 'planning'], ['plan my week', 'planning'],
+  ['write a short poem about the moon', 'writing'], ['write a haiku about rain', 'writing'], ['a haiku about the ocean', 'writing'], ['write a thank you note to my teacher', 'writing'], ['write a slogan for a coffee shop', 'writing'], ['can you help me write a birthday message for my mom', 'writing'],
+  ['recommend a good book to read', 'conversation'], ['what should I cook tonight', 'conversation'], ['suggest a name for my cat', 'conversation'], ['say something encouraging', 'conversation'], ['i cannot sleep what should i do', 'conversation'], ['give me a motivational quote', 'conversation'], ['i have a job interview tomorrow any tips', 'conversation'], ['how do I make friends at a new school', 'conversation'],
+  ['why is the sky blue', 'science'], ['how do vaccines work', 'science'], ['what causes the tides', 'science'], ['how does the heart pump blood', 'science'],
+  // the shape next to each: never a Day 2 class
+  ['write an essay about photosynthesis', 'essay'], ['the capital of Peru', 'capital-of'], ['h', 'fragment'], ['jgkafsjka', 'mash'],
+  ['make a sandwich', 'other'], ['build muscle', 'other'], ['what is 17 times 23', 'other'], ['2+2', 'other'], ['solve 3x+2=11', 'other'],
+  ['What is the capital of France?', 'other'], ['What is Paris?', 'other'], ['define ocean', 'other'], ['hi', 'other'], ['how are you', 'other'], ['thanks', 'other'], ['who are you', 'other'], ['what can you do', 'other'], ['bye', 'other'],
+];
+test('Day 2: each octopus class holds on its shape and no control row or converse turn lands in one', () => {
+  for (const [q, want] of DAY2) assert.equal(classify(q), want, JSON.stringify(q));
+  assert.deepEqual(CLASSES.slice(-10), ['build', 'math', 'data', 'tools', 'code', 'planning', 'writing', 'conversation', 'science', 'other']);
+});
+test('Day 2: a row carrying its own class keeps it, a bad class name falls back to classify, byClass gains the key', () => {
+  const c = classesOf([{ id: 'cur-math-1', prompt: 'is 97 a prime number', class: 'math' }, { id: 'dream-2-code-1', prompt: 'how are you', class: 'code' }, { id: 'x', prompt: 'how are you', class: 'Bad Name' }, { id: 'y', prompt: 'why is the sky blue', class: 'new-class' }]);
+  assert.deepEqual(c.lines.map((l) => l.class), ['math', 'code', 'other', 'new-class']);
+  assert.equal(c.summary.byClass.math, 1);
+  assert.equal(c.summary.byClass['new-class'], 1);
+  assert.equal(c.summary.rows, 4);
+});
+test('Day 2: read --file keeps a row class and a dream expect, so the driver sees them', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'misses-day2-'));
+  try {
+    const file = path.join(dir, 'dreams.jsonl');
+    fs.writeFileSync(file, JSON.stringify({ id: 'dream-2-math-1', at: '2026-10-01T03:00:00.000Z', prompt: 'lcm of 8 and 12', reply: '24', route: 'dream', class: 'math', expect: { contains: ['24'] }, status: 'open', generation: 2 }) + '\n');
+    const r = spawnSync(process.execPath, [CLI, 'read', '--status', 'open', '--file', file], { encoding: 'utf8', windowsHide: true });
+    assert.equal(r.status, 0, r.stderr);
+    const rows = r.stdout.trim().split(/\r?\n/).map((l) => JSON.parse(l));
+    assert.equal(rows[0].class, 'math');
+    assert.deepEqual(rows[0].expect, { contains: ['24'] });
+    assert.equal(rows[0].reply, '24');
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });

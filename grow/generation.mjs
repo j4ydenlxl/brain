@@ -9,6 +9,8 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { validateCell, validateTest, parseJsonl, importsOf, FORBIDDEN, REFUSAL_RE } from './contract.mjs';
+import { buildRequest } from './app-slug.mjs'; // Day 2, the builder arm: a build request names the app the organism writes
+import { NAME_RE, APP_EXTS, MAX_FILE_BYTES, MAX_APP_BYTES, MIN_TESTS, APP_TEST_IMPORTS } from './probe-app.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_ROOT = path.resolve(HERE, '..');
@@ -19,6 +21,10 @@ export const TOKEN_NAMES = Object.freeze(['VERCEL_TOKEN', 'VERCEL_OIDC_TOKEN', '
 export const CLOUD_ENV = Object.freeze(['CLAUDE_CODE_REMOTE', 'GITHUB_ACTIONS', 'VERCEL', 'CI']);
 export const DEFAULT_LANES = Object.freeze(['direct', 'baked']);
 export const SEED = 'grow/seed-misses.jsonl';
+/** The curriculum (Day 2, the octopus: one seed set per domain, written by a human session) and the dreams (grow/dream.mjs
+ *  collect): both are read as open misses on top of the primary source, every generation, until the organism answers them. */
+export const CURRICULUM = 'grow/curriculum.jsonl';
+export const DREAMS = 'grow/dreams.jsonl';
 export const SUITES = Object.freeze(['test/grow-sandbox.test.mjs', 'test/grow-store.test.mjs', 'test/judge.test.mjs', 'test/grow-misses.test.mjs', 'test/ask-http.test.mjs']);
 export const TRAILER = 'Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>';
 const CLI_MARKS = ['growing', 'grown', 'skipped']; // grow/misses.mjs MARKS
@@ -183,11 +189,45 @@ export function conciseDirective(root) {
   }
   throw new Fail('no CONCISE directive in CLAUDE.md: a brief without it is not his order');
 }
+/** The builder arm's brief (GROW.md step 2b): the CONCISE directive, the requests, the four files, the rules grow/probe-app.mjs enforces. */
+export function buildBrief({ root, n, slug, name, dir, prompts, ids }) {
+  const d = dir.replace(/\/$/, '') + '/';
+  const lines = [
+    conciseDirective(root), '',
+    '# Build brief: ' + name + ' (slug ' + slug + ', generation ' + n + ', the builder arm)', '',
+    'Requests (misses ' + ids.join(', ') + '):', ...prompts.map((p) => '- ' + JSON.stringify(p)), '',
+    'You are the builder arm of the organism (GROW.md step 2b). Write the whole app, native and complete, under `' + d + '`:',
+    '- `index.html`: the page, self contained (its own CSS inline), loading `./app.mjs` with one `<script type="module" src="./app.mjs"></script>`;',
+    '  no other origin, no http(s):// address, no code of the forbidden list inline. Phone width works (16px gutter, no horizontal scroll).',
+    '- `app.mjs`: the logic as exported pure functions plus `mount(doc)` wiring the page, called only when a document exists',
+    '  (`if (typeof document !== \'undefined\') mount(document);`). A pure ES module: imports only `./x.mjs` files of the app directory.',
+    '  Never: fetch(), XMLHttpRequest, WebSocket, EventSource, sendBeacon, import(), require(), eval(), new Function, process, a node:',
+    '  module, child_process, worker_threads, an http(s):// address, document.cookie, indexedDB. localStorage is fine (the viewer\'s browser keeps the data).',
+    '- `test.mjs`: at least ' + MIN_TESTS + ' `test(...)` over the exported functions; imports only `./app.mjs` (or another ./x.mjs) and ' + APP_TEST_IMPORTS.join(', ') + '.',
+    '  It runs under node 24 inside the sandbox: `node --test test.mjs` must pass with 0 failures.',
+    '- `brief.md`: one paragraph: what the app does and how to use it.',
+    'Files: top level only, names matching ' + String(NAME_RE) + ', extensions ' + APP_EXTS.join(' ') + ', each under ' + MAX_FILE_BYTES + ' bytes, the app under ' + MAX_APP_BYTES + ' bytes.',
+    'The driver already wrote `' + d + 'app.json`: leave it. Never a network call, a key, a token, a file outside `' + d + '`, or an edit to any other file of the repository.',
+    'Validate until it passes: `node grow/build.mjs validate ' + d.slice(0, -1) + '` must print {"ok":true}; then `node --test ' + d + 'test.mjs`.',
+    'The app must do what the request says, in full. A survivor is served at /apps/' + slug + '/ of the site and the organism answers the request with that URL.',
+    'Report: the exact printed line of the validate command and the `# pass` and `# fail` lines of the test run. Nothing else.',
+  ];
+  return lines.join('\n') + '\n';
+}
 export const CLASS_RULES = Object.freeze({
   fragment: 'One to three letters and nothing else ("h", "xz"), never a greeting the organism answers ("hi", "yo"). The answer quotes the input in double quotes, says it is not a word and asks for a whole word or a question, in at least 6 words.',
   mash: 'A keyboard mash or row walk of 6 or more letters, no space ("jgkafsjka", "asdfgh"): 5 letters running with no vowel (y counts as one), every letter on the home or the bottom row, 5 neighbouring keys of one row in order, or a pair no word has ("jg", "qw", "zx"), as grow/misses.mjs classes reads it; real words ("strengthened", "property") are not. The answer quotes the input in double quotes and asks for a real word or a question, in at least 6 words.',
   'capital-of': 'The bare shape "the capital of X", "capital of X" or "X capital"; can is false for a prompt opening with what, which or where (the knowledge tier answers those). The answer names the capital in plain letters ("Brasilia").',
   'essay-ocean-salt': 'An essay on why the ocean or the sea is salty, in any phrasing. The answer is an essay of at least 150 words that contains "salt" and at least one of river, rock, mineral or evaporat(ion).',
+  // Day 2, the octopus: one arm per domain of "everything", each seeded with a curriculum (judge/dev + judge/heldout)
+  math: 'Whole-number theory in words or symbols: n factorial ("what is 6 factorial", "factorial of 5", "7!"), the gcd and the lcm of two numbers (also "greatest common divisor", "least common multiple"), a primality question ("is 97 a prime number", "is 221 prime"), the prime factors of n, the nth fibonacci number (1, 1, 2, 3, 5, 8: the 10th is 55), how many divisors n has, the sum of 1 to n, n choose k. can is false for plain arithmetic ("what is 17 times 23", "2+2", "15% of 80", "square root of 144") and for equations ("solve 3x+2=11"): the exact tier answers those. The answer COMPUTES the number (never a table of typed answers: the held-out rows use other numbers) and states it in at most 60 words with the number in plain digits; a primality answer says "is prime" or "is not prime".',
+  data: 'A small list of numbers or fields in the prompt and one statistic or transform on it: the mean or average, the median, the mode, the range, the sum, the largest or smallest, a sort ascending or descending ("sort these numbers descending: 5, 2, 9, 1" answers "9, 5, 2, 1"), the word count of the text after a colon ("count the words in: the cat sat on the mat"), key=value pairs to JSON ("convert to json: name=Ann, age=30" answers {"name":"Ann","age":30}, strings quoted, numbers bare). can is false for arithmetic with no list ("2+2", "what is 17 times 23") and for equations. The answer computes from the numbers in the prompt (the held-out rows use other lists), in at most 60 words, the result in plain digits, one decimal place only when it is not whole ("12.5").',
+  science: 'A why, how or what-causes question about the everyday natural world, on these topics and no other: why the sky is blue (scattering), how vaccines work (the immune system, antibodies), what causes the tides (the moon, gravity), why leaves change colour in autumn (chlorophyll), how airplanes fly (wings, lift, pressure), what causes earthquakes (plates, faults), how the heart pumps blood (chambers, contraction), what causes a rainbow (light refracted), why there are seasons (the tilt of the axis), what causes thunder (lightning heats air), why ice floats (density), why stars twinkle (the atmosphere). The held-out rows ask the same topics in other words. can is false for "what is X" and "define X" (the knowledge tier answers those) and for every greeting or question about the organism. The answer is a plain explanation of at least 40 words naming the mechanism in those words.',
+  tools: 'A one-line command question for git, bash or curl, in these tasks and no other. git: undo the last commit but keep the changes (git reset --soft HEAD~1), throw away the changes to one file (git checkout -- or git restore), create a branch and switch to it (git checkout -b, git switch -c), the log one line per commit (--oneline), change the last commit message (--amend), stash the changes. bash: list files sorted by size (ls -lS), count the files in a folder (ls | wc -l), find a file by name (find), the size of a folder (du -sh), search a word in all files of a folder (grep -r), show running processes (ps aux). curl: download a file (-O or -o), a JSON POST (-X POST -d with a content-type header), only the response headers (-I), follow redirects (-L). The held-out rows ask the same tasks in other words. can is false when the organism\'s command reader already answers (count the lines of a named file, head or tail of a named file, mkdir, rm, cp, mv: ask it). The answer gives the command on its own line or in a code span, then one sentence on what it does.',
+  code: 'A program fragment to write or explain, beyond the native spec reader (which answers "write a javascript function that ..." and "write a python function that ...": not this class). The tasks: a regex (an email address, a US phone number, a URL), a SQL query (select rows by a condition, count per group, the N most recent with order by and limit), a bash script that counts lines (wc -l), a JavaScript or Python class (a stack with push and pop, a queue with enqueue and dequeue, a bank account with deposit and withdraw), a JavaScript function that debounces (setTimeout and clearTimeout) or returns the fibonacci sequence, a CSS rule (centre a div, centre text), the HTML for a button that shows an alert or for a text input and a button, reading a CSV file in Python (import csv), reversing a string in Python ([::-1]), what map or filter does to a JavaScript array. The held-out rows ask the same tasks in other words. can is false for a "write a function that ..." prompt the spec reader answers, for greetings and for arithmetic. The answer is the code in a fenced block, then one or two sentences.',
+  planning: 'A day-by-day or week-by-week plan: "plan a N-day trip to <place>", "make a N-day study plan for a <subject> exam", "a N-week plan to run a 5k" (or to learn an instrument, a language, a skill), "give me a N day meal plan", "a study schedule for N days", "a N day workout plan". The number N and the subject come from the prompt (the held-out rows use other N and other subjects); can is true only when the prompt names a count of days or weeks. The answer has a heading per unit, "Day 1" to "Day N" or "Week 1" to "Week N" in exactly those words, each with concrete items naming the place, subject or activity, at least 60 words in all (40 for 2 or 3 days); a meal plan names breakfast, lunch and dinner.',
+  writing: 'A short creative piece on a subject from the prompt: a short poem about X (20 to 200 words), a haiku about X (three lines, 5 to 30 words), a limerick about X (five lines, 20 to 80 words), a short story about X (at least 100 words), a thank you note to my Y (at least 30 words, says thank), a slogan for a Z (at most 25 words), a birthday message for my mom or dad (at least 15 words, says birthday and the person). The subject X, Y or Z is any noun phrase (the held-out rows use other subjects) and the piece names it in its own words. can is false for an essay (another class answers essays), for code and for questions. The answer is the piece itself, nothing before it.',
+  conversation: 'An advice or recommendation turn the conversation region does not carry: recommend a book, a movie, a podcast; what should I cook, eat, do this weekend; suggest a name for my cat or dog, a hobby, a sport; say something encouraging or nice; a motivational or inspiring quote; I cannot sleep, I am nervous about my exam, a job interview or a first date tomorrow, any tips; how do I make friends at a new school. can is false for greetings, thanks, goodbyes, "who are you", "what can you do" and every turn act/converse.mjs answers (ask the organism: those are answered today), for facts, arithmetic and definitions. The answer is warm, concrete and specific to the subject in the prompt (it names the thing it recommends): 8 to 80 words for a quote, at least 15 to 30 words otherwise, as the dev rows show.',
 });
 const CLAUSES = {
   equals: '`equals`: the whole answer is this text.',
@@ -203,7 +243,7 @@ const STRATEGY = {
   direct: 'Lane direct: write the cell from the dev rows and your own knowledge. `node grow/generation.mjs ask "<q>"` shows what the organism answers today (keep can(q) false there).',
 };
 
-export function brief({ root, n, lane, cls, id, dir, prompts, devRel, devLines, devRows, baseline, sibling }) {
+export function brief({ root, n, lane, cls, id, dir, prompts, devRel, devLines, devRows, baseline, sibling, dreams = [] }) {
   const used = [...new Set(devRows.flatMap((r) => Object.keys((r && r.expect) || {})))].filter((k) => CLAUSES[k]);
   const meta = '{ id: \'' + id + '\', class: \'' + cls + '\', generation: ' + n + ', lane: \'' + lane + '\', grownFrom: ' + JSON.stringify(prompts) + ', version: 1 }';
   const forbid = FORBIDDEN.map(([re, what]) => what + ' `' + re.source + '`').join('; ');
@@ -225,6 +265,11 @@ export function brief({ root, n, lane, cls, id, dir, prompts, devRel, devLines, 
     '## The dev rows (' + devRel + ', verbatim: `examples` and examples.jsonl hold exactly these)', '',
     '```jsonl', ...devLines, '```', '',
     'What each expect clause means (judge/judge.mjs; text trimmed, compared case-insensitively):', ...used.map((k) => '- ' + CLAUSES[k]), '',
+    ...(dreams.length ? [
+      '## Dreamed tasks (route dream, GROW.md step 7)', '',
+      'The dream arm proposed these tasks of the class and solved them; they are misses this cell grows for, NOT dev rows: never add them to `examples` or examples.jsonl (those hold exactly the dev rows). Each line is { q, expect, answer } with the solver\'s own answer:', '',
+      '```jsonl', ...dreams.map((d) => JSON.stringify({ q: d.prompt, expect: d.expect ?? null, answer: d.reply ?? null })), '```', '',
+    ] : []),
     '## The lane: ' + lane, '', STRATEGY[lane] || STRATEGY.direct, '',
     '## Files you may not open', '',
     'Never open, read, list or grep judge/heldout/, judge/control.jsonl or state/grow/baseline/: a survivor is real only because no arm saw the rows it is graded on. Do not open the other arms\' directories under state/grow/gen-' + n + '/.', '',
@@ -268,6 +313,15 @@ async function prepare(root, flags, env) {
   const g = runNode(root, 'grow/misses.mjs', ['read', '--status', 'growing', ...(source === 'supabase' ? [] : ['--file', flags.misses || SEED])], { env });
   if (g.code !== 0) blocked.push('misses: the growing read failed, a miss stuck at growing stays there: ' + why1(g));
   else for (const m of rowsOf(g.stdout)) if (m && m.generation !== n && !rows.some((o) => o.id === m.id)) rows.push(m);
+  // Day 2: the curriculum and the dreams are open misses too, read every generation until the organism answers them
+  // (SENSE below marks the answered ones grown); their files are never written by the driver
+  const extra = { curriculum: 0, dreams: 0 };
+  for (const [key, rel] of [['curriculum', CURRICULUM], ['dreams', DREAMS]]) {
+    if (!fs.existsSync(path.join(root, rel))) continue;
+    const x = runNode(root, 'grow/misses.mjs', ['read', '--status', 'open', '--file', rel], { env });
+    if (x.code !== 0) { blocked.push(key + ': node grow/misses.mjs read --file ' + rel + ' exited ' + x.code + ': ' + why1(x)); continue; }
+    for (const m of rowsOf(x.stdout)) if (m && m.id !== null && m.id !== undefined && !rows.some((o) => o.id === m.id)) { rows.push(m); extra[key]++; }
+  }
   const genMisses = path.join(genDir, 'misses.jsonl');
   fs.writeFileSync(genMisses, jsonl(rows)); // the seed file is never written
   // SENSE proper: a miss the organism answers today (a cell grown since it was logged, or a tier that answers it) is
@@ -294,6 +348,34 @@ async function prepare(root, flags, env) {
   for (const l of rowsOf(c.stdout)) if (l.class && !answered.has(l.id)) { if (!byClass.has(l.class)) byClass.set(l.class, []); byClass.get(l.class).push(l); }
   const kept = [];
   let skipped = 0;
+  // Day 2, the builder arm (GROW.md step 2b): a build request ("make me a todo app") is not a cell class. One build
+  // brief per app (slug): the arm writes the app, finish runs it in the sandbox, judges it and serves a survivor. An
+  // app grown/apps.json already serves grows its misses here without an arm (the site answers them with its URL).
+  const buildRows = byClass.get('build') || [];
+  byClass.delete('build');
+  const builds = [];
+  let buildGrowing = 0;
+  if (buildRows.length) {
+    const served = new Set((() => { const a = readJson(path.join(root, 'grown', 'apps.json')); return a && Array.isArray(a.apps) ? a.apps.map((x) => x && x.slug) : []; })());
+    const bySlug = new Map();
+    for (const l of buildRows) {
+      const req = buildRequest(l.prompt);
+      if (!req) { blocked.push('build: ' + l.id + ': not a build request grow/app-slug.mjs reads: ' + JSON.stringify(String(l.prompt).slice(0, 80))); skipped++; continue; }
+      if (!bySlug.has(req.slug)) bySlug.set(req.slug, { ...req, ls: [] });
+      bySlug.get(req.slug).ls.push(l);
+    }
+    for (const [slug, b] of bySlug) {
+      const ids = b.ls.map((l) => l.id).filter((x) => x !== null && x !== undefined);
+      if (served.has(slug)) { markMisses(root, env, { file: genMisses, ids, status: 'grown', cell: 'app:' + slug, generation: n, supabase: source === 'supabase' }, blocked); continue; }
+      const dir = 'state/grow/gen-' + n + '/build/' + slug;
+      const file = path.join(genDir, 'build', 'brief-' + slug + '.md');
+      const prompts = b.ls.map((l) => l.prompt);
+      writeJson(path.join(root, dir, 'app.json'), { slug, name: b.name, prompt: prompts[0], generation: n, misses: ids });
+      fs.writeFileSync(file, buildBrief({ root, n, slug, name: b.name, dir, prompts, ids }));
+      buildGrowing += markMisses(root, env, { file: genMisses, ids, status: 'growing', generation: n, supabase: source === 'supabase' }, blocked);
+      builds.push({ slug, name: b.name, prompt: prompts[0], prompts, misses: ids, dir, brief: relOf(root, file) });
+    }
+  }
   for (const [cls, ls] of byClass) {
     const has = (d) => CLASS_RE.test(cls) && fs.existsSync(path.join(root, 'judge', d, cls + '.jsonl')); // by name: never opened
     const b = has('heldout') && has('dev') ? runNode(root, 'judge/baseline.mjs', [cls], { env, timeout: 20 * MIN }) : null;
@@ -310,7 +392,7 @@ async function prepare(root, flags, env) {
     skipped += ls.length;
   }
   const ids = kept.flatMap((k) => k.ls.map((l) => l.id)).filter((x) => x !== null && x !== undefined);
-  const growing = markMisses(root, env, { file: genMisses, ids, status: 'growing', generation: n, supabase: source === 'supabase' }, blocked);
+  const growing = markMisses(root, env, { file: genMisses, ids, status: 'growing', generation: n, supabase: source === 'supabase' }, blocked) + buildGrowing;
   let parent = flags.parent ?? null; // else the last tournament's winner
   if (parent === null) {
     const gs = readJson(path.join(root, 'grown', 'generations.json'));
@@ -318,24 +400,26 @@ async function prepare(root, flags, env) {
     if (last && lanes.includes(last.parent)) parent = last.parent;
   }
   const classes = [], briefs = [];
+  const rowById = new Map(rows.filter((m) => m && m.id !== null && m.id !== undefined).map((m) => [m.id, m]));
   for (const k of kept) {
     const prompts = k.ls.map((l) => l.prompt);
+    const dreams = k.ls.map((l) => rowById.get(l.id)).filter((m) => m && m.route === 'dream');
     const arms = [];
     for (const lane of lanes) for (let i = 1; i <= (lane === parent ? 2 : 1); i++) {
       const id = armId(k.cls, lane, n, i);
       const dir = 'state/grow/gen-' + n + '/' + lane + '/' + id;
       const file = path.join(genDir, lane, 'brief-' + k.cls + (i > 1 ? '-' + i : '') + '.md');
       fs.mkdirSync(path.dirname(file), { recursive: true });
-      fs.writeFileSync(file, brief({ root, n, lane, cls: k.cls, id, dir, prompts, devRel: k.devRel, devLines: k.devLines, devRows: k.devRows, baseline: k.baseline, sibling: i > 1 ? armId(k.cls, lane, n, 1) : null }));
+      fs.writeFileSync(file, brief({ root, n, lane, cls: k.cls, id, dir, prompts, devRel: k.devRel, devLines: k.devLines, devRows: k.devRows, baseline: k.baseline, sibling: i > 1 ? armId(k.cls, lane, n, 1) : null, dreams }));
       arms.push({ lane, dir, id, brief: relOf(root, file) });
       briefs.push(relOf(root, file));
     }
-    classes.push({ class: k.cls, misses: k.ls.map((l) => l.id), prompts, dev: k.devRel, devRows: k.devRows.length, baseline: k.baseline, arms });
+    classes.push({ class: k.cls, misses: k.ls.map((l) => l.id), prompts, dreams: dreams.length, dev: k.devRel, devRows: k.devRows.length, baseline: k.baseline, arms });
   }
-  writeJson(path.join(genDir, 'plan.json'), { generation: n, at, lanes, parent, missSource: source, classes, blocked });
+  writeJson(path.join(genDir, 'plan.json'), { generation: n, at, lanes, parent, missSource: source, classes, builds, blocked });
   fs.writeFileSync(path.join(genDir, 'blocked.txt'), blocked.map((l) => l + '\n').join(''));
   return {
-    generation: n, classes: classes.length, briefs: briefs.length, misses: { read: rows.length, answered: answered.size, growing, skipped, source },
+    generation: n, classes: classes.length, briefs: briefs.length, builds: builds.length, misses: { read: rows.length, answered: answered.size, growing, skipped, source, curriculum: extra.curriculum, dreams: extra.dreams },
     baseline: Object.fromEntries(kept.map((k) => [k.cls, k.baseline.score])), parent, plan: relOf(root, path.join(genDir, 'plan.json')), blocked, at,
   };
 }
@@ -426,9 +510,27 @@ export function candidates(root, n, lanes, plan = null) {
   }
   return out;
 }
+/** The builder arm's candidates: state/grow/gen-<n>/build/<slug>/ with the driver's app.json (an arm may not invent an app); written says the arm left an index.html. */
+export function appCandidates(root, n, plan) {
+  const base = path.join(genDirOf(root, n), 'build');
+  const fromPlan = plan && Array.isArray(plan.builds) ? plan.builds : [];
+  let slugs = [];
+  try { slugs = fs.readdirSync(base, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort(); } catch { slugs = []; }
+  const out = [];
+  for (const slug of slugs) {
+    const dir = path.join(base, slug);
+    const app = readJson(path.join(dir, 'app.json'));
+    if (!app || app.slug !== slug) continue;
+    const pb = fromPlan.find((x) => x && x.slug === slug);
+    out.push({ slug, name: typeof app.name === 'string' ? app.name : slug, dir, rel: relOf(root, dir), misses: Array.isArray(app.misses) ? app.misses : pb && Array.isArray(pb.misses) ? pb.misses : [], written: fs.existsSync(path.join(dir, 'index.html')) });
+  }
+  return out;
+}
 /** The tournament: survivors, then candidates, then name; the first is the parent. */
 export const rankLanes = (stats) => Object.entries(stats).sort((a, b) => (b[1].survivors - a[1].survivors) || (b[1].candidates - a[1].candidates) || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)).map((e) => e[0]);
-export const commitMessage = (n, survivors, total, parent) => 'gen ' + n + ': ' + survivors + ' of ' + total + ' survived, parent ' + parent;
+/** What SHIP commits: the store, the built site, and the dreams file when it exists (collect writes it after a finish, so the next finish ships it). */
+export const shipPaths = (root) => ['grown/', 'web/dist/', ...(fs.existsSync(path.join(root, DREAMS)) ? [DREAMS] : [])];
+export const commitMessage = (n, survivors, total, parent, apps = 0) => 'gen ' + n + ': ' + survivors + ' of ' + total + ' survived, parent ' + parent + (apps ? ', ' + apps + (apps === 1 ? ' app' : ' apps') + ' built' : '');
 
 function finish(root, flags, env) {
   const n = genOf(flags, root);
@@ -436,19 +538,23 @@ function finish(root, flags, env) {
   const plan = readJson(path.join(genDir, 'plan.json'));
   const lanes = flags.lanes ? lanesOf(flags.lanes) : plan && Array.isArray(plan.lanes) && plan.lanes.length ? plan.lanes : [...DEFAULT_LANES];
   const cands = candidates(root, n, lanes, plan);
+  const apps = appCandidates(root, n, plan);
   const b = backendOf(env);
   const extra = flags['sandbox-args'] ? String(flags['sandbox-args']).split(/\s+/).filter(Boolean) : [];
   const sbArgs = (c) => ['run', c.rel, '--heldout', 'judge/heldout/' + c.class + '.jsonl', '--control', 'judge/control.jsonl', '--out', c.rel + '/result.json', ...(b.backend === 'here' ? ['--backend', 'here'] : []), ...extra];
   const laneArgs = (verb, lane) => [verb, String(n), lane, '--dir', 'state/grow/gen-' + n + '/' + lane];
+  const appArgs = (a) => ['run', a.rel, '--app', '--out', a.rel + '/result.json', ...(b.backend === 'here' ? ['--backend', 'here'] : []), ...extra];
+  const promoteArgs = (a) => ['promote', String(n), a.slug, '--dir', 'state/grow/gen-' + n + '/build'];
   const withC = lanes.filter((l) => cands.some((c) => c.lane === l));
   const clsList = [...new Set(cands.map((c) => c.class).filter(Boolean))];
   if (flags.dry) {
     const would = [...clsList.map((k) => 'node judge/baseline.mjs ' + k), ...cands.filter((c) => c.class).flatMap((c) => ['node grow/sandbox.mjs ' + sbArgs(c).join(' '), 'node judge/select.mjs ' + c.rel])];
+    for (const a of apps) would.push('node grow/sandbox.mjs ' + appArgs(a).join(' '), 'node grow/build.mjs judge ' + a.rel, ...(flags['no-promote'] ? [] : ['node grow/build.mjs ' + promoteArgs(a).join(' ')]));
     for (const l of withC) for (const v of ['shard', 'promote']) if (!flags['no-' + (v === 'shard' ? 'store' : v)]) would.push('node grow/store.mjs ' + laneArgs(v, l).join(' '));
     if (!flags['no-build']) would.push('node web/build.mjs');
     if (!flags['no-tests']) would.push('node --test --test-reporter=tap ' + SUITES.join(' '));
-    if (!flags['no-commit']) would.push('git add -- grown/ web/dist/', 'git commit -m "' + commitMessage(n, '<survivors>', '<candidates>', '<parent>') + '" -m "' + TRAILER + '" -- grown/ web/dist/', ...(flags['no-push'] ? [] : ['git push']));
-    return { dry: true, generation: n, backend: b.backend, why: b.why, candidates: cands.map(({ dir, rel, ...c }) => ({ dir: rel, ...c })), would, at: new Date().toISOString() };
+    if (!flags['no-commit']) would.push('git add -- ' + shipPaths(root).join(' '), 'git commit -m "' + commitMessage(n, '<survivors>', '<candidates>', '<parent>') + '" -m "' + TRAILER + '" -- ' + shipPaths(root).join(' '), ...(flags['no-push'] ? [] : ['git push']));
+    return { dry: true, generation: n, backend: b.backend, why: b.why, candidates: cands.map(({ dir, rel, ...c }) => ({ dir: rel, ...c })), apps: apps.map(({ dir, rel, ...a }) => ({ dir: rel, ...a })), would, at: new Date().toISOString() };
   }
   const lock = lockOf(root, env);
   if (!lock.ok) throw new Fail(lock.line, 1);
@@ -458,7 +564,7 @@ function finish(root, flags, env) {
   const blocked = [];
   const stats = Object.fromEntries(lanes.map((l) => [l, { candidates: cands.filter((c) => c.lane === l).length, survivors: 0 }]));
   const total = cands.length, live = b.backend !== 'none' && !b.expired;
-  if (!total) blocked.push('no candidate: no arm wrote a cell.mjs under state/grow/gen-' + n + '/<lane>/<id>/');
+  if (!total && !apps.length) blocked.push('no candidate: no arm wrote a cell.mjs under state/grow/gen-' + n + '/<lane>/<id>/');
   else if (!live) blocked.push('sandbox: ' + b.why);
   const ran = total > 0 && live;
   // the baseline again NOW (grown/ untouched until promote): select refuses one of other organism code
@@ -487,11 +593,35 @@ function finish(root, flags, env) {
     if (c.survived) stats[c.lane].survivors++;
   }
   const survivors = cands.filter((c) => c.survived).length, judged = cands.filter((c) => c.judged).length, unrun = cands.filter((c) => c.unrun).length;
+  // Day 2, the builder arm (GROW.md step 2b): every app through the sandbox (--app), the app judge, then promote (served
+  // at /apps/<slug>/, listed in grown/apps.json). An app that fails is a loser (its misses reopen), never a void: the cell
+  // tournament and the apps are separate; a generation with no cell candidate still ships a built app.
+  const appStats = { candidates: apps.length, built: 0, promoted: 0, slugs: [] };
+  for (const a of apps) {
+    a.survived = a.promoted = false;
+    if (!live) { blocked.push('sandbox: app ' + a.slug + ': ' + b.why); continue; }
+    if (!a.written) { blocked.push('build: app ' + a.slug + ': the arm wrote no index.html under ' + a.rel + ': its misses reopen'); continue; }
+    const s = runNode(root, 'grow/sandbox.mjs', appArgs(a), { env, timeout: 20 * MIN });
+    if (s.code !== 0) { blocked.push('sandbox: app ' + a.slug + ': exit ' + s.code + ': ' + why1(s)); continue; }
+    const j = runNode(root, 'grow/build.mjs', ['judge', a.rel], { env, timeout: 5 * MIN });
+    const verdict = j.code === 0 ? readJson(path.join(a.dir, 'verdict.json')) : null;
+    if (!verdict) { blocked.push('judge: app ' + a.slug + ': exit ' + j.code + ': ' + why1(j)); continue; }
+    a.survived = verdict.survived === true;
+    if (!a.survived) { blocked.push('app ' + a.slug + ' did not survive: ' + (Array.isArray(verdict.why) && verdict.why.length ? verdict.why.join('; ') : 'no why')); continue; }
+    appStats.built++;
+    if (flags['no-promote']) continue;
+    const p = runNode(root, 'grow/build.mjs', promoteArgs(a), { env, timeout: 5 * MIN });
+    const pj = lastJson(p.stdout);
+    if (p.code !== 0 || !pj) { blocked.push('promote: app ' + a.slug + ': exit ' + p.code + ': ' + why1(p)); continue; }
+    a.promoted = (Array.isArray(pj.promoted) && pj.promoted.includes(a.slug)) || (Array.isArray(pj.skipped) && pj.skipped.includes(a.slug));
+    if (a.promoted) { appStats.promoted++; appStats.slugs.push(a.slug); }
+  }
+  const tournament = total > 0;
   // no verdict at all, or a candidate that did not run, is a broken run, not a tournament: nothing recorded, the generation runs again
-  let block = !total ? 'no candidate' : !live ? (b.expired ? 'the sandbox token expired' : 'no sandbox backend') : !judged ? 'no candidate was judged' : unrun ? unrun + ' of ' + total + ' candidates did not run' : null;
+  let block = !total ? (appStats.promoted ? null : apps.length ? 'no app survived' : 'no candidate') : !live ? (b.expired ? 'the sandbox token expired' : 'no sandbox backend') : !judged ? 'no candidate was judged' : unrun ? unrun + ' of ' + total + ' candidates did not run' : null;
   if (ran && unrun) blocked.push('void: ' + unrun + ' of ' + total + ' candidates did not run (a sandbox or select exit that is not 0 is infrastructure, not a loss): generation ' + n + ' is not recorded and runs again');
   else if (ran && !judged) blocked.push('void: no candidate was judged: generation ' + n + ' is not recorded and runs again');
-  const parent = block ? null : rankLanes(stats)[0] ?? null;
+  const parent = block || !tournament ? null : rankLanes(stats)[0] ?? null;
   // step 5: per lane, shard (the archive) then promote (survivors into grown/, one cell per class: the champion);
   // the parent lane goes first, so it wins a tie for a class (grow/store.mjs promote)
   const store = block ? { all: 'skipped: ' + block } : {};
@@ -515,7 +645,7 @@ function finish(root, flags, env) {
   }
   // the ids grown/ holds after step 5: a survivor among them is grown for its misses whether this run or an earlier, half-landed one promoted it
   const heldIds = new Set((() => { const ix = readJson(path.join(root, 'grown', 'index.json')); return ix && Array.isArray(ix.cells) ? ix.cells.map((c) => String(c.id)) : []; })());
-  const record = !block && !promoteFailed;
+  const record = !block && !promoteFailed && tournament; // an app alone is no tournament: generations.json keeps the tournaments
   if (promoteFailed) block = 'the promote failed';
   let built = block ? 'skipped: ' + block : 'skipped (--no-build)';
   if (!block && !flags['no-build']) {
@@ -524,7 +654,8 @@ function finish(root, flags, env) {
     if (!built) { block = 'the build failed'; blocked.push('build: node web/build.mjs exited ' + r.code + ': ' + why1(r)); }
   }
   // the tournament, in grown/generations.json (prepare reads the parent from it)
-  const planMisses = plan && Array.isArray(plan.classes) ? plan.classes.flatMap((c) => c.misses || []) : [];
+  const planBuilds = plan && Array.isArray(plan.builds) ? plan.builds : [];
+  const planMisses = [...(plan && Array.isArray(plan.classes) ? plan.classes.flatMap((c) => c.misses || []) : []), ...planBuilds.flatMap((x) => (x && Array.isArray(x.misses) ? x.misses : []))];
   if (record) {
     const gFile = path.join(root, 'grown', 'generations.json');
     const gs = readJson(gFile);
@@ -543,13 +674,14 @@ function finish(root, flags, env) {
   let pushed = block ? 'skipped: nothing committed' : 'skipped (--no-commit)';
   if (!block && !flags['no-commit']) {
     const git = (args, o) => runBin(root, 'git', args, { env, ...o });
-    const add = git(['add', '--', 'grown/', 'web/dist/']);
+    const ship = shipPaths(root);
+    const add = git(['add', '--', ...ship]);
     pushed = 'skipped: nothing committed';
     if (add.code !== 0) { committed = false; blocked.push('commit: git add exited ' + add.code + ': ' + why1(add)); }
-    else if (git(['diff', '--cached', '--quiet', '--', 'grown/', 'web/dist/']).code === 0) committed = 'nothing to commit';
+    else if (git(['diff', '--cached', '--quiet', '--', ...ship]).code === 0) committed = 'nothing to commit';
     else {
       const email = lastLine(git(['config', 'user.email']).stdout) || 'j4ydenlxl@users.noreply.github.com';
-      const cm = git(['-c', 'user.name=jayden', '-c', 'user.email=' + email, 'commit', '-m', commitMessage(n, survivors, total, parent), '-m', TRAILER, '--', 'grown/', 'web/dist/']);
+      const cm = git(['-c', 'user.name=jayden', '-c', 'user.email=' + email, 'commit', '-m', commitMessage(n, survivors, total, parent, appStats.promoted), '-m', TRAILER, '--', ...ship]);
       committed = cm.code === 0;
       if (!committed) blocked.push('commit: git commit exited ' + cm.code + ': ' + why1(cm));
     }
@@ -571,14 +703,29 @@ function finish(root, flags, env) {
     grown += markMisses(root, env, { file: genMisses, ids: pc.misses || [], status: 'grown', cell: cell.id, generation: n, supabase }, blocked);
     for (const id of pc.misses || []) grownIds.add(id);
   }
+  // a promoted app's misses are grown with the cell app:<slug> (the site answers them with the URL); an uncommitted
+  // promote converges next generation: prepare reads grown/apps.json and grows the misses without an arm
+  for (const pb of planBuilds) {
+    const a = block || !pb ? null : apps.find((x) => x.slug === pb.slug && x.promoted);
+    if (!a) continue;
+    grown += markMisses(root, env, { file: genMisses, ids: Array.isArray(pb.misses) ? pb.misses : [], status: 'grown', cell: 'app:' + pb.slug, generation: n, supabase }, blocked);
+    for (const id of Array.isArray(pb.misses) ? pb.misses : []) grownIds.add(id);
+  }
   const reopened = markMisses(root, env, { file: genMisses, ids: planMisses.filter((id) => !grownIds.has(id)), status: 'open', generation: n, supabase }, blocked);
   const all = [...new Set([...before, ...blocked])];
   fs.mkdirSync(genDir, { recursive: true });
   fs.writeFileSync(blockedFile, all.map((l) => l + '\n').join(''));
   return {
     generation: n, lanes: stats, candidates: total, survivors, parent, baseline, store, promoted, archived, retired, built, tests, committed, pushed,
-    misses: { growing: planMisses.length, grown, reopened }, self: 'not wired', dream: 'not wired', blocked: all, at: new Date().toISOString(),
+    apps: appStats, misses: { growing: planMisses.length, grown, reopened }, self: 'not wired', dream: dreamOf(root, n), blocked: all, at: new Date().toISOString(),
   };
+}
+
+/** The dream of this generation as collect wrote it (state/grow/gen-n/dream/collect.json), else 'none' (propose and collect run after finish: GROW.md step 7). */
+export function dreamOf(root, n) {
+  const c = readJson(path.join(genDirOf(root, n), 'dream', 'collect.json'));
+  if (!c || typeof c !== 'object') return 'none';
+  return { proposed: Number.isInteger(c.proposed) ? c.proposed : 0, kept: Number.isInteger(c.kept) ? c.kept : 0, classes: c.byClass && typeof c.byClass === 'object' ? Object.keys(c.byClass).length : 0 };
 }
 
 // ---- main

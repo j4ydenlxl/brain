@@ -33,7 +33,23 @@
 //                     shape the knowledge tier already answers: "What is the capital of France?")
 //   essay-ocean-salt  /essay/i and /ocean|sea(?:water)?/i and /salt/i
 //   essay             /\bessay\b/i
+//   build             a build request: make/build/create/write/code/generate/develop/design (me) a <1 to 5 words> <app
+//                     noun> ("make me a todo app", "create a pomodoro timer"); the BUILDER ARM, not a cell (Day 2)
+//   math              whole-number theory: factorial, gcd, lcm, "is N prime", prime factors, fibonacci, divisors,
+//                     "sum of 1 to N", "N choose K"; never plain arithmetic or an equation (the exact tier answers those)
+//   data              a statistic or transform on a list in the prompt: mean, median, mode, range, sum, largest, sort,
+//                     "count the words in:", "to json"
+//   tools             a git, curl or "in bash" command question
+//   code              a regex, sql, script, css, html, python or javascript fragment to write or explain
+//   planning          a plan or schedule with a count of days or weeks ("plan a 3-day trip to Rome", "plan my week")
+//   writing           a poem, haiku, limerick, story, note, slogan, message or toast to write
+//   conversation      an advice or recommendation turn (recommend, suggest, what should i, any tips, a quote, i cannot
+//                     sleep) the conversation region does not carry
+//   science           a why, how or what-causes question ("why is the sky blue")
+//   (a turn act/converse.mjs answers is never one of the Day 2 classes: it is answered already)
 //   other             everything else
+// A row that carries its own `class` (a curriculum row of grow/curriculum.jsonl, a dream of grow/dreams.jsonl) keeps it
+// when it is a class name (a-z, 0-9, -); classify() is for a row without one (a person's miss).
 // COMMON is the 200 most frequent words of 6+ letters in the ingested Simple English Wikipedia text that the
 // shape above still flags by their own letters ("alaska", "dallas", "armstrong", "offspring", "downstream",
 // "corkscrew", then names), an inflection counted with its stem (isCommon strips the ending) and five template
@@ -55,7 +71,22 @@ export const DEFAULT_SUPABASE_URL = 'https://iiaxowfsdzcpteajphmx.supabase.co';
 export const NO_KEY = SERVICE_NAME + ' absent (his hand)';
 export const STATUSES = Object.freeze(['open', 'growing', 'grown', 'skipped']);
 export const MARKS = Object.freeze(['growing', 'grown', 'skipped']);
-export const CLASSES = Object.freeze(['fragment', 'mash', 'capital-of', 'essay-ocean-salt', 'essay', 'other']);
+export const CLASSES = Object.freeze(['fragment', 'mash', 'capital-of', 'essay-ocean-salt', 'essay', 'build', 'math', 'data', 'tools', 'code', 'planning', 'writing', 'conversation', 'science', 'other']);
+/** A class name a row may carry (grow/generation.mjs CLASS_RE). */
+export const CLASS_NAME_RE = /^[a-z0-9][a-z0-9-]{0,63}$/;
+// ---- the Day 2 shapes (the octopus: one arm per domain of "everything"), in the order classify() tries them
+const APP_NOUN = '(?:app|application|website|site|web ?page|page|tool|game|widget|calculator|timer|stopwatch|clock|counter|todo|to-do|notes|notepad|checklist|tracker|converter|dashboard|editor|planner|journal|quiz|calendar|player|generator|picker|board)';
+export const BUILD_RE = new RegExp('\\b(?:make|build|create|write|code|generate|develop|design)\\b(?:\\s+(?:me|us))?\\s+(?:a|an|the|my|our)?\\s*(?:[a-z0-9-]+\\s+){0,5}?' + APP_NOUN + '\\b', 'i');
+export const MATH_RE = /\b(?:factorial|gcd|lcm|greatest common divisor|least common multiple|highest common factor|prime factors?|prime factori[sz]ation|fibonacci|divisors?|choose|sum of (?:the )?(?:integers |numbers )?(?:from )?\d+ to \d+)\b|\bis \d+ (?:a )?prime\b|\b\d+\s*!\s*$/i;
+export const DATA_RE = /\b(?:mean|median|mode|average|range|standard deviation|variance|largest|smallest|biggest|minimum|maximum|sum|total|sort|order)\b[^\n]*\d+(?:\.\d+)?\s*,\s*\d+|\bsort(?:ed)?\b[^\n]*\d|\b(?:to|into|as) json\b|\bcsv to json\b|\bcount the words\b|\bword count\b/i;
+export const TOOLS_RE = /\b(?:git|curl|npm|pip|docker|ssh)\b|\bcommand\b|\b(?:in|with|using|on) (?:bash|the terminal|a terminal|the shell|the command line|zsh|linux)\b|\bone-liner\b/i;
+export const CODE_RE = /\b(?:regex|regular expression|sql|script|css|html|python|javascript|typescript|java|c\+\+|rust|code|snippet|algorithm|json)\b/i;
+export const PLAN_RE = /\b(?:plan|schedule|itinerary|timetable|routine|roadmap)\b/i;
+export const PLAN_SPAN_RE = /\b\d+[- ]?(?:day|days|week|weeks|month|months)\b|\bplan my\b|\bfor \d+ days?\b|\bitinerary\b|\bmeal plan\b|\bstudy plan\b|\bworkout plan\b/i;
+export const WRITING_RE = /\b(?:poem|haiku|limerick|sonnet|story|tale|letter|note|slogan|tagline|toast|speech|message|caption|paragraph|lyrics|song|jingle|motto|rhyme|verse)\b/i;
+export const WRITING_VERB_RE = /\b(?:write|compose|draft|make up|pen|create|give me|generate)\b|^(?:a|an) (?:poem|haiku|limerick|sonnet|story|tale|slogan|tagline|toast|rhyme|verse)\b/i;
+export const CONVO_RE = /\b(?:recommend|suggest|suggestion|any tips|tips for|advice|what should i|should i|say something|cheer me up|motivat|inspir|encourag|quote|i (?:cannot|can't|cant|can not) (?:sleep|focus|stop)|i am (?:bored|sad|nervous|anxious|stressed|tired|lonely)|i'm (?:bored|sad|nervous|anxious|stressed|tired|lonely)|how do i (?:make friends|deal with|cope|get over|stop|start)|what (?:hobby|sport|game|book|movie|film|show|podcast))\b/i;
+export const SCIENCE_RE = /^(?:why|how)\b|\bwhat (?:causes|makes|happens)\b|\bexplain\b/i;
 export const LIMIT = Object.freeze({ dflt: 200, max: 1000, fetchMs: 10_000 });
 /** A log id (public.misses id is a bigint identity). */
 export const LOG_ID_RE = /^\d{1,19}$/;
@@ -153,6 +184,16 @@ export function classify(prompt) {
   if (/\b(?:the\s+)?capital\s+of\s+\w/i.test(s) && !/^\s*(?:what|which|where)\b/i.test(s)) return 'capital-of';
   if (/essay/i.test(s) && /ocean|sea(?:water)?/i.test(s) && /salt/i.test(s)) return 'essay-ocean-salt';
   if (/\bessay\b/i.test(s)) return 'essay';
+  if (BUILD_RE.test(s)) return 'build';
+  if (converse(s)) return 'other'; // a turn the conversation region answers is not one of the Day 2 classes
+  if (MATH_RE.test(s)) return 'math';
+  if (DATA_RE.test(s)) return 'data';
+  if (TOOLS_RE.test(s)) return 'tools';
+  if (CODE_RE.test(s)) return 'code';
+  if (PLAN_RE.test(s) && PLAN_SPAN_RE.test(s)) return 'planning';
+  if (WRITING_RE.test(s) && WRITING_VERB_RE.test(s)) return 'writing';
+  if (CONVO_RE.test(s)) return 'conversation';
+  if (SCIENCE_RE.test(s)) return 'science';
   return 'other';
 }
 
@@ -166,14 +207,15 @@ export const USAGE = [
 
 class Fail extends Error { constructor(msg, code = 1) { super(msg); this.exit = code; } }
 
-/** One line a row for every row with a string prompt, then the summary. Rows without one (a summary line) are skipped. */
+/** One line a row for every row with a string prompt, then the summary. Rows without one (a summary line) are skipped.
+ *  A row carrying its own class name keeps it (a curriculum row, a dream); byClass gains a key for a class not in CLASSES. */
 export function classesOf(rows) {
   const byClass = Object.fromEntries(CLASSES.map((c) => [c, 0]));
   const lines = [];
   for (const r of rows) {
     if (!r || typeof r.prompt !== 'string') continue;
-    const c = classify(r.prompt);
-    byClass[c]++;
+    const c = typeof r.class === 'string' && CLASS_NAME_RE.test(r.class) ? r.class : classify(r.prompt);
+    byClass[c] = (byClass[c] || 0) + 1;
     lines.push({ id: r.id ?? null, prompt: r.prompt, class: c });
   }
   return { lines, summary: { byClass, rows: lines.length } };
@@ -185,6 +227,8 @@ export function rowOf(r) {
   const row = { id: r.id ?? null, at: r.at ?? null, prompt: r.prompt, reply: r.reply ?? null, route: r.route ?? null, status: r.status ?? 'open' };
   if (Number.isInteger(r.generation)) row.generation = r.generation; // the mark's generation, so a driver can tell its own mark from an earlier run's
   if (typeof r.cell === 'string' && r.cell) row.cell = r.cell;
+  if (typeof r.class === 'string' && CLASS_NAME_RE.test(r.class)) row.class = r.class; // a curriculum row or a dream names its class
+  if (r.expect && typeof r.expect === 'object' && !Array.isArray(r.expect)) row.expect = r.expect; // a dream carries the proposer's expect
   return row;
 }
 

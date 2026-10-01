@@ -34,7 +34,10 @@ off, and "you only fail if you dont listen to me".
 1. SENSE. `node grow/generation.mjs prepare` does the mechanical part: verifies the lock, fetches the knowledge
    pack (`node tools/fetch-pack.mjs`, from the public store, no token), reads the open misses
    (`node grow/misses.mjs read --status open`, or the seed file `grow/seed-misses.jsonl` when there is no
-   service key), asks the organism each one and marks the misses it already answers `grown` (a cell grown since,
+   service key) plus, every generation, the CURRICULUM `grow/curriculum.jsonl` (Day 2: one seed set per domain of
+   "everything", each row carrying its class; a human session writes it) and the DREAMS `grow/dreams.jsonl` (step 7's
+   pairs, `route: dream`, each with the solver's answer and the proposer's expect), both read as open misses until the
+   organism answers them (the driver never writes those two files), asks the organism each one and marks the misses it already answers `grown` (a cell grown since,
    or a tier that answers it: never planned again), classes the rest (`node grow/misses.mjs classes`), keeps the classes that have a locked held-out
    set (a class without one is logged "no held-out set: a human session adds truth" and skipped), grades the
    organism before any cell on each class (`node judge/baseline.mjs <class>`), marks those misses `growing`,
@@ -53,9 +56,25 @@ off, and "you only fail if you dont listen to me".
    (`node grow/generation.mjs ask "<q>"`: act/prompt.mjs ask() with no model and the knowledge pack open, the
    same organism judge/baseline.mjs grades) and bakes what it returns into the cell as data, so the cell carries what the organism already knew in a shape it can answer
    natively. The parent lane of the last tournament gets one extra arm per class (its second candidate has a
-   different id). An arm may never read `judge/heldout/`,
+   different id). A brief whose class has dreamed tasks lists them under "Dreamed tasks" with the solver's answer:
+   misses the cell grows for, never examples. The eight domains of "everything" (code, math, writing, science, tools,
+   planning, data, conversation) each have a curriculum class with a locked held-out set, so every generation has an arm
+   per domain while its curriculum rows are open. An arm may never read `judge/heldout/`,
    `judge/control.jsonl` or `state/grow/baseline/`; the selector checks that
    no held-out row appears among the cell's examples and refuses the cell when one does.
+
+2b. THE BUILDER ARM (Day 2). A miss of class `build` ("make me a todo app") is not a cell class: `prepare` writes ONE
+   build brief per app, `state/grow/gen-<n>/build/brief-<slug>.md`, and the driver's own
+   `state/grow/gen-<n>/build/<slug>/app.json` ({ slug, name, prompt, generation, misses }). One arm per build brief
+   (same agent, same CONCISE prefix): it writes `index.html`, `app.mjs`, `test.mjs` and `brief.md` under that
+   directory and nothing else (the rules are in the brief and in grow/probe-app.mjs; `node grow/build.mjs validate <dir>`
+   must print {"ok":true}). `finish` runs the app in the sandbox (`node grow/sandbox.mjs run <dir> --app`), judges it
+   (`node grow/build.mjs judge <dir>`: validate ok, its own tests pass with 0 failures and at least 3 passed, exit 0) and
+   promotes a survivor (`node grow/build.mjs promote <n> <slug>`): the app is served at `/apps/<slug>/` of the site,
+   listed in `grown/apps.json` and `grown/apps.mjs`, and the site answers the request with that URL (act/ask-http.mjs,
+   from `app`). The misses are grown with the cell `app:<slug>`. An app already served grows its misses without an
+   arm. The apps and the cell tournament are separate: a failing app is a loser, never a void, and a generation with
+   no cell candidate still ships a built app (the final line has `apps: { candidates, built, promoted, slugs }`).
 
 3. SANDBOX. `node grow/generation.mjs finish` runs every candidate directory through
    `node grow/sandbox.mjs run <dir> --heldout judge/heldout/<class>.jsonl --control judge/control.jsonl`
@@ -83,12 +102,20 @@ off, and "you only fail if you dont listen to me".
    `"self": "not wired"`). One candidate edit to this file or to `grow/` per generation, kept only when the next
    generation's survival rate rises, judged by the same locked judge.
 
-7. DREAM (Day 2; until `grow/dream.mjs` exists this step is skipped and the final line says
-   `"dream": "not wired"`). When the open misses run dry, a proposer arm writes tasks just past what the cells
-   answer, a solver arm attempts them, and the pairs enter step 1 as misses with `route: dream`.
+7. DREAM (Day 2, wired: `grow/dream.mjs`). After step 8, `node grow/dream.mjs propose --gen <n>` writes one DREAM
+   BRIEF per class that has a locked held-out set: `state/grow/gen-<n>/dream/brief-<class>.md`. One arm per brief, as
+   in step 2 (an Opus 5.5 agent, the CONCISE directive first, the brief as its whole prompt): the proposer half writes
+   4 tasks in the class's shape just past what the organism answers today, the solver half answers each one, into
+   `state/grow/gen-<n>/dream/<class>.jsonl` ({ q, expect, answer } a line), checked with `node grow/dream.mjs check <file>`
+   until `"ok":true`. Then `node grow/dream.mjs collect --gen <n> --commit` asks the organism every task, drops the ones it
+   answers and the ones dreamed before, appends the rest to `grow/dreams.jsonl` as misses with `route: dream`, and commits
+   and pushes that file as jayden (a cloud checkout dies with its session: an unpushed dream is lost). The next
+   generation's step 1 reads them, so a heartbeat with no open miss still grows. `finish` reports `dream` from
+   `state/grow/gen-<n>/dream/collect.json` when collect of this generation ran before it (a re-run), else `"none"`.
 
 8. SHIP. `finish` ends with: `node --test test/grow-sandbox.test.mjs test/grow-store.test.mjs test/judge.test.mjs
-   test/grow-misses.test.mjs test/ask-http.test.mjs`; `git add grown/ web/dist/`; a commit as jayden,
+   test/grow-misses.test.mjs test/ask-http.test.mjs`; `git add grown/ web/dist/ grow/dreams.jsonl` (the dreams file
+   when it exists); a commit as jayden,
    message `gen <n>: <survivors> of <candidates> survived, parent <lane>` with the trailer
    `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`; `git push` (a push deploys dilation.dev when the
    project is connected; `--no-push` keeps the commit local); then the misses of survivors are marked `grown`

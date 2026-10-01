@@ -58,6 +58,7 @@ import { solve } from './solve.mjs';
 import { seedBasic } from '../seeds/basic.mjs';
 import { installGuard, DEFAULT_MODEL_URL } from '../bin/serve.mjs';
 import { scrubSecrets } from './prompt.mjs'; // the miss row's prompt is scrubbed of credential shapes before it leaves
+import { appAnswer } from '../grown/apps.mjs'; // Day 2, the builder arm: the apps the organism built and serves (grow/build.mjs promote)
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // The knowledge store the function answers from: the full store when the host has it (this machine),
@@ -142,6 +143,13 @@ export class Bucket {
 
 const BASE_HEADERS = Object.freeze({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff', vary: 'Origin' });
 const lower = (h) => { const o = {}; for (const [k, v] of Object.entries(h || {})) o[String(k).toLowerCase()] = Array.isArray(v) ? v.join(', ') : v; return o; };
+/** The URL of a served app: the request's own host (never a name typed here), its forwarded scheme, the app path; the path alone without a host. */
+export function appUrl(h, p) {
+  const host = String((h && (h.host || h['x-forwarded-host'])) || '').split(',')[0].trim();
+  if (!host) return p;
+  const proto = String((h && h['x-forwarded-proto']) || '').split(',')[0].trim() || (/^(localhost|127\.|\[::1\])/.test(host) ? 'http' : 'https');
+  return proto + '://' + host + p;
+}
 const rel = (s) => String(s || '').split(ROOT + path.sep).join('').split(ROOT).join('.');
 
 /** The one line a response's status and ask leave in the request log. */
@@ -345,9 +353,20 @@ export function createHandler(o = {}) {
       serverUs, host, knowledge: s.knowledge,
       model: { configured, provider: configured ? 'env' : 'null', names: [BASE_NAME, KEY_NAME, MODEL_NAME], keyName: keyNameFor(env) },
     };
+    // Day 2, the builder arm: a build request naming an app the organism built and serves is answered with its URL
+    // on the first line (grown/apps.mjs, written by grow/build.mjs promote), never the growing head. o.appAnswer: a test
+    // plants its own list; without grown cells (o.grown false) the real list is not consulted either.
+    const app = typeof o.appAnswer === 'function' ? o.appAnswer(prompt) : o.grown === false ? null : appAnswer(prompt);
+    if (app) {
+      const url = appUrl(h, app.path);
+      json.text = app.name + ': the organism built it in generation ' + app.generation + ' and serves it at ' + url;
+      json.from = 'app';
+      json.route = 'app';
+      json.app = { slug: app.slug, name: app.name, generation: app.generation, path: app.path, url };
+    }
     // THE GROWING REPLY (board 37, item misses): no model cell and a memory miss. The first line is the growing
     // head; the miss goes to the log, awaited (a serverless host ends the work with the response).
-    if (!configured && isMemoryMiss(a)) {
+    if (!app && !configured && isMemoryMiss(a)) {
       json.text = GROWING_HEAD + '\n' + a.text;
       const row = {
         prompt: scrubSecrets(prompt).text.slice(0, LIMITS.promptChars),

@@ -663,3 +663,126 @@ test('(o) validateTest: ./cell.mjs and the listed node modules only, never proce
   assert.deepEqual(countTests('# pass 7\n# tests 2\n# pass 1\n# fail 1\n'), { passed: null, failed: 1 });
   assert.deepEqual(countTests('# fail 0\n# pass 2\n# fail 0\n'), { passed: 2, failed: null });
 });
+
+// ------------------------------------------------------------------ --app: the builder arm (his NEXT-WEEK.md Day 2)
+// Appended by the Opus 5.5 builder for the Fable 5.1 orchestrator, Day 2 (2026-10-01): an app directory through
+// grow/probe-app.mjs on the same backends, under the same nonce and distrust rule.
+const APP_OK = path.join(ROOT, 'grow', 'fixtures', 'app-ok');
+const APP_BAD = path.join(ROOT, 'grow', 'fixtures', 'app-bad');
+const APP_KEYS = ['candidate', 'kind', 'slug', 'backend', 'session', 'node', 'startedAt', 'wallMs', 'cpuMs', 'validate', 'tests', 'files', 'exitCode', 'error'];
+
+test('(p) --app --backend here --fixture on app-ok: kind app, validate ok, 4 tests pass, exit 0, no error; result.json at --out only', async () => {
+  const out = path.join(TMP, 'p', 'result.json');
+  const r = await runNode([SANDBOX, 'run', APP_OK, '--app', '--backend', 'here', '--fixture', '--out', out]);
+  assert.equal(r.code, 0, r.err);
+  const lines = r.out.trim().split('\n');
+  assert.equal(lines.length, 1, 'one JSON line on stdout');
+  const res = JSON.parse(lines[0]);
+  assert.deepEqual(JSON.parse(fs.readFileSync(out, 'utf8')), res);
+  assert.deepEqual(Object.keys(res), APP_KEYS);
+  assert.deepEqual([res.candidate, res.kind, res.slug, res.backend, res.session, res.node], ['grow/fixtures/app-ok', 'app', 'app-ok', 'here', null, process.version]);
+  assert.deepEqual(res.validate, { ok: true, errors: [] });
+  assert.deepEqual([res.tests.passed, res.tests.failed, res.tests.exitCode], [4, 0, 0]);
+  assert.match(res.tests.tail, /# pass 4/);
+  assert.equal(res.exitCode, 0);
+  assert.equal(res.error, null);
+  assert.ok(Number.isInteger(res.cpuMs) && Number.isInteger(res.wallMs) && res.wallMs > 0);
+  assert.deepEqual(res.files, Object.fromEntries(fs.readdirSync(APP_OK).sort().map((f) => [f, fs.statSync(path.join(APP_OK, f)).size])));
+  assert.ok(!Object.hasOwn(res, 'nonce'), 'the nonce stays out of result.json');
+  assert.equal(fs.existsSync(path.join(APP_OK, 'result.json')), false, 'nothing written into the fixture');
+});
+
+test('(p2) --app through the API stub: run/app/*, the app probe and the nonce go in; the probe line carries the nonce; a forged, crashed or exit-3 run keeps nothing', async () => {
+  const { PROBE_APP_ARGS, buildAppResult } = await import('../grow/sandbox.mjs');
+  let s = await stub();
+  try {
+    const r = await runNode([SANDBOX, 'run', APP_OK, '--app', '--out', path.join(TMP, 'p2', 'ok.json'), '--api-base', s.base]);
+    assert.equal(r.code, 0, r.err);
+    const res = JSON.parse(r.out);
+    assert.deepEqual(Object.keys(res), APP_KEYS);
+    assert.deepEqual([res.kind, res.slug, res.backend, res.session, res.cpuMs, res.validate.ok, res.tests.passed, res.tests.failed, res.error],
+      ['app', 'app-ok', 'vercel', 'sbx_stub_1', 4321, true, 4, 0, null]);
+    assert.deepEqual(s.seen.map((x) => x.path.replace(/sbx_stub_1/, '<sid>')), ['/v2/sandboxes', '/v2/sandboxes/sessions/<sid>/fs/write', '/v2/sandboxes/sessions/<sid>/cmd', '/v2/sandboxes/sessions/<sid>/stop']);
+    const w = s.seen[1];
+    assert.deepEqual(w.entries.filter((e) => e.type === '0').map((e) => e.name).sort(),
+      ['run/app/app.json', 'run/app/app.mjs', 'run/app/index.html', 'run/app/test.mjs', 'run/grow/contract.mjs', 'run/grow/probe-app.mjs', 'run/grow/probe.mjs', 'run/nonce.txt']);
+    const cmd = s.seen[2];
+    assert.deepEqual(cmd.json.args, ['grow/probe-app.mjs', 'app', '--nonce-file', 'nonce.txt']);
+    assert.deepEqual(PROBE_APP_ARGS, cmd.json.args);
+    assert.equal(cmd.json.cwd, '/vercel/sandbox/run');
+    const nonce = w.entries.find((e) => e.name === 'run/nonce.txt').text.trim();
+    assert.match(nonce, /^[0-9a-f]{32}$/);
+    const line = lastJson(cmd.stdout, nonce);
+    assert.equal(line.kind, 'app');
+    assert.equal(line.slug, 'app', 'inside the sandbox the directory is app/: the result slug is the runner\'s');
+    assert.equal(fs.existsSync(path.join(cmd.dir, 'nonce.txt')), false, 'the app probe deleted the nonce file');
+  } finally { await s.close(); }
+  for (const [mode, re, exit] of [['forge-only', /no JSON line carrying this run's nonce \(exit 0\)/, 0], ['exit3', /the probe exited 3 after printing its line/, 3], ['nojson', /no JSON line carrying this run's nonce \(exit 1\)/, 1]]) {
+    s = await stub(mode);
+    try {
+      const r = await runNode([SANDBOX, 'run', APP_OK, '--app', '--out', path.join(TMP, 'p2', mode + '.json'), '--api-base', s.base]);
+      assert.equal(r.code, 0, r.err);
+      const res = JSON.parse(r.out);
+      assert.deepEqual(Object.keys(res), APP_KEYS);
+      assert.equal(res.validate.ok, false, mode);
+      assert.match(res.error, re, mode);
+      assert.deepEqual(res.validate.errors, [res.error]);
+      assert.deepEqual([res.tests.exitCode, res.tests.passed, res.tests.failed], [null, null, null]);
+      assert.deepEqual(res.files, {});
+      assert.equal(res.exitCode, exit);
+      assert.ok(!r.out.includes('forged-cell') && !r.out.includes('FORGED'));
+    } finally { await s.close(); }
+  }
+  // buildAppResult alone: a line with the nonce that is not an app probe's is not believed either
+  const base = { candidate: 'c', backend: 'here', session: null, startedAt: 's', wallMs: 1, cpuMs: 1, exitCode: 0, error: null, fallbackId: 'todo', stderr: '' };
+  const cellLine = { nonce: 'n', id: 'x', validate: { ok: true, errors: [] }, tests: { exitCode: 0, passed: 9, failed: 0, tail: '' } };
+  const bad = buildAppResult({ ...base, probe: cellLine });
+  assert.equal(bad.validate.ok, false);
+  assert.match(bad.error, /not an app probe's \(kind null\)/);
+  const good = buildAppResult({ ...base, probe: { ...cellLine, kind: 'app', slug: 'app', files: { 'index.html': 3, x: 'NaN' } } });
+  assert.deepEqual([good.validate.ok, good.slug, good.tests.passed, good.error], [true, 'todo', 9, null]);
+  assert.deepEqual(good.files, { 'index.html': 3 });
+});
+
+test('(q) --app on app-bad: validate.ok false naming the other origin, and its one failing test counted', async () => {
+  const r = await runNode([SANDBOX, 'run', APP_BAD, '--app', '--backend', 'here', '--fixture', '--out', path.join(TMP, 'q', 'result.json')]);
+  assert.equal(r.code, 0, r.err);
+  const res = JSON.parse(r.out);
+  assert.equal(res.kind, 'app');
+  assert.equal(res.validate.ok, false);
+  assert.ok(res.validate.errors.includes('index.html references another origin: https://cdn.example.com/x.js'), res.validate.errors.join(' | '));
+  assert.deepEqual([res.tests.passed, res.tests.failed, res.tests.exitCode], [3, 1, 1]);
+  assert.equal(res.exitCode, 0);
+  assert.equal(res.error, null, 'the probe ran cleanly: the app failed, not the run');
+  assert.equal(fs.existsSync(path.join(APP_BAD, 'result.json')), false);
+});
+
+test('(r) --app refuses --heldout and --control (exit 2), the here backend outside grow/fixtures/ on a PC (exit 4), and a subdirectory (exit 2)', async () => {
+  const out = path.join(TMP, 'r', 'never.json');
+  for (const extra of [['--heldout', HELD], ['--control', CTL]]) {
+    const r = await runNode([SANDBOX, 'run', APP_OK, '--app', ...extra, '--backend', 'here', '--fixture', '--out', out]);
+    assert.equal(r.code, 2);
+    assert.equal(r.out, '');
+    assert.equal(r.err.trim(), '--app takes no --heldout or --control: an app is judged by its own tests');
+  }
+  const r1 = await runNode([SANDBOX, 'run', APP_OK, '--app', '--backend', 'here', '--out', out]);
+  assert.equal(r1.code, 4);
+  assert.equal(r1.err.trim(), HERE_REFUSAL);
+  const copy = fs.mkdtempSync(path.join(TMP, 'app-copy-'));
+  for (const f of fs.readdirSync(APP_OK)) fs.copyFileSync(path.join(APP_OK, f), path.join(copy, f));
+  const r2 = await runNode([SANDBOX, 'run', copy, '--app', '--backend', 'here', '--fixture', '--out', out]);
+  assert.equal(r2.code, 4);
+  assert.match(r2.err, /--fixture runs only a directory under grow\/fixtures\//);
+  assert.equal(fs.existsSync(out), false);
+  // the control: the same copy on a cloud VM runs
+  const ci = await runNode([SANDBOX, 'run', copy, '--app', '--backend', 'here', '--out', path.join(TMP, 'r', 'ci.json')], bareEnv({ GITHUB_ACTIONS: 'true' }));
+  assert.equal(ci.code, 0, ci.err);
+  const res = JSON.parse(ci.out);
+  assert.deepEqual([res.kind, res.validate.ok, res.tests.passed], ['app', true, 4]);
+  // a subdirectory is refused before anything runs
+  fs.mkdirSync(path.join(copy, 'assets'));
+  const sub = await runNode([SANDBOX, 'run', copy, '--app', '--backend', 'here', '--out', out], bareEnv({ GITHUB_ACTIONS: 'true' }));
+  assert.equal(sub.code, 2);
+  assert.match(sub.err, /holds assets, which is not a regular file: an app is top-level files only/);
+  assert.equal(fs.existsSync(out), false);
+});

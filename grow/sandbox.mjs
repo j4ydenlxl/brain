@@ -11,7 +11,13 @@
 //        [--fixture] [--verbose]
 // Tokens are read by NAME (VERCEL_TOKEN, else VERCEL_OIDC_TOKEN) and are sent to api.vercel.com only; they
 // are never printed. Exit: 0 result written, 2 usage or input, 3 token, 4 refused, 5 the sandbox API failed.
-// Author: board 37 sandbox builder, 2026-09-30.
+// --app (his NEXT-WEEK.md Day 2 builder arm): <candidateDir> is an APP directory (index.html, app.mjs, test.mjs);
+// the tarball carries its top-level files under run/app/, grow/probe-app.mjs, grow/probe.mjs, grow/contract.mjs
+// and the nonce, the command is `node grow/probe-app.mjs app --nonce-file nonce.txt`, and result.json is the app
+// shape (buildAppResult) under the same distrust rule. --heldout and --control are refused with --app (exit 2);
+// the here backend is refused outside grow/fixtures/ on his PC exactly as for a cell.
+// Author: board 37 sandbox builder, 2026-09-30; --app by the Opus 5.5 builder for the Fable 5.1 orchestrator,
+// Day 2 (2026-10-01), his NEXT-WEEK.md builder arm.
 import fs from 'node:fs';
 import os from 'node:os';
 import crypto from 'node:crypto';
@@ -36,13 +42,15 @@ const USAGE = [
   '  here: the same probe as a child process on this machine; refused unless --fixture (a directory under',
   '    grow/fixtures/) or the environment is a cloud VM (' + CLOUD_ENV.join(', ') + ').',
   '  prints the result.json line; exit 0 written, 2 usage, 3 token, 4 refused, 5 sandbox API failure.',
+  '       node grow/sandbox.mjs run <appDir> --app [--out <result.json>] [--backend vercel|here] [--fixture] [--timeout-ms]',
+  '         [--api-base] [--verbose]   an app (index.html, app.mjs, test.mjs) through grow/probe-app.mjs; no --heldout/--control.',
 ].join('\n');
 
 class Fail extends Error { constructor(code, line) { super(line); this.code = code; } }
 
 // ------------------------------------------------------------------ arguments and identity
 export function parseArgs(argv) {
-  const o = { verb: argv[0], dir: null, heldout: null, control: null, out: null, backend: 'vercel', timeoutMs: 90000, apiBase: VERCEL_API, fixture: false, verbose: false, help: false };
+  const o = { verb: argv[0], dir: null, heldout: null, control: null, out: null, backend: 'vercel', timeoutMs: 90000, apiBase: VERCEL_API, fixture: false, verbose: false, help: false, app: false };
   const rest = argv.slice(1);
   for (let i = 0; i < rest.length; i++) {
     const a = rest[i], v = () => { if (i + 1 >= rest.length) throw new Fail(2, a + ' needs a value'); return rest[++i]; };
@@ -55,12 +63,14 @@ export function parseArgs(argv) {
     else if (a === '--api-base') o.apiBase = v().replace(/\/+$/, '');
     else if (a === '--fixture') o.fixture = true;
     else if (a === '--verbose') o.verbose = true;
+    else if (a === '--app') o.app = true;
     else if (a.startsWith('--')) throw new Fail(2, 'unknown option ' + a);
     else if (!o.dir) o.dir = a;
     else throw new Fail(2, 'one candidate directory only, got a second: ' + a);
   }
   if (!['vercel', 'here'].includes(o.backend)) throw new Fail(2, '--backend is vercel or here, not ' + o.backend);
   if (!Number.isInteger(o.timeoutMs) || o.timeoutMs < 5000 || o.timeoutMs > 45 * 60000) throw new Fail(2, '--timeout-ms is an integer from 5000 to 2700000');
+  if (o.app && (o.heldout || o.control)) throw new Fail(2, '--app takes no --heldout or --control: an app is judged by its own tests');
   return o;
 }
 
@@ -124,7 +134,24 @@ export function packEntries(candDir, heldRows, ctlRows, nonce = null) {
 
 export const NONCE_FILE = 'nonce.txt';
 export const PROBE_ARGS = ['grow/probe.mjs', 'cand', '--heldout', 'heldout.jsonl', '--control', 'control.jsonl', '--nonce-file', NONCE_FILE];
+export const PROBE_APP_ARGS = ['grow/probe-app.mjs', 'app', '--nonce-file', NONCE_FILE];
 export const newNonce = () => crypto.randomBytes(16).toString('hex');
+
+/**
+ * The files an APP run receives, under run/: every top-level regular file of appDir as app/<name>, the app probe
+ * with the two modules it imports, and the nonce. An app is top-level files only: a subdirectory or a link in
+ * appDir is refused here (exit 2), never silently left behind.
+ */
+export function packAppEntries(appDir, nonce = null) {
+  const files = [];
+  for (const d of fs.readdirSync(appDir, { withFileTypes: true }).sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))) {
+    if (!d.isFile()) throw new Fail(2, 'the app directory holds ' + d.name + ', which is not a regular file: an app is top-level files only');
+    files.push({ name: RUN_DIR + '/app/' + d.name, data: fs.readFileSync(path.join(appDir, d.name)) });
+  }
+  for (const m of ['probe-app.mjs', 'probe.mjs', 'contract.mjs']) files.push({ name: RUN_DIR + '/grow/' + m, data: fs.readFileSync(path.join(ROOT, 'grow', m)) });
+  if (nonce) files.push({ name: RUN_DIR + '/' + NONCE_FILE, data: nonce + '\n' }); // the app probe reads it and deletes it first
+  return withDirs(files);
+}
 
 /**
  * The probe's last stdout line that parses as a JSON object, or null. With a nonce, only a line whose
@@ -199,6 +226,35 @@ export function buildResult({ candidate, backend, session, startedAt, wallMs, cp
   };
 }
 
+/**
+ * The app result.json under the same distrust rule as buildResult: the probe's line counts only when it carries the
+ * run's nonce AND the probe exited 0 AND the run reported no error; otherwise validate.ok false with the reason as
+ * error, tests null and no file of the probe's listing kept. The slug is the runner's (the app directory's name):
+ * inside the sandbox the directory is always app/, so the probe's own slug is never the app's.
+ */
+export function buildAppResult({ candidate, backend, session, startedAt, wallMs, cpuMs, probe, exitCode, error, fallbackId, stderr, nodeVersion }) {
+  const why = distrust(probe, exitCode, error) ?? (probe.kind !== 'app' ? 'the probe line is not an app probe\'s (kind ' + JSON.stringify(probe.kind ?? null) + ')' : null);
+  const head = { candidate, kind: 'app', slug: fallbackId, backend, session };
+  if (why) {
+    return {
+      ...head, node: nodeVersion ?? null, startedAt, wallMs, cpuMs,
+      validate: { ok: false, errors: [why] },
+      tests: { exitCode: null, passed: null, failed: null, tail: tail(stderr) },
+      files: {}, exitCode: exitCode ?? null, error: why,
+    };
+  }
+  const v = probe.validate && typeof probe.validate === 'object' ? probe.validate : { ok: false, errors: ['the probe printed no validate'] };
+  const t = probe.tests && typeof probe.tests === 'object' ? probe.tests : {};
+  const files = {};
+  if (probe.files && typeof probe.files === 'object' && !Array.isArray(probe.files)) for (const [k, b] of Object.entries(probe.files)) if (Number.isFinite(b)) files[k] = b;
+  return {
+    ...head, node: probe.node ?? nodeVersion ?? null, startedAt, wallMs, cpuMs,
+    validate: { ok: v.ok === true, errors: Array.isArray(v.errors) ? v.errors.map((e) => String(e)) : [] },
+    tests: { exitCode: t.exitCode ?? null, passed: t.passed ?? null, failed: t.failed ?? null, tail: typeof t.tail === 'string' ? t.tail : '' },
+    files, exitCode, error: null,
+  };
+}
+
 // ------------------------------------------------------------------ the vercel backend
 async function runVercel(o, ctx) {
   const { tgz, log, nonce } = ctx;
@@ -241,7 +297,7 @@ async function runVercel(o, ctx) {
     let text = null;
     try {
       text = await call('cmd', '/v2/sandboxes/sessions/' + sid + '/cmd', { method: 'POST', headers: H, body: JSON.stringify({
-        command: 'node', args: PROBE_ARGS, cwd: cwd.replace(/\/+$/, '') + '/' + RUN_DIR, wait: true, logs: true, timeout: o.timeoutMs,
+        command: 'node', args: ctx.probeArgs || PROBE_ARGS, cwd: cwd.replace(/\/+$/, '') + '/' + RUN_DIR, wait: true, logs: true, timeout: o.timeoutMs,
       }) }, o.timeoutMs + 20000);
     } catch (e) {
       if (!e.abort) throw e;
@@ -263,7 +319,7 @@ async function runVercel(o, ctx) {
     } catch (e) { stopErr = String(e.message || e); }
   }
   if (infra) throw new Fail(infra.code || 5, String(infra.message || infra) + (stopErr ? '; and ' + stopErr : '; the session was stopped'));
-  const res = buildResult({ candidate: ctx.candidate, backend: 'vercel', session: sid, startedAt, wallMs: Date.now() - t0, cpuMs, probe: probeOut,
+  const res = (ctx.build || buildResult)({ candidate: ctx.candidate, backend: 'vercel', session: sid, startedAt, wallMs: Date.now() - t0, cpuMs, probe: probeOut,
     exitCode, error, held: ctx.held, ctl: ctx.ctl, fallbackId: ctx.fallbackId, stderr });
   if (stopErr) res.error = (res.error ? res.error + '; ' : '') + stopErr; // after the probe: no row is untrusted by it, the run still fails
   return res;
@@ -288,7 +344,7 @@ async function runHere(o, ctx) {
     const keep = ['PATH', 'Path', 'HOME', 'USERPROFILE', 'SystemRoot', 'SYSTEMROOT', 'TEMP', 'TMP', 'TMPDIR'];
     const env = {}; for (const k of keep) if (process.env[k] !== undefined) env[k] = process.env[k]; // no token reaches the probe
     const r = await new Promise((ok) => {
-      const c = spawn(process.execPath, PROBE_ARGS, { cwd: path.join(tmp, RUN_DIR), env, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
+      const c = spawn(process.execPath, ctx.probeArgs || PROBE_ARGS, { cwd: path.join(tmp, RUN_DIR), env, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
       let out = '', err = '', killed = false;
       c.stdout.on('data', (d) => { out += d; });
       c.stderr.on('data', (d) => { err += d; });
@@ -298,7 +354,7 @@ async function runHere(o, ctx) {
     const probe = lastJson(r.out, ctx.nonce);
     const error = r.killed ? 'the probe was killed after ' + o.timeoutMs + ' ms' : null;
     const cpuMs = probe && !distrust(probe, r.code, error) && Number.isFinite(probe.probeCpuMs) ? Math.round(probe.probeCpuMs) : null;
-    return buildResult({ candidate: ctx.candidate, backend: 'here', session: null, startedAt, wallMs: Date.now() - t0, cpuMs, probe, exitCode: r.code,
+    return (ctx.build || buildResult)({ candidate: ctx.candidate, backend: 'here', session: null, startedAt, wallMs: Date.now() - t0, cpuMs, probe, exitCode: r.code,
       error, held: ctx.held, ctl: ctx.ctl, fallbackId: ctx.fallbackId, stderr: r.err, nodeVersion: process.version });
   } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
 }
@@ -312,6 +368,19 @@ export async function main(argv) {
   if (!fs.existsSync(candAbs) || !fs.statSync(candAbs).isDirectory()) throw new Fail(2, 'no candidate directory ' + o.dir);
   if (o.backend === 'here') hereAllowed(o, candAbs);
   const log = o.verbose ? (s) => process.stderr.write('[sandbox] ' + s + '\n') : () => {};
+  if (o.app) { // the builder arm: an app directory through the app probe, the same backends and the same distrust rule
+    const nonce = newNonce();
+    const tgz = targz(packAppEntries(candAbs, nonce));
+    log('app tarball ' + tgz.length + ' bytes');
+    const ctx = { tgz, log, nonce, held: [], ctl: [], fallbackId: path.basename(candAbs), probeArgs: PROBE_APP_ARGS, build: buildAppResult,
+      candidate: inside(candAbs, ROOT) ? posix(path.relative(ROOT, candAbs)) : posix(candAbs) };
+    const result = o.backend === 'here' ? await runHere(o, ctx) : await runVercel(o, ctx);
+    const out = path.resolve(o.out || path.join(candAbs, 'result.json'));
+    fs.mkdirSync(path.dirname(out), { recursive: true });
+    fs.writeFileSync(out, JSON.stringify(result, null, 2) + '\n');
+    log('wrote ' + out);
+    return { result };
+  }
   const held = rowsOf(o.heldout, '--heldout'), ctl = rowsOf(o.control, '--control');
   const nonce = newNonce();
   const tgz = targz(packEntries(candAbs, held, ctl, nonce));

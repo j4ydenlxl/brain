@@ -406,10 +406,10 @@ test('the baseline harness grades a row the organism answers as ok and a row it 
 });
 
 // ------------------------------------------------------------------ the real Day 1 sets and the real lock
-const CLASSES = ['fragment', 'mash', 'capital-of', 'essay-ocean-salt'];
+const CLASSES = ['fragment', 'mash', 'capital-of', 'essay-ocean-salt', 'code', 'math', 'writing', 'science', 'tools', 'planning', 'data', 'conversation']; // Day 1 four, Day 2 the eight domains (2026-10-01)
 const read = (rel) => parseJsonl(fs.readFileSync(path.join(ROOT, rel), 'utf8'));
 
-test('the four classes carry 6 to 10 dev rows and 10 to 16 held-out rows, and no held-out q is in dev', () => {
+test('the twelve classes carry 6 to 10 dev rows and 10 to 16 held-out rows, and no held-out q is in dev', () => {
   let overlap = 0;
   for (const c of CLASSES) {
     const dev = read('judge/dev/' + c + '.jsonl');
@@ -452,7 +452,7 @@ test('the control is the 12 prompts the board named, and no dev or held-out q is
 
 test('the real judge verifies: judge/verify.mjs prints LOCK OK over every held-out set and grow/contract.mjs', () => {
   const r = node([path.join(ROOT, 'judge', 'verify.mjs')]);
-  assert.equal(r.stdout.trim(), 'LOCK OK 10 files');
+  assert.equal(r.stdout.trim(), 'LOCK OK 18 files');
   assert.equal(r.status, 0);
   const lock = JSON.parse(fs.readFileSync(path.join(ROOT, 'judge', 'LOCK.json'), 'utf8'));
   assert.deepEqual(Object.keys(lock.files).sort(), ['grow/contract.mjs', 'judge/baseline.mjs', 'judge/control.jsonl', ...CLASSES.map((c) => 'judge/heldout/' + c + '.jsonl'), 'judge/judge.mjs', 'judge/select.mjs', 'judge/verify.mjs'].sort());

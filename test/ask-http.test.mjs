@@ -12,7 +12,8 @@ import path from 'node:path';
 import http from 'node:http';
 import { spawn } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { createHandler, FOOTER, LIMITS, NOT_CONFIGURED, modelConfigured, keyNameFor, OIDC_NAME } from '../act/ask-http.mjs';
+import { createHandler, FOOTER, LIMITS, NOT_CONFIGURED, modelConfigured, keyNameFor, OIDC_NAME, appUrl } from '../act/ask-http.mjs';
+import { buildRequest } from '../grow/app-slug.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'ask-http-test-'));
@@ -431,4 +432,29 @@ test('a grown cell planted over grown/index.mjs answers through the handler: fro
     assert.equal(stub.seen.length, 1);
     assert.equal(stub.seen[0].body.prompt, 'qzxvbnmw');
   } finally { stub.srv.close(); }
+});
+
+test('Day 2, the builder arm: a build request naming a served app is answered with its URL on the first line, from app, never the growing head; an app not served still grows; the URL is the request host', async () => {
+  const apps = [{ slug: 'todo', name: 'todo', generation: 2, path: '/apps/todo/' }];
+  const appAnswer = (p) => { const r = buildRequest(p); const a = r && apps.find((x) => x.slug === r.slug); return a ? { ...a } : null; };
+  const h = createHandler({ stateDir: path.join(TMP, 'app'), grown: false, appAnswer });
+  const r = await h(post('make me a todo app', { headers: { host: 'dilation.dev', 'x-forwarded-proto': 'https' } }));
+  assert.equal(r.status, 200);
+  assert.equal(r.json.from, 'app');
+  assert.equal(r.json.route, 'app');
+  assert.deepEqual(r.json.app, { slug: 'todo', name: 'todo', generation: 2, path: '/apps/todo/', url: 'https://dilation.dev/apps/todo/' });
+  assert.ok(r.json.text.split('\n')[0].includes('https://dilation.dev/apps/todo/'), r.json.text);
+  assert.equal(r.json.growing, undefined, 'no growing reply for a served app');
+  for (const k of FOOTER) assert.ok(k in r.json, 'footer field ' + k);
+  const p = await h(post('build a todo app'));
+  assert.equal(p.json.app.url, '/apps/todo/', 'no host header: the path alone');
+  const n = await h(post('make me a weather app'));
+  assert.notEqual(n.json.from, 'app');
+  assert.equal(n.json.app, undefined);
+  const none = createHandler({ stateDir: path.join(TMP, 'app-none'), grown: false });
+  const z = await none(post('make me a todo app'));
+  assert.notEqual(z.json.from, 'app', 'without grown cells the real list is not consulted');
+  assert.equal(appUrl({ host: 'localhost:3000' }, '/apps/x/'), 'http://localhost:3000/apps/x/');
+  assert.equal(appUrl({ 'x-forwarded-host': 'a.example, b.example', 'x-forwarded-proto': 'https' }, '/apps/x/'), 'https://a.example/apps/x/');
+  assert.equal(appUrl({}, '/apps/x/'), '/apps/x/');
 });
