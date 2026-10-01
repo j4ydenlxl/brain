@@ -24,6 +24,9 @@
 - (19:28Z by the shell clock) "You have 33 percent usage left, this is what you HAVE TO BUILD, no u have to build process and the capability for it to do anything to fill in all gaps, its orthogonal primitives, and the capabilities musnt be flimsy]"
 - (19:59Z by the shell clock) "No, remember my plan ends tomorrow so build everything and the organisms need to heartbeat itself, its self iterating ai datacenter in your pocket, revolutionary paradigm shift we sre creating something new remember you are to work to create everyrhing to make self iteration work and that self iteration should work in the way i told you and make it a god at everything. So you are to exhaust all tokens. The organism should be seperates from claude code, the organism operates and iterates itself and u have to make that"
 - (20:51Z by the shell clock) "Do it all, dont ask me.It should be able to become a god by itself. you jsut gotta build how it can. jusat like a human. they have a brain, hands, feet. sight. simple at first but infintie potential"
+- (about 22:12Z) "WHy are you making feet ???? wtf? thats an analogy" (a correction: the brain, hands, feet, sight of the line above are an image, never names for parts)
+- (about 22:15Z) "Do u even remember what i want? ai datacenter in ur pocket, pioneering in cloud ai"
+- (22:19Z) "Its gotta be fronteir ai and fill in all the gaps without you. And i authorized it"
 
 From MANUAL.md section A: "The central architectural principle is the use of orthogonal computational primitives. ... A primitive may perform transformation, prediction, retrieval, comparison, routing, aggregation, temporal integration, memory access, evaluation, simulation, or another fundamental computational operation. These primitives are intentionally general."
 

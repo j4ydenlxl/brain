@@ -1,0 +1,106 @@
+# body/heartbeat.yml: THE ORGANISM'S OWN HEARTBEAT, with no Claude in it.
+#
+# His order, 2026-10-01 19:59Z: "the organisms need to heartbeat itself ... The organism should be
+# seperates from claude code, the organism operates and iterates itself and u have to make that".
+# His Claude plan ends 2026-10-02, and with it the hourly claude.ai routine that has been the only
+# heartbeat. This job is the body that stays: a GitHub runner checks the repository out, burns eras
+# (grow/era.mjs: absorb, open, grow, measure, ship; no model call anywhere in it) and each era
+# commits and pushes neo/ and grown/ with the job's own token. No secret is read. No package is
+# installed. Nothing here calls Claude, Anthropic, or any model.
+#
+# INSTALL (one time, his hand: a token needs the `workflow` scope to push a file under
+# .github/workflows, and the token on his PC holds gist, read:org, repo):
+#   gh auth refresh -h github.com -s workflow
+#   mkdir -p .github/workflows && cp body/heartbeat.yml .github/workflows/heartbeat.yml
+#   git add .github/workflows/heartbeat.yml && git commit -m "heartbeat: the organism beats by itself" && git push origin HEAD:master
+#   gh workflow run heartbeat.yml --ref master          (the first beat, now; the schedule takes over)
+#
+# MINUTES. A private repository has 2,000 free runner minutes a month, shared with cloud.yml (its
+# daily job spends BRAIN_WALL_MINUTES, 55 by default). The defaults here are one 6 minute beat every
+# 3 hours: 8 beats, about 56 runner minutes a day. Knobs, all repository variables (gh variable set):
+#   BRAIN_BEAT_MINUTES   minutes of eras per beat (default 6, at most 330)
+#   BRAIN_BEAT_RELAY     true: each beat dispatches the next one, so the burn is constant (a public
+#                        repository has no minute cap; a private one spends its month in under 2 days)
+# STOP: commit a file named neo/STOP (any content) and every later beat exits 0 before it burns; or
+# run gh workflow disable heartbeat.yml.
+
+name: heartbeat
+
+on:
+  schedule:
+    # minute 23 of every third hour, UTC. GitHub may start a scheduled run late when its queue is busy.
+    - cron: "23 */3 * * *"
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: "minutes of eras in this beat (at most 330)"
+        required: false
+        default: "6"
+      relay:
+        description: "true: dispatch the next beat when this one ends"
+        required: false
+        default: "false"
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: heartbeat
+  cancel-in-progress: false
+
+jobs:
+  beat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    defaults:
+      run:
+        shell: bash
+    env:
+      BEAT_MINUTES: ${{ github.event_name == 'workflow_dispatch' && inputs.minutes || vars.BRAIN_BEAT_MINUTES || '6' }}
+      RELAY: ${{ github.event_name == 'workflow_dispatch' && inputs.relay || vars.BRAIN_BEAT_RELAY || 'false' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 20
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: the stop file
+        id: stop
+        run: |
+          if [ -e neo/STOP ]; then echo "stopped by neo/STOP"; echo "stopped=true" >> "$GITHUB_OUTPUT"; else echo "stopped=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: burn eras until the beat is spent
+        if: steps.stop.outputs.stopped == 'false'
+        run: |
+          git config user.name "brain organism"
+          git config user.email "brain-organism@users.noreply.github.com"
+          case "$BEAT_MINUTES" in ''|*[!0-9]*) BEAT_MINUTES=6 ;; esac
+          [ "$BEAT_MINUTES" -gt 330 ] && BEAT_MINUTES=330
+          [ "$BEAT_MINUTES" -lt 2 ] && BEAT_MINUTES=2
+          end=$(( $(date +%s) + BEAT_MINUTES * 60 ))
+          eras=0
+          # an era needs room to measure and ship: never start one with under 90 seconds left
+          while [ $(( end - $(date +%s) )) -ge 90 ]; do
+            left_ms=$(( (end - $(date +%s) - 45) * 1000 ))
+            ms=$(( left_ms < 480000 ? left_ms : 480000 ))
+            if ! out=$(node grow/era.mjs run --max-ms "$ms" --commit); then echo "the era loop failed; the beat ends here"; break; fi
+            line=$(printf '%s\n' "$out" | tail -n 1)
+            echo "$line"
+            eras=$(( eras + 1 ))
+            case "$line" in *'"stop":"idle"'*) echo "idle: nothing left to grow in this beat"; break ;; esac
+          done
+          echo "beat: $eras era runs in $BEAT_MINUTES minutes on $(nproc) cores"
+          git log --format='%h %s' -3 | cut -c1-120
+
+      - name: relay the next beat
+        if: steps.stop.outputs.stopped == 'false' && env.RELAY == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run heartbeat.yml -R "$GITHUB_REPOSITORY" --ref master -f minutes="$BEAT_MINUTES" -f relay=true
+          echo "relayed: the next beat waits in the heartbeat concurrency group"
