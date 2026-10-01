@@ -241,3 +241,194 @@ test('the model cell is configured by NAME: our key when set, else the platform 
   assert.equal(modelConfigured({ [OIDC_NAME]: 't' }), false, 'the token alone, with no base url, configures nothing');
   assert.equal(keyNameFor({}), 'BRAIN_LLM_KEY');
 });
+
+// ---------------------------------------------------------------- the growing reply and the miss log (board 37, item misses)
+// His NEXT-WEEK.md step 8: "The site's miss reply changes from a refusal to \"I am growing a cell for this\", and the
+// miss is logged for step 1." A stub on 127.0.0.1 stands in for Supabase and COUNTS what reaches it, so "nothing was
+// logged" is a count and not a belief.
+async function missStub(status = 201) {
+  const seen = [];
+  const srv = http.createServer((req, res) => {
+    let b = '';
+    req.on('data', (d) => { b += d; });
+    req.on('end', () => {
+      let body = null;
+      try { body = JSON.parse(b); } catch { body = b; }
+      seen.push({ method: req.method, url: req.url, apikey: req.headers.apikey, auth: req.headers.authorization, prefer: req.headers.prefer, type: req.headers['content-type'], body });
+      res.writeHead(srv.status); res.end();
+    });
+  });
+  srv.status = status;
+  await new Promise((r) => srv.listen(0, '127.0.0.1', r));
+  return { srv, seen, url: 'http://127.0.0.1:' + srv.address().port };
+}
+
+test('a memory miss answers "I am growing a cell for this" first and POSTs one row to the miss log with the anon key; an exact answer is untouched', async () => {
+  const { GROWING_HEAD } = await import('../act/ask-http.mjs');
+  const stub = await missStub(201);
+  try {
+    const h = createHandler({ stateDir: path.join(TMP, 'grow-a') });
+    const env = { SUPABASE_URL: stub.url, SUPABASE_ANON_KEY: 'x' };
+    // (a) the keyboard mash: 200, the growing head on the first line, logged, one POST with apikey x
+    const r = await h(post('jgkafsjka', { env }));
+    assert.equal(r.status, 200);
+    assert.equal(r.json.from, 'memory');
+    assert.ok(r.json.text.startsWith('I am growing a cell for this'), r.json.text.split('\n')[0]);
+    assert.equal(r.json.text.split('\n')[0], GROWING_HEAD);
+    assert.equal(r.json.growing.logged, true, r.json.growing.reason);
+    assert.match(r.json.growing.reason, /201/);
+    assert.equal(stub.seen.length, 1);
+    const s = stub.seen[0];
+    assert.equal(s.method, 'POST');
+    assert.equal(s.url, '/rest/v1/misses');
+    assert.equal(s.apikey, 'x');
+    assert.equal(s.auth, 'Bearer x');
+    assert.equal(s.prefer, 'return=minimal');
+    assert.match(s.type, /application\/json/);
+    assert.equal(s.body.prompt, 'jgkafsjka');
+    assert.equal(s.body.reply, GROWING_HEAD, 'the reply logged is the first line a person read');
+    assert.deepEqual(Object.keys(s.body).sort(), ['prompt', 'reply', 'route']);
+    assert.equal(s.body.route.from, 'memory');
+    assert.equal(s.body.route.host, 'local');
+    // the rest of the old text follows the head: the fall through lines are still there
+    assert.match(r.json.text.split('\n').slice(1).join('\n'), /nothing in memory matches/);
+    // a prompt carrying a credential shape leaves scrubbed
+    const tok = 'ghp_' + 'A'.repeat(30);
+    const r2 = await h(post('qzxv ' + tok, { env }));
+    assert.equal(r2.json.growing.logged, true);
+    assert.equal(stub.seen.length, 2);
+    assert.ok(!JSON.stringify(stub.seen[1].body).includes(tok), 'the token shape reached the miss log');
+    // (c) an exact answer: 391, no growing field, nothing POSTed
+    const x = await h(post('what is 17 times 23', { env }));
+    assert.equal(x.json.exact.answer, '391');
+    assert.equal('growing' in x.json, false);
+    assert.doesNotMatch(x.json.text, /growing a cell/);
+    // a conversational turn is not a miss either
+    const hi = await h(post('hi', { env }));
+    assert.equal(hi.json.from, 'native');
+    assert.equal('growing' in hi.json, false);
+    assert.equal(stub.seen.length, 2, 'only the two misses reached the log');
+    // the control that can fail: the log refusing the row is logged false, and the second line says it was not logged
+    stub.srv.status = 401;
+    const bad = await h(post('jgkafsjka', { env }));
+    assert.equal(bad.json.growing.logged, false);
+    assert.match(bad.json.growing.reason, /answered 401/);
+    assert.equal(bad.json.text.split('\n')[0], GROWING_HEAD);
+    assert.equal(bad.json.text.split('\n')[1], '(' + bad.json.growing.reason + ')');
+    assert.equal(stub.seen.length, 3);
+  } finally { stub.srv.close(); }
+});
+
+test('without the SUPABASE names the miss still answers the growing head, logged false with the reason naming SUPABASE_URL, and no request leaves', async () => {
+  const stub = await missStub(201);
+  try {
+    const h = createHandler({ stateDir: path.join(TMP, 'grow-b') });
+    const r = await h(post('jgkafsjka'));
+    assert.equal(r.status, 200);
+    assert.ok(r.json.text.startsWith('I am growing a cell for this'));
+    assert.equal(r.json.growing.logged, false);
+    assert.match(r.json.growing.reason, /SUPABASE_URL/);
+    assert.match(r.json.text.split('\n')[1], /^\(not logged: .*SUPABASE_URL/);
+    // one of the two names is not enough
+    const one = await h(post('jgkafsjka', { env: { SUPABASE_URL: stub.url } }));
+    assert.equal(one.json.growing.logged, false);
+    assert.match(one.json.growing.reason, /SUPABASE_ANON_KEY/);
+    assert.equal(stub.seen.length, 0, 'nothing reached the log without both names');
+  } finally { stub.srv.close(); }
+});
+
+test('logMiss never throws: a deadline, an unreachable log and a refusal each come back as a reason with no value in it', async () => {
+  const { logMiss, isMemoryMiss, missOrigin, MISS_MS } = await import('../act/ask-http.mjs');
+  assert.equal(MISS_MS, 1500);
+  const env = { SUPABASE_URL: 'https://example.supabase.co/', SUPABASE_ANON_KEY: 'sb_publishable_planted' };
+  const row = { prompt: 'h', reply: 'I am growing a cell for this.', route: { from: 'memory' } };
+  let got = null;
+  const ok = await logMiss(env, row, { fetch: async (url, init) => { got = { url, init }; return new Response(null, { status: 201 }); } });
+  assert.deepEqual([ok.logged, ok.status], [true, 201]);
+  assert.equal(got.url, 'https://example.supabase.co/rest/v1/misses');
+  assert.equal(got.init.method, 'POST');
+  assert.equal(got.init.headers.apikey, 'sb_publishable_planted');
+  assert.deepEqual(JSON.parse(got.init.body), row);
+  const hang = (url, init) => new Promise((resolve, reject) => { init.signal.addEventListener('abort', () => reject(Object.assign(new Error('aborted'), { name: 'AbortError' }))); });
+  const slow = await logMiss(env, row, { fetch: hang, timeoutMs: 40 });
+  assert.equal(slow.logged, false);
+  assert.match(slow.reason, /did not answer in 40 ms/);
+  const down = await logMiss(env, row, { fetch: async () => { throw Object.assign(new TypeError('egress refused: sb_publishable_planted'), { code: 'EGRESS_REFUSED' }); } });
+  assert.equal(down.logged, false);
+  assert.match(down.reason, /EGRESS_REFUSED/);
+  for (const r of [ok, slow, down]) assert.ok(!r.reason.includes('sb_publishable_planted'), 'the key value is in a reason');
+  const refused = await logMiss(env, row, { fetch: async () => new Response('{"message":"no"}', { status: 403 }) });
+  assert.deepEqual([refused.logged, refused.status], [false, 403]);
+  assert.equal((await logMiss({ SUPABASE_URL: 'not a url', SUPABASE_ANON_KEY: 'k' }, row, { fetch: () => { throw new Error('must not be called'); } })).logged, false);
+  assert.equal(missOrigin(env), 'https://example.supabase.co');
+  assert.equal(missOrigin({ SUPABASE_URL: 'https://example.supabase.co' }), null, 'no anon key, no allowlist entry');
+  // what is a miss: memory, no hit, no cite; a grown cell (from cell), a hit or a cite is not
+  assert.equal(isMemoryMiss({ from: 'memory', provenance: { memoryHits: 0 }, cites: [] }), true);
+  assert.equal(isMemoryMiss({ from: 'cell', provenance: { memoryHits: 0 }, cites: [] }), false);
+  assert.equal(isMemoryMiss({ from: 'memory', provenance: { memoryHits: 2 }, cites: [] }), false);
+  assert.equal(isMemoryMiss({ from: 'memory', provenance: { memoryHits: 0 }, cites: [{ title: 't' }] }), false);
+});
+
+test('the guard allowlist gains the miss log origin and nothing else, in a child with its own cold start', async () => {
+  const stub = await missStub(201);
+  const other = await missStub(201);
+  try {
+    const code = [
+      'const m = await import(' + JSON.stringify(HANDLER) + ');',
+      'const h = m.createHandler({ stateDir: ' + JSON.stringify(path.join(TMP, 'grow-guard')) + ' });',
+      "const r = await h({ method: 'POST', body: JSON.stringify({ prompt: 'jgkafsjka' }), ip: 'c' });",
+      'let egress = null;',
+      "try { await fetch('http://example.com/'); egress = 'reached'; } catch (e) { egress = e.code || String(e); }",
+      'let otherPort = null;',
+      'try { await fetch(' + JSON.stringify(other.url + '/rest/v1/misses') + ", { method: 'POST', body: '{}' }); otherPort = 'reached'; } catch (e) { otherPort = e.code || String(e); }",
+      "console.log('RESULT ' + JSON.stringify({ growing: r.json.growing, first: r.json.text.split(String.fromCharCode(10))[0], egress, otherPort, guard: !!globalThis.__brainEgressGuard }));",
+      'process.exit(0);',
+    ].join('\n');
+    const x = result(await child(code, { SUPABASE_URL: stub.url, SUPABASE_ANON_KEY: 'x' }));
+    assert.equal(x.guard, true);
+    assert.equal(x.growing.logged, true, x.growing.reason);
+    assert.match(x.first, /^I am growing a cell for this/);
+    assert.equal(stub.seen.length, 1, 'the row reached the log through the guard');
+    assert.equal(stub.seen[0].body.prompt, 'jgkafsjka');
+    assert.equal(x.egress, 'EGRESS_REFUSED', 'example.com is still refused');
+    assert.equal(x.otherPort, 'EGRESS_REFUSED', 'another loopback port is still refused: the allowlist gained one origin');
+    assert.equal(other.seen.length, 0);
+  } finally { stub.srv.close(); other.srv.close(); }
+});
+
+test('a grown cell planted over grown/index.mjs answers through the handler: from cell, no growing field, nothing logged', async () => {
+  const stub = await missStub(201);
+  const dir = fs.mkdtempSync(path.join(TMP, 'planted-'));
+  const planted = path.join(dir, 'index.mjs');
+  fs.writeFileSync(planted, [
+    'export const GROWN = Object.freeze([]);',
+    "export function grownAnswer(q) { return String(q).trim() === 'jgkafsjka' ? { id: 'mash-planted', class: 'mash', generation: 1, answer: 'That reads as a keyboard mash.' } : null; }",
+  ].join('\n'));
+  try {
+    const code = [
+      "const { registerHooks } = await import('node:module');",
+      'const PLANTED = ' + JSON.stringify(pathToFileURL(planted).href) + ';',
+      "registerHooks({ resolve(spec, ctx, next) { if (spec === '../grown/index.mjs' && String(ctx.parentURL).endsWith('/act/prompt.mjs')) return { url: PLANTED, shortCircuit: true }; return next(spec, ctx); } });",
+      'const m = await import(' + JSON.stringify(HANDLER) + ');',
+      'const h = m.createHandler({ stateDir: ' + JSON.stringify(path.join(TMP, 'grow-planted')) + ' });',
+      "const r = await h({ method: 'POST', body: JSON.stringify({ prompt: 'jgkafsjka' }), ip: 'c' });",
+      "const miss = await h({ method: 'POST', body: JSON.stringify({ prompt: 'qzxvbnmw' }), ip: 'c' });",
+      "console.log('RESULT ' + JSON.stringify({ r: r.json, miss: { from: miss.json.from, growing: miss.json.growing } }));",
+      'process.exit(0);',
+    ].join('\n');
+    const x = result(await child(code, { SUPABASE_URL: stub.url, SUPABASE_ANON_KEY: 'x' }));
+    assert.equal(x.r.from, 'cell');
+    assert.equal(x.r.route, 'direct');
+    assert.equal(x.r.provenance.answer, 'native');
+    assert.equal(x.r.provenance.method, 'mash-planted');
+    assert.equal(x.r.native.kind, 'cell:mash-planted');
+    assert.equal(x.r.native.answer, 'That reads as a keyboard mash.');
+    assert.match(x.r.text, /^answered natively by a grown cell \(mash-planted, generation 1\)/);
+    assert.equal('growing' in x.r, false, 'a grown answer is not a miss');
+    // the matched control in the same child: a prompt the planted cell does not carry is still a logged miss
+    assert.equal(x.miss.from, 'memory');
+    assert.equal(x.miss.growing.logged, true, x.miss.growing.reason);
+    assert.equal(stub.seen.length, 1);
+    assert.equal(stub.seen[0].body.prompt, 'qzxvbnmw');
+  } finally { stub.srv.close(); }
+});

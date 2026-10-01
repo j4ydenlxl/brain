@@ -1183,3 +1183,121 @@ test('the program guard: a learned file that holds only retract refuses the plan
   assert.deepEqual(s2.levels.cue[pat][0].forms.roles, [form]);
   assert.equal(P.programAnswer(BAKER, { provider: 'null', programs: s2 }).hit.answer, '43');
 });
+
+// ---------------------------------------------------------------- the grown hook (board 37, item misses)
+// grown/index.mjs (written by grow/store.mjs promote) is asked right after the conversation region. These tests
+// cannot edit that file, so they grade the hook three ways: the answer shape through the exported answerFromGrown,
+// the current index through ask() itself (whatever generation it holds), and, in a child whose module hook replaces
+// grown/index.mjs for act/prompt.mjs alone, a planted survivor and a planted generation-0 index (no survivor), so the
+// fall-through is graded even after the tree grows a cell for "h".
+test('answerFromGrown mirrors answerFromNative: from cell, route direct, native.kind cell:<id>, provenance native/grown, one ask event', async (t) => {
+  const P = await import('../act/prompt.mjs');
+  const { brain, events } = newBrain(t, { name: 'grown-shape' });
+  const g = { id: 'frag-planted', class: 'fragment', generation: 3, answer: 'A single letter is not a question yet.', ns: 1234 };
+  const before = events(ASK_EVENT).length;
+  const a = P.answerFromGrown(brain, 'h', g, Date.now());
+  assert.equal(a.ok, true);
+  assert.equal(a.from, 'cell');
+  assert.equal(a.route, 'direct');
+  assert.equal(a.promptHash, promptHash('h'));
+  assert.equal(a.promptChars, 1);
+  assert.equal(a.text, 'answered natively by a grown cell (frag-planted, generation 3), with no model, no memory read and no network.\n' + g.answer);
+  assert.deepEqual(a.native, { kind: 'cell:frag-planted', answer: g.answer, form: 'fragment', ns: 1234 });
+  assert.equal(a.provenance.answer, 'native');
+  assert.equal(a.provenance.source, 'grown');
+  assert.equal(a.provenance.method, 'frag-planted');
+  assert.equal(a.provenance.memoryHits, 0);
+  assert.equal(a.provenance.llm.provider, null);
+  assert.match(a.provenance.llm.reason, /not asked: a grown cell answered/);
+  assert.deepEqual([a.memory, a.exact, a.cites, a.redacted, a.ticks, a.hops], [null, null, [], 0, 0, []]);
+  assert.equal(a.words, 8);
+  // the same field set as the conversation region's answer (answerFromNative), so every reader of that shape reads this one
+  const n = await ask(brain, 'hello', { provider: 'null' });
+  assert.equal(n.from, 'native');
+  assert.deepEqual(Object.keys(a).sort(), Object.keys(n).sort());
+  assert.deepEqual(Object.keys(a.provenance).sort(), Object.keys(n.provenance).sort());
+  const asked = events(ASK_EVENT).slice(before);
+  assert.ok(asked.some((e) => e.from === 'cell' && e.source === 'grown' && e.method === 'frag-planted'), 'the grown answer left one ask event');
+});
+
+test('ask("h") at the current grown index: the hook answers exactly when grownAnswer does, and opts.grown false skips it', async (t) => {
+  const { GROWN, grownAnswer } = await import('../grown/index.mjs');
+  const { readFileSync } = await import('node:fs');
+  const idx = JSON.parse(readFileSync(path.join(ROOT, 'grown', 'index.json'), 'utf8'));
+  assert.ok(Array.isArray(GROWN));
+  assert.equal(GROWN.length, idx.cells.length, 'grown/index.mjs and grown/index.json list the same survivors');
+  const { brain } = newBrain(t, { name: 'grown-index' });
+  const g = grownAnswer('h');
+  assert.ok(GROWN.length > 0 || g === null, 'an index with no survivor answers nothing');
+  const a = await ask(brain, 'h', { provider: 'null' });
+  const off = await ask(brain, 'h', { provider: 'null', grown: false });
+  // with the hook off, "h" reaches the memory tier and misses, whatever the index holds
+  assert.equal(off.from, 'memory', 'opts.grown false never answers from a cell');
+  assert.equal(off.text.split('\n')[1], 'nothing in memory matches this prompt.');
+  // with it on, ask() answers from the cell exactly when grownAnswer("h") names one, else the same memory miss
+  const want = g
+    ? { from: 'cell', kind: 'cell:' + g.id, last: g.answer }
+    : { from: off.from, kind: off.native ? off.native.kind : null, last: off.text.split('\n').at(-1) };
+  assert.deepEqual({ from: a.from, kind: a.native ? a.native.kind : null, last: a.text.split('\n').at(-1) }, want);
+  if (!g) assert.equal(a.text, off.text, 'a null hook changes nothing in the answer');
+  // the conversation region still comes first: a greeting is native whatever the index holds
+  assert.equal((await ask(brain, 'hi', { provider: 'null' })).from, 'native');
+});
+
+test('a planted survivor over grown/index.mjs answers ask("h") from cell; grown false, a greeting and a sum keep their own routes; a planted generation-0 index falls through', async () => {
+  const { writeFileSync } = await import('node:fs');
+  const { pathToFileURL } = await import('node:url');
+  const dir = mkdtempSync(path.join(tmpdir(), 'grown-planted-'));
+  try {
+    const planted = path.join(dir, 'index.mjs');
+    writeFileSync(planted, [
+      'export const GROWN = Object.freeze([]);',
+      "export function grownAnswer(q) { return /^[a-z]$/i.test(String(q).trim()) ? { id: 'frag-planted', class: 'fragment', generation: 1, answer: 'One letter: say a little more.' } : null; }",
+    ].join('\n'));
+    // a generation-0 index (no survivor, the generated grownAnswer loop) that counts its calls, so the fall-through
+    // below is graded whatever the tree's own grown/index.mjs holds by then
+    const empty = path.join(dir, 'gen0.mjs');
+    writeFileSync(empty, [
+      'export const GROWN = Object.freeze([]);',
+      'export function grownAnswer(q) {',
+      '  globalThis.__gen0Calls = (globalThis.__gen0Calls || 0) + 1;',
+      '  const text = String(q ?? "");',
+      '  for (const c of GROWN) { if (c.can(text) === true) { const a = c.answer(text); if (typeof a === "string" && a.trim()) return { id: c.meta.id, class: c.meta.class, generation: c.meta.generation, answer: a }; } }',
+      '  return null;',
+      '}',
+    ].join('\n'));
+    const url = (p) => JSON.stringify(pathToFileURL(path.join(ROOT, p)).href);
+    const code = [
+      "const { registerHooks } = await import('node:module');",
+      'const PLANTED = ' + JSON.stringify(pathToFileURL(planted).href) + ';',
+      'const EMPTY = ' + JSON.stringify(pathToFileURL(empty).href) + ';',
+      "registerHooks({ resolve(spec, ctx, next) { const p = String(ctx.parentURL); if (spec === '../grown/index.mjs' && p.endsWith('/act/prompt.mjs')) return { url: PLANTED, shortCircuit: true }; if (spec === '../grown/index.mjs' && p.endsWith('/act/prompt.mjs?gen0')) return { url: EMPTY, shortCircuit: true }; return next(spec, ctx); } });",
+      'const P = await import(' + url('act/prompt.mjs') + ');',
+      'const P0 = await import(' + url('act/prompt.mjs') + " + '?gen0');",
+      'const { seedBasic } = await import(' + url('seeds/basic.mjs') + ');',
+      "const brain = seedBasic({ name: 'grown-planted', ledger: 'off' });",
+      "const pick = (a) => ({ from: a.from, route: a.route, kind: a.native && a.native.kind, source: a.provenance && a.provenance.source, first: String(a.text).split(String.fromCharCode(10))[0], second: String(a.text).split(String.fromCharCode(10))[1], last: String(a.text).split(String.fromCharCode(10)).at(-1) });",
+      "const out = { h: pick(await P.ask(brain, 'h', { provider: 'null' })), off: pick(await P.ask(brain, 'h', { provider: 'null', grown: false })), hi: pick(await P.ask(brain, 'hi', { provider: 'null' })), sum: pick(await P.ask(brain, 'what is 17 times 23', { provider: 'null' })) };",
+      "out.gen0 = pick(await P0.ask(brain, 'h', { provider: 'null' })); out.gen0Calls = globalThis.__gen0Calls || 0;",
+      "out.gen0Off = pick(await P0.ask(brain, 'h', { provider: 'null', grown: false })); out.gen0CallsAfterOff = globalThis.__gen0Calls || 0;",
+      "console.log('RESULT ' + JSON.stringify(out));",
+    ].join('\n');
+    const r = spawnSync(NODE, ['--input-type=module', '-e', code], { cwd: ROOT, encoding: 'utf8', timeout: 120_000 });
+    const line = String(r.stdout).split('\n').find((l) => l.startsWith('RESULT '));
+    assert.ok(line, 'no RESULT line: ' + r.stdout + r.stderr);
+    const x = JSON.parse(line.slice(7));
+    assert.deepEqual([x.h.from, x.h.route, x.h.kind, x.h.source], ['cell', 'direct', 'cell:frag-planted', 'grown']);
+    assert.equal(x.h.first, 'answered natively by a grown cell (frag-planted, generation 1), with no model, no memory read and no network.');
+    assert.equal(x.h.last, 'One letter: say a little more.');
+    assert.equal(x.off.from, 'memory', 'opts.grown false: the planted cell is skipped');
+    assert.equal(x.hi.from, 'native', 'the conversation region answers before the grown cells');
+    assert.equal(x.sum.from, 'exact', 'a cell that cannot answer lets the exact path answer');
+    assert.equal(x.sum.last, '391');
+    // generation 0: the hook asked the empty index once, it returned null, and ask("h") fell through to the memory miss
+    assert.equal(x.gen0Calls, 1, 'the hook consulted the generation-0 index');
+    assert.equal(x.gen0.from, 'memory');
+    assert.equal(x.gen0.second, 'nothing in memory matches this prompt.');
+    assert.deepEqual(x.gen0, x.gen0Off, 'a null hook answers exactly what opts.grown false answers');
+    assert.equal(x.gen0CallsAfterOff, 1, 'opts.grown false does not consult the index');
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

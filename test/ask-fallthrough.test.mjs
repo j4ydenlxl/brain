@@ -253,14 +253,20 @@ test('memoryMissText: the old line unless a miss with the null provider standing
   assert.equal(memoryAnswer(empty), 'nothing in memory matches this prompt.');
 });
 
-test('the server path: createHandler with no model configured prints the three lines and the same JSON fields', async () => {
-  const { createHandler, NOT_CONFIGURED } = await import('../act/ask-http.mjs');
+test('the server path: createHandler with no model configured prints the growing head, the unlogged note, then the three lines, and the same JSON fields', async () => {
+  const { createHandler, NOT_CONFIGURED, GROWING_HEAD } = await import('../act/ask-http.mjs');
   const h = createHandler({ stateDir: path.join(TMP, 'handler') });
   for (const q of ['do my homework', 'hey how are you doing today my friend it is a lovely day']) {
     const r = await h({ method: 'POST', body: JSON.stringify({ prompt: q }), ip: '10.9.9.9', env: {} });
     assert.equal(r.status, 200);
     const j = r.json;
-    assert.equal(j.text, FALLTHROUGH_HEAD + '\n' + OLD[q] + '\n' + FALLTHROUGH_TRY, q);
+    // a memory miss with no model: the growing head first (board 37, item misses), the miss-log note second (an empty
+    // environment holds no log), and the three fall-through lines below, unchanged
+    const lines = j.text.split('\n');
+    assert.equal(lines[0], GROWING_HEAD, q);
+    assert.ok(GROWING_HEAD.length < 240 && GROWING_HEAD.endsWith('.'), 'a first line for a person');
+    assert.match(lines[1], /^\(not logged: /, q);
+    assert.equal(lines.slice(2).join('\n'), FALLTHROUGH_HEAD + '\n' + OLD[q] + '\n' + FALLTHROUGH_TRY, q);
     assert.equal(j.from, 'memory');
     assert.equal(j.route, 'direct');
     assert.equal(j.provenance.answer, 'memory');
@@ -274,7 +280,7 @@ test('the server path: createHandler with no model configured prints the three l
 });
 
 test('the bench readers: a person line, a bare miss and the native clock are read as the bar defines them', async () => {
-  const { firstLineForPerson, isMiss, normaliseClock, DEV_UNCARRIED } = await import('../bench/ask-fallthrough.mjs');
+  const { firstLineForPerson, isMiss, oldLine, normaliseClock, DEV_UNCARRIED } = await import('../bench/ask-fallthrough.mjs');
   const full = FALLTHROUGH_HEAD + '\n' + OLD['do my homework'] + '\n' + FALLTHROUGH_TRY;
   assert.equal(firstLineForPerson(full), true);
   assert.equal(firstLineForPerson(OLD['do my homework']), false, 'the old line alone is not a line for a person');
@@ -287,6 +293,15 @@ test('the bench readers: a person line, a bare miss and the native clock are rea
   assert.equal(isMiss({ ...j, provenance: { ...j.provenance, memoryHits: 1 } }), false, 'a hit');
   assert.equal(isMiss({ ...j, text: full }), false, 'the fall through text is not the control shape');
   assert.equal(isMiss(null), false);
+  // since board 37 (item misses) both arms open with the growing head and its miss-log note: the control shape is the
+  // old line LAST, the fall through shape has its try line below the old line
+  const { GROWING_HEAD } = await import('../act/ask-http.mjs');
+  const headed = GROWING_HEAD + '\n(not logged: no log in this environment)\n';
+  assert.equal(isMiss({ ...j, text: headed + OLD['do my homework'] }), true, 'the control below the growing head is still a miss');
+  assert.equal(isMiss({ ...j, text: headed + full }), false, 'the fall through below the growing head is still not the control shape');
+  assert.equal(oldLine(headed + full), OLD['do my homework'], 'the old line is found wherever it sits');
+  assert.equal(oldLine(GROWING_HEAD), null);
+  assert.equal(firstLineForPerson(headed + OLD['do my homework']), true, 'the growing head is a first line for a person');
   assert.equal(normaliseClock('(kind greeting, 12000 ns), x'), normaliseClock('(kind greeting, 7 ns), x'));
   assert.notEqual(normaliseClock('(kind greeting, 1 ns)'), normaliseClock('(kind thanks, 1 ns)'));
   for (const q of DEV_UNCARRIED) assert.ok(!(q in OLD), 'a development prompt of the bench is not one of the twelve here: ' + q);

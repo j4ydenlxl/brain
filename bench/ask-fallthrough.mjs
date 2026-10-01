@@ -58,11 +58,15 @@ export function firstLineForPerson(text) {
 }
 /** The native text carries the nanoseconds the grammar took; two runs differ there and nowhere else. */
 export const normaliseClock = (s) => String(s ?? '').replace(/\(kind ([^,()]+), \d+ ns\)/g, '(kind $1, N ns)');
-/** A bare memory miss: zero hits, no page, the null provider standing in, the old line as the text. */
+/** The old line of a text, wherever it sits: alone, or below the growing head and its miss-log note (board 37, item misses). */
+export const oldLine = (text) => String(text ?? '').split('\n').find((l) => MISS_RE.test(l)) ?? null;
+/** A bare memory miss: zero hits, no page, the null provider standing in, the old line as the LAST line of the text (the
+ *  fall through writes its try line below the old line, the control writes nothing below it). */
 export function isMiss(j) {
   if (!j || !j.provenance || !j.llm) return false;
+  const last = String(j.text ?? '').split('\n').filter((l) => l.length).pop() ?? '';
   return j.from === 'memory' && j.provenance.answer === 'memory' && j.provenance.memoryHits === 0 && j.provenance.webPages === 0
-    && j.llm.provider === 'null' && !j.llm.fellBack && MISS_RE.test(String(j.text));
+    && j.llm.provider === 'null' && !j.llm.fellBack && MISS_RE.test(last);
 }
 const median = (xs) => { const s = xs.filter(Number.isFinite).sort((a, b) => a - b); return s.length ? s[Math.floor((s.length - 1) / 2)] : null; };
 
@@ -134,7 +138,7 @@ async function runArm(name, base, scratch, sets) {
       const lines = String(on.text ?? '').split('\n');
       rows.push({
         set, label: item.carried ? 'carried' : 'uncarried', prompt: item.prompt, route: on.route, from: on.from, answer: on.answer,
-        missOff: off.miss, person: firstLineForPerson(on.text), oldSurvives: off.miss ? lines[1] === off.text : null,
+        missOff: off.miss, person: firstLineForPerson(on.text), oldSurvives: off.miss ? lines.includes(oldLine(off.text)) : null,
         changed, fieldsSame, shape: on.shape && off.shape, status: [on.status, off.status], usOn: on.serverUs, usOff: off.serverUs,
         firstLine: lines[0].slice(0, 240), knowledgeReady: on.knowledgeReady,
       });
@@ -259,7 +263,7 @@ async function main() {
     .map((r) => ({ label: r.label, prompt: r.prompt, route: r.route, answer: r.answer, person: r.person, changed: r.changed, fieldsSame: r.fieldsSame, firstLine: r.firstLine }));
   const stripRows = (arm, keepHeld) => arm.rows.filter((r) => keepHeld || r.set !== 'heldout').map((r) => ({ set: r.set, label: r.label, prompt: r.prompt, route: r.route, from: r.from, answer: r.answer, missOff: r.missOff, person: r.person, oldSurvives: r.oldSurvives, changed: r.changed, fieldsSame: r.fieldsSame, usOn: r.usOn, usOff: r.usOff }));
   const statement = H
-    ? `A person who types something the organism does not carry into dilation.dev/ask used to read one line, "nothing in memory matches <words>.", which reads as a refusal. Through the endpoint's own handler (act/ask-http.mjs, no model configured, the null provider, no socket), on the deployed file set copied from this tree with .vercelignore applied, ${H.d.uncarriedPerson} of ${H.d.uncarried} held-out uncarried prompts now open with a sentence for a person that says what the organism does carry and that no language model is configured on this host, and the old line survives as the second line of ${H.d.oldSurvives} of ${H.d.uncarriedMiss} misses. Against the control (the same handler with the fall through switched off, interleaved per prompt), ${H.d.carriedChanged} of ${H.d.carriedOnArm} held-out carried prompts changed their text on the deployed set and ${H.t.carriedChanged} of ${H.t.carriedOnArm} on this host with its knowledge store open, and ${H.d.fieldsChanged + H.t.fieldsChanged} answers changed any field other than the text. The held-out file was written by ${cfg.author}; the development prompts were written in this bench. The bar ${barMet ? 'is met' : 'is not met'}.`
+    ? `A person who types something the organism does not carry into dilation.dev/ask used to read one line, "nothing in memory matches <words>.", which reads as a refusal. Through the endpoint's own handler (act/ask-http.mjs, no model configured, the null provider, no socket), on the deployed file set copied from this tree with .vercelignore applied, ${H.d.uncarriedPerson} of ${H.d.uncarried} held-out uncarried prompts now open with a sentence for a person that says what the organism does carry and that no language model is configured on this host, and the old line survives as a line of ${H.d.oldSurvives} of ${H.d.uncarriedMiss} misses. Against the control (the same handler with the fall through switched off, interleaved per prompt), ${H.d.carriedChanged} of ${H.d.carriedOnArm} held-out carried prompts changed their text on the deployed set and ${H.t.carriedChanged} of ${H.t.carriedOnArm} on this host with its knowledge store open, and ${H.d.fieldsChanged + H.t.fieldsChanged} answers changed any field other than the text. The held-out file was written by ${cfg.author}; the development prompts were written in this bench. The bar ${barMet ? 'is met' : 'is not met'}.`
     : `Development run without a held-out file: on the deployed file set ${D.devUncarried.uncarriedPerson} of ${D.devUncarried.uncarried} development uncarried prompts open with a sentence for a person, and ${D.devCarried.carriedChanged} of ${D.devCarried.carriedOnArm} development carried prompts changed their text against the control (${T.devCarried.carriedChanged} of ${T.devCarried.carriedOnArm} on this host). This is not the bar: the bar needs the held-out file the verify plane writes.`;
   const verdict = {
     at: new Date().toISOString(),
@@ -291,7 +295,7 @@ async function main() {
       person: 'the first line of the text is under 240 chars, ends with a period and does not contain "nothing in memory"',
       miss: 'the control answer: from memory, provenance.answer memory, memoryHits 0, webPages 0, llm.provider null, no fellBack, text starting "nothing in memory matches"',
       carriedChanged: 'a labeled carried prompt that is not a bare miss on that arm whose text differs between fall through on and off, the native nanoseconds normalised',
-      oldSurvives: 'line two of the on text equals the whole control text',
+      oldSurvives: 'the control\'s old line ("nothing in memory matches ...") is a line of the on text, below the growing head and its miss-log note (board 37, item misses)',
     },
     misses: { deploy: misses(arms.deploy.rows), tree: misses(arms.tree.rows) },
     rows: { deploy: stripRows(arms.deploy, false), tree: stripRows(arms.tree, false) },

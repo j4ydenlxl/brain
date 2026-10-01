@@ -81,6 +81,7 @@ import { askBySpawn } from './spawn.mjs'; // a question grows the cells that ans
 import { solveMath } from '../reason/math.mjs';
 import { solvedFor } from '../reason/solved.mjs'; // Board 15 item ns (board 15 builder): the solved region, right after direct
 import { converse } from './converse.mjs'; // the native conversation region (his 2026-09-26 20:20: "it cant even respond to 'hi.'")
+import { grownAnswer } from '../grown/index.mjs'; // the grown cells, right after the conversation region (grow/CONTRACT.md grown/; board 37 item misses)
 import { synthesize, entryOf as codeEntryOf, docLines as codeDocLines } from '../reason/synth.mjs';
 import { codeNative, codeNativeShape } from './code-native.mjs'; // code, code-reading, sql, command and format with no model (board 34, item code-native)
 // The program tier (board 26 builder, item wire-induce): programs bench/induce.mjs induced from development GSM8K records.
@@ -825,6 +826,52 @@ function answerFromNative(brain, text, c, started) {
   answer.seq = logAsk(brain, {
     t: clockT(brain), gen: clockGen(brain), type: ASK_EVENT, by: SURFACE, route: 'direct', promptHash: hash, promptChars: text.length, from: 'native',
     provenance: 'native', source: 'converse', tier: 'native', lookupNs: c.ns, method: c.kind, modelAgreed: null,
+    memoryHits: 0, webPages: 0, redacted: 0, provider: null, model: null, llmMs: 0, llmOk: false, ms: answer.ms,
+  });
+  return answer;
+}
+
+const NOT_ASKED_GROWN = 'not asked: a grown cell answered';
+
+/**
+ * The answer object of a grown cell (grown/index.mjs grownAnswer; board 37 item misses): the shape of
+ * answerFromNative, from 'cell', provenance.answer 'native', provenance.source 'grown', method the cell id,
+ * route 'direct', no model, no memory read, no network; native.ns is the nanoseconds grownAnswer took.
+ * @param {object} brain
+ * @param {string} text the prompt
+ * @param {{id: string, class: string, generation: number, answer: string, ns?: number}} g
+ * @param {number} started Date.now() when ask() began
+ */
+export function answerFromGrown(brain, text, g, started) {
+  const hash = promptHash(text);
+  const ns = Number.isFinite(g.ns) ? g.ns : 0;
+  const answer = {
+    ok: true,
+    promptHash: hash,
+    promptChars: text.length,
+    from: 'cell',
+    text: 'answered natively by a grown cell (' + g.id + ', generation ' + g.generation + '), with no model, no memory read and no network.\n' + g.answer,
+    memory: null,
+    exact: null,
+    native: { kind: 'cell:' + g.id, answer: g.answer, form: g.class, ns },
+    cites: [],
+    redacted: 0,
+    redactedShapes: [],
+    provenance: {
+      answer: 'native', source: 'grown', tier: 'native', title: null, method: g.id, modelAgreed: null,
+      confidence: null, item: null, keyNs: 0, lookupNs: ns,
+      memoryHits: 0, webPages: 0,
+      llm: { provider: null, model: null, ms: 0, tokens: 0, ok: false, reason: NOT_ASKED_GROWN, fellBack: null, probed: null },
+    },
+    words: String(g.answer).split(/\s+/).filter(Boolean).length,
+    ms: Date.now() - started,
+    route: 'direct',
+    ticks: 0,
+    hops: [],
+  };
+  answer.seq = logAsk(brain, {
+    t: clockT(brain), gen: clockGen(brain), type: ASK_EVENT, by: SURFACE, route: 'direct', promptHash: hash, promptChars: text.length, from: 'cell',
+    provenance: 'native', source: 'grown', tier: 'native', lookupNs: ns, method: g.id, modelAgreed: null,
     memoryHits: 0, webPages: 0, redacted: 0, provider: null, model: null, llmMs: 0, llmOk: false, ms: answer.ms,
   });
   return answer;
@@ -1809,6 +1856,15 @@ export async function ask(brain, prompt, opts = {}) {
   if (opts.converse !== false) {
     const c = converse(text0);
     if (c) return answerFromNative(brain, text0, c, started0);
+  }
+  // THE GROWN CELLS (grown/index.mjs, written by grow/store.mjs promote; his NEXT-WEEK.md loop step 5: "Survivors
+  // are copied into the tab layer and the function, so the site answers natively"): the first survivor whose can()
+  // holds answers, with no model. Generation 0 holds none, so grownAnswer returns null and nothing here changes.
+  // opts.grown false skips it.
+  if (opts.grown !== false) {
+    const tg = process.hrtime.bigint();
+    const g = grownAnswer(text0);
+    if (g) return answerFromGrown(brain, text0, { ...g, ns: Number(process.hrtime.bigint() - tg) }, started0);
   }
   // The solved region (Board 15, item ns; board 15 builder), right after direct: a verified program
   // bound to this question's numbers, no model. Off unless opts.solved or BRAIN_SOLVED=1 (solvedFor).

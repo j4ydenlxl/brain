@@ -35,6 +35,15 @@
 //
 // THE LOG. One JSON line per request under os.tmpdir() (the function's only writable directory):
 // at, status, promptHash, route, serverUs. Never the prompt. Rotated past 256 KB (one old segment).
+//
+// THE GROWING REPLY AND THE MISS LOG (board 37, item misses; his NEXT-WEEK.md step 8: "The site's miss reply
+// changes from a refusal to \"I am growing a cell for this\", and the miss is logged for step 1. Every miss
+// becomes a cell."). With no model cell configured, a memory miss (from memory, no hit, no cite) answers
+// GROWING_HEAD on its first line (what a person on a phone reads), and, when the environment holds both
+// SUPABASE_URL and SUPABASE_ANON_KEY (read by NAME), the miss is POSTed to Supabase public.misses with the
+// publishable key (anon may INSERT only), awaited with a 1500 ms deadline, its failure a reason in
+// json.growing and never a thrown error. The guard's allowlist gains that one origin (SUPABASE_URL's) and
+// nothing else. A grown cell's answer (from 'cell') is not a miss, so none of this fires for it.
 import fs from 'node:fs';
 import http from 'node:http';
 import https from 'node:https';
@@ -48,6 +57,7 @@ import { scrub } from './llm.mjs';
 import { solve } from './solve.mjs';
 import { seedBasic } from '../seeds/basic.mjs';
 import { installGuard, DEFAULT_MODEL_URL } from '../bin/serve.mjs';
+import { scrubSecrets } from './prompt.mjs'; // the miss row's prompt is scrubbed of credential shapes before it leaves
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // The knowledge store the function answers from: the full store when the host has it (this machine),
@@ -75,6 +85,52 @@ export const OIDC_NAME = 'VERCEL_OIDC_TOKEN';
 /** The NAME of the variable the model cell reads its key from: ours when set, else the platform token, else ours (unconfigured). */
 export const keyNameFor = (env = process.env) => (env && env[KEY_NAME] ? KEY_NAME : env && env[OIDC_NAME] ? OIDC_NAME : KEY_NAME);
 export const modelConfigured = (env = process.env) => Boolean(env && env[BASE_NAME] && env[keyNameFor(env)]);
+
+// ---------------------------------------------------------------- the growing reply and the miss log (board 37, item misses)
+// one line a person reads on a phone: under 240 characters, ends with a period (bench/ask-fallthrough.mjs firstLineForPerson)
+export const GROWING_HEAD = 'I am growing a cell for this. Your prompt is logged, the next hourly generation in the cloud grows a cell that answers it, and this site answers it after that. Until then I answer greetings, arithmetic, equations and the facts I ingested.';
+export const MISS_URL_NAME = 'SUPABASE_URL';
+export const MISS_KEY_NAME = 'SUPABASE_ANON_KEY';
+export const MISS_MS = 1500;
+/** True when the environment holds both miss-log names (values are not read beyond presence). */
+export const missConfigured = (env = process.env) => Boolean(env && env[MISS_URL_NAME] && env[MISS_KEY_NAME]);
+/** The miss log's origin, for the guard's allowlist; null when the log is not configured or the url is not one. */
+export function missOrigin(env = process.env) {
+  if (!missConfigured(env)) return null;
+  try { return new URL(String(env[MISS_URL_NAME])).origin; } catch { return null; }
+}
+/** A memory miss: the tier read memory, found nothing and cites nothing (a grown cell's answer is from 'cell'). */
+export const isMemoryMiss = (a) => Boolean(a && a.from === 'memory' && ((a.provenance && a.provenance.memoryHits) ?? 0) === 0 && !(a.cites && a.cites.length));
+
+/**
+ * POST one miss row to Supabase public.misses with the publishable key (header apikey and Bearer).
+ * Awaited, deadline timeoutMs, never throws: { logged, reason, status? }. No value is ever in the reason.
+ * @param {object} env holds SUPABASE_URL and SUPABASE_ANON_KEY by name
+ * @param {{prompt: string, reply: string, route: object}} row
+ * @param {{fetch?: Function, timeoutMs?: number}} [o]
+ */
+export async function logMiss(env, row, { fetch: f = globalThis.fetch, timeoutMs = MISS_MS } = {}) {
+  if (!missConfigured(env)) return { logged: false, reason: 'not logged: the environment does not hold both ' + MISS_URL_NAME + ' and ' + MISS_KEY_NAME };
+  const origin = missOrigin(env);
+  if (!origin) return { logged: false, reason: 'not logged: ' + MISS_URL_NAME + ' is not a url' };
+  const key = String(env[MISS_KEY_NAME]);
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    const res = await f(origin + '/rest/v1/misses', {
+      method: 'POST',
+      headers: { apikey: key, authorization: 'Bearer ' + key, 'content-type': 'application/json', prefer: 'return=minimal' },
+      body: JSON.stringify({ prompt: row.prompt, reply: row.reply, route: row.route }),
+      signal: ac.signal,
+    });
+    try { await res.arrayBuffer(); } catch { /* the body is not needed */ }
+    if (res.status >= 200 && res.status < 300) return { logged: true, reason: 'logged: the miss log answered ' + res.status, status: res.status };
+    return { logged: false, reason: 'not logged: the miss log answered ' + res.status, status: res.status };
+  } catch (e) {
+    if (ac.signal.aborted) return { logged: false, reason: 'not logged: the miss log did not answer in ' + timeoutMs + ' ms' };
+    return { logged: false, reason: 'not logged: the miss log could not be reached (' + String((e && e.code) || (e && e.cause && e.cause.code) || (e && e.name) || 'error') + ')' };
+  } finally { clearTimeout(timer); }
+}
 
 /** A token bucket with continuous refill. take() returns 0 when a token was taken, else the ms to wait. */
 export class Bucket {
@@ -168,7 +224,8 @@ export function createHandler(o = {}) {
     if (o.guard !== false) {
       // the allowlist is the model origin and nothing else (installGuard reads only these names)
       const pre = globalThis.__brainEgressGuard ? null : { fetch: globalThis.fetch, http: http.request, https: https.request };
-      const g = installGuard({ env: { BRAIN_MODEL_URL: modelOrigin(env) || DEFAULT_MODEL_URL }, stateDir });
+      // (and the miss log's origin when SUPABASE_URL and SUPABASE_ANON_KEY are both set: board 37, item misses)
+      const g = installGuard({ env: { BRAIN_MODEL_URL: modelOrigin(env) || DEFAULT_MODEL_URL, BRAIN_EGRESS_ALLOW: missOrigin(env) || '' }, stateDir });
       if (pre) ownProcessException(pre);
       guard = { entries: g.allow.entries.length, routed: Boolean(g.allow.route) };
     }
@@ -287,6 +344,21 @@ export function createHandler(o = {}) {
       serverUs, host, knowledge: s.knowledge,
       model: { configured, provider: configured ? 'env' : 'null', names: [BASE_NAME, KEY_NAME, MODEL_NAME], keyName: keyNameFor(env) },
     };
+    // THE GROWING REPLY (board 37, item misses): no model cell and a memory miss. The first line is the growing
+    // head; the miss goes to the log, awaited (a serverless host ends the work with the response).
+    if (!configured && isMemoryMiss(a)) {
+      json.text = GROWING_HEAD + '\n' + a.text;
+      const row = {
+        prompt: scrubSecrets(prompt).text.slice(0, LIMITS.promptChars),
+        reply: json.text.split('\n')[0],
+        route: { from: a.from, route: a.route || null, provenance: p.answer ?? null, host },
+      };
+      let g;
+      try { g = await logMiss(env, row); } catch (e) { g = { logged: false, reason: 'not logged: ' + String((e && e.code) || (e && e.name) || 'error') }; }
+      json.growing = { logged: Boolean(g.logged), reason: g.reason };
+      // the head says the miss is logged; when it was not, the second line says so (the first line stays the head)
+      if (!json.growing.logged) json.text = GROWING_HEAD + '\n(' + g.reason + ')\n' + a.text;
+    }
     return done(200, json, {}, { promptHash: a.promptHash, route: json.route, serverUs });
   }
 
