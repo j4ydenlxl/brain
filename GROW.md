@@ -38,6 +38,10 @@ off, and "you only fail if you dont listen to me".
    will use and why, which tokens are present (by name, true or false), the miss source (supabase or seed),
    the lock (`LOCK OK <n> files` or the drift), the survivor count so far. If the lock is not OK, stop: print
    the line, do nothing else.
+   Then the CORTEX POINTER (`grow/cortex.mjs`: the model the arms run under; `grown/cortex.json`):
+   `node grow/cortex.mjs sense --self <your exact model id> --models <the model ids your environment names, comma separated>`.
+   It prints the pointer and, when a model the rule has never seen appears (a stronger model shipped), registers it
+   as the CHALLENGER: it is trialled, never trusted. You never edit `grown/cortex.json` by hand.
 
 1. SENSE. `node grow/generation.mjs prepare` does the mechanical part: verifies the lock, fetches the knowledge
    pack (`node tools/fetch-pack.mjs`, from the public store, no token), reads the open misses
@@ -55,8 +59,15 @@ off, and "you only fail if you dont listen to me".
    held-out prompts and no arm may open it), the lane's grow strategy, the directory the arm must write, and
    the files it may not open.
 
-2. GROW (the octopus). One ARM per brief, all in parallel, each a Claude agent (the Agent tool; model
-   `claude-opus-5-5`; prefix its prompt with the CONCISE directive from CLAUDE.md). The arm's prompt is the
+2. GROW (the octopus). First `node grow/cortex.mjs plan --gen <n>` (it writes `work/grow/gen-<n>/cortex.json`: the
+   model of every arm). One ARM per brief, all in parallel, each a Claude agent (the Agent tool; the model is
+   `arms[<id>]` of that file, passed as its `alias` when that is not null, else its `model`; never a model the plan
+   did not print; prefix its prompt with the CONCISE directive from CLAUDE.md). Every arm runs under the pointer,
+   except, while a challenger is pending, the parent lane's SECOND arm of each class: the same brief written by the
+   two models is the trial, and `finish` judges it (`node grow/cortex.mjs judge --gen <n>`, right after the self
+   judge): the challenger becomes the pointer only when its cells score higher on the held-out sets than the
+   pointer's over at least 4 pairs, with no fewer survivors; a tie holds. The final line has `cortex`: `"none"`, or
+   `{ verdict: moved | held | pending, pointer, challenger, pairs, reason }`. The arm's prompt is the
    brief. The arm writes one candidate: `work/grow/gen-<n>/<lane>/<id>/cell.mjs`, `test.mjs`,
    `examples.jsonl`, `brief.md` (its copy of the brief), and validates it with `node grow/generation.mjs validate <dir>`
    until it prints `{"ok":true}`. The two lanes differ in strategy: lane `direct` writes the cell from the dev rows and
@@ -107,8 +118,8 @@ off, and "you only fail if you dont listen to me".
    to hand the parent lane its extra arms.
 
 6. SELF-MODIFY (Day 3, wired: `grow/self.mjs`). The procedure is a candidate too: ONE edit per generation to this
-   file or to one existing `.mjs` or `.md` under `grow/` (never `grow/self.mjs`, never a file `judge/LOCK.json`
-   names), kept only when the next generation's survival rate rises, judged by the same locked judge.
+   file or to one existing `.mjs` or `.md` under `grow/` (never `grow/self.mjs` or `grow/cortex.mjs`, never a file
+   `judge/LOCK.json` names), kept only when the next generation's survival rate rises, judged by the same locked judge.
    - The verdict is `finish`'s: right after it records the tournament it runs `node grow/self.mjs judge --gen <n>`.
      A pending trial is `kept` when this generation's rate (survivors / candidates over every lane) is ABOVE the
      trial's baseline, else `reverted` (the file is written back and the commit of step 8 carries it); `superseded`
@@ -118,7 +129,7 @@ off, and "you only fail if you dont listen to me".
      `finish` just printed). `"brief": null` with `blocked` lines means no trial this generation (one is pending, no
      tournament yet, or every candidate survived): go to step 7. Else it wrote the SELF BRIEF,
      `work/grow/gen-<n>/self/brief.md`, with this generation's evidence (the tournaments, every candidate's verdict
-     line, the blocked lines, the earlier trials). One arm, as in step 2 (an Opus 5.5 agent, the brief as its whole
+     line, the blocked lines, the earlier trials). One arm, as in step 2 (an agent under the pointer, the brief as its whole
      prompt; the CONCISE directive is in it): it writes `work/grow/gen-<n>/self/candidate.json` ({ target, why,
      hypothesis }) and the WHOLE new file under `work/grow/gen-<n>/self/file/<target>`, and runs
      `node grow/self.mjs check --gen <n>` until it prints `"ok":true` (the target rule, `node --check`, the suites on a
@@ -129,7 +140,7 @@ off, and "you only fail if you dont listen to me".
 
 7. DREAM (Day 2, wired: `grow/dream.mjs`). After step 8, `node grow/dream.mjs propose --gen <n>` writes one DREAM
    BRIEF per class that has a locked held-out set: `work/grow/gen-<n>/dream/brief-<class>.md`. One arm per brief, as
-   in step 2 (an Opus 5.5 agent, the CONCISE directive first, the brief as its whole prompt): the proposer half writes
+   in step 2 (an agent under the pointer, the CONCISE directive first, the brief as its whole prompt): the proposer half writes
    4 tasks in the class's shape just past what the organism answers today, the solver half answers each one, into
    `work/grow/gen-<n>/dream/<class>.jsonl` ({ q, expect, answer } a line), checked with `node grow/dream.mjs check <file>`
    until `"ok":true`. Then `node grow/dream.mjs collect --gen <n> --commit` asks the organism every task, drops the ones it
@@ -160,4 +171,6 @@ archive and the misses are open again for the next heartbeat.
 
 Only a human session re-locks the judge (`node judge/lock.mjs --by "<who, under what order>"`) after adding a
 class's truth (`judge/dev/<class>.jsonl` and `judge/heldout/<class>.jsonl`, held-out rows never equal to dev
-rows) or a control row, and only a human session moves the cortex pointer (Day 3).
+rows) or a control row, and only a human session challenges the pointer with a model the rule already knew
+(`node grow/cortex.mjs challenge <id> --by "<who, under what order>"`); the pointer itself moves only by
+`node grow/cortex.mjs judge`, which `finish` runs.
