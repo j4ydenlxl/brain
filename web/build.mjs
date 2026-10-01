@@ -48,6 +48,9 @@ import { injectCensus, readCensusBlock } from './spawn-census.mjs';
 // The kept-per-hour block (queue item 7): the loop's yield read from its verdicts, put on the findings page
 // after it is written (web/yield.mjs; board 20 builder). BRAIN_YIELD_BLOCK=off builds without it.
 import { injectYield } from './yield.mjs';
+// The living page (his plan: "A living page, dilation.dev/alive"; Day 3 board, alive builder): grown/ and the two grow/ jsonl
+// files rendered at /alive with the same numbers in /alive/data.json (web/alive.mjs). The stamp is this build's clock, passed in.
+import { generateAlive } from './alive.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SRC = join(HERE, 'src');
@@ -482,11 +485,12 @@ export function write(opts = {}) {
   ladder.bytes = ladder.header.bytes;
   const handoff = generateHandoff();
   const ask = generateAsk();
+  const alive = generateAlive({ root: ROOT_DIR, outDir: join(DIST, 'alive'), builtAt: new Date().toISOString() });
   return {
     js: Buffer.byteLength(js), html: Buffer.byteLength(html),
     total: Buffer.byteLength(js) + Buffer.byteLength(html),
     jsPath: join(DIST, 'app.js'), htmlPath: join(DIST, 'index.html'),
-    findings, yieldBlock, portfolio, ladder, handoff, ask,
+    findings, yieldBlock, portfolio, ladder, handoff, ask, alive,
   };
 }
 
@@ -516,7 +520,11 @@ if (process.argv[1] && process.argv[1].endsWith('build.mjs')) {
     + (r.handoff.missing ? 'docs/HANDOFF.md absent: run node tools/handoff.mjs' : r.handoff.sections + ' sections, ' + r.handoff.blocks + ' blocks, '
       + r.handoff.commands + ' command lines from docs/HANDOFF.md (' + r.handoff.mdBytes + ' bytes, served as handoff/HANDOFF.md)'));
   console.log('dist ask/index.html ' + String(r.ask.bytes).padStart(12) + ' bytes   organism modules ' + r.ask.modules + ' copied byte for byte: ' + r.ask.manifest.files.map((f) => f.file + ' sha256 ' + f.sha256.slice(0, 12)).join(', '));
-  const pages = ['index.html', 'findings/index.html', 'portfolio/index.html', 'ladder/index.html', 'handoff/index.html', 'ask/index.html'];
+  const al = r.alive;
+  console.log('dist alive/index.html ' + String(al.bytes).padStart(10) + ' bytes   cap ' + al.cap + '; ' + al.generations + ' generations, ' + al.cells + ' cells, newest '
+    + (al.newest === null ? 'none yet' : 'generation ' + al.newest + ' (' + al.survivors + ' of ' + al.candidates + ' survived)') + ', ' + al.dreams + ' dreams, cortex ' + al.pointer
+    + '; alive/data.json ' + al.dataBytes + ' bytes' + (al.notRead.length ? '; not read: ' + al.notRead.join(', ') : ''));
+  const pages = ['index.html', 'findings/index.html', 'portfolio/index.html', 'ladder/index.html', 'handoff/index.html', 'ask/index.html', 'alive/index.html'];
   console.log('pages built: ' + pages.length + ' (' + pages.join(', ') + ')');
   // --verdict (board 24b, item web-vision): the portfolio and ladder blocks measured on the pages just written
   if (process.argv.includes('--verdict')) {
