@@ -14,7 +14,7 @@ import zlib from 'node:zlib';
 import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { tar, targz, withDirs } from '../grow/tar.mjs';
-import { HERE_REFUSAL, jwtExp, parseCmdStream, lastJson, distrust } from '../grow/sandbox.mjs';
+import { HERE_REFUSAL, jwtExp, parseCmdStream, lastJson, distrust, readIds } from '../grow/sandbox.mjs';
 import { countTests, testArgv } from '../grow/probe.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -246,10 +246,11 @@ test('(b) run --api-base <stub> with no token: create, fs/write, cmd, stop in or
     assert.equal(res.error, null);
     // what the stub saw
     assert.deepEqual(s.seen.map((x) => x.path.replace(/sbx_stub_1/, '<sid>')), ['/v2/sandboxes', '/v2/sandboxes/sessions/<sid>/fs/write', '/v2/sandboxes/sessions/<sid>/cmd', '/v2/sandboxes/sessions/<sid>/stop']);
-    const pj = JSON.parse(fs.readFileSync(path.join(ROOT, '.vercel', 'project.json'), 'utf8'));
-    for (const x of s.seen) { assert.equal(x.teamId, pj.orgId); assert.equal(x.authorization, null, 'no token goes to a host that is not api.vercel.com'); }
+    // the ids the runner itself resolves (the environment, then .vercel/project.json, then its defaults): a clean checkout has no .vercel/
+    const ids = readIds(process.env);
+    for (const x of s.seen) { assert.equal(x.teamId, ids.team); assert.equal(x.authorization, null, 'no token goes to a host that is not api.vercel.com'); }
     const c = s.seen[0].json;
-    assert.equal(c.projectId, pj.projectId);
+    assert.equal(c.projectId, ids.project);
     assert.equal(c.runtime, 'node24');
     assert.equal(c.persistent, false);
     assert.deepEqual(c.networkPolicy, { mode: 'deny-all' });

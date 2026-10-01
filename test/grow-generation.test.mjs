@@ -122,8 +122,8 @@ const calls = (root) => { try { return fs.readFileSync(path.join(root, 'calls.lo
 /** Each call as one word and its object: the candidate dir, the class or the lane. */
 const seq = (root) => calls(root).map((c) => (c[0] === 'sandbox' ? 'sandbox ' + c[2] : c[0] === 'select' || c[0] === 'baseline' ? c[0] + ' ' + c[1] : c[0].startsWith('store ') ? c[0] + ' ' + c[3] : c[0]));
 const reset = (root) => fs.rmSync(path.join(root, 'calls.log'), { force: true });
-const genMisses = (root) => fs.readFileSync(path.join(root, 'state/grow/gen-1/misses.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
-const D1 = 'state/grow/gen-1/direct/fragment-direct-g1', B1 = 'state/grow/gen-1/baked/mash-baked-g1';
+const genMisses = (root) => fs.readFileSync(path.join(root, 'work/grow/gen-1/misses.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
+const D1 = 'work/grow/gen-1/direct/fragment-direct-g1', B1 = 'work/grow/gen-1/baked/mash-baked-g1';
 /** prepare, the two stub candidates (fragment-direct-g1 survives by canned.json, mash-baked-g1 does not), an empty call log. */
 function twoCandidates(root) {
   assert.equal(drive(root, ['prepare']).code, 0);
@@ -134,7 +134,7 @@ function twoCandidates(root) {
 const count = (text, s) => text.split(s).length - 1;
 const clean = (root) => fs.rmSync(root, { recursive: true, force: true });
 function candidate(root, lane, id, cls, quote = "'") {
-  put(root, 'state/grow/gen-1/' + lane + '/' + id + '/cell.mjs', 'export const meta = { id: ' + quote + id + quote + ', class: ' + quote + cls + quote + ', generation: 1, lane: ' + quote + lane + quote + ' };\n');
+  put(root, 'work/grow/gen-1/' + lane + '/' + id + '/cell.mjs', 'export const meta = { id: ' + quote + id + quote + ', class: ' + quote + cls + quote + ', generation: 1, lane: ' + quote + lane + quote + ' };\n');
 }
 
 test('(a) status: every key, tokens are booleans by name, the lock line from judge/verify.mjs', () => {
@@ -192,7 +192,7 @@ test('(b) prepare refuses on LOCK DRIFT and runs nothing after the lock', () => 
     assert.equal(r.code, 1);
     assert.match(r.stderr, /^LOCK DRIFT judge\/select\.mjs/);
     assert.deepEqual(calls(root).map((c) => c[0]), ['verify']);
-    assert.ok(!fs.existsSync(path.join(root, 'state/grow/gen-1/plan.json')));
+    assert.ok(!fs.existsSync(path.join(root, 'work/grow/gen-1/plan.json')));
   } finally { clean(root); }
 });
 
@@ -208,10 +208,10 @@ test('(c) prepare: plan, briefs, the parent lane gets a second arm, no held-out 
     assert.deepEqual(r.json.baseline, { fragment: 0, mash: 0 });
     assert.equal(r.json.parent, 'direct');
     assert.ok(r.json.blocked.some((l) => l.startsWith('no held-out set: capital-of')));
-    const plan = JSON.parse(fs.readFileSync(path.join(root, 'state/grow/gen-1/plan.json'), 'utf8'));
+    const plan = JSON.parse(fs.readFileSync(path.join(root, 'work/grow/gen-1/plan.json'), 'utf8'));
     assert.deepEqual(plan.classes.map((c) => c.class), ['fragment', 'mash']);
     assert.deepEqual(plan.classes[0].arms.map((a) => a.id), ['fragment-direct-g1', 'fragment-direct-g1-2', 'fragment-baked-g1']);
-    assert.ok(fs.existsSync(path.join(root, 'state/grow/gen-1/direct/brief-fragment-2.md')));
+    assert.ok(fs.existsSync(path.join(root, 'work/grow/gen-1/direct/brief-fragment-2.md')));
     const secret = [...HELDOUT.fragment, ...HELDOUT.mash, CONTROL];
     for (const c of plan.classes) for (const a of c.arms) {
       const text = fs.readFileSync(path.join(root, a.brief), 'utf8');
@@ -223,9 +223,9 @@ test('(c) prepare: plan, briefs, the parent lane gets a second arm, no held-out 
       assert.ok(text.includes("id: '" + a.id + "'"));
       assert.ok(text.includes('scored 0 on 3 held-out rows'));
     }
-    const baked = fs.readFileSync(path.join(root, 'state/grow/gen-1/baked/brief-mash.md'), 'utf8');
+    const baked = fs.readFileSync(path.join(root, 'work/grow/gen-1/baked/brief-mash.md'), 'utf8');
     assert.ok(baked.includes('node grow/generation.mjs ask "<q>"'));
-    const gen = fs.readFileSync(path.join(root, 'state/grow/gen-1/misses.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
+    const gen = fs.readFileSync(path.join(root, 'work/grow/gen-1/misses.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
     assert.deepEqual(gen.map((m) => m.status), ['growing', 'growing', 'open', 'open']);
     assert.equal(gen[0].generation, 1);
     assert.deepEqual(calls(root).filter((c) => c[0] === 'baseline').map((c) => c[1]), ['fragment', 'mash']);
@@ -236,7 +236,7 @@ test('positive control: the brief grep does see a held-out prompt once one is in
   const root = makeRoot();
   try {
     assert.equal(drive(root, ['prepare']).code, 0);
-    const text = fs.readFileSync(path.join(root, 'state/grow/gen-1/direct/brief-fragment.md'), 'utf8');
+    const text = fs.readFileSync(path.join(root, 'work/grow/gen-1/direct/brief-fragment.md'), 'utf8');
     assert.equal(count(text + '\n' + HELDOUT.fragment[0], HELDOUT.fragment[0]), 1);
     assert.equal(count(text, 'DEVQ-frag-one'), 1); // the verbatim dev block holds it once
     assert.equal(count(text, 'HELDOUT-SENTINEL'), 0);
@@ -266,8 +266,8 @@ test('(e) finish --dry makes zero stub calls and lists what it would run', () =>
     assert.deepEqual(r.json.candidates[0], { dir: D1, lane: 'direct', id: 'fragment-direct-g1', class: 'fragment', classFrom: 'cell.mjs' });
     assert.equal(r.json.would[0], 'node judge/baseline.mjs fragment');
     assert.equal(r.json.would[2], 'node judge/select.mjs ' + D1);
-    assert.ok(r.json.would.includes('node judge/select.mjs state/grow/gen-1/direct/fragment-direct-g1'));
-    assert.ok(r.json.would.some((w) => w.startsWith('node grow/sandbox.mjs run state/grow/gen-1/direct/fragment-direct-g1 --heldout judge/heldout/fragment.jsonl') && w.endsWith('--backend here')));
+    assert.ok(r.json.would.includes('node judge/select.mjs work/grow/gen-1/direct/fragment-direct-g1'));
+    assert.ok(r.json.would.some((w) => w.startsWith('node grow/sandbox.mjs run work/grow/gen-1/direct/fragment-direct-g1 --heldout judge/heldout/fragment.jsonl') && w.endsWith('--backend here')));
     assert.ok(r.json.would.includes('git push'));
   } finally { clean(root); }
 });
@@ -308,11 +308,11 @@ test('(f) finish with stubs: 2 candidates, 1 survivor, the exact order of every 
     assert.deepEqual(gs.generations.at(-1).lanes, j.lanes);
     assert.deepEqual(gs.generations.at(-1).misses, [1, 'seed-2']);
     assert.equal(nextGeneration(root), 2);
-    const gen = fs.readFileSync(path.join(root, 'state/grow/gen-1/misses.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
+    const gen = fs.readFileSync(path.join(root, 'work/grow/gen-1/misses.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
     assert.equal(gen[0].status, 'grown');
     assert.equal(gen[0].cell, 'fragment-direct-g1');
     assert.equal(gen[1].status, 'open');
-    assert.ok(fs.readFileSync(path.join(root, 'state/grow/gen-1/blocked.txt'), 'utf8').includes('no held-out set: capital-of'));
+    assert.ok(fs.readFileSync(path.join(root, 'work/grow/gen-1/blocked.txt'), 'utf8').includes('no held-out set: capital-of'));
   } finally { clean(root); }
 });
 
@@ -331,7 +331,7 @@ test('(g) a promote failure stops the build, the record and the commit', () => {
     assert.ok(r.json.blocked.some((l) => l.startsWith('promote: direct: exit 1: promote failed: stub')));
     assert.ok(!calls(root).some((c) => c[0] === 'build'));
     assert.equal(fs.readFileSync(path.join(root, 'grown/generations.json'), 'utf8'), gsBefore);
-    const gen = fs.readFileSync(path.join(root, 'state/grow/gen-1/misses.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
+    const gen = fs.readFileSync(path.join(root, 'work/grow/gen-1/misses.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
     assert.equal(gen[0].status, 'open');
   } finally { clean(root); }
 });
@@ -498,7 +498,7 @@ test('prepare: a class without a dev set is skipped and never graded; a pack fai
     assert.ok(r.json.blocked.includes('no dev set: capital-of: a human session adds truth'));
     assert.ok(r.json.blocked.includes('pack: node tools/fetch-pack.mjs --quiet exited 1: pack fetch failed: stub'));
     assert.deepEqual(calls(root).filter((c) => c[0] === 'baseline').map((c) => c[1]), ['fragment', 'mash']);
-    assert.ok(!fs.existsSync(path.join(root, 'state/grow/gen-1/direct/brief-capital-of.md')));
+    assert.ok(!fs.existsSync(path.join(root, 'work/grow/gen-1/direct/brief-capital-of.md')));
   } finally { clean(root); }
 });
 
@@ -567,7 +567,7 @@ test('validate: every test.mjs and examples.jsonl check fails its own copy, the 
 
 /** A valid fragment cell in its candidate directory; rows are both examples and examples.jsonl. */
 function fragCell(root, { id = 'fragment-direct-g1', rows = DEV.fragment, tests = 3 } = {}) {
-  const rel = 'state/grow/gen-1/direct/' + id;
+  const rel = 'work/grow/gen-1/direct/' + id;
   put(root, rel + '/cell.mjs', "export const meta = { id: '" + id + "', class: 'fragment', generation: 1, lane: 'direct', grownFrom: ['h'], version: 1 };\n"
     + "export function can(q) { return q.startsWith('DEVQ-frag'); }\n"
     + "export function answer(q) { return can(q) ? 'The text \"' + q + '\" is not a word: say a whole word or ask a question.' : null; }\n"
@@ -577,7 +577,7 @@ function fragCell(root, { id = 'fragment-direct-g1', rows = DEV.fragment, tests 
   put(root, rel + '/examples.jsonl', jsonl(rows));
   return path.join(root, rel);
 }
-test('validate inside state/grow/gen-<n>/<lane>/<id>/: the id, lane, test count and every dev row', () => {
+test('validate inside work/grow/gen-<n>/<lane>/<id>/: the id, lane, test count and every dev row', () => {
   const root = makeRoot();
   try {
     const good = validateIn(fragCell(root), root);
@@ -587,7 +587,7 @@ test('validate inside state/grow/gen-<n>/<lane>/<id>/: the id, lane, test count 
     assert.deepEqual(short.json.errors, ['dev rows missing: ["DEVQ-frag-two"]']);
     const two = validateIn(fragCell(root, { tests: 2 }), root);
     assert.deepEqual(two.json.errors, ['test.mjs declares 2 tests, not 3']);
-    const dir = path.join(root, 'state/grow/gen-1/direct/wrong-name');
+    const dir = path.join(root, 'work/grow/gen-1/direct/wrong-name');
     fs.mkdirSync(dir, { recursive: true });
     for (const f of ECHO) fs.copyFileSync(path.join(BRAIN, 'grow/fixtures/echo-cell', f), path.join(dir, f));
     const echo = validateIn(dir, root);
@@ -600,17 +600,17 @@ test('candidates: the class from cell.mjs, else brief.md, else plan.json; none i
   const root = makeRoot();
   try {
     assert.equal(drive(root, ['prepare']).code, 0);
-    put(root, 'state/grow/gen-1/direct/fragment-direct-g1/cell.mjs', 'export const meta = {};\n');
-    put(root, 'state/grow/gen-1/direct/fragment-direct-g1/brief.md', fs.readFileSync(path.join(root, 'state/grow/gen-1/direct/brief-fragment.md')));
-    put(root, 'state/grow/gen-1/baked/mash-baked-g1/cell.mjs', 'export const meta = {};\n');
-    put(root, 'state/grow/gen-1/baked/stray-g1/cell.mjs', 'export const meta = {};\n');
-    const plan = JSON.parse(fs.readFileSync(path.join(root, 'state/grow/gen-1/plan.json'), 'utf8'));
+    put(root, 'work/grow/gen-1/direct/fragment-direct-g1/cell.mjs', 'export const meta = {};\n');
+    put(root, 'work/grow/gen-1/direct/fragment-direct-g1/brief.md', fs.readFileSync(path.join(root, 'work/grow/gen-1/direct/brief-fragment.md')));
+    put(root, 'work/grow/gen-1/baked/mash-baked-g1/cell.mjs', 'export const meta = {};\n');
+    put(root, 'work/grow/gen-1/baked/stray-g1/cell.mjs', 'export const meta = {};\n');
+    const plan = JSON.parse(fs.readFileSync(path.join(root, 'work/grow/gen-1/plan.json'), 'utf8'));
     const c = candidates(root, 1, ['direct', 'baked'], plan);
     assert.deepEqual(c.map((x) => [x.id, x.class, x.classFrom]), [['fragment-direct-g1', 'fragment', 'brief.md'], ['mash-baked-g1', 'mash', 'plan.json'], ['stray-g1', null, null]]);
     reset(root);
     const r = drive(root, ['finish', '--gen', '1', '--no-commit', '--no-tests', '--no-build', '--no-store', '--no-promote'], { CI: '1' });
     assert.equal(r.code, 0, r.stderr);
-    assert.ok(r.json.blocked.includes('sandbox: state/grow/gen-1/baked/stray-g1: no class in cell.mjs, brief.md or plan.json'));
+    assert.ok(r.json.blocked.includes('sandbox: work/grow/gen-1/baked/stray-g1: no class in cell.mjs, brief.md or plan.json'));
     assert.ok(!seq(root).some((s) => s.includes('stray-g1')));
     assert.equal(r.json.candidates, 3);
   } finally { clean(root); }
@@ -730,11 +730,11 @@ test('prepare: a miss the organism already answers is grown (with the cell that 
     assert.equal(h.generation, 1);
     assert.equal(gen.find((m) => m.id === 4).status, 'grown', 'answered by a tier: grown with no cell');
     assert.equal(gen.find((m) => m.id === 'seed-2').status, 'growing');
-    const plan = JSON.parse(fs.readFileSync(path.join(root, 'state/grow/gen-1/plan.json'), 'utf8'));
+    const plan = JSON.parse(fs.readFileSync(path.join(root, 'work/grow/gen-1/plan.json'), 'utf8'));
     assert.deepEqual(plan.classes.map((c) => c.class), ['mash']);
     assert.ok(Array.isArray(plan.blocked) && plan.blocked.some((l) => /^no held-out set: other/.test(l)), 'prepare records its blocked lines in the plan');
     // a finish attempt's own lines never carry into the next attempt: only prepare's do
-    fs.writeFileSync(path.join(root, 'state/grow/gen-1/blocked.txt'), plan.blocked.concat(['promote: baked: exit 1: a line from an earlier finish attempt']).join('\n') + '\n');
+    fs.writeFileSync(path.join(root, 'work/grow/gen-1/blocked.txt'), plan.blocked.concat(['promote: baked: exit 1: a line from an earlier finish attempt']).join('\n') + '\n');
     const f = drive(root, ['finish', '--gen', '1', '--no-commit'], { CI: '1' });
     assert.equal(f.code, 0, f.stderr);
     assert.ok(!f.json.blocked.some((l) => /earlier finish attempt/.test(l)), f.json.blocked.join(' | '));
@@ -751,7 +751,7 @@ test('Day 2: curriculum and dream rows are open misses on top of the seed, keep 
     const r = drive(root, ['prepare']);
     assert.equal(r.code, 0, r.stderr);
     assert.deepEqual(r.json.misses, { read: 7, answered: 0, growing: 4, skipped: 3, source: 'seed', curriculum: 2, dreams: 1 }, 'the grown dream is not read');
-    const plan = JSON.parse(fs.readFileSync(path.join(root, 'state/grow/gen-1/plan.json'), 'utf8'));
+    const plan = JSON.parse(fs.readFileSync(path.join(root, 'work/grow/gen-1/plan.json'), 'utf8'));
     const frag = plan.classes.find((c) => c.class === 'fragment');
     const mash = plan.classes.find((c) => c.class === 'mash');
     assert.deepEqual(frag.misses, [1, 'dream-1-fragment-1']);
@@ -761,17 +761,17 @@ test('Day 2: curriculum and dream rows are open misses on top of the seed, keep 
     const gen = genMisses(root);
     assert.equal(gen.find((m) => m.id === 'cur-mash-1').class, 'mash');
     assert.equal(gen.find((m) => m.id === 'dream-1-fragment-1').status, 'growing');
-    const b = fs.readFileSync(path.join(root, 'state/grow/gen-1/direct/brief-fragment.md'), 'utf8');
+    const b = fs.readFileSync(path.join(root, 'work/grow/gen-1/direct/brief-fragment.md'), 'utf8');
     assert.ok(b.includes('## Dreamed tasks (route dream'), 'the brief has the dream section');
     assert.ok(b.includes('"q":"DREAM-frag-one"') && b.includes('the dreamed answer'), 'the dreamed task and the solver answer are in the brief');
     assert.ok(!b.includes('DREAM-frag-grown'), 'a grown dream is not in the brief');
-    const bm = fs.readFileSync(path.join(root, 'state/grow/gen-1/direct/brief-mash.md'), 'utf8');
+    const bm = fs.readFileSync(path.join(root, 'work/grow/gen-1/direct/brief-mash.md'), 'utf8');
     assert.ok(!bm.includes('## Dreamed tasks'), 'no dream section without a dream of the class');
     assert.ok(bm.includes('CURRICULUM-mash-one'), 'the curriculum prompt is among the misses the cell grows for');
     // the files the driver never writes
     assert.ok(fs.readFileSync(path.join(root, 'grow/curriculum.jsonl'), 'utf8').includes('"status":"open"'));
     // finish: the dream of this generation as collect wrote it, and grow/dreams.jsonl in the commit paths
-    put(root, 'state/grow/gen-1/dream/collect.json', JSON.stringify({ generation: 1, proposed: 8, kept: 5, byClass: { fragment: { proposed: 4, kept: 2 }, mash: { proposed: 4, kept: 3 } } }));
+    put(root, 'work/grow/gen-1/dream/collect.json', JSON.stringify({ generation: 1, proposed: 8, kept: 5, byClass: { fragment: { proposed: 4, kept: 2 }, mash: { proposed: 4, kept: 3 } } }));
     candidate(root, 'direct', 'fragment-direct-g1', 'fragment');
     const f = drive(root, ['finish', '--gen', '1', '--no-commit', '--dry'], { CI: '1' });
     assert.equal(f.code, 0, f.stderr);
@@ -797,27 +797,27 @@ test('Day 2, the builder arm: a build miss gets a build brief and app.json (neve
     assert.equal(r.json.builds, 2, 'one build per slug: todo and weather');
     assert.equal(r.json.misses.growing, 5, 'two class misses (fragment, mash) and three build misses are growing');
     assert.ok(!r.json.blocked.some((l) => l.includes('build')), 'build is never a class without a held-out set: ' + r.json.blocked.join(' | '));
-    const plan = JSON.parse(fs.readFileSync(path.join(root, 'state/grow/gen-1/plan.json'), 'utf8'));
+    const plan = JSON.parse(fs.readFileSync(path.join(root, 'work/grow/gen-1/plan.json'), 'utf8'));
     assert.ok(!plan.classes.some((c) => c.class === 'build'));
     const todo = plan.builds.find((b) => b.slug === 'todo');
     assert.deepEqual(todo.misses, ['seed-5', 'seed-6']);
-    assert.equal(todo.dir, 'state/grow/gen-1/build/todo');
-    assert.equal(todo.brief, 'state/grow/gen-1/build/brief-todo.md');
+    assert.equal(todo.dir, 'work/grow/gen-1/build/todo');
+    assert.equal(todo.brief, 'work/grow/gen-1/build/brief-todo.md');
     const brief = fs.readFileSync(path.join(root, todo.brief), 'utf8');
     assert.ok(brief.startsWith(DIRECTIVE), 'the build brief starts with the CONCISE directive');
-    for (const s of ['"make me a todo app"', '"build a todo app"', 'state/grow/gen-1/build/todo/', 'index.html', 'app.mjs', 'test.mjs', 'brief.md', 'node grow/build.mjs validate state/grow/gen-1/build/todo', 'at least 3', 'fetch()']) assert.ok(brief.includes(s), 'the brief has ' + s);
-    const appJson = JSON.parse(fs.readFileSync(path.join(root, 'state/grow/gen-1/build/todo/app.json'), 'utf8'));
+    for (const s of ['"make me a todo app"', '"build a todo app"', 'work/grow/gen-1/build/todo/', 'index.html', 'app.mjs', 'test.mjs', 'brief.md', 'node grow/build.mjs validate work/grow/gen-1/build/todo', 'at least 3', 'fetch()']) assert.ok(brief.includes(s), 'the brief has ' + s);
+    const appJson = JSON.parse(fs.readFileSync(path.join(root, 'work/grow/gen-1/build/todo/app.json'), 'utf8'));
     assert.deepEqual(appJson, { slug: 'todo', name: 'todo', prompt: 'make me a todo app', generation: 1, misses: ['seed-5', 'seed-6'] });
     assert.equal(genMisses(root).find((m) => m.id === 'seed-5').status, 'growing');
     // the arm: the fixture app under todo/ (app.json stays the driver's); the weather arm wrote nothing
-    for (const f of ['index.html', 'app.mjs', 'test.mjs']) put(root, 'state/grow/gen-1/build/todo/' + f, fs.readFileSync(path.join(BRAIN, 'grow/fixtures/app-ok', f)));
-    put(root, 'state/grow/gen-1/build/todo/brief.md', 'A todo list.\n');
+    for (const f of ['index.html', 'app.mjs', 'test.mjs']) put(root, 'work/grow/gen-1/build/todo/' + f, fs.readFileSync(path.join(BRAIN, 'grow/fixtures/app-ok', f)));
+    put(root, 'work/grow/gen-1/build/todo/brief.md', 'A todo list.\n');
     const dry = drive(root, ['finish', '--gen', '1', '--dry'], { CI: '1' });
     assert.equal(dry.code, 0, dry.stderr);
     assert.equal(dry.json.apps.length, 2);
-    assert.ok(dry.json.would.includes('node grow/sandbox.mjs run state/grow/gen-1/build/todo --app --out state/grow/gen-1/build/todo/result.json --backend here'), dry.json.would.join(' | '));
-    assert.ok(dry.json.would.includes('node grow/build.mjs judge state/grow/gen-1/build/todo'));
-    assert.ok(dry.json.would.includes('node grow/build.mjs promote 1 todo --dir state/grow/gen-1/build'));
+    assert.ok(dry.json.would.includes('node grow/sandbox.mjs run work/grow/gen-1/build/todo --app --out work/grow/gen-1/build/todo/result.json --backend here'), dry.json.would.join(' | '));
+    assert.ok(dry.json.would.includes('node grow/build.mjs judge work/grow/gen-1/build/todo'));
+    assert.ok(dry.json.would.includes('node grow/build.mjs promote 1 todo --dir work/grow/gen-1/build'));
     // no cell candidate at all: the app alone ships
     reset(root);
     const f = drive(root, ['finish', '--gen', '1', '--no-commit'], { CI: '1' });
@@ -829,13 +829,13 @@ test('Day 2, the builder arm: a build miss gets a build brief and app.json (neve
     assert.equal(f.json.committed, 'skipped (--no-commit)', 'not blocked: ' + f.json.blocked.join(' | '));
     assert.ok(f.json.blocked.some((l) => l.startsWith('build: app weather: the arm wrote no index.html')), f.json.blocked.join(' | '));
     assert.ok(!f.json.blocked.some((l) => l.startsWith('no candidate')), f.json.blocked.join(' | '));
-    assert.ok(seq(root).includes('sandbox state/grow/gen-1/build/todo'), seq(root).join(' | '));
+    assert.ok(seq(root).includes('sandbox work/grow/gen-1/build/todo'), seq(root).join(' | '));
     assert.ok(fs.existsSync(path.join(root, 'web/dist/apps/todo/index.html')), 'served under web/dist/apps/todo/');
     assert.ok(!fs.existsSync(path.join(root, 'web/dist/apps/todo/test.mjs')), 'test.mjs is not served');
     const apps = JSON.parse(fs.readFileSync(path.join(root, 'grown/apps.json'), 'utf8'));
     assert.deepEqual(apps.apps.map((a) => [a.slug, a.generation, a.path]), [['todo', 1, '/apps/todo/']]);
     assert.ok(fs.existsSync(path.join(root, 'grown/apps.mjs')));
-    const verdict = JSON.parse(fs.readFileSync(path.join(root, 'state/grow/gen-1/build/todo/verdict.json'), 'utf8'));
+    const verdict = JSON.parse(fs.readFileSync(path.join(root, 'work/grow/gen-1/build/todo/verdict.json'), 'utf8'));
     assert.equal(verdict.survived, true);
     const gen = genMisses(root);
     for (const id of ['seed-5', 'seed-6']) { assert.equal(gen.find((m) => m.id === id).status, 'grown', id); assert.equal(gen.find((m) => m.id === id).cell, 'app:todo', id); }
@@ -846,8 +846,8 @@ test('Day 2, the builder arm: a build miss gets a build brief and app.json (neve
     const r2 = drive(root, ['prepare', '--gen', '2']);
     assert.equal(r2.code, 0, r2.stderr);
     assert.equal(r2.json.builds, 1, 'weather again, todo is served');
-    assert.ok(!fs.existsSync(path.join(root, 'state/grow/gen-2/build/brief-todo.md')));
-    const gen2 = fs.readFileSync(path.join(root, 'state/grow/gen-2/misses.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
+    assert.ok(!fs.existsSync(path.join(root, 'work/grow/gen-2/build/brief-todo.md')));
+    const gen2 = fs.readFileSync(path.join(root, 'work/grow/gen-2/misses.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
     assert.equal(gen2.find((m) => m.id === 'seed-5').status, 'grown');
     assert.equal(gen2.find((m) => m.id === 'seed-5').cell, 'app:todo');
   } finally { clean(root); }
@@ -856,13 +856,13 @@ test('Day 2, the builder arm: a build miss gets a build brief and app.json (neve
   try {
     put(bad, 'grow/seed-misses.jsonl', jsonl([{ id: 'seed-5', at: '2026-09-30T20:00:00Z', prompt: 'make me a todo app', reply: 'nothing in memory matches', status: 'open' }]));
     assert.equal(drive(bad, ['prepare']).code, 0);
-    for (const f of ['index.html', 'app.mjs', 'test.mjs']) put(bad, 'state/grow/gen-1/build/todo/' + f, fs.readFileSync(path.join(BRAIN, 'grow/fixtures/app-ok', f)));
+    for (const f of ['index.html', 'app.mjs', 'test.mjs']) put(bad, 'work/grow/gen-1/build/todo/' + f, fs.readFileSync(path.join(BRAIN, 'grow/fixtures/app-ok', f)));
     const f = drive(bad, ['finish', '--gen', '1', '--no-commit'], { CI: '1', STUB_APP_FAIL: 'todo' });
     assert.equal(f.code, 0, f.stderr);
     assert.deepEqual(f.json.apps, { candidates: 1, built: 0, promoted: 0, slugs: [] });
     assert.equal(f.json.committed, 'blocked: no app survived');
     assert.ok(f.json.blocked.some((l) => l.startsWith('app todo did not survive: tests.failed is 1')), f.json.blocked.join(' | '));
     assert.ok(!fs.existsSync(path.join(bad, 'web/dist/apps/todo/index.html')));
-    assert.equal(fs.readFileSync(path.join(bad, 'state/grow/gen-1/misses.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l)).find((m) => m.id === 'seed-5').status, 'open');
+    assert.equal(fs.readFileSync(path.join(bad, 'work/grow/gen-1/misses.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l)).find((m) => m.id === 'seed-5').status, 'open');
   } finally { clean(bad); }
 });

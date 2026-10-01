@@ -8,8 +8,11 @@ off, and "you only fail if you dont listen to me".
 
 ## What you may and may not do
 
-- You may write: `state/grow/gen-<n>/...` (candidates, runtime, never committed), `grown/` only through
+- You may write: `work/grow/gen-<n>/...` (candidates, runtime, never committed), `grown/` only through
   `grow/store.mjs promote`, `web/dist` only through `node web/build.mjs`, and the commit the SHIP step makes.
+  `work/` is the generation's own directory: every brief, candidate and verdict lives there and every arm may
+  read its brief there. `state/` is not yours: the settings deny reading it, and you never go around a denied
+  path (a step that seems to need one is written in `blocked.txt` instead).
 - You may NOT edit `judge/` or `grow/contract.mjs` (the judge is LOCKED; `node judge/verify.mjs` proves it
   every run and a drifted judge stops the generation). You may NOT open `judge/heldout/` or
   `judge/control.jsonl`: the held-out truth is what makes a survivor real. An arm reads `judge/dev/<class>.jsonl`
@@ -22,7 +25,12 @@ off, and "you only fail if you dont listen to me".
 - Never quote a number a command did not print. No em-dashes. Stamps come from the commands' `at` fields.
 - A gap fills itself where it can: no service key means the seed misses; no store token means the shard is
   skipped with a reason and the survivors still promote; no push means the commit waits for the next run.
-  What cannot be filled is written as one line in `state/grow/gen-<n>/blocked.txt` and in the final JSON.
+  What cannot be filled is written as one line in `work/grow/gen-<n>/blocked.txt` and in the final JSON.
+- The VM's own node runs every step (node 22 or newer: the test flag is chosen by version): never install another.
+- A `finish` that stopped before its commit (a red suite, a failed build) is run AGAIN with the same command, once
+  the cause is gone: it reuses the selection it already made (`"selection": "reused: ..."`) instead of grading
+  the candidates against an organism that already holds this generation's survivors. Never edit
+  `grown/generations.json`, a verdict or `selection.json` by hand, and never pass `--rejudge`.
 
 ## The steps
 
@@ -41,15 +49,15 @@ off, and "you only fail if you dont listen to me".
    or a tier that answers it: never planned again), classes the rest (`node grow/misses.mjs classes`), keeps the classes that have a locked held-out
    set (a class without one is logged "no held-out set: a human session adds truth" and skipped), grades the
    organism before any cell on each class (`node judge/baseline.mjs <class>`), marks those misses `growing`,
-   and writes the plan `state/grow/gen-<n>/plan.json` and one BRIEF per class per lane:
-   `state/grow/gen-<n>/<lane>/brief-<class>.md`. Each brief holds: the contract, the class, the dev rows with
+   and writes the plan `work/grow/gen-<n>/plan.json` and one BRIEF per class per lane:
+   `work/grow/gen-<n>/<lane>/brief-<class>.md`. Each brief holds: the contract, the class, the dev rows with
    their `expect`, the baseline SCORE for the class (never its rows: `state/grow/baseline/<class>.json` holds the
    held-out prompts and no arm may open it), the lane's grow strategy, the directory the arm must write, and
    the files it may not open.
 
 2. GROW (the octopus). One ARM per brief, all in parallel, each a Claude agent (the Agent tool; model
    `claude-opus-5-5`; prefix its prompt with the CONCISE directive from CLAUDE.md). The arm's prompt is the
-   brief. The arm writes one candidate: `state/grow/gen-<n>/<lane>/<id>/cell.mjs`, `test.mjs`,
+   brief. The arm writes one candidate: `work/grow/gen-<n>/<lane>/<id>/cell.mjs`, `test.mjs`,
    `examples.jsonl`, `brief.md` (its copy of the brief), and validates it with `node grow/generation.mjs validate <dir>`
    until it prints `{"ok":true}`. The two lanes differ in strategy: lane `direct` writes the cell from the dev rows and
    the arm's own knowledge; lane `baked` first asks the organism's own knowledge tier
@@ -64,8 +72,8 @@ off, and "you only fail if you dont listen to me".
    no held-out row appears among the cell's examples and refuses the cell when one does.
 
 2b. THE BUILDER ARM (Day 2). A miss of class `build` ("make me a todo app") is not a cell class: `prepare` writes ONE
-   build brief per app, `state/grow/gen-<n>/build/brief-<slug>.md`, and the driver's own
-   `state/grow/gen-<n>/build/<slug>/app.json` ({ slug, name, prompt, generation, misses }). One arm per build brief
+   build brief per app, `work/grow/gen-<n>/build/brief-<slug>.md`, and the driver's own
+   `work/grow/gen-<n>/build/<slug>/app.json` ({ slug, name, prompt, generation, misses }). One arm per build brief
    (same agent, same CONCISE prefix): it writes `index.html`, `app.mjs`, `test.mjs` and `brief.md` under that
    directory and nothing else (the rules are in the brief and in grow/probe-app.mjs; `node grow/build.mjs validate <dir>`
    must print {"ok":true}). `finish` runs the app in the sandbox (`node grow/sandbox.mjs run <dir> --app`), judges it
@@ -98,26 +106,44 @@ off, and "you only fail if you dont listen to me".
    generation, at, lanes: { <lane>: { candidates, survivors } }, parent, misses }] }`), and `prepare` reads it
    to hand the parent lane its extra arms.
 
-6. SELF-MODIFY (Day 2; until `grow/self.mjs` exists this step is skipped and the final line says
-   `"self": "not wired"`). One candidate edit to this file or to `grow/` per generation, kept only when the next
-   generation's survival rate rises, judged by the same locked judge.
+6. SELF-MODIFY (Day 3, wired: `grow/self.mjs`). The procedure is a candidate too: ONE edit per generation to this
+   file or to one existing `.mjs` or `.md` under `grow/` (never `grow/self.mjs`, never a file `judge/LOCK.json`
+   names), kept only when the next generation's survival rate rises, judged by the same locked judge.
+   - The verdict is `finish`'s: right after it records the tournament it runs `node grow/self.mjs judge --gen <n>`.
+     A pending trial is `kept` when this generation's rate (survivors / candidates over every lane) is ABOVE the
+     trial's baseline, else `reverted` (the file is written back and the commit of step 8 carries it); `superseded`
+     when someone changed the file meanwhile; `pending` when this generation recorded no tournament. The final line
+     has `self`: `"none"`, or `{ verdict, target, baseline, rate, reason }`.
+   - The next trial, after step 8 and before step 7: `node grow/self.mjs propose --gen <n>` (n: the generation
+     `finish` just printed). `"brief": null` with `blocked` lines means no trial this generation (one is pending, no
+     tournament yet, or every candidate survived): go to step 7. Else it wrote the SELF BRIEF,
+     `work/grow/gen-<n>/self/brief.md`, with this generation's evidence (the tournaments, every candidate's verdict
+     line, the blocked lines, the earlier trials). One arm, as in step 2 (an Opus 5.5 agent, the brief as its whole
+     prompt; the CONCISE directive is in it): it writes `work/grow/gen-<n>/self/candidate.json` ({ target, why,
+     hypothesis }) and the WHOLE new file under `work/grow/gen-<n>/self/file/<target>`, and runs
+     `node grow/self.mjs check --gen <n>` until it prints `"ok":true` (the target rule, `node --check`, the suites on a
+     scratch copy of the tree with the file in place). Then `node grow/self.mjs apply --gen <n> --commit`: the file
+     enters the tree as a TRIAL, recorded in `grown/self.json` with the baseline, committed and pushed as jayden (a
+     cloud checkout dies with its session: an unpushed trial never happened). The next generation runs under it and
+     its `finish` judges it. `node grow/self.mjs status` prints the pending trial and the history.
 
 7. DREAM (Day 2, wired: `grow/dream.mjs`). After step 8, `node grow/dream.mjs propose --gen <n>` writes one DREAM
-   BRIEF per class that has a locked held-out set: `state/grow/gen-<n>/dream/brief-<class>.md`. One arm per brief, as
+   BRIEF per class that has a locked held-out set: `work/grow/gen-<n>/dream/brief-<class>.md`. One arm per brief, as
    in step 2 (an Opus 5.5 agent, the CONCISE directive first, the brief as its whole prompt): the proposer half writes
    4 tasks in the class's shape just past what the organism answers today, the solver half answers each one, into
-   `state/grow/gen-<n>/dream/<class>.jsonl` ({ q, expect, answer } a line), checked with `node grow/dream.mjs check <file>`
+   `work/grow/gen-<n>/dream/<class>.jsonl` ({ q, expect, answer } a line), checked with `node grow/dream.mjs check <file>`
    until `"ok":true`. Then `node grow/dream.mjs collect --gen <n> --commit` asks the organism every task, drops the ones it
    answers and the ones dreamed before, appends the rest to `grow/dreams.jsonl` as misses with `route: dream`, and commits
    and pushes that file as jayden (a cloud checkout dies with its session: an unpushed dream is lost). The next
    generation's step 1 reads them, so a heartbeat with no open miss still grows. `finish` reports `dream` from
-   `state/grow/gen-<n>/dream/collect.json` when collect of this generation ran before it (a re-run), else `"none"`.
+   `work/grow/gen-<n>/dream/collect.json` when collect of this generation ran before it (a re-run), else `"none"`.
 
 8. SHIP. `finish` ends with: `node --test test/grow-sandbox.test.mjs test/grow-store.test.mjs test/judge.test.mjs
    test/grow-misses.test.mjs test/ask-http.test.mjs`; `git add grown/ web/dist/ grow/dreams.jsonl` (the dreams file
    when it exists); a commit as jayden,
    message `gen <n>: <survivors> of <candidates> survived, parent <lane>` with the trailer
-   `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`; `git push` (a push deploys dilation.dev when the
+   `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`; the push (`git push`, or `git push origin HEAD:master` on a checkout with no upstream, with one rebase when
+   the remote moved: `finish` does all three itself; a push deploys dilation.dev when the
    project is connected; `--no-push` keeps the commit local); then the misses of survivors are marked `grown`
    with the cell id and the generation, the others go back to `open`. The site already answers a miss with
    "I am growing a cell for this" and logs it (act/ask-http.mjs), so every miss becomes a cell.
@@ -125,8 +151,8 @@ off, and "you only fail if you dont listen to me".
 ## Done
 
 The generation is done when `finish` printed its one JSON line:
-`{ generation, lanes, candidates, survivors, parent, store, promoted, built, tests, committed, pushed,
-misses: { growing, grown, reopened }, self, dream, blocked, at }`. Paste that line, unchanged, as your whole
+`{ generation, lanes, candidates, survivors, parent, baseline, selection, store, promoted, built, tests, committed,
+pushed, apps, misses: { growing, grown, reopened }, self, cortex, dream, blocked, at }`. Paste that line, unchanged, as your whole
 final message. A generation with zero survivors is a real result, not a failure: the losers are in the
 archive and the misses are open again for the next heartbeat.
 

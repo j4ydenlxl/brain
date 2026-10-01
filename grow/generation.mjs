@@ -6,6 +6,7 @@
 // Author: board 38 builder, item driver, 2026-09-30.
 import fs from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { validateCell, validateTest, parseJsonl, importsOf, FORBIDDEN, REFUSAL_RE } from './contract.mjs';
@@ -37,7 +38,7 @@ export const USAGE = [
   '  prepare [--gen <n>] [--misses <jsonl>] [--lanes direct,baked] [--parent <lane>]',
   '  validate <candidateDir>',
   '  ask "<q>" [--knowledge <dir>|none]',
-  '  finish [--gen <n>] [--lanes a,b] [--dry] [--no-store|promote|build|tests|commit|push] [--sandbox-args "<args>"]',
+  '  finish [--gen <n>] [--lanes a,b] [--dry] [--rejudge] [--no-store|promote|build|tests|commit|push] [--sandbox-args "<args>"]',
 ].join('\n');
 
 class Fail extends Error { constructor(line, code = 1) { super(line); this.code = code; } }
@@ -52,7 +53,7 @@ export const lastJson = (s) => objs(s).pop() || null;
 const readJson = (f) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return null; } };
 const writeJson = (f, o) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, JSON.stringify(o, null, 2) + '\n'); };
 const jsonl = (rows) => rows.map((r) => JSON.stringify(r)).join('\n') + (rows.length ? '\n' : '');
-const genDirOf = (root, n) => path.join(root, 'state', 'grow', 'gen-' + n);
+const genDirOf = (root, n) => path.join(root, 'work', 'grow', 'gen-' + n);
 // the one line that says why a child failed: never a stack frame, the Node banner or a bare brace; the first line that
 // names an error, a refusal, an expiry or a failure, else the last meaningful one; stderr before stdout
 const NOISE = /^(node:internal\/|at |\^|throw err;|Node\.js v|code: '|[{}()\[\];]*$)/;
@@ -66,9 +67,39 @@ function runBin(root, bin, args, { env = process.env, timeout = 10 * MIN } = {})
 }
 export const runNode = (root, script, args = [], o = {}) => runBin(root, process.execPath, [path.join(root, script), ...args], o);
 
+/**
+ * The push, for a checkout that may have no upstream (the heartbeat's: a bare git push exits 128 there) and a remote that
+ * may have moved (another run landed first): git push, else origin HEAD:<branch>, else ONE rebase of this run's commits
+ * onto the remote and the push again. A branch that tracks some other upstream is only ever pushed there. The commit
+ * stays either way. Returns { ok: true, how } or { ok: false, why }.
+ */
+export function pushHead(root, { env = process.env, branch = env.GROW_BRANCH || 'master' } = {}) {
+  const git = (args) => runBin(root, 'git', args, { env, timeout: 5 * MIN });
+  const said1 = (what, r) => what + ' exited ' + r.code + ': ' + why1(r);
+  const up = git(['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}']);
+  const upstream = up.code === 0 ? lastLine(up.stdout) : null;
+  const ref = 'HEAD:refs/heads/' + branch, tries = [];
+  if (upstream) {
+    const r = git(['push']);
+    if (r.code === 0) return { ok: true, how: 'git push' };
+    tries.push(said1('git push', r));
+    if (upstream !== 'origin/' + branch) return { ok: false, why: tries.join('; ') };
+  } else {
+    const r = git(['push', 'origin', ref]);
+    if (r.code === 0) return { ok: true, how: 'git push origin ' + ref };
+    tries.push(said1('git push origin ' + ref, r));
+  }
+  const pl = git(['pull', '--rebase', '--autostash', 'origin', branch]);
+  if (pl.code !== 0) { git(['rebase', '--abort']); tries.push(said1('git pull --rebase origin ' + branch, pl)); return { ok: false, why: tries.join('; ') }; }
+  const r = git(['push', 'origin', ref]);
+  if (r.code === 0) return { ok: true, how: 'git push origin ' + ref + ' after a rebase onto origin/' + branch };
+  tries.push(said1('git push origin ' + ref + ' after the rebase', r));
+  return { ok: false, why: tries.join('; ') };
+}
+
 // ---- arguments
 const VALUE = new Set(['gen', 'misses', 'lanes', 'parent', 'root', 'knowledge', 'sandbox-args', 'gh']);
-const BOOL = new Set(['no-store', 'no-promote', 'no-build', 'no-tests', 'no-commit', 'no-push', 'dry']);
+const BOOL = new Set(['no-store', 'no-promote', 'no-build', 'no-tests', 'no-commit', 'no-push', 'dry', 'rejudge']);
 export function parseArgs(argv) {
   const pos = [], flags = {};
   for (let i = 0; i < argv.length; i++) {
@@ -272,7 +303,7 @@ export function brief({ root, n, lane, cls, id, dir, prompts, devRel, devLines, 
     ] : []),
     '## The lane: ' + lane, '', STRATEGY[lane] || STRATEGY.direct, '',
     '## Files you may not open', '',
-    'Never open, read, list or grep judge/heldout/, judge/control.jsonl or state/grow/baseline/: a survivor is real only because no arm saw the rows it is graded on. Do not open the other arms\' directories under state/grow/gen-' + n + '/.', '',
+    'Never open, read, list or grep judge/heldout/, judge/control.jsonl or state/grow/baseline/: a survivor is real only because no arm saw the rows it is graded on. Do not open the other arms\' directories under work/grow/gen-' + n + '/.', '',
     '## What you write in `' + dir + '/`', '',
     '1. `cell.mjs` as above.',
     '2. `test.mjs`: node:test and node:assert/strict, importing only `./cell.mjs`, at least three tests: every example right by its expect; can false on greetings, questions and arithmetic; the same q twice, the same answer.',
@@ -367,7 +398,7 @@ async function prepare(root, flags, env) {
     for (const [slug, b] of bySlug) {
       const ids = b.ls.map((l) => l.id).filter((x) => x !== null && x !== undefined);
       if (served.has(slug)) { markMisses(root, env, { file: genMisses, ids, status: 'grown', cell: 'app:' + slug, generation: n, supabase: source === 'supabase' }, blocked); continue; }
-      const dir = 'state/grow/gen-' + n + '/build/' + slug;
+      const dir = 'work/grow/gen-' + n + '/build/' + slug;
       const file = path.join(genDir, 'build', 'brief-' + slug + '.md');
       const prompts = b.ls.map((l) => l.prompt);
       writeJson(path.join(root, dir, 'app.json'), { slug, name: b.name, prompt: prompts[0], generation: n, misses: ids });
@@ -407,7 +438,7 @@ async function prepare(root, flags, env) {
     const arms = [];
     for (const lane of lanes) for (let i = 1; i <= (lane === parent ? 2 : 1); i++) {
       const id = armId(k.cls, lane, n, i);
-      const dir = 'state/grow/gen-' + n + '/' + lane + '/' + id;
+      const dir = 'work/grow/gen-' + n + '/' + lane + '/' + id;
       const file = path.join(genDir, lane, 'brief-' + k.cls + (i > 1 ? '-' + i : '') + '.md');
       fs.mkdirSync(path.dirname(file), { recursive: true });
       fs.writeFileSync(file, brief({ root, n, lane, cls: k.cls, id, dir, prompts, devRel: k.devRel, devLines: k.devLines, devRows: k.devRows, baseline: k.baseline, sibling: i > 1 ? armId(k.cls, lane, n, 1) : null, dreams }));
@@ -458,7 +489,7 @@ async function validate(root, dirArg) {
   }
   const meta = mod && mod.meta && typeof mod.meta === 'object' ? mod.meta : {};
   const cls = typeof meta.class === 'string' ? meta.class : classOfSource(source);
-  // inside state/grow/gen-<n>/<lane>/<id>/
+  // inside work/grow/gen-<n>/<lane>/<id>/
   const g = /^gen-(\d+)$/.exec(path.basename(path.dirname(path.dirname(dir))));
   if (g && mod) {
     const lane = path.basename(path.dirname(dir));
@@ -510,7 +541,7 @@ export function candidates(root, n, lanes, plan = null) {
   }
   return out;
 }
-/** The builder arm's candidates: state/grow/gen-<n>/build/<slug>/ with the driver's app.json (an arm may not invent an app); written says the arm left an index.html. */
+/** The builder arm's candidates: work/grow/gen-<n>/build/<slug>/ with the driver's app.json (an arm may not invent an app); written says the arm left an index.html. */
 export function appCandidates(root, n, plan) {
   const base = path.join(genDirOf(root, n), 'build');
   const fromPlan = plan && Array.isArray(plan.builds) ? plan.builds : [];
@@ -530,7 +561,32 @@ export function appCandidates(root, n, plan) {
 export const rankLanes = (stats) => Object.entries(stats).sort((a, b) => (b[1].survivors - a[1].survivors) || (b[1].candidates - a[1].candidates) || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)).map((e) => e[0]);
 /** What SHIP commits: the store, the built site, and the dreams file when it exists (collect writes it after a finish, so the next finish ships it). */
 export const shipPaths = (root) => ['grown/', 'web/dist/', ...(fs.existsSync(path.join(root, DREAMS)) ? [DREAMS] : [])];
-export const commitMessage = (n, survivors, total, parent, apps = 0) => 'gen ' + n + ': ' + survivors + ' of ' + total + ' survived, parent ' + parent + (apps ? ', ' + apps + (apps === 1 ? ' app' : ' apps') + ' built' : '');
+export const commitMessage = (n, survivors, total, parent, apps = 0, self = null, cortex = null) => 'gen ' + n + ': ' + survivors + ' of ' + total + ' survived, parent ' + parent + (apps ? ', ' + apps + (apps === 1 ? ' app' : ' apps') + ' built' : '') + (self && self.verdict && self.target ? ', self ' + self.verdict + ' ' + self.target : '') + (cortex && cortex.verdict === 'moved' ? ', cortex moved to ' + cortex.pointer : '');
+
+/** GROW.md step 6: the pending self-modification trial judged by this generation's tournament (`node grow/self.mjs judge
+ *  --gen n`, a child: self.mjs imports this module, so the import stays one way). Without the file: 'not wired'. `ship`
+ *  holds the paths the commit carries beside grown/ (a target that was written back). */
+/** The cortex-pointer rule (grow/cortex.mjs): a pending challenger model is judged by the paired arms of this generation's
+ *  tournament (`node grow/cortex.mjs judge --gen n`, a child like the self judge). Without the file: 'not wired'. The
+ *  ledger is grown/cortex.json, so the commit carries it with grown/. */
+export function cortexJudge(root, n, env, blocked) {
+  if (!fs.existsSync(path.join(root, 'grow', 'cortex.mjs'))) return 'not wired';
+  const r = runNode(root, 'grow/cortex.mjs', ['judge', '--gen', String(n), '--root', root], { env, timeout: 5 * MIN });
+  const j = lastJson(r.stdout);
+  if (r.code !== 0 || !j || typeof j.verdict !== 'string') { blocked.push('cortex: grow/cortex.mjs judge exited ' + r.code + ': ' + why1(r)); return 'failed'; }
+  if (j.verdict === 'none') return 'none';
+  return { verdict: j.verdict, pointer: j.pointer, challenger: j.challenger ?? null, pairs: j.pairs ?? null, reason: j.reason };
+}
+
+export function selfJudge(root, n, env, blocked) {
+  if (!fs.existsSync(path.join(root, 'grow', 'self.mjs'))) return { self: 'not wired', ship: [] };
+  const r = runNode(root, 'grow/self.mjs', ['judge', '--gen', String(n), '--root', root], { env, timeout: 5 * MIN });
+  const j = lastJson(r.stdout);
+  if (r.code !== 0 || !j || typeof j.verdict !== 'string') { blocked.push('self: grow/self.mjs judge exited ' + r.code + ': ' + why1(r)); return { self: 'failed', ship: [] }; }
+  const ship = Array.isArray(j.ship) ? j.ship.map(String) : [];
+  if (j.verdict === 'none') return { self: 'none', ship };
+  return { self: { verdict: j.verdict, target: j.target, baseline: j.baseline ? j.baseline.rate : null, rate: j.judged ? j.judged.rate : null, reason: j.reason }, ship };
+}
 
 function finish(root, flags, env) {
   const n = genOf(flags, root);
@@ -542,9 +598,9 @@ function finish(root, flags, env) {
   const b = backendOf(env);
   const extra = flags['sandbox-args'] ? String(flags['sandbox-args']).split(/\s+/).filter(Boolean) : [];
   const sbArgs = (c) => ['run', c.rel, '--heldout', 'judge/heldout/' + c.class + '.jsonl', '--control', 'judge/control.jsonl', '--out', c.rel + '/result.json', ...(b.backend === 'here' ? ['--backend', 'here'] : []), ...extra];
-  const laneArgs = (verb, lane) => [verb, String(n), lane, '--dir', 'state/grow/gen-' + n + '/' + lane];
+  const laneArgs = (verb, lane) => [verb, String(n), lane, '--dir', 'work/grow/gen-' + n + '/' + lane];
   const appArgs = (a) => ['run', a.rel, '--app', '--out', a.rel + '/result.json', ...(b.backend === 'here' ? ['--backend', 'here'] : []), ...extra];
-  const promoteArgs = (a) => ['promote', String(n), a.slug, '--dir', 'state/grow/gen-' + n + '/build'];
+  const promoteArgs = (a) => ['promote', String(n), a.slug, '--dir', 'work/grow/gen-' + n + '/build'];
   const withC = lanes.filter((l) => cands.some((c) => c.lane === l));
   const clsList = [...new Set(cands.map((c) => c.class).filter(Boolean))];
   if (flags.dry) {
@@ -552,6 +608,8 @@ function finish(root, flags, env) {
     for (const a of apps) would.push('node grow/sandbox.mjs ' + appArgs(a).join(' '), 'node grow/build.mjs judge ' + a.rel, ...(flags['no-promote'] ? [] : ['node grow/build.mjs ' + promoteArgs(a).join(' ')]));
     for (const l of withC) for (const v of ['shard', 'promote']) if (!flags['no-' + (v === 'shard' ? 'store' : v)]) would.push('node grow/store.mjs ' + laneArgs(v, l).join(' '));
     if (!flags['no-build']) would.push('node web/build.mjs');
+    if (fs.existsSync(path.join(root, 'grow', 'self.mjs'))) would.push('node grow/self.mjs judge --gen ' + n);
+    if (fs.existsSync(path.join(root, 'grow', 'cortex.mjs'))) would.push('node grow/cortex.mjs judge --gen ' + n);
     if (!flags['no-tests']) would.push('node --test --test-reporter=tap ' + SUITES.join(' '));
     if (!flags['no-commit']) would.push('git add -- ' + shipPaths(root).join(' '), 'git commit -m "' + commitMessage(n, '<survivors>', '<candidates>', '<parent>') + '" -m "' + TRAILER + '" -- ' + shipPaths(root).join(' '), ...(flags['no-push'] ? [] : ['git push']));
     return { dry: true, generation: n, backend: b.backend, why: b.why, candidates: cands.map(({ dir, rel, ...c }) => ({ dir: rel, ...c })), apps: apps.map(({ dir, rel, ...a }) => ({ dir: rel, ...a })), would, at: new Date().toISOString() };
@@ -564,12 +622,27 @@ function finish(root, flags, env) {
   const blocked = [];
   const stats = Object.fromEntries(lanes.map((l) => [l, { candidates: cands.filter((c) => c.lane === l).length, survivors: 0 }]));
   const total = cands.length, live = b.backend !== 'none' && !b.expired;
-  if (!total && !apps.length) blocked.push('no candidate: no arm wrote a cell.mjs under state/grow/gen-' + n + '/<lane>/<id>/');
+  if (!total && !apps.length) blocked.push('no candidate: no arm wrote a cell.mjs under work/grow/gen-' + n + '/<lane>/<id>/');
   else if (!live) blocked.push('sandbox: ' + b.why);
-  const ran = total > 0 && live;
+  // A finish that selected and promoted, then stopped before its commit (a red suite, a failed build), left grown/ holding
+  // THIS generation's survivors: the baseline measured again would be the organism WITH them, and every candidate would
+  // lose to itself (generations 1 and 2 were both recorded 0 that way). So a landed selection (selection.json, written
+  // below) is reused when grown/ holds one of its survivors and the candidates are byte-equal; when they are not, the
+  // selection cannot be run again in this checkout (--rejudge runs it anyway, for a tree whose grown/ was put back).
+  const selFile = path.join(genDir, 'selection.json');
+  const sigOf = (c) => { try { return createHash('sha256').update(fs.readFileSync(path.join(c.dir, 'cell.mjs'))).digest('hex'); } catch { return null; } };
+  const prior = flags.rejudge ? null : readJson(selFile);
+  const priorRows = prior && prior.generation === n && Array.isArray(prior.candidates) ? prior.candidates : null;
+  const holds = (() => { const ix = readJson(path.join(root, 'grown', 'index.json')); return new Set(ix && Array.isArray(ix.cells) ? ix.cells.filter((c) => c && c.generation === n).map((c) => String(c.id)) : []); })();
+  const landed = Boolean(priorRows) && priorRows.some((p) => p.survived && holds.has(String(p.id)));
+  const sameCands = landed && priorRows.length === cands.length && cands.every((c) => priorRows.some((p) => p.id === c.id && p.lane === c.lane && p.sha256 && p.sha256 === sigOf(c)));
+  const reuse = landed && sameCands;
+  let selection = 'fresh';
+  if (landed && !sameCands) blocked.push('void: grown/ already holds generation ' + n + ' survivors and the candidates changed since they were selected: the baseline would be measured with them in it (finish --rejudge after grown/ is put back, or a fresh checkout)');
+  const ran = total > 0 && live && !(landed && !sameCands);
   // the baseline again NOW (grown/ untouched until promote): select refuses one of other organism code
-  const baseline = {};
-  for (const k of ran ? clsList : []) {
+  const baseline = reuse && prior.baseline && typeof prior.baseline === 'object' ? { ...prior.baseline } : {};
+  for (const k of ran && !reuse ? clsList : []) {
     const r = runNode(root, 'judge/baseline.mjs', [k], { env, timeout: 20 * MIN }), j = lastJson(r.stdout);
     if (r.code === 0 && j && typeof j.score === 'number') baseline[k] = j.score;
     else blocked.push('baseline: ' + k + ': exit ' + r.code + ': ' + why1(r) + ': its candidates are not judged');
@@ -581,6 +654,12 @@ function finish(root, flags, env) {
   // nor count; its misses reopen); a candidate without a class is the arm's fault and is not in the tournament.
   for (const c of cands) {
     c.survived = c.judged = c.unrun = false;
+    if (reuse) {
+      const p = priorRows.find((x) => x.id === c.id && x.lane === c.lane);
+      c.judged = p.judged === true; c.survived = p.survived === true;
+      if (c.survived) stats[c.lane].survivors++;
+      continue;
+    }
     if (!ran || (c.class && !(c.class in baseline))) continue;
     if (!c.class) { blocked.push('sandbox: ' + c.rel + ': no class in cell.mjs, brief.md or plan.json'); continue; }
     const s = runNode(root, 'grow/sandbox.mjs', sbArgs(c), { env, timeout: 20 * MIN });
@@ -593,6 +672,8 @@ function finish(root, flags, env) {
     if (c.survived) stats[c.lane].survivors++;
   }
   const survivors = cands.filter((c) => c.survived).length, judged = cands.filter((c) => c.judged).length, unrun = cands.filter((c) => c.unrun).length;
+  if (reuse) selection = 'reused: selected at ' + prior.at + ', grown/ holds its survivors';
+  else if (ran && judged && !unrun) writeJson(selFile, { generation: n, at: new Date().toISOString(), baseline, candidates: cands.map((c) => ({ id: c.id, lane: c.lane, class: c.class || null, sha256: sigOf(c), judged: c.judged, survived: c.survived })) });
   // Day 2, the builder arm (GROW.md step 2b): every app through the sandbox (--app), the app judge, then promote (served
   // at /apps/<slug>/, listed in grown/apps.json). An app that fails is a loser (its misses reopen), never a void: the cell
   // tournament and the apps are separate; a generation with no cell candidate still ships a built app.
@@ -618,7 +699,7 @@ function finish(root, flags, env) {
   }
   const tournament = total > 0;
   // no verdict at all, or a candidate that did not run, is a broken run, not a tournament: nothing recorded, the generation runs again
-  let block = !total ? (appStats.promoted ? null : apps.length ? 'no app survived' : 'no candidate') : !live ? (b.expired ? 'the sandbox token expired' : 'no sandbox backend') : !judged ? 'no candidate was judged' : unrun ? unrun + ' of ' + total + ' candidates did not run' : null;
+  let block = !total ? (appStats.promoted ? null : apps.length ? 'no app survived' : 'no candidate') : !live ? (b.expired ? 'the sandbox token expired' : 'no sandbox backend') : landed && !sameCands ? 'the candidates changed after their survivors were promoted' : !judged ? 'no candidate was judged' : unrun ? unrun + ' of ' + total + ' candidates did not run' : null;
   if (ran && unrun) blocked.push('void: ' + unrun + ' of ' + total + ' candidates did not run (a sandbox or select exit that is not 0 is infrastructure, not a loss): generation ' + n + ' is not recorded and runs again');
   else if (ran && !judged) blocked.push('void: no candidate was judged: generation ' + n + ' is not recorded and runs again');
   const parent = block || !tournament ? null : rankLanes(stats)[0] ?? null;
@@ -662,6 +743,10 @@ function finish(root, flags, env) {
     const list = (gs && Array.isArray(gs.generations) ? gs.generations : []).filter((e) => !(e && e.generation === n));
     writeJson(gFile, { generations: [...list, { generation: n, at: new Date().toISOString(), lanes: stats, parent, misses: planMisses }] });
   }
+  // step 6: the pending self-modification trial, judged by the tournament just recorded (kept when the survival rate
+  // is above the trial's baseline, else its file is written back); before the suites, so they test the tree the commit ships
+  const selfR = selfJudge(root, n, env, blocked);
+  const cortexR = record ? cortexJudge(root, n, env, blocked) : (fs.existsSync(path.join(root, 'grow', 'cortex.mjs')) ? 'none' : 'not wired'); // a void tournament is no trial
   // step 8: the suites, the commit, the push
   let tests = block ? 'skipped: ' + block : 'skipped (--no-tests)';
   if (!block && !flags['no-tests']) {
@@ -674,22 +759,22 @@ function finish(root, flags, env) {
   let pushed = block ? 'skipped: nothing committed' : 'skipped (--no-commit)';
   if (!block && !flags['no-commit']) {
     const git = (args, o) => runBin(root, 'git', args, { env, ...o });
-    const ship = shipPaths(root);
+    const ship = [...shipPaths(root), ...selfR.ship];
     const add = git(['add', '--', ...ship]);
     pushed = 'skipped: nothing committed';
     if (add.code !== 0) { committed = false; blocked.push('commit: git add exited ' + add.code + ': ' + why1(add)); }
     else if (git(['diff', '--cached', '--quiet', '--', ...ship]).code === 0) committed = 'nothing to commit';
     else {
       const email = lastLine(git(['config', 'user.email']).stdout) || 'j4ydenlxl@users.noreply.github.com';
-      const cm = git(['-c', 'user.name=jayden', '-c', 'user.email=' + email, 'commit', '-m', commitMessage(n, survivors, total, parent, appStats.promoted), '-m', TRAILER, '--', ...ship]);
+      const cm = git(['-c', 'user.name=jayden', '-c', 'user.email=' + email, 'commit', '-m', commitMessage(n, survivors, total, parent, appStats.promoted, typeof selfR.self === 'object' && selfR.self.verdict !== 'pending' ? selfR.self : null, typeof cortexR === 'object' ? cortexR : null), '-m', TRAILER, '--', ...ship]);
       committed = cm.code === 0;
       if (!committed) blocked.push('commit: git commit exited ' + cm.code + ': ' + why1(cm));
     }
     if (committed === true && flags['no-push']) pushed = 'skipped (--no-push)';
     else if (committed === true) {
-      const ps = git(['push']);
-      pushed = ps.code === 0;
-      if (!pushed) blocked.push('push: git push exited ' + ps.code + ': ' + why1(ps) + ' (the commit stays)');
+      const ps = pushHead(root, { env });
+      pushed = ps.ok;
+      if (!pushed) blocked.push('push: ' + ps.why + ' (the commit stays)');
     }
   }
   // a promoted survivor's misses are grown (unless blocked), the rest open again
@@ -716,12 +801,12 @@ function finish(root, flags, env) {
   fs.mkdirSync(genDir, { recursive: true });
   fs.writeFileSync(blockedFile, all.map((l) => l + '\n').join(''));
   return {
-    generation: n, lanes: stats, candidates: total, survivors, parent, baseline, store, promoted, archived, retired, built, tests, committed, pushed,
-    apps: appStats, misses: { growing: planMisses.length, grown, reopened }, self: 'not wired', dream: dreamOf(root, n), blocked: all, at: new Date().toISOString(),
+    generation: n, lanes: stats, candidates: total, survivors, parent, baseline, selection, store, promoted, archived, retired, built, tests, committed, pushed,
+    apps: appStats, misses: { growing: planMisses.length, grown, reopened }, self: selfR.self, cortex: cortexR, dream: dreamOf(root, n), blocked: all, at: new Date().toISOString(),
   };
 }
 
-/** The dream of this generation as collect wrote it (state/grow/gen-n/dream/collect.json), else 'none' (propose and collect run after finish: GROW.md step 7). */
+/** The dream of this generation as collect wrote it (work/grow/gen-n/dream/collect.json), else 'none' (propose and collect run after finish: GROW.md step 7). */
 export function dreamOf(root, n) {
   const c = readJson(path.join(genDirOf(root, n), 'dream', 'collect.json'));
   if (!c || typeof c !== 'object') return 'none';

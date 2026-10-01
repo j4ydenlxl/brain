@@ -11,7 +11,7 @@
 //                                  survived only when validate.ok with no error, tests.failed 0, tests.exitCode 0,
 //                                  tests.passed >= 3, exitCode 0 and error null; why names every clause that fails.
 //                                  Exit 0 when a verdict is written (survived or not), 1 when result.json is unreadable.
-//   promote <n> <slug> [--dir state/grow/gen-<n>/build] [--web web/dist] [--grown grown] [--root <dir>]
+//   promote <n> <slug> [--dir work/grow/gen-<n>/build] [--web web/dist] [--grown grown] [--root <dir>]
 //                                  <dir>/<slug>/ with a survived verdict.json and the driver's app.json
 //                                  ({ slug, name, prompt, generation, misses }) is served: its files but result.json,
 //                                  verdict.json, app.json, brief.md and test.mjs go to <web>/apps/<slug>/, grown/apps.json
@@ -40,7 +40,7 @@ export const USAGE = [
   'usage: node grow/build.mjs <verb> [args] [flags]',
   '  validate <appDir>                 prints {ok, errors, slug}; exit 1 when not ok',
   '  judge <appDir> [--out verdict.json]   reads <appDir>/result.json, writes the verdict; prints it',
-  '  promote <n> <slug> [--dir state/grow/gen-<n>/build] [--web web/dist] [--grown grown] [--root <dir>]',
+  '  promote <n> <slug> [--dir work/grow/gen-<n>/build] [--web web/dist] [--grown grown] [--root <dir>]',
   '      serves <dir>/<slug>/ at /apps/<slug>/ (a survived verdict.json and app.json, else refused);',
   '      prints {promoted, skipped, apps, generation, path}',
 ].join('\n');
@@ -308,7 +308,7 @@ export async function main(argv = process.argv.slice(2), { env = process.env } =
     const gen = Number(pos[1]);
     const root = flags.root ? path.resolve(flags.root) : null;
     const at = (p, dflt) => (p ? path.resolve(root || process.cwd(), p) : path.join(root || ROOT, ...dflt));
-    return { out: await promote({ gen, slug: pos[2], dir: at(flags.dir, ['state', 'grow', 'gen-' + gen, 'build']), webDir: at(flags.web, ['web', 'dist']), grownDir: at(flags.grown, ['grown']), env }), code: 0 };
+    return { out: await promote({ gen, slug: pos[2], dir: at(flags.dir, ['work', 'grow', 'gen-' + gen, 'build']), webDir: at(flags.web, ['web', 'dist']), grownDir: at(flags.grown, ['grown']), env }), code: 0 };
   }
   throw new Fail('unknown verb ' + verb + ' (validate, judge, promote; see --help)');
 }

@@ -48,7 +48,7 @@ function copyApp(name, changes = {}) {
 const okHtml = fs.readFileSync(path.join(OK, 'index.html'), 'utf8');
 const okApp = fs.readFileSync(path.join(OK, 'app.mjs'), 'utf8');
 const okTest = fs.readFileSync(path.join(OK, 'test.mjs'), 'utf8');
-const CLEAN = { candidate: 'state/grow/gen-1/build/todo', kind: 'app', slug: 'todo', backend: 'vercel', session: 'sbx_1', node: 'v24.0.0',
+const CLEAN = { candidate: 'work/grow/gen-1/build/todo', kind: 'app', slug: 'todo', backend: 'vercel', session: 'sbx_1', node: 'v24.0.0',
   startedAt: '2026-10-01T00:00:00.000Z', wallMs: 900, cpuMs: 120, validate: { ok: true, errors: [] },
   tests: { exitCode: 0, passed: 4, failed: 0, tail: '# pass 4' }, files: { 'index.html': 10, 'app.mjs': 10, 'test.mjs': 10 }, exitCode: 0, error: null };
 const at = () => new Date('2026-10-01T01:02:03.000Z');
@@ -190,7 +190,7 @@ test('validateApp: one defect at a time on a copy of app-ok, each named; the unc
 // ---------------------------------------------------------------- judge
 test('judge: a clean result.json survives; the verdict is written beside it in its shape; exit 0', async () => {
   const v = verdictOf(CLEAN, { now: at });
-  assert.deepEqual(v, { candidate: 'state/grow/gen-1/build/todo', slug: 'todo', kind: 'app', survived: true, why: [],
+  assert.deepEqual(v, { candidate: 'work/grow/gen-1/build/todo', slug: 'todo', kind: 'app', survived: true, why: [],
     validate: { ok: true, errors: [] }, tests: { passed: 4, failed: 0, exitCode: 0 }, exitCode: 0, error: null, at: '2026-10-01T01:02:03.000Z' });
   const d = copyApp('todo');
   fs.writeFileSync(path.join(d, 'result.json'), JSON.stringify(CLEAN));
@@ -253,14 +253,14 @@ test('judge: an unreadable result.json exits 1 with one stderr line and writes n
 });
 
 // ---------------------------------------------------------------- promote
-const SURVIVED = (slug) => ({ candidate: 'state/grow/gen-1/build/' + slug, slug, kind: 'app', survived: true, why: [], validate: { ok: true, errors: [] },
+const SURVIVED = (slug) => ({ candidate: 'work/grow/gen-1/build/' + slug, slug, kind: 'app', survived: true, why: [], validate: { ok: true, errors: [] },
   tests: { passed: 4, failed: 0, exitCode: 0 }, exitCode: 0, error: null, at: '2026-10-01T01:00:00.000Z' });
 const APPJSON = (slug, prompt = 'make me a todo app') => ({ slug, name: 'todo', prompt, generation: 1, misses: ['m-1'] });
 
-/** A temporary root: grow/app-slug.mjs (grown/apps.mjs imports it), and the app under state/grow/gen-1/build/<slug>/. */
+/** A temporary root: grow/app-slug.mjs (grown/apps.mjs imports it), and the app under work/grow/gen-1/build/<slug>/. */
 function stage({ slug = 'todo', verdict = SURVIVED(slug), app = APPJSON(slug), result = { ...CLEAN, slug }, slugModule = null } = {}) {
   const root = path.join(TMP, 'root-' + (++seq));
-  const dir = path.join(root, 'state', 'grow', 'gen-1', 'build', slug);
+  const dir = path.join(root, 'work', 'grow', 'gen-1', 'build', slug);
   fs.mkdirSync(dir, { recursive: true });
   for (const f of ['index.html', 'app.mjs', 'test.mjs']) fs.copyFileSync(path.join(OK, f), path.join(dir, f));
   fs.writeFileSync(path.join(dir, 'brief.md'), 'what the arm was told\n');

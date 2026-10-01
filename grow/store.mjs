@@ -41,10 +41,10 @@ const PUT_TRIES = 5;
 
 export const USAGE = [
   'usage: node grow/store.mjs <verb> [args] [flags]',
-  '  shard <gen> <lane> [--dir state/grow/gen-<gen>/<lane>] [--repo ' + DEFAULT_REPO + '] [--branch main] [--api-base URL]',
+  '  shard <gen> <lane> [--dir work/grow/gen-<gen>/<lane>] [--repo ' + DEFAULT_REPO + '] [--branch main] [--api-base URL]',
   '      tar+gzip the lane, PUT shards/gen-<gen>-<lane>.tar.gz and generations/gen-<gen>-<lane>.json, append index.json;',
   '      prints {shard, bytes, candidates, survivors, indexCells}',
-  '  promote <gen> <lane> [--dir state/grow/gen-<gen>/<lane>] [--grown grown]',
+  '  promote <gen> <lane> [--dir work/grow/gen-<gen>/<lane>] [--grown grown]',
   '      the survivors (verdict.json survived:true AND the whole CONTRACT conjunction, else refused) into grown/cells/,',
   '      ONE cell per class (the champion): promoted only when its held-out score is above the class\'s current cell',
   '      (the parent lane promotes first and wins ties), the cell it beats is retired (the archive shard keeps it),',
@@ -608,7 +608,7 @@ export async function main(argv = process.argv.slice(2), { env = process.env, gh
   if (flags.help) return { usage: true };
   if (!verb) throw new Fail('no verb: shard, promote, index or verify-local (see --help)');
   const grownDir = path.resolve(flags.grown || path.join(ROOT, 'grown'));
-  const laneDir = (g, l) => path.resolve(flags.dir || path.join(ROOT, 'state', 'grow', 'gen-' + g, l));
+  const laneDir = (g, l) => path.resolve(flags.dir || path.join(ROOT, 'work', 'grow', 'gen-' + g, l));
   const store = () => ({ repo: flags.repo || DEFAULT_REPO, branch: flags.branch || DEFAULT_BRANCH, tp: makeTransport({ apiBase: flags['api-base'], env, ghCheck }) });
   if (verb === 'shard' || verb === 'promote') {
     if (pos.length !== 3) throw new Fail(verb + ' takes <gen> <lane> (see --help)');

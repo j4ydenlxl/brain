@@ -19,7 +19,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { REFUSAL_RE, parseJsonl } from './contract.mjs';
-import { nextGeneration, conciseDirective, CLASS_RE, CLASS_RULES, DEFAULT_ROOT, redact, TRAILER } from './generation.mjs';
+import { nextGeneration, conciseDirective, CLASS_RE, CLASS_RULES, DEFAULT_ROOT, redact, TRAILER, pushHead } from './generation.mjs';
 import { expectErrors, expectFailures, qKey } from '../judge/judge.mjs';
 
 export const MAX_ROWS = 12;
@@ -41,7 +41,7 @@ const posix = (p) => p.split(path.sep).join('/');
 const relOf = (root, p) => posix(path.relative(root, p));
 const first = (e) => String((e && e.message) || e).split('\n')[0];
 const writeJson = (f, o) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, JSON.stringify(o, null, 2) + '\n'); };
-const dreamDirOf = (root, n) => path.join(root, 'state', 'grow', 'gen-' + n, 'dream');
+const dreamDirOf = (root, n) => path.join(root, 'work', 'grow', 'gen-' + n, 'dream');
 /** The non-blank lines of a JSONL text, each [lineNumber, trimmedText]. */
 const linesOf = (text) => String(text ?? '').split(/\r?\n/).map((s, i) => [i + 1, s.trim()]).filter(([, s]) => s);
 const resolveIn = (root, f) => (path.isAbsolute(f) ? f : fs.existsSync(path.resolve(f)) ? path.resolve(f) : path.resolve(root, f));
@@ -103,10 +103,10 @@ export const CLAUSE_LINES = Object.freeze([
 ]);
 
 export function dreamBrief({ n, cls, k, devLines, directive }) {
-  const out = 'state/grow/gen-' + n + '/dream/' + cls + '.jsonl';
+  const out = 'work/grow/gen-' + n + '/dream/' + cls + '.jsonl';
   return [
     '# Generation ' + n + ', DREAM arm, class ' + cls + ': propose and solve ' + k + ' tasks', '',
-    'You are the DREAM arm of generation ' + n + ' for class `' + cls + '` (GROW.md step 7: a proposer arm writes tasks just past what the cells answer, a solver arm attempts them, and the pairs feed step 2). You are both halves: propose ' + k + ' tasks, then solve each one. Write exactly ONE file, `' + out + '` (create the directory `state/grow/gen-' + n + '/dream/`), and nowhere else. Run every command from the tree root.', '',
+    'You are the DREAM arm of generation ' + n + ' for class `' + cls + '` (GROW.md step 7: a proposer arm writes tasks just past what the cells answer, a solver arm attempts them, and the pairs feed step 2). You are both halves: propose ' + k + ' tasks, then solve each one. Write exactly ONE file, `' + out + '` (create the directory `work/grow/gen-' + n + '/dream/`), and nowhere else. Run every command from the tree root.', '',
     directive, '',
     '## The class', '',
     ...(CLASS_RULES[cls] ? [CLASS_RULES[cls], ''] : []),
@@ -120,7 +120,7 @@ export function dreamBrief({ n, cls, k, devLines, directive }) {
     ...CLAUSE_LINES.map((l) => '  - ' + l),
     '- `answer` (the solver half): your own best answer to q, in full, for a person; `expectOk(answer, expect)` (judge/judge.mjs) must hold.', '',
     '## Files you may not open', '',
-    'Never open, read, list or grep judge/heldout/, judge/control.jsonl or state/grow/baseline/, and do not open the other arms\' directories under state/grow/gen-' + n + '/: a survivor is real only because no arm saw the rows it is graded on.', '',
+    'Never open, read, list or grep judge/heldout/, judge/control.jsonl or state/grow/baseline/, and do not open the other arms\' directories under work/grow/gen-' + n + '/: a survivor is real only because no arm saw the rows it is graded on.', '',
     '## How you validate', '',
     'Run `node grow/dream.mjs check ' + out + '` until it prints `"ok":true`; fix the file and re-run.', '',
     '## Your answer', '',
@@ -315,9 +315,9 @@ function ship(root, n, kept, blocked, noPush) {
   const cm = git(['-c', 'user.name=jayden', '-c', 'user.email=' + email, 'commit', '-m', 'gen ' + n + ': dreamed ' + kept.length + ' tasks (' + classes + ')', '-m', TRAILER, '--', DREAMS]);
   if (cm.status !== 0) { blocked.push('commit: git commit exited ' + cm.status + ': ' + line(cm)); return { committed: false, pushed: 'skipped: nothing committed' }; }
   if (noPush) return { committed: true, pushed: 'skipped (--no-push)' };
-  const ps = git(['push']);
-  if (ps.status !== 0) blocked.push('push: git push exited ' + ps.status + ': ' + line(ps) + ' (the commit stays)');
-  return { committed: true, pushed: ps.status === 0 };
+  const ps = pushHead(root);
+  if (!ps.ok) blocked.push('push: ' + ps.why + ' (the commit stays)');
+  return { committed: true, pushed: ps.ok };
 }
 
 // ---- main

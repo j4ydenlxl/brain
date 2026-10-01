@@ -23,7 +23,7 @@ answer. Under 512 KB of source. It exports:
 
 ## A candidate directory
 
-`state/grow/gen-<n>/<lane>/<id>/` (runtime, gitignored):
+`work/grow/gen-<n>/<lane>/<id>/` (runtime, gitignored):
 
 - `cell.mjs`, `test.mjs` (`grow/contract.mjs` `validateTest`: it imports `./cell.mjs`, other `./x.mjs` of its
   directory, and of node only `node:test`, `node:assert`, `node:assert/strict`, `node:fs`, `node:path`,
@@ -100,8 +100,8 @@ rows or dreams gets an arm every generation.
 
 A miss of class `build` (grow/misses.mjs BUILD_RE: make/build/create/write/code/generate/develop/design ... app/tool/page/
 game/site/...) becomes an app, not a cell. `grow/app-slug.mjs buildRequest(prompt)` names it ({ name, slug }); the driver
-writes `state/grow/gen-<n>/build/<slug>/app.json` ({ slug, name, prompt, generation, misses }) and the brief
-`state/grow/gen-<n>/build/brief-<slug>.md`. The arm writes, in that directory and nowhere else: `index.html` (self
+writes `work/grow/gen-<n>/build/<slug>/app.json` ({ slug, name, prompt, generation, misses }) and the brief
+`work/grow/gen-<n>/build/brief-<slug>.md`. The arm writes, in that directory and nowhere else: `index.html` (self
 contained, loads `./app.mjs`, no other origin), `app.mjs` (exported pure functions plus `mount(doc)`; pure ES module;
 grow/probe-app.mjs APP_FORBIDDEN: no fetch, XMLHttpRequest, WebSocket, EventSource, sendBeacon, import(), require(), eval,
 new Function, process, node:, child_process, worker_threads, http(s)://, document.cookie, indexedDB), `test.mjs` (at

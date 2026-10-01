@@ -35,8 +35,8 @@ is alive, and what only his hand can do. Every command below was run in the Day 
 1. SENSE: `node grow/generation.mjs prepare` verifies the lock, fetches the knowledge pack, reads the open misses
    (Supabase with SUPABASE_SERVICE_KEY, else grow/seed-misses.jsonl) PLUS grow/curriculum.jsonl and grow/dreams.jsonl,
    asks the organism each one (an answered miss is grown, never planned), groups the rest by class, runs the baseline per
-   class and writes one brief per arm under state/grow/gen-<n>/<lane>/. A build miss ("make me a todo app") gets a build
-   brief under state/grow/gen-<n>/build/ instead.
+   class and writes one brief per arm under work/grow/gen-<n>/<lane>/. A build miss ("make me a todo app") gets a build
+   brief under work/grow/gen-<n>/build/ instead.
 2. GROW (the octopus): one Claude arm per brief, in parallel, the CONCISE directive first. Eight domains of "everything"
    (code, math, writing, science, tools, planning, data, conversation) each have a curriculum class with a locked
    held-out set, so every generation has an arm per domain while its rows are open. Two lanes: `direct` writes the cell

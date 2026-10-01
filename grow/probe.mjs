@@ -118,8 +118,11 @@ export function countTests(text) {
  * cannot be the destination: the permission model disables fsync, so node's WriteStream fails on close and the
  * child exits 1 with the summary written; the summary stays on stdout, counted by countTests' one-summary rule.)
  */
-export function testArgv(dir) {
-  return ['--permission', '--allow-fs-read=' + dir, '--test', '--test-isolation=none', '--test-reporter=tap', 'test.mjs'];
+export function testArgv(dir, version = process.versions.node) {
+  // node 22 (the heartbeat VM's own node) spells the flag --experimental-test-isolation; 23.6 renamed it
+  const [major, minor] = String(version).split('.').map(Number);
+  const isolation = (major > 23 || (major === 23 && minor >= 6) ? '--test-isolation' : '--experimental-test-isolation') + '=none';
+  return ['--permission', '--allow-fs-read=' + dir, '--test', isolation, '--test-reporter=tap', 'test.mjs'];
 }
 
 function runTests(dir) {

@@ -74,7 +74,7 @@ function run(root, args, extra = {}) {
   try { json = JSON.parse(line); } catch { json = null; }
   return { code: r.status, json, stdout: r.stdout || '', stderr: r.stderr || '' };
 }
-const dreamFile = (root, cls, rows, n = 2) => put(root, 'state/grow/gen-' + n + '/dream/' + cls + '.jsonl', typeof rows === 'string' ? rows : jsonl(rows));
+const dreamFile = (root, cls, rows, n = 2) => put(root, 'work/grow/gen-' + n + '/dream/' + cls + '.jsonl', typeof rows === 'string' ? rows : jsonl(rows));
 
 test('propose: one brief per class with both sets, beta blocked, generation defaults to 2, k defaults to 4', () => {
   const root = makeRoot();
@@ -85,10 +85,10 @@ test('propose: one brief per class with both sets, beta blocked, generation defa
     assert.equal(r.json.generation, 2);
     assert.equal(r.json.perClass, 4);
     assert.deepEqual(r.json.classes, ['alpha']);
-    assert.deepEqual(r.json.briefs, ['state/grow/gen-2/dream/brief-alpha.md']);
+    assert.deepEqual(r.json.briefs, ['work/grow/gen-2/dream/brief-alpha.md']);
     assert.deepEqual(r.json.blocked, ['no held-out set: beta: a human session adds truth']);
-    assert.ok(fs.existsSync(path.join(root, 'state/grow/gen-2/dream/brief-alpha.md')));
-    assert.ok(!fs.existsSync(path.join(root, 'state/grow/gen-2/dream/brief-beta.md')));
+    assert.ok(fs.existsSync(path.join(root, 'work/grow/gen-2/dream/brief-alpha.md')));
+    assert.ok(!fs.existsSync(path.join(root, 'work/grow/gen-2/dream/brief-beta.md')));
     assert.ok(Number.isFinite(Date.parse(r.json.at)));
   } finally { clean(root); }
 });
@@ -101,14 +101,14 @@ test('propose: the brief holds the title, the CONCISE directive, the dev rows ve
     const b = fs.readFileSync(path.join(root, r.json.briefs[0]), 'utf8');
     assert.ok(b.startsWith('# Generation 5, DREAM arm, class alpha: propose and solve 3 tasks\n'));
     assert.ok(b.includes(DIRECTIVE));
-    assert.ok(b.includes('exactly ONE file, `state/grow/gen-5/dream/alpha.jsonl`'));
+    assert.ok(b.includes('exactly ONE file, `work/grow/gen-5/dream/alpha.jsonl`'));
     assert.ok(b.includes('GROW.md step 7'));
     for (const row of DEV_ALPHA) assert.ok(b.includes(JSON.stringify(row)), 'dev row missing: ' + row.q);
     assert.ok(b.includes('```jsonl'));
     assert.ok(b.includes('what those rows share'));
     for (const c of ['equals', 'contains', 'containsAny', 'notContains', 'minWords', 'maxWords', 'notRefusal']) assert.ok(b.includes('- `' + c + '`:'), 'clause undefined: ' + c);
     assert.ok(b.includes('node grow/generation.mjs ask "<q>"'));
-    assert.ok(b.includes('node grow/dream.mjs check state/grow/gen-5/dream/alpha.jsonl'));
+    assert.ok(b.includes('node grow/dream.mjs check work/grow/gen-5/dream/alpha.jsonl'));
     assert.ok(b.includes('"ok":true'));
     for (const f of ['judge/heldout/', 'judge/control.jsonl', 'state/grow/baseline/']) assert.ok(b.includes(f));
     const order = ['## The class', '## What a dreamed task is', '## Files you may not open', '## How you validate', '## Your answer'].map((h) => b.indexOf(h));
@@ -129,7 +129,7 @@ test('propose: --per-class out of 1 to 12, a bad --gen, a bad --classes and an u
       assert.equal(r.stdout.trim(), '');
       assert.equal(r.stderr.trim().split(/\r?\n/).length, 1);
     }
-    assert.ok(!fs.existsSync(path.join(root, 'state')), 'a refused propose wrote a brief');
+    assert.ok(!fs.existsSync(path.join(root, 'work')), 'a refused propose wrote a brief');
     for (const k of ['1', '12']) assert.equal(run(root, ['propose', '--per-class', k]).json.perClass, Number(k));
   } finally { clean(root); }
 });
@@ -155,7 +155,7 @@ test('check: a good file is ok, prints { ok, class, rows, errors }, exit 0', () 
     const r = run(root, ['check', f]);
     assert.equal(r.code, 0, r.stdout + r.stderr);
     assert.deepEqual(r.json, { ok: true, class: 'alpha', rows: 3, errors: [] });
-    const rel = run(root, ['check', 'state/grow/gen-2/dream/alpha.jsonl']); // root-relative, as the brief says
+    const rel = run(root, ['check', 'work/grow/gen-2/dream/alpha.jsonl']); // root-relative, as the brief says
     assert.equal(rel.code, 0, rel.stdout + rel.stderr);
   } finally { clean(root); }
 });
@@ -238,7 +238,7 @@ test('collect: keeps the rows the organism refuses, drops the one it answers, ap
       assert.ok(Number.isFinite(Date.parse(x.at)));
       assert.match(x.id, FILE_ID);
     }
-    const saved = JSON.parse(fs.readFileSync(path.join(root, 'state/grow/gen-2/dream/collect.json'), 'utf8'));
+    const saved = JSON.parse(fs.readFileSync(path.join(root, 'work/grow/gen-2/dream/collect.json'), 'utf8'));
     assert.deepEqual(saved, r.json);
     assert.deepEqual(asked(root).map((a) => a.qs), [GOOD.map((g) => g.q)], 'the organism is asked every valid q once');
     assert.equal(asked(root)[0].knowledge, 'undefined', 'no pack: the organism default knowledge');
@@ -352,8 +352,8 @@ test('collect --commit: the kept dreams are committed as jayden with the Opus tr
     fs.writeFileSync(path.join(root, 'README.md'), 'x\n');
     git(['add', '-A']);
     assert.equal(git(['commit', '-q', '-m', 'init']).status, 0);
-    fs.mkdirSync(path.join(root, 'state/grow/gen-2/dream'), { recursive: true });
-    fs.writeFileSync(path.join(root, 'state/grow/gen-2/dream/alpha.jsonl'), GOOD.map((r) => JSON.stringify(r)).join('\n') + '\n');
+    fs.mkdirSync(path.join(root, 'work/grow/gen-2/dream'), { recursive: true });
+    fs.writeFileSync(path.join(root, 'work/grow/gen-2/dream/alpha.jsonl'), GOOD.map((r) => JSON.stringify(r)).join('\n') + '\n');
     const r = run(root, ['collect', '--gen', '2', '--commit', '--no-push']);
     assert.equal(r.code, 0, r.stderr);
     assert.ok(r.json.kept >= 1, JSON.stringify(r.json));
@@ -368,7 +368,7 @@ test('collect --commit: the kept dreams are committed as jayden with the Opus tr
     assert.equal(again.code, 0, again.stderr);
     assert.equal(again.json.kept, 0);
     assert.equal(again.json.committed, 'nothing to commit');
-    const c = JSON.parse(fs.readFileSync(path.join(root, 'state/grow/gen-2/dream/collect.json'), 'utf8'));
+    const c = JSON.parse(fs.readFileSync(path.join(root, 'work/grow/gen-2/dream/collect.json'), 'utf8'));
     assert.equal(c.committed, 'nothing to commit', 'collect.json carries the ship fields');
     const bad = run(root, ['collect', '--gen', '2', '--commit=yes']);
     assert.equal(bad.code, 2);
