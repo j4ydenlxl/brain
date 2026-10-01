@@ -27,6 +27,8 @@
 - (about 22:12Z) "WHy are you making feet ???? wtf? thats an analogy" (a correction: the brain, hands, feet, sight of the line above are an image, never names for parts)
 - (about 22:15Z) "Do u even remember what i want? ai datacenter in ur pocket, pioneering in cloud ai"
 - (22:19Z) "Its gotta be fronteir ai and fill in all the gaps without you. And i authorized it"
+- (about 22:20Z) "should work exactly like ai"
+- (23:19Z by the shell clock) "Also fronteir level isnt optional, make it so if its chatgpt 4o today, its chatgpt 5 tomorrow. its deadass iteration velocity as its whole philosophy, crunching timel make a way to warp physics and time to do so in blistering efficiency and hyper speeds using 100 percent of its own and make sure they dont commit, they go through pipeline to do so, or make it more efficient for it to do it and to test if they are really posing higher measure/something all native to the model. model needs to be a god too, at memecoins, which is how i can monetize it, it will have its own cloud computer"
 
 From MANUAL.md section A: "The central architectural principle is the use of orthogonal computational primitives. ... A primitive may perform transformation, prediction, retrieval, comparison, routing, aggregation, temporal integration, memory access, evaluation, simulation, or another fundamental computational operation. These primitives are intentionally general."
 
