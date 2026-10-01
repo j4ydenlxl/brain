@@ -42,7 +42,7 @@ export async function runOrganism(rows, { knowledge, grown } = {}) {
   for (const row of rows) {
     const a = await ask(brain, row.q, { provider: 'null', k: 5, events: [], ...(knowledge !== undefined ? { knowledge } : {}), ...(grown === false ? { grown: false } : {}) });
     let got = a && typeof a.text === 'string' ? a.text : null;
-    let via = 'ask';
+    let via = a && a.from === 'cell' && a.provenance && typeof a.provenance.method === 'string' ? 'grown:' + a.provenance.method : 'ask'; // ask() consults grown/ itself: name the cell
     if (got === null || REFUSAL_RE.test(got.trim())) {
       let g = null;
       try { g = grownAnswer(row.q); } catch { g = null; }
