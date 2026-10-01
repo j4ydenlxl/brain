@@ -1,0 +1,469 @@
+{
+  "about": "The ABSORB registry (grow/NEO.md, Order 7): open, machine-readable files on raw.githubusercontent.com, each under the licence its repository names. grow/absorb.mjs pulls them as a ring and turns them into teacher-format tasks with no model call. A file is data: never run. checked is the one GET that proved the row from this machine.",
+  "sources": [
+    {
+      "id": "samayo-capital", "kind": "json-relation", "domain": "geography", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-capital-city.json",
+      "checked": { "at": "2026-10-01T17:25:07.352Z", "status": 200, "bytes": 17907, "sha256": "448e7c9be3b58ee5b85bea786e3688c13cb82298f072dcfc1e7bf5d83724ce52" },
+      "make": { "relations": [{
+        "key": "country", "value": "city", "keyLabel": "country", "valueLabel": "capital", "task": "country-capital",
+        "templates": ["what is the capital of {key}", "name the capital city of {key}", "which city is the capital of {key}", "tell me the capital of {key}"],
+        "answer": "The capital of {key} is {value}.",
+        "reverse": { "task": "capital-country", "templates": ["{key} is the capital of which country", "which country has {key} as its capital", "of which country is {key} the capital", "name the country whose capital is {key}"], "answer": "{key} is the capital of {value}." } }] }
+    },
+    {
+      "id": "samayo-continent", "kind": "json-relation", "domain": "geography", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-continent.json",
+      "checked": { "at": "2026-10-01T17:25:07.502Z", "status": 200, "bytes": 18842, "sha256": "ad4bb67626dd2f86cf957038ab7ed823c8a662c9927d19a0ad1b9488b325144b" },
+      "make": { "relations": [{
+        "key": "country", "value": "continent", "keyLabel": "country", "valueLabel": "continent", "task": "country-continent",
+        "templates": ["which continent is {key} in", "on what continent is {key}", "name the continent of {key}", "{key} lies on which continent"],
+        "answer": "{key} is in {value}." }] }
+    },
+    {
+      "id": "samayo-population", "kind": "json-numeric", "domain": "demographics", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-population.json",
+      "checked": { "at": "2026-10-01T17:25:07.529Z", "status": 200, "bytes": 18479, "sha256": "1bb8f27c245d9086c496fc25349a0245b67c17a7aeb1c25c80efd2081eb4825f" },
+      "make": { "numerics": [{ "key": "country", "value": "population", "noun": "population", "task": "country-population" }] }
+    },
+    {
+      "id": "samayo-area", "kind": "json-numeric", "domain": "geography", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-surface-area.json",
+      "checked": { "at": "2026-10-01T17:25:07.589Z", "status": 200, "bytes": 17030, "sha256": "a864c0d4d568211e77ce135928d8c2e53d4b26cf660ffb1407ba2ea914425f66" },
+      "make": { "numerics": [{ "key": "country", "value": "area", "noun": "surface area", "task": "country-area" }] }
+    },
+    {
+      "id": "samayo-calling-code", "kind": "json-relation", "domain": "telecom", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-calling-code.json",
+      "checked": { "at": "2026-10-01T17:25:07.654Z", "status": 200, "bytes": 17928, "sha256": "eb704821c3981fa1edd1dfe544e72ca71f8d4e820cecf2795d4b9980f2ba5f82" },
+      "make": { "relations": [{
+        "key": "country", "value": "calling_code", "keyLabel": "country", "valueLabel": "calling code", "task": "country-calling-code",
+        "templates": ["what is the calling code of {key}", "which dialing code does {key} use", "give the international calling code for {key}", "tell me the phone code of {key}"],
+        "answer": "+{value}", "expect": "equals",
+        "reverse": { "task": "calling-code-country", "templates": ["which country uses the calling code +{key}", "the dialing code +{key} belongs to which country", "whose international calling code is +{key}", "name the country with phone code +{key}"], "answer": "+{key} is the calling code of {value}." } }] }
+    },
+    {
+      "id": "samayo-currency", "kind": "json-relation", "domain": "currency", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-currency-name.json",
+      "checked": { "at": "2026-10-01T17:25:07.725Z", "status": 200, "bytes": 21188, "sha256": "09d939d97be80086eb8384741ad747e12c4da128e527ad445129922af610939d" },
+      "make": { "relations": [{
+        "key": "country", "value": "currency_name", "keyLabel": "country", "valueLabel": "currency", "task": "country-currency",
+        "templates": ["what currency does {key} use", "name the currency of {key}", "which currency is used in {key}", "tell me the money of {key}"],
+        "answer": "{key} uses the {value}.",
+        "reverse": { "task": "currency-country", "templates": ["which country uses the {key}", "the {key} is the currency of which country", "name the country whose currency is the {key}", "where is the {key} the money"], "answer": "The {key} is the currency of {value}." } }] }
+    },
+    {
+      "id": "samayo-tld", "kind": "json-relation", "domain": "internet", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-domain-tld.json",
+      "checked": { "at": "2026-10-01T17:25:07.789Z", "status": 200, "bytes": 16266, "sha256": "362a9482572f9605c44e6afec0e93db2c27ccab57f09c5b09057a1bb3ddf036a" },
+      "make": { "relations": [{
+        "key": "country", "value": "tld", "keyLabel": "country", "valueLabel": "top-level domain", "task": "country-tld",
+        "templates": ["what is the internet domain of {key}", "which top-level domain belongs to {key}", "name the country code domain of {key}", "tell me the web domain ending of {key}"],
+        "answer": "The top-level domain of {key} is {value}.",
+        "reverse": { "task": "tld-country", "templates": ["which country has the domain {key}", "the top-level domain {key} belongs to which country", "name the country whose domain is {key}", "whose internet domain is {key}"], "answer": "{key} is the top-level domain of {value}." } }] }
+    },
+    {
+      "id": "samayo-dish", "kind": "json-relation", "domain": "food", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-national-dish.json",
+      "checked": { "at": "2026-10-01T17:25:07.847Z", "status": 200, "bytes": 18852, "sha256": "6d854c417afc4e5b7ed3a4f20516976e26371441bd6274d8e60894ee2c459b18" },
+      "make": { "relations": [{
+        "key": "country", "value": "dish", "keyLabel": "country", "valueLabel": "national dish", "task": "national-dish",
+        "templates": ["what is the national dish of {key}", "name the national dish of {key}", "which dish is the national dish of {key}", "tell me the national food of {key}"],
+        "answer": "The national dish of {key} is {value}.",
+        "reverse": { "task": "dish-country", "templates": ["{key} is the national dish of which country", "which country has {key} as its national dish", "of which country is {key} the national dish", "name the country whose national dish is {key}"], "answer": "{key} is the national dish of {value}." } }] }
+    },
+    {
+      "id": "samayo-independence", "kind": "json-relation", "domain": "history", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-independence-date.json",
+      "checked": { "at": "2026-10-01T17:25:07.905Z", "status": 200, "bytes": 18291, "sha256": "f6bc906a29d3a5f6e00773e1238de573ae0f8f36f777de528933e0c31ee97b29" },
+      "make": { "relations": [{
+        "key": "country", "value": "independence", "keyLabel": "country", "valueLabel": "independence year", "task": "independence-year",
+        "templates": ["in what year did {key} become independent", "when did {key} gain independence", "what year is the independence of {key} dated to", "tell me the independence year of {key}"],
+        "answer": "{key} became independent in {value}." }] }
+    },
+    {
+      "id": "samayo-government", "kind": "json-relation", "domain": "politics", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-government-type.json",
+      "checked": { "at": "2026-10-01T17:25:07.969Z", "status": 200, "bytes": 20918, "sha256": "a23d6657764ef7a8abe364f0140e550b90c2990e7a749649d3a282fffd421dfa" },
+      "make": { "relations": [{
+        "key": "country", "value": "government", "keyLabel": "country", "valueLabel": "government type", "task": "government-type",
+        "templates": ["what type of government does {key} have", "what is the form of government of {key}", "how is {key} governed", "tell me the government type of {key}"],
+        "answer": "The form of government of {key} is {value}." }] }
+    },
+    {
+      "id": "samayo-life-expectancy", "kind": "json-numeric", "domain": "health", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/samayo/country-json/master/src/country-by-life-expectancy.json",
+      "checked": { "at": "2026-10-01T17:25:08.031Z", "status": 200, "bytes": 17693, "sha256": "b1915ebd4238ac7c38f5d80cfce4aec6a9ce46da4fea95f1ccb8700b9df84b3a" },
+      "make": { "numerics": [{ "key": "country", "value": "expectancy", "noun": "life expectancy", "unit": "years", "task": "life-expectancy" }] }
+    },
+    {
+      "id": "mledoze-countries", "kind": "json-relation", "domain": "country-codes", "license": "ODbL-1.0",
+      "url": "https://raw.githubusercontent.com/mledoze/countries/master/countries.json",
+      "checked": { "at": "2026-10-01T17:25:08.099Z", "status": 200, "bytes": 1398155, "sha256": "913e5d716f9dc6b59881ee23488d47f5fda52070d1a34cac5fa327c9e61d8f7c" },
+      "make": { "relations": [
+        { "key": "name.common", "value": "cca3", "keyLabel": "country", "valueLabel": "alpha-3 code", "task": "country-alpha3",
+          "templates": ["what is the three-letter code of {key}", "give the ISO alpha-3 code of {key}", "which three-letter country code does {key} have", "tell me the alpha-3 code for {key}"],
+          "answer": "{value}", "expect": "equals",
+          "reverse": { "task": "alpha3-country", "templates": ["which country has the three-letter code {key}", "the alpha-3 code {key} stands for which country", "name the country with ISO code {key}", "whose three-letter code is {key}"], "answer": "The code {key} stands for {value}." } },
+        { "key": "name.common", "value": "subregion", "keyLabel": "country", "valueLabel": "subregion", "task": "country-subregion",
+          "templates": ["which subregion of the world is {key} in", "in what subregion does {key} lie", "name the world subregion of {key}", "tell me the subregion that holds {key}"],
+          "answer": "{key} is in {value}." }
+      ] }
+    },
+    {
+      "id": "datasets-country-codes", "kind": "csv-relation", "domain": "currency", "license": "ODC-PDDL-1.0",
+      "url": "https://raw.githubusercontent.com/datasets/country-codes/main/data/country-codes.csv",
+      "checked": { "at": "2026-10-01T17:25:08.180Z", "status": 200, "bytes": 133966, "sha256": "07918cb63dd8bc43e52110def00d490998634360605e9d8c602865e2260802fd" },
+      "make": { "relations": [{
+        "key": "CLDR display name", "value": "ISO4217-currency_alphabetic_code", "keyLabel": "country", "valueLabel": "currency code", "task": "country-currency-code",
+        "templates": ["what is the currency code of {key}", "which ISO 4217 code does the money of {key} have", "give the currency code used in {key}", "tell me the three-letter currency code of {key}"],
+        "answer": "{value}", "expect": "equals" }] }
+    },
+    {
+      "id": "datasets-currency-codes", "kind": "csv-relation", "domain": "currency", "license": "ODC-PDDL-1.0",
+      "url": "https://raw.githubusercontent.com/datasets/currency-codes/main/data/codes-all.csv",
+      "checked": { "at": "2026-10-01T17:25:08.242Z", "status": 200, "bytes": 17853, "sha256": "c4b6829a966f0564e77dc6c2d100d268cce61b30f7637bf3d5ec626b0393407f" },
+      "make": { "where": { "WithdrawalDate": "" }, "relations": [{
+        "key": "AlphabeticCode", "value": "Currency", "keyLabel": "currency code", "valueLabel": "currency", "task": "currency-code-name",
+        "templates": ["which currency has the code {key}", "what currency is {key}", "name the currency with the ISO code {key}", "the ISO 4217 code {key} stands for which currency"],
+        "answer": "The code {key} stands for the {value}.",
+        "reverse": { "task": "currency-name-code", "templates": ["what is the ISO code of the {key}", "give the currency code of the {key}", "which three-letter code does the {key} have", "tell me the ISO 4217 code for the {key}"], "answer": "{value}", "expect": "equals" } }] }
+    },
+    {
+      "id": "datasets-language-codes", "kind": "csv-relation", "domain": "language", "license": "ODC-PDDL-1.0",
+      "url": "https://raw.githubusercontent.com/datasets/language-codes/main/data/language-codes.csv",
+      "checked": { "at": "2026-10-01T17:25:08.336Z", "status": 200, "bytes": 3242, "sha256": "34e9dde2efbb37abd8c24d47a8693063579f706836fbe694557ecdbf1bfc53f2" },
+      "make": { "relations": [{
+        "key": "alpha2", "value": "English", "keyLabel": "language code", "valueLabel": "language", "task": "language-code-name",
+        "templates": ["which language has the code {key}", "what language is the code {key}", "name the language with ISO 639-1 code {key}", "the language code {key} stands for which language"],
+        "answer": "The code {key} stands for {value}.",
+        "reverse": { "task": "language-name-code", "templates": ["what is the two-letter code of {key}", "give the ISO 639-1 code of {key}", "which language code does {key} have", "tell me the short code for the language {key}"], "answer": "{value}", "expect": "equals" } }] }
+    },
+    {
+      "id": "datasets-language-codes-3b2", "kind": "csv-relation", "domain": "language", "license": "ODC-PDDL-1.0",
+      "url": "https://raw.githubusercontent.com/datasets/language-codes/main/data/language-codes-3b2.csv",
+      "checked": { "at": "2026-10-01T17:25:08.408Z", "status": 200, "bytes": 4351, "sha256": "91f3f427c5a6aefade22ab4c64bbe2c7a009904307bed3e9183ce012047a2850" },
+      "make": { "relations": [{
+        "key": "alpha3-b", "value": "English", "keyLabel": "three-letter language code", "valueLabel": "language", "task": "language-alpha3-name",
+        "templates": ["which language has the three-letter code {key}", "what language is the ISO 639-2 code {key}", "name the language with the bibliographic code {key}", "the three-letter language code {key} stands for which language"],
+        "answer": "The code {key} stands for {value}.",
+        "reverse": { "task": "language-name-alpha3", "templates": ["what is the three-letter code of {key}", "give the ISO 639-2 code of {key}", "which bibliographic language code does {key} have", "tell me the three-letter code for the language {key}"], "answer": "{value}", "expect": "equals" } }] }
+    },
+    {
+      "id": "periodic-table", "kind": "json-relation", "domain": "chemistry", "license": "CC-BY-SA-3.0",
+      "url": "https://raw.githubusercontent.com/Bowserinator/Periodic-Table-JSON/master/PeriodicTableJSON.json",
+      "checked": { "at": "2026-10-01T17:25:08.478Z", "status": 200, "bytes": 281004, "sha256": "df2c43ec13e2be1c7ea07215057f3cddef224fd0f7dc6f0ad712d9ffdcfcc360" },
+      "make": { "root": "elements", "relations": [
+        { "key": "name", "value": "symbol", "keyLabel": "element", "valueLabel": "symbol", "task": "element-symbol",
+          "templates": ["what is the chemical symbol of {key}", "give the symbol for {key}", "which symbol stands for {key}", "tell me the element symbol of {key}"],
+          "answer": "{value}", "expect": "equals",
+          "reverse": { "task": "symbol-element", "templates": ["which element has the symbol {key}", "what element is {key}", "name the element whose symbol is {key}", "the chemical symbol {key} stands for which element"], "answer": "{key} is the symbol of {value}." } },
+        { "key": "name", "value": "number", "keyLabel": "element", "valueLabel": "atomic number", "task": "element-number",
+          "templates": ["what is the atomic number of {key}", "give the atomic number of {key}", "how many protons does {key} have", "tell me the proton count of {key}"],
+          "answer": "{value}", "expect": "equals",
+          "reverse": { "task": "number-element", "templates": ["which element has atomic number {key}", "what element has {key} protons", "name the element with atomic number {key}", "element number {key} is which element"], "answer": "Element number {key} is {value}." } },
+        { "key": "name", "value": "category", "keyLabel": "element", "valueLabel": "category", "task": "element-category",
+          "templates": ["what kind of element is {key}", "which category does {key} belong to", "name the element category of {key}", "tell me the group type of {key}"],
+          "answer": "{key} belongs to the {value} category." }
+      ] }
+    },
+    {
+      "id": "timezones-windows", "kind": "json-relation", "domain": "time", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/dmfilipenko/timezones.json/master/timezones.json",
+      "checked": { "at": "2026-10-01T17:25:08.542Z", "status": 200, "bytes": 30018, "sha256": "327f50179853a32b83b863075460bc79c8ad4be646de7cff0799372b3ffb072a" },
+      "make": { "relations": [
+        { "key": "value", "value": "abbr", "keyLabel": "time zone", "valueLabel": "abbreviation", "task": "tz-abbreviation",
+          "templates": ["what is the abbreviation of {key}", "give the short form of the time zone {key}", "which abbreviation does {key} use", "tell me the time zone code of {key}"],
+          "answer": "{value}", "expect": "equals",
+          "reverse": { "task": "abbreviation-tz", "templates": ["which time zone has the abbreviation {key}", "the time zone code {key} stands for what", "name the time zone abbreviated {key}", "what time zone does {key} abbreviate"], "answer": "{key} abbreviates {value}." } },
+        { "key": "value", "value": "offset", "keyLabel": "time zone", "valueLabel": "UTC offset in hours", "task": "tz-utc-offset",
+          "templates": ["what is the UTC offset of {key}", "how many hours from UTC is {key}", "give the offset from UTC of {key}", "tell me the UTC offset in hours of {key}"],
+          "answer": "{value}", "expect": "equals" }
+      ] }
+    },
+    {
+      "id": "tzdb-zones", "kind": "json-relation", "domain": "time", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/vvo/tzdb/main/raw-time-zones.json",
+      "checked": { "at": "2026-10-01T17:25:08.606Z", "status": 200, "bytes": 118033, "sha256": "d7db289055c635fdec2900c243858cc524bfee85c8add6e8266724b9c9d078a5" },
+      "make": { "relations": [
+        { "key": "name", "value": "countryName", "keyLabel": "IANA time zone", "valueLabel": "country", "task": "tzdb-zone-country",
+          "templates": ["which country is the time zone {key} in", "the IANA zone {key} belongs to which country", "name the country of the time zone {key}", "in what country is the zone {key} used"],
+          "answer": "The time zone {key} is in {value}.",
+          "reverse": { "task": "tzdb-country-zone", "templates": ["which IANA time zone does {key} use", "name the time zone of {key}", "what is the tz database zone for {key}", "tell me the IANA zone used in {key}"], "answer": "{key} uses {value}." } },
+        { "key": "mainCities.0", "value": "name", "keyLabel": "city", "valueLabel": "IANA time zone", "task": "city-time-zone",
+          "templates": ["which IANA time zone is {key} in", "name the tz database zone of {key}", "what time zone identifier covers {key}", "tell me the IANA zone for the city {key}"],
+          "answer": "{value}", "expect": "equals",
+          "reverse": { "task": "time-zone-main-city", "templates": ["which main city does the time zone {key} cover", "name the main city of the zone {key}", "the IANA zone {key} is named for which city", "tell me the chief city in the time zone {key}"], "answer": "The time zone {key} covers {value}." } }
+      ] }
+    },
+    {
+      "id": "openflights-airports", "kind": "csv-relation", "domain": "aviation", "license": "ODbL-1.0",
+      "url": "https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat",
+      "checked": { "at": "2026-10-01T17:25:08.665Z", "status": 200, "bytes": 1127225, "sha256": "9387cdb38df5bd664da823f8ccb69fdd9b33a1888f5b7cca09c34a3cd9ff59f9" },
+      "make": { "columns": ["id", "name", "city", "country", "iata", "icao", "lat", "lon", "alt", "tz", "dst", "tzdb", "type", "source"],
+        "match": { "iata": "^[A-Z]{3}$" },
+        "relations": [
+          { "key": "iata", "value": "city", "keyLabel": "airport code", "valueLabel": "city", "task": "airport-code-city",
+            "templates": ["which city is the airport {key} in", "the airport code {key} serves which city", "name the city of airport {key}", "where is the airport with IATA code {key}"],
+            "answer": "The airport {key} is in {value}." },
+          { "key": "iata", "value": "name", "keyLabel": "airport code", "valueLabel": "airport", "task": "airport-code-name",
+            "templates": ["what is the name of the airport {key}", "which airport has the IATA code {key}", "name the airport coded {key}", "the IATA code {key} stands for which airport"],
+            "answer": "{key} is {value}.",
+            "reverse": { "task": "airport-name-code", "templates": ["what is the IATA code of {key}", "give the three-letter code of {key}", "which airport code does {key} have", "tell me the IATA code for {key}"], "answer": "{value}", "expect": "equals" } }
+        ] }
+    },
+    {
+      "id": "openflights-airlines", "kind": "csv-relation", "domain": "aviation", "license": "ODbL-1.0",
+      "url": "https://raw.githubusercontent.com/jpatokal/openflights/master/data/airlines.dat",
+      "checked": { "at": "2026-10-01T17:25:08.700Z", "status": 200, "bytes": 396896, "sha256": "39be1a432e8b04ebc12860c29281c974a9cb52169c82b2456a835d66ab1548a1" },
+      "make": { "columns": ["id", "name", "alias", "iata", "icao", "callsign", "country", "active"],
+        "where": { "active": "Y" }, "match": { "icao": "^[A-Z]{3}$" },
+        "relations": [
+          { "key": "icao", "value": "name", "keyLabel": "airline code", "valueLabel": "airline", "task": "airline-icao-name",
+            "templates": ["which airline has the ICAO code {key}", "what airline is {key}", "name the airline with the code {key}", "the ICAO airline code {key} stands for which airline"],
+            "answer": "The code {key} is {value}.",
+            "reverse": { "task": "airline-name-icao", "templates": ["what is the ICAO code of {key}", "give the three-letter airline code of {key}", "which ICAO code does {key} fly under", "tell me the ICAO designator for {key}"], "answer": "{value}", "expect": "equals" } },
+          { "key": "name", "value": "country", "keyLabel": "airline", "valueLabel": "country", "task": "airline-country",
+            "templates": ["which country is the airline {key} from", "where is the airline {key} based", "name the home country of {key}", "the airline {key} belongs to which country"],
+            "answer": "{key} is an airline of {value}." }
+        ] }
+    },
+    {
+      "id": "language-map", "kind": "json-relation", "domain": "programming", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/blakeembrey/language-map/main/languages.json",
+      "checked": { "at": "2026-10-01T17:25:08.730Z", "status": 200, "bytes": 163608, "sha256": "eed5e7c99c09c6f23571a54590314d40a7c4473024228d517a4ac6e6a94a9510" },
+      "make": { "entries": true, "explode": "extensions", "where": { "type": "programming" },
+        "relations": [{
+          "key": "extensions", "value": "$key", "keyLabel": "file extension", "valueLabel": "language", "task": "extension-language",
+          "templates": ["which programming language uses the file extension {key}", "a file ending in {key} holds which language", "name the language of {key} files", "what language is written in a {key} file"],
+          "answer": "A {key} file holds {value}.",
+          "reverse": { "task": "language-extension", "templates": ["what file extension does {key} use", "give the file extension of {key} source files", "which extension do {key} files have", "tell me the file ending used for {key}"], "answer": "{value}", "expect": "equals" } }] }
+    },
+    {
+      "id": "http-status-codes", "kind": "json-relation", "domain": "internet", "license": "Unlicense",
+      "url": "https://raw.githubusercontent.com/for-GET/know-your-http-well/master/json/status-codes.json",
+      "checked": { "at": "2026-10-01T17:25:08.803Z", "status": 200, "bytes": 22194, "sha256": "a750781fae509dd2217ed4526c033abdfc147d576f448b5a1ec705df3d83b561" },
+      "make": { "match": { "code": "^[0-9]{3}$" },
+        "relations": [{
+          "key": "code", "value": "phrase", "keyLabel": "HTTP status code", "valueLabel": "reason phrase", "task": "http-status-phrase",
+          "templates": ["what does the HTTP status {key} mean", "what is the reason phrase of status code {key}", "a server answers {key}: what is the phrase", "name the HTTP status with code {key}"],
+          "answer": "HTTP {key} is {value}.",
+          "reverse": { "task": "http-phrase-status", "templates": ["what is the HTTP status code for {key}", "which status code means {key}", "give the number of the HTTP status {key}", "the reason phrase {key} goes with which code"], "answer": "{value}", "expect": "equals" } }] }
+    },
+    {
+      "id": "world-cities", "kind": "csv-relation", "domain": "geography", "license": "CC-BY-4.0",
+      "url": "https://raw.githubusercontent.com/datasets/world-cities/main/data/world-cities.csv",
+      "checked": { "at": "2026-10-01T17:25:08.866Z", "status": 200, "bytes": 1335139, "sha256": "2dd022b636b2edf3226e4d52065d9f2f10c1373e1865f50e91518510a2ead9a3" },
+      "make": { "relations": [
+        { "key": "name", "value": "country", "keyLabel": "city", "valueLabel": "country", "task": "city-country",
+          "templates": ["which country is the city {key} in", "in what country is {key}", "name the country where {key} lies", "the city {key} belongs to which country"],
+          "answer": "{key} is in {value}." },
+        { "key": "name", "value": "subcountry", "keyLabel": "city", "valueLabel": "region", "task": "city-region",
+          "templates": ["which region or province is {key} in", "name the first-level division that holds {key}", "in what state or province does {key} lie", "the city {key} sits in which region"],
+          "answer": "{key} lies in {value}." }
+      ] }
+    },
+    {
+      "id": "gemoji", "kind": "json-relation", "domain": "symbols", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/github/gemoji/master/db/emoji.json",
+      "checked": { "at": "2026-10-01T17:25:08.942Z", "status": 200, "bytes": 413367, "sha256": "b174ae2aeb321b52f64adb9ff412f966a7f338839d780784dd15dcad702c2dd6" },
+      "make": { "relations": [
+        { "key": "aliases.0", "value": "description", "keyLabel": "emoji shortcode", "valueLabel": "emoji name", "task": "emoji-shortcode-name",
+          "templates": ["what does the emoji shortcode {key} show", "which emoji is the shortcode {key}", "name the emoji written as the shortcode {key}", "the shortcode {key} stands for which emoji"],
+          "answer": "The shortcode {key} is the {value} emoji.",
+          "reverse": { "task": "emoji-name-shortcode", "templates": ["what is the shortcode of the {key} emoji", "give the GitHub shortcode for {key}", "which shortcode writes the {key} emoji", "tell me the emoji alias of {key}"], "answer": "{value}", "expect": "equals" } },
+        { "key": "description", "value": "category", "keyLabel": "emoji", "valueLabel": "emoji category", "task": "emoji-category",
+          "templates": ["which emoji category holds {key}", "what group is the {key} emoji in", "name the category of the {key} emoji", "the emoji {key} is filed under which category"],
+          "answer": "The {key} emoji is in {value}." }
+      ] }
+    },
+    {
+      "id": "sp500", "kind": "csv-relation", "domain": "finance", "license": "ODC-PDDL-1.0",
+      "url": "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+      "checked": { "at": "2026-10-01T17:25:08.963Z", "status": 200, "bytes": 53677, "sha256": "8e8c5a9aa27079a1feb6f92f9d56c5ad7a2084263a66d4191c54705a5b77c2ed" },
+      "make": { "relations": [
+        { "key": "Symbol", "value": "Security", "keyLabel": "ticker", "valueLabel": "company", "task": "sp500-ticker-company",
+          "templates": ["which company has the ticker {key}", "what company trades as {key}", "name the S&P 500 company with the symbol {key}", "the stock symbol {key} belongs to which company"],
+          "answer": "The ticker {key} is {value}.",
+          "reverse": { "task": "sp500-company-ticker", "templates": ["what is the ticker of {key}", "give the stock symbol of {key}", "which symbol does {key} trade under", "tell me the ticker for {key}"], "answer": "{value}", "expect": "equals" } },
+        { "key": "Security", "value": "GICS Sector", "keyLabel": "company", "valueLabel": "sector", "task": "sp500-company-sector",
+          "templates": ["which sector is {key} in", "what GICS sector does {key} belong to", "name the industry sector of {key}", "the company {key} is in which sector"],
+          "answer": "{key} is in the {value} sector." }
+      ] }
+    },
+    {
+      "id": "nasdaq-listed", "kind": "csv-relation", "domain": "finance", "license": "ODC-PDDL-1.0",
+      "url": "https://raw.githubusercontent.com/datasets/nasdaq-listings/main/data/nasdaq-listed-symbols.csv",
+      "checked": { "at": "2026-10-01T17:25:08.979Z", "status": 200, "bytes": 505239, "sha256": "36d469cc7f1e75382b4b57d97fc4a814fed35913e4f0e7d3a544ba48c96e32b5" },
+      "make": { "where": { "ETF": "N", "Test Issue": "N" },
+        "relations": [{
+          "key": "Symbol", "value": "Company Name", "keyLabel": "Nasdaq symbol", "valueLabel": "company", "task": "nasdaq-symbol-company",
+          "templates": ["which company has the Nasdaq symbol {key}", "what company is listed as {key}", "name the company trading on Nasdaq as {key}", "the Nasdaq ticker {key} belongs to which company"],
+          "answer": "{key} is {value}.",
+          "reverse": { "task": "nasdaq-company-symbol", "templates": ["what is the Nasdaq symbol of {key}", "give the ticker of {key}", "which symbol does {key} list under", "tell me the stock symbol for {key}"], "answer": "{value}", "expect": "equals" } }] }
+    },
+    {
+      "id": "crypto-tickers", "kind": "json-relation", "domain": "finance", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/crypti/cryptocurrencies/master/cryptocurrencies.json",
+      "checked": { "at": "2026-10-01T17:25:09.069Z", "status": 200, "bytes": 297103, "sha256": "c4487c9768d5800790b45b9f5946d247d197d1d2f7c00ed4f2f929948b83038f" },
+      "make": { "entries": true, "match": { "$key": "^[A-Z][A-Z0-9]{1,5}$" },
+        "relations": [{
+          "key": "$key", "value": "$value", "keyLabel": "crypto ticker", "valueLabel": "cryptocurrency", "task": "crypto-ticker-name",
+          "templates": ["which cryptocurrency has the ticker {key}", "what coin trades as {key}", "name the cryptocurrency with the symbol {key}", "the crypto symbol {key} stands for which coin"],
+          "answer": "The ticker {key} is {value}.",
+          "reverse": { "task": "crypto-name-ticker", "templates": ["what is the ticker of the cryptocurrency {key}", "give the symbol of the coin {key}", "which ticker does {key} trade under", "tell me the crypto symbol for {key}"], "answer": "{value}", "expect": "equals" } }] }
+    },
+    {
+      "id": "co2-mauna-loa", "kind": "csv-numeric", "domain": "climate", "license": "ODC-PDDL-1.0",
+      "url": "https://raw.githubusercontent.com/datasets/co2-ppm/main/data/co2-annmean-mlo.csv",
+      "checked": { "at": "2026-10-01T17:25:09.151Z", "status": 200, "bytes": 1161, "sha256": "b1548ededea6f9b7eecac370753de8d8da6e0afafe1041f749a11db78c2e33c4" },
+      "make": { "numerics": [{
+        "key": "Year", "value": "Mean", "noun": "mean CO2 level at Mauna Loa", "unit": "ppm", "task": "co2-annual-mean",
+        "templates": {
+          "value": ["what was the mean CO2 level at Mauna Loa in {a}", "give the annual mean CO2 at Mauna Loa for {a}", "how much CO2 did Mauna Loa measure on average in {a}", "tell me the yearly mean CO2 reading at Mauna Loa in {a}"],
+          "larger": ["which year had the higher mean CO2 at Mauna Loa, {a} or {b}", "between {a} and {b}, which year had more CO2 at Mauna Loa", "was the Mauna Loa CO2 mean higher in {a} or in {b}", "{a} or {b}: which year read more CO2 at Mauna Loa"],
+          "smaller": ["which year had the lower mean CO2 at Mauna Loa, {a} or {b}", "between {a} and {b}, which year had less CO2 at Mauna Loa", "was the Mauna Loa CO2 mean lower in {a} or in {b}", "{a} or {b}: which year read less CO2 at Mauna Loa"],
+          "compare": ["compare the mean CO2 at Mauna Loa in {a} and {b}", "how did Mauna Loa CO2 in {a} compare with {b}", "{a} versus {b}: compare the Mauna Loa CO2 means", "contrast the Mauna Loa CO2 mean of {a} with that of {b}"],
+          "sum": ["what is the sum of the Mauna Loa CO2 means of {a} and {b}", "add the Mauna Loa CO2 mean of {a} to that of {b}", "the Mauna Loa CO2 mean of {a} plus that of {b} makes what", "what do the Mauna Loa CO2 means of {a} and {b} add up to"]
+        },
+        "answers": {
+          "value": "The mean CO2 level at Mauna Loa in {a} was {va}{unit}.",
+          "larger": "{win} had the higher mean CO2 at Mauna Loa ({vwin}{unit} against {vlose}{unit}).",
+          "smaller": "{win} had the lower mean CO2 at Mauna Loa ({vwin}{unit} against {vlose}{unit}).",
+          "compare": "The Mauna Loa CO2 mean was {va}{unit} in {a} and {vb}{unit} in {b}, so {big} was higher.",
+          "sum": "The Mauna Loa CO2 mean of {a} ({va}) plus that of {b} ({vb}) is {sum}{unit}."
+        } }] }
+    },
+    {
+      "id": "gold-annual", "kind": "csv-numeric", "domain": "finance", "license": "ODC-PDDL-1.0",
+      "url": "https://raw.githubusercontent.com/datasets/gold-prices/main/data/annual.csv",
+      "checked": { "at": "2026-10-01T17:25:09.212Z", "status": 200, "bytes": 2383, "sha256": "9d4687185ca14851f4ec36a55810583193b935b726ec72aa35a758c53a25d4af" },
+      "make": { "numerics": [{
+        "key": "Date", "value": "Price", "noun": "gold price", "unit": "US dollars an ounce", "task": "gold-annual-price",
+        "templates": {
+          "value": ["what was the gold price in {a}", "give the average gold price of {a}", "how much did an ounce of gold cost in {a}", "tell me the yearly gold price for {a}"],
+          "larger": ["was gold dearer in {a} or in {b}", "between {a} and {b}, which year had the higher gold price", "which year saw the higher gold price, {a} or {b}", "{a} or {b}: when did gold cost more"],
+          "smaller": ["was gold cheaper in {a} or in {b}", "between {a} and {b}, which year had the lower gold price", "which year saw the lower gold price, {a} or {b}", "{a} or {b}: when did gold cost less"],
+          "compare": ["compare the gold price of {a} and {b}", "how did the gold price in {a} compare with {b}", "{a} versus {b}: compare the gold prices", "contrast the gold price of {a} with that of {b}"],
+          "sum": ["what is the gold price of {a} plus that of {b}", "add the gold price of {a} to the gold price of {b}", "the gold prices of {a} and {b} together make what", "what do the gold prices of {a} and {b} add up to"]
+        },
+        "answers": {
+          "value": "The gold price in {a} was {va}{unit}.",
+          "larger": "Gold cost more in {win} ({vwin}{unit} against {vlose}{unit}).",
+          "smaller": "Gold cost less in {win} ({vwin}{unit} against {vlose}{unit}).",
+          "compare": "Gold was {va}{unit} in {a} and {vb}{unit} in {b}, so {big} was dearer.",
+          "sum": "The gold price of {a} ({va}) plus that of {b} ({vb}) is {sum}{unit}."
+        } }] }
+    },
+    {
+      "id": "tld-types", "kind": "csv-relation", "domain": "internet", "license": "ODC-PDDL-1.0",
+      "url": "https://raw.githubusercontent.com/datasets/top-level-domain-names/main/data/top-level-domain-names.csv",
+      "checked": { "at": "2026-10-01T17:25:09.304Z", "status": 200, "bytes": 71074, "sha256": "ef94aafbb465fe59e98dc80352d4ba886bd08cef6a6c3aa2c925fb01e79b7209" },
+      "make": { "relations": [
+        { "key": "Domain", "value": "Type", "keyLabel": "top-level domain", "valueLabel": "domain type", "task": "tld-type",
+          "templates": ["what type of top-level domain is {key}", "what category of top-level domain is {key}", "name the kind of top-level domain {key} is", "the domain {key} falls under which type"],
+          "answer": "{key} is a {value} top-level domain." },
+        { "key": "Domain", "value": "Sponsoring Organization", "keyLabel": "top-level domain", "valueLabel": "sponsoring organization", "task": "tld-sponsor",
+          "templates": ["who sponsors the top-level domain {key}", "which organization runs the domain {key}", "name the sponsoring body of {key}", "the top-level domain {key} is operated by whom"],
+          "answer": "{key} is sponsored by {value}.",
+          "reverse": { "task": "tld-sponsor-domain", "templates": ["which top-level domain does {key} sponsor", "name the domain run by {key}", "what top-level domain is operated by {key}", "tell me the domain that {key} sponsors"], "answer": "{key} sponsors {value}." } }
+      ] }
+    },
+    {
+      "id": "mime-types", "kind": "json-relation", "domain": "computing", "license": "MIT",
+      "url": "https://raw.githubusercontent.com/jshttp/mime-db/master/db.json",
+      "checked": { "at": "2026-10-01T17:25:09.370Z", "status": 200, "bytes": 209696, "sha256": "63217b4e2a6816c23a8c025b953b3f78993cc85c7253e395a07de3200f659d42" },
+      "make": { "entries": true, "explode": "extensions",
+        "relations": [{
+          "key": "extensions", "value": "$key", "keyLabel": "file extension", "valueLabel": "media type", "task": "extension-media-type",
+          "templates": ["what is the media type of a .{key} file", "which MIME type goes with the extension {key}", "name the content type for .{key} files", "a server sends a .{key} file as which media type"],
+          "answer": "{value}", "expect": "equals",
+          "reverse": { "task": "media-type-extension", "templates": ["what file extension does the media type {key} use", "give the extension for {key} files", "which extension goes with the MIME type {key}", "tell me the file ending of the content type {key}"], "answer": "The media type {key} uses .{value} files." } }] }
+    },
+    {
+      "id": "corpora-fruits", "kind": "list-membership", "domain": "food", "license": "CC0-1.0",
+      "url": "https://raw.githubusercontent.com/dariusk/corpora/master/data/foods/fruits.json",
+      "checked": { "at": "2026-10-01T17:25:09.444Z", "status": 200, "bytes": 1670, "sha256": "d912db8514048d55982781be15d76c251d66d770c09f4748da33be5f712e8c51" },
+      "make": { "root": "fruits", "task": "fruit", "kind": "a fruit",
+        "decoys": ["carrot", "potato", "onion", "garlic", "lettuce", "spinach", "broccoli", "cauliflower", "celery", "cabbage", "radish", "turnip", "beet", "kale", "asparagus", "leek", "parsnip", "artichoke", "mushroom", "bread", "cheese", "butter", "yogurt", "tofu", "chicken", "salmon", "egg", "honey", "sugar", "salt", "milk", "pasta", "ginger", "sweet potato", "brussels sprout"] }
+    },
+    {
+      "id": "corpora-instruments", "kind": "list-membership", "domain": "music", "license": "CC0-1.0",
+      "url": "https://raw.githubusercontent.com/dariusk/corpora/master/data/music/instruments.json",
+      "checked": { "at": "2026-10-01T17:25:09.509Z", "status": 200, "bytes": 768, "sha256": "a2be9c68eb6a536bd37961c78598cbf7c4a303b77ae495f24da27aeff01d2527" },
+      "make": { "root": "instruments", "task": "instrument", "kind": "a musical instrument",
+        "decoys": ["table", "chair", "lamp", "pillow", "blanket", "toaster", "kettle", "fork", "plate", "cup", "broom", "mop", "sofa", "mirror", "curtain", "doormat", "towel", "sponge", "ladder", "hammer", "screwdriver", "wrench", "stapler", "pencil", "eraser", "notebook", "umbrella", "wallet", "backpack", "candle", "vase", "bathtub", "shovel", "refrigerator"] }
+    },
+    {
+      "id": "corpora-dogs", "kind": "list-membership", "domain": "animals", "license": "CC0-1.0",
+      "url": "https://raw.githubusercontent.com/dariusk/corpora/master/data/animals/dogs.json",
+      "checked": { "at": "2026-10-01T17:25:09.573Z", "status": 200, "bytes": 11847, "sha256": "3be2ef65fba033a3c4d5910cbd6237ff2ecd3ed98e0209de9e7ac05b8a9b0791" },
+      "make": { "root": "dogs", "task": "dog-breed", "kind": "a dog breed",
+        "decoys": ["Siamese", "Persian", "Maine Coon", "Ragdoll", "Bengal", "Sphynx", "Abyssinian", "Burmese", "Russian Blue", "Scottish Fold", "British Shorthair", "Birman", "Oriental Shorthair", "Devon Rex", "Cornish Rex", "Norwegian Forest Cat", "Savannah", "Tonkinese", "Manx", "Himalayan", "Exotic Shorthair", "Ragamuffin", "Somali", "Balinese", "Chartreux", "Turkish Angora", "Turkish Van", "Egyptian Mau", "Ocicat", "Singapura", "Bombay", "Havana Brown", "Korat", "LaPerm", "Selkirk Rex", "American Curl", "Japanese Bobtail", "Snowshoe", "Toyger", "Nebelung"] }
+    },
+    {
+      "id": "corpora-programming-languages", "kind": "list-membership", "domain": "programming", "license": "CC0-1.0",
+      "url": "https://raw.githubusercontent.com/dariusk/corpora/master/data/technology/programming_languages.json",
+      "checked": { "at": "2026-10-01T17:25:09.627Z", "status": 200, "bytes": 8816, "sha256": "bb82f00c0504ed8b891a9f9395009b952b62b4a22f4c7f773504af82bdd7d27a" },
+      "make": { "task": "programming-language", "kind": "a programming language",
+        "decoys": ["English", "French", "Spanish", "German", "Mandarin", "Hindi", "Swahili", "Portuguese", "Russian", "Japanese", "Korean", "Italian", "Dutch", "Turkish", "Polish", "Greek", "Hebrew", "Arabic", "Bengali", "Tamil", "Photoshop", "Excel", "Firefox", "Windows", "Spotify", "Slack", "Dropbox", "Outlook", "PowerPoint", "Minecraft", "Wikipedia", "Instagram"] }
+    },
+    {
+      "id": "corpora-crayola", "kind": "json-relation", "domain": "colors", "license": "CC0-1.0",
+      "url": "https://raw.githubusercontent.com/dariusk/corpora/master/data/colors/crayola.json",
+      "checked": { "at": "2026-10-01T17:25:09.688Z", "status": 200, "bytes": 10287, "sha256": "70d87260ce4372f2f919158df7d442f9ae7947a53370e9582ed27582dc05637b" },
+      "make": { "root": "colors", "relations": [{
+        "key": "color", "value": "hex", "keyLabel": "Crayola color", "valueLabel": "hex code", "task": "crayola-color-hex",
+        "templates": ["what is the hex code of the Crayola color {key}", "give the hex value of {key} crayon color", "which hex code is the Crayola {key}", "tell me the RGB hex of the color {key}"],
+        "answer": "{value}", "expect": "equals",
+        "reverse": { "task": "crayola-hex-color", "templates": ["which Crayola color has the hex code {key}", "name the crayon color with the hex value {key}", "the hex code {key} is which Crayola color", "tell me the Crayola name of {key}"], "answer": "{key} is the Crayola color {value}." } }] }
+    },
+    {
+      "id": "corpora-us-cities", "kind": "json-relation", "domain": "geography", "license": "CC0-1.0",
+      "url": "https://raw.githubusercontent.com/dariusk/corpora/master/data/geography/us_cities.json",
+      "checked": { "at": "2026-10-01T17:25:09.736Z", "status": 200, "bytes": 94062, "sha256": "31fdee0cc919fcec261f1ccd6589d05b0c75bdd4cb5ad856c523093b1d626b29" },
+      "make": { "root": "cities", "relations": [{
+        "key": "city", "value": "state", "keyLabel": "US city", "valueLabel": "state", "task": "us-city-state",
+        "templates": ["which US state is {key} in", "in what state is the city {key}", "name the state where {key} lies", "the American city {key} is in which state"],
+        "answer": "{key} is in {value}." }] }
+    },
+    {
+      "id": "corpora-us-city-population", "kind": "json-numeric", "domain": "demographics", "license": "CC0-1.0",
+      "url": "https://raw.githubusercontent.com/dariusk/corpora/master/data/geography/us_cities.json",
+      "checked": { "at": "2026-10-01T17:25:09.791Z", "status": 200, "bytes": 94062, "sha256": "31fdee0cc919fcec261f1ccd6589d05b0c75bdd4cb5ad856c523093b1d626b29" },
+      "make": { "root": "cities", "numerics": [{ "key": "{city}, {state}", "value": "population", "noun": "population", "task": "us-city-population" }] }
+    },
+    {
+      "id": "corpora-planets-moons", "kind": "json-relation", "domain": "astronomy", "license": "CC0-1.0",
+      "url": "https://raw.githubusercontent.com/dariusk/corpora/master/data/science/planets.json",
+      "checked": { "at": "2026-10-01T17:25:09.799Z", "status": 200, "bytes": 4233, "sha256": "af6222c27833535c3843c0eda5722666ea783604437a837895a10439aefeadd7" },
+      "make": { "root": "planets", "explode": "moons", "where": { "name": ["Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"] },
+        "relations": [{
+          "key": "moons", "value": "name", "keyLabel": "moon", "valueLabel": "planet", "task": "moon-planet",
+          "templates": ["which planet does the moon {key} orbit", "{key} is a moon of which planet", "name the planet that {key} circles", "around what planet does {key} travel"],
+          "answer": "{key} orbits {value}." }] }
+    },
+    {
+      "id": "corpora-greek-gods", "kind": "list-membership", "domain": "mythology", "license": "CC0-1.0",
+      "url": "https://raw.githubusercontent.com/dariusk/corpora/master/data/mythology/greek_gods.json",
+      "checked": { "at": "2026-10-01T17:25:09.851Z", "status": 200, "bytes": 455, "sha256": "cb6217fcd841d339aa074843e85f968cfec1d3ef8393458f5938ff6a186e781d" },
+      "make": { "root": "greek_gods", "task": "greek-deity", "kind": "a Greek deity",
+        "decoys": ["Jupiter", "Juno", "Minerva", "Mars", "Venus", "Mercury", "Neptune", "Vulcan", "Diana", "Ceres", "Bacchus", "Janus", "Saturn", "Vesta", "Odin", "Thor", "Loki", "Freya", "Frigg", "Baldur", "Tyr", "Heimdall", "Ra", "Osiris", "Isis", "Anubis", "Horus", "Thoth", "Set", "Vishnu", "Shiva", "Brahma", "Ganesha", "Lakshmi"] }
+    },
+    {
+      "id": "lukes-iso3166", "kind": "csv-relation", "domain": "country-codes", "license": "CC-BY-SA-4.0",
+      "url": "https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.csv",
+      "checked": { "at": "2026-10-01T17:25:09.911Z", "status": 200, "bytes": 20730, "sha256": "347bba35029f804f53780062052499781d267b8a5d887bf3b051e80a68390d6d" },
+      "make": { "relations": [
+        { "key": "name", "value": "alpha-2", "keyLabel": "country", "valueLabel": "alpha-2 code", "task": "country-alpha2",
+          "templates": ["what is the two-letter code of {key}", "give the ISO alpha-2 code of {key}", "which two-letter country code does {key} have", "tell me the alpha-2 code for {key}"],
+          "answer": "{value}", "expect": "equals",
+          "reverse": { "task": "alpha2-country", "templates": ["which country has the two-letter code {key}", "the alpha-2 code {key} stands for which country", "name the country with ISO alpha-2 code {key}", "whose two-letter country code is {key}"], "answer": "The code {key} stands for {value}." } },
+        { "key": "name", "value": "country-code", "keyLabel": "country", "valueLabel": "numeric code", "task": "country-numeric-code",
+          "templates": ["what is the ISO numeric code of {key}", "give the three-digit country code of {key}", "which numeric ISO 3166 code does {key} have", "tell me the numeric country code for {key}"],
+          "answer": "{value}", "expect": "equals",
+          "reverse": { "task": "numeric-code-country", "templates": ["which country has the ISO numeric code {key}", "the numeric country code {key} stands for which country", "name the country with the three-digit code {key}", "whose ISO 3166 numeric code is {key}"], "answer": "The numeric code {key} stands for {value}." } }
+      ] }
+    }
+  ]
+}
