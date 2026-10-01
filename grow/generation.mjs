@@ -728,12 +728,6 @@ function finish(root, flags, env) {
   const heldIds = new Set((() => { const ix = readJson(path.join(root, 'grown', 'index.json')); return ix && Array.isArray(ix.cells) ? ix.cells.map((c) => String(c.id)) : []; })());
   const record = !block && !promoteFailed && tournament; // an app alone is no tournament: generations.json keeps the tournaments
   if (promoteFailed) block = 'the promote failed';
-  let built = block ? 'skipped: ' + block : 'skipped (--no-build)';
-  if (!block && !flags['no-build']) {
-    const r = runNode(root, 'web/build.mjs', [], { env, timeout: 20 * MIN });
-    built = r.code === 0;
-    if (!built) { block = 'the build failed'; blocked.push('build: node web/build.mjs exited ' + r.code + ': ' + why1(r)); }
-  }
   // the tournament, in grown/generations.json (prepare reads the parent from it)
   const planBuilds = plan && Array.isArray(plan.builds) ? plan.builds : [];
   const planMisses = [...(plan && Array.isArray(plan.classes) ? plan.classes.flatMap((c) => c.misses || []) : []), ...planBuilds.flatMap((x) => (x && Array.isArray(x.misses) ? x.misses : []))];
@@ -747,6 +741,13 @@ function finish(root, flags, env) {
   // is above the trial's baseline, else its file is written back); before the suites, so they test the tree the commit ships
   const selfR = selfJudge(root, n, env, blocked);
   const cortexR = record ? cortexJudge(root, n, env, blocked) : (fs.existsSync(path.join(root, 'grow', 'cortex.mjs')) ? 'none' : 'not wired'); // a void tournament is no trial
+  // the site, built now: the tournament is recorded and both judges ran, so /alive and the tab layer show THIS generation
+  let built = block ? 'skipped: ' + block : 'skipped (--no-build)';
+  if (!block && !flags['no-build']) {
+    const r = runNode(root, 'web/build.mjs', [], { env, timeout: 20 * MIN });
+    built = r.code === 0;
+    if (!built) { block = 'the build failed'; blocked.push('build: node web/build.mjs exited ' + r.code + ': ' + why1(r)); }
+  }
   // step 8: the suites, the commit, the push
   let tests = block ? 'skipped: ' + block : 'skipped (--no-tests)';
   if (!block && !flags['no-tests']) {

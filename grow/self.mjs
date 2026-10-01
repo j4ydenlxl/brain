@@ -30,18 +30,18 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { nextGeneration, conciseDirective, DEFAULT_ROOT, redact, TRAILER, SUITES, pushHead } from './generation.mjs';
+import { nextGeneration, conciseDirective, DEFAULT_ROOT, redact, TRAILER, SUITES, pushHead, why1 } from './generation.mjs';
 
 export const LEDGER = 'grown/self.json';
 export const KEEP_DIR = 'grown/self';
 export const TARGET_RE = /^(GROW\.md|grow\/[A-Za-z0-9][A-Za-z0-9_.-]*\.(mjs|md))$/;
 /** Never a candidate: this file (it judges the trial) and the two that produce the result.json the locked judge reads
  *  (an edit there could grade itself up). neverOf adds every file judge/LOCK.json names. */
-export const NEVER = Object.freeze(['grow/self.mjs', 'grow/sandbox.mjs', 'grow/probe.mjs']);
+export const NEVER = Object.freeze(['grow/self.mjs', 'grow/cortex.mjs', 'grow/sandbox.mjs', 'grow/probe.mjs']);
 export const MAX_BYTES = 300 * 1024;
 export const MAX_TEXT = 2000;
 /** A GROW.md candidate keeps these (the lock, the self step, his directive and the finish line are the procedure's spine). */
-export const KEEP = Object.freeze(['## Done', 'judge/verify.mjs', 'LOCK OK', 'grow/self.mjs', 'CONCISE']);
+export const KEEP = Object.freeze(['## Done', 'judge/verify.mjs', 'LOCK OK', 'grow/self.mjs', 'grow/cortex.mjs', 'CONCISE']);
 /** A candidate module may not name the files an arm never opens (the judge's held-out truth). */
 export const FORBID = Object.freeze(['judge/heldout', 'judge/control.jsonl', 'state/grow/baseline']);
 export const SELF_SUITES = Object.freeze([...SUITES, 'test/grow-generation.test.mjs', 'test/grow-dream.test.mjs', 'test/grow-build.test.mjs', 'test/grow-self.test.mjs', 'test/grow-cortex.test.mjs']);
@@ -72,7 +72,7 @@ const readJson = (f) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); }
 const writeJson = (f, o) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, JSON.stringify(o, null, 2) + '\n'); };
 const sha256 = (buf) => createHash('sha256').update(buf).digest('hex');
 const selfDirOf = (root, n) => path.join(root, 'work', 'grow', 'gen-' + n, 'self');
-const lastLine = (r) => redact(String((r.stderr || '') + '\n' + (r.stdout || '')).split(/\r?\n/).map((l) => l.trim()).filter(Boolean).pop() || (r.error ? String(r.error.code || r.error.message) : 'exit ' + r.status));
+const lastLine = (r) => why1(r); // the line that says why (an Error, a refusal), never the Node banner or a stack frame
 const round4 = (x) => Math.round(x * 10000) / 10000;
 const clip = (s, k) => { const t = String(s ?? '').replace(/\s+/g, ' ').trim(); return t.length > k ? t.slice(0, k - 1) + '~' : t; };
 /** The child environment: no test-runner context, no NODE_OPTIONS. */
@@ -118,7 +118,7 @@ export function readLedger(root) {
   const l = readJson(path.join(root, LEDGER));
   return { trial: l && l.trial && typeof l.trial === 'object' ? l.trial : null, history: l && Array.isArray(l.history) ? l.history : [] };
 }
-/** survivors / candidates of a generation record over every lane (a record's own rate field wins), null without candidates. */
+/** survivors / candidates of a generation record over every lane, null without candidates (a rate field written in the record is never read: the lanes are what the forged rule checks). */
 export function rateOf(entry) {
   if (!entry || typeof entry !== 'object') return null;
   let candidates = 0, survivors = 0;
@@ -364,7 +364,7 @@ function apply(root, flags, env) {
   // a fresh check, or the recorded one when it graded exactly this file
   const cand = readJson(path.join(dir, 'candidate.json'));
   const recorded = readJson(path.join(dir, 'check.json'));
-  const target = cand && typeof cand.target === 'string' ? cand.target.replace(/\\/g, '/') : null;
+  const target = cand && typeof cand.target === 'string' ? cand.target.replace(/\\/g, '/').replace(/^\.\//, '') : null; // as check names it
   const file = target ? path.join(dir, 'file', target) : null;
   const sha = file && fs.existsSync(file) ? sha256(fs.readFileSync(file)) : null;
   const c = recorded && recorded.ok === true && recorded.target === target && recorded.sha === sha && recorded.generation === n ? recorded : check(root, n, { env });

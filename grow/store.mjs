@@ -569,7 +569,7 @@ export async function promote({ gen, lane, dir, grownDir, now = () => new Date()
       if (c.class != null && mod.meta.class !== c.class) throw new Fail(c.id + ': meta.class is ' + mod.meta.class + ' but the verdict says ' + c.class);
       if (mod.meta.generation !== gen) throw new Fail(c.id + ': meta.generation is ' + mod.meta.generation + ', not the promoted generation ' + gen);
       const h = c.verdict?.heldout ?? {};
-      rows.push({ id: c.id, class: mod.meta.class, generation: gen, lane, file: 'cells/' + c.id + '.mjs', heldout: { score: h.score ?? null, n: h.n ?? null }, promotedAt: at });
+      rows.push({ id: c.id, class: mod.meta.class, generation: gen, lane, file: 'cells/' + c.id + '.mjs', heldout: { score: h.score ?? null, n: h.n ?? null, ok: h.ok ?? null }, promotedAt: at });
     }
     const next = { ...index, generation: Math.max(index.generation, gen), cells: [...index.cells.filter((row) => !retiredIds.has(row.id)), ...rows] };
     fs.writeFileSync(indexPath, JSON.stringify(next, null, 2) + '\n');

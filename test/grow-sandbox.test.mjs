@@ -513,6 +513,16 @@ test('(k) test.mjs runs under the permission model: it may read its directory, n
   assert.deepEqual(testArgv('/x').slice(0, 2), ['--permission', '--allow-fs-read=/x']);
 });
 
+// Day 3 board, test builder, 2026-10-01: the heartbeat VM runs node 22, which knows only the experimental spelling of
+// the isolation flag (23.6 renamed it); the wrong spelling there is a node usage error and every candidate's tests count null.
+test('(k2) testArgv spells the isolation flag by node version: --experimental-test-isolation=none below 23.6, --test-isolation=none from it', () => {
+  const at = (v) => testArgv('/x', v);
+  for (const v of ['22.22.0', '23.5.9']) assert.ok(at(v).includes('--experimental-test-isolation=none') && !at(v).includes('--test-isolation=none'), v + ': ' + at(v).join(' '));
+  for (const v of ['23.6.0', '24.15.0']) assert.ok(at(v).includes('--test-isolation=none') && !at(v).includes('--experimental-test-isolation=none'), v + ': ' + at(v).join(' '));
+  for (const v of ['22.22.0', '23.6.0', '24.15.0']) assert.deepEqual(at(v).slice(0, 2), ['--permission', '--allow-fs-read=/x'], v);
+  assert.equal(at('22.22.0').length, at('24.15.0').length, 'one flag swapped, nothing added');
+});
+
 test('(l) the probe deletes the nonce file before any candidate code runs, and echoes the nonce in its line', async () => {
   const run = fs.mkdtempSync(path.join(TMP, 'nonce-'));
   const cand = path.join(run, 'cand');

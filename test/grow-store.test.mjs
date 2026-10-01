@@ -394,7 +394,7 @@ test('promote: one survivor copied with its sibling, the loser not; index.json a
   assert.equal(idx.cells.length, 1);
   const row = idx.cells[0];
   assert.match(row.promotedAt, /^\d{4}-\d\d-\d\dT/);
-  assert.deepEqual({ ...row, promotedAt: 'x' }, { id: 'test-echo-cell', class: 'echo', generation: 1, lane: 'alpha', file: 'cells/test-echo-cell.mjs', heldout: { score: 1, n: 2 }, promotedAt: 'x' });
+  assert.deepEqual({ ...row, promotedAt: 'x' }, { id: 'test-echo-cell', class: 'echo', generation: 1, lane: 'alpha', file: 'cells/test-echo-cell.mjs', heldout: { score: 1, n: 2, ok: 2 }, promotedAt: 'x' });
   const mjs = fs.readFileSync(path.join(g, 'index.mjs'), 'utf8');
   assert.match(mjs, /^\/\/ order\. Do not edit by hand: the next promote rewrites it\. Generation 1: 1 cell\.$/m);
   assert.match(mjs, /^import \* as c0 from '\.\/cells\/test-echo-cell\.mjs';$/m);

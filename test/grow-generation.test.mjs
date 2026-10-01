@@ -3,18 +3,22 @@
 // miss reader and its classes), a fake seed, stubs for judge/verify.mjs, judge/baseline.mjs, judge/select.mjs,
 // grow/sandbox.mjs, grow/store.mjs, web/build.mjs and tools/fetch-pack.mjs that log each call to calls.log, dev and
 // held-out files with SENTINEL prompts, and five trivial suites. The driver runs with --root <tmp>, so nothing here
-// reaches the network, a token, the real store, the real grown/ or git (finish runs with --no-commit or stops first).
+// reaches the network, a token, the real store, the real grown/ or the tree's git (finish runs with --no-commit or stops
+// first, except in a stub root the test made its own git repository under the temp directory, a hermetic config).
 // Author: board 38 builder, item driver, 2026-09-30.
+// Extended: Day 3 board, test builder, 2026-10-01: the landed-selection reuse (reused, void, fresh), pushHead against real
+// git in temp directories, the self and cortex judges as planted stub children and the commit they shape.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import {
   backendOf, tokensOf, nextGeneration, rankLanes, armId, classOfSource, candidates, CLASS_SRC_RE, TOKEN_NAMES, CLOUD_ENV,
-  parseArgs, commitMessage, SUITES, why1,
+  parseArgs, commitMessage, SUITES, why1, pushHead, selfJudge, cortexJudge, TRAILER,
 } from '../grow/generation.mjs';
 
 const BRAIN = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -77,6 +81,12 @@ if (process.env.STUB_PROMOTE_FAIL) { console.error('promote failed: stub'); proc
 const ids = fs.readdirSync(dir).filter((id) => { try { return JSON.parse(fs.readFileSync(path.join(dir, id, 'verdict.json'), 'utf8')).survived === true; } catch { return false; } });
 const held = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'grown/index.json'), 'utf8')).cells.map((c) => c.id); } catch { return []; } })();
 const promoted = ids.filter((id) => !held.includes(id));
+// as the real store does, promote writes grown/index.json: a later finish of this generation sees its survivors held there
+if (promoted.length) {
+  const f = path.join(ROOT, 'grown/index.json');
+  let ix; try { ix = JSON.parse(fs.readFileSync(f, 'utf8')); } catch { ix = { generation: 0, cells: [] }; }
+  fs.writeFileSync(f, JSON.stringify({ ...ix, generation: Math.max(Number(ix.generation) || 0, Number(n)), cells: [...(Array.isArray(ix.cells) ? ix.cells : []), ...promoted.map((id) => ({ id, generation: Number(n), lane }))] }));
+}
 console.log(JSON.stringify({ promoted, archived: ids.filter((id) => held.includes(id)).map((id) => ({ id, holds: id })), retired: [], cells: held.length + promoted.length, generation: Number(n) }));`,
   'web/build.mjs': `log('build');
 if (process.env.STUB_BUILD_FAIL) { console.error('build failed: stub'); process.exit(1); }
@@ -88,10 +98,14 @@ console.log('pack present');`,
 
 const jsonl = (rows) => rows.map((r) => JSON.stringify(r)).join('\n') + '\n';
 const put = (root, rel, text) => { const f = path.join(root, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, text); return f; };
+// every temp directory is removed at exit as well as by its test's finally: a test that dies between the two still leaves nothing
+const TEMPS = new Set();
+process.on('exit', () => { for (const d of TEMPS) { try { fs.rmSync(d, { recursive: true, force: true }); } catch { /* best effort */ } } });
+const tmp = (prefix) => { const d = fs.mkdtempSync(path.join(os.tmpdir(), prefix)); TEMPS.add(d); return d; };
 
 /** A fresh stub tree; parent names the last tournament's winner in grown/generations.json. */
 function makeRoot({ parent = 'direct' } = {}) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'grow-generation-'));
+  const root = tmp('grow-generation-');
   for (const rel of ['grow/contract.mjs', 'grow/misses.mjs', 'grow/probe.mjs', 'grow/probe-app.mjs', 'grow/app-slug.mjs', 'grow/build.mjs', 'act/converse.mjs', 'CLAUDE.md']) put(root, rel, fs.readFileSync(path.join(BRAIN, rel)));
   for (const [rel, body] of Object.entries(STUBS)) put(root, rel, PRELUDE + body + '\n');
   put(root, 'grow/seed-misses.jsonl', jsonl(SEED_ROWS));
@@ -520,7 +534,7 @@ test('(i) validate: ok on the echo fixture, a copy with fetch( fails', () => {
   const ok = spawnSync(process.execPath, [DRIVER, 'validate', path.join(BRAIN, 'grow/fixtures/echo-cell')], { env: envOf(), encoding: 'utf8' });
   assert.equal(ok.status, 0, ok.stderr);
   assert.deepEqual(JSON.parse(ok.stdout.trim()), { ok: true, errors: [], id: 'echo-fixture', class: 'fixture', generation: 1, lane: 'fixture', examples: 1 });
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'grow-generation-cell-'));
+  const dir = tmp('grow-generation-cell-');
   try {
     for (const f of ['cell.mjs', 'test.mjs', 'examples.jsonl']) fs.copyFileSync(path.join(BRAIN, 'grow/fixtures/echo-cell', f), path.join(dir, f));
     fs.appendFileSync(path.join(dir, 'cell.mjs'), "\nexport const leak = () => fetch('https://example.invalid');\n");
@@ -643,7 +657,7 @@ test('rankLanes, nextGeneration, armId, parseArgs and the commit message', () =>
   assert.deepEqual(rankLanes({ direct: { survivors: 1, candidates: 2 }, baked: { survivors: 1, candidates: 3 } }), ['baked', 'direct']);
   assert.deepEqual(rankLanes({ direct: { survivors: 0, candidates: 1 }, baked: { survivors: 0, candidates: 1 } }), ['baked', 'direct']);
   assert.deepEqual(rankLanes({ direct: { survivors: 2, candidates: 2 }, baked: { survivors: 0, candidates: 4 } }), ['direct', 'baked']);
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'grow-generation-n-'));
+  const root = tmp('grow-generation-n-');
   try {
     assert.equal(nextGeneration(root), 1);
     put(root, 'grown/index.json', JSON.stringify({ generation: 2, cells: [] }));
@@ -865,4 +879,312 @@ test('Day 2, the builder arm: a build miss gets a build brief and app.json (neve
     assert.ok(!fs.existsSync(path.join(bad, 'web/dist/apps/todo/index.html')));
     assert.equal(fs.readFileSync(path.join(bad, 'work/grow/gen-1/misses.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l)).find((m) => m.id === 'seed-5').status, 'open');
   } finally { clean(bad); }
+});
+
+// ---- Day 3: the landed selection, pushHead, the self and cortex judges (Day 3 board, test builder, 2026-10-01)
+const sha = (f) => createHash('sha256').update(fs.readFileSync(f)).digest('hex');
+const gensText = (root) => fs.readFileSync(path.join(root, 'grown/generations.json'), 'utf8');
+const selOf = (root) => JSON.parse(fs.readFileSync(path.join(root, 'work/grow/gen-1/selection.json'), 'utf8'));
+/** How many times each judging stub ran since the log began: the reuse claim is that a second finish adds none. */
+const ran = (root) => { const c = { baseline: 0, sandbox: 0, select: 0 }; for (const x of calls(root)) if (x[0] in c) c[x[0]]++; return c; };
+/** The cloud run of generations 1 and 2: prepare, the two candidates, a finish whose suites go red AFTER the promote, so
+ *  grown/ holds this generation's survivor and nothing is committed. Returns the finish line. */
+function halfLanded(root) {
+  twoCandidates(root);
+  const r = drive(root, ['finish', '--gen', '1', '--no-push'], { CI: '1', STUB_SUITE_FAIL: '1' });
+  assert.equal(r.code, 0, r.stderr);
+  assert.equal(r.json.committed, 'blocked: the suites failed');
+  assert.equal(r.json.selection, 'fresh');
+  assert.equal(r.json.promoted, 1);
+  const ix = JSON.parse(fs.readFileSync(path.join(root, 'grown/index.json'), 'utf8'));
+  assert.ok(ix.cells.some((c) => c.id === 'fragment-direct-g1' && c.generation === 1), 'grown/ holds the survivor: ' + JSON.stringify(ix));
+  assert.deepEqual(ran(root), { baseline: 2, sandbox: 2, select: 2 });
+  return r.json;
+}
+
+test('Day 3, reuse: a finish stopped by a red suite after its promote is finished again from selection.json: no baseline, sandbox or select runs twice, the survivors and baseline are the first run\'s, the tournament is recorded', () => {
+  const root = makeRoot();
+  try {
+    const first = halfLanded(root);
+    const sel = selOf(root);
+    assert.equal(sel.generation, 1);
+    assert.ok(!Number.isNaN(Date.parse(sel.at)), 'at is a time: ' + sel.at);
+    assert.deepEqual(sel.baseline, { fragment: 0, mash: 0 });
+    assert.deepEqual(sel.candidates, [
+      { id: 'fragment-direct-g1', lane: 'direct', class: 'fragment', sha256: sha(path.join(root, D1, 'cell.mjs')), judged: true, survived: true },
+      { id: 'mash-baked-g1', lane: 'baked', class: 'mash', sha256: sha(path.join(root, B1, 'cell.mjs')), judged: true, survived: false },
+    ]);
+    const selText = fs.readFileSync(path.join(root, 'work/grow/gen-1/selection.json'), 'utf8');
+    // a baseline measured now is the organism WITH the survivor (0.5 here): a fresh selection would read it, the reuse may not
+    const r = drive(root, ['finish', '--gen', '1', '--no-commit'], { CI: '1', STUB_BASELINE_SCORE: '0.5' });
+    assert.equal(r.code, 0, r.stderr);
+    assert.ok(r.json.selection.startsWith('reused'), r.json.selection);
+    assert.ok(r.json.selection.includes(sel.at), r.json.selection);
+    assert.deepEqual(ran(root), { baseline: 2, sandbox: 2, select: 2 }, 'nothing judged a second time');
+    assert.deepEqual(r.json.baseline, first.baseline);
+    assert.deepEqual(r.json.lanes, first.lanes);
+    assert.deepEqual(r.json.lanes, { direct: { candidates: 1, survivors: 1 }, baked: { candidates: 1, survivors: 0 } });
+    assert.equal(r.json.survivors, first.survivors);
+    assert.equal(r.json.parent, 'direct');
+    assert.equal(r.json.promoted, 0, 'grown/ held it already');
+    assert.equal(r.json.built, true);
+    assert.deepEqual(r.json.tests, { exitCode: 0, pass: 5, fail: 0 });
+    assert.equal(r.json.committed, 'skipped (--no-commit)');
+    assert.deepEqual(r.json.misses, { growing: 2, grown: 1, reopened: 1 });
+    assert.ok(!r.json.blocked.some((l) => l.startsWith('void')), r.json.blocked.join(' | '));
+    const gs = JSON.parse(gensText(root)).generations;
+    assert.equal(gs.filter((g) => g.generation === 1).length, 1, 'one record of generation 1');
+    assert.deepEqual(gs.at(-1).lanes, first.lanes);
+    assert.equal(gs.at(-1).parent, 'direct');
+    assert.equal(genMisses(root).find((m) => m.id === 1).cell, 'fragment-direct-g1');
+    assert.equal(fs.readFileSync(path.join(root, 'work/grow/gen-1/selection.json'), 'utf8'), selText, 'a reuse does not rewrite the selection');
+  } finally { clean(root); }
+});
+
+test('Day 3, void: grown/ holds the survivors but a candidate changed by one byte: blocked by name, nothing judged or recorded; --rejudge runs the selection again', () => {
+  const root = makeRoot();
+  try {
+    halfLanded(root);
+    const gsText = gensText(root);
+    fs.appendFileSync(path.join(root, B1, 'cell.mjs'), ' ');
+    reset(root);
+    const r = drive(root, ['finish', '--gen', '1', '--no-commit'], { CI: '1' });
+    assert.equal(r.code, 0, r.stderr);
+    assert.ok(r.json.blocked.some((l) => l.startsWith('void: grown/ already holds generation 1')), r.json.blocked.join(' | '));
+    assert.equal(r.json.committed, 'blocked: the candidates changed after their survivors were promoted');
+    assert.ok(!r.json.selection.startsWith('reused'), r.json.selection);
+    assert.equal(r.json.survivors, 0);
+    assert.equal(r.json.parent, null);
+    assert.equal(r.json.built, 'skipped: the candidates changed after their survivors were promoted');
+    assert.deepEqual(seq(root), ['verify'], 'no baseline, sandbox, select, store, build or suite ran');
+    assert.equal(gensText(root), gsText, 'generations.json is as the first run wrote it');
+    assert.deepEqual(r.json.misses, { growing: 2, grown: 0, reopened: 2 });
+    // --rejudge: selection.json is ignored, the whole selection runs (a tree whose grown/ was put back)
+    reset(root);
+    const j = drive(root, ['finish', '--gen', '1', '--rejudge', '--no-commit', '--no-tests'], { CI: '1' });
+    assert.equal(j.code, 0, j.stderr);
+    assert.equal(j.json.selection, 'fresh');
+    assert.deepEqual(seq(root).slice(0, 7), ['verify', 'baseline fragment', 'baseline mash', 'sandbox ' + D1, 'select ' + D1, 'sandbox ' + B1, 'select ' + B1]);
+    assert.equal(j.json.survivors, 1);
+    assert.ok(!j.json.blocked.some((l) => l.startsWith('void')), j.json.blocked.join(' | '));
+    assert.equal(selOf(root).candidates.find((c) => c.id === 'mash-baked-g1').sha256, sha(path.join(root, B1, 'cell.mjs')), 'the new selection holds the changed cell');
+    assert.notEqual(gensText(root), gsText, 'the rejudged tournament is recorded');
+    assert.equal(JSON.parse(gensText(root)).generations.at(-1).generation, 1);
+  } finally { clean(root); }
+});
+
+test('Day 3, fresh: with no promoted survivor of the generation in grown/ (nothing survived, --no-promote, a cell of another generation) every finish selects afresh', () => {
+  const root = makeRoot();
+  try {
+    twoCandidates(root);
+    put(root, 'canned.json', JSON.stringify({ survive: [] }));
+    const a = drive(root, ['finish', '--gen', '1', '--no-commit', '--no-tests'], { CI: '1' });
+    assert.equal(a.code, 0, a.stderr);
+    assert.equal(a.json.selection, 'fresh');
+    assert.equal(a.json.survivors, 0);
+    assert.deepEqual(selOf(root).candidates.map((c) => c.survived), [false, false]);
+    // nothing survived: the next finish selects again; this one survives but does not promote
+    put(root, 'canned.json', JSON.stringify({ survive: ['fragment-direct-g1'] }));
+    const b = drive(root, ['finish', '--gen', '1', '--no-commit', '--no-tests', '--no-promote'], { CI: '1' });
+    assert.equal(b.code, 0, b.stderr);
+    assert.equal(b.json.selection, 'fresh');
+    assert.equal(b.json.survivors, 1);
+    assert.equal(b.json.promoted, 'skipped (--no-promote)');
+    assert.deepEqual(selOf(root).candidates.map((c) => c.survived), [true, false]);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, 'grown/index.json'), 'utf8')).cells, [], 'nothing promoted');
+    // a survivor selection.json names that grown/ holds only as a cell of ANOTHER generation is not this one landed: fresh again
+    put(root, 'grown/index.json', JSON.stringify({ generation: 0, cells: [{ id: 'fragment-direct-g1', generation: 0, lane: 'direct' }] }));
+    const c = drive(root, ['finish', '--gen', '1', '--no-commit', '--no-tests'], { CI: '1' });
+    assert.equal(c.code, 0, c.stderr);
+    assert.equal(c.json.selection, 'fresh');
+    assert.equal(c.json.survivors, 1);
+    assert.deepEqual(ran(root), { baseline: 6, sandbox: 6, select: 6 }, 'three selections, each judged in full');
+  } finally { clean(root); }
+});
+
+// ---- pushHead against real git: a bare remote and clones in a temp directory, a hermetic config (no system or user file)
+function gitEnvOf(base) {
+  const cfg = path.join(base, 'gitconfig');
+  fs.writeFileSync(cfg, '[user]\n\tname = grow-test\n\temail = grow-test@example.invalid\n[init]\n\tdefaultBranch = master\n[core]\n\tautocrlf = false\n');
+  const env = { ...process.env, GIT_CONFIG_GLOBAL: cfg, GIT_CONFIG_NOSYSTEM: '1', GIT_TERMINAL_PROMPT: '0' };
+  for (const k of ['GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE', 'GIT_OBJECT_DIRECTORY', 'GROW_BRANCH', 'NODE_TEST_CONTEXT', 'NODE_OPTIONS']) delete env[k];
+  return env;
+}
+function gitIn(env) {
+  return (cwd, args) => {
+    const r = spawnSync('git', args, { cwd, env, encoding: 'utf8', windowsHide: true, timeout: 60000 });
+    if (r.status !== 0) throw new Error('git ' + args.join(' ') + ' exited ' + r.status + ': ' + (r.stderr || r.stdout));
+    return String(r.stdout || '').trim();
+  };
+}
+
+test('Day 3, pushHead: no upstream pushes origin HEAD:refs/heads/<branch>; a moved remote is rebased onto once; a branch tracking another upstream is pushed there only; no remote is ok:false and the commit stays', () => {
+  const base = tmp('grow-push-');
+  try {
+    const env = gitEnvOf(base), git = gitIn(env);
+    const remote = path.join(base, 'remote.git');
+    git(base, ['init', '-q', '--bare', '-b', 'master', remote]);
+    const rev = (dir, ref = 'HEAD') => git(dir, ['rev-parse', ref]);
+    const commit = (dir, file, msg) => { fs.writeFileSync(path.join(dir, file), msg + '\n'); git(dir, ['add', file]); git(dir, ['commit', '-q', '-m', msg]); return rev(dir); };
+    const clone = (name) => { const d = path.join(base, name); git(base, ['clone', '-q', remote, d]); return d; };
+    const seed = path.join(base, 'seed');
+    git(base, ['init', '-q', '-b', 'master', seed]);
+    commit(seed, 'seed.txt', 'seed');
+    git(seed, ['remote', 'add', 'origin', remote]);
+    git(seed, ['push', '-q', 'origin', 'HEAD:refs/heads/master']);
+
+    // detached HEAD (the heartbeat's checkout): a bare git push would exit 128 there
+    const a = clone('a');
+    git(a, ['checkout', '-q', '--detach']);
+    const ca = commit(a, 'a.txt', 'from a, detached');
+    assert.deepEqual(pushHead(a, { env }), { ok: true, how: 'git push origin HEAD:refs/heads/master' });
+    assert.equal(rev(remote, 'master'), ca, 'the remote master moved to the commit');
+    // an untracked branch and GROW_BRANCH: the push names that branch
+    const g = clone('g');
+    git(g, ['checkout', '-q', '-b', 'work']);
+    const cg = commit(g, 'g.txt', 'from g, untracked');
+    assert.deepEqual(pushHead(g, { env: { ...env, GROW_BRANCH: 'release' } }), { ok: true, how: 'git push origin HEAD:refs/heads/release' });
+    assert.equal(rev(remote, 'release'), cg);
+    assert.equal(rev(remote, 'master'), ca, 'master untouched by a GROW_BRANCH push');
+
+    // the remote moved first: b (an untracked branch, cloned before) is rebased onto c's commit once, then pushed
+    const b = clone('b');
+    git(b, ['checkout', '-q', '-b', 'work']);
+    const c = clone('c');
+    commit(c, 'c.txt', 'from c, landed first');
+    git(c, ['push', '-q', 'origin', 'HEAD:refs/heads/master']);
+    commit(b, 'b.txt', 'from b, after the remote moved');
+    assert.deepEqual(pushHead(b, { env }), { ok: true, how: 'git push origin HEAD:refs/heads/master after a rebase onto origin/master' });
+    assert.equal(rev(remote, 'master'), rev(b), 'the remote master is the rebased commit');
+    assert.deepEqual(git(remote, ['log', '--format=%s', 'master']).split(/\r?\n/), ['from b, after the remote moved', 'from c, landed first', 'from a, detached', 'seed']);
+    assert.deepEqual(git(remote, ['ls-tree', '--name-only', 'master']).split(/\r?\n/).sort(), ['a.txt', 'b.txt', 'c.txt', 'seed.txt']);
+
+    // a branch that tracks origin/other is pushed there, never to master; when that push is refused it stays refused
+    const d = clone('d');
+    git(d, ['checkout', '-q', '-b', 'other']);
+    git(d, ['push', '-q', '-u', 'origin', 'other']);
+    const master = rev(remote, 'master');
+    const cd = commit(d, 'd.txt', 'from d, on other');
+    assert.deepEqual(pushHead(d, { env }), { ok: true, how: 'git push' });
+    assert.equal(rev(remote, 'other'), cd);
+    assert.equal(rev(remote, 'master'), master, 'master untouched');
+    const e = clone('e');
+    git(e, ['checkout', '-q', '-b', 'other', '--track', 'origin/other']);
+    const ce = commit(e, 'e.txt', 'from e, on other first');
+    git(e, ['push', '-q']);
+    commit(d, 'd2.txt', 'from d, refused');
+    const pd = pushHead(d, { env });
+    assert.equal(pd.ok, false);
+    assert.match(pd.why, /^git push exited \d+: /);
+    assert.ok(!pd.why.includes('pull'), 'no rebase onto master for a branch that tracks another upstream: ' + pd.why);
+    assert.equal(rev(remote, 'other'), ce);
+    assert.equal(rev(remote, 'master'), master, 'master still untouched');
+
+    // no remote at all: ok false with the why, the commit stays in the checkout
+    const f = path.join(base, 'f');
+    git(base, ['init', '-q', '-b', 'master', f]);
+    const cf = commit(f, 'f.txt', 'from f, nowhere to go');
+    const pf = pushHead(f, { env });
+    assert.equal(pf.ok, false);
+    assert.match(pf.why, /^git push origin HEAD:refs\/heads\/master exited \d+: .+; git pull --rebase origin master exited \d+: /);
+    assert.equal(rev(f), cf, 'the commit stays');
+    assert.equal(git(f, ['log', '-1', '--format=%s']), 'from f, nowhere to go');
+  } finally { clean(base); }
+});
+
+// ---- the self and cortex judges: stub children planted in the stub root, steered by STUB_SELF and STUB_CORTEX
+const JUDGES = {
+  'grow/self.mjs': `log('self');
+const v = process.env.STUB_SELF || 'none';
+if (v === 'fail') { console.error('self judge failed: stub'); process.exit(1); }
+if (v === 'reverted') fs.writeFileSync(path.join(ROOT, 'GROW.md'), '# GROW (written back by the self stub)\\n');
+console.log(JSON.stringify({ generation: Number(process.argv[process.argv.indexOf('--gen') + 1]), verdict: v, target: v === 'none' ? null : 'GROW.md', baseline: { rate: 0.25, survivors: 1, candidates: 4 }, judged: { generation: 1, rate: 0.5, survivors: 1, candidates: 2 }, reason: 'stub ' + v, ship: v === 'reverted' ? ['GROW.md'] : [], at: '2026-10-01T00:00:00.000Z' }));`,
+  'grow/cortex.mjs': `log('cortex');
+const v = process.env.STUB_CORTEX || 'none';
+if (v === 'fail') { console.error('cortex judge failed: stub'); process.exit(1); }
+console.log(JSON.stringify({ verdict: v, pointer: v === 'moved' ? 'stub-model-b' : 'stub-model-a', challenger: 'stub-model-b', pairs: 2, reason: 'stub ' + v }));`,
+};
+const plantJudges = (root) => { for (const [rel, body] of Object.entries(JUDGES)) put(root, rel, PRELUDE + body + '\n'); };
+
+test('Day 3, commitMessage: a 6th argument (self) and a 7th (cortex) append their verdicts; a cortex that did not move adds nothing', () => {
+  const self = { verdict: 'kept', target: 'GROW.md' }, moved = { verdict: 'moved', pointer: 'model-b' };
+  assert.equal(commitMessage(4, 1, 2, 'direct', 0, self, moved), 'gen 4: 1 of 2 survived, parent direct, self kept GROW.md, cortex moved to model-b');
+  assert.equal(commitMessage(4, 1, 2, 'direct', 1, self), 'gen 4: 1 of 2 survived, parent direct, 1 app built, self kept GROW.md');
+  assert.equal(commitMessage(4, 1, 2, 'direct', 0, null, moved), 'gen 4: 1 of 2 survived, parent direct, cortex moved to model-b');
+  assert.equal(commitMessage(4, 1, 2, 'direct', 0, null, { verdict: 'stayed', pointer: 'model-a' }), 'gen 4: 1 of 2 survived, parent direct');
+  assert.equal(commitMessage(4, 1, 2, 'direct', 0, { verdict: 'none', target: null }, null), 'gen 4: 1 of 2 survived, parent direct');
+});
+
+test('Day 3, the self and cortex judges: children of finish after the record and before the build and the suites, their lines in the JSON; a failure is a blocked line, never a blocked commit; a void tournament is no cortex trial', () => {
+  const root = makeRoot();
+  try {
+    // without the files: not wired (the stub root has neither until planted)
+    assert.deepEqual(selfJudge(root, 1, envOf(), []), { self: 'not wired', ship: [] });
+    assert.equal(cortexJudge(root, 1, envOf(), []), 'not wired');
+    twoCandidates(root);
+    plantJudges(root);
+    assert.deepEqual(selfJudge(root, 1, envOf({ STUB_SELF: 'none' }), []), { self: 'none', ship: [] });
+    assert.equal(cortexJudge(root, 1, envOf({ STUB_CORTEX: 'none' }), []), 'none');
+    reset(root);
+    const r = drive(root, ['finish', '--gen', '1', '--no-commit'], { CI: '1', STUB_SELF: 'kept', STUB_CORTEX: 'moved' });
+    assert.equal(r.code, 0, r.stderr);
+    assert.deepEqual(r.json.self, { verdict: 'kept', target: 'GROW.md', baseline: 0.25, rate: 0.5, reason: 'stub kept' });
+    assert.deepEqual(r.json.cortex, { verdict: 'moved', pointer: 'stub-model-b', challenger: 'stub-model-b', pairs: 2, reason: 'stub moved' });
+    const s = seq(root);
+    assert.deepEqual(s.slice(11, 14), ['self', 'cortex', 'build'], s.join(' | ')); // the build after both judges: the pages show this generation
+    assert.deepEqual(s.slice(14).sort(), SUITES.map((x) => 'suite ' + x).sort(), 'the suites test the tree the judges left');
+    for (const who of ['self', 'cortex']) assert.deepEqual(calls(root).find((c) => c[0] === who).slice(1), ['judge', '--gen', '1', '--root', path.resolve(root)]);
+    // both children exit 1: 'failed' and a blocked line each; the suites still run and the commit is not blocked by them
+    reset(root);
+    const f = drive(root, ['finish', '--gen', '1', '--no-commit'], { CI: '1', STUB_SELF: 'fail', STUB_CORTEX: 'fail' });
+    assert.equal(f.code, 0, f.stderr);
+    assert.equal(f.json.self, 'failed');
+    assert.equal(f.json.cortex, 'failed');
+    assert.ok(f.json.blocked.includes('self: grow/self.mjs judge exited 1: self judge failed: stub'), f.json.blocked.join(' | '));
+    assert.ok(f.json.blocked.includes('cortex: grow/cortex.mjs judge exited 1: cortex judge failed: stub'), f.json.blocked.join(' | '));
+    assert.equal(f.json.committed, 'skipped (--no-commit)');
+    assert.deepEqual(f.json.tests, { exitCode: 0, pass: 5, fail: 0 });
+    // a void tournament (every sandbox refused) records nothing, so the cortex has no trial and is not run
+    reset(root);
+    const v = drive(root, ['finish', '--gen', '1', '--rejudge', '--no-commit'], { CI: '1', STUB_SANDBOX_FAIL: '*', STUB_CORTEX: 'moved' });
+    assert.equal(v.code, 0, v.stderr);
+    assert.equal(v.json.cortex, 'none');
+    assert.ok(!calls(root).some((c) => c[0] === 'cortex'), seq(root).join(' | '));
+    assert.equal(v.json.self, 'none');
+  } finally { clean(root); }
+});
+
+test('Day 3, the commit the judges shape: a failed self and cortex still commit; a reverted self ships its target and both verdicts reach the message', () => {
+  const root = makeRoot();
+  try {
+    twoCandidates(root);
+    plantJudges(root);
+    put(root, 'GROW.md', '# GROW (the trial edit)\n');
+    put(root, 'web/dist/index.html', '<!doctype html><title>stub</title>\n');
+    const env = gitEnvOf(root), git = gitIn(env);
+    const gitEnv = { GIT_CONFIG_GLOBAL: env.GIT_CONFIG_GLOBAL, GIT_CONFIG_NOSYSTEM: '1', GIT_TERMINAL_PROMPT: '0' };
+    git(root, ['init', '-q', '-b', 'master']);
+    git(root, ['add', '-A']);
+    git(root, ['commit', '-q', '-m', 'stub tree']);
+    const a = drive(root, ['finish', '--gen', '1', '--no-push'], { CI: '1', STUB_SELF: 'fail', STUB_CORTEX: 'fail', ...gitEnv });
+    assert.equal(a.code, 0, a.stderr);
+    assert.equal(a.json.self, 'failed');
+    assert.equal(a.json.cortex, 'failed');
+    assert.equal(a.json.committed, true, a.json.blocked.join(' | '));
+    assert.equal(a.json.pushed, 'skipped (--no-push)');
+    assert.equal(git(root, ['log', '-1', '--format=%s']), 'gen 1: 1 of 2 survived, parent direct');
+    assert.ok(git(root, ['show', '--name-only', '--format=', 'HEAD']).split(/\r?\n/).includes('grown/index.json'));
+    // the second finish of the generation (reused): the self trial reverted GROW.md, the cortex moved
+    const b = drive(root, ['finish', '--gen', '1', '--no-push'], { CI: '1', STUB_SELF: 'reverted', STUB_CORTEX: 'moved', ...gitEnv });
+    assert.equal(b.code, 0, b.stderr);
+    assert.ok(b.json.selection.startsWith('reused'), b.json.selection);
+    assert.equal(b.json.self.verdict, 'reverted');
+    assert.equal(b.json.committed, true, b.json.blocked.join(' | '));
+    assert.equal(git(root, ['log', '-1', '--format=%s']), 'gen 1: 1 of 2 survived, parent direct, self reverted GROW.md, cortex moved to stub-model-b');
+    assert.ok(git(root, ['log', '-1', '--format=%B']).includes(TRAILER));
+    const files = git(root, ['show', '--name-only', '--format=', 'HEAD']).split(/\r?\n/);
+    assert.ok(files.includes('GROW.md'), 'the written-back target is in the commit: ' + files.join(' '));
+    assert.ok(!files.some((x) => x === 'calls.log' || x.startsWith('work/')), 'nothing outside the ship paths: ' + files.join(' '));
+    assert.equal(git(root, ['show', 'HEAD:GROW.md']), '# GROW (written back by the self stub)');
+  } finally { clean(root); }
 });
