@@ -531,7 +531,7 @@ export async function promote({ gen, lane, dir, grownDir, now = () => new Date()
     const files = copyPlan(c.dir, c.id);
     const key = classKey(c.class, c.id), score = heldScore(c.verdict?.heldout);
     if (taken.has(key)) { archived.push({ id: c.id, class: c.class, score, holds: taken.get(key), why: 'one cell per class: ' + taken.get(key) + ' ranks first in this lane' }); continue; }
-    const current = index.cells.find((row) => classKey(row.class, row.id) === key) ?? null;
+    const current = index.cells.find((row) => row.tier !== 'neo' && classKey(row.class, row.id) === key) ?? null;
     if (current && !(score > heldScore(current.heldout))) {
       archived.push({ id: c.id, class: c.class, score, holds: current.id, why: 'one cell per class: ' + current.id + ' holds it at ' + heldScore(current.heldout) + ', and ' + score + ' is not above that' });
       continue;
@@ -571,7 +571,11 @@ export async function promote({ gen, lane, dir, grownDir, now = () => new Date()
       const h = c.verdict?.heldout ?? {};
       rows.push({ id: c.id, class: mod.meta.class, generation: gen, lane, file: 'cells/' + c.id + '.mjs', heldout: { score: h.score ?? null, n: h.n ?? null, ok: h.ok ?? null }, promotedAt: at });
     }
-    const next = { ...index, generation: Math.max(index.generation, gen), cells: [...index.cells.filter((row) => !retiredIds.has(row.id)), ...rows] };
+    // locked rows stay ahead of every NEO colony (grow/NEO.md: a colony never shadows a locked cell)
+    const kept = index.cells.filter((row) => !retiredIds.has(row.id));
+    const neoAt = kept.findIndex((row) => row.tier === 'neo');
+    const cells = neoAt < 0 ? [...kept, ...rows] : [...kept.slice(0, neoAt), ...rows, ...kept.slice(neoAt)];
+    const next = { ...index, generation: Math.max(index.generation, gen), cells };
     fs.writeFileSync(indexPath, JSON.stringify(next, null, 2) + '\n');
     fs.writeFileSync(mjsPath, render(next));
     nodeCheck(mjsPath);
