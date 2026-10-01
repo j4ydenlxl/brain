@@ -9,7 +9,8 @@ off, and "you only fail if you dont listen to me".
 ## What you may and may not do
 
 - You may write: `work/grow/gen-<n>/...` (candidates, runtime, never committed), `grown/` only through
-  `grow/store.mjs promote`, `web/dist` only through `node web/build.mjs`, and the commit the SHIP step makes.
+  `grow/store.mjs promote`, `web/dist` only through `node web/build.mjs`, `neo/` only through `grow/era.mjs`
+  (step 9), and the commits the SHIP step and the ERA step make.
   `work/` is the generation's own directory: every brief, candidate and verdict lives there and every arm may
   read its brief there. `state/` is not yours: the settings deny reading it, and you never go around a denied
   path (a step that seems to need one is written in `blocked.txt` instead).
@@ -43,6 +44,12 @@ off, and "you only fail if you dont listen to me".
    `node grow/cortex.mjs sense --self <your exact model id> --models <the model ids your environment names, comma separated>`.
    It prints the pointer and, when a model the rule has never seen appears (a stronger model shipped), registers it
    as the CHALLENGER: it is trialled, never trusted. You never edit `grown/cortex.json` by hand.
+   Then THE CADENCE (his order of 2026-10-01 18:22Z: "It should do every native"; the model is the exception, the
+   native tier the rule; the arms and the heartbeat spend ONE usage limit, and a spent limit stops the organism):
+   `date -u +%H:%M`, rounded to the nearest hour, is this heartbeat's hour. Hours 07 and 19 are CORTEX heartbeats:
+   steps 1 to 9, all of it. Every other hour is a NATIVE heartbeat: no arm, no agent, no brief, no step 1 to 8;
+   go straight to step 9 and burn eras until :50, and your whole final message is the last line step 9 printed.
+   A native heartbeat that finds no `grow/era.mjs` in the checkout is a cortex heartbeat.
 
 1. SENSE. `node grow/generation.mjs prepare` does the mechanical part: verifies the lock, fetches the knowledge
    pack (`node tools/fetch-pack.mjs`, from the public store, no token), reads the open misses
@@ -171,13 +178,26 @@ off, and "you only fail if you dont listen to me".
    with the cell id and the generation, the others go back to `open`. The site already answers a miss with
    "I am growing a cell for this" and logs it (act/ask-http.mjs), so every miss becomes a cell.
 
+9. ERA (his Order 7, "always burning": `grow/era.mjs`, contract `grow/NEO.md`). After step 7's collect, the rest of
+   the hour is the NEO tier's, and it calls no model: `node grow/era.mjs run --max-ms 480000 --commit` burns eras back
+   to back for eight minutes (one era = `grow/absorb.mjs pull`, `grow/teach.mjs intake`, `grow/neo.mjs grow` over the
+   ledger's tasks, `grow/measure.mjs run`, then ONE commit `era <e>: <tasks> tasks, <cells> cells, <mastered> mastered`
+   of `neo/` and `grown/` as jayden with the same trailer, pushed with one rebase when the remote moved) and prints ONE
+   JSON line. Run the same command again while the clock reads before :50 of the hour and its line did not say
+   `"stop":"idle"`; never start one at or after :50 (the next heartbeat fires at :59 and owns the checkout). No arm,
+   no agent, no brief: the command is the whole step. A step of an era that fails is a `blocked` line inside its JSON
+   and the era goes on; a command that exits non-zero is one line in `work/grow/gen-<n>/blocked.txt`, once, and the
+   step ends there (never retried in a loop). A generation that has no time left for an era is still done.
+
 ## Done
 
 The generation is done when `finish` printed its one JSON line:
 `{ generation, lanes, candidates, survivors, parent, baseline, selection, store, promoted, built, tests, committed,
 pushed, apps, misses: { growing, grown, reopened }, self, cortex, dream, blocked, at }`. Paste that line, unchanged, as your whole
 final message. A generation with zero survivors is a real result, not a failure: the losers are in the
-archive and the misses are open again for the next heartbeat.
+archive and the misses are open again for the next heartbeat. On a cortex heartbeat step 9 still runs after that
+line was printed (the line is pasted at the very end); a NATIVE heartbeat (step 0, the cadence) is done when the last
+`grow/era.mjs` command of step 9 printed its line, and that line is the whole final message.
 
 ## A human session (not the routine)
 

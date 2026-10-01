@@ -24,7 +24,7 @@ const BRAIN = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCRIPT = path.join(BRAIN, 'grow', 'self.mjs');
 const DIRECTIVE = '[SYSTEM DIRECTIVE: CONCISE MODE ENFORCED]';
 const CLAUDE_MD = fs.readFileSync(path.join(BRAIN, 'CLAUDE.md'));
-const GROW_MD = ['# GROW (stub)', '', 'Step 6 is grow/self.mjs; the pointer rule is grow/cortex.mjs; the NEO tier is selected by grow/neo.mjs and opened by grow/teach.mjs; every arm gets the CONCISE directive; node judge/verify.mjs prints LOCK OK first.', '', '## Done', '', 'Paste the final line.', ''].join('\n');
+const GROW_MD = ['# GROW (stub)', '', 'Step 6 is grow/self.mjs; the pointer rule is grow/cortex.mjs; the NEO tier is selected by grow/neo.mjs and opened by grow/teach.mjs; step 9 burns eras with grow/era.mjs; every arm gets the CONCISE directive; node judge/verify.mjs prints LOCK OK first.', '', '## Done', '', 'Paste the final line.', ''].join('\n');
 const NEO_SUITES = ['test/neo-kernel.test.mjs', 'test/neo.test.mjs', 'test/grow-teach.test.mjs'];
 /** The temp filesystem the stubs live on: whether it folds case (Windows, macOS) and may create a symbolic link (Windows without the privilege may not). */
 const FS = (() => {
@@ -133,8 +133,8 @@ function trialRoot(opts) {
 test('the rules: TARGET_RE, NEVER and judge/LOCK.json in each shape it may take decide the targets; SELF_SUITES names the planted suite', () => {
   for (const t of ['GROW.md', 'grow/notes.md', 'grow/tool.mjs', 'grow/CONTRACT.md', 'grow/a_b-c.d.mjs']) assert.ok(TARGET_RE.test(t), t);
   for (const t of ['README.md', 'grow/rows.jsonl', 'grow/sub/x.mjs', 'judge/judge.mjs', './GROW.md', 'grow/.hidden.mjs', 'grow/x.js', 'GROW.md.bak']) assert.ok(!TARGET_RE.test(t), t);
-  assert.deepEqual([...NEVER], ['grow/self.mjs', 'grow/cortex.mjs', 'grow/sandbox.mjs', 'grow/probe.mjs', 'grow/neo.mjs', 'grow/teach.mjs']);
-  assert.deepEqual([...KEEP], ['## Done', 'judge/verify.mjs', 'LOCK OK', 'grow/self.mjs', 'grow/cortex.mjs', 'grow/neo.mjs', 'grow/teach.mjs', 'CONCISE']);
+  assert.deepEqual([...NEVER], ['grow/self.mjs', 'grow/cortex.mjs', 'grow/sandbox.mjs', 'grow/probe.mjs', 'grow/neo.mjs', 'grow/teach.mjs', 'grow/NEO.md', 'grow/measure.mjs']);
+  assert.deepEqual([...KEEP], ['## Done', 'judge/verify.mjs', 'LOCK OK', 'grow/self.mjs', 'grow/cortex.mjs', 'grow/neo.mjs', 'grow/teach.mjs', 'grow/era.mjs', 'CONCISE']);
   assert.ok(!NEVER.includes('grow/neo-kernel.mjs'), 'the kernel stays a target: a new primitive is the growth surface');
   for (const k of KEEP) assert.ok(GROW_MD.includes(k), 'the stub GROW.md holds ' + k);
   assert.ok(SELF_SUITES.includes(PLANTED) && SELF_SUITES.includes('test/grow-self.test.mjs'));

@@ -42,12 +42,13 @@ export const KEEP_DIR = 'grown/self';
 export const TARGET_RE = /^(GROW\.md|grow\/[A-Za-z0-9][A-Za-z0-9_.-]*\.(mjs|md))$/;
 /** Never a candidate: this file (it judges the trial), the cortex rule, the two that produce the result.json the locked
  *  judge reads (an edit there could grade itself up), and the two that select and admit the NEO tier (grow/NEO.md: the
- *  organism may not edit what grades it). neverOf adds every file judge/LOCK.json names. */
-export const NEVER = Object.freeze(['grow/self.mjs', 'grow/cortex.mjs', 'grow/sandbox.mjs', 'grow/probe.mjs', 'grow/neo.mjs', 'grow/teach.mjs']);
+ *  organism may not edit what grades it), that contract itself (his orders, verbatim at its head) and the consistent
+ *  measure (grow/measure.mjs: the series its improvement is read from). neverOf adds every file judge/LOCK.json names. */
+export const NEVER = Object.freeze(['grow/self.mjs', 'grow/cortex.mjs', 'grow/sandbox.mjs', 'grow/probe.mjs', 'grow/neo.mjs', 'grow/teach.mjs', 'grow/NEO.md', 'grow/measure.mjs']);
 export const MAX_BYTES = 300 * 1024;
 export const MAX_TEXT = 2000;
-/** A GROW.md candidate keeps these (the lock, the self step, the cortex rule, the NEO selector and teacher, his directive and the finish line are the procedure's spine). */
-export const KEEP = Object.freeze(['## Done', 'judge/verify.mjs', 'LOCK OK', 'grow/self.mjs', 'grow/cortex.mjs', 'grow/neo.mjs', 'grow/teach.mjs', 'CONCISE']);
+/** A GROW.md candidate keeps these (the lock, the self step, the cortex rule, the NEO selector and teacher, the era step (his Order 7: always burning), his directive and the finish line are the procedure's spine). */
+export const KEEP = Object.freeze(['## Done', 'judge/verify.mjs', 'LOCK OK', 'grow/self.mjs', 'grow/cortex.mjs', 'grow/neo.mjs', 'grow/teach.mjs', 'grow/era.mjs', 'CONCISE']);
 /** A candidate module may not name the files an arm never opens (the judge's held-out truth). */
 export const FORBID = Object.freeze(['judge/heldout', 'judge/control.jsonl', 'state/grow/baseline']);
 /** The suites a candidate must keep green; suitesWith runs those the checked root holds (a NEO suite not written yet is no failure). */
