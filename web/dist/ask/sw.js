@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "ad22e968404a52573931c72f26ff82ad970c2f1c2db2c16d423b7a3dc109c070";
+const VERSION = "871d7d3773ad58081fee551c3191b7ed680e4b7be9d31bcbfa6053106d2c0311";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"a41d9191995bdab94e9e5fbf34d6d82178d18c8ba11caa77c68aae1dc331c91e"},
+  {"url":"/organism/cells.json","sha256":"206b89e1c2c4deb5201db0bd7a9dbe3830235cbee3b9f54204b48035fd29585e"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -119,10 +119,13 @@ const PRECACHE = [
   {"url":"/organism/cells/discards-of-year-2783-neo-g8.mjs","sha256":"2f3478e7379b376fa73d674d4434c1b14550ca5f2f74ec254485c37d3efb6807"},
   {"url":"/organism/cells/recreational-of-year-477f-neo-g8.mjs","sha256":"2a435563529c966f983a45b5e19ceedbd1f189837ac87eef585003ed571c8e1c"},
   {"url":"/organism/cells/recreational-of-year-477f-compare-neo-g8.mjs","sha256":"d6131049c1cd58015d5a2c702ef10437864f23c39e0ae29303b5799dc8845958"},
+  {"url":"/organism/cells/season-of-air-date-6fe0-compare-neo-g8.mjs","sha256":"398618466ed890911ee6068a61318f656ec4153ed0a67a4a1cc87cef5937417f"},
+  {"url":"/organism/cells/season-of-air-date-6fe0-smaller-neo-g8.mjs","sha256":"8031529bb80d1c8b23f92dbe54167b529d8f5a0c0e3f1e9f71312ec08ed698c2"},
+  {"url":"/organism/cells/season-of-air-date-6fe0-sum-neo-g8.mjs","sha256":"66d88855936886d80ee7792cfd15cfd76b522b8a4bb1363e2d3de347d51a6f31"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"c7f2683aa637e93c877cbaa57e28ef20fd676c70c2a5688a86fbe3a7b9d6e756"}
+  {"url":"/organism/era/tasks.json","sha256":"767cc07567b145169dd17d77ee54df9dc01bbfe34acb8913434e4128a1db29bc"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -208,6 +211,8 @@ const LAZY = [
   {"url":"/organism/era/tasks/city-of-name-b6cd-rev.json","sha256":"340178b0255a6b02a2d6691ea6b1ae44bd6c383199b5702a7150e3abd6af2a3b"},
   {"url":"/organism/era/tasks/city-region.json","sha256":"de86667000e2dc1a8b0392009567d89b5473e43bc37112d2b2917fa3675f1ec9"},
   {"url":"/organism/era/tasks/city-time-zone.json","sha256":"63a279bff97b2134f203685387f400aa7a85efd7091841575a58e3b4e6ff5cd7"},
+  {"url":"/organism/era/tasks/clean-name-of-album-565e.json","sha256":"b0142155d6747399fb1465f6b73818405c58b8d713ecf892656153a0c5291ce8"},
+  {"url":"/organism/era/tasks/clean-name-of-album-565e-rev.json","sha256":"e2eeb9e693ceb53c3500d7a6ac80dae2e778ac0103e4c9de422a1a5f1051e13d"},
   {"url":"/organism/era/tasks/close-of-date-338c-sum.json","sha256":"9daafce8a53b45733ec5159539188784b32bf64e26614008fb3db34a48c944d2"},
   {"url":"/organism/era/tasks/co2-annual-mean.json","sha256":"0e2651706e6b9264b543db844aa2b3179f432c35898d6c93bcb1341c950ef66a"},
   {"url":"/organism/era/tasks/co2-annual-mean-compare.json","sha256":"c4bdf1acdeedf359e80803198664facd3d1c901a876a3010767e956fa2ded8c9"},
@@ -262,6 +267,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/country-name-of-country-c-4749-rev.json","sha256":"64621dbae146ab4838c4156c3a6ee8e32ae3e7b8d58dd19674774973c44b63cf"},
   {"url":"/organism/era/tasks/country-numeric-code.json","sha256":"c3a3dd30129adc5c6648b4a2b7b7a0e3bb7af07c932c877c4707e7667e64f76f"},
   {"url":"/organism/era/tasks/country-of-bean-origin-of-6337.json","sha256":"8332575bd5e8e73ce037187f04472eb676f2d95869910364dfe2d298c6feedd7"},
+  {"url":"/organism/era/tasks/country-of-cheese-2f13.json","sha256":"91b50ff5988ff310ab542970fa28771a58291f38a2f10431cd739136b3c42745"},
   {"url":"/organism/era/tasks/country-of-volcano-name-d399.json","sha256":"2fb35f2c93d1d71c2cc31e2d39ef6d20fe36d1e19b1d366037a31f53941183f7"},
   {"url":"/organism/era/tasks/country-population.json","sha256":"c62ed6ec34c7864cd9fcf6e190ff8338396ebd95ea12bb40af052b969376dd0c"},
   {"url":"/organism/era/tasks/country-population-compare.json","sha256":"8d7c0fecaf07e954abffa112606dd86a745b62acbe2b917ac42a139119475f8d"},
@@ -356,17 +362,22 @@ const LAZY = [
   {"url":"/organism/era/tasks/fiscal-sponsorship-model-74bf-rev.json","sha256":"2f19b4adf89988b768be087e8a231c1a532979f500d720d1942b4fe737214c58"},
   {"url":"/organism/era/tasks/fr-finance-vix-vix-daily-065995-da-d741c7.json","sha256":"8055697354f24909ffd93dd38a10c9ce38c960e734a5143bf4b96d3056b342ad"},
   {"url":"/organism/era/tasks/fr-finance-vix-vix-daily-065995-da-f7d004.json","sha256":"a94f30d6b55073fd484136f05d2cab35b55a4bd9d528adeba26b8a46007f9471"},
+  {"url":"/organism/era/tasks/fr-finance-vix-vix-daily-065995-hi-4cfb42.json","sha256":"e267f26a7bd60d7091c5e9bc6c0f308abbad60312a82d74630c228b3489e19a1"},
   {"url":"/organism/era/tasks/fr-finance-vix-vix-daily-065995-hi-ba582e.json","sha256":"8a913f55fb2a94885493e9984c9bab4a34df10cb29c702e8bd431bc44249e183"},
   {"url":"/organism/era/tasks/fr-finance-vix-vix-daily-065995-op-b5e052.json","sha256":"d783221b59eb7b215f8708ade6711727dead65823e024c0026717fac66e76f1f"},
   {"url":"/organism/era/tasks/fr-finance-vix-vix-daily-065995-op-bb1986.json","sha256":"3c53cf5e6bf64dfec91aab549c9785ce25f15bf31092c429564acaa6c8482c4f"},
+  {"url":"/organism/era/tasks/fr-finance-vix-vix-monthly-e0dd17-5a13b6.json","sha256":"7399bc3ba31739f70fafd586d3dc321c29d0ffc069fe8a67b7df9204f7c36493"},
+  {"url":"/organism/era/tasks/fr-finance-vix-vix-monthly-e0dd17-c14489.json","sha256":"d2906e5d2325dfc9790dc22441a91b19a275f7da7128938639367c39fe015869"},
+  {"url":"/organism/era/tasks/fr-natural-gas-daily-4cc47b-date-to-price.json","sha256":"5b6d46ac70e225c8daf47fbd9eaf50c9af57db00bf5a20538a9da4d5fbef2216"},
+  {"url":"/organism/era/tasks/fr-natural-gas-daily-4cc47b-price-to-date.json","sha256":"cd1ead8f7ceca0c95910d1d5fcf8d8c189d40d5e8e3f9018547232fc1fb93093"},
+  {"url":"/organism/era/tasks/fr-natural-gas-monthly-984ace-mont-f12891.json","sha256":"7de5abc188075d3d44d702df4577549aeddc9c398ae987f3ca0c40aa6448333e"},
   {"url":"/organism/era/tasks/french-of-alpha3-b-1798.json","sha256":"e27df6df22ed6f1dccf46c5411a9863804ca8a4b6935d4601409a6785ca5924e"},
   {"url":"/organism/era/tasks/french-of-alpha3-b-1798-rev.json","sha256":"61ff46bc89b3c72813394698961bad978d7cf0a92d55e15d36ec8f8227a5c3fe"},
   {"url":"/organism/era/tasks/fruit-member.json","sha256":"aed5454e20511e2b84ded17ad4d5d08dd3a6a05df7396254c9f05a01d115c28f"},
   {"url":"/organism/era/tasks/fruit-which.json","sha256":"fc60027e660f5c4a6674269bf9d77a36e33af5c48f7303ae0c4c5ce9a5ed3141"},
-  {"url":"/organism/era/tasks/gdp-per-capita-of-cou-c914-compare.json","sha256":"50f44e384a27d0531f2bae193a9eb341ba79f466dfad6f8cf23b997b2809528e"},
-  {"url":"/organism/era/tasks/gdp-per-capita-of-cou-c914-larger.json","sha256":"28f684d08ceda99084a1ab952a9bc7592e5b9885a27f00c37bed9f90d07e0dc2"},
-  {"url":"/organism/era/tasks/gdp-per-capita-of-cou-c914-smaller.json","sha256":"17f82808f6f519ceba21b4a3b8bd81238a278f5e2615212e1c19639c79ac4159"},
-  {"url":"/organism/era/tasks/gdp-per-capita-of-cou-c914-sum.json","sha256":"13b0ec9330f1e7d8dd008d9d6463df87b90c1ae91cf72a1bf2425f4a9df82b12"}
+  {"url":"/organism/era/tasks/gemoji-emoji-name-to-emoji-category.json","sha256":"82d51b3dc85ca817005026dd5ae84ce2d0e2c55d2acdfd37f8f8749590100e08"},
+  {"url":"/organism/era/tasks/gemoji-emoji-name-to-emoji-shortcode.json","sha256":"ccd1903e09b86b9555e96d8e3c840fe1bd9dfffc0b727f65bd91df4b89edf6d9"},
+  {"url":"/organism/era/tasks/gemoji-emoji-shortcode-to-emoji.json","sha256":"9d253f520d1ddb569afb4a5b071852c076e2cd1c58c0b9cb81d486e106728caf"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
