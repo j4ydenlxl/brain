@@ -38,6 +38,10 @@
 - (Oct 2, about 12:04Z) "its should be all on cloud so even phones can use no hardware constraints its cloud ai" (a correction to the pocket part: the work happens in the CLOUD, the phone is only the surface, so no device limits what it can do)
 - (Oct 2, about 12:06Z) "$0 per token to run its ai datacenter in the cloud and works Exaxtly like a FRONTEIR LLM"
 - (Oct 2, about 12:06Z) "This is a paradigm shift in ai, u are to find it"
+- (Oct 2, about 12:06Z) "Shiuld work better than you and able to create the most insane things like an ai brain for a brain just like you did but orthogonally not linearly"
+- (Oct 2, about 12:08Z) "It should be an octopus over the entire fucking internet scrape every ticker and then compileand then use it for memecoin trading but u cant build that its gotta create and assemble the cells for it and it should be a god at memecoins" (he repeats the correction: I do not build the trader; the organism creates and assembles the cells for it from general abilities. No order path, no key and no wallet is ever written by a session.)
+- (Oct 2, about 12:44Z) "It is a ultimate of all my projects, and an ai datacenter in pocket that has computer use and can multiply computer use to generate thousands of screens and control all them/ warp time, scrape in massive speeds. Why dont you build a visualization at 90 percent"
+- (Oct 2, about 13:01Z) "It should fill its own gaps you are to build EXTREMELY FIRM ORTHOGONAL PRIMITIVES CONNECTIONS, extremely powerful for it to surpass fronteir level and be able to generate 100 REAL CLOYD COMPUTERS, REAL COMPUTERS THAT WORK EXACTLY LIKE TO THOUSANDS"
 
 From MANUAL.md section A: "The central architectural principle is the use of orthogonal computational primitives. ... A primitive may perform transformation, prediction, retrieval, comparison, routing, aggregation, temporal integration, memory access, evaluation, simulation, or another fundamental computational operation. These primitives are intentionally general."
 
