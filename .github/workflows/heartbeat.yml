@@ -2,11 +2,38 @@
 #
 # His order, 2026-10-01 19:59Z: "the organisms need to heartbeat itself ... The organism should be
 # seperates from claude code, the organism operates and iterates itself and u have to make that".
-# His Claude plan ends 2026-10-02, and with it the hourly claude.ai routine that has been the only
-# heartbeat. This job is the body that stays: a GitHub runner checks the repository out, burns eras
-# (grow/era.mjs: absorb, open, grow, measure, ship; no model call anywhere in it) and each era
+# His order, 2026-10-02 12:00Z: "access to cloud computing and ability to do everything"; 12:04Z: "its
+# should be all on cloud so even phones can use no hardware constraints its cloud ai". A GitHub runner
+# checks the repository out and burns eras (grow/era.mjs; no model call anywhere in it); each era
 # commits and pushes neo/ and grown/ with the job's own token. No secret is read. No package is
 # installed. Nothing here calls Claude, Anthropic, or any model.
+#
+# ITS OWN COMPUTE (contract c12, grow/compute.mjs). Every beat starts with job `plan`: it reads this
+# month's spent runner minutes and the repository's visibility through the API (the job's own token),
+# and prints the beat: minutes, runners at once (shards), relay or not. PRIVATE (2,000 free minutes a
+# month, shared by every workflow): the minutes left, less a 10 percent reserve and less the plan job
+# of every slot to come, spread EVENLY over the slots left in the month; never more; spent, no beat.
+# PUBLIC (no cap): the longest beats, PUBLIC.shards runners at once, relayed back to back. No API: a
+# safe small default. Then job `grow` (a matrix, one runner per shard, contract c8) grows and STAGES
+# its share of the tasks and merges nothing; job `merge` takes every stage, runs ONE era that merges
+# them through the era's own steps and pipeline (era run --staged), then plain eras until its minutes
+# are spent, ships through the era's own ship step, rebuilds the site data when neo/ or grown/
+# changed (Vercel deploys dilation.dev from every push) and relays the next beat when the plan says
+# so. A tree whose swarm has no --shard or whose era has no --staged plans one runner: job `merge`
+# runs the eras exactly as before. A push to master by another body that changed neo/ or grown/
+# rebuilds the site data (job `site`); a push made with the job's own token starts no run.
+#
+# REAL COMPUTERS (grow/machine.mjs). His words, 2026-10-02: "be able to generate 100 REAL CLOYD
+# COMPUTERS, REAL COMPUTERS THAT WORK EXACTLY LIKE TO THOUSANDS". Every runner of the matrix is a fresh
+# computer: beside its swarm shard it records itself and drives its own installed Chrome over its
+# slice of the queue (machine step --shard i/n --out), and uploads its screens and records as its OWN
+# artifact. The merge downloads every computer's artifact and lands them under neo/ (machine land,
+# verified, capped) before each era, so the era ships them. A one-runner beat is its own computer: the
+# merge runs the step itself. A public beat runs PUBLIC.shards computers (GitHub allows 256 jobs in one
+# matrix; a free account runs 20 at once and queues the rest). The dispatch input `computers` asks for
+# exactly that many (at most 256) on any repository; the plan prints the cost in runner minutes before
+# the matrix starts and refuses when a private budget cannot pay, naming the number it could pay.
+#   gh workflow run heartbeat.yml --ref master -f computers=100
 #
 # INSTALL (one time, his hand: a token needs the `workflow` scope to push a file under
 # .github/workflows, and the token on his PC holds gist, read:org, repo):
@@ -15,56 +42,245 @@
 #   git add .github/workflows/heartbeat.yml && git commit -m "heartbeat: the organism beats by itself" && git push origin HEAD:master
 #   gh workflow run heartbeat.yml --ref master          (the first beat, now; the schedule takes over)
 #
-# MINUTES. A private repository has 2,000 free runner minutes a month, shared with cloud.yml (its
-# daily job spends BRAIN_WALL_MINUTES, 55 by default). The defaults here are one 6 minute beat every
-# 3 hours: 8 beats, about 56 runner minutes a day. Knobs, all repository variables (gh variable set):
-#   BRAIN_BEAT_MINUTES   minutes of eras per beat (default 6, at most 330)
-#   (dispatch input) beats   N: N beats in a row, then the relay stops by itself (8 hours = minutes 240, beats 2)
-#   BRAIN_BEAT_RELAY     true: each beat dispatches the next one, so the burn is constant (a public
-#                        repository has no minute cap; a private one spends its month in under 2 days)
-# STOP: commit a file named neo/STOP (any content) and every later beat exits 0 before it burns; or
-# run gh workflow disable heartbeat.yml.
+# KNOBS. Repository variable BRAIN_BUDGET_MINUTES (default 2000: the month's free minutes). Dispatch
+# inputs: minutes (empty: the plan decides; a private beat never exceeds its share), relay ("false"
+# stops a public relay; the plan decides otherwise), beats (N beats in a row, at most 12).
+# STOP: commit a file named neo/STOP (any content) and every later beat ends in its plan job before it
+# burns; or run gh workflow disable heartbeat.yml.
 
 name: heartbeat
 
 on:
   schedule:
-    # minute 23 of every third hour, UTC. GitHub may start a scheduled run late when its queue is busy.
+    # minute 23 of every third hour, UTC: one slot of the plan. GitHub may start a scheduled run late.
     - cron: "23 */3 * * *"
   workflow_dispatch:
     inputs:
       minutes:
-        description: "minutes of eras in this beat (at most 330)"
+        description: "minutes each runner grows (empty: the plan decides; a private beat never exceeds its share; at most 330)"
         required: false
-        default: "6"
+        default: ""
       relay:
-        description: "true: dispatch the next beat when this one ends"
+        description: "false: no relay after this beat (empty: the plan decides; a public repository relays back to back)"
         required: false
-        default: "false"
+        default: ""
       beats:
         description: "beats in a row: each one dispatches the next until the count is spent (at most 12)"
         required: false
         default: "1"
+      computers:
+        description: "real computers in this run's matrix, each driving its own browser (empty: the plan decides; at most 256; a private budget that cannot pay is refused)"
+        required: false
+        default: ""
+  push:
+    branches: [master]
+    paths: ["neo/**", "grown/**"]
 
 permissions:
   contents: write
   actions: write
 
 concurrency:
-  group: heartbeat
+  # every beat shares the group 'heartbeat' (one at a time, none cancelled); a site rebuild has its own
+  group: ${{ github.event_name == 'push' && 'heartbeat-site' || 'heartbeat' }}
   cancel-in-progress: false
 
 jobs:
-  beat:
+  plan:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      stopped: ${{ steps.plan.outputs.stopped }}
+      run: ${{ steps.plan.outputs.run }}
+      beat_minutes: ${{ steps.plan.outputs.beat_minutes }}
+      shards: ${{ steps.plan.outputs.shards }}
+      matrix: ${{ steps.plan.outputs.matrix }}
+      relay: ${{ steps.plan.outputs.relay }}
+      merge_minutes: ${{ steps.plan.outputs.merge_minutes }}
+      gen: ${{ steps.plan.outputs.gen }}
+      computers: ${{ steps.plan.outputs.computers }}
+      cost_minutes: ${{ steps.plan.outputs.cost_minutes }}
+      swarm: ${{ steps.plan.outputs.swarm }}
+      sha: ${{ steps.plan.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: the month's ledger from the last plan
+        uses: actions/cache/restore@v4
+        with:
+          path: neo/COMPUTE.json
+          key: compute-${{ github.run_id }}
+          restore-keys: compute-
+
+      - name: the stop file and the plan
+        id: plan
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          BRAIN_BUDGET_MINUTES: ${{ vars.BRAIN_BUDGET_MINUTES }}
+          WANT_MINUTES: ${{ inputs.minutes }}
+          WANT_RELAY: ${{ inputs.relay }}
+          WANT_COMPUTERS: ${{ inputs.computers }}
+        run: |
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          if [ -e neo/STOP ]; then
+            echo "stopped by neo/STOP"
+            printf '%s\n' stopped=true run=false beat_minutes=0 shards=0 'matrix=[0]' relay=false merge_minutes=0 gen=0 computers=0 cost_minutes=0 swarm=false >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "stopped=false" >> "$GITHUB_OUTPUT"
+          want=""
+          case "$WANT_MINUTES" in ''|*[!0-9]*) ;; *) want="--minutes $WANT_MINUTES" ;; esac
+          comp=""
+          case "$WANT_COMPUTERS" in ''|0*|*[!0-9]*) ;; *) comp="--computers $WANT_COMPUTERS" ;; esac
+          line=""
+          if [ -f grow/compute.mjs ]; then
+            out=$(node grow/compute.mjs plan --write $want $comp) || true
+            line=$(printf '%s\n' "$out" | tail -n 1)
+          fi
+          # the plan and its cost in runner minutes, printed before any computer of the matrix starts
+          echo "plan: $line"
+          cost=$(printf '%s' "$line" | sed -n 's/.*"costMinutes":\([0-9]*\).*/\1/p')
+          computers=$(printf '%s' "$line" | sed -n 's/.*"computers":\([0-9]*\).*/\1/p')
+          echo "cost: ${cost:-unknown} runner minutes for ${computers:-unknown} computers"
+          if [ "$WANT_RELAY" = "false" ]; then line=$(printf '%s' "$line" | sed 's/"relay":true/"relay":false/'); fi
+          if ! node grow/compute.mjs outputs "$line" >> "$GITHUB_OUTPUT"; then
+            printf '%s\n' run=true beat_minutes=4 shards=1 'matrix=[0]' relay=false merge_minutes=0 gen=0 >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: keep the month's ledger for the next plan
+        if: steps.plan.outputs.stopped == 'false' && hashFiles('neo/COMPUTE.json') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: neo/COMPUTE.json
+          key: compute-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: hand the ledger to the merge (the era commits it)
+        if: steps.plan.outputs.run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: compute-${{ github.run_id }}
+          path: neo/COMPUTE.json
+          if-no-files-found: ignore
+          retention-days: 1
+
+  grow:
+    needs: plan
+    if: needs.plan.outputs.run == 'true' && fromJSON(needs.plan.outputs.shards) > 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    defaults:
+      run:
+        shell: bash
+    env:
+      SHARD: ${{ matrix.shard }}
+      SHARDS: ${{ needs.plan.outputs.shards }}
+      BEAT_MINUTES: ${{ needs.plan.outputs.beat_minutes }}
+      GEN: ${{ needs.plan.outputs.gen }}
+      SWARM: ${{ needs.plan.outputs.swarm }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: this computer drives its own browser over its slice of the queue, beside its shard
+        run: |
+          out="$RUNNER_TEMP/machine"
+          mkdir -p "$out"
+          if [ -f grow/machine.mjs ]; then
+            case "$BEAT_MINUTES" in ''|*[!0-9]*) BEAT_MINUTES=4 ;; esac
+            mms=$(( BEAT_MINUTES * 60000 - 30000 ))
+            [ "$mms" -gt 1200000 ] && mms=1200000
+            [ "$mms" -lt 30000 ] && mms=30000
+            nohup node grow/machine.mjs step --shard "$SHARD/$SHARDS" --out "$out" --era "${GITHUB_RUN_NUMBER:-0}" --max-ms "$mms" > "$RUNNER_TEMP/machine.log" 2>&1 &
+            echo $! > "$RUNNER_TEMP/machine.pid"
+            echo "machine: computer $SHARD of $SHARDS started, at most $mms ms, on $(nproc) cores"
+          else
+            echo "machine: no grow/machine.mjs in this tree"
+          fi
+
+      - name: grow this shard's tasks and stage them, merging nothing
+        run: |
+          stage="$RUNNER_TEMP/stage"
+          mkdir -p "$stage"
+          case "$BEAT_MINUTES" in ''|*[!0-9]*) BEAT_MINUTES=4 ;; esac
+          [ "$BEAT_MINUTES" -gt 330 ] && BEAT_MINUTES=330
+          ms=$(( BEAT_MINUTES * 60000 ))
+          gen=""
+          case "$GEN" in ''|0|*[!0-9]*) ;; *) gen="--gen $GEN" ;; esac
+          if [ "$SWARM" = "false" ]; then
+            echo "swarm: this tree runs no shards; this computer drives its browser only"
+          elif out=$(node grow/swarm.mjs grow $gen --shard "$SHARD/$SHARDS" --stage "$stage" --no-merge --max-ms "$ms"); then
+            printf '%s\n' "$out" | tail -n 1
+          else
+            echo "shard $SHARD of $SHARDS failed; what it staged still goes to the merge"
+          fi
+          echo "staged: $(find "$stage" -type f | wc -l) files"
+
+      - name: this computer's line (the browser step ends by its own deadline)
+        if: always()
+        run: |
+          pid=$(cat "$RUNNER_TEMP/machine.pid" 2>/dev/null || true)
+          if [ -n "$pid" ]; then
+            waited=0
+            while kill -0 "$pid" 2>/dev/null && [ "$waited" -lt 1500 ]; do sleep 2; waited=$(( waited + 2 )); done
+            kill -0 "$pid" 2>/dev/null && kill "$pid" 2>/dev/null || true
+            tail -n 1 "$RUNNER_TEMP/machine.log" || true
+          fi
+          echo "machine: $(find "$RUNNER_TEMP/machine" -type f 2>/dev/null | wc -l) files for the merge"
+
+      - name: hand the stage to the merge
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage-${{ github.run_id }}-${{ matrix.shard }}
+          path: ${{ runner.temp }}/stage
+          if-no-files-found: ignore
+          retention-days: 1
+
+      - name: hand this computer's screens and record to the merge, as its own artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: machine-${{ github.run_id }}-${{ matrix.shard }}
+          path: ${{ runner.temp }}/machine
+          if-no-files-found: ignore
+          retention-days: 1
+
+  merge:
+    needs: [plan, grow]
+    if: ${{ !cancelled() && needs.plan.result == 'success' && needs.plan.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 350
     defaults:
       run:
         shell: bash
     env:
-      BEAT_MINUTES: ${{ github.event_name == 'workflow_dispatch' && inputs.minutes || vars.BRAIN_BEAT_MINUTES || '6' }}
-      RELAY: ${{ github.event_name == 'workflow_dispatch' && inputs.relay || vars.BRAIN_BEAT_RELAY || 'false' }}
-      BEATS: ${{ github.event_name == 'workflow_dispatch' && inputs.beats || '1' }}
+      SHARDS: ${{ needs.plan.outputs.shards }}
+      BEAT_MINUTES: ${{ needs.plan.outputs.beat_minutes }}
+      MERGE_MINUTES: ${{ needs.plan.outputs.merge_minutes }}
+      RELAY: ${{ needs.plan.outputs.relay }}
+      BEATS: ${{ inputs.beats || '1' }}
+      WANT_MINUTES: ${{ inputs.minutes }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -75,51 +291,178 @@ jobs:
         with:
           node-version: "24"
 
-      - name: the stop file
-        id: stop
-        run: |
-          if [ -e neo/STOP ]; then echo "stopped by neo/STOP"; echo "stopped=true" >> "$GITHUB_OUTPUT"; else echo "stopped=false" >> "$GITHUB_OUTPUT"; fi
+      - name: the stages of every shard
+        if: fromJSON(needs.plan.outputs.shards) > 1
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: stage-${{ github.run_id }}-*
+          path: ${{ runner.temp }}/stage
+          merge-multiple: true
 
-      - name: burn eras until the beat is spent
-        if: steps.stop.outputs.stopped == 'false'
+      - name: the screens and records of every computer, one directory each
+        if: fromJSON(needs.plan.outputs.shards) > 1
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: machine-${{ github.run_id }}-*
+          path: ${{ runner.temp }}/machine
+
+      - name: the month's ledger of this plan
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: compute-${{ github.run_id }}
+          path: ${{ runner.temp }}/compute
+
+      - name: burn eras (the staged era first when the beat ran shards), each shipped by the era
+        id: era
         run: |
           git config user.name "brain organism"
           git config user.email "brain-organism@users.noreply.github.com"
-          case "$BEAT_MINUTES" in ''|*[!0-9]*) BEAT_MINUTES=6 ;; esac
-          [ "$BEAT_MINUTES" -gt 330 ] && BEAT_MINUTES=330
-          [ "$BEAT_MINUTES" -lt 2 ] && BEAT_MINUTES=2
-          end=$(( $(date +%s) + BEAT_MINUTES * 60 ))
+          echo "start=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          case "$BEAT_MINUTES" in ''|*[!0-9]*) BEAT_MINUTES=4 ;; esac
+          case "$MERGE_MINUTES" in ''|*[!0-9]*) MERGE_MINUTES=0 ;; esac
+          case "$SHARDS" in ''|*[!0-9]*) SHARDS=1 ;; esac
+          # every era starts from what the remote holds: another writer may have pushed since the last
+          # one, and an era whose push lost is dropped here and grown again on top of the newer head
+          # every computer's screens and records land under neo/ (verified, capped) after each level, so the era ships them
+          level() {
+            git rebase --abort >/dev/null 2>&1 || true
+            if git fetch -q origin master; then git reset -q --hard origin/master; git clean -fdq -- neo grown; fi
+            if [ -f "$RUNNER_TEMP/compute/COMPUTE.json" ]; then mkdir -p neo; cp "$RUNNER_TEMP/compute/COMPUTE.json" neo/COMPUTE.json; fi
+            if [ -f grow/machine.mjs ] && [ -d "$RUNNER_TEMP/machine" ]; then
+              node grow/machine.mjs land --from "$RUNNER_TEMP/machine" > "$RUNNER_TEMP/land.log" 2>&1 || echo "machine: land failed: $(tail -n 1 "$RUNNER_TEMP/land.log")"
+            fi
+          }
+          if [ "$SHARDS" -gt 1 ]; then minutes=$MERGE_MINUTES; else minutes=$BEAT_MINUTES; fi
+          [ "$minutes" -gt 330 ] && minutes=330
+          [ "$minutes" -lt 2 ] && minutes=2
+          end=$(( $(date +%s) + minutes * 60 ))
+          # a one-runner beat is its own computer: it drives its browser here, inside the beat's minutes
+          if [ "$SHARDS" -le 1 ] && [ -f grow/machine.mjs ]; then
+            mms=$(( minutes * 12000 ))
+            [ "$mms" -gt 300000 ] && mms=300000
+            [ "$mms" -lt 30000 ] && mms=30000
+            node grow/machine.mjs step --shard 0/1 --out "$RUNNER_TEMP/machine/self" --era "${GITHUB_RUN_NUMBER:-0}" --max-ms "$mms" | tail -n 1 || echo "machine: the step failed; the eras go on"
+          fi
+          if [ -d "$RUNNER_TEMP/machine" ]; then level; echo "machine: $(tail -n 1 "$RUNNER_TEMP/land.log" 2>/dev/null)"; fi
+          # the watch step: every keyless public source on the watch list, one snapshot a beat, into packs under neo/ the era ships
+          if [ -f grow/tape.mjs ]; then
+            node grow/tape.mjs pull --max-ms 30000 --era "${GITHUB_RUN_NUMBER:-0}" | tail -n 1 || echo "tape: the pull failed; the eras go on"
+          fi
           eras=0
+          # a one-runner beat downloads no stage: counting a missing directory must not end the step (pipefail)
+          staged=0
+          if [ -d "$RUNNER_TEMP/stage" ]; then staged=$(find "$RUNNER_TEMP/stage" -type f | wc -l); fi
+          if [ "$SHARDS" -gt 1 ]; then echo "stages: $staged files from $SHARDS shards"; fi
+          if [ "$SHARDS" -gt 1 ] && [ "$staged" -gt 0 ] && node grow/era.mjs --help | grep -q -- '--staged'; then
+            level
+            ms=$(( (end - $(date +%s) - 45) * 1000 ))
+            [ "$ms" -lt 60000 ] && ms=60000
+            if out=$(node grow/era.mjs run --commit --staged "$RUNNER_TEMP/stage" --max-eras 1 --max-ms "$ms"); then
+              printf '%s\n' "$out" | tail -n 1
+              eras=1
+            else
+              echo "the staged era failed; plain eras go on"
+            fi
+          fi
           # an era needs room to measure and ship: never start one with under 90 seconds left
           while [ $(( end - $(date +%s) )) -ge 90 ]; do
             left_ms=$(( (end - $(date +%s) - 45) * 1000 ))
             ms=$(( left_ms < 480000 ? left_ms : 480000 ))
-            # every era starts from what the remote holds: another writer may have pushed since the last
-            # one, and an era whose push lost is dropped here and grown again on top of the newer head
-            git rebase --abort >/dev/null 2>&1 || true
-            if git fetch -q origin master; then git reset -q --hard origin/master; git clean -fdq -- neo grown; fi
+            level
             if ! out=$(node grow/era.mjs run --max-ms "$ms" --commit); then echo "the era loop failed; the beat ends here"; break; fi
             line=$(printf '%s\n' "$out" | tail -n 1)
             echo "$line"
             eras=$(( eras + 1 ))
             case "$line" in *'"stop":"idle"'*) echo "idle: nothing left to grow in this beat"; break ;; esac
           done
-          echo "beat: $eras era runs in $BEAT_MINUTES minutes on $(nproc) cores"
+          # what landed and no era shipped (an idle era commits nothing) goes in a commit of its own
+          if [ -f grow/machine.mjs ] && [ -d "$RUNNER_TEMP/machine" ]; then
+            for try in 1 2 3; do
+              paths=""
+              for p in neo/machines neo/screens neo/machines.json; do [ -e "$p" ] && paths="$paths $p"; done
+              [ -n "$paths" ] || break
+              git add -A -- $paths
+              if git diff --cached --quiet -- $paths; then echo "machine: every landed screen is shipped"; break; fi
+              git commit -q -m "machine: the screens and records of this beat's computers" -- $paths
+              if git push -q origin HEAD:master; then echo "machine: landed and pushed"; break; fi
+              echo "machine: the push lost to a newer head (try $try)"
+              level
+            done
+          fi
+          echo "beat: $eras era runs in $minutes minutes on $(nproc) cores"
           git log --format='%h %s' -3 | cut -c1-120
 
+      - name: the site data, when neo/ or grown/ changed in this beat
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        env:
+          START: ${{ steps.era.outputs.start }}
+        run: |
+          git config user.name "brain organism"
+          git config user.email "brain-organism@users.noreply.github.com"
+          for try in 1 2 3; do
+            git rebase --abort >/dev/null 2>&1 || true
+            git fetch -q origin master || break
+            git reset -q --hard origin/master
+            if [ -n "$START" ] && git diff --quiet "$START" HEAD -- neo grown; then echo "site: neo/ and grown/ unchanged in this beat"; break; fi
+            if ! node web/build.mjs > "$RUNNER_TEMP/site.log" 2>&1; then tail -n 3 "$RUNNER_TEMP/site.log"; echo "site: the build failed"; break; fi
+            git add -A -- web/dist
+            if git diff --cached --quiet -- web/dist; then echo "site: nothing changed"; break; fi
+            git commit -q -m "site: rebuilt from the era data" -- web/dist
+            if git push -q origin HEAD:master; then echo "site: pushed"; break; fi
+            echo "site: the push lost to a newer head (try $try)"
+          done
+
       - name: relay the next beat
-        if: steps.stop.outputs.stopped == 'false'
+        if: ${{ !cancelled() }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           case "$BEATS" in ''|*[!0-9]*) BEATS=1 ;; esac
           [ "$BEATS" -gt 12 ] && BEATS=12
+          more=""
+          case "$WANT_MINUTES" in ''|*[!0-9]*) ;; *) more="-f minutes=$WANT_MINUTES" ;; esac
           if [ "$RELAY" = "true" ]; then
-            gh workflow run heartbeat.yml -R "$GITHUB_REPOSITORY" --ref master -f minutes="$BEAT_MINUTES" -f relay=true
-            echo "relayed: the next beat waits in the heartbeat concurrency group"
+            gh workflow run heartbeat.yml -R "$GITHUB_REPOSITORY" --ref master $more
+            echo "relayed: the next beat plans itself and waits in the heartbeat concurrency group"
           elif [ "$BEATS" -gt 1 ]; then
-            gh workflow run heartbeat.yml -R "$GITHUB_REPOSITORY" --ref master -f minutes="$BEAT_MINUTES" -f beats="$(( BEATS - 1 ))"
+            gh workflow run heartbeat.yml -R "$GITHUB_REPOSITORY" --ref master $more -f beats="$(( BEATS - 1 ))"
             echo "relayed: $(( BEATS - 1 )) more beats after this one"
           else
             echo "no relay: the schedule brings the next beat"
           fi
+
+  site:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: rebuild the site data from neo/ and grown/
+        run: |
+          git config user.name "brain organism"
+          git config user.email "brain-organism@users.noreply.github.com"
+          for try in 1 2 3; do
+            git fetch -q origin master || break
+            git reset -q --hard origin/master
+            if ! node web/build.mjs > "$RUNNER_TEMP/site.log" 2>&1; then tail -n 3 "$RUNNER_TEMP/site.log"; echo "site: the build failed"; break; fi
+            git add -A -- web/dist
+            if git diff --cached --quiet -- web/dist; then echo "site: nothing changed"; break; fi
+            git commit -q -m "site: rebuilt from the era data" -- web/dist
+            if git push -q origin HEAD:master; then echo "site: pushed"; break; fi
+            echo "site: the push lost to a newer head (try $try)"
+          done
