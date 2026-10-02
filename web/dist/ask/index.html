@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ASK / DILATION</title>
-<meta name="description" content="Ask the organism, as a conversation. A greeting, a sum, a word problem or what its grown cells hold is answered in your tab with no request; a follow-up is read against the turns before it; anything else goes to the organism on the server, which prints its route.">
+<meta name="description" content="Ask the organism in the cloud, as a conversation: every prompt goes to the cloud and comes back with its route; any phone gets all of it, and this device answers only when the cloud cannot be reached.">
 <meta name="theme-color" content="#02030a">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,6 +37,7 @@ h1 { font-size: 13px; letter-spacing: 0.24em; text-transform: uppercase; font-we
 .refusal { margin-top: 6px; opacity: 0.85; }
 .refusal .foot { font-size: 11px; }
 .foot { color: var(--dim); font-size: 12px; }
+.strip { margin-top: 10px; overflow-wrap: anywhere; }
 form { position: sticky; bottom: 0; z-index: 2; display: flex; gap: 8px; align-items: flex-end; margin-top: 12px; padding: 10px 0 calc(14px + env(safe-area-inset-bottom)); background: #02030a; border-top: 1px solid var(--line); }
 #q { flex: 1; min-width: 0; background: #060913; color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 11px 12px; font: inherit; font-size: 16px; line-height: 1.4; resize: none; max-height: 40vh; overflow-y: auto; display: block; }
 #q:focus { outline: none; border-color: var(--acc); box-shadow: 0 0 0 3px rgba(127,176,255,0.12); }
@@ -47,6 +48,8 @@ button { font: inherit; cursor: pointer; }
 .chips { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { background: transparent; color: var(--dim); border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; font-size: 11px; max-width: 100%; overflow-wrap: anywhere; text-align: left; }
 .chip:hover { color: var(--ink); border-color: var(--acc); }
+#bodyrow { margin-top: 10px; }
+[hidden] { display: none !important; }
 details.foot { margin-top: 10px; }
 summary { cursor: pointer; }
 nav { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 18px; }
@@ -56,24 +59,19 @@ code { color: var(--ink); overflow-wrap: anywhere; }
 </head>
 <body>
 <main>
-<nav><a href="../">organism</a><a href="../ladder/">ladder</a><a href="../findings/">findings</a><a href="../portfolio/">portfolio</a></nav>
+<nav><a href="../">organism</a><a href="/alive">alive</a><a href="../ladder/">ladder</a><a href="../findings/">findings</a><a href="../portfolio/">portfolio</a></nav>
 <div class="top"><h1>Ask the organism</h1><button id="new" type="button">new chat</button></div>
-<div class="dim">A conversation with the organism, answered in this tab first. The code below is its own conversation region (a greeting, a question about the organism, thanks, a farewell), its exact reader, its word problem reader, its follow-up reader and the router to the cells it grew, the same files <code>node bin/brain.mjs ask</code> runs, copied byte for byte: no model, no token. A follow-up ("and germany?", "plus 9", "when was she born") is rewritten by rule into a question that stands alone, printed as "read as", and that is what is asked. A question no reader and no grown cell carries is posted once to the organism on the server (<code>/api/ask</code>); the tab's own refusal lines print under that answer, never guessed. Installed from the browser menu, the grown cells answer with no network.</div>
-<div style="margin-top:8px"><span class="port">act/exact-read.mjs 8376ffba0835</span> <span class="port">tasks/exact.mjs ede0ce88f1ad</span> <span class="port">act/word.mjs c2dd2fe71b77</span> <span class="port">act/converse.mjs 4389c43af457</span> <span class="port">act/thread.mjs 431a1f246114</span> <span class="port">act/cells-tab.mjs 92e172abe6cb</span></div>
-<details class="foot"><summary>how every answer prints its route</summary>Every answer prints how it was reached: <b>route</b> (which path answered), <b>provenance</b> (native: the conversation region; exact: computed with BigInt rationals, never rounded; grown: a cell the organism grew; memory; model), <b>model</b> (none: no language model was called, or the provider and model the server called), and its clock: a tab answer prints the nanoseconds per ask measured on YOUR device (median of 7 timed batches of the same ask) or the milliseconds a grown cell took; a server answer prints the microseconds <code>ask()</code> took on the server and the round trip this tab measured in milliseconds. The same question on the command line: <code>node bin/brain.mjs ask dilation "hey" --provider null</code>. The distance to the frontier is on the <a href="../ladder/">ladder</a>, from the verdict files.</details>
+<div class="dim">A conversation with the organism in the cloud. Every prompt is posted to it (<code>/api/ask</code>) and its answer prints with its route; no model, no token, and nothing to install: any phone gets all of it. A follow-up ("and germany?", "plus 9") is read against the turns before it and printed as "read as". A prompt the cloud cannot answer yet is taken as a task: it says so, and its next era grows cells for it. Only when the cloud cannot be reached does this device answer, from what it already holds, and the answer says so.</div>
+<div class="foot strip" id="alive"><a href="/alive">the organism, live</a></div>
+<details class="foot"><summary>how every answer prints its route</summary>Every answer prints how it was reached: <b>route</b> (which path answered), <b>provenance</b> (native: the conversation region; exact: computed with BigInt rationals, never rounded; grown: a cell the organism grew; memory; model), <b>model</b> (none: no language model was called), the lookup an answer was composed from, the microseconds the cloud took and the round trip this page measured. When the cloud is not reached, this device runs the same files <code>node bin/brain.mjs ask</code> runs, copied byte for byte, and prints the nanoseconds per ask measured on it: <div style="margin-top:6px"><span class="port">act/exact-read.mjs 8376ffba0835</span> <span class="port">tasks/exact.mjs ede0ce88f1ad</span> <span class="port">act/word.mjs c2dd2fe71b77</span> <span class="port">act/converse.mjs 4389c43af457</span> <span class="port">act/thread.mjs 431a1f246114</span> <span class="port">act/cells-tab.mjs 677518a29deb</span></div></details>
 <div class="chips"><button class="chip" type="button" data-q="hey">hey</button><button class="chip" type="button" data-q="who are you">who are you</button><button class="chip" type="button" data-q="what is 17 times 23">what is 17 times 23</button><button class="chip" type="button" data-q="2 to the power of 100">2 to the power of 100</button><button class="chip" type="button" data-q="15 percent of 200">15 percent of 200</button><button class="chip" type="button" data-q="the square root of 144">the square root of 144</button><button class="chip" type="button" data-q="subtract 3 from 10">subtract 3 from 10</button><button class="chip" type="button" data-q="Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?">Natalia sold clips to 48 of her friends in April, and then sh...</button><button class="chip" type="button" data-q="write a poem about the sea">write a poem about the sea</button></div>
-<div id="term" aria-live="polite"><div class="entry dim" id="hello">ready. type a question, or pick one below. Enter sends, Shift+Enter is a new line; a follow-up is read against the turns before it.</div></div>
+<div class="foot" id="bodyrow"><span id="body">this device grows nothing: the cloud does the work. The switch lets it grow cells too (never on a metered connection, with save-data on or on a low battery).</span> <button id="bodysw" class="chip" type="button" aria-pressed="false">grow on this device too</button></div>
+<div id="term" aria-live="polite"><div class="entry dim" id="hello">ready. every prompt goes to the organism in the cloud and comes back with its route; this device answers only when the cloud cannot be reached. Enter sends, Shift+Enter is a new line; a follow-up is read against the turns before it.</div></div>
 <form id="f" autocomplete="off"><span class="acc prompt-label">brain ask dilation &gt;</span><textarea id="q" name="q" rows="1" placeholder="hey, or what is 17 times 23" spellcheck="false" enterkeyhint="send" aria-label="your prompt"></textarea><button id="go" type="submit">ask</button></form>
 </main>
 <script type="module">
-import { converse } from '../organism/act/converse.mjs';
-import { readExact, spokenExpression, spokenLeftover } from '../organism/act/exact-read.mjs';
-import { readWord, wordRefusal } from '../organism/act/word.mjs';
-import { carry } from '../organism/act/thread.mjs';
-import { loadCells, route, OFFLINE_LINE } from '../organism/act/cells-tab.mjs';
 const $ = (s) => document.querySelector(s);
-const opts = readWord ? { word: readWord } : {};
-const THREAD_KEY = "dilation.thread", KEEP_TURNS = 20, TEXT_CAP = 8000, HELLO_LINE = "ready. type a question, or pick one below. Enter sends, Shift+Enter is a new line; a follow-up is read against the turns before it.";
+const THREAD_KEY = "dilation.thread", KEEP_TURNS = 20, TEXT_CAP = 8000, HELLO_LINE = "ready. every prompt goes to the organism in the cloud and comes back with its route; this device answers only when the cloud cannot be reached. Enter sends, Shift+Enter is a new line; a follow-up is read against the turns before it.", DEVICE_ROUTE = "grown on this device, no server", OFFLINE_LINE = "offline: nothing this device holds carries that prompt and there is no network to reach the organism in the cloud, so it was not sent. Ask again when you are online.";
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 function clock(fn) {
   for (let i = 0; i < 20; i++) fn();
@@ -104,39 +102,44 @@ function youView(typed, read) {
   return ['div', { class: 'q' }, ['div', { class: 'you' }, ['span', { class: 'acc' }, '>'], ' ' + typed],
     read ? ['div', { class: 'dim read', 'data-read': '1' }, 'read as: ' + read] : null];
 }
+function fallbackView(why) {
+  return ['div', { class: 'foot', 'data-fallback': '1' }, ['span', { class: 'warn' }, 'offline fallback'],
+    '  the cloud gave no answer (' + why + '), so this device answered from what it already holds:'];
+}
 function tabNativeView(nat, c) {
   return ['div', { class: 'tab' },
     ['div', { class: 'ans say', 'data-answer': nat.answer, 'data-native': nat.kind }, nat.answer],
-    ['pre', { class: 'dim' }, 'answered natively in this tab by the conversation region (kind ' + nat.kind + '), with no model, no memory read and no network.'],
-    ['div', { class: 'foot', 'data-route': 'direct', 'data-provenance': 'native' }, 'route ', ['span', { class: 'ok' }, 'direct'], '  provenance ', ['span', { class: 'ok' }, 'native'],
-      '  kind ' + nat.kind + '  model none  tokens 0  network 0  ', ['span', { class: 'ok', 'data-ns': c.ns }, c.ns.toLocaleString('en-US') + ' ns per ask on this device'],
-      ' (median of 7 batches, ' + c.asks.toLocaleString('en-US') + ' asks)']];
+    ['div', { class: 'foot', 'data-route': 'direct', 'data-provenance': 'native' }, 'device: route ', ['span', { class: 'ok' }, 'direct'], '  provenance native  kind ' + nat.kind
+      + '  model none  tokens 0  network 0  ', ['span', { class: 'ok', 'data-ns': c.ns }, c.ns.toLocaleString('en-US') + ' ns per ask on this device']]];
 }
 function tabExactView(r, c) {
   return ['div', { class: 'tab' },
-    ['pre', { class: 'dim' }, 'answered exactly by ' + r.method + ', with no model and no network.\n' + r.steps.map((s) => '- ' + s).join('\n')],
+    ['pre', { class: 'dim' }, 'answered exactly by ' + r.method + '.\n' + r.steps.map((s) => '- ' + s).join('\n')],
     ['div', { class: 'ans', 'data-answer': r.answer }, r.answer],
-    ['div', { class: 'foot', 'data-route': 'exact', 'data-provenance': 'exact' }, 'route ', ['span', { class: 'ok' }, 'exact'], '  provenance ', ['span', { class: 'ok' }, 'exact'],
-      '  method ' + r.method + '  model none  tokens 0  network 0  ', ['span', { class: 'ok', 'data-ns': c.ns }, c.ns.toLocaleString('en-US') + ' ns per ask on this device'],
-      ' (median of 7 batches, ' + c.asks.toLocaleString('en-US') + ' asks)']];
+    ['div', { class: 'foot', 'data-route': 'exact', 'data-provenance': 'exact' }, 'device: route ', ['span', { class: 'ok' }, 'exact'], '  method ' + r.method
+      + '  model none  tokens 0  network 0  ', ['span', { class: 'ok', 'data-ns': c.ns }, c.ns.toLocaleString('en-US') + ' ns per ask on this device']]];
 }
 function cellView(hit, gen) {
   const ms = Math.round(Number(hit.ms) * 100) / 100;
   return ['div', { class: 'tab' },
     ['pre', { class: 'reply', 'data-answer': hit.text, 'data-cell': hit.cell }, hit.text],
-    ['div', { class: 'foot', 'data-route': 'cell', 'data-provenance': 'grown' }, 'route ', ['span', { class: 'ok' }, 'grown cell ' + hit.cell + ', generation ' + (gen == null ? 'unknown' : gen) + ', no server'],
-      '  class ' + (hit.class == null ? 'unknown' : hit.class) + '  model none  tokens 0  ' + (Number.isFinite(ms) ? ms : 0) + ' ms in this tab']];
+    ['div', { class: 'foot', 'data-route': 'cell', 'data-provenance': 'grown' }, 'device: route ', ['span', { class: 'ok' }, 'grown cell ' + hit.cell + ', generation ' + (gen == null ? 'unknown' : gen)],
+      '  class ' + (hit.class == null ? 'unknown' : hit.class) + '  model none  tokens 0  ' + (Number.isFinite(ms) ? ms : 0) + ' ms on this device']];
+}
+function deviceView(d) {
+  return ['div', { class: 'tab' },
+    ['pre', { class: 'reply', 'data-answer': d.text, 'data-device': d.task }, d.text],
+    ['div', { class: 'foot', 'data-route': 'device', 'data-provenance': 'grown' }, 'device: route ', ['span', { class: 'ok' }, DEVICE_ROUTE], '  task ' + d.task + '  cells ' + d.cells + '  model none  tokens 0']];
 }
 function pendingView(waitedS) {
-  return ['div', { class: 'srv pending acc', 'data-server-pending': '1' }, 'asking the organism on the server ...' + (waitedS > 0 ? ' ' + waitedS + ' s, still waiting' : '')];
+  return ['div', { class: 'srv pending acc', 'data-server-pending': '1' }, 'asking the organism in the cloud ...' + (waitedS > 0 ? ' ' + waitedS + ' s, still waiting' : '')];
 }
-function refusalView(unknown, why, note) {
+function streamView(text) {
+  return ['div', { class: 'srv', 'data-streaming': '1' }, ['pre', { class: 'reply' }, text], ['div', { class: 'foot' }, ['span', { class: 'acc' }, 'streaming from the cloud ...']]];
+}
+function deviceMissView(note) {
   return ['div', { class: 'refusal dim', 'data-refusal': '1' },
-    ['pre', { class: 'dim' }, 'no cell in this tab carries this question, so the tab refuses it, not guesses; the organism on the server answers it.'],
-    ['div', { class: 'foot', 'data-route': 'refused', 'data-provenance': 'none' }, 'tab: route refused  provenance none  model none (the model cell is not in the browser)  tokens 0'
-      + (unknown.length ? '  words the spoken reader could not read: ' + unknown.join(', ') : '')],
-    why ? ['div', { class: 'foot' }, 'the word problem reader stopped at: ' + why] : null,
-    note ? ['div', { class: 'foot', 'data-cells': '1' }, note] : null];
+    ['div', { class: 'foot', 'data-route': 'refused', 'data-provenance': 'none' }, 'device: nothing this device holds carries it, so it refuses it, not guesses' + (note ? ' (' + note + ')' : '') + '. Ask again when the cloud answers.']];
 }
 function offlineView() {
   return ['div', { class: 'srv', 'data-server-done': '1', 'data-status': '0', 'data-offline': '1' }, ['div', { class: 'foot' }, ['span', { class: 'warn' }, OFFLINE_LINE]]];
@@ -156,12 +159,30 @@ function answerOnce(j) {
   if (cut > 0 && text.endsWith(a) && text[cut - 1] === '\n') return { mode: 'tail', answer: String(src.answer), head: text.slice(0, cut).trimEnd(), text };
   return { mode: 'text', answer: String(src.answer), head: null, text };
 }
+function missLine(j) {
+  if (!j || typeof j !== 'object') return null;
+  const g = j.growing && typeof j.growing === 'object' ? j.growing : null;
+  const name = (v) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, 80) : null);
+  const task = name(j.task) || (g ? name(g.task) : null);
+  if (task) return 'the cloud has taken this as a task (' + task + ') and grows cells for it in its next era; ask again after that.';
+  if (g && g.logged === true) return 'the cloud has taken this as a task: it is logged, and its next era grows cells for it; ask again after that.';
+  if (j.queued === true) return 'the cloud has taken this as a task: it is queued, and its next era grows cells for it; ask again after that.';
+  if (g && g.logged === false) return 'the cloud could not log this as a task (' + (name(g.reason) || 'no reason given') + '), so nothing grows for it yet.';
+  return null;
+}
+function viaOf(j) {
+  const v = j && typeof j === 'object' ? (j.native && typeof j.native === 'object' && j.native.via) || j.via : null;
+  if (!v || typeof v !== 'object') return null;
+  const s = (x) => (typeof x === 'string' && x.trim() ? x.trim().slice(0, 120) : null);
+  const out = { pack: s(v.pack), key: s(v.key), column: s(v.column), op: s(v.op) };
+  return out.pack || out.column ? out : null;
+}
 function serverView(s) {
   const j = s.j || {};
   const rtt = Math.round(s.rttMs);
   if (s.status !== 200 || !j.ok) {
-    const why = s.err ? 'the server half did not answer: ' + s.err : 'the server answered ' + s.status + ': ' + (j.error || 'no JSON') + (s.retry ? ' (retry after ' + s.retry + ' s)' : '');
-    return ['div', { class: 'srv', 'data-server-done': '1', 'data-status': String(s.status), 'data-rtt-ms': rtt }, ['div', { class: 'foot' }, ['span', { class: 'warn' }, 'server'], '  ' + why + '  round trip ' + rtt + ' ms in this tab']];
+    const why = s.err ? 'the cloud did not answer: ' + s.err : 'the cloud answered ' + s.status + ': ' + (j.error || 'no JSON') + (s.retry ? ' (retry after ' + s.retry + ' s)' : '');
+    return ['div', { class: 'srv', 'data-server-done': '1', 'data-status': String(s.status), 'data-rtt-ms': rtt }, ['div', { class: 'foot' }, ['span', { class: 'warn' }, 'cloud'], '  ' + why + '  round trip ' + rtt + ' ms']];
   }
   const l = j.llm || {}, p = j.provenance || {}, k = j.knowledge || {};
   const nat = j.native && j.native.answer != null ? j.native : null;
@@ -173,14 +194,16 @@ function serverView(s) {
   const body = once.mode === 'equal' ? [ans]
     : once.mode === 'tail' ? [ans, once.head ? ['pre', { class: 'srvtext dim', 'data-srv-head': '1' }, once.head] : null]
       : [['pre', { class: 'srvtext' }, String(j.text)], ans];
+  const via = viaOf(j), miss = missLine(j);
+  const us = Number(j.serverUs);
   return ['div', { class: 'srv', 'data-server-done': '1', 'data-status': '200', 'data-srv-route': String(j.route), 'data-srv-provenance': String(p.answer), 'data-srv-provider': l.provider == null ? 'none' : String(l.provider),
-    'data-server-us': String(Number(j.serverUs)), 'data-rtt-ms': rtt, 'data-srv-once': once.mode }, ...body,
-  ['div', { class: 'foot' }, 'server: route ', ['span', { class: 'acc' }, String(j.route)], '  provenance ', ['span', { class: 'acc' }, String(p.answer)], '  ', ...modelParts(l),
-    '  memory hits ' + (p.memoryHits || 0) + '  web pages ' + (p.webPages || 0)
-    + (j.exact && typeof j.exact.ns === 'number' ? '  exact ' + j.exact.ns.toLocaleString('en-US') + ' ns' : '')
-    + (nat && typeof nat.ns === 'number' ? '  native ' + nat.ns.toLocaleString('en-US') + ' ns' : '') + '  ',
-    ['span', { class: 'ok' }, Number(j.serverUs).toLocaleString('en-US') + ' us on the server'], ' (' + String(j.host) + ')  round trip ' + rtt + ' ms in this tab'],
-  k.ready ? null : ['div', { class: 'foot' }, 'knowledge store on the server: absent (' + (k.why || 'not ingested') + '), so the knowledge tier answers nothing there.']];
+    'data-server-us': String(us), 'data-rtt-ms': rtt, 'data-srv-once': once.mode, 'data-streamed': s.streamed ? '1' : null }, ...body,
+  miss ? ['div', { class: 'foot miss', 'data-miss': '1' }, ['span', { class: 'acc' }, 'taken as a task'], '  ' + miss] : null,
+  via ? ['div', { class: 'foot', 'data-via': '1' }, 'looked up: pack ' + (via.pack || '-') + ', key ' + (via.key || '-') + ', column ' + (via.column || '-') + (via.op ? ', op ' + via.op : '')] : null,
+  ['div', { class: 'foot' }, 'cloud: route ', ['span', { class: 'acc' }, String(j.route)], '  provenance ', ['span', { class: 'acc' }, String(p.answer)], '  ', ...modelParts(l),
+    '  memory hits ' + (p.memoryHits || 0) + '  web pages ' + (p.webPages || 0) + '  ',
+    Number.isFinite(us) ? ['span', { class: 'ok' }, us.toLocaleString('en-US') + ' us in the cloud'] : null, (j.host ? ' (' + String(j.host) + ')' : '') + '  round trip ' + rtt + ' ms'],
+  k.ready === false ? ['div', { class: 'foot' }, 'knowledge store in the cloud: absent (' + (k.why || 'not ingested') + ').'] : null];
 }
 function restoredView(t) {
   return ['div', { class: 'tab', 'data-restored': '1' }, t.text ? ['pre', { class: 'reply' }, t.text] : null,
@@ -200,6 +223,11 @@ function cleanTurns(raw) {
     const turn = { prompt, text: clip(t.text) };
     if (typeof t.read === 'string' && t.read.trim()) turn.read = t.read.trim().slice(0, 2000);
     if (typeof t.route === 'string' && t.route.trim()) turn.route = t.route.trim().slice(0, 300);
+    if (t.via && typeof t.via === 'object') {
+      const v = {};
+      for (const k of ['pack', 'key', 'column', 'op']) if (typeof t.via[k] === 'string' && t.via[k].trim()) v[k] = t.via[k].trim().slice(0, 120);
+      if (v.pack || v.column) turn.via = v;
+    }
     out.push(turn);
   }
   return out.slice(-KEEP_TURNS);
@@ -223,6 +251,87 @@ function saveTurns(store, turns) {
     return false;
   }
 }
+function carryRelation(last, typed) {
+  const t = String(typed == null ? '' : typed).trim();
+  const v = last && typeof last === 'object' ? last.via : null;
+  if (!t || !v || typeof v !== 'object' || typeof last.prompt !== 'string') return null;
+  const m = /^(?:and what about|and how about|and|what about|how about|same for)\s+(.+?)\s*\?*$/i.exec(t);
+  if (!m) return null;
+  const x = m[1].trim();
+  if (!x || x.length > 120) return null;
+  const base = typeof last.read === 'string' && last.read.trim() ? last.read.trim() : last.prompt;
+  if (typeof v.key === 'string' && v.key) {
+    const i = base.toLowerCase().indexOf(v.key.toLowerCase());
+    if (i >= 0) return { prompt: base.slice(0, i) + x + base.slice(i + v.key.length), carried: true, from: base, rule: 'relation' };
+  }
+  if (typeof v.column === 'string' && v.column) return { prompt: 'what is the ' + v.column + ' of ' + x, carried: true, from: base, rule: 'relation' };
+  return null;
+}
+function streamKind(ct) {
+  const c = String(ct == null ? '' : ct).toLowerCase();
+  if (c.includes('application/x-ndjson') || c.includes('application/jsonl')) return 'ndjson';
+  if (c.includes('text/event-stream')) return 'sse';
+  return null;
+}
+async function readStream(res, kind, onDelta) {
+  const reader = res.body.getReader();
+  const dec = new TextDecoder();
+  let buf = '', text = '', final = null, events = 0;
+  const take = (line) => {
+    let s = line.trim();
+    if (kind === 'sse') { if (!s.startsWith('data:')) return; s = s.slice(5).trim(); }
+    if (!s || s === '[DONE]') return;
+    let o;
+    try { o = JSON.parse(s); } catch { return; }
+    if (!o || typeof o !== 'object' || Array.isArray(o)) return;
+    events++;
+    if (typeof o.delta === 'string' && o.delta) { text += o.delta; if (onDelta) onDelta(text); }
+    if ('ok' in o) final = o;
+  };
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += typeof value === 'string' ? value : dec.decode(value, { stream: true });
+    let i;
+    while ((i = buf.indexOf('\n')) >= 0) { take(buf.slice(0, i)); buf = buf.slice(i + 1); }
+  }
+  buf += dec.decode();
+  if (buf) take(buf);
+  const j = final ? { ...final } : text ? { ok: true, text, route: 'stream', provenance: { answer: 'stream' } } : null;
+  if (j && j.text == null && text) j.text = text;
+  return { j, text, events };
+}
+function stripView(d) {
+  const n = d && typeof d === 'object' && d.neo && typeof d.neo === 'object' ? d.neo : null;
+  const now = n && n.now && typeof n.now === 'object' ? n.now : null;
+  if (!now) return null;
+  const num = (v) => typeof v === 'number' && Number.isFinite(v);
+  const parts = [];
+  const add = (v, one, many) => { if (num(v)) parts.push(v.toLocaleString('en-US') + ' ' + (v === 1 ? one : many)); };
+  if (num(now.era)) parts.push('era ' + now.era);
+  add(now.cells, 'cell', 'cells');
+  add(now.tasks, 'task', 'tasks');
+  if (num(now.mastered)) parts.push(now.mastered + ' mastered');
+  if (num(now.ok) && num(now.n)) parts.push('held-out ' + now.ok + ' of ' + now.n + (num(now.score) ? ' (' + now.score + ')' : ''));
+  const vel = Array.isArray(now.velocity) ? now.velocity.find((x) => x && x.key === 'cellsPerSecond' && num(x.value)) : null;
+  if (vel) parts.push(vel.value + ' cells per second');
+  if (num(now.plateau)) parts.push('plateau ' + now.plateau);
+  const p = n.pipeline && typeof n.pipeline === 'object' ? n.pipeline : null;
+  if (p && typeof p.promoted === 'boolean') parts.push('last promote ' + (p.promoted ? 'kept' : 'refused') + (num(p.era) ? ' at era ' + p.era : ''));
+  // the trials and the compute ledger, each only when data.json carries it (web/alive.mjs neo.selfMod.trials, neo.compute)
+  const t = n.selfMod && typeof n.selfMod === 'object' && n.selfMod.trials && typeof n.selfMod.trials === 'object' ? n.selfMod.trials : null;
+  if (t && num(t.rows) && num(t.kept)) parts.push('trials ' + t.kept + ' kept of ' + t.rows);
+  const cf = n.compute && typeof n.compute === 'object' && Array.isArray(n.compute.fields) ? n.compute.fields : [];
+  const field = (k) => { const x = cf.find((f) => f && f.key === k); return x && num(x.value) ? x.value : null; };
+  const spent = field('spentMinutes'), budget = field('budgetMinutes');
+  if (spent !== null) parts.push('compute ' + spent + (budget !== null ? ' of ' + budget : '') + (spent === 1 && budget === null ? ' minute' : ' minutes'));
+  if (!parts.length) return null;
+  return ['div', { class: 'foot strip', 'data-alive': '1' }, ['span', { class: 'ok' }, 'live'], '  the organism in the cloud: ' + parts.join(', ')
+    + (typeof d.builtAt === 'string' ? ' (built ' + d.builtAt.slice(0, 40) + ')' : '')];
+}
+function saveDataOn(nav) {
+  return Boolean(nav && typeof nav === 'object' && nav.connection && nav.connection.saveData === true);
+}
 function swAllowed(nav, loc) {
   if (!nav || typeof nav !== 'object' || !('serviceWorker' in nav) || !loc) return false;
   const h = String(loc.hostname || '');
@@ -231,18 +340,21 @@ function swAllowed(nav, loc) {
 function sendsOnKey(ev) {
   return Boolean(ev) && ev.key === 'Enter' && !ev.shiftKey && !ev.isComposing && ev.keyCode !== 229;
 }
-// The one request this page ever makes: a prompt the tab refused, POSTed once to the same origin.
+// The cloud: every prompt, POSTed once to the same origin. A stream is read as it arrives; anything else whole.
 const API = '/api/ask';
-async function server(q) {
+async function cloud(q, onDelta) {
   const t0 = performance.now();
-  const out = { status: 0, j: null, err: null, retry: null, rttMs: 0 };
+  const out = { status: 0, j: null, err: null, retry: null, rttMs: 0, streamed: false };
   const ctl = typeof AbortController === 'function' ? new AbortController() : null;
   const stop = ctl ? setTimeout(() => ctl.abort(), 25000) : null;
   try {
-    const res = await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: q }), signal: ctl ? ctl.signal : undefined });
+    const res = await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/x-ndjson, text/event-stream;q=0.9, application/json;q=0.8' }, body: JSON.stringify({ prompt: q }), signal: ctl ? ctl.signal : undefined });
     out.status = res.status;
-    out.retry = res.headers.get('retry-after');
-    try { out.j = await res.json(); } catch { out.j = null; }
+    const h = (k) => (res.headers && typeof res.headers.get === 'function' ? res.headers.get(k) : null);
+    out.retry = h('retry-after');
+    const kind = streamKind(h('content-type'));
+    if (kind && res.body && typeof res.body.getReader === 'function') { const r = await readStream(res, kind, onDelta); out.j = r.j; out.streamed = true; }
+    else { try { out.j = await res.json(); } catch { out.j = null; } }
   } catch (err) {
     out.err = ctl && ctl.signal.aborted ? 'no answer in 25 s, the request was stopped' : String((err && err.message) || err);
   }
@@ -250,91 +362,115 @@ async function server(q) {
   out.rttMs = performance.now() - t0;
   return out;
 }
-// The thread this tab holds, read back from this device (one localStorage key; a store that throws is no store).
+// The device tier, imported only when the cloud cannot be reached (and the follow-up reader only when the thread has a
+// turn): one import each, retried after a failure.
+const TIER = {"converse":"../organism/act/converse.mjs","exact":"../organism/act/exact-read.mjs","word":"../organism/act/word.mjs","thread":"../organism/act/thread.mjs","cells":"../organism/act/cells-tab.mjs"};
+function lazy(u) { let p = null; return () => { if (!u) return Promise.resolve(null); if (!p) p = import(u).then((m) => m, () => { p = null; return null; }); return p; }; }
+const mods = { converse: lazy(TIER.converse), exact: lazy(TIER.exact), word: lazy(TIER.word), thread: lazy(TIER.thread), cells: lazy(TIER.cells), body: lazy("../organism/web/pocket-era.mjs") };
+const fits = async (t, s) => { const m = await mods.body(); return m && typeof m.gateFits === 'function' ? m.gateFits(t, s) : false; };
+let cells = null;
+function grown(ct) {
+  if (!cells) cells = ct.loadCells(new URL("/organism/", location.href).href, { fits }).catch((err) => { cells = null; throw err; });
+  return cells;
+}
+// The order on this device: the conversation region, the exact reader (with the word problem reader), the grown cells,
+// a cell grown on this device. { view, text, how, out } on an answer, { note } when none carries it.
+async function deviceTier(q) {
+  const notes = [];
+  const cv = await mods.converse();
+  const nat = cv && typeof cv.converse === 'function' ? cv.converse(q) : null;
+  if (nat) return { view: tabNativeView(nat, clock(() => cv.converse(q))), text: nat.answer, how: 'direct, native, kind ' + nat.kind, out: { answer: nat.answer, route: 'direct', provenance: 'native', kind: nat.kind } };
+  const ex = await mods.exact();
+  if (ex && typeof ex.readExact === 'function') {
+    const w = await mods.word();
+    const opts = w && typeof w.readWord === 'function' ? { word: w.readWord } : {};
+    const r = ex.readExact(q, opts);
+    if (r) return { view: tabExactView(r, clock(() => ex.readExact(q, opts))), text: r.answer, how: 'exact, method ' + r.method, out: { answer: r.answer, route: 'exact', provenance: 'exact' } };
+  }
+  const ct = await mods.cells();
+  if (ct && typeof ct.loadCells === 'function' && typeof ct.route === 'function') {
+    try {
+      const router = await grown(ct);
+      const hit = await ct.route(router, q);
+      if (hit) {
+        const row = router.rows.find((x) => x.id === hit.cell);
+        const gen = row && row.generation != null ? row.generation : router.generation;
+        return { view: cellView(hit, gen), text: hit.text, how: 'grown cell ' + hit.cell + ', generation ' + (gen == null ? 'unknown' : gen), out: { answer: hit.text, route: 'cell', provenance: 'grown', cell: hit.cell, generation: gen } };
+      }
+      notes.push('none of the ' + router.rows.length + ' cells it holds carries it');
+    } catch (err) {
+      notes.push('its cells did not load: ' + String((err && err.message) || err));
+    }
+  }
+  try {
+    const b = await mods.body();
+    const d = b && typeof b.deviceAnswer === 'function' ? await b.deviceAnswer(q) : null;
+    if (d && typeof d.text === 'string') return { view: deviceView(d), text: d.text, how: DEVICE_ROUTE + ', task ' + d.task, out: { answer: d.text, route: 'device', provenance: 'grown', task: d.task } };
+  } catch {}
+  return { view: null, note: notes.join('; ') || null };
+}
+// The thread this page holds, read back from this device (one localStorage key; a store that throws is no store).
 const store = () => { try { return window.localStorage || null; } catch { return null; } };
+const nav = typeof navigator === 'undefined' ? null : navigator;
 let turns = loadTurns(store());
 let epoch = 0;
-const online = () => !(typeof navigator !== 'undefined' && navigator && navigator.onLine === false);
+const online = () => !(nav && nav.onLine === false);
 const put = (e, view) => e.appendChild(mount(document, view));
 const show = (e) => { try { e.scrollIntoView({ block: 'end' }); } catch {} };
-function record(my, typed, c, text, how) {
+function record(my, typed, c, text, how, via) {
   if (my !== epoch) return;
   const t = { prompt: typed, text: String(text == null ? '' : text), route: how };
   if (c.carried) t.read = c.prompt;
+  if (via) t.via = via;
   turns = cleanTurns(turns.concat([t]));
   saveTurns(store(), turns);
 }
-// The grown cells web/pocket.mjs bundled: cells.json read once, a cell imported the first time a prompt reaches it.
-let cells = null;
-function grown() {
-  if (!cells) cells = loadCells(new URL("/organism/", location.href).href).catch((err) => { cells = null; throw err; });
-  return cells;
-}
-// The order of the tab: the follow-up carry, then (1) the conversation region, (2) the exact reader, (3) the word
-// problem reader, (4) the grown cells, (5) the server.
 async function ask(q) {
   const typed = String(q || '').trim(); if (!typed) return null;
   const my = epoch;
-  let c = { prompt: typed, carried: false, rule: null };
-  try { const k = carry(turns, typed); if (k && k.carried && typeof k.prompt === 'string' && k.prompt.trim()) c = k; } catch {}
+  let c = carryRelation(turns[turns.length - 1], typed) || { prompt: typed, carried: false, rule: null };
+  if (!c.carried && turns.length) {
+    try { const th = await mods.thread(); const k = th && typeof th.carry === 'function' ? th.carry(turns, typed) : null; if (k && k.carried && typeof k.prompt === 'string' && k.prompt.trim()) c = k; } catch {}
+  }
+  if (my !== epoch) return { dropped: true, read: null };
   q = c.prompt;
   const read = c.carried ? q : null;
   const hello = $('#hello'); if (hello) hello.remove();
   const e = mount(document, ['div', { class: 'entry' }]);
   put(e, youView(typed, read));
   $('#term').appendChild(e); show(e);
-  const nat = converse(q);
-  if (nat) {
-    put(e, tabNativeView(nat, clock(() => converse(q)))); show(e);
-    record(my, typed, c, nat.answer, 'direct, native, kind ' + nat.kind);
-    return { tab: true, answer: nat.answer, route: 'direct', provenance: 'native', kind: nat.kind, read };
-  }
-  const r = readExact(q, opts);
-  if (r) {
-    put(e, tabExactView(r, clock(() => readExact(q, opts)))); show(e);
-    record(my, typed, c, r.answer, 'exact, method ' + r.method);
-    return { tab: true, answer: r.answer, route: 'exact', provenance: 'exact', read };
-  }
-  let note = null;
-  if (route) {
-    try {
-      const router = await grown();
-      const hit = await route(router, q);
-      if (hit) {
-        const row = router.rows.find((x) => x.id === hit.cell);
-        const gen = row && row.generation != null ? row.generation : router.generation;
-        put(e, cellView(hit, gen)); show(e);
-        record(my, typed, c, hit.text, 'grown cell ' + hit.cell + ', generation ' + (gen == null ? 'unknown' : gen) + ', no server');
-        return { tab: true, answer: hit.text, route: 'cell', provenance: 'grown', cell: hit.cell, generation: gen, read };
-      }
-      note = 'the grown cells in this tab: none of the ' + router.rows.length + ' carries it.';
-    } catch (err) {
-      note = 'the grown cells did not load in this tab (' + String((err && err.message) || err) + '), so none was asked.';
+  let why = 'this device is offline', s = null;
+  if (online()) {
+    let slot = mount(document, pendingView(0));
+    e.appendChild(slot); show(e);
+    const t0 = performance.now();
+    const tick = setInterval(() => {
+      const w = Math.round((performance.now() - t0) / 1000);
+      if (w >= 3 && slot.getAttribute('data-server-pending')) { const n = mount(document, pendingView(w)); slot.replaceWith(n); slot = n; }
+    }, 1000);
+    s = await cloud(q, (text) => { if (my !== epoch) return; const n = mount(document, streamView(text)); slot.replaceWith(n); slot = n; show(e); });
+    clearInterval(tick);
+    if (s.status === 200 && s.j && s.j.ok) {
+      slot.replaceWith(mount(document, serverView(s))); show(e);
+      const j = s.j, via = viaOf(j);
+      record(my, typed, c, j.text, 'cloud, route ' + j.route + ', provenance ' + ((j.provenance && j.provenance.answer) || 'none'), via);
+      const once = answerOnce(j);
+      return { cloud: true, status: s.status, json: j, answer: once.answer != null ? once.answer : once.text, route: String(j.route), streamed: s.streamed, miss: missLine(j), via, read };
     }
+    if (online()) { slot.replaceWith(mount(document, serverView(s))); why = s.err ? s.err : 'it answered ' + s.status; }
+    else slot.remove();
   }
-  // A new chat started while the cells were read: this prompt belongs to the cleared thread, so it is not sent.
-  if (my !== epoch) return { tab: false, dropped: true, read };
-  const refusal = refusalView(spokenLeftover(q).slice(0, 8), wordRefusal ? wordRefusal(q) : null, note);
-  if (!online()) {
-    put(e, offlineView()); put(e, refusal); show(e);
-    record(my, typed, c, '', 'offline, not sent');
-    return { tab: false, offline: true, read };
+  if (my !== epoch) return { cloud: false, dropped: true, read };
+  const d = await deviceTier(q);
+  if (my !== epoch) return { cloud: false, dropped: true, read };
+  if (d.view) {
+    put(e, fallbackView(why)); put(e, d.view); show(e);
+    record(my, typed, c, d.text, 'offline fallback on this device: ' + d.how);
+    return { cloud: false, fallback: true, why, status: s ? s.status : 0, read, ...d.out };
   }
-  let slot = mount(document, pendingView(0));
-  e.appendChild(slot); put(e, refusal); show(e);
-  const t0 = performance.now();
-  const tick = setInterval(() => {
-    const w = Math.round((performance.now() - t0) / 1000);
-    if (w >= 3 && slot.getAttribute('data-server-pending')) { const n = mount(document, pendingView(w)); slot.replaceWith(n); slot = n; }
-  }, 1000);
-  const s = await server(q);
-  clearInterval(tick);
-  const off = Boolean(s.err) && !online();
-  slot.replaceWith(mount(document, off ? offlineView() : serverView(s)));
-  show(e);
-  const ok = s.status === 200 && s.j && s.j.ok;
-  record(my, typed, c, ok ? s.j.text : '', off ? 'offline, not answered' : ok ? 'server, route ' + s.j.route + ', provenance ' + ((s.j.provenance && s.j.provenance.answer) || 'none') : 'server, no answer (' + (s.err || 'status ' + s.status) + ')');
-  return { tab: false, status: s.status, json: s.j, offline: off, read };
+  put(e, online() ? deviceMissView(d.note) : offlineView()); show(e);
+  record(my, typed, c, '', online() ? 'the cloud did not answer (' + why + ')' : 'offline, not sent');
+  return { cloud: false, fallback: false, offline: !online(), why, status: s ? s.status : 0, read };
 }
 // One prompt at a time, in the order typed: a follow-up is carried against the answer before it.
 let chain = Promise.resolve();
@@ -353,19 +489,44 @@ $('#f').addEventListener('submit', (ev) => { ev.preventDefault(); submit(); });
 box.addEventListener('keydown', (ev) => { if (sendsOnKey(ev)) { ev.preventDefault(); submit(); } });
 box.addEventListener('input', fit);
 $('#new').addEventListener('click', newChat);
-for (const b of document.querySelectorAll('.chip')) b.addEventListener('click', () => send(b.dataset.q));
+for (const b of document.querySelectorAll('[data-q]')) b.addEventListener('click', () => send(b.dataset.q));
 if (turns.length) {
   const hello = $('#hello'); if (hello) hello.remove();
-  let last = null;
-  for (const t of turns) { last = mount(document, ['div', { class: 'entry', 'data-restored': '1' }, youView(t.prompt, t.read || null), restoredView(t)]); $('#term').appendChild(last); }
-  show(last);
+  let lastEl = null;
+  for (const t of turns) { lastEl = mount(document, ['div', { class: 'entry', 'data-restored': '1' }, youView(t.prompt, t.read || null), restoredView(t)]); $('#term').appendChild(lastEl); }
+  show(lastEl);
 }
-// The pocket: the service worker of /ask/, on https or localhost only.
-if (swAllowed(typeof navigator === 'undefined' ? null : navigator, location)) {
-  try { const p = navigator.serviceWorker.register("/ask/sw.js", { scope: "/ask/" }); if (p && typeof p.catch === 'function') p.catch(() => {}); } catch {}
+// THE DEVICE WORKER (web/pocket-era.mjs): off unless the switch says on; imported only then, never on a metered
+// connection, with save-data on or on a low battery (startBody refuses).
+let body = null;
+function bodyCtl() {
+  if (!body) body = mods.body().then((m) => (m && typeof m.startBody === 'function' ? m.startBody({ document, navigator: nav, Worker: typeof Worker === 'function' ? Worker : null, storage: store(), lineEl: $('#body'), switchEl: $('#bodysw'), bind: false }) : null)).then((b) => { if (!b) body = null; return b; }, () => { body = null; return null; });
+  return body;
 }
+$('#bodysw').addEventListener('click', async () => {
+  const b = await bodyCtl();
+  if (b) await b.toggle(); else { const l = $('#body'); if (l) l.textContent = 'this browser could not load the device worker.'; }
+});
+// After the first paint: the live strip, the service worker and a switch left on. None on save-data but the switch.
+const later = (f) => { try { if (window && typeof window.requestIdleCallback === 'function') return window.requestIdleCallback(() => f(), { timeout: 4000 }); } catch {} return setTimeout(f, 300); };
+later(() => {
+  let on = null;
+  try { const st = store(); on = st ? st.getItem("dilation.body") : null; } catch {}
+  if (on === '1') bodyCtl();
+  if (saveDataOn(nav)) return;
+  Promise.resolve().then(() => fetch("/alive/data.json")).then((r) => (r && r.ok ? r.json() : null)).then((d) => { const v = stripView(d); const el = $('#alive'); if (v && el) el.replaceChildren(mount(document, v)); }).catch(() => {});
+  // The pocket: the service worker, scope / (it holds /ask and the device tier under /organism/), on https or
+  // localhost only; a registration of the same worker under another scope (the old /ask/) is removed.
+  if (swAllowed(nav, location)) {
+    try {
+      const sw = nav.serviceWorker, path = (u) => { try { return new URL(u, location.href).pathname; } catch { return ''; } };
+      const p = sw.register("/ask/sw.js", { scope: "/" }); if (p && typeof p.catch === 'function') p.catch(() => {});
+      if (typeof sw.getRegistrations === 'function') Promise.resolve(sw.getRegistrations()).then((rs) => { for (const r of rs || []) { const w = r.active || r.waiting || r.installing; if (w && path(w.scriptURL) === "/ask/sw.js" && path(r.scope) !== "/") r.unregister(); } }).catch(() => {});
+    } catch {}
+  }
+});
 const pre = new URLSearchParams(location.search).get('q'); if (pre) send(pre);
-window.__brainAsk = { ready: true, spoken: spokenExpression, ask, send, newChat, turns: () => turns.slice() };
+window.__brainAsk = { ready: true, ask, send, newChat, turns: () => turns.slice() };
 box.focus();
 </script>
 </body>
