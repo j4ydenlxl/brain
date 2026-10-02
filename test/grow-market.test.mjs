@@ -3,7 +3,7 @@
 // "its deadass iteration velocity as its whole philosophy"; "make sure they dont commit, they go through pipeline to do
 // so ... and to test if they are really posing higher measure". Every test is offline: the network is a planted fetch,
 // the clock a planted clock, the tape a planted tape, and every root a temporary directory removed when the run ends.
-// What it holds the organ to: the no-trade proof (a grep of the source), the costs, fills at the NEXT row, the
+// What it holds the part to: the no-trade proof (a grep of the source), the costs, fills at the NEXT row, the
 // walk-forward split (the search never sees a later row, and a feature that reads one is caught), the placebo control
 // (a planted timing edge is kept; the same tape with the edge shuffled away, and pure noise, keep nothing), the canary,
 // the tail and carried flags, win rate never the score, null never zero, politeness (gap, GET, User-Agent, 429 back off,
@@ -96,7 +96,7 @@ function marketRoute(url) {
   return jsonRes({ error: 'unrouted' }, 404);
 }
 
-// ---- a planted tape (rows in the exact shape the sight writes)
+// ---- a planted tape (rows in the exact shape the watch writes)
 const T0 = Date.parse('2026-10-01T00:00:00.000Z');
 function plantRows({ pools = 60, rowsPer = 40, gapS = 20, spreadMs = 3 * 3600 * 1000, mode = 'edge', seed = 7, start = T0, poolName = (k) => A('Plant' + k + 'p') } = {}) {
   const rng = M.rngOf(seed);
@@ -535,17 +535,17 @@ test('an unreadable value is null, never zero: the row keeps null, the column ho
   assert.equal(M.bookStats([{ status: 'unseen', net: null }, { status: 'closed', net: 0.1, notionalUsd: 100 }]).unseen, 1);
 });
 
-// ============================================================ SIGHT: polite, capped, GET only, the time SEEN
+// ============================================================ WATCH: polite, capped, GET only, the time SEEN
 const CTRL = String.fromCharCode(0, 7, 27, 0x2028, 0x2029, 0x85);
 const CTRL_ANY = new RegExp('[' + String.fromCharCode(0) + '-' + String.fromCharCode(31) + String.fromCharCode(0x7f, 0x85, 0x2028, 0x2029) + ']');
-test('SIGHT is polite: one request a second per host, GET, redirect manual, the project User-Agent; each row carries the time it was SEEN', async () => {
+test('WATCH is polite: one request a second per host, GET, redirect manual, the project User-Agent; each row carries the time it was SEEN', async () => {
   const r = mkRoot();
   const time = fakeTime();
   const route = (u) => (u.startsWith(DS + '/tokens/v1/') ? jsonRes([dsPair(A('Pool1'), A('Tok1')), dsPair(A('Pool2'), A('Tok2'), { liq: 8000 }), dsPair(A('NoLiqPool'), A('Tok2'), { liq: null })]) : marketRoute(u));
   const f = plantedFetch(time, route);
   const state = M.readState(r);
   const t0 = time.t.now;
-  const out = await M.sight(r, CFG, state, { fetch: f, clock: time.clock, sleep: time.sleep, deadline: t0 + 60000 });
+  const out = await M.watch(r, CFG, state, { fetch: f, clock: time.clock, sleep: time.sleep, deadline: t0 + 60000 });
   assert.ok(f.calls.length >= 8, 'calls ' + f.calls.length);
   assert.ok(time.t.now <= t0 + 60000 + 100, 'ran past its deadline');
   for (const c of f.calls) {
@@ -584,7 +584,7 @@ test('429: the host is backed off for its Retry-After, persisted in STATE.json a
   assert.ok(l1.ms <= o.maxMs);
   const ds1 = f.calls.filter((c) => c.host === 'api.dexscreener.com');
   assert.equal(ds1.length, 1, 'one 429, then silence for that host');
-  assert.deepEqual(l1.sight.backoff, ['api.dexscreener.com']);
+  assert.deepEqual(l1.watch.backoff, ['api.dexscreener.com']);
   assert.equal(readJ(path.join(r, M.STATE)).hosts['api.dexscreener.com'].backoffUntil, ds1[0].at + 40 + 120000);
   slow = false;
   const n1 = f.calls.length;
@@ -646,14 +646,14 @@ test('a step on a tape too short to grade spends most of its time seeing; once t
   };
   const thin = await run(null);
   assert.ok(thin.last > 0.5 * 40000, 'a thin tape: seeing went on past half the step (' + thin.last + ' ms)');
-  assert.ok(thin.last <= M.SIGHT_SHARE.thin * 40000);
+  assert.ok(thin.last <= M.WATCH_SHARE.thin * 40000);
   assert.ok(thin.line.ms <= 40000);
   const tr = M.readTape(thin.r).rows;
   assert.ok(tr.length > 0);
   assert.equal(thin.state.spanMs, tr[tr.length - 1].ms - tr[0].ms, 'the span is kept for the next step');
   const grading = await run(M.GRADE.minSpanMs);
-  assert.ok(grading.last <= M.SIGHT_SHARE.grading * 40000, 'a gradable tape: seeing stopped at half the step (' + grading.last + ' ms)');
-  assert.equal(M.SIGHT_SHARE.grading, 0.5);
+  assert.ok(grading.last <= M.WATCH_SHARE.grading * 40000, 'a gradable tape: seeing stopped at half the step (' + grading.last + ' ms)');
+  assert.equal(M.WATCH_SHARE.grading, 0.5);
 });
 test('the network refuses: a redirect (never followed), a host off the list (never requested), an oversized body, the caps, non-JSON', async () => {
   const time = fakeTime();
@@ -880,7 +880,7 @@ test('CLI step (contract c1): one JSON line, exit 0, paper; edge null and the li
   const line = JSON.parse(out[0]);
   assert.equal(line.paper, true);
   assert.equal(line.era, 3);
-  assert.deepEqual(line.sight, { skipped: 'offline' });
+  assert.deepEqual(line.watch, { skipped: 'offline' });
   assert.equal(line.tape.rows, 2400);
   assert.equal(line.tape.pools, 60);
   assert.ok(line.search.tried > 0);

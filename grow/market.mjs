@@ -3,11 +3,11 @@
 // His words (2026-10-01): "model needs to be a god too, at memecoins, which is how i can monetize it, it will have its
 // own cloud computer"; "its deadass iteration velocity as its whole philosophy"; "make sure they dont commit, they go
 // through pipeline to do so ... and to test if they are really posing higher measure".
-// THE HARD LINE: this organ SEES markets and keeps a SIMULATED book. It holds no credential of any kind, it reads no
+// THE HARD LINE: this part SEES markets and keeps a SIMULATED book. It holds no credential of any kind, it reads no
 // environment variable, every request it makes is a GET to a public read-only data host of ALLOWED_HOSTS, and no code
 // path in it could place a trade (test/grow-market.test.mjs greps this file to prove it). Going live with money is the
 // owner's own later step, outside this file.
-// (1) SIGHT: public market data pulled as DATA from the keyless endpoints of neo/market-sources.json (each checked live,
+// (1) WATCH: public market data pulled as DATA from the keyless endpoints of neo/market-sources.json (each checked live,
 //     its status recorded there), at most one request a second per host (slower where the config's hostGapMs says so),
 //     byte and time caps, a User-Agent naming the project,
 //     a back off on 429, no redirect followed. What it saw is appended to a bounded tape <root>/neo/market/tape/ (JSONL
@@ -1047,12 +1047,12 @@ export function bookStats(positions) {
   return { open: by('open').length, closed: by('closed').length, unseen: by('unseen').length, netUsd: usd(by('closed')), markUsd: usd(by('open')) };
 }
 
-// ---- SIGHT: one step's reading of the market
+// ---- WATCH: one step's reading of the market
 // the share of a step's time spent seeing: half while the tape is long enough to grade (the search takes the rest),
 // most of it while the tape is still too short for a walk-forward grade (a search would only be skipped)
-export const SIGHT_SHARE = Object.freeze({ grading: 0.5, thin: 0.85 });
+export const WATCH_SHARE = Object.freeze({ grading: 0.5, thin: 0.85 });
 /** Discover, resolve tokens to pools, then re-read the watched pools in rounds until the deadline; append the tape. */
-export async function sight(root, cfg, state, { fetch: fetchFn, clock = () => Date.now(), sleep = defaultSleep, deadline }) {
+export async function watch(root, cfg, state, { fetch: fetchFn, clock = () => Date.now(), sleep = defaultSleep, deadline }) {
   const net = createNet({ fetch: fetchFn, clock, sleep, hosts: state.hosts, allowed: cfg.allowedHosts, deadline, gaps: isObj(cfg.hostGapMs) ? cfg.hostGapMs : {} });
   const rows = [];
   const tokens = [];
@@ -1139,8 +1139,8 @@ export async function step(root, o = {}) {
     state.steps++;
     const era = Number.isInteger(o.era) && o.era >= 0 ? o.era : null;
     const seed = era !== null ? era + 1 : state.steps;
-    const share = state.spanMs >= GRADE.minSpanMs ? SIGHT_SHARE.grading : SIGHT_SHARE.thin;
-    const seen = o.offline ? { skipped: 'offline' } : await sight(root, cfg, state, { fetch: o.fetch, clock, sleep, deadline: t0 + Math.floor(maxMs * share) });
+    const share = state.spanMs >= GRADE.minSpanMs ? WATCH_SHARE.grading : WATCH_SHARE.thin;
+    const seen = o.offline ? { skipped: 'offline' } : await watch(root, cfg, state, { fetch: o.fetch, clock, sleep, deadline: t0 + Math.floor(maxMs * share) });
     const tape = readTape(root);
     const strategies = readStrategies(root);
     const features = isObj(o.features) ? o.features : FEATURES;
@@ -1176,7 +1176,7 @@ export async function step(root, o = {}) {
     const pools = new Set(tape.rows.map((r) => r.key)).size;
     const compactBest = bestG ? { id: bestG.id, rule: bestG.rule, trades: bestG.oos.trades, net: bestG.oos.net.mean, control: bestG.oos.control.median, beat: bestG.oos.control.beat + '/' + bestG.oos.control.seeds, edge: bestG.oos.edge, carried: bestG.oos.carried, kept: kept.some((k) => k.id === bestG.id) } : null;
     return {
-      paper: true, era, ms: clock() - t0, sight: seen,
+      paper: true, era, ms: clock() - t0, watch: seen,
       tape: { rows: tape.rows.length, pools, torn: tape.torn, bad: tape.bad, bytes: tape.bytes, spanMin: Math.round(span / 60000) },
       search: th.skipped ? { skipped: th.skipped, leaks: th.leaks } : { tried: th.tried, cps: th.cps, split: th.split, fitRows: th.fitRows, testRows: th.testRows, graded: graded.length, leaks: th.leaks },
       tried: state.tried, kept: kept.length, retired: th.retired.length, void: th.void, best: compactBest, edge, why, book: bookStats(book),
