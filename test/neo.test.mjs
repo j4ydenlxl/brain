@@ -135,15 +135,18 @@ test('determinism: two spawns of the same rows give deep-equal cells', () => {
   }
 });
 
-test('KEPT: every cell passes a dev row and fails none it fires on, and the order is rows passed first', () => {
+test('KEPT: every cell passes a dev row and fails none it fires on, and the order is rows passed first, fallbacks last', () => {
   for (const task of TASKS) {
     const rows = T[task].dev;
-    let last = Infinity;
+    let last = Infinity, fallback = false;
     for (const c of RUNS[task].cells) {
       assert.equal(checkCell(c).ok, true, c.id);
       const fired = rows.map((r) => [r, runCell(c, r.q)]).filter(([, a]) => a !== null);
       assert.ok(fired.some(([r, a]) => expectOk(a, r.expect)), task + ' ' + c.id + ' passes no dev row');
       for (const [r, a] of fired) assert.ok(expectOk(a, r.expect), task + ' ' + c.id + ' fires wrong on ' + r.q + ': ' + a);
+      const isNear = JSON.stringify(c.pyramid).includes('"memory.nearest"');
+      assert.ok(!fallback || isNear, task + ': a fallback (memory.nearest) goes after every other cell');
+      if (isNear && !fallback) { fallback = true; last = Infinity; }
       assert.ok(c.fit.ok <= last, 'the order is rows passed, more first');
       last = c.fit.ok;
     }
@@ -584,17 +587,39 @@ test('the ledger generated total grows by stats.generated, its other keys untouc
   assert.equal(fs.readdirSync(path.join(root, 'neo', 'tasks', 'doubled')).some((f) => f.endsWith('.tmp')), false);
 });
 
-test('a second grow re-grows from the colony as parents and keeps the present colony at an equal score', async () => {
+test('a mastered task is skipped: a second grow spawns nothing and writes nothing (THE CURSOR, part 2)', async () => {
   const { root, line } = await promoted();
-  const before = grownBytes(root), led0 = readJ(path.join(root, 'neo', 'LEDGER.json')).generated, col0 = readJ(path.join(root, 'neo', 'tasks', 'doubled', 'colony.json')).cells;
+  assert.deepEqual(readJ(path.join(root, 'grown', 'index.json')).cells.find((r) => r.id === line.id).heldout, { score: 1, n: 10, ok: 10 });
+  const before = grownBytes(root), led0 = fs.readFileSync(path.join(root, 'neo', 'LEDGER.json')), col0 = fs.readFileSync(path.join(root, 'neo', 'tasks', 'doubled', 'colony.json'));
   const again = await grow(root, { gen: 6 });
+  assert.equal(again.skipped, true);
   assert.equal(again.promoted, false);
-  assert.deepEqual(again.why, ['the present colony scores as high']);
+  assert.equal(again.generated, 0);
+  assert.deepEqual(again.why, ['mastered: skipped (' + line.id + ' answers 10 of 10 held-out rows)']);
   assert.deepEqual(grownBytes(root), before);
-  assert.equal(readJ(path.join(root, 'neo', 'LEDGER.json')).generated, led0 + again.generated);
+  assert.deepEqual(fs.readFileSync(path.join(root, 'neo', 'LEDGER.json')), led0);
+  assert.deepEqual(fs.readFileSync(path.join(root, 'neo', 'tasks', 'doubled', 'colony.json')), col0);
+});
+
+test('a second grow of an unmastered task re-grows from the colony as parents, keeps the population and writes its cursor', async () => {
+  const root = growRoot(), line = await grow(root); // its own root: the shared promoted root stays as the later tests read it
+  assert.equal(line.promoted, true, JSON.stringify(line.why));
+  const ixPath = path.join(root, 'grown', 'index.json'), ix = readJ(ixPath);
+  ix.cells.find((r) => r.id === line.id).heldout = { score: 0.9, n: 10, ok: 9 };
+  fs.writeFileSync(ixPath, JSON.stringify(ix, null, 2) + '\n');
+  const led0 = readJ(path.join(root, 'neo', 'LEDGER.json')), col0 = readJ(path.join(root, 'neo', 'tasks', 'doubled', 'colony.json')).cells;
+  assert.equal(led0.tasks[0].cursor.round, 0, 'the first grow wrote round 0');
+  const again = await grow(root, { gen: 6 });
+  assert.equal(again.skipped, undefined);
+  assert.equal(again.round, 1, 'the second grow continues: round 1');
+  assert.equal(again.promoted, true, JSON.stringify(again.why));
+  assert.equal(again.replaced, line.id);
+  const led1 = readJ(path.join(root, 'neo', 'LEDGER.json'));
+  assert.equal(led1.generated, led0.generated + again.generated);
+  assert.equal(led1.tasks[0].cursor.round, 1);
+  assert.equal(led1.note, 'the teacher keeps this key');
   const col1 = readJ(path.join(root, 'neo', 'tasks', 'doubled', 'colony.json')).cells, ids = new Set(col1.map((c) => c.id));
   assert.ok(col0.every((c) => ids.has(c.id)), 'the population is kept forever');
-  assert.ok(line.id && readJ(path.join(root, 'grown', 'index.json')).cells.some((r) => r.id === line.id));
 });
 
 test('one colony per task: a re-grow with a higher held-out score replaces the present colony, its file and its row', async () => {

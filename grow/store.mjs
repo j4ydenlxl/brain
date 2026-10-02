@@ -28,6 +28,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { validateCell, ID_RE, FORBIDDEN } from './contract.mjs';
+import { GATE_SOURCE, rowServes, templateSource } from './neo-core.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const DEFAULT_REPO = 'j4ydenlxl/brain-cells';
@@ -417,12 +418,35 @@ export const GROWN_BODY = [
   '',
 ].join('\n');
 
-/** grown/index.mjs for a grown/index.json: static imports in index order, GROWN, grownAnswer. */
+const isNeoRow = (c) => c !== null && typeof c === 'object' && c.tier === 'neo';
+/** The meta of a silent tier "neo" row: what grownAnswer would print for it (it never answers). */
+const silentMeta = (c) => ({ id: c.id, class: c.class ?? c.task ?? null, generation: c.generation ?? null, lane: 'neo' });
+/**
+ * grown/index.mjs for a grown/index.json: static imports in index order, GROWN, grownAnswer. An index with a tier "neo"
+ * row also carries THE GATE (contract c2, grow/neo-core.mjs GATE_SOURCE): a neo row that serves (serve true and well
+ * formed templates, rowServes) is wrapped so it answers only a prompt that fits one of its templates; any other neo row
+ * is silent and its module is not imported; GATE lists, by index position, null for a locked row and
+ * { serve, task, templates } for a neo row. An index of locked rows only renders as it always did. grownAnswer (the
+ * body) is the same text either way.
+ */
 export function renderIndexMjs(index) {
   const n = index.cells.length;
   const what = n === 0 ? 'no cell yet.' : n + (n === 1 ? ' cell.' : ' cells.');
   const lines = [GROWN_HEAD_1 + '// order. Do not edit by hand: the next promote rewrites it. Generation ' + index.generation + ': ' + what];
-  index.cells.forEach((c, i) => lines.push('import * as c' + i + " from './" + c.file + "';"));
+  const neo = index.cells.map(isNeoRow), serves = index.cells.map((c) => rowServes(c));
+  if (!neo.some(Boolean)) {
+    index.cells.forEach((c, i) => lines.push('import * as c' + i + " from './" + c.file + "';"));
+    lines.push('export const GROWN = Object.freeze([' + index.cells.map((_, i) => 'c' + i).join(', ') + ']);');
+    return lines.join('\n') + '\n\n' + GROWN_BODY;
+  }
+  index.cells.forEach((c, i) => { if (!neo[i] || serves[i]) lines.push('import * as ' + (neo[i] ? 'n' : 'c') + i + " from './" + c.file + "';"); });
+  lines.push(GATE_SOURCE);
+  index.cells.forEach((c, i) => {
+    if (!neo[i]) return;
+    lines.push('const c' + i + ' = ' + (serves[i] ? 'serving(n' + i + ', ' + JSON.stringify(c.templates.map(templateSource)) + ')' : 'silent(' + JSON.stringify(silentMeta(c)) + ')') + ';');
+  });
+  const gate = index.cells.map((c, i) => (neo[i] ? 'Object.freeze(' + JSON.stringify({ serve: serves[i], task: c.task ?? c.class ?? null, templates: serves[i] ? c.templates : [] }) + ')' : 'null'));
+  lines.push('export const GATE = Object.freeze([' + gate.join(', ') + ']);');
   lines.push('export const GROWN = Object.freeze([' + index.cells.map((_, i) => 'c' + i).join(', ') + ']);');
   return lines.join('\n') + '\n\n' + GROWN_BODY;
 }
@@ -470,12 +494,22 @@ export function copyPlan(candDir, id) {
   return [...files.values()];
 }
 
-/** Import grown/index.mjs and ask every cell its own examples[0].q through grownAnswer. */
+/**
+ * Import grown/index.mjs and ask every cell its own examples[0].q through grownAnswer. A silent tier "neo" row (GATE
+ * serve false: it answers nothing, by design) is { id, q: null, ok: true, silent: true } when it answers no prompt
+ * (can is false and answer is null on its own probe).
+ */
 export async function answersOf(mjsPath) {
   const mod = await import(pathToFileURL(mjsPath).href + '?v=' + Date.now() + '-' + Math.random().toString(36).slice(2));
   if (!Array.isArray(mod.GROWN) || typeof mod.grownAnswer !== 'function') throw new Fail(mjsPath + ' does not export GROWN and grownAnswer');
-  const answers = mod.GROWN.map((c) => {
+  const gate = Array.isArray(mod.GATE) ? mod.GATE : null;
+  const answers = mod.GROWN.map((c, i) => {
     const id = c?.meta?.id ?? null;
+    if (gate && gate[i] && gate[i].serve !== true) {
+      let quiet = false;
+      try { quiet = c.can('silent probe') === false && c.answer('silent probe') === null; } catch { quiet = false; }
+      return { id, q: null, ok: quiet, got: null, silent: true };
+    }
     const q = c?.examples?.[0]?.q ?? null;
     let r = null;
     try { r = typeof q === 'string' ? mod.grownAnswer(q) : null; } catch { r = null; }

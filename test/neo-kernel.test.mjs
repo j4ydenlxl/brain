@@ -13,7 +13,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { FORBIDDEN, MAX_SOURCE_BYTES, importsOf, validateCell } from '../grow/contract.mjs';
 import {
   KERNEL_VERSION, TYPES, FAMILIES, PRIMS, argTypes, listPrims, evalNode, wellTyped, heightOf, sizeOf, guardOk, featureOk,
-  runCell, norm, makeColony, makeCell, cellId, checkCell, sha256Hex, fmtNum,
+  runCell, norm, makeColony, makeCell, cellId, checkCell, sha256Hex, fmtNum, knowLoad, knowNorm, knowGet, knowFind, plainNum,
 } from '../grow/neo-kernel.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -34,11 +34,11 @@ const arity = (name) => argTypes(name).length + (PRIMS[name].rest ? 1 : 0);
 const goodArgs = (name) => [...argTypes(name), ...(PRIMS[name].rest ? [PRIMS[name].rest] : [])].map((t) => GOOD[t]);
 
 // ---------------------------------------------------------------- manifests
-test('manifests: at least 100 primitives over the nine families, each typed and named family.name', () => {
+test('manifests: at least 100 primitives over the ten families, each typed and named family.name', () => {
   const names = Object.keys(PRIMS);
   assert.ok(names.length >= 100, 'count ' + names.length);
   assert.equal(KERNEL_VERSION, 1);
-  assert.deepEqual([...FAMILIES], ['sense', 'transform', 'aggregate', 'compare', 'compute', 'memory', 'route', 'iterate', 'render']);
+  assert.deepEqual([...FAMILIES], ['sense', 'transform', 'aggregate', 'compare', 'compute', 'memory', 'know', 'route', 'iterate', 'render']);
   for (const fam of FAMILIES) assert.ok(names.filter((n) => PRIMS[n].family === fam).length >= 3, fam + ' has fewer than 3');
   for (const [name, p] of Object.entries(PRIMS)) {
     assert.equal(name.split('.')[0], p.family, name);
@@ -868,6 +868,133 @@ test('the marked region alone: evaluated with nothing around it, it answers, and
     assert.deepEqual(validateCell(src, mod), { ok: true, errors: [] });
     assert.equal(mod.answer('add 3 and 4'), '7');
     assert.equal(mod.can('subtract 3 from 4'), false);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// ---------------------------------------------------------------- the know family (contract c5)
+const CAP = { id: 'cap', columns: ['country', 'capital', 'population'], rows: [['France', 'Paris', 67000000], ["Côte d'Ivoire", 'Yamoussoukro', 26000000], ['United Kingdom', 'London', 1.5], ['Chad', "N'Djamena", 1], ['The Gambia', 'Banjul', 2]] };
+test('know: knowNorm folds case, accents, punctuation and a leading "the"; a non-text key is empty', () => {
+  assert.equal(knowNorm("  The Côte-d'IVOIRE! "), 'cote d ivoire');
+  assert.equal(knowNorm('the'), '');
+  assert.equal(knowNorm('Theodore'), 'theodore');
+  assert.equal(knowNorm(12.5), '12 5');
+  assert.equal(knowNorm(null), '');
+  assert.equal(knowNorm({}), '');
+});
+test('know: knowLoad keeps exactly the valid packs given, in the row, list-column and compact column forms', () => {
+  assert.equal(knowLoad([CAP, { id: 'Bad Id', columns: ['a'], rows: [['x']] }, { id: 'dup', columns: ['a', 'a'], rows: [] }, { id: 'nocols', columns: [], rows: [] }, null, 'x']), 1);
+  assert.equal(knowLoad([
+    { id: 'lst', columns: ['a', 'b'], n: 2, cols: [['x', 'y'], [1, 2]] },
+    { id: 'cmp', columns: ['a', 'b', 'n'], n: 3, cols: [{ s: 'x|y|z', sep: '|' }, { d: 'p|q', i: '0,1,0', sep: '|' }, { s: '1|2.5|', sep: '|', num: true }] },
+    { id: 'short', columns: ['a'], n: 3, cols: [{ s: 'x|y', sep: '|' }] },
+    { id: 'outofrange', columns: ['a'], n: 1, cols: [{ d: 'p', i: '5', sep: '|' }] },
+    { id: 'widesep', columns: ['a'], n: 1, cols: [{ s: 'x', sep: '||' }] },
+  ]), 2);
+  assert.equal(knowGet('lst', 'a', 'Y', 'b'), '2');
+  assert.equal(knowGet('cmp', 'a', 'z', 'b'), 'p');
+  assert.equal(knowGet('cmp', 'a', 'y', 'n'), '2.5');
+  assert.equal(knowGet('cmp', 'a', 'z', 'n'), null, 'an empty cell is no value');
+  assert.equal(knowGet('cap', 'country', 'france', 'capital'), null, 'a reload replaces the registry');
+  assert.equal(knowLoad('not a list'), 0);
+});
+test('know: lookup and reverse by key, absent and ambiguous keys are null, a wrong column or pack is null', () => {
+  knowLoad([CAP, { id: 'amb', columns: ['k', 'v'], rows: [['A', 'one'], ['a', 'two'], ['B', 'same'], ['b.', 'Same!']] }]);
+  assert.equal(R(['know.lookup', L('the united kingdom'), L('cap'), L('country'), L('capital')]), 'London');
+  assert.equal(R(['know.lookup', L('COTE D IVOIRE'), L('cap'), L('country'), L('capital')]), 'Yamoussoukro');
+  assert.equal(R(['know.reverse', L('paris'), L('cap'), L('country'), L('capital')]), 'France');
+  assert.equal(R(['know.lookup', L('Gambia'), L('cap'), L('country'), L('capital')]), 'Banjul');
+  assert.equal(R(['know.lookup', L('Atlantis'), L('cap'), L('country'), L('capital')]), null);
+  assert.equal(R(['know.lookup', L('a'), L('amb'), L('k'), L('v')]), null, 'two values: no answer');
+  assert.equal(R(['know.lookup', L('b'), L('amb'), L('k'), L('v')]), 'same', 'two rows that agree after knowNorm are one answer');
+  assert.equal(R(['know.lookup', L('france'), L('cap'), L('country'), L('mayor')]), null);
+  assert.equal(R(['know.lookup', L('france'), L('nope'), L('country'), L('capital')]), null);
+  assert.equal(R(['know.num', ['know.lookup', L('france'), L('cap'), L('country'), L('population')]]), 67000000);
+  assert.equal(R(['render.plain', ['know.num', ['know.lookup', L('united kingdom'), L('cap'), L('country'), L('population')]]]), '1.5');
+});
+test('know: find names the keys a prompt carries, longest first, exact case preferred, stop words dropped, capped', () => {
+  knowLoad([CAP, { id: 'w', columns: ['k'], rows: [['In'], ['New York'], ['York'], ['new york'], ['Is']] }]);
+  const F = (q, col, id = 'cap') => R(['know.find', L(id), L(col)], q);
+  assert.deepEqual(F('what is the capital of France', 'country'), ['France']);
+  assert.deepEqual(F('which country has the capital Paris', 'capital'), ['Paris']);
+  assert.deepEqual(F('capital of the united kingdom?', 'country'), ['United Kingdom']);
+  assert.deepEqual(F('cote d ivoire or france: which is larger', 'country'), ["Côte d'Ivoire", 'France']);
+  assert.deepEqual(F('gambia', 'country'), ['The Gambia']);
+  assert.equal(F('the weather today', 'country'), null, 'no key named is no value');
+  assert.deepEqual(F('is New York in the list', 'k', 'w'), ['New York'], 'the longest match, the exact-case one, and no stop-word key beside content');
+  assert.deepEqual(F('is in', 'k', 'w'), ['Is', 'In'], 'stop-word keys stay when nothing else is found');
+  assert.equal(F('x', 'nope'), null);
+  assert.equal(F('x', 'k', 'nope'), null);
+  const many = Array.from({ length: 80 }, (_, i) => 'k' + i);
+  knowLoad([{ id: 'many', columns: ['k'], rows: many.map((k) => [k]) }]);
+  assert.equal(F(many.join(' '), 'k', 'many').length, 50);
+});
+test('know: a key the pack writes with a leading mark is named only where the prompt writes the mark too, in any case', () => {
+  knowLoad([{ id: 'tld', columns: ['domain', 'country'], rows: [['.no', 'Norway'], ['.is', 'Iceland'], ['.uk', 'United Kingdom'], ['#tag', 'x']] }]);
+  const F = (q) => R(['know.find', L('tld'), L('domain')], q);
+  assert.equal(F('is no the answer'), null, 'the bare word is no key');
+  assert.equal(F('the uk and no more tag'), null);
+  assert.equal(F('what is x.no or no.uk'), null, 'the mark inside a word is not the key');
+  assert.deepEqual(F('which country uses .no'), ['.no']);
+  assert.deepEqual(F('WHICH COUNTRY USES .NO?'), ['.no'], 'any case');
+  assert.deepEqual(F('who runs .uk, and #tag'), ['.uk', '#tag']);
+  assert.equal(R(['know.lookup', ['transform.nthStr', ['know.find', L('tld'), L('domain')], L(1)], L('tld'), L('domain'), L('country')], 'which country uses .is'), 'Iceland');
+});
+test('know: knowLoad reads the runs and the front coded column forms, and a malformed one drops its pack', () => {
+  assert.equal(knowLoad([{
+    id: 'rf', columns: ['k', 'v', 'n'], n: 5,
+    cols: [{ f: '0alpha|52|0beta|4max|0z', sep: '|' }, { d: 'x|y', r: '0*3,1*2', sep: '|' }, { d: '1.5|7', r: '1*4,0*1', sep: '|', num: true }],
+  }]), 1);
+  assert.deepEqual(['alpha', 'alpha2', 'beta', 'betamax', 'z'].map((k) => knowGet('rf', 'k', k, 'v')), ['x', 'x', 'x', 'y', 'y']);
+  assert.deepEqual(['alpha', 'betamax', 'z'].map((k) => knowGet('rf', 'k', k, 'n')), ['7', '7', '1.5']);
+  assert.equal(knowLoad([{ id: 'big', columns: ['k', 'v'], n: 2, cols: [{ f: '0' + 'a'.repeat(40) + '|zb', sep: '|' }, { s: 'one|two', sep: '|' }] }]), 1);
+  assert.equal(knowGet('big', 'k', 'a'.repeat(35) + 'b', 'v'), 'two', 'a shared prefix of 35 is one base 36 digit');
+  const bad = {
+    over: { d: 'x', r: '0*6', sep: '|' }, short: { d: 'x', r: '0*2', sep: '|' }, range: { d: 'x|y', r: '2*5', sep: '|' },
+    syntax: { d: 'x', r: '0-5', sep: '|' }, zero: { d: 'x', r: '0*0,0*5', sep: '|' }, upper: { d: 'abcdefghijk'.split('').join('|'), r: 'A*5', sep: '|' },
+    fewcells: { f: '0a|0b', sep: '|' }, longprefix: { f: '0ab|3c|0d|0e|0f', sep: '|' }, nodigit: { f: '0a|-b|0c|0d|0e', sep: '|' },
+  };
+  for (const [id, col] of Object.entries(bad)) assert.equal(knowLoad([{ id, columns: ['k'], n: 5, cols: [col] }]), 0, id);
+  assert.equal(knowLoad([{ id: 'fine', columns: ['k'], n: 5, cols: [{ d: 'abcdefghijk'.split('').join('|'), r: 'a*5', sep: '|' }] }]), 1, 'the same shape well formed');
+  assert.equal(knowGet('fine', 'k', 'k', 'k'), 'k');
+});
+test('know: row is a null-prototype object of one key, where filters keys by a value, has tests a key', () => {
+  knowLoad([CAP, { id: 'pr', columns: ['__proto__', 'v'], rows: [['k', 'x']] }, { id: 'm', columns: ['item', 'member'], rows: [['apple', 'yes'], ['brick', 'no'], ['pear', 'yes']] }]);
+  const row = R(['know.row', L('Chad'), L('cap'), L('country')]);
+  assert.equal(Object.getPrototypeOf(row), null);
+  assert.deepEqual({ ...row }, { country: 'Chad', capital: "N'Djamena", population: 1 });
+  const pr = R(['know.row', L('k'), L('pr'), L('__proto__')]);
+  assert.equal(Object.getPrototypeOf(pr), null);
+  assert.equal(({}).v, undefined, 'no prototype was touched');
+  assert.equal(R(['render.json', ['know.row', L('Chad'), L('cap'), L('country')]]), '{"country":"Chad","capital":"N\'Djamena","population":1}');
+  assert.deepEqual(R(['know.where', ['know.find', L('m'), L('item')], L('m'), L('item'), L('member'), L('yes')], 'brick, pear or apple'), ['pear', 'apple']);
+  assert.equal(R(['render.bool', ['know.has', L('PEAR'), L('m'), L('item')]]), 'Yes');
+  assert.equal(R(['know.has', L('plum'), L('m'), L('item')]), false);
+  assert.equal(R(['know.where', L('x'), L('m'), L('item'), L('member'), L('')]), null);
+});
+test('know: render.plain writes every digit, never an exponent, and a float to 15 significant digits', () => {
+  assert.equal(plainNum(1e21), '1000000000000000000000');
+  assert.equal(plainNum(0.1 + 0.2), '0.3');
+  assert.equal(plainNum(-0), '0');
+  assert.equal(plainNum(2n ** 70n), '1180591620717411303424');
+  assert.equal(plainNum(1e-9), null);
+  assert.equal(plainNum(NaN), null);
+  assert.equal(R(['render.plain', L(67390000)]), '67390000');
+  assert.notEqual(R(['render.number', L(12.25)]), R(['render.plain', L(12.25)]), 'render.number rounds, render.plain does not');
+});
+test('know: the family runs inside the marked region alone with its packs passed as data', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'neo-know-'));
+  try {
+    const alone = path.join(dir, 'alone.mjs');
+    fs.writeFileSync(alone, REGION + '\nexport { evalNode, knowLoad };\n');
+    const K = await import(pathToFileURL(alone).href);
+    assert.equal(K.knowLoad([{ id: 'cap', columns: ['country', 'capital'], n: 2, cols: [{ s: 'France|Japan', sep: '|' }, { s: 'Paris|Tokyo', sep: '|' }] }]), 1);
+    const cell = ['render.str', ['know.lookup', ['transform.nthStr', ['know.find', L('cap'), L('country')], L(1)], L('cap'), L('country'), L('capital')]];
+    assert.equal(K.evalNode(cell, 'capital of Japan'), 'Tokyo');
+    assert.equal(K.evalNode(cell, 'capital of Mars'), null);
+    knowLoad([]);
+    assert.equal(R(cell, 'capital of Japan'), null, 'each module holds its own registry');
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

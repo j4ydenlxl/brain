@@ -56,13 +56,18 @@
 //              number found there, the nearest key (word overlap of at least one half), a key test, mem.consts,
 //              mem.texts, mem.lists, mem.tpl, mem.tpls, mem.answer. mem is data and never changes after a cell is
 //              made (a table's normalized index is cached per table object).
-//   route      if (text, number, list), first non-null (text, number, list), when, unless, a case table (text, num).
+//   know       retrieval from the knowledge packs knowLoad holds (contract c5; a pack id and its column names are
+//              literal arguments): the keys of a column the prompt names (find), the value of a key in another column
+//              (lookup), the key of a value (reverse), the row of a key, whether a key is listed (has), the keys
+//              among some whose column holds a value (where), and a text as a number (num). Keys match after
+//              knowNorm (no accents, lower case, no punctuation, no leading "the"); a key with two values is no answer.
+//   route     if (text, number, list), first non-null (text, number, list), when, unless, a case table (text, num).
 //   iterate    a range 1..N, a range a..b, steps, multiples, squares, powers, fibonacci terms, countdown, running
 //              sum, differences, growth by a percent per period, collatz path, digits, repeat, and a template
 //              mapped over a range or a list (one line per item: slot 0 the item, slot 1 its position from 1, slot 2
 //              the count), for "Day 1" to "Day N" plans.
 //   render     the apex, out str: a plain number (digits, no separator, one decimal place only when not whole, a
-//              BigInt in full), fixed decimals, a percent, money, an ordinal, a number with its unit, a label with a
+//              BigInt in full), a number in full (plain: every digit, a float to 15 significant digits), fixed decimals, a percent, money, an ordinal, a number with its unit, a label with a
 //              number, a list joined by commas, a list with "and", numbers joined, lines, a numbered list, bullets,
 //              a yes/no phrase pair, yes or no, a sentence template with slots (text and number), a sentence, a JSON
 //              object, key: value lines, a code span, a written date, a text as is.
@@ -104,7 +109,7 @@ const MAX_TEXT = 100000;
 const SAFE = 9007199254740991n;
 const NEAR = 0.5;
 const TYPES = Object.freeze(['text', 'num', 'nums', 'str', 'strs', 'bool', 'kv', 'tpl']);
-const FAMILIES = Object.freeze(['sense', 'transform', 'aggregate', 'compare', 'compute', 'memory', 'route', 'iterate', 'render']);
+const FAMILIES = Object.freeze(['sense', 'transform', 'aggregate', 'compare', 'compute', 'memory', 'know', 'route', 'iterate', 'render']);
 const STOP_WORDS = Object.freeze(('a an the is are was were be been being am of to in on at by for with from and or but ' +
   'what whats which who whom whose how when where why do does did can could would should will shall may might must ' +
   'please me my i im you your it its this that these those tell give show find there their them they we us our ' +
@@ -542,6 +547,193 @@ function asStr(v) { return typeof v === 'string' ? v : isNum(v) ? fmtNum(v) : nu
 function asNum(v) { return isNum(v) ? v : typeof v === 'string' ? parseNum(v.trim()) : null; }
 function memField(mem, field, key) { const t = mem && mem[field]; return isKv(t) && typeof key === 'string' && Object.hasOwn(t, key) ? t[key] : null; }
 
+// ---- knowledge (contract c5): packs of rows the absorber pulled, loaded by knowLoad, read by the know family. A pack
+// is DATA: { id, columns: [names], rows: [[cells]] } or the column form { id, columns, cols } (each column a list of
+// cells, or { s: cells joined by sep, sep, num? } or { d: distinct cells joined by sep, i: indices in base 36 joined by
+// commas, sep, num? } or { d, r: runs "index*count" in base 36 joined by commas, sep, num? } or { f: cells front coded
+// and joined by sep, sep, num? }). A cell is a string or a finite number. Keys match after knowNorm; a key with two
+// values is no answer.
+const KNOW = new Map();
+const KNOW_ID = /^[a-z0-9-]+$/;
+const KNOW_MAX_ROWS = 200000;
+const KNOW_MAX_GRAM = 8;
+/** The match form of a key: no accents, lower case, every run of what is not a letter or a digit one space, no leading "the". */
+function knowNorm(s) {
+  if (typeof s !== 'string' && !(typeof s === 'number' && Number.isFinite(s))) return '';
+  const t = knowWords(String(s));
+  return t.startsWith('the ') ? t.slice(4) : t === 'the' ? '' : t;
+}
+function knowWords(s) { return s.slice(0, 2000).normalize('NFD').replace(/\p{M}+/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim(); }
+/** A number as plain digits (no exponent, no separator; a float to 15 significant digits), or null. */
+function plainNum(v) {
+  if (typeof v === 'bigint') return v.toString();
+  if (typeof v !== 'number' || !Number.isFinite(v)) return null;
+  if (Number.isInteger(v)) return Math.abs(v) < 1e21 ? String(v + 0) : BigInt(v).toString();
+  const s = String(Number(v.toPrecision(15)) + 0);
+  return /e/i.test(s) ? null : s;
+}
+function knowCell(v) { return typeof v === 'string' ? (v.trim() ? v : null) : typeof v === 'number' && Number.isFinite(v) ? plainNum(v) : null; }
+function knowColumn(c, n) {
+  if (Array.isArray(c)) return c.length === n ? c : null;
+  if (!isKv(c) || typeof c.sep !== 'string' || c.sep.length !== 1) return null;
+  const conv = c.num === true ? (x) => (x === '' ? '' : Number(x)) : (x) => x;
+  if (typeof c.s === 'string') { const xs = n ? c.s.split(c.sep) : []; return xs.length === n ? xs.map(conv) : null; }
+  if (typeof c.d === 'string' && typeof c.i === 'string') {
+    const d = c.d.split(c.sep).map(conv), ix = n ? c.i.split(',') : [];
+    if (ix.length !== n) return null;
+    const out = new Array(n);
+    for (let k = 0; k < n; k++) { const j = parseInt(ix[k], 36); if (!(j >= 0 && j < d.length)) return null; out[k] = d[j]; }
+    return out;
+  }
+  if (typeof c.d === 'string' && typeof c.r === 'string') { // runs of the dictionary: "index*count" in base 36, by commas
+    const d = c.d.split(c.sep).map(conv), out = [];
+    for (const run of n ? c.r.split(',') : []) {
+      const m = /^([0-9a-z]+)\*([0-9a-z]+)$/.exec(run), j = m ? parseInt(m[1], 36) : -1, len = m ? parseInt(m[2], 36) : 0;
+      if (!(j >= 0 && j < d.length) || !(len >= 1) || out.length + len > n) return null;
+      for (let k = 0; k < len; k++) out.push(d[j]);
+    }
+    return out.length === n ? out : null;
+  }
+  if (typeof c.f === 'string') { // front coded: each item the count (one base 36 digit) of first code units it shares with the item before, then the rest
+    const xs = n ? c.f.split(c.sep) : [];
+    if (xs.length !== n) return null;
+    const out = new Array(n);
+    let prev = '';
+    for (let k = 0; k < n; k++) {
+      const m = /^[0-9a-z]/.test(xs[k]) ? parseInt(xs[k][0], 36) : -1;
+      if (!(m >= 0 && m <= prev.length)) return null;
+      prev = prev.slice(0, m) + xs[k].slice(1);
+      out[k] = conv(prev);
+    }
+    return out;
+  }
+  return null;
+}
+function knowRows(p) {
+  const cols = p.columns;
+  if (Array.isArray(p.rows)) return p.rows.slice(0, KNOW_MAX_ROWS).map((r) => (Array.isArray(r) ? cols.map((_, j) => r[j]) : null));
+  if (!Array.isArray(p.cols) || p.cols.length !== cols.length || !Number.isInteger(p.n) || p.n < 0 || p.n > KNOW_MAX_ROWS) return null;
+  const data = p.cols.map((c) => knowColumn(c, p.n));
+  if (data.some((c) => c === null)) return null;
+  return Array.from({ length: p.n }, (_, i) => data.map((c) => c[i]));
+}
+/**
+ * Load knowledge packs: the registry becomes exactly the valid packs given (a later pack of one id wins); the count.
+ * A row that is not a list, a cell that is neither a string nor a finite number, becomes empty text.
+ */
+function knowLoad(packs) {
+  KNOW.clear();
+  for (const p of Array.isArray(packs) ? packs : []) {
+    if (!isKv(p) || typeof p.id !== 'string' || !KNOW_ID.test(p.id) || !Array.isArray(p.columns) || !p.columns.length) continue;
+    if (!p.columns.every((c) => typeof c === 'string' && c.trim()) || new Set(p.columns).size !== p.columns.length) continue;
+    let rows = null;
+    try { rows = knowRows(p); } catch { rows = null; }
+    if (!rows) continue;
+    const clean = rows.filter(Boolean).map((r) => r.map((v) => (typeof v === 'string' || (typeof v === 'number' && Number.isFinite(v)) ? v : '')));
+    KNOW.set(p.id, { id: p.id, cols: p.columns.slice(), col: new Map(p.columns.map((c, j) => [c, j])), rows: clean, keys: new Map(), grams: new Map() });
+  }
+  return KNOW.size;
+}
+function knowCol(p, name) { return typeof name === 'string' && p.col.has(name) ? p.col.get(name) : -1; }
+function knowKeys(p, j) {
+  let m = p.keys.get(j);
+  if (m) return m;
+  m = new Map();
+  p.rows.forEach((r, i) => { const k = knowNorm(r[j]); if (!k) return; const a = m.get(k); if (a) a.push(i); else m.set(k, [i]); });
+  p.keys.set(j, m);
+  return m;
+}
+/** The one value of column vc for the key in column kc of a pack, or null (no pack, no column, no key, two values). */
+function knowGet(id, kc, key, vc) {
+  const p = typeof id === 'string' ? KNOW.get(id) : null;
+  if (!p || typeof key !== 'string') return null;
+  const ki = knowCol(p, kc), vi = knowCol(p, vc);
+  if (ki < 0 || vi < 0) return null;
+  const at = knowKeys(p, ki).get(knowNorm(key));
+  if (!at) return null;
+  let out = null, on = null;
+  for (const i of at) {
+    const v = knowCell(p.rows[i][vi]);
+    if (v === null) continue;
+    const n = knowNorm(v) || v;
+    if (on !== null && n !== on) return null;
+    if (on === null) { out = v; on = n; }
+  }
+  return out;
+}
+/** The row of a key as { column: cell } (numbers as numbers), or null (no key, or two rows that differ). */
+function knowRow(id, kc, key) {
+  const p = typeof id === 'string' ? KNOW.get(id) : null;
+  if (!p || typeof key !== 'string') return null;
+  const ki = knowCol(p, kc);
+  const at = ki < 0 ? null : knowKeys(p, ki).get(knowNorm(key));
+  if (!at) return null;
+  const sig = (r) => r.map((v) => knowNorm(v)).join('\u0000');
+  if (at.some((i) => sig(p.rows[i]) !== sig(p.rows[at[0]]))) return null;
+  const out = Object.create(null);
+  p.cols.forEach((c, j) => { const v = p.rows[at[0]][j]; if (v !== '') out[c] = v; });
+  return out;
+}
+function knowGrams(p, j) {
+  let g = p.grams.get(j);
+  if (g) return g;
+  g = { canon: new Map(), max: 1 };
+  for (const r of p.rows) {
+    const t = knowCell(r[j]), k = t === null ? '' : knowNorm(t);
+    if (!k || g.canon.has(k)) continue;
+    g.canon.set(k, t);
+    g.max = Math.min(KNOW_MAX_GRAM, Math.max(g.max, k.split(' ').length));
+  }
+  p.grams.set(j, g);
+  return g;
+}
+/** A key that begins with a mark: neither a letter, a digit nor a space. */
+const MARKED = /^[^\p{L}\p{N}\s]/u;
+function boundedIn(hay, needle) {
+  for (let i = hay.indexOf(needle); i >= 0; i = hay.indexOf(needle, i + 1)) {
+    const a = i === 0 || !/[\p{L}\p{N}]/u.test(hay[i - 1]), b = i + needle.length >= hay.length || !/[\p{L}\p{N}]/u.test(hay[i + needle.length]);
+    if (a && b) return true;
+  }
+  return false;
+}
+/**
+ * The keys of a pack column the prompt names, in prompt order, each as the pack writes it: the longest match at each
+ * place, never overlapping. When one of them is written in the prompt exactly as in the pack, only those exact ones
+ * are kept; one made only of stop words goes when another is found. A key written with a leading mark (".no") is
+ * named only where the prompt writes it with the mark (any case).
+ */
+function knowFind(q, id, kc) {
+  const p = typeof id === 'string' ? KNOW.get(id) : null;
+  if (!p || typeof q !== 'string') return null;
+  const j = knowCol(p, kc);
+  if (j < 0) return null;
+  const g = knowGrams(p, j), ws = splitW(knowWords(q)), found = [], src = q.slice(0, 2000), low = src.toLowerCase();
+  for (let i = 0; i < ws.length && found.length < 50;) {
+    let hit = 0;
+    for (let n = Math.min(g.max + 1, ws.length - i); n >= 1 && !hit; n--) {
+      let k = ws.slice(i, i + n).join(' ');
+      if (k.startsWith('the ')) k = k.slice(4);
+      if (!k || !g.canon.has(k)) continue;
+      const t = g.canon.get(k);
+      // a key the pack writes with a leading mark (".no", "#tag") is named only where the prompt writes the mark too
+      if (MARKED.test(t) && !boundedIn(low, t.toLowerCase())) continue;
+      if (!found.includes(t)) found.push(t);
+      hit = n;
+    }
+    i += hit || 1;
+  }
+  const exact = found.filter((t) => boundedIn(src, t));
+  const kept = exact.length ? exact : found;
+  const content = kept.filter((t) => splitW(norm(t, 1)).some((w) => !STOP.has(w)));
+  return content.length ? content : kept;
+}
+/** The keys among keys whose column vc holds value (knowNorm equal), in the given order. */
+function knowWhere(keys, id, kc, vc, value) {
+  const want = knowNorm(value);
+  if (!want || !Array.isArray(keys)) return null;
+  return keys.filter((k) => { const v = knowGet(id, kc, k, vc); return v !== null && knowNorm(v) === want; });
+}
+
 // ---- sha256 (pure; the cell id)
 const SHA_P = sieve(311);
 const SHA_H = SHA_P.slice(0, 8).map((p) => ((Math.sqrt(p) % 1) * 4294967296) | 0);
@@ -844,6 +1036,15 @@ function buildPrims() {
   P('memory.answer', '', 'str', 'the answer|what it holds|the fact', (a, c) => asStr(c.mem.answer));
   P('memory.table', '', 'kv', 'the table|everything it holds', (a, c) => (isKv(c.mem.table) ? c.mem.table : null));
 
+  // know: retrieval from the knowledge packs (knowLoad); a pack id and its column names are literal arguments
+  P('know.find', 'text str str', 'strs', 'which|named|mentioned|the one called', (a, c) => ne(knowFind(c.q, S(a[0]), S(a[1]))));
+  P('know.lookup', 'str str str str', 'str', 'what is the|look up|the value of|find the', (a) => knowGet(S(a[1]), S(a[2]), S(a[0]), S(a[3])));
+  P('know.reverse', 'str str str str', 'str', 'which has|whose|which one has|the one with', (a) => knowGet(S(a[1]), S(a[3]), S(a[0]), S(a[2])));
+  P('know.row', 'str str str', 'kv', 'everything about|the record of|all about', (a) => knowRow(S(a[1]), S(a[2]), S(a[0])));
+  P('know.has', 'str str str', 'bool', 'is it known|is there a|is it listed', (a) => { const p = KNOW.get(S(a[1])); const j = p ? knowCol(p, S(a[2])) : -1; return j < 0 ? null : knowKeys(p, j).has(knowNorm(S(a[0]))); });
+  P('know.where', 'strs str str str str', 'strs', 'which of these|the ones that are|among these', (a) => knowWhere(SS(a[0]), S(a[1]), S(a[2]), S(a[3]), S(a[4])));
+  P('know.num', 'str', 'num', 'as a number|numeric value|how much', (a) => parseNum(S(a[0]).trim()));
+
   // route: choose between values (lazy ones see a null instead of failing on it)
   P('route.if', 'bool str str', 'str', 'if|whether|otherwise|depending on', ifThen, LAZY);
   P('route.ifNum', 'bool num num', 'num', 'if|whether|otherwise', ifThen, LAZY);
@@ -877,6 +1078,7 @@ function buildPrims() {
 
   // render: the apex, the text a person reads
   P('render.number', 'num', 'str', 'the answer|equals|is|number', (a) => fmtNum(N(a[0])));
+  P('render.plain', 'num', 'str', 'exact number|all its digits|in full', (a) => plainNum(N(a[0])));
   P('render.decimals', 'num num', 'str', 'decimal places|to places|rounded to|to the nearest', (a) => fmtFixed(N(a[0]), a[1]));
   P('render.percent', 'num', 'str', 'percent|percentage|%', (a) => fmtNum(N(a[0])) + '%');
   P('render.money', 'num', 'str', 'dollars|cost|price|money|$', (a) => { const s = fmtFixed(absN(N(a[0])), 2); return s === null ? null : (F(a[0]) < 0 ? '-$' : '$') + s; });
@@ -1083,4 +1285,5 @@ const ARGS = Object.freeze(Object.fromEntries(Object.entries(PRIMS).map(([k, p])
 export {
   KERNEL_VERSION, TYPES, FAMILIES, STOP_WORDS, MAX_DEPTH, PRIMS, argTypes, listPrims, evalNode, wellTyped, heightOf, sizeOf,
   guardOk, featureOk, runCell, norm, makeColony, makeCell, cellId, checkCell, sha256Hex, canon, numbersIn, fmtNum,
+  knowLoad, knowNorm, knowGet, knowFind, plainNum,
 };
