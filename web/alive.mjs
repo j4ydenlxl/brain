@@ -13,6 +13,23 @@
 // Every string from a record is HTML-escaped (dream prompts are text the organism wrote for itself: untrusted) and an em dash in
 // a record becomes a comma, so none reaches the page; data.json keeps the record's text and writes an em dash as its \u escape.
 //
+// THE NEO PART (his order 7, "visible constant improvement"; and of 20:51Z, "simple at first but infintie potential"):
+// the organism that heartbeats and iterates itself with no model, seen from outside. Read at build time from the
+// committed files the eras write (NEO_FILES: neo/LEDGER.json, neo/ERA.json, grown/measure.jsonl, neo/ABSORB.json,
+// neo/frontier.json, neo/TRIALS.jsonl), every number exactly as the file holds it, a file not written yet "not yet":
+// iterations, eras and the last era's time and body, tasks, colonies, cells, mastered and the held-out fraction of the
+// newest measure row, the newest SERIES_ROWS rows as two inline SVG sparklines with their table, velocity and plateau
+// when the row has them, sources absorbed and the crawl queue's counts, the self-modification record (neo/TRIALS.jsonl
+// with grown/self.json and grown/cortex.json), the bodies that beat in the day before the build, and one plain sentence
+// for what is not working yet, built from those numbers. OPEN-ENDED: a velocity key the measure adds later is drawn by
+// its own name, a body the era names later is counted by its own name.
+// GUARDS: refusedPath keeps every reader off state/, judge/heldout/, judge/control.jsonl and neo/tasks/*/heldout.jsonl
+// (the read is refused before a file is opened); every JSON file is size-capped and a JSON-lines file is read from its
+// newest bytes (a torn line is counted and skipped); every string of the model is scrubbed (token shapes, credentials
+// in a URL, the value of any token-named variable of the build's environment, and any path into the runtime directory)
+// before it reaches the page or data.json. No script on the page, no external request.
+// NEO part author: Opus 5.5 builder (ALIVE) for the Fable 5.1 orchestrator, 2026-10-01.
+//
 // Run: node web/alive.mjs   (writes web/dist/alive/index.html and data.json, prints one JSON line; web/build.mjs calls generateAlive)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -29,11 +46,60 @@ export const PAGE_CAP = 150000;
 export const GEN_ROWS = 120, HISTORY_ROWS = 40, DREAM_PROMPTS = 6;
 const PROMPT_CHARS = 240;
 const EM = String.fromCharCode(0x2014);
+// the NEO part's files (kept apart from FILES so a page built before the part landed still matches its own data.json)
+export const NEO_FILES = Object.freeze({ ledger: 'neo/LEDGER.json', era: 'neo/ERA.json', measure: 'grown/measure.jsonl', absorb: 'neo/ABSORB.json',
+  frontier: 'neo/frontier.json', trials: 'neo/TRIALS.jsonl' });
+// the sparkline's rows, the trial rows on the page, the window of the bodies that beat (a day before the build stamp)
+export const SERIES_ROWS = 48, TRIAL_ROWS = 8, BODY_WINDOW_MS = 24 * 60 * 60 * 1000;
+// bounds: a JSON file over jsonBytes is not parsed; a JSON-lines file is read from its newest bytes
+export const READ_LIMITS = Object.freeze({ jsonBytes: 32 * 1024 * 1024, measureBytes: 4 * 1024 * 1024, trialsBytes: 16 * 1024 * 1024 });
+
+// ------------------------------------------------------------------ guards: what may never be opened, what may never be shown
+// state/, judge/heldout/, judge/control.jsonl, neo/tasks/*/heldout.jsonl, and (wider than the rule) any path with a heldout segment
+const REFUSED = [/^state(\/|$)/i, /^judge\/heldout(\/|$)/i, /^judge\/control\.jsonl$/i, /^neo\/tasks\/[^/]+\/heldout\.jsonl$/i, /(^|\/)heldout(\.jsonl?)?(\/|$)/i];
+/** Why a tree-relative path may not be opened (a held-out or runtime path, or a path that leaves the tree), else null. */
+export function refusedPath(rel) {
+  const r = String(rel ?? '').replace(/\\/g, '/').replace(/\/+/g, '/').replace(/^(\.\/)+/, '');
+  if (!r || r.startsWith('/') || /^[a-z]:/i.test(r) || r.split('/').includes('..')) return 'not a path inside the tree';
+  return REFUSED.some((re) => re.test(r)) ? 'a held-out or runtime path: never opened' : null;
+}
+const REDACTED = '[redacted]', RUNTIME = '[a runtime path]';
+// a distinctive prefix is matched even glued to the word before it; a short generic one (sk-, npm_, rk_) only at a word start
+const TOKEN_SHAPES = [
+  /gh[pousr]_[A-Za-z0-9]{20,}/g, /github_pat_[A-Za-z0-9_]{20,}/g, /glpat-[A-Za-z0-9_-]{16,}/g, /\bnpm_[A-Za-z0-9]{30,}/g,
+  /sk-(?:ant|proj)-[A-Za-z0-9_-]{20,}/g, /\bsk-[A-Za-z0-9_-]{20,}/g, /\b[rsp]k_(?:live|test)_[A-Za-z0-9]{10,}/g, /xox[abposr]-[A-Za-z0-9-]{10,}/g,
+  /\bAKIA[0-9A-Z]{16}\b/g, /AIza[0-9A-Za-z_-]{35}/g, /\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{4,}/g, /\bBearer\s+[A-Za-z0-9._~+/=-]{12,}/gi,
+];
+const URL_CRED = /\b([a-z][a-z0-9+.-]*:\/\/)[^\s/@:]*:[^\s/@]+@/gi;
+const NAMED = /\b((?:[A-Za-z0-9]+[_-])*(?:token|secret|password|passwd|api[_-]?key|access[_-]?key|auth))(\s*[:=]\s*)(["']?)[^\s"',;&]{6,}/gi;
+const RUNTIME_PATH = /[^\s"'<>()]*(?<![A-Za-z0-9_.-])state[\\/][^\s"'<>()]*/gi;
+/** A string with every token shape, credential in a URL, token-named assignment and runtime path replaced; secrets are exact values to remove too. */
+export function scrub(s, secrets = []) {
+  let t = String(s);
+  for (const v of secrets) if (typeof v === 'string' && v.length >= 8) t = t.split(v).join(REDACTED);
+  for (const re of TOKEN_SHAPES) t = t.replace(re, REDACTED);
+  return t.replace(URL_CRED, '$1' + REDACTED + '@').replace(NAMED, '$1$2$3' + REDACTED).replace(RUNTIME_PATH, RUNTIME);
+}
+const SECRET_NAME = /token|secret|password|passwd|api[_-]?key|access[_-]?key|credential|auth|private|cookie|session|pat$/i;
+/** The values (never the names, never printed) of the environment's token-named variables, the build scrubs them by value. */
+export function secretValues(env = {}) {
+  const out = [];
+  for (const [k, v] of Object.entries(isObjLoose(env) ? env : {})) if (SECRET_NAME.test(k) && typeof v === 'string' && v.length >= 8) out.push(v);
+  return out.sort((a, b) => b.length - a.length);
+}
+function isObjLoose(v) { return Boolean(v) && typeof v === 'object'; }
+/** Every string of a value scrubbed (keys too), a fresh copy; numbers, booleans and null as they are. */
+function deepScrub(v, secrets) {
+  if (typeof v === 'string') return scrub(v, secrets);
+  if (Array.isArray(v)) return v.map((x) => deepScrub(x, secrets));
+  if (v && typeof v === 'object') { const o = {}; for (const [k, x] of Object.entries(v)) o[scrub(k, secrets)] = deepScrub(x, secrets); return o; }
+  return v;
+}
 
 // an em dash in a record becomes a comma (with the spaces around it folded), so the page never carries one
 const DASH = new RegExp('\\s*' + EM + '\\s*', 'g');
 const noDash = (s) => String(s).replace(DASH, ', ');
-export const esc = (s) => noDash(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+export const esc = (s) => scrub(noDash(s)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 const isObj = (v) => Boolean(v) && typeof v === 'object' && !Array.isArray(v);
 const count = (v) => (Number.isInteger(v) && v >= 0 ? v : null);
 const finite = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
@@ -42,13 +108,43 @@ const clip = (s, n) => (s.length > n ? s.slice(0, n - 3) + '...' : s);
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
 
 // ------------------------------------------------------------------ reading (tolerant: a file is a source with a state)
-function load(root, rel) {
+/** The newest maxBytes of a file from its first whole line, and the sha256 of the whole file (hashed in chunks). */
+function readTail(file, size, maxBytes) {
+  const fd = fs.openSync(file, 'r');
+  try {
+    const hash = createHash('sha256'), chunk = Buffer.alloc(1024 * 1024);
+    for (let pos = 0; pos < size;) { const n = fs.readSync(fd, chunk, 0, Math.min(chunk.length, size - pos), pos); if (n <= 0) break; hash.update(chunk.subarray(0, n)); pos += n; }
+    // one byte more than the window, so a window that starts on a line start keeps that line (the byte before it is its newline)
+    const tail = Buffer.alloc(maxBytes + 1);
+    const got = fs.readSync(fd, tail, 0, maxBytes + 1, size - maxBytes - 1);
+    const buf = tail.subarray(0, got), nl = buf.indexOf(10);
+    return { buf: nl < 0 ? Buffer.alloc(0) : buf.subarray(nl + 1), sha256: hash.digest('hex') };
+  } finally { fs.closeSync(fd); }
+}
+/**
+ * One record of the tree as text, never throwing: { src: { file, state, bytes, sha256 }, body }. A refused path (refusedPath)
+ * is never opened; a file over maxBytes is "too large", or with tail its newest maxBytes from a whole line (src.tailBytes).
+ */
+export function load(root, rel, { maxBytes = READ_LIMITS.jsonBytes, tail = false } = {}) {
   const src = { file: rel, state: 'missing', bytes: null, sha256: null };
+  if (refusedPath(rel)) { src.state = 'refused'; return { src, body: null }; }
   const file = path.join(root, ...rel.split('/'));
   let buf;
-  try { if (!fs.existsSync(file)) return { src, body: null }; buf = fs.readFileSync(file); } catch { src.state = 'unreadable'; return { src, body: null }; }
-  src.bytes = buf.length;
-  src.sha256 = createHash('sha256').update(buf).digest('hex');
+  try {
+    const st = fs.statSync(file, { throwIfNoEntry: false });
+    if (!st) return { src, body: null };
+    if (!st.isFile()) { src.state = 'unreadable'; return { src, body: null }; }
+    if (st.size > maxBytes) {
+      src.bytes = st.size;
+      if (!tail) { src.state = 'too large'; return { src, body: null }; }
+      const t = readTail(file, st.size, maxBytes);
+      buf = t.buf; src.sha256 = t.sha256; src.tailBytes = maxBytes;
+    } else {
+      buf = fs.readFileSync(file);
+      src.bytes = buf.length;
+      src.sha256 = createHash('sha256').update(buf).digest('hex');
+    }
+  } catch { src.state = 'unreadable'; return { src, body: null }; }
   const body = buf.toString('utf8').replace(/^﻿/, '');
   if (!body.trim()) { src.state = 'empty'; return { src, body: null }; }
   src.state = 'read';
@@ -62,8 +158,8 @@ function loadJson(root, rel, shapeOk) {
   if (!shapeOk(json)) { src.state = 'wrong shape'; return { src, json: null }; }
   return { src, json };
 }
-function loadJsonl(root, rel) {
-  const { src, body } = load(root, rel);
+function loadJsonl(root, rel, opts) {
+  const { src, body } = load(root, rel, opts);
   if (body === null) return { src, rows: [] };
   const rows = [];
   let bad = 0;
@@ -77,7 +173,20 @@ function loadJsonl(root, rel) {
   return { src, rows };
 }
 
-/** The organism's records under root, never throwing: { generations, index, self, cortex, apps, dreams, curriculum, sources }. */
+/**
+ * The NEO records under root, never throwing: { ledger, era, measure: [rows], absorb, frontier, trials: [rows], sources }.
+ * Each a whole object as its file holds it (or null / []); the model picks the numbers.
+ */
+export function readNeo(root = ROOT) {
+  const led = loadJson(root, NEO_FILES.ledger, isObj), er = loadJson(root, NEO_FILES.era, isObj);
+  const ab = loadJson(root, NEO_FILES.absorb, isObj), fr = loadJson(root, NEO_FILES.frontier, isObj);
+  const me = loadJsonl(root, NEO_FILES.measure, { maxBytes: READ_LIMITS.measureBytes, tail: true });
+  const tr = loadJsonl(root, NEO_FILES.trials, { maxBytes: READ_LIMITS.trialsBytes, tail: true });
+  return { ledger: led.json, era: er.json, measure: me.rows, absorb: ab.json, frontier: fr.json, trials: tr.rows,
+    sources: { ledger: led.src, era: er.src, measure: me.src, absorb: ab.src, frontier: fr.src, trials: tr.src } };
+}
+
+/** The organism's records under root, never throwing: { generations, index, self, cortex, apps, dreams, curriculum, neo, sources }. */
 export function readAlive(root = ROOT) {
   const g = loadJson(root, FILES.generations, (j) => isObj(j) && Array.isArray(j.generations));
   const ix = loadJson(root, FILES.index, (j) => isObj(j) && Array.isArray(j.cells));
@@ -91,7 +200,7 @@ export function readAlive(root = ROOT) {
     self: { trial: sf.json && isObj(sf.json.trial) ? sf.json.trial : null, history: sf.json && Array.isArray(sf.json.history) ? sf.json.history.filter(isObj) : [] },
     cortex: cx.json,
     apps: ap.json ? ap.json.apps.filter(isObj) : [],
-    dreams: dr.rows, curriculum: cu.rows,
+    dreams: dr.rows, curriculum: cu.rows, neo: readNeo(root),
     sources: { generations: g.src, index: ix.src, self: sf.src, cortex: cx.src, apps: ap.src, dreams: dr.src, curriculum: cu.src },
   };
 }
@@ -143,8 +252,142 @@ function cortexRow(h) {
 }
 const SLUG = /^[a-z0-9][a-z0-9-]{0,63}$/, APP_PATH = /^\/apps\/[a-z0-9][a-z0-9-]{0,63}\/$/;
 
-/** The page's numbers and their files. builtAt is the caller's stamp; nothing here reads a clock. */
-export function aliveModel(data, { builtAt = null } = {}) {
+// ------------------------------------------------------------------ the NEO part of the model
+// a body as grow/measure.mjs bodiesPart accepts one; an era row without one is "unrecorded", any other value "unrecognised"
+const BODY_RE = /^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,63}$/;
+const bodyName = (b) => (b === undefined || b === null ? 'unrecorded' : typeof b === 'string' && BODY_RE.test(b) ? b : 'unrecognised');
+// the velocity keys of contract c7 first, in its order; any other numeric key the measure adds is drawn after them by name
+export const VELOCITY_ORDER = Object.freeze(['cellsPerSecond', 'tasksPerMinute', 'masteredPerEra', 'eraMs', 'workers', 'era']);
+const KEY_RE = /^[A-Za-z][A-Za-z0-9_]{0,40}$/;
+const arrLen = (v) => (Array.isArray(v) ? v.length : null);
+const cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+function velocityOf(v) {
+  if (!isObj(v)) return null;
+  const keys = Object.keys(v).filter((k) => KEY_RE.test(k) && finite(v[k]) !== null);
+  const known = VELOCITY_ORDER.filter((k) => keys.includes(k)), other = keys.filter((k) => !VELOCITY_ORDER.includes(k)).sort();
+  const out = [...known, ...other].map((key) => ({ key, value: v[key] }));
+  return out.length ? out : null;
+}
+const neoCounts = (r) => {
+  const o = isObj(r.neo) ? r.neo : {}, h = isObj(o.heldout) ? o.heldout : {};
+  return { tasks: count(o.tasks), colonies: count(o.colonies), cells: count(o.cells), mastered: count(o.mastered), ok: count(h.ok), n: count(h.n), score: finite(h.score) };
+};
+/** first, last (each with its era), lowest and highest of one key over the series rows; null when no row holds it. */
+function statsOf(rows, key) {
+  const held = rows.filter((r) => r[key] !== null);
+  if (!held.length) return null;
+  const vals = held.map((r) => r[key]), a = held[0], z = held[held.length - 1];
+  return { first: a[key], firstEra: a.era, last: z[key], lastEra: z.era, min: Math.min(...vals), max: Math.max(...vals) };
+}
+/** A trial row of neo/TRIALS.jsonl as grow/evolve.mjs counts it: skipped, retired, kept, blocked, else reverted. */
+export function trialVerdict(r) {
+  if (r.skipped) return 'skipped';
+  if (isObj(r.change) && r.change.op === 'retire') return 'retired';
+  if (r.kept === true) return 'kept';
+  if (r.blocked) return 'blocked';
+  return 'reverted';
+}
+/** A trial's change as one short line: a string as it is, an object as its first scalar fields. */
+function changeText(c) {
+  if (text(c)) return clip(c, 120);
+  if (!isObj(c)) return null;
+  const parts = Object.entries(c).filter(([k, v]) => KEY_RE.test(k) && (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean')).slice(0, 4).map(([k, v]) => k + ' ' + v);
+  return parts.length ? clip(parts.join(', '), 120) : null;
+}
+
+/** The plain sentence of what is not working yet, from the numbers alone (each one a number the page shows beside it). */
+export function gapSentence(now, last, same) {
+  if (!now || [now.tasks, now.mastered, now.ok, now.n].every((v) => v === null)) return null;
+  const parts = [];
+  if (now.tasks !== null && now.mastered !== null && now.mastered < now.tasks) parts.push('only ' + now.mastered + ' of ' + now.tasks + ' tasks are mastered');
+  if (now.tasks !== null && now.colonies !== null && now.colonies < now.tasks) parts.push(now.colonies + ' of ' + now.tasks + ' tasks have a colony at all');
+  if (now.ok !== null && now.n !== null && now.ok < now.n) parts.push('the colonies answer ' + now.ok + ' of ' + now.n + ' held-out rows right' + (now.score !== null ? ' (' + now.score + ')' : ''));
+  if (now.plateau !== null && now.plateau > 0) parts.push('the held-out total has not risen for ' + now.plateau + ' eras');
+  if (same !== null) parts.push('the newest ' + same + ' measure rows hold the same task, colony, cell, mastered and held-out counts');
+  if (last && last.grown !== null && last.grown > 0 && last.promoted === 0) parts.push('era ' + last.era + ' grew ' + last.grown + ' tasks and promoted none');
+  return parts.length ? 'Not working yet: ' + parts.join('; ') + '.' : 'No gap shows in these numbers yet.';
+}
+
+/** The NEO part: every number from the file that holds it (see NEO_FILES), null when the file does not hold it. */
+export function neoModel(raw, { builtAt = null, selfHistory = [], cortexHistory = [] } = {}) {
+  const n = isObj(raw) ? raw : {};
+  const given = isObj(n.sources) ? n.sources : {};
+  const sources = {};
+  for (const k of Object.keys(NEO_FILES)) sources[k] = isObj(given[k]) ? { ...given[k], file: NEO_FILES[k] } : { file: NEO_FILES[k], state: 'missing', bytes: null, sha256: null };
+  const built = text(builtAt);
+  const ledger = isObj(n.ledger) ? n.ledger : null;
+  // ERA: the count, the last era (the highest number; a tie, the later row), the bodies of the day before the build
+  const ed = isObj(n.era) ? n.era : null;
+  const eraRows = ed && Array.isArray(ed.eras) ? ed.eras.filter((r) => isObj(r) && count(r.era) !== null) : [];
+  const lr = eraRows.reduce((a, r) => (!a || r.era >= a.era ? r : a), null);
+  const grown = lr && Array.isArray(lr.grown) ? lr.grown.filter(isObj) : null;
+  const last = lr ? { era: lr.era, at: text(lr.at), hoursBefore: hoursBefore(lr.at, built), ms: count(lr.ms), body: bodyName(lr.body), workers: count(lr.workers),
+    grown: grown ? grown.length : null, promoted: grown ? grown.filter((g) => g.promoted === true).length : null, cells: count(lr.cells), mastered: count(lr.mastered) } : null;
+  let bodies = null;
+  if (eraRows.length && built && ISO.test(built) && Number.isFinite(Date.parse(built))) {
+    const end = Date.parse(built), since = end - BODY_WINDOW_MS, by = new Map();
+    let eras = 0, ahead = 0;
+    for (const r of eraRows) {
+      const t = text(r.at) && ISO.test(r.at) ? Date.parse(r.at) : NaN;
+      if (!Number.isFinite(t) || t < since) continue;
+      eras++;
+      if (t > end) ahead++;
+      const k = bodyName(r.body), b = by.get(k) || { body: k, eras: 0, last: null };
+      b.eras++;
+      if (!b.last || r.at > b.last) b.last = r.at;
+      by.set(k, b);
+    }
+    bodies = { since: new Date(since).toISOString(), eras, by: [...by.values()].sort((a, b) => b.eras - a.eras || cmp(a.body, b.body)), ...(ahead ? { ahead } : {}) };
+  }
+  // MEASURE: the newest row and the series of the newest SERIES_ROWS rows
+  const mrows = (Array.isArray(n.measure) ? n.measure : []).filter(isObj);
+  const lm = mrows.length ? mrows[mrows.length - 1] : null;
+  const now = lm ? { era: count(lm.era), at: text(lm.at), ...neoCounts(lm), velocity: velocityOf(lm.velocity), plateau: count(lm.plateau) } : null;
+  const rows = mrows.slice(-SERIES_ROWS).map((r) => { const c = neoCounts(r); return { era: count(r.era), at: text(r.at), mastered: c.mastered, ok: c.ok, n: c.n, score: c.score }; });
+  const sig = (r) => { const c = neoCounts(r); return Object.values(c).some((v) => v === null) ? null : JSON.stringify(c); };
+  let same = null;
+  if (lm && sig(lm) !== null) {
+    let k = 1;
+    for (let i = mrows.length - 2; i >= 0 && sig(mrows[i]) === sig(lm); i--) k++;
+    if (k >= 2) same = k;
+  }
+  const series = rows.length ? { count: rows.length, rows, mastered: statsOf(rows, 'mastered'), score: statsOf(rows, 'score') } : null;
+  // ABSORB and the crawl queue
+  const ab = isObj(n.absorb) ? n.absorb : null;
+  const pulled = ab && Array.isArray(ab.pulled) ? ab.pulled.filter(isObj) : null;
+  const absorbed = ab ? { pulls: pulled ? pulled.length : null, sources: pulled ? new Set(pulled.filter((p) => text(p.id)).map((p) => p.id)).size : null,
+    bytes: count(ab.bytes), rows: count(ab.rows), cursor: count(ab.cursor), blocked: arrLen(ab.blocked) } : null;
+  const fr = isObj(n.frontier) ? n.frontier : null;
+  const frontier = fr ? { queue: arrLen(fr.queue), seen: arrLen(fr.seen), repos: isObj(fr.repos) ? Object.keys(fr.repos).length : arrLen(fr.repos), added: arrLen(fr.added) } : null;
+  // SELF-MODIFICATION: the native trials, then the routine's trials and the cortex trials the page shows below
+  const trows = (Array.isArray(n.trials) ? n.trials : []).filter(isObj);
+  let trials = null;
+  if (trows.length) {
+    const c = { kept: 0, reverted: 0, skipped: 0, blocked: 0, retired: 0 };
+    for (const r of trows) c[trialVerdict(r)]++;
+    trials = { rows: trows.length, ...c, newest: trows.slice(-TRIAL_ROWS).reverse().map((r) => ({ era: count(r.era), at: text(r.at), kind: text(r.kind) ? clip(r.kind, 24) : null,
+      verdict: trialVerdict(r), change: changeText(r.change), why: clip(text(r.why) || text(r.skipped) || text(r.blocked) || '', 200) || null })) };
+  }
+  const selfMod = { trials, self: tally((Array.isArray(selfHistory) ? selfHistory : []).filter(isObj), 'verdict', 'no verdict'),
+    cortex: tally((Array.isArray(cortexHistory) ? cortexHistory : []).filter(isObj), 'verdict', 'no verdict') };
+  return {
+    iterations: ledger ? count(ledger.generated) : null,
+    eras: { count: ed ? count(ed.era) : null, last }, bodies, now, series, same, absorbed, frontier, selfMod,
+    gap: gapSentence(now, last, same), sources,
+  };
+}
+
+/**
+ * The page's numbers and their files. builtAt is the caller's stamp; nothing here reads a clock. secrets are exact values
+ * (secretValues of the build's environment) removed from every string, with every token shape and runtime path (scrub).
+ */
+export function aliveModel(data, { builtAt = null, secrets = [] } = {}) {
+  // the records are scrubbed before the model clips any text (a clip must never cut a token or a secret in half and leave
+  // a piece that no longer matches), and the model once more after (a line it composes)
+  const sec = Array.isArray(secrets) ? secrets : [];
+  return deepScrub(modelOf(deepScrub(data, sec), { builtAt }), sec);
+}
+function modelOf(data, { builtAt = null } = {}) {
   const d = isObj(data) ? data : {};
   const given = isObj(d.sources) ? d.sources : {};
   const sources = {};
@@ -207,6 +450,7 @@ export function aliveModel(data, { builtAt = null } = {}) {
     dreams: { count: dreamsAll.length, byClass: tally(dreamsAll, 'class', 'unclassed'), byStatus: tally(dreamsAll, 'status', 'unmarked'), newest: newestDreams },
     curriculum: { count: curriculum.length, byClass: curByClass, byStatus: tally(curriculum, 'status', 'unmarked') },
     apps, sources,
+    neo: neoModel(d.neo, { builtAt: built, selfHistory: historyAll, cortexHistory: cortexAll }),
   };
 }
 
@@ -309,6 +553,12 @@ footer p { margin: 6px 0; }
 ul.files { list-style: none; padding: 0; margin: 8px 0; }
 ul.files li { margin: 5px 0; overflow-wrap: anywhere; }
 ul.files code { white-space: nowrap; }
+.gap { border-left: 2px solid rgba(255,178,127,0.7); padding: 6px 0 6px 12px; margin: 12px 0 0; color: #ead7c8; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.spark { display: block; width: 100%; height: 56px; margin: 6px 0 2px; background: rgba(150,180,255,0.05); border-radius: 6px; }
+.spark polyline { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.spark.held polyline { stroke: var(--live); }
+details { margin: 8px 0 0; }
+summary { cursor: pointer; color: var(--accent); }
 @media (min-width: 760px) { .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .card { padding: 14px; border-radius: 12px; } body { padding: 0 16px 60px; } }`;
 
@@ -502,8 +752,115 @@ function appsSection(m) {
   return out.join('') + files(FILES.apps) + '</section>';
 }
 
+// ------------------------------------------------------------------ the NEO part on the page
+const NY = '<span class="nm">not yet</span>', NR = '<span class="nm">not recorded</span>';
+const notYet = (why) => '<p class="none">' + NY + ': ' + esc(why) + '</p>';
+const bn = (v) => (v === null || v === undefined ? NR : b(v));
+const nr = (v) => (v === null || v === undefined ? NR : esc(v));
+const valOf = (v) => '<div class="val">' + (v === null || v === undefined ? NY : esc(v)) + '</div>';
+const eraOf = (e) => (e === null ? 'an unnumbered row' : 'era ' + esc(e));
+const VELOCITY_LABEL = Object.freeze({ cellsPerSecond: 'cells per second', tasksPerMinute: 'tasks per minute', masteredPerEra: 'mastered per era', eraMs: 'era ms', workers: 'workers', era: 'era' });
+const TRIAL_VERDICTS = ['kept', 'reverted', 'skipped', 'blocked', 'retired'];
+
+/** One series as an inline SVG polyline (a null breaks the line), scaled to its own lowest and highest value. */
+function sparkSvg(rows, key, cls) {
+  const W = 300, H = 56, P = 4, n = rows.length;
+  const held = rows.map((r) => r[key]).filter((v) => v !== null);
+  const lo = Math.min(...held), hi = Math.max(...held);
+  const x = (i) => (n === 1 ? W / 2 : P + ((W - 2 * P) * i) / (n - 1));
+  const y = (v) => (hi === lo ? H / 2 : H - P - ((H - 2 * P) * (v - lo)) / (hi - lo));
+  const segs = [];
+  let cur = [];
+  rows.forEach((r, i) => { if (r[key] === null) { if (cur.length) segs.push(cur); cur = []; } else cur.push([x(i), y(r[key])]); });
+  if (cur.length) segs.push(cur);
+  const lines = segs.map((s) => '<polyline points="' + (s.length === 1 ? [[s[0][0] - 2, s[0][1]], [s[0][0] + 2, s[0][1]]] : s).map(([a, c]) => a.toFixed(1) + ',' + c.toFixed(1)).join(' ') + '"/>');
+  return '<svg class="spark ' + cls + '" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' + lines.join('') + '</svg>';
+}
+function sparkBlock(sr, key, cls, label, what) {
+  const st = sr[key];
+  if (!st) return '<h3>' + label + '</h3>' + notYet('no row among the newest ' + sr.count + ' of ' + NEO_FILES.measure + ' holds ' + what);
+  return '<h3>' + label + '</h3>' + sparkSvg(sr.rows, key, cls) + '<p class="line">' + b(st.first) + ' at ' + eraOf(st.firstEra) + ' to ' + b(st.last) + ' at ' + eraOf(st.lastEra)
+    + '; lowest ' + esc(st.min) + ', highest ' + esc(st.max) + '.</p>';
+}
+const verdictChips = (list) => (list.length ? '<span class="chips">' + list.map((x) => '<span class="chip">' + esc(x.verdict) + '<b>' + esc(x.n) + '</b></span>').join('') + '</span>' : NY);
+
+function neoSection(m) {
+  const n = m.neo, s = n.sources, now = n.now, last = n.eras.last;
+  const out = ['<section class="card" id="neo"><h2>The organism by itself</h2><p class="lede">No model runs in this loop. Each era the organism absorbs open data, opens tasks from it, grows cells for every task by composing its own primitives, tries changes to its own engine, measures itself and commits them, on whichever body is beating. Every number below is read from the committed file named under it when this page was built; a file not written yet reads "not yet".</p>'];
+  out.push('<p class="gap">' + (n.gap ? esc(n.gap) : NY + ': ' + esc(now ? 'the newest row of ' + NEO_FILES.measure + ' holds no task, mastered or held-out count'
+    : whyEmpty(s.measure, 'no measure row yet') + ', so nothing is measured')) + '</p>');
+  const mv = s.measure, whyM = esc(whyEmpty(mv, 'no measure row yet'));
+  const tiles = [
+    tile('iterations', valOf(n.iterations), n.iterations !== null ? 'candidate cells generated, every era together' : esc(whyEmpty(s.ledger, 'no generated count')), NEO_FILES.ledger + ' generated'),
+    tile('eras run', valOf(n.eras.count), last ? 'the last: era ' + esc(last.era) + (last.at ? ', ' + esc(last.at) : '') : esc(whyEmpty(s.era, 'no era yet')), NEO_FILES.era + ' era'),
+    tile('tasks', valOf(now ? now.tasks : null), now ? 'opened, measured at ' + eraOf(now.era) : whyM, NEO_FILES.measure + ' neo.tasks'),
+    tile('colonies', valOf(now ? now.colonies : null), now ? 'tasks with a grown colony' : whyM, NEO_FILES.measure + ' neo.colonies'),
+    tile('cells', valOf(now ? now.cells : null), now ? 'kept cells, every colony together' : whyM, NEO_FILES.measure + ' neo.cells'),
+    tile('mastered', now && now.mastered !== null ? '<div class="val">' + esc(now.mastered) + (now.tasks !== null ? '<span class="of">/</span>' + esc(now.tasks) : '') + '</div>' : valOf(null),
+      now ? 'tasks whose colony answers every held-out row' : whyM, NEO_FILES.measure + ' neo.mastered'),
+    tile('held-out fraction', valOf(now ? now.score : null), now && now.ok !== null && now.n !== null ? esc(now.ok) + ' of ' + esc(now.n) + ' held-out rows right, every colony together' : now ? 'no held-out count in the newest row' : whyM,
+      NEO_FILES.measure + ' neo.heldout', true),
+  ];
+  out.push('<div class="tiles">' + tiles.join('') + '</div>');
+  // the last era and the bodies that beat
+  out.push('<h3>The last era</h3>' + (last
+    ? '<p class="line">Era ' + b(last.era) + ' ran ' + (last.at ? 'at ' + esc(last.at) + ', ' + hoursText(last.hoursBefore) : 'at an unrecorded time') + (last.body === 'unrecorded' ? ', on a body its row does not name' : ', on the body ' + b(last.body))
+      + (last.ms !== null ? ', for ' + b(last.ms) + ' ms' : '') + (last.workers !== null ? ' with ' + b(last.workers) + ' workers' : '')
+      + ': it grew ' + (last.grown !== null ? b(last.grown) + ' tasks and promoted ' + b(last.promoted) + ' colonies' : 'no recorded task')
+      + (last.cells !== null ? '; the organism then held ' + b(last.cells) + ' cells' : '') + (last.mastered !== null ? ' and ' + b(last.mastered) + ' mastered tasks' : '') + '.</p>'
+    : notYet(whyEmpty(s.era, 'no era yet'))));
+  const bd = n.bodies;
+  out.push('<h3>Bodies that beat in the day before this build</h3>' + (bd
+    ? (bd.eras ? '<p class="line">' + b(bd.eras) + ' eras since ' + esc(bd.since) + ', by body:</p><div class="chips">' + bd.by.map((x) => '<span class="chip">' + esc(x.body) + '<b>' + esc(x.eras) + '</b></span>').join('') + '</div>'
+        + '<p class="src">the newest beat of each: ' + bd.by.map((x) => esc(x.body) + ' at ' + esc(x.last)).join(', ') + '</p>'
+      : notYet('no era of ' + NEO_FILES.era + ' ran since ' + bd.since))
+      + (bd.ahead ? '<p class="src">' + esc(bd.ahead) + ' era rows are stamped after this build: the clock went backwards</p>' : '')
+    : notYet(last ? 'no ISO build stamp given, so the window is not computable' : whyEmpty(s.era, 'no era yet'))) + files(NEO_FILES.era));
+  // the series, velocity and plateau
+  const sr = n.series;
+  if (sr) {
+    out.push('<h3>Era by era</h3><p class="lede">The newest ' + b(sr.count) + ' rows of <code>' + esc(NEO_FILES.measure) + '</code>, oldest on the left; the newest is ' + eraOf(now.era) + (now.at ? ' at ' + esc(now.at) : '') + '.'
+      + (n.same !== null ? ' The newest ' + b(n.same) + ' rows hold the same counts.' : '') + '</p>');
+    out.push(sparkBlock(sr, 'mastered', 'mast', 'Mastered tasks', 'a mastered count') + sparkBlock(sr, 'score', 'held', 'Held-out fraction', 'a held-out score'));
+    out.push('<details><summary>the ' + esc(sr.count) + ' rows, newest first</summary><div class="scroll"><table><tr><th class="n">era</th><th>at</th><th class="n">mastered</th><th class="n">held-out right</th><th class="n">of rows</th><th class="n">fraction</th></tr>'
+      + sr.rows.slice().reverse().map((r) => '<tr><td class="n">' + nr(r.era) + '</td><td>' + (r.at ? esc(r.at) : NR) + '</td><td class="n">' + nr(r.mastered) + '</td><td class="n">' + nr(r.ok) + '</td><td class="n">' + nr(r.n) + '</td><td class="n">' + nr(r.score) + '</td></tr>').join('')
+      + '</table></div></details>');
+  } else out.push('<h3>Era by era</h3>' + notYet(whyEmpty(mv, 'no measure row yet')));
+  out.push('<h3>Velocity and plateau</h3>');
+  if (!now) out.push(notYet(whyEmpty(mv, 'no measure row yet')));
+  else {
+    out.push(now.velocity ? '<div class="chips">' + now.velocity.map((v) => '<span class="chip">' + esc(VELOCITY_LABEL[v.key] || v.key) + '<b>' + esc(v.value) + '</b></span>').join('') + '</div>'
+      : notYet('the newest row of ' + NEO_FILES.measure + ' carries no velocity'));
+    out.push(now.plateau !== null ? '<p class="line">plateau ' + b(now.plateau) + ': the eras since the held-out total last rose.</p>' : notYet('the newest row of ' + NEO_FILES.measure + ' carries no plateau'));
+  }
+  out.push(files(NEO_FILES.measure));
+  // what it absorbed, the crawl queue
+  const a = n.absorbed, f = n.frontier;
+  out.push('<h3>What it absorbed</h3>' + (a
+    ? '<p class="line">' + bn(a.sources) + ' sources over ' + bn(a.pulls) + ' pulls: ' + bn(a.bytes) + ' bytes, ' + bn(a.rows) + ' rows; the cursor stands at ' + bn(a.cursor) + (a.blocked !== null ? '; ' + bn(a.blocked) + ' blocked pulls on record' : '') + '.</p>'
+    : notYet(whyEmpty(s.absorb, 'nothing absorbed yet'))) + files(NEO_FILES.absorb));
+  out.push('<h3>The crawl queue</h3>' + (f
+    ? '<p class="line">' + bn(f.queue) + ' links queued, ' + bn(f.seen) + ' seen, ' + bn(f.repos) + ' repositories, ' + bn(f.added) + ' sources added.</p>'
+    : notYet(whyEmpty(s.frontier, 'no queue yet'))) + files(NEO_FILES.frontier));
+  // the self-modification record
+  const sm = n.selfMod, t = sm.trials;
+  out.push('<h3>Self-modification record</h3><p class="lede">Changes the organism tries on its own engine, a genome mutant or a macro mined from its own kept cells, each kept only when the engine\'s own printed score is better in two runs, else reverted.</p>');
+  if (t) {
+    out.push('<div class="chips">' + TRIAL_VERDICTS.map((k) => '<span class="chip">' + k + '<b>' + esc(t[k]) + '</b></span>').join('') + '</div><p class="line">' + b(t.rows) + ' trial rows; the newest first:</p>'
+      + '<div class="scroll"><table><tr><th class="n">era</th><th>kind</th><th>verdict</th><th>change</th><th>why</th></tr>'
+      + t.newest.map((r) => '<tr><td class="n">' + nr(r.era) + '</td><td>' + (r.kind ? esc(r.kind) : NR) + '</td><td>' + pillFor(r.verdict) + '</td><td>' + (r.change ? esc(r.change) : '') + '</td><td class="why">' + (r.why ? esc(r.why) : '') + '</td></tr>').join('')
+      + '</table></div>');
+  } else out.push(notYet(whyEmpty(s.trials, 'no trial yet')));
+  out.push(files(NEO_FILES.trials));
+  out.push('<p class="line">The routine\'s trials, by verdict: ' + verdictChips(sm.self) + '</p>' + files(FILES.self)
+    + '<p class="line">The cortex trials, by verdict: ' + verdictChips(sm.cortex) + '</p>' + files(FILES.cortex));
+  return out.join('') + '</section>';
+}
+
 function footer(m) {
-  const rows = Object.values(m.sources).map((s) => '<li><code>' + esc(s.file) + '</code> ' + esc(s.state) + (typeof s.bytes === 'number' ? ', ' + esc(s.bytes) + ' bytes' : '')
+  const all = [...Object.values(m.sources), ...(m.neo && isObj(m.neo.sources) ? Object.values(m.neo.sources) : [])];
+  const rows = all.map((s) => '<li><code>' + esc(s.file) + '</code> ' + esc(s.state) + (typeof s.bytes === 'number' ? ', ' + esc(s.bytes) + ' bytes' : '')
+    + (typeof s.tailBytes === 'number' ? ', the newest ' + esc(s.tailBytes) + ' bytes read' : '')
     + (typeof s.rows === 'number' && s.state === 'read' ? ', ' + esc(s.rows) + ' lines' : '') + (s.bad ? ', ' + esc(s.bad) + ' unreadable lines' : '') + (s.sha256 ? ', sha256 ' + esc(s.sha256.slice(0, 16)) : '') + '</li>');
   return '<footer><p>Built at ' + (m.builtAt ? esc(m.builtAt) : '<span class="nm">no build stamp given</span>') + ' by <code>node web/build.mjs</code> from the files below. The organism rebuilds this page itself every generation, before its commit; no number on it is typed: each one is read from the file named under it, and the same numbers are served as <a href="/alive/data.json">data.json</a>.</p>'
     + '<ul class="files">' + rows.join('') + '</ul><p><a href="/">back to the organism</a></p></footer>';
@@ -513,23 +870,26 @@ function footer(m) {
 export function renderAlive(m) {
   return '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n'
     + '<title>DILATION / BRAIN / ALIVE</title>\n'
-    + '<meta name="description" content="The brain growing its own cells in the cloud: its generations, its cells by arm, its self-edits, its cortex and the tasks it set itself, read from its own records at every build.">\n'
+    + '<meta name="description" content="The brain growing its own cells in the cloud: its eras with no model in the loop, its generations, its cells by arm, its self-edits, its cortex and the tasks it set itself, read from its own records at every build.">\n'
     + (m.builtAt ? '<meta name="generated" content="' + esc(m.builtAt) + '">\n' : '')
     + '<style>\n' + STYLE + '\n</style>\n</head>\n<body>\n<div class="wrap">\n'
     + '<header class="top"><div class="brand">DILATION <span class="dim">/</span> BRAIN <span class="dim">/</span> ALIVE</div>'
     + '<nav class="pills"><a class="pill" href="/">organism</a><a class="pill" href="/ask">ask</a><a class="pill" href="/ladder/">ladder</a><a class="pill" href="/findings/">findings</a><a class="pill" href="/portfolio/">portfolio</a><span class="pill here">alive</span></nav></header>\n'
-    + hero(m) + '\n' + lastHour(m) + '\n' + generationsSection(m) + '\n' + cellsSection(m) + '\n' + selfSection(m) + '\n' + cortexSection(m) + '\n' + dreamsSection(m) + '\n' + appsSection(m) + '\n'
+    + hero(m) + '\n' + (m.neo ? neoSection(m) + '\n' : '') + lastHour(m) + '\n' + generationsSection(m) + '\n' + cellsSection(m) + '\n' + selfSection(m) + '\n' + cortexSection(m) + '\n' + dreamsSection(m) + '\n' + appsSection(m) + '\n'
     + footer(m) + '\n</div>\n</body>\n</html>\n';
 }
 
 /** The page for the records readAlive returned; builtAt is the caller's stamp. */
-export const aliveHtml = (data, { builtAt = null } = {}) => renderAlive(aliveModel(data, { builtAt }));
+export const aliveHtml = (data, { builtAt = null, secrets = [] } = {}) => renderAlive(aliveModel(data, { builtAt, secrets }));
 
-/** Read the records under root and write <outDir>/index.html and <outDir>/data.json. Throws when no stamp is passed or an em dash would ship. */
-export function generateAlive({ root = ROOT, outDir = null, builtAt } = {}) {
+/**
+ * Read the records under root and write <outDir>/index.html and <outDir>/data.json. Throws when no stamp is passed or an em
+ * dash would ship. env is the build's environment: the values of its token-named variables are scrubbed from both files.
+ */
+export function generateAlive({ root = ROOT, outDir = null, builtAt, env = process.env } = {}) {
   if (!text(builtAt)) throw new Error('alive: no builtAt: the caller passes its own new Date().toISOString()');
   const dir = outDir || path.join(root, 'web', 'dist', 'alive');
-  const m = aliveModel(readAlive(root), { builtAt });
+  const m = aliveModel(readAlive(root), { builtAt, secrets: secretValues(env) });
   const html = renderAlive(m), json = jsonText(m);
   if (html.includes(EM) || json.includes(EM)) throw new Error('alive: an em dash reached the page');
   fs.mkdirSync(dir, { recursive: true });
@@ -539,7 +899,9 @@ export function generateAlive({ root = ROOT, outDir = null, builtAt } = {}) {
   const lg = m.vitals.lastGeneration;
   return { path: page, dataPath, bytes: Buffer.byteLength(html), dataBytes: Buffer.byteLength(json), cap: PAGE_CAP, generations: m.generations.length, newest: lg.generation,
     survivors: lg.survivors, candidates: lg.candidates, cells: m.cells.length, dreams: m.dreams.count, pointer: m.cortex.pointer,
-    notRead: Object.values(m.sources).filter((s) => s.state !== 'read').map((s) => s.file + ' ' + s.state) };
+    neo: { iterations: m.neo.iterations, eras: m.neo.eras.count, tasks: m.neo.now ? m.neo.now.tasks : null, cells: m.neo.now ? m.neo.now.cells : null,
+      mastered: m.neo.now ? m.neo.now.mastered : null, series: m.neo.series ? m.neo.series.count : 0 },
+    notRead: [...Object.values(m.sources), ...Object.values(m.neo.sources)].filter((s) => s.state !== 'read').map((s) => s.file + ' ' + s.state) };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
