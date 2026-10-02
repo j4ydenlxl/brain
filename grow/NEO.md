@@ -33,6 +33,11 @@
 - (about 23:55Z) "We need fronteir level by iteration velocity working exactly like reg ai but better and octopused"
 - (about 00:10Z Oct 2) "Why did you build it for it? It should be able to do anything" (a correction: never hand-build a domain module for it; build the general primitives and the process, and it opens and grows any task itself)
 - (Oct 2, before 01:06Z) "Why dont you run a 8 hour build and see what it does for 8 hours? No token use on your part. We are already at 81 percent usage., were kinda heavy"
+- (Oct 2, about 11:55Z, a new session, Ultracode on) "Continue with the brain project. it should fill all its own gaps./ reread vision see wahat board did, exhaust all tokens today and at 98 percent, finish with a portfolio u are to COMPLETE, todasy the last day"
+- (Oct 2, about 12:00Z) "Crucial part is ai data center in ur pocket fronteir level always on self iterating burning octopus and access to cloud computing and ability to do everything"
+- (Oct 2, about 12:04Z) "its should be all on cloud so even phones can use no hardware constraints its cloud ai" (a correction to the pocket part: the work happens in the CLOUD, the phone is only the surface, so no device limits what it can do)
+- (Oct 2, about 12:06Z) "$0 per token to run its ai datacenter in the cloud and works Exaxtly like a FRONTEIR LLM"
+- (Oct 2, about 12:06Z) "This is a paradigm shift in ai, u are to find it"
 
 From MANUAL.md section A: "The central architectural principle is the use of orthogonal computational primitives. ... A primitive may perform transformation, prediction, retrieval, comparison, routing, aggregation, temporal integration, memory access, evaluation, simulation, or another fundamental computational operation. These primitives are intentionally general."
 
