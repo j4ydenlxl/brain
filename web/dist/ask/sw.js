@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "a17fa13ee1a9afca5b1c2b08cc9d52d9fafc7851a0050a5cebcea5a7b9838b85";
+const VERSION = "8fbf5601bd4861a6d01840e9a32188f5c5fe3d0829fe90288e1d354e73ed4662";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -113,7 +113,7 @@ const PRECACHE = [
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"c2ef52aa526f8074e7064189a6e47f2e8a1394917aa77c025d7fb108d34b79a4"}
+  {"url":"/organism/era/tasks.json","sha256":"d6583456c3ad55441b344c00bf52cff9ca3e3c8be08cdf834acbe5a95b898463"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -177,6 +177,8 @@ const LAZY = [
   {"url":"/organism/era/tasks/china-of-date-6872.json","sha256":"793637ac25696a6fdd32f6d24cc12209e246e226046b8717ddcee7ac1952f184"},
   {"url":"/organism/era/tasks/china-of-date-6872-compare.json","sha256":"9c88cbbf252608aa971c1cedfda6e3c8d2ecfd12555af9220241f3a8449f5bf1"},
   {"url":"/organism/era/tasks/china-of-date-6872-larger.json","sha256":"cfe06fb4255a5ea040f52f31b48588a36ff44baaae2663f353cb7ab2bd7b98d0"},
+  {"url":"/organism/era/tasks/city-of-airport-ed91.json","sha256":"48606037b598cdb8b51fefe9b5d528852b9447a7a7bb670c6b6baad16d326108"},
+  {"url":"/organism/era/tasks/city-of-airport-ed91-rev.json","sha256":"0e82d1b71f8893525124c8f13c8e9604e855553e826c6af9bc4318f7143e6f42"},
   {"url":"/organism/era/tasks/city-region.json","sha256":"de86667000e2dc1a8b0392009567d89b5473e43bc37112d2b2917fa3675f1ec9"},
   {"url":"/organism/era/tasks/city-time-zone.json","sha256":"63a279bff97b2134f203685387f400aa7a85efd7091841575a58e3b4e6ff5cd7"},
   {"url":"/organism/era/tasks/close-of-date-338c-sum.json","sha256":"9daafce8a53b45733ec5159539188784b32bf64e26614008fb3db34a48c944d2"},
@@ -189,6 +191,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/coastline-of-country-2328-larger.json","sha256":"b86f51f3218107e64395093d04b750f1bcbd24770f6e06134e78ec3766bf4c96"},
   {"url":"/organism/era/tasks/coastline-of-country-2328-smaller.json","sha256":"40fdee4061db7a75ad8cf2b76831a978132f132b5b92f79bb70022533e50eba4"},
   {"url":"/organism/era/tasks/coastline-of-country-2328-sum.json","sha256":"4d415172e92e2555e12059797c19f65b2577bd1fbed41f3aa4b160c76a667edb"},
+  {"url":"/organism/era/tasks/code-of-country-d8f7-rev.json","sha256":"fff26556be6d0a46aa72f7c19ba84fd38036f7a0b85b82a9b14fe2f6c15f740c"},
   {"url":"/organism/era/tasks/code-of-description-en-3e06.json","sha256":"927408e2fd164b0495683072de114cb1944f34e46af32cffd7ff846f97ce2290"},
   {"url":"/organism/era/tasks/code-of-description-en-3e06-rev.json","sha256":"4098c1af37721ea4d77a262ce3f81bce528f9df40b058034ee2808953645b15e"},
   {"url":"/organism/era/tasks/column-of-title-0e66.json","sha256":"620b06bdfe76ae5eb913270f79e1e1fac1013d214a953ee942ad39750defc0a4"},
@@ -351,9 +354,8 @@ const LAZY = [
   {"url":"/organism/era/tasks/internet-explorer-of-c9df.json","sha256":"f9a72dba36d52900f99230edf5e7a39770b7676e65b22c80ca5256fcd8f7066d"},
   {"url":"/organism/era/tasks/internet-explorer-of-c9df-compare.json","sha256":"8d29ce901dfddf9b4f2bbc184b24919155b9e32bddb8d53bdae1ae7a6c0c1833"},
   {"url":"/organism/era/tasks/internet-explorer-of-c9df-larger.json","sha256":"44b651ab07dcb9f5caedb2783628fb0024a008f668899e8084d818beb0a9e033"},
-  {"url":"/organism/era/tasks/internet-explorer-of-c9df-smaller.json","sha256":"4c42b603218fd4d6c8349b00fd27acf681c48e67bc0c49cdcff702786b1ee24a"},
-  {"url":"/organism/era/tasks/internet-explorer-of-c9df-sum.json","sha256":"3c28fe3de93d8f41f47fc08cd1b5f9571841213cbb55b508ed470da9c3413643"},
-  {"url":"/organism/era/tasks/language-map-file-extension-to-language.json","sha256":"93e7a691c1ed96e3107e8f155bd6e91473055f575a21c4d0f280840b06097c01"}
+  {"url":"/organism/era/tasks/language-map-file-extension-to-language.json","sha256":"93e7a691c1ed96e3107e8f155bd6e91473055f575a21c4d0f280840b06097c01"},
+  {"url":"/organism/era/tasks/language-map-language-to-file-extension.json","sha256":"11338a58885f19dd09ee9bab341e2baafb2c20d8dc5e89119682e7fc191602e4"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
