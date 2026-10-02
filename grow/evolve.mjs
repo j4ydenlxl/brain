@@ -25,7 +25,12 @@
 //  (d) the score is what the engine printed: held-out correct summed over the sample, then mastered, then cells per
 //      second; KEPT only when the mutant is strictly better on held-out, or equal on held-out (no mastered task lost) and
 //      at least 5 percent faster, the same verdict in BOTH of two repeated runs (the second with the arms in the other
-//      order: a race is not graded by one run); a mutant worse or equal in the first run is reverted at once;
+//      order: a race is not graded by one run); a mutant worse or equal in the first run is reverted at once. A first
+//      run TOO CLOSE TO CALL (the arms scored some task differently, yet their sums lie KNOBS.close rows apart or fewer)
+//      GROWS the sample to KNOBS.grow times its tasks (the next tasks of the same draw) and the grown sample decides,
+//      in both orders; no time for it is an unconfirmed row (the candidate is drawn again);
+//  (d') the genome candidate: a seeded mutant, or every KNOBS.crossEvery-th graded genome trial a CROSSOVER of the two
+//      most promising mutants no trial kept (their first run better or faster), each gene taken whole from one parent;
 //  (e) kept: <root>/neo/GENOME.json (or MACROS.json) written atomically; reverted: nothing changes; either way one row
 //      appended to <root>/neo/TRIALS.jsonl with every number the trial used;
 //  (f) the scratch roots removed, even when the engine crashed, hung or the clock ran out.
@@ -38,7 +43,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { GENOME_FILE, GENOME_VERSION, DEFAULTS as GENOME_DEFAULTS, GENES, genomeFrom, readGenomeDoc, mutate, describe, genomeId, hashText, diff, rng } from './genome.mjs';
+import { GENOME_FILE, GENOME_VERSION, DEFAULTS as GENOME_DEFAULTS, GENES, genomeFrom, readGenomeDoc, mutate, crossover, describe, genomeId, hashText, diff, rng } from './genome.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_ROOT = path.resolve(HERE, '..');
@@ -47,8 +52,13 @@ export const MACROS_FILE = 'neo/MACROS.json';
 export const LEDGER_FILE = 'neo/LEDGER.json';
 export const TASKS_DIR = 'neo/tasks';
 export const ENGINE = 'grow/neo.mjs';
-/** The step's knobs: its clock, the sample, the per-grow candidate budget, the speed bar, the retire age of a macro. */
-export const KNOBS = Object.freeze({ maxMs: 240000, sample: 3, generated: 20000, faster: 1.05, retireEras: 20, minGrowMs: 400, slackMs: 45000, tries: 16, minTasks: 2 });
+/**
+ * The step's knobs: its clock, the sample, the per-grow candidate budget, the speed bar, the retire age of a macro;
+ * close: a first run whose arms differ task by task but sum this many held-out rows apart or fewer is too close to call;
+ * grow: the sample is then grown to this many times its tasks; crossEvery: every this-th graded genome trial is a
+ * crossover of the promising mutants earlier trials did not keep.
+ */
+export const KNOBS = Object.freeze({ maxMs: 240000, sample: 3, generated: 20000, faster: 1.05, retireEras: 20, minGrowMs: 400, slackMs: 45000, tries: 16, minTasks: 2, close: 1, grow: 2, crossEvery: 3, cpsFloor: 1000, minGenerated: 1000 });
 export const USAGE = [
   'usage: node grow/evolve.mjs step [--era <n>] [--max-ms <n>] [--root <dir>] [--sample <k>] [--generated <k>] [--kind genome|macro] [--genes <a,b>] [--engine <file>] [--tmp <dir>]',
   '       node grow/evolve.mjs status [--root <dir>]',
@@ -233,7 +243,7 @@ export function runEngine(engine, args, { env = process.env, timeoutMs = 60000, 
   const r = spawnSync(process.execPath, [engine, ...args], { encoding: 'utf8', timeout: Math.max(1, Math.floor(timeoutMs)), killSignal: 'SIGKILL', windowsHide: true, env, cwd, maxBuffer: 64 * 1024 * 1024 });
   const ms = Date.now() - t0;
   const line = lastJson(r.stdout);
-  if (r.error) return { ok: false, line, code: null, why: (r.error.code === 'ETIMEDOUT' ? 'timed out after ' + ms + ' ms' : first(r.error)), ms };
+  if (r.error) return { ok: false, line, code: null, why: (r.error.code === 'ETIMEDOUT' ? 'timed out after ' + ms + ' ms' : first(r.error)), ms, ...(r.error.code === 'ETIMEDOUT' ? { timedOut: true } : {}) };
   if (r.status !== 0) {
     const err = String(r.stderr || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean)[0] || (line && line.error) || 'no stderr';
     return { ok: false, line, code: r.status, why: 'exited ' + r.status + (r.signal ? ' (' + r.signal + ')' : '') + ': ' + String(err).slice(0, 200), ms };
@@ -263,8 +273,11 @@ export function runArm({ engine, root, tasks, gen, budget, deadline, env, slackM
     if (left < minGrowMs) { out.blocked = 'out of time before ' + t; break; }
     const args = ['grow', '--task', t, '--gen', String(gen), '--root', root, '--max-generated', String(budget.maxGenerated), '--max-ms', String(budget.maxMs)];
     if (stage) args.push('--stage', stage);
-    const r = runEngine(engine, args, { env, timeoutMs: Math.min(left, budget.maxMs + slackMs) });
+    const cap = budget.maxMs + slackMs;
+    const r = runEngine(engine, args, { env, timeoutMs: Math.min(left, cap) });
     out.ms += r.ms;
+    // killed at the step's clock (what was left, under the grow's own cap): the clock ran out, not the engine
+    if (r.timedOut && left < cap) { out.blocked = 'out of time in ' + t + ' (the step clock killed its grow after ' + r.ms + ' ms, under its cap of ' + cap + ' ms)'; break; }
     if (!r.ok || r.line.ok === false) { out.blocked = 'grow ' + t + ' ' + (r.why || 'printed ok false: ' + String(r.line.error || '').slice(0, 200)); break; }
     let line = r.line;
     if (!isObj(line.heldout) && stage) { const s = readJson(path.join(stage, t + '.json')); if (isObj(s) && isObj(s.result)) line = { ...s.result, ...line, heldout: s.result.heldout }; }
@@ -278,6 +291,25 @@ export function runArm({ engine, root, tasks, gen, budget, deadline, env, slackM
   }
   out.cps = secs > 0 ? Math.round(out.generated / secs) : 0;
   return out;
+}
+
+/**
+ * The engine's time over the time its grows were told, measured on the latest trial whose first run finished both arms:
+ * that run's ms over 2 arms x its tasks x the trial's budget.maxMs, never under 1 (two decimals); 1 with no such trial.
+ * The next budget is divided by it, so one run comes back to half the step (a fixed point: a grow's own fixed cost
+ * shrinks the next grow's share until the run fits).
+ * @param {object[]} rows the rows of TRIALS.jsonl
+ * @returns {number}
+ */
+export function overrun(rows) {
+  for (let i = (Array.isArray(rows) ? rows.length : 0) - 1; i >= 0; i--) {
+    const r = rows[i];
+    const run = isObj(r) && Array.isArray(r.runs) ? r.runs[0] : null;
+    if (!isObj(run) || !isObj(run.base) || !isObj(run.mut) || run.base.blocked || run.mut.blocked || !isObj(r.budget)) continue;
+    const told = 2 * (Array.isArray(run.base.tasks) ? run.base.tasks.length : 0) * num(r.budget.maxMs), took = num(run.base.ms) + num(run.mut.ms);
+    if (told > 0 && took > 0) return Math.max(1, Math.round((took / told) * 100) / 100);
+  }
+  return 1;
 }
 
 // ---------------------------------------------------------------- (d) the verdict
@@ -311,6 +343,20 @@ export function decide(verdicts) {
   if (b === undefined) return { kept: false, why: 'the first run said ' + a + ' and no second run confirmed it' };
   if (a !== b) return { kept: false, why: 'the two runs disagree (' + a + ', then ' + b + ')' };
   return { kept: true, why: a === 'better' ? 'more held-out rows right in both runs' : 'as many held-out rows right and at least 5 percent faster in both runs' };
+}
+/**
+ * Whether a run is too close to call: the two arms scored some task differently, yet their held-out sums lie `close`
+ * rows apart or fewer. Arms that scored every task alike are a clear call (the change does nothing the sample sees).
+ * @param {{ heldoutOk: number, tasks: { task: string, ok: number }[] }} base the present arm
+ * @param {{ heldoutOk: number, tasks: { task: string, ok: number }[] }} mut the mutant arm
+ * @param {number} close the margin in held-out rows (KNOBS.close)
+ * @returns {{ close: boolean, apart: number }}
+ */
+export function tooClose(base, mut, close = KNOBS.close) {
+  const apart = Math.abs(num(mut.heldoutOk) - num(base.heldoutOk));
+  const ok = new Map((Array.isArray(base.tasks) ? base.tasks : []).map((t) => [t.task, t.ok]));
+  const differ = (Array.isArray(mut.tasks) ? mut.tasks : []).some((t) => !ok.has(t.task) || ok.get(t.task) !== t.ok) || (Array.isArray(base.tasks) && Array.isArray(mut.tasks) && base.tasks.length !== mut.tasks.length);
+  return { close: differ && apart <= close, apart };
 }
 
 // ---------------------------------------------------------------- the ledger of trials
@@ -486,21 +532,66 @@ export function retireMacros(root, era, { eras = KNOBS.retireEras, cells = null,
  * (present id, mutant id) pair no earlier graded trial reverted.
  * @returns {{ current: object, doc: object|null, lineage: number, mutant: object, change: object[], seed: string, beforeId: string, afterId: string }|null}
  */
-export function genomeCandidate(root, era, { genes = null, tries = KNOBS.tries } = {}) {
+export function genomeCandidate(root, era, { genes = null, tries = KNOBS.tries, crossEvery = KNOBS.crossEvery } = {}) {
   const doc = readGenomeDoc(root);
   const current = genomeFrom(doc);
   const lineage = isObj(doc) && Number.isInteger(doc.lineage) && doc.lineage >= 0 ? doc.lineage : 0;
   const beforeId = genomeId(current);
-  const tried = new Set(readTrials(root).filter((r) => r.kind === 'genome' && graded(r) && typeof r.beforeId === 'string').map((r) => r.beforeId + '>' + r.afterId));
+  const rows = readTrials(root);
+  const tried = new Set(rows.filter((r) => r.kind === 'genome' && graded(r) && typeof r.beforeId === 'string').map((r) => r.beforeId + '>' + r.afterId));
+  const inGenes = (change) => !genes || change.every((c) => genes.includes(c.gene));
+  // CROSSOVER: every crossEvery-th graded genome trial, a child of the two most promising mutants no trial kept (or of
+  // the present genome and the one there is), each gene taken whole from one parent; a child equal to a parent, to the
+  // present genome or to a tried pair is not drawn
+  const n = rows.filter((r) => r.kind === 'genome' && (graded(r) || r.kept === true)).length;
+  if (Number.isInteger(crossEvery) && crossEvery > 0 && n % crossEvery === crossEvery - 1) {
+    const ps = partners(rows, current, { genes });
+    const pair = ps.length >= 2 ? [ps[0], ps[1]] : ps.length === 1 ? [{ id: beforeId, genome: current }, ps[0]] : null;
+    if (pair) {
+      const ids = new Set([beforeId, pair[0].id, pair[1].id]);
+      for (let a = 0; a < tries; a++) {
+        const seed = 'cross:era:' + era + ':lineage:' + lineage + ':try:' + a;
+        const c = crossover(pair[0].genome, pair[1].genome, seed);
+        const afterId = genomeId(c.genome), change = diff(current, c.genome);
+        if (ids.has(afterId) || !change.length || !inGenes(change) || tried.has(beforeId + '>' + afterId)) continue;
+        return { current, doc, lineage, mutant: c.genome, change, seed, beforeId, afterId, op: 'crossover', parents: [pair[0].id, pair[1].id] };
+      }
+    }
+  }
   for (let a = 0; a < tries; a++) {
     const seed = 'era:' + era + ':lineage:' + lineage + ':try:' + a;
     const m = mutate(current, seed, genes ? { genes } : {});
     if (!m.change.length) continue;
     const afterId = genomeId(m.genome);
     if (tried.has(beforeId + '>' + afterId)) continue;
-    return { current, doc, lineage, mutant: m.genome, change: m.change, seed, beforeId, afterId };
+    return { current, doc, lineage, mutant: m.genome, change: m.change, seed, beforeId, afterId, op: 'mutate', parents: null };
   }
   return null;
+}
+/**
+ * The promising mutants no trial kept, as genomes over the present one (its genes with the trial's change applied):
+ * genome trials not kept, not skipped, not blocked, whose deciding sample's first run said better or faster (a second run
+ * that disagreed, no time to confirm). Ranked by that run's held-out gain, then its speed ratio, then the later era; one
+ * per genome; none equal to the present genome; with `genes`, only those that move no other gene.
+ * @param {object[]} rows the rows of TRIALS.jsonl
+ * @param {object} current the present genome
+ * @returns {{ id: string, genome: object, gain: number[], era: number }[]}
+ */
+export function partners(rows, current, { genes = null } = {}) {
+  const out = new Map(), here = genomeId(current);
+  for (const r of rows) {
+    if (!isObj(r) || r.kind !== 'genome' || r.kept === true || r.skipped || r.blocked || !Array.isArray(r.change) || !r.change.length || !Array.isArray(r.verdicts)) continue;
+    const lead = isObj(r.grew) ? r.verdicts[1] : r.verdicts[0];
+    if (lead !== 'better' && lead !== 'faster') continue;
+    const moves = r.change.filter((c) => isObj(c) && typeof c.gene === 'string');
+    const g = genomeFrom({ ...current, ...Object.fromEntries(moves.map((c) => [c.gene, c.to])) });
+    const id = genomeId(g);
+    if (id === here || out.has(id)) continue;
+    if (genes && diff(current, g).some((c) => !genes.includes(c.gene))) continue;
+    const b = isObj(r.before) ? r.before : {}, a = isObj(r.after) ? r.after : {};
+    out.set(id, { id, genome: g, gain: [num(a.heldoutOk) - num(b.heldoutOk), num(b.cps) > 0 ? num(a.cps) / num(b.cps) : 0], era: Number.isInteger(r.era) ? r.era : 0 });
+  }
+  return [...out.values()].sort((x, y) => (y.gain[0] - x.gain[0]) || (y.gain[1] - x.gain[1]) || (y.era - x.era));
 }
 /**
  * The next macro: the best mined candidate that is not a macro yet and that no earlier graded trial reverted.
@@ -534,16 +625,12 @@ export function sweepStale(tmp, maxAgeMs = 3600000) {
 }
 
 // ---------------------------------------------------------------- one trial: two arms, one or two runs
-function runTrial({ scratch, template, engine, sample, budget, gen, deadline, env, variant, o, stage }) {
+function runTrial({ scratch, template, engine, sample, grown = null, budget, gen, deadline, env, variant, o, stage }) {
   const runs = [], verdicts = [];
-  let blocked = null, failed = null, unconfirmed = null;
-  for (let k = 0; k < 2 && !blocked && !failed; k++) {
-    if (k === 1) {
-      if (verdicts[0] !== 'better' && verdicts[0] !== 'faster') break;
-      const need = runs[0].base.ms + runs[0].mut.ms, left = deadline - Date.now();
-      if (left < need) { unconfirmed = 'no time left for the second run (the first took ' + need + ' ms, ' + Math.max(0, left) + ' ms were left)'; break; }
-    }
-    const order = k === 0 ? ['base', 'mut'] : ['mut', 'base'];
+  let blocked = null, failed = null, unconfirmed = null, close = null, grew = null;
+  const part = (a) => (a ? { ...scoreOf(a), tasks: a.tasks, ...(a.blocked ? { blocked: a.blocked } : {}) } : null);
+  // one run: both arms on `tasks` in `order`; false when an arm blocked or failed (the trial ends)
+  const once = (k, order, tasks) => {
     const res = {};
     for (const which of order) {
       const arm = path.join(scratch, which + '-' + k);
@@ -551,23 +638,53 @@ function runTrial({ scratch, template, engine, sample, budget, gen, deadline, en
       variant(arm, which);
       const st = stage ? path.join(scratch, 'stage-' + which + '-' + k) : null;
       if (st) fs.mkdirSync(st, { recursive: true });
-      res[which] = runArm({ engine: engine || path.join(arm, ENGINE), root: arm, tasks: sample.tasks, gen, budget, deadline, env, slackMs: o.slackMs, minGrowMs: o.minGrowMs, stage: st });
+      res[which] = runArm({ engine: engine || path.join(arm, ENGINE), root: arm, tasks, gen, budget, deadline, env, slackMs: o.slackMs, minGrowMs: o.minGrowMs, stage: st });
       rmScratch(arm);
       const b = res[which].blocked;
       if (b) {
-        if (which === 'base' || b.startsWith('out of time')) blocked = (which === 'base' ? 'the present engine failed: ' : 'the clock ran out in the mutant arm: ') + b;
+        if (which === 'base' || b.startsWith('out of time')) blocked = (b.startsWith('out of time') ? 'the clock ran out in the ' + (which === 'base' ? 'present' : 'mutant') + ' arm: ' : 'the present engine failed: ') + b;
         else failed = 'the mutant made the engine fail: ' + b;
-        break;
+        runs.push({ order, base: part(res.base), mut: part(res.mut), verdict: null });
+        return null;
       }
     }
-    const part = (a) => (a ? { ...scoreOf(a), tasks: a.tasks, ...(a.blocked ? { blocked: a.blocked } : {}) } : null);
-    if (blocked || failed) { runs.push({ order, base: part(res.base), mut: part(res.mut), verdict: null }); break; }
     const v = verdictOf(res.base, res.mut, o.faster);
     verdicts.push(v);
     runs.push({ order, base: part(res.base), mut: part(res.mut), verdict: v });
+    return res;
+  };
+  const first = once(0, ['base', 'mut'], sample.tasks);
+  const c = first ? tooClose(first.base, first.mut, o.close) : { close: false };
+  let d = null;
+  if (c.close) close = c.apart;
+  if (first && c.close && grown && grown.tasks.length > sample.tasks.length) {
+    // TOO CLOSE TO CALL: the sample grows (the next tasks of the same deterministic draw) and the grown sample decides,
+    // in both arm orders; a mutant worse or equal in the grown sample's first run is reverted at once
+    const from = sample.tasks.length, to = grown.tasks.length, head = 'the first run was too close to call (' + c.apart + ' held-out row' + (c.apart === 1 ? '' : 's') + ' apart)';
+    const need = Math.ceil(((runs[0].base.ms + runs[0].mut.ms) * to) / Math.max(1, from)) * 2, left = deadline - Date.now();
+    if (left < need) unconfirmed = head + ' and no time is left to grow the sample to ' + to + ' tasks (' + need + ' ms needed, ' + Math.max(0, left) + ' ms were left)';
+    else {
+      grown.add();
+      grew = { from, to, tasks: grown.tasks.slice() };
+      for (let k = 1; k <= 2 && !blocked && !failed; k++) {
+        if (k === 2 && verdicts[1] !== 'better' && verdicts[1] !== 'faster') break;
+        once(k, k === 1 ? ['base', 'mut'] : ['mut', 'base'], grown.tasks);
+      }
+      if (!blocked && !failed) { const g = decide(verdicts.slice(1)); d = { kept: g.kept, why: head + '; on the sample grown to ' + to + ' tasks: ' + g.why }; }
+    }
+  } else if (first && (verdicts[0] === 'better' || verdicts[0] === 'faster')) {
+    const need = runs[0].base.ms + runs[0].mut.ms, left = deadline - Date.now();
+    if (left < need) unconfirmed = 'no time left for the second run (the first took ' + need + ' ms, ' + Math.max(0, left) + ' ms were left)';
+    else once(1, ['mut', 'base'], sample.tasks);
   }
-  const d = blocked ? { kept: false, why: blocked } : failed ? { kept: false, why: failed } : unconfirmed ? { kept: false, why: unconfirmed } : decide(verdicts);
-  return { runs, verdicts, kept: d.kept, why: d.why, blocked, unconfirmed };
+  if (!d) d = blocked ? { kept: false, why: blocked } : failed ? { kept: false, why: failed } : unconfirmed ? { kept: false, why: unconfirmed } : decide(verdicts);
+  return { runs, verdicts, kept: d.kept, why: d.why, blocked, unconfirmed, close, grew };
+}
+/** Copy every file of the given tasks from root into a scratch root, by path (bytes, never read row by row). */
+function addTasks(root, dest, tasks) {
+  let files = 0;
+  for (const t of tasks) for (const r of walk(abs(root, TASKS_DIR + '/' + t))) { copyFile(root, dest, TASKS_DIR + '/' + t + '/' + r); files++; }
+  return files;
 }
 
 /** The era a step runs as when none is given: one after the last era in TRIALS.jsonl. */
@@ -611,7 +728,14 @@ export async function step(root = DEFAULT_ROOT, opts = {}) {
   const skipped = [];
   const skip = (kind, why) => { appendTrial(root, { at: now().toISOString(), era, kind, change: null, before: null, after: null, kept: false, skipped: why }); skipped.push(kind + ': ' + why); };
   const sample = sampleTasks(root, era, o.sample);
-  const budget = { maxGenerated: o.generated, maxMs: Math.max(o.minGrowMs, Math.floor(o.maxMs / (4 * Math.max(1, sample.tasks.length)))) };
+  // the grow budget: a quarter of the step over the sample's tasks, over the engine's measured overrun; the cells are
+  // sized to that time too (at most cpsFloor a second, never under minGenerated), since the engine's grow runs on to
+  // --max-generated whatever its --max-ms (on a copy of the tree three grows told --max-ms 5000 and --max-generated
+  // 20000 took 33774 ms; in a step told 115000 ms, the arms of a first run of 3 grows told --max-ms 9583 took 37953 ms
+  // and 37455 ms, so a second run could not have fit)
+  const over = overrun(readTrials(root));
+  const growMs = Math.max(o.minGrowMs, Math.floor(o.maxMs / (4 * Math.max(1, sample.tasks.length) * over)));
+  const budget = { maxGenerated: Math.max(o.minGenerated, Math.min(o.generated, Math.floor((growMs / 1000) * o.cpsFloor))), maxMs: growMs, ...(over > 1 ? { overrun: over } : {}) };
   const gen = Math.max(1, era);
   let row = null, copied = null, scratchLeft = false;
   if (!sample.tasks.length) for (const k of kinds) skip(k, 'no opened task with a dev and a held-out set in ' + LEDGER_FILE);
@@ -627,7 +751,7 @@ export async function step(root = DEFAULT_ROOT, opts = {}) {
         if (!feat.features.includes(need)) { skip(kind, 'the engine cannot load ' + (kind === 'genome' ? 'a genome' : 'macros') + ' yet: its status features ' + JSON.stringify(feat.features) + ' lack "' + need + '"' + (feat.why ? ' (' + feat.why + ')' : '')); continue; }
         let prep;
         if (kind === 'genome') {
-          prep = genomeCandidate(root, era, { genes, tries: o.tries });
+          prep = genomeCandidate(root, era, { genes, tries: o.tries, crossEvery: o.crossEvery });
           if (!prep) { skip(kind, 'each of ' + o.tries + ' drawn mutants was already tried and reverted'); continue; }
         } else {
           prep = await macroCandidate(root, era, { minTasks: o.minTasks, now });
@@ -636,19 +760,24 @@ export async function step(root = DEFAULT_ROOT, opts = {}) {
         const variant = kind === 'genome'
           ? (arm, which) => { if (which === 'mut') writeJsonAtomic(abs(arm, GENOME_FILE), { version: GENOME_VERSION, genes: { ...prep.mutant }, lineage: prep.lineage + 1, trial: true }); }
           : (arm, which) => { if (which === 'mut') writeJsonAtomic(abs(arm, MACROS_FILE), { ...prep.doc, macros: [...prep.doc.macros, prep.macro] }); };
-        const t = runTrial({ scratch, template, engine, sample, budget, gen, deadline, env, variant, o, stage: feat.features.includes('stage') });
+        // the grown sample: the next tasks of the same draw, copied into the template only when a run is too close to call
+        const big = sampleTasks(root, era, Math.max(o.sample, Math.floor(o.sample * o.grow)));
+        const grown = big.tasks.length > sample.tasks.length ? { tasks: big.tasks, add: () => addTasks(root, template, big.tasks.filter((x) => !sample.tasks.includes(x))) } : null;
+        const t = runTrial({ scratch, template, engine, sample, grown, budget, gen, deadline, env, variant, o, stage: feat.features.includes('stage') });
         const at = now().toISOString();
+        // before and after: the first run of the sample that decided (the grown one when the sample grew)
+        const lead = t.grew && t.runs[1] && t.runs[1].base ? t.runs[1] : t.runs[0];
         row = {
-          at, era, kind, change: kind === 'genome' ? prep.change : prep.change, before: t.runs[0] ? t.runs[0].base && scoreOf(t.runs[0].base) : null,
-          after: t.runs[0] && t.runs[0].mut ? scoreOf(t.runs[0].mut) : null, kept: t.kept, why: t.why,
-          ...(kind === 'genome' ? { seed: prep.seed, beforeId: prep.beforeId, afterId: prep.afterId, lineage: prep.lineage } : { mined: prep.cells, candidates: prep.rank }),
-          sample, budget, gen, faster: o.faster, verdicts: t.verdicts, runs: t.runs, ...(t.blocked ? { blocked: t.blocked } : {}), ...(t.unconfirmed ? { unconfirmed: true } : {}),
+          at, era, kind, change: kind === 'genome' ? prep.change : prep.change, before: lead ? lead.base && scoreOf(lead.base) : null,
+          after: lead && lead.mut ? scoreOf(lead.mut) : null, kept: t.kept, why: t.why,
+          ...(kind === 'genome' ? { seed: prep.seed, beforeId: prep.beforeId, afterId: prep.afterId, lineage: prep.lineage, op: prep.op, parents: prep.parents } : { mined: prep.cells, candidates: prep.rank }),
+          sample, budget, gen, faster: o.faster, verdicts: t.verdicts, runs: t.runs, close: t.close, grew: t.grew, ...(t.blocked ? { blocked: t.blocked } : {}), ...(t.unconfirmed ? { unconfirmed: true } : {}),
         };
         if (t.kept) {
           try {
             if (kind === 'genome') {
               const hist = isObj(prep.doc) && Array.isArray(prep.doc.history) ? prep.doc.history.slice(-49) : [];
-              writeJsonAtomic(abs(root, GENOME_FILE), { version: GENOME_VERSION, genes: { ...prep.mutant }, lineage: prep.lineage + 1, era, at, id: prep.afterId, change: prep.change, history: [...hist, { era, at, change: prep.change, before: row.before, after: row.after }] });
+              writeJsonAtomic(abs(root, GENOME_FILE), { version: GENOME_VERSION, genes: { ...prep.mutant }, lineage: prep.lineage + 1, era, at, id: prep.afterId, change: prep.change, history: [...hist, { era, at, op: prep.op, change: prep.change, before: row.before, after: row.after }] });
             } else writeJsonAtomic(abs(root, MACROS_FILE), { ...prep.doc, macros: [...prep.doc.macros, prep.macro] });
           } catch (e) { row.kept = false; row.why = 'kept by the trial but the write failed: ' + first(e); }
         }
@@ -662,7 +791,7 @@ export async function step(root = DEFAULT_ROOT, opts = {}) {
   }
   const doc = readGenomeDoc(root);
   return {
-    era, kind: row ? row.kind : null, kept: row ? row.kept : false, why: row ? row.why : null, change: row ? describe(row.change) : null,
+    era, kind: row ? row.kind : null, op: row && row.op ? row.op : null, kept: row ? row.kept : false, why: row ? row.why : null, change: row ? describe(row.change) : null, grew: row && row.grew ? { from: row.grew.from, to: row.grew.to } : null,
     before: row ? row.before : null, after: row ? row.after : null, verdicts: row ? row.verdicts : [], sample: sample.tasks, budget,
     copied: copied ? { files: copied.files, bytes: copied.bytes } : null, skipped, retired: retired.length, swept, scratchLeft,
     trials: counts(readTrials(root)), lineage: isObj(doc) && Number.isInteger(doc.lineage) ? doc.lineage : 0, macros: readMacros(root).macros.length, ms: Date.now() - t0,

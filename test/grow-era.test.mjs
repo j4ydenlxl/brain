@@ -20,6 +20,8 @@ import {
   runEras, ship, status, readEra, growOrder, colonies, lockState, takeLock, refreshLock, releaseLock, finishesInFlight, commitMessage,
   allowedHere, bodyOf, planEra, toldMs, argsOf, mergeEraDocs, fingerprint, changedPaths, recordPatterns, masteredRow, pidAlive, pushEra,
   KEEP, STALE_MS, HARD_STALE_MS, LOCK, ERA_FILE, SHIP_PATHS, PC_REFUSAL, USAGE, STEPS, IDLE_STOP, MIN_CHILD_MS, MIN_ERA_MS, RECORDS,
+  FLAT_SLOTS, FLAT_AFTER, STALE_AFTER, RECORD_PATHS, RECORD_MS, OPENERS, inputsSig, taskSig, staleSkip, nextStale, nothingToDo, kernelVersion, heldoutTotal,
+  MERGE_STEP,
 } from '../grow/era.mjs';
 import { CLOUD_ENV, TOKEN_NAMES, TRAILER, runNode } from '../grow/generation.mjs';
 import { CLOUD_ENV as SANDBOX_CLOUD_ENV } from '../grow/sandbox.mjs';
@@ -79,6 +81,7 @@ else {
   const results = [], refused = [];
   for (const { task } of readJ('neo/LEDGER.json', { tasks: [] }).tasks) {
     if (results.some((r) => r.task === task) || refused.some((r) => r.task === task)) continue;
+    if (ix.cells.some((c) => c.tier === 'neo' && c.class === task && c.heldout && c.heldout.score === 1)) continue; // mastered: the swarm grows it no more
     const p = plan[task] || {};
     if (p.fail) { refused.push({ task, why: 'node grow/neo.mjs grow exited 1: stub' }); continue; }
     const score = p.score ?? 0.5;
@@ -114,6 +117,7 @@ if (process.env.STUB_EVOLVE_FAIL) { console.error('evolve failed: stub'); proces
 console.log(JSON.stringify({ trials: 0 }));`],
   // MEASURE: appends its row (a record) to grown/measure.jsonl and prints it
   measure: ['grow/measure.mjs', `log('measure');
+{ const d = readJ('neo/ERA.json', null), last = d && Array.isArray(d.eras) ? d.eras[d.eras.length - 1] : null; fs.appendFileSync(path.join(ROOT, 'measure-saw.log'), JSON.stringify({ era: Number(arg('--era')), doc: d ? d.era : null, row: last ? { era: last.era, body: last.body, workers: last.workers, ms: last.ms, cells: last.cells } : null }) + '\\n'); }
 if (process.env.STUB_MEASURE_FAIL) { console.error('measure failed: stub'); process.exit(1); }
 const neo = readJ('grown/index.json', { cells: [] }).cells.filter((c) => c.tier === 'neo');
 const row = { at: new Date().toISOString(), nonce: process.pid + '-' + Math.random(), era: Number(arg('--era')), neo: { tasks: readJ('neo/LEDGER.json', { tasks: [] }).tasks.length, colonies: neo.length, cells: neo.reduce((s, c) => s + c.cells, 0), mastered: neo.filter((c) => c.heldout.score === 1).length } };
@@ -121,6 +125,29 @@ fs.appendFileSync(path.join(ROOT, 'grown/measure.jsonl'), JSON.stringify(row) + 
 console.log(JSON.stringify(row));`],
 };
 const ALL = Object.keys(STUBS);
+/**
+ * The steps that landed after c1's first tests (a tree holds them only when a test asks): the REAL grow/pipeline.mjs
+ * through a shim that logs its call (STUB_SNAPSHOT_FAIL / STUB_PROMOTE_FAIL fail that verb), and an intake step that
+ * opens the names in intake-open.json only when it is told at least STUB_INTAKE_NEEDS ms.
+ */
+const PIPELINE_SRC = path.join(BRAIN, 'grow', 'pipeline.mjs');
+const EXTRA = {
+  pipeline: ['grow/pipeline.mjs', `log('pipeline');
+const verb = process.argv[2];
+if ((verb === 'snapshot' && process.env.STUB_SNAPSHOT_FAIL) || (verb === 'promote' && process.env.STUB_PROMOTE_FAIL)) { console.error(verb + ' failed: stub'); process.exit(1); }
+const m = await import(${JSON.stringify(pathToFileURL(PIPELINE_SRC).href)});
+try { const r = await m.main(process.argv.slice(2)); console.log(JSON.stringify(r)); } catch (e) { console.error('pipeline: ' + e.message); process.exit(Number.isInteger(e.code) ? e.code : 1); }`],
+  intake: ['grow/intake.mjs', `log('intake');
+const told = Number(arg('--max-ms') ?? 0), need = Number(process.env.STUB_INTAKE_NEEDS ?? 0);
+const names = told >= need ? readJ('intake-open.json', []) : [];
+if (names.length) {
+  writeJ('intake-open.json', []);
+  const led = readJ('neo/LEDGER.json', { tasks: [], generated: 0 });
+  for (const t of names) { led.tasks.push({ task: t, generation: 4, devSha: 'd', heldoutSha: 'h', dev: 20, heldout: 10, by: 'stub-intake', at: '2026-10-01T00:00:00.000Z' }); writeJ('neo/tasks/' + t + '/task.json', { task: t }); }
+  writeJ('neo/LEDGER.json', led);
+}
+console.log(JSON.stringify({ opened: names, told }));`],
+};
 /** Where no era may look: each holds a sentinel. */
 const FORBIDDEN_FILES = ['state/SENTINEL.json', 'judge/heldout/fragment.jsonl', 'judge/control.jsonl', 'neo/tasks/alpha/heldout.jsonl'];
 
@@ -135,9 +162,10 @@ const neoRow = (task, score, extra = {}) => ({ id: task + '-neo-g3', class: task
 const HAND = { id: 'capital-of-direct-g1', class: 'capital-of', generation: 1, lane: 'direct', file: 'cells/capital-of-direct-g1.mjs', heldout: { score: 1, n: 14 } };
 
 /** A fresh stub tree: grown/index.json at generation 3 (so g is 4), the ledger, the names intake opens, the grow plan, the steps on disk. */
-function makeRoot({ ledger = [], open = ['alpha', 'beta'], plan = {}, cells = [], era = null, steps = ALL } = {}) {
+function makeRoot({ ledger = [], open = ['alpha', 'beta'], plan = {}, cells = [], era = null, steps = ALL, extra = [] } = {}) {
   const root = tmp('grow-era-');
   for (const s of steps) put(root, STUBS[s][0], PRELUDE + STUBS[s][1] + '\n');
+  for (const s of extra) put(root, EXTRA[s][0], PRELUDE + EXTRA[s][1] + '\n');
   put(root, 'grown/index.json', JSON.stringify({ generation: 3, cells }));
   put(root, 'neo/LEDGER.json', JSON.stringify({ tasks: ledger.map(ledgerRow), generated: 0 }));
   put(root, 'open.json', JSON.stringify(open));
@@ -182,6 +210,9 @@ const ERA_SEQ = (e, g = 4, workers = null) => [
   'absorb pull --gen ' + g + ' --max-ms N', 'frontier step --max-ms N --era ' + e, 'know shelve --max-ms N --era ' + e, 'teach intake --gen ' + g,
   'swarm grow --gen ' + g + ' --max-ms N --era ' + e + (workers ? ' --workers ' + workers : ''), 'neo regate', 'evolve step --max-ms N --era ' + e, 'measure run --era ' + e + ' --max-ms N',
 ];
+/** A stub tree without grow/pipeline.mjs and grow/intake.mjs: the three lines every era of it names. */
+const NOT_LANDED = Object.freeze(['snapshot: grow/pipeline.mjs is not on disk', 'intake: grow/intake.mjs is not on disk', 'promote: grow/pipeline.mjs is not on disk']);
+const own = (xs) => xs.filter((s) => !NOT_LANDED.includes(s));
 const alive = (pid) => { try { process.kill(pid, 0); return true; } catch (e) { return e.code === 'EPERM'; } };
 /** Kill every grandchild a stub recorded (a test that failed leaves none running). */
 const reap = (root) => { let t = ''; try { t = fs.readFileSync(path.join(root, 'grandchild.pid'), 'utf8'); } catch { return; } for (const p of t.split(/\r?\n/).filter(Boolean).map(Number)) { try { process.kill(p, 'SIGKILL'); } catch { /* gone */ } } };
@@ -196,7 +227,9 @@ test('c1: one era runs absorb, frontier, know, teach, swarm grow, neo regate, ev
     for (const c of calls(root)) assert.deepEqual(c.slice(-2), ['--root', path.resolve(root)]);
     for (const c of calls(root)) { const i = c.indexOf('--max-ms'); if (i >= 0) { const v = Number(c[i + 1]); assert.ok(Number.isInteger(v) && v >= 1000 && v < 480000, c.join(' ')); } }
     const j = r.json;
-    assert.deepEqual(Object.keys(j), ['eras', 'era', 'ms', 'body', 'workers', 'absorbed', 'opened', 'grown', 'cells', 'mastered', 'idle', 'committed', 'pushed', 'velocity', 'skipped', 'blocked', 'stop', 'lock']);
+    assert.deepEqual(Object.keys(j), ['eras', 'era', 'ms', 'body', 'workers', 'absorbed', 'opened', 'grown', 'cells', 'mastered', 'idle', 'promoted', 'plateau', 'committed', 'pushed', 'velocity', 'skipped', 'blocked', 'stop', 'lock']);
+    assert.equal(j.promoted, null, 'no grow/pipeline.mjs: nothing promoted or restored');
+    assert.equal(j.plateau, 0, 'the held-out rows rose (0 to 10)');
     assert.equal(j.eras, 1);
     assert.equal(j.era, 1);
     assert.equal(j.body, 'ci');
@@ -208,7 +241,7 @@ test('c1: one era runs absorb, frontier, know, teach, swarm grow, neo regate, ev
     assert.equal(j.mastered, 0);
     assert.equal(j.idle, 0);
     assert.equal(j.committed, 'skipped (no --commit)');
-    assert.deepEqual(j.skipped, []);
+    assert.deepEqual(j.skipped, [...NOT_LANDED]);
     assert.deepEqual(j.blocked, []);
     assert.equal(j.stop, 'max-eras');
     assert.equal(j.lock, 'taken');
@@ -217,8 +250,13 @@ test('c1: one era runs absorb, frontier, know, teach, swarm grow, neo regate, ev
     assert.equal(j.velocity.masteredPerEra, 0);
     const doc = eraDoc(root);
     const row = doc.eras[0];
-    assert.deepEqual(Object.keys(row), ['era', 'at', 'ms', 'body', 'workers', 'absorbed', 'opened', 'grown', 'cells', 'mastered', 'velocity', 'changed', 'idle', 'steps', 'skipped', 'blocked']);
-    assert.deepEqual(Object.keys(row.steps), STEPS.map((s) => s.name));
+    assert.deepEqual(Object.keys(row), ['era', 'at', 'ms', 'body', 'workers', 'absorbed', 'opened', 'grown', 'cells', 'mastered', 'velocity', 'pipeline', 'heldout', 'plateau', 'flat', 'inputs', 'stale', 'changed', 'idle', 'steps', 'skipped', 'blocked']);
+    assert.deepEqual(Object.keys(row.steps), STEPS.map((s) => s.name).filter((n) => !['snapshot', 'intake', 'promote'].includes(n)));
+    assert.equal(row.pipeline, 'absent');
+    assert.deepEqual(row.heldout, { before: 0, after: 10 });
+    assert.equal(row.plateau, 0);
+    assert.equal(row.flat, false);
+    assert.match(row.inputs, /^[0-9a-f]{16}$/);
     assert.deepEqual(Object.keys(row.velocity), ['cellsPerSecond', 'tasksPerMinute', 'masteredPerEra', 'eraMs', 'workers', 'generated', 'tasks', 'growMs']);
     assert.equal(row.velocity.generated, 2000);
     assert.equal(row.velocity.tasks, 2);
@@ -228,7 +266,10 @@ test('c1: one era runs absorb, frontier, know, teach, swarm grow, neo regate, ev
     assert.deepEqual(doc.lastGrown, { alpha: 1, beta: 1 });
     assert.equal(doc.idle, 0);
     assert.ok(!fs.existsSync(path.join(root, LOCK)), 'the lock is released');
-    assert.deepEqual(STEPS.map((s) => s.name + ' ' + s.script + ' ' + s.verb), ['absorb grow/absorb.mjs pull', 'frontier grow/frontier.mjs step', 'know grow/know.mjs shelve', 'teach grow/teach.mjs intake', 'grow grow/swarm.mjs grow', 'regate grow/neo.mjs regate', 'evolve grow/evolve.mjs step', 'measure grow/measure.mjs run']);
+    assert.deepEqual(STEPS.map((s) => s.name + ' ' + s.script + ' ' + s.verb), [
+      'snapshot grow/pipeline.mjs snapshot', 'absorb grow/absorb.mjs pull', 'frontier grow/frontier.mjs step', 'know grow/know.mjs shelve', 'teach grow/teach.mjs intake',
+      'intake grow/intake.mjs step', 'grow grow/swarm.mjs grow', 'regate grow/neo.mjs regate', 'evolve grow/evolve.mjs step', 'promote grow/pipeline.mjs promote', 'measure grow/measure.mjs run',
+    ]);
   } finally { clean(root); }
 });
 
@@ -239,8 +280,9 @@ test('feature-detected: a step whose file is not on disk is skipped and named, a
     assert.equal(r.code, 0, r.stderr);
     assert.deepEqual(seq(root), ['teach intake --gen 4', 'neo grow --task alpha --gen 4', 'neo grow --task beta --gen 4', 'neo regate', 'measure run --era 1 --max-ms N']);
     assert.deepEqual(r.json.skipped, [
-      'absorb: grow/absorb.mjs is not on disk', 'frontier: grow/frontier.mjs is not on disk', 'know: grow/know.mjs is not on disk',
-      'grow: grow/swarm.mjs is not on disk: the era grew task by task (node grow/neo.mjs grow)', 'evolve: grow/evolve.mjs is not on disk',
+      'snapshot: grow/pipeline.mjs is not on disk', 'absorb: grow/absorb.mjs is not on disk', 'frontier: grow/frontier.mjs is not on disk', 'know: grow/know.mjs is not on disk',
+      'intake: grow/intake.mjs is not on disk', 'grow: grow/swarm.mjs is not on disk: the era grew task by task (node grow/neo.mjs grow)', 'evolve: grow/evolve.mjs is not on disk',
+      'promote: grow/pipeline.mjs is not on disk',
     ]);
     assert.equal(r.json.workers, 1);
     assert.equal(r.json.absorbed, null);
@@ -263,11 +305,11 @@ test('a verb that answers usage (exit 2) is tried once more without its optional
     const a = drive(root, ['run', '--max-eras', '1'], { CI: '1', STUB_FRONTIER_USAGE: 'opt' });
     assert.equal(a.code, 0, a.stderr);
     assert.deepEqual(seq(root).filter((s) => s.startsWith('frontier')), ['frontier step --max-ms N --era 1', 'frontier step']);
-    assert.deepEqual(a.json.skipped, []);
+    assert.deepEqual(own(a.json.skipped), []);
     reset(root);
     const b = drive(root, ['run', '--max-eras', '1'], { CI: '1', STUB_FRONTIER_USAGE: 'all', STUB_TEACH_USAGE: '1' });
     assert.deepEqual(seq(root).filter((s) => s.startsWith('frontier') || s.startsWith('teach')), ['frontier step --max-ms N --era 2', 'frontier step', 'teach intake --gen 4']);
-    assert.deepEqual(b.json.skipped, [
+    assert.deepEqual(own(b.json.skipped), [
       'frontier: node grow/frontier.mjs step answered usage (exit 2: usage: unknown flag --max-ms): that verb has not landed',
       'teach: node grow/teach.mjs intake answered usage (exit 2: usage: one verb of intake): that verb has not landed',
     ]);
@@ -294,12 +336,26 @@ test('a verb that answers usage (exit 2) is tried once more without its optional
 
 test('planEra, toldMs and argsOf: the slots of contract c1 (a share each, capped; grow the rest), what follows each step, the --max-ms a child is told', () => {
   const p = planEra(480000);
-  assert.deepEqual(p.slots, { absorb: 48000, frontier: 14400, know: 14400, teach: 24000, regate: 9600, evolve: 28800, measure: 48000, ship: 19200, grow: 273600 });
-  assert.deepEqual(p.after, { ship: 0, measure: 19200, evolve: 67200, regate: 96000, grow: 105600, teach: 379200, know: 403200, frontier: 417600, absorb: 432000 });
+  assert.deepEqual(p.slots, { snapshot: 28800, absorb: 48000, frontier: 14400, know: 14400, teach: 24000, intake: 24000, regate: 9600, evolve: 28800, promote: 28800, measure: 48000, ship: 19200, grow: 192000 });
+  assert.deepEqual(p.after, { ship: 0, measure: 19200, promote: 67200, evolve: 96000, regate: 124800, grow: 134400, intake: 326400, teach: 350400, know: 374400, frontier: 388800, absorb: 403200, snapshot: 451200 });
   assert.equal(Object.values(p.slots).reduce((a, b) => a + b, 0), 480000, 'the slots add up to the budget');
   const big = planEra(3600000);
-  assert.deepEqual(big.slots, { absorb: 90000, frontier: 30000, know: 30000, teach: 60000, regate: 20000, evolve: 60000, measure: 60000, ship: 30000, grow: 3220000 }, 'the caps bind');
+  assert.deepEqual(big.slots, { snapshot: 90000, absorb: 90000, frontier: 30000, know: 30000, teach: 60000, intake: 60000, regate: 20000, evolve: 60000, promote: 90000, measure: 60000, ship: 30000, grow: 2980000 }, 'the caps bind');
   assert.deepEqual(planEra(-5).slots.grow, 0);
+  // a step not on disk keeps no slot: its time goes to growing (the stub tree of c1 before the pipeline landed)
+  const legacy = planEra(480000, { present: ['absorb', 'frontier', 'know', 'teach', 'grow', 'regate', 'evolve', 'measure'] });
+  assert.deepEqual([legacy.slots.snapshot, legacy.slots.intake, legacy.slots.promote, legacy.slots.grow], [0, 0, 0, 273600]);
+  assert.equal(legacy.after.grow, 105600);
+  // FLAT: frontier, know, intake and evolve get more of the era, grow less; rising: grow keeps the time
+  const flat = planEra(480000, { flat: true });
+  assert.deepEqual(flat.slots, { snapshot: 28800, absorb: 48000, frontier: 38400, know: 28800, teach: 24000, intake: 48000, regate: 9600, evolve: 120000, promote: 28800, measure: 48000, ship: 19200, grow: 38400 });
+  // the flat evolve slot holds one confirmed trial: told at least 2 runs of the 46497 ms first run measured on a copy of the tree
+  assert.ok(toldMs(flat.slots.evolve) >= 2 * 46497, String(toldMs(flat.slots.evolve)));
+  for (const s of ['frontier', 'know', 'intake', 'evolve']) assert.ok(flat.slots[s] > p.slots[s], s);
+  assert.ok(flat.slots.grow < p.slots.grow);
+  assert.deepEqual(Object.keys(FLAT_SLOTS), ['frontier', 'know', 'intake', 'evolve']);
+  assert.equal(FLAT_AFTER, 1);
+  assert.deepEqual(planEra(3600000, { flat: true }).slots.evolve, 150000, 'the flat caps bind');
   assert.equal(toldMs(48000), 43200);
   assert.equal(toldMs(374400), 369400);
   assert.equal(toldMs(500), 1000);
@@ -353,7 +409,7 @@ test('deadline arithmetic (an injected clock): each child is killed at min(its s
     fs.rmSync(path.join(root, ERA_FILE));
     const k = await inproc(root, { maxEras: 1, maxMs: 480000, now: () => c3.t, exec: h.exec });
     assert.deepEqual(h.log.map((x) => x[0]), ['grow/absorb.mjs']);
-    assert.deepEqual(k.skipped, ['frontier', 'know', 'teach', 'grow', 'regate', 'evolve', 'measure'].map((s) => s + ': no time left in the era (1000 ms)'));
+    assert.deepEqual(own(k.skipped), ['frontier', 'know', 'teach', 'grow', 'regate', 'evolve', 'measure'].map((s) => s + ': no time left in the era (1000 ms)'));
     assert.equal(eraDoc(root).eras.length, 1);
   } finally { clean(root); }
 });
@@ -715,7 +771,7 @@ test('--dry lists what one era would run, in c1 order, and runs nothing, writes 
     fs.rmSync(path.join(root, 'grow', 'swarm.mjs'));
     const s = drive(root, ['run', '--dry']);
     assert.deepEqual(s.json.would.slice(4, 6), ['node grow/neo.mjs grow --task gamma --gen 4 --root ' + R, 'node grow/neo.mjs grow --task alpha --gen 4 --root ' + R]);
-    assert.deepEqual(s.json.skipped, ['grow: grow/swarm.mjs is not on disk: the era grows task by task']);
+    assert.deepEqual(own(s.json.skipped), ['grow: grow/swarm.mjs is not on disk: the era grows task by task']);
     put(root, LOCK, JSON.stringify({ pid: 5, at: new Date().toISOString() }));
     assert.equal(drive(root, ['run', '--dry']).json.lock, 'held');
     assert.deepEqual(calls(root), [], 'no child ran');
@@ -968,4 +1024,374 @@ test('a rebase conflict outside neo/ and grown/ (an unpushed human commit the re
     assert.ok(!fs.existsSync(path.join(A, '.git', 'rebase-merge')) && !fs.existsSync(path.join(A, '.git', 'rebase-apply')), 'no rebase in progress');
     assert.equal(git(remote, ['log', '-1', '--format=%s', 'master']), 'B edits the readme', 'nothing was pushed');
   } finally { clean(seed, base); }
+});
+
+// ---- THE PIPELINE in the era (c9), FLAT, STALE, NOTHING TO DO
+const sawOf = (root) => { try { return fs.readFileSync(path.join(root, 'measure-saw.log'), 'utf8').split(/\r?\n/).filter(Boolean).map((l) => JSON.parse(l)); } catch { return []; } };
+const filesUnder = (root, rel) => { try { return fs.readdirSync(path.join(root, rel)).sort(); } catch { return []; } };
+
+test('c1 with the pipeline: snapshot, absorb, frontier, know, teach, intake, swarm grow, regate, evolve, promote, measure, each once in that order; the row (body, workers, ms) is in neo/ERA.json BEFORE measure runs; a rise is promoted', () => {
+  const root = makeRoot({ extra: ['pipeline', 'intake'] });
+  try {
+    const r = drive(root, ['run', '--max-eras', '1', '--workers', '3'], { CI: '1' });
+    assert.equal(r.code, 0, r.stderr);
+    const E = ERA_SEQ(1, 4, 3);
+    assert.deepEqual(seq(root), ['pipeline snapshot --era 1 --max-ms N', ...E.slice(0, 4), 'intake step --max-ms N --era 1', ...E.slice(4, 7), 'pipeline promote --era 1 --max-ms N', E[7]]);
+    const j = r.json;
+    assert.deepEqual(j.skipped, []);
+    assert.deepEqual(j.blocked, []);
+    assert.equal(j.promoted, 1);
+    assert.equal(j.plateau, 0);
+    const row = eraDoc(root).eras[0];
+    assert.deepEqual(Object.keys(row.steps), STEPS.map((s) => s.name));
+    assert.equal(row.pipeline, 'snapshot');
+    assert.equal(row.promoted.promoted, true);
+    assert.deepEqual(row.promoted.raised, ['held-out rows right 0 to 10']);
+    assert.deepEqual(row.promoted.fell, []);
+    assert.deepEqual(row.promoted.gained, ['alpha', 'beta']);
+    assert.deepEqual([row.promoted.before, row.promoted.after], [0, 10]);
+    assert.deepEqual(row.heldout, { before: 0, after: 10 });
+    assert.equal(row.cells, 20, 'measure\'s numbers written after it ran');
+    // measure read neo/ERA.json while it ran: the era's row was there, with body, workers and ms, and no cells yet
+    const saw = sawOf(root);
+    assert.equal(saw.length, 1);
+    assert.equal(saw[0].doc, 1);
+    assert.equal(saw[0].row.era, 1);
+    assert.equal(saw[0].row.body, 'ci');
+    assert.equal(saw[0].row.workers, 3);
+    assert.ok(Number.isInteger(saw[0].row.ms) && saw[0].row.ms > 0 && saw[0].row.ms <= row.ms, JSON.stringify(saw[0]));
+    assert.equal(saw[0].row.cells, null);
+    // the pipeline's own record: one promotion, nothing pending
+    const pj = JSON.parse(fs.readFileSync(path.join(root, 'neo', 'PIPELINE.json'), 'utf8'));
+    assert.equal(pj.promotions, 1);
+    assert.ok(!fs.existsSync(path.join(root, 'work', 'grow', 'pipeline', 'pending.json')));
+    assert.deepEqual(ledgerNames(root), ['alpha', 'beta'], 'the promoted era\'s tasks stay');
+  } finally { clean(root); }
+});
+const ledgerNames = (root) => JSON.parse(fs.readFileSync(path.join(root, 'neo', 'LEDGER.json'), 'utf8')).tasks.map((t) => t.task);
+
+test('promote and SHIP: promoted is ONE commit of everything; not promoted restores the generated files (the counters kept) and commits nothing but at most one record commit of neo/ERA.json, neo/LEDGER.json, grown/measure.jsonl every 6 hours', () => {
+  const base = tmp('grow-era-pipe-git-');
+  const root = makeRoot({ extra: ['pipeline'] });
+  try {
+    assert.deepEqual([...RECORD_PATHS], ['neo/ERA.json', 'neo/LEDGER.json', 'grown/measure.jsonl']);
+    assert.equal(RECORD_MS, 6 * 3600 * 1000);
+    const env = gitEnvOf(base), git = gitIn(env), gv = gitEnvVars(env);
+    git(root, ['init', '-q', '-b', 'master']);
+    git(root, ['add', '-A']);
+    git(root, ['commit', '-q', '-m', 'stub tree']);
+    const run = () => drive(root, ['run', '--max-eras', '1', '--commit', '--no-push'], { CI: '1', STUB_GROW_CHURN: '1', ...gv });
+    // era 1: 0 to 10 held-out rows: promoted, one commit holding the grown cells, the churn and the records
+    const a = run();
+    assert.equal(a.code, 0, a.stderr);
+    assert.equal(a.json.promoted, 1);
+    assert.equal(a.json.committed, 1);
+    assert.equal(git(root, ['log', '-1', '--format=%s']), 'era 1: 2 tasks, 20 cells, 0 mastered');
+    const one = git(root, ['show', '--name-only', '--format=', 'HEAD']).split(/\r?\n/).filter(Boolean);
+    for (const f of ['grown/index.json', 'neo/ERA.json', 'neo/LEDGER.json', 'neo/PIPELINE.json', 'grown/measure.jsonl']) assert.ok(one.includes(f), f + ' in ' + one.join(' '));
+    assert.ok(one.some((f) => f.startsWith('grown/cells/')), 'the generated files are in the one commit');
+    assert.equal(git(root, ['status', '--porcelain', '--', 'neo/ERA.json']), '', 'the commit carries the era it ends');
+    const head1 = git(root, ['rev-parse', 'HEAD']);
+    const cells1 = filesUnder(root, 'grown/cells');
+    // era 2: the same scores (a tie): not promoted, the churn removed, nothing committed (the counters went with era 1)
+    const b = run();
+    assert.equal(b.code, 0, b.stderr);
+    assert.equal(b.json.promoted, 0);
+    assert.equal(b.json.committed, 0);
+    assert.equal(git(root, ['rev-parse', 'HEAD']), head1);
+    const row2 = eraDoc(root).eras[1];
+    assert.equal(row2.promoted.promoted, false);
+    assert.equal(row2.promoted.why, 'nothing rose (a tie is not promoted)');
+    assert.match(row2.shipped, /^skipped: not promoted, and the counters were committed at \S+ \(one record commit every 6 h\)$/);
+    assert.deepEqual(filesUnder(root, 'grown/cells'), cells1, 'the generated files are back at the snapshot');
+    assert.equal(git(root, ['status', '--porcelain', '--untracked-files=all', '--', 'grown/cells', 'grown/index.json']), '');
+    assert.deepEqual(ledgerNames(root), ['alpha', 'beta']);
+    // the record clock past 6 hours: era 3 (not promoted) is one record commit of the counters and nothing else
+    const doc = eraDoc(root);
+    doc.recordAt = new Date(Date.now() - RECORD_MS - 60000).toISOString();
+    fs.writeFileSync(path.join(root, ERA_FILE), JSON.stringify(doc));
+    const c = run();
+    assert.equal(c.code, 0, c.stderr);
+    assert.equal(c.json.promoted, 0);
+    assert.equal(c.json.committed, 1);
+    assert.equal(git(root, ['log', '-1', '--format=%s']), 'era 3: 2 tasks, 20 cells, 0 mastered (record)');
+    const rec = git(root, ['show', '--name-only', '--format=', 'HEAD']).split(/\r?\n/).filter(Boolean);
+    assert.ok(rec.length && rec.every((f) => RECORD_PATHS.includes(f)), rec.join(' '));
+    assert.ok(rec.includes('neo/ERA.json') && rec.includes('grown/measure.jsonl'), rec.join(' '));
+    assert.equal(git(root, ['show', 'HEAD:neo/ERA.json']).includes('"recordAt"'), true, 'the record commit carries its own clock');
+    assert.match(git(root, ['status', '--porcelain', '--', 'neo/PIPELINE.json']), /^ ?M neo\/PIPELINE\.json$/, 'the pipeline record waits for the next promoted commit');
+    assert.deepEqual(filesUnder(root, 'grown/cells'), cells1);
+    // era 4: the record went out minutes ago: nothing committed again
+    const d = run();
+    assert.equal(d.json.committed, 0);
+    assert.match(eraDoc(root).eras[3].shipped, /^skipped: not promoted/);
+  } finally { clean(root, base); }
+});
+
+test('a promote that does not answer is followed by pipeline restore (the tree back at its snapshot); a snapshot that fails generates nothing; a tree the restore could not put back is never committed', () => {
+  const root = makeRoot({ extra: ['pipeline'] });
+  try {
+    assert.equal(drive(root, ['run', '--max-eras', '1'], { CI: '1' }).json.promoted, 1);
+    const cells1 = filesUnder(root, 'grown/cells');
+    reset(root);
+    const a = drive(root, ['run', '--max-eras', '1'], { CI: '1', STUB_GROW_CHURN: '1', STUB_PROMOTE_FAIL: '1' });
+    assert.equal(a.code, 0, a.stderr);
+    assert.deepEqual(seq(root).slice(-3), ['pipeline promote --era 2 --max-ms N', 'pipeline restore --era 2', 'measure run --era 2 --max-ms N']);
+    assert.ok(a.json.blocked.includes('era 2: promote: node grow/pipeline.mjs promote exited 1: promote failed: stub'), a.json.blocked.join(' | '));
+    const row = eraDoc(root).eras[1];
+    assert.deepEqual(row.promoted, { promoted: false, why: 'promote did not answer: the tree was restored to its snapshot', raised: [], fell: [], gained: [] });
+    assert.equal(row.grown.length, 2);
+    assert.deepEqual(filesUnder(root, 'grown/cells'), cells1, 'the churn of era 2 is gone');
+    assert.ok(!fs.existsSync(path.join(root, 'work', 'grow', 'pipeline', 'pending.json')));
+    // the snapshot fails: no step that generates runs, measure still does
+    reset(root);
+    const b = drive(root, ['run', '--max-eras', '1'], { CI: '1', STUB_GROW_CHURN: '1', STUB_SNAPSHOT_FAIL: '1' });
+    assert.equal(b.code, 0, b.stderr);
+    assert.deepEqual(seq(root), ['pipeline snapshot --era 3 --max-ms N', 'measure run --era 3 --max-ms N']);
+    assert.ok(b.json.blocked.includes('era 3: snapshot: node grow/pipeline.mjs snapshot exited 1: snapshot failed: stub'), b.json.blocked.join(' | '));
+    assert.ok(b.json.blocked.includes('era 3: snapshot: no snapshot of the tree: the era generated nothing (nothing could judge it)'));
+    const r3 = eraDoc(root).eras[2];
+    assert.equal(r3.pipeline, 'none');
+    assert.deepEqual(r3.grown, []);
+    assert.equal(r3.idle, true);
+    assert.deepEqual(filesUnder(root, 'grown/cells'), cells1);
+  } finally { clean(root); }
+  // the restore fails too (the pipeline answers nothing at all): the era is never committed
+  const base = tmp('grow-era-unrestored-');
+  const r2 = makeRoot({ extra: ['pipeline'] });
+  try {
+    const env = gitEnvOf(base), git = gitIn(env), gv = gitEnvVars(env);
+    put(r2, 'grow/pipeline.mjs', PRELUDE + "log('pipeline');\nif (process.argv[2] === 'snapshot') console.log(JSON.stringify({ snapshot: true }));\nelse { console.error('broken: stub'); process.exit(1); }\n");
+    git(r2, ['init', '-q', '-b', 'master']);
+    git(r2, ['add', '-A']);
+    git(r2, ['commit', '-q', '-m', 'stub tree']);
+    const c = drive(r2, ['run', '--max-eras', '1', '--commit', '--no-push'], { CI: '1', ...gv });
+    assert.equal(c.code, 0, c.stderr);
+    assert.equal(c.json.committed, 0);
+    assert.ok(c.json.blocked.some((l) => /^era 1: promote: node grow\/pipeline\.mjs restore exited 1: broken: stub: the tree is not at its snapshot$/.test(l)), c.json.blocked.join(' | '));
+    assert.equal(eraDoc(r2).eras[0].shipped, 'skipped: the tree is not at its snapshot (the restore did not answer): nothing committed');
+    assert.equal(git(r2, ['log', '-1', '--format=%s']), 'stub tree');
+  } finally { clean(r2, base); }
+});
+
+test('STALE: inputsSig moves with neo/GENOME.json, neo/MACROS.json, a knowledge pack and the kernel version; a task grown STALE_AFTER times without a gain on the same inputs is skipped until they change (its own task files too, never its held-out file); a gain or mastery forgets it', () => {
+  assert.equal(STALE_AFTER, 2);
+  const root = makeRoot({ ledger: ['alpha', 'beta'] });
+  try {
+    put(root, 'neo/tasks/alpha/task.json', '{"task":"alpha"}');
+    put(root, 'neo/tasks/alpha/dev.jsonl', '{"q":"a"}\n');
+    const sigs = [inputsSig(root)];
+    assert.match(sigs[0], /^[0-9a-f]{16}$/);
+    for (const [rel, text] of [['neo/GENOME.json', '{"g":1}'], ['neo/MACROS.json', '[]'], ['neo/know/pack-1.json', '{}'], ['grow/neo-kernel.mjs', 'export const KERNEL_VERSION = 1;\n']]) {
+      put(root, rel, text);
+      sigs.push(inputsSig(root));
+    }
+    assert.equal(new Set(sigs).size, sigs.length, 'each input moves the signature');
+    assert.equal(kernelVersion(root), 'v1');
+    put(root, 'grow/neo-kernel.mjs', 'export const KERNEL_VERSION = 2;\n// a comment\n');
+    assert.equal(kernelVersion(root), 'v2');
+    const v2 = inputsSig(root);
+    put(root, 'grow/neo-kernel.mjs', 'export const KERNEL_VERSION = 2;\n// another comment\n');
+    assert.equal(inputsSig(root), v2, 'the kernel counts by its version, not its bytes');
+    const t0 = taskSig(root, 'alpha');
+    put(root, 'neo/tasks/alpha/heldout.jsonl', '{"q":"moved"}\n');
+    assert.equal(taskSig(root, 'alpha'), t0, 'the held-out file is never an input');
+    const s1 = nextStale(root, { stale: {} }, ['alpha', 'beta'], new Set(['beta']), 1);
+    assert.deepEqual(Object.keys(s1), ['alpha'], 'beta gained: forgotten');
+    assert.equal(s1.alpha.n, 1);
+    const s2 = nextStale(root, { stale: s1 }, ['alpha'], new Set(), 2);
+    assert.deepEqual(s2.alpha, { sig: t0, n: 2, era: 2 });
+    assert.deepEqual([...staleSkip(root, { stale: s1 }, ['alpha', 'beta'])], [], 'once is not stale');
+    assert.deepEqual([...staleSkip(root, { stale: s2 }, ['alpha', 'beta'])], ['alpha']);
+    put(root, 'neo/tasks/alpha/dev.jsonl', '{"q":"b"}\n');
+    assert.deepEqual([...staleSkip(root, { stale: s2 }, ['alpha'])], [], 'its own dev rows moved: grown again');
+    const s3 = nextStale(root, { stale: s2 }, ['alpha'], new Set(), 3);
+    assert.equal(s3.alpha.n, 1, 'new inputs count from one');
+    put(root, 'grown/index.json', JSON.stringify({ generation: 3, cells: [neoRow('alpha', 1)] }));
+    assert.deepEqual(nextStale(root, { stale: s2 }, [], new Set(), 3, colonies(root)), {}, 'mastered: forgotten');
+  } finally { clean(root); }
+  // an era run (no grow/swarm.mjs: the era's own loop): alpha grown twice at the same score, then skipped; a new genome grows it again
+  const r = makeRoot({ steps: ['teach', 'neo', 'measure'], ledger: ['alpha'], cells: [neoRow('alpha', 0.5)], open: [] });
+  try {
+    const a = drive(r, ['run', '--max-eras', '6'], { CI: '1', STUB_GROW_CHURN: '1' });
+    assert.equal(a.code, 0, a.stderr);
+    assert.deepEqual(seq(r).filter((s) => s.startsWith('neo grow')), ['neo grow --task alpha --gen 4', 'neo grow --task alpha --gen 4']);
+    const eras = eraDoc(r).eras;
+    assert.deepEqual(eras.map((x) => x.grown.length), [1, 1, 0]);
+    assert.deepEqual(eras[2].stale, { skipped: 1, held: 1 });
+    assert.deepEqual(eraDoc(r).stale.alpha.n, 2);
+    assert.equal(a.json.eras, 3);
+    assert.equal(a.json.stop, 'idle');
+    reset(r);
+    put(r, 'neo/GENOME.json', '{"g":2}');
+    const b = drive(r, ['run', '--max-eras', '1'], { CI: '1', STUB_GROW_CHURN: '1' });
+    assert.equal(b.code, 0, b.stderr);
+    assert.deepEqual(seq(r).filter((s) => s.startsWith('neo grow')), ['neo grow --task alpha --gen 4'], 'new inputs: grown again');
+    assert.equal(eraDoc(r).stale.alpha.n, 1);
+  } finally { clean(r); }
+});
+
+test('NOTHING TO DO: an era with nothing to grow and nothing that could open something new is not run: the run prints "stop":"idle" at once', () => {
+  assert.deepEqual([...OPENERS], ['absorb', 'frontier', 'know', 'teach', 'intake']);
+  // no step that opens or evolves on disk, every task mastered: not one child runs, nothing is written
+  const a = makeRoot({ steps: ['neo', 'measure'], ledger: ['alpha'], cells: [neoRow('alpha', 1)], open: [] });
+  try {
+    const r = drive(a, ['run', '--max-eras', '5'], { CI: '1' });
+    assert.equal(r.code, 0, r.stderr);
+    assert.equal(r.json.eras, 0);
+    assert.equal(r.json.stop, 'idle');
+    assert.deepEqual(r.json.blocked, ['idle: nothing to grow (1 tasks: 1 mastered, 0 grown 2 times without a gain on the same inputs) and no step that opens or evolves is on disk: no era run']);
+    assert.deepEqual(calls(a), []);
+    assert.ok(!fs.existsSync(path.join(a, ERA_FILE)));
+    assert.ok(nothingToDo(a, readEra(a)));
+    put(a, 'grow/evolve.mjs', PRELUDE + STUBS.evolve[1] + '\n');
+    assert.ok(nothingToDo(a, readEra(a)), 'evolve on disk is no help to a mastered task');
+    put(a, 'grown/index.json', JSON.stringify({ generation: 3, cells: [neoRow('alpha', 0.5)] }));
+    assert.equal(nothingToDo(a, readEra(a)), null, 'evolve on disk with a task not mastered: something to do');
+  } finally { clean(a); }
+  // every step on disk, the pipeline too: era 1 opens, grows and promotes nothing; the next is not run
+  const b = makeRoot({ extra: ['pipeline', 'intake'], ledger: ['alpha'], cells: [neoRow('alpha', 1)], open: [] });
+  try {
+    const r = drive(b, ['run', '--max-eras', '5'], { CI: '1' });
+    assert.equal(r.code, 0, r.stderr);
+    assert.equal(r.json.eras, 1);
+    assert.equal(r.json.stop, 'idle');
+    assert.equal(r.json.idle, 1, 'stopped before a second idle era ran');
+    assert.ok(r.json.blocked.includes('idle: nothing to grow (1 tasks: 1 mastered, 0 grown 2 times without a gain on the same inputs) and era 1 before it opened, grew and promoted nothing on the same inputs: no era run'), r.json.blocked.join(' | '));
+    assert.equal(seq(b).filter((s) => s.startsWith('measure')).length, 1);
+    assert.equal(eraDoc(b).eras[0].idle, true);
+    // the first era of the next run still looks (a cron run's absorb may find something new)
+    reset(b);
+    const c = drive(b, ['run', '--max-eras', '5'], { CI: '1' });
+    assert.equal(c.json.eras, 1);
+    assert.equal(seq(b)[0], 'pipeline snapshot --era 2 --max-ms N');
+  } finally { clean(b); }
+});
+
+test('FLAT: a flat fixture organism (re-grown tasks that never rise) gives frontier, know, intake and evolve the flat slots and opens something new within three eras; the plateau resets when the held-out rows rise', () => {
+  const root = makeRoot({ extra: ['pipeline', 'intake'], ledger: ['alpha', 'beta'], cells: [neoRow('alpha', 0.5), neoRow('beta', 0.5)], open: [] });
+  try {
+    put(root, 'intake-open.json', JSON.stringify(['delta']));
+    // the intake step finds its source only with the time a flat era gives it (rising: about 21 s told; flat: about 43 s)
+    const r = drive(root, ['run', '--max-eras', '3'], { CI: '1', STUB_INTAKE_NEEDS: '30000' });
+    assert.equal(r.code, 0, r.stderr);
+    const eras = eraDoc(root).eras;
+    assert.equal(eras.length, 3);
+    const told = calls(root).filter((c) => c[0] === 'intake').map((c) => Number(c[c.indexOf('--max-ms') + 1]));
+    assert.deepEqual(eras.map((x) => [x.flat, x.plateau]), [[false, 1], [true, 0], [false, 1]]);
+    assert.ok(told[0] < 30000 && told[1] >= 30000 && told[2] < 30000, told.join(' '));
+    assert.deepEqual(eras[0].opened, []);
+    assert.equal(eras[0].promoted.promoted, false, 'a tie is not promoted');
+    const first = eras.findIndex((x) => Array.isArray(x.opened) && x.opened.length);
+    assert.ok(first >= 0 && first < 3, 'something new within three eras');
+    assert.deepEqual(eras[first].opened, ['delta']);
+    assert.equal(eras[first].flat, true);
+    assert.equal(eras[first].promoted.promoted, true);
+    assert.deepEqual(eras[first].promoted.gained, ['delta']);
+    assert.deepEqual(ledgerNames(root), ['alpha', 'beta', 'delta']);
+    const evolveTold = calls(root).filter((c) => c[0] === 'evolve').map((c) => Number(c[c.indexOf('--max-ms') + 1]));
+    assert.ok(evolveTold[1] > evolveTold[0] * 2, 'evolve gets more of a flat era: ' + evolveTold.join(' '));
+  } finally { clean(root); }
+});
+
+// ---------------------------------------------------------------- STAGED (c8 in the era)
+/** A swarm stub with a merge verb: each <task>.json of --stage ({ score }) of a ledger task is merged and leaves the stage; another stays. */
+const SWARM_MERGE = `if (process.argv[2] === 'merge') {
+  log('swarm');
+  if (process.env.STUB_MERGE_USAGE) { console.error('usage: unknown verb merge'); process.exit(2); }
+  if (process.env.STUB_MERGE_FAIL) { console.error('merge failed: stub'); process.exit(1); }
+  const dir = arg('--stage');
+  const ix = readJ('grown/index.json', { generation: 0, cells: [] });
+  const ledger = readJ('neo/LEDGER.json', { tasks: [] }).tasks.map((t) => t.task);
+  const results = [], left = [];
+  for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.json')).sort()) {
+    const task = f.slice(0, -5), s = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+    if (!ledger.includes(task)) { left.push(task); continue; }
+    ix.cells = ix.cells.filter((c) => !(c.tier === 'neo' && c.class === task));
+    ix.cells.push(growRow(task, 4, s.score));
+    fs.rmSync(path.join(dir, f));
+    results.push({ task, generated: 500, kept: 5, cells: 5, promoted: true, heldout: { ok: Math.round(s.score * 10), n: 10, score: s.score }, baseline: { ok: 0, n: 10, score: 0 }, ms: 2 });
+  }
+  writeJ('grown/index.json', ix);
+  console.log(JSON.stringify({ stage: dir, files: results.length + left.length, grown: results.length, cells: results.length * 500, kept: results.length * 5, mastered: 0, promoted: results.length, ms: 4, merge: { files: results.length, ms: 2, slowest: 1 }, left, refused: left.map((t) => ({ task: t, why: 'the ledger holds no task ' + JSON.stringify(t) + ': not merged (left in the stage)' })), results, blocked: [] }));
+} else {
+${STUBS.swarm[1]}
+}`;
+const stageOf = (files) => { const d = tmp('grow-era-stage-'); for (const [t, score] of Object.entries(files)) put(d, t + '.json', JSON.stringify({ score })); return d; };
+
+test('STAGED (c8 in the era): run --staged <dir> merges the shards\' stages as the FIRST era\'s grow step (swarm merge --stage <dir>), judged and recorded like a grow; the eras after it grow; a file of no ledger task stays in the stage', () => {
+  assert.deepEqual([MERGE_STEP.name, MERGE_STEP.script, MERGE_STEP.verb, [...MERGE_STEP.flags], [...MERGE_STEP.optional]], ['grow', 'grow/swarm.mjs', 'merge', ['stage'], ['max-ms']]);
+  const root = makeRoot({ ledger: ['alpha', 'beta'], open: [] });
+  const stage = stageOf({ alpha: 1, beta: 0.5, ghost: 1 });
+  try {
+    put(root, 'grow/swarm.mjs', PRELUDE + SWARM_MERGE + '\n');
+    const r = drive(root, ['run', '--max-eras', '2', '--staged', stage], { CI: '1' });
+    assert.equal(r.code, 0, r.stderr);
+    const s = seq(root);
+    assert.deepEqual(s.slice(0, 8), [...ERA_SEQ(1).slice(0, 4), 'swarm merge --stage ' + path.resolve(stage) + ' --max-ms N', ...ERA_SEQ(1).slice(5)]);
+    assert.deepEqual(s.slice(8), ERA_SEQ(2), 'the second era grows');
+    const doc = eraDoc(root);
+    assert.deepEqual(doc.eras[0].staged, { files: 3, merged: 2, left: 1 });
+    assert.deepEqual(doc.eras[0].grown.map((g) => g.task), ['alpha', 'beta']);
+    assert.equal(doc.eras[0].mastered, 1);
+    assert.ok(doc.eras[0].blocked.includes('grow: ghost: the ledger holds no task "ghost": not merged (left in the stage)'), doc.eras[0].blocked.join(' | '));
+    assert.equal(doc.eras[1].staged, undefined);
+    assert.deepEqual(doc.eras[1].grown.map((g) => g.task), ['beta'], 'era 2 grows what is not mastered');
+    assert.deepEqual(fs.readdirSync(stage), ['ghost.json']);
+    // --dry names the merge in place of the grow
+    reset(root);
+    const d = drive(root, ['run', '--dry', '--staged', stage]);
+    assert.equal(d.code, 0, d.stderr);
+    assert.ok(d.json.would.some((w) => w.startsWith('node grow/swarm.mjs merge --stage ' + path.resolve(stage) + ' --max-ms ')), d.json.would.join(' | '));
+    assert.ok(!d.json.would.some((w) => w.startsWith('node grow/swarm.mjs grow')));
+    assert.deepEqual(calls(root), []);
+  } finally { clean(root, stage); }
+});
+
+test('STAGED: a swarm whose merge answers usage is skipped and named and the era grows; a merge that fails is a blocked line and nothing grows; with nothing else to do the staged era still runs; a stage that is not a directory is exit 2 and nothing runs', () => {
+  const a = makeRoot({ ledger: ['alpha'], open: [] });
+  const stage = stageOf({ alpha: 1 });
+  try {
+    put(a, 'grow/swarm.mjs', PRELUDE + SWARM_MERGE + '\n');
+    const r = drive(a, ['run', '--max-eras', '1', '--staged', stage], { CI: '1', STUB_MERGE_USAGE: '1' });
+    assert.equal(r.code, 0, r.stderr);
+    const at = path.resolve(stage);
+    assert.deepEqual(seq(a).filter((x) => x.startsWith('swarm')), ['swarm merge --stage ' + at + ' --max-ms N', 'swarm merge --stage ' + at, 'swarm grow --gen 4 --max-ms N --era 1']);
+    const row = eraDoc(a).eras[0];
+    assert.ok(row.skipped.includes('grow: node grow/swarm.mjs merge answered usage (exit 2: usage: unknown verb merge): that verb has not landed: the era grew instead of merging ' + at), row.skipped.join(' | '));
+    assert.equal(row.staged, undefined);
+    assert.deepEqual(row.grown.map((g) => g.task), ['alpha']);
+    // a merge that fails: blocked, no grow in its place, the stage kept
+    reset(a);
+    const f = drive(a, ['run', '--max-eras', '1', '--staged', stage], { CI: '1', STUB_MERGE_FAIL: '1' });
+    assert.equal(f.code, 0, f.stderr);
+    assert.deepEqual(seq(a).filter((x) => x.startsWith('swarm')), ['swarm merge --stage ' + at + ' --max-ms N']);
+    const fr = eraDoc(a).eras[1];
+    assert.ok(fr.blocked.includes('grow: node grow/swarm.mjs merge exited 1: merge failed: stub'), fr.blocked.join(' | '));
+    assert.deepEqual([fr.staged, fr.grown], [{ files: null, merged: null, left: null }, []]);
+    assert.deepEqual(fs.readdirSync(stage), ['alpha.json']);
+  } finally { clean(a); }
+  // nothing to grow and no step that opens on disk: a plain run does nothing, a staged run merges
+  const b = makeRoot({ steps: ['neo', 'measure'], ledger: ['alpha'], cells: [neoRow('alpha', 1)], open: [] });
+  try {
+    put(b, 'grow/swarm.mjs', PRELUDE + SWARM_MERGE + '\n');
+    const plain = drive(b, ['run', '--max-eras', '1'], { CI: '1' });
+    assert.deepEqual([plain.code, plain.json.eras, plain.json.stop], [0, 0, 'idle']);
+    const r = drive(b, ['run', '--max-eras', '1', '--staged', stage], { CI: '1' });
+    assert.equal(r.code, 0, r.stderr);
+    assert.equal(r.json.eras, 1);
+    assert.deepEqual(eraDoc(b).eras[0].staged, { files: 1, merged: 1, left: 0 });
+    assert.deepEqual(fs.readdirSync(stage), []);
+    // not a directory: exit 2, one line, nothing run
+    reset(b);
+    for (const bad of [path.join(stage, 'missing'), path.join(b, 'neo', 'LEDGER.json')]) {
+      const x = drive(b, ['run', '--staged', bad], { CI: '1' });
+      assert.equal(x.code, 2, x.stderr);
+      assert.equal(x.stderr.trim(), 'era: --staged ' + path.resolve(bad) + ' is not a directory');
+      assert.equal(x.stdout, '');
+    }
+    assert.deepEqual(calls(b), []);
+    const v = drive(b, ['run', '--staged='], { CI: '1' });
+    assert.deepEqual([v.code, v.stderr.trim()], [2, 'era: --staged needs a value']);
+  } finally { clean(b, stage); }
 });

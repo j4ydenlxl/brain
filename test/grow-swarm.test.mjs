@@ -18,8 +18,10 @@ import { syncBuiltinESMExports } from 'node:module';
 import {
   swarmGrow, swarmOrder, defaultWorkers, verifyStaged, moduleOf, stagedTask, mergeRows, mergeVerdict, taskOfEntry, resultOf, USAGE, ENGINE,
   PER_TASK_CAP_MS, MIN_TASK_MS, SPAWN_DEFAULT_MS, MERGE_SHARE, MERGE_FILE_MS, MERGE_GUARD_MS, MIN_FILE_MS, DEFAULT_MAX, WORKERS, roundPlan, mergeGuard,
+  shardOf, parseShard, MAX_SHARDS, swarmMerge, stageDirOf,
 } from '../grow/swarm.mjs';
-import { colonies } from '../grow/era.mjs';
+import { colonies, taskSig, STALE_AFTER } from '../grow/era.mjs';
+import { createHash } from 'node:crypto';
 import { TOKEN_NAMES, CLOUD_ENV } from '../grow/generation.mjs';
 import { importsOf } from '../grow/contract.mjs';
 
@@ -198,8 +200,9 @@ test('STAGE: W workers at once, each grow --stage into one directory outside the
     assert.equal(r.code, 0, r.stderr);
     assert.equal(r.lines.length, 1);
     const j = r.json;
-    assert.deepEqual(Object.keys(j), ['tasks', 'workers', 'grown', 'cells', 'kept', 'mastered', 'promoted', 'ms', 'cellsPerSecond', 'refused', 'fallback', 'rounds', 'merge', 'generation', 'era', 'queued', 'masteredSkipped', 'results', 'blocked']);
+    assert.deepEqual(Object.keys(j), ['tasks', 'workers', 'grown', 'cells', 'kept', 'mastered', 'promoted', 'ms', 'cellsPerSecond', 'refused', 'fallback', 'rounds', 'merge', 'generation', 'era', 'queued', 'masteredSkipped', 'stale', 'shard', 'stage', 'results', 'blocked']);
     assert.deepEqual([j.tasks, j.workers, j.grown, j.cells, j.kept, j.mastered, j.promoted, j.rounds, j.generation, j.era, j.queued, j.masteredSkipped], [6, 3, 6, 600, 30, 0, 6, 2, 7, 12, 0, 0]);
+    assert.deepEqual([j.stale, j.shard, j.stage], [[], null, null]);
     assert.deepEqual(Object.keys(j.merge), ['files', 'ms', 'slowest']);
     assert.equal(j.merge.files, 6);
     assert.ok(Number.isInteger(j.merge.ms) && j.merge.slowest > 0 && j.merge.slowest <= j.merge.ms, JSON.stringify(j.merge));
@@ -587,7 +590,20 @@ test('usage: a bad flag, value or verb is exit 2 with one line and nothing run; 
       [['grow', '--era', 'x'], /^swarm: --era is an integer from 1, not x$/],
       [['grow', '--bogus', '1'], /^swarm: unknown flag --bogus \(see --help\)$/],
       [['grow', 'now'], /^swarm: unexpected argument now \(see --help\)$/],
-      [['dance'], /^swarm: unknown verb dance: grow \(--help\)$/],
+      [['dance'], /^swarm: unknown verb dance: grow or merge \(--help\)$/],
+      [['grow', '--shard', '3/3'], /^swarm: --shard is <i>\/<n> with 0 <= i < n <= 1024, not 3\/3$/],
+      [['grow', '--shard', '0/0'], /^swarm: --shard is <i>\/<n> with 0 <= i < n <= 1024, not 0\/0$/],
+      [['grow', '--shard', '1'], /^swarm: --shard is <i>\/<n> with 0 <= i < n <= 1024, not 1$/],
+      [['grow', '--shard', '0/1025'], /^swarm: --shard is <i>\/<n> with 0 <= i < n <= 1024, not 0\/1025$/],
+      [['grow', '--no-merge'], /^swarm: --no-merge needs --stage <dir> \(where the verified files wait for merge\)$/],
+      [['grow', '--stage', path.join(root, '..', 'elsewhere-' + path.basename(root))], /^swarm: --stage needs --no-merge \(grow stages, then merge --stage <dir> merges\)$/],
+      [['grow', '--no-merge=1', '--stage', 'x'], /^swarm: --no-merge takes no value$/],
+      [['grow', '--no-merge', '--stage', path.join(root, 'neo', 'stage')], /^swarm: --stage .* is under the tree's neo\/: a stage lives outside neo\/ and grown\/$/],
+      [['grow', '--no-merge', '--stage', path.join(root, 'grown')], /^swarm: --stage .* is under the tree's grown\/: a stage lives outside neo\/ and grown\/$/],
+      [['merge'], /^swarm: merge needs --stage <dir>$/],
+      [['merge', '--stage', path.join(root, 'no-such-stage')], /^swarm: --stage .*no-such-stage is not a directory$/],
+      [['merge', '--workers', '2', '--stage', 'x'], /^swarm: --workers is not a flag of merge \(see --help\)$/],
+      [['merge', '--no-merge'], /^swarm: --no-merge is not a flag of merge \(see --help\)$/],
     ];
     for (const [args, re] of cases) {
       const r = drive(root, args);
@@ -597,7 +613,8 @@ test('usage: a bad flag, value or verb is exit 2 with one line and nothing run; 
       assert.equal(r.stdout, '');
     }
     assert.deepEqual(events(root), [], 'nothing ran');
-    for (const args of [['--help'], ['grow', '-h'], []]) {
+    assert.ok(!fs.existsSync(path.join(root, 'neo', 'stage')) && !fs.existsSync(path.join(root, '..', 'elsewhere-' + path.basename(root))), 'a refused --stage is never made');
+    for (const args of [['--help'], ['grow', '-h'], ['merge', '--help'], []]) {
       const h = drive(root, args);
       assert.equal(h.code, 0);
       assert.equal(h.stdout.trim(), USAGE);
@@ -613,7 +630,7 @@ test('all native: grow/swarm.mjs imports node builtins, ./generation.mjs and ./e
   const src = fs.readFileSync(SWARM, 'utf8');
   const specs = importsOf(src);
   assert.deepEqual(specs.filter((s) => !s.startsWith('node:')).sort(), ['./era.mjs', './generation.mjs']);
-  assert.ok(specs.filter((s) => s.startsWith('node:')).every((s) => ['node:fs', 'node:os', 'node:path', 'node:url'].includes(s)), specs.join(' '));
+  assert.ok(specs.filter((s) => s.startsWith('node:')).every((s) => ['node:fs', 'node:os', 'node:path', 'node:url', 'node:crypto'].includes(s)), specs.join(' '));
   const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|\s)\/\/.*$/gm, '$1');
   for (const re of [/\bfetch\s*\(/, /https?:/i, /ollama/i, /anthropic/i, /openai/i, /11434/, /\beval\s*\(/, /new\s+Function/, /\bimport\s*\(/, /\brequire\s*\(/, /net\.connect|node:https?|node:net|WebSocket/]) {
     assert.ok(!re.test(code), 'grow/swarm.mjs code matches ' + re);
@@ -660,4 +677,188 @@ test('THE ENGINE\'S OWN SHAPES (grow/neo.mjs c3): a stage { kind, task, result, 
   const u = mergeVerdict({ refused: [] });
   assert.deepEqual([u.merged, u.promoted], [null, null], 'a line with no merged list: every staged task it does not refuse landed');
   assert.deepEqual(mergeVerdict(null).refused.size, 0);
+});
+
+test('SHARDS (c8): the shard of a task is the first 8 hex of sha256(name) mod n, the same every call; <i>/<n> parsed; spread over 300 names every shard of 3 holds at least 60', () => {
+  const h = (t) => parseInt(createHash('sha256').update(t).digest('hex').slice(0, 8), 16);
+  for (const t of ['task-a', 'task-b', 'x', 'a much longer task name']) for (const n of [1, 2, 3, 7, 1024]) assert.equal(shardOf(t, n), h(t) % n);
+  assert.equal(shardOf('task-a', 1), 0);
+  const counts = [0, 0, 0];
+  for (let k = 0; k < 300; k++) counts[shardOf('t' + k, 3)]++;
+  assert.ok(counts.every((c) => c >= 60), counts.join(' '));
+  assert.deepEqual([parseShard('0/1'), parseShard('2/3'), parseShard('1023/1024')], [{ i: 0, n: 1 }, { i: 2, n: 3 }, { i: 1023, n: 1024 }]);
+  assert.equal(MAX_SHARDS, 1024);
+  for (const bad of ['3/3', '0/0', '-1/3', '1', '1/2/3', 'a/b', '0/1025', ' 0/2']) assert.throws(() => parseShard(bad), (e) => e.code === 2, bad);
+});
+
+test('SHARDS (c8): n shards grow disjoint sets whose union is every task, each --no-merge into one --stage merging nothing; merge --stage of all of them gives grown/index.json byte for byte as one unsharded staged run, and the colonies of a normal grow', () => {
+  const tasks = ['task-a', 'task-b', 'task-c', 'task-d', 'task-e', 'task-f', 'task-g'];
+  const plan = { features: ['stage'], tasks: Object.fromEntries(tasks.map((t, k) => [t, { score: 0.1 * (k + 1), generated: 10 + k }])) };
+  const roots = [makeRoot({ tasks, plan }), makeRoot({ tasks, plan }), makeRoot({ tasks, plan })];
+  const [A, B, C] = roots;
+  const SA = tmp('grow-swarm-shards-'), SB = tmp('grow-swarm-one-');
+  const ix = (root) => fs.readFileSync(path.join(root, 'grown', 'index.json'), 'utf8');
+  try {
+    const before = ix(A);
+    const seen = [];
+    for (let i = 0; i < 3; i++) {
+      fs.rmSync(path.join(A, 'events.log'), { force: true });
+      const r = drive(A, ['grow', '--gen', '5', '--shard', i + '/3', '--stage', SA, '--no-merge', '--max-ms', '60000']);
+      assert.equal(r.code, 0, r.stderr);
+      const mine = tasks.filter((t) => shardOf(t, 3) === i);
+      const grew = events(A).filter((e) => e.verb === 'grow' && e.phase === 'start').map((e) => e.task);
+      assert.deepEqual(grew.slice().sort(), mine, 'shard ' + i + ' grows only its own tasks');
+      assert.ok(mine.length > 0, 'every shard holds a task in this fixture');
+      assert.deepEqual(events(A).filter((e) => e.verb === 'merge'), [], 'a --no-merge grow merges nothing');
+      assert.equal(ix(A), before, 'nothing lands in the tree before the merge');
+      const j = r.json;
+      assert.deepEqual(j.shard, { i, n: 3, tasks: mine.length, others: tasks.length - mine.length });
+      assert.deepEqual([j.grown, j.merge, j.fallback, j.stage, j.rounds], [mine.length, null, null, path.resolve(SA), 1]);
+      assert.deepEqual(j.results.map((x) => x.task).sort(), mine);
+      seen.push(...grew);
+    }
+    assert.deepEqual(seen.slice().sort(), tasks, 'the union is every task, none twice');
+    assert.equal(new Set(seen).size, seen.length);
+    assert.deepEqual(fs.readdirSync(SA).sort(), tasks.map((t) => t + '.json'), 'only the verified files, whole (no temporary name left)');
+    const m = drive(A, ['merge', '--stage', SA, '--max-ms', '60000']);
+    assert.equal(m.code, 0, m.stderr);
+    assert.deepEqual(Object.keys(m.json), ['stage', 'files', 'grown', 'cells', 'kept', 'mastered', 'promoted', 'ms', 'merge', 'left', 'refused', 'results', 'blocked']);
+    assert.deepEqual([m.json.files, m.json.grown, m.json.cells, m.json.merge.files, m.json.left, m.json.refused, m.json.blocked], [7, 7, 7 * 10 + 21, 7, [], [], []]);
+    assert.ok(events(A).filter((e) => e.verb === 'merge').every((e) => e.files.length === 1), 'one child a file');
+    assert.deepEqual(fs.readdirSync(SA), [], 'a merged file leaves the stage');
+    // one unsharded staged run
+    const g = drive(B, ['grow', '--gen', '5', '--stage', SB, '--no-merge', '--max-ms', '60000']);
+    assert.equal(g.code, 0, g.stderr);
+    assert.equal(g.json.shard, null);
+    assert.equal(drive(B, ['merge', '--stage', SB, '--max-ms', '60000']).code, 0);
+    assert.equal(ix(A), ix(B), 'a merge of all the shards is one unsharded run');
+    // a normal grow lands the same colonies
+    assert.equal(drive(C, ['grow', '--gen', '5', '--max-ms', '60000']).code, 0);
+    const cells = (root) => JSON.parse(ix(root)).cells.slice().sort(byTask);
+    assert.deepEqual(cells(A), cells(C));
+    assert.equal(cells(A).length, 7);
+  } finally { clean(...roots, SA, SB); }
+});
+
+test('a --no-merge grow: the verifier refuses a bad file before it reaches the --stage directory; an engine without "stage" grows nothing there and nothing in the tree ("fallback":"none")', () => {
+  const tasks = ['task-a', 'task-b'];
+  const root = makeRoot({ tasks, plan: { features: ['stage'], tasks: { 'task-b': { staged: 'badjson' } } } });
+  const S = tmp('grow-swarm-nm-');
+  try {
+    const r = drive(root, ['grow', '--gen', '5', '--stage', S, '--no-merge', '--max-ms', '60000']);
+    assert.equal(r.code, 0, r.stderr);
+    assert.deepEqual(fs.readdirSync(S), ['task-a.json']);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(S, 'task-a.json'), 'utf8')).task, 'task-a');
+    assert.deepEqual(r.json.refused.map((x) => x.task), ['task-b']);
+    assert.match(r.json.refused[0].why, /^verifier: the staged file is not JSON/);
+    fs.rmSync(path.join(S, 'task-a.json'));
+    put(root, 'swarm-plan.json', JSON.stringify({ features: ['gate'] }));
+    fs.rmSync(path.join(root, 'events.log'), { force: true });
+    const before = fs.readFileSync(path.join(root, 'grown', 'index.json'), 'utf8');
+    const n = drive(root, ['grow', '--stage', S, '--no-merge', '--max-ms', '60000']);
+    assert.equal(n.code, 0, n.stderr);
+    assert.deepEqual([n.json.tasks, n.json.grown, n.json.workers, n.json.fallback, n.json.queued], [0, 0, 0, 'none', 2]);
+    assert.deepEqual(n.json.blocked, ['node grow/neo.mjs status features lack "stage": a --no-merge grow stages nothing (it never grows into the tree)']);
+    assert.deepEqual(events(root).map((e) => e.verb), ['status']);
+    assert.equal(fs.readFileSync(path.join(root, 'grown', 'index.json'), 'utf8'), before);
+    assert.deepEqual(fs.readdirSync(S), []);
+  } finally { clean(root, S); }
+});
+
+test('merge --stage: in the swarm order at merge time; each file verified again; a file merged, refused or skipped leaves the stage; one the merge left, one naming no ledger task, one under the guard or after a failed merge stays; an engine without "stage" merges nothing', () => {
+  const tasks = ['task-a', 'task-b', 'task-c', 'task-d', 'task-e'];
+  const root = makeRoot({ tasks, plan: { features: ['stage'], mergeEngine: true, mergeLeft: ['task-c'], mergeRefuse: ['task-d'], mergeSkip: ['task-e'] }, era: { era: 5, eras: [], lastGrown: { 'task-a': 5 } } });
+  const S = tmp('grow-swarm-merge-');
+  const doc = (t) => JSON.stringify({ task: t, result: { task: t, generation: 6, generated: 10, kept: 1, heldout: { ok: 5, n: 10, score: 0.5 } }, module: { id: t + '-neo-g6', source: 'export const id = ' + JSON.stringify(t) + ';\n' } });
+  const stageAll = () => { for (const t of ['task-a', 'task-c', 'task-d', 'task-e']) put(S, t + '.json', doc(t)); put(S, 'task-b.json', '{ "task": '); put(S, 'stray.json', doc('stray')); };
+  const merges = () => events(root).filter((e) => e.verb === 'merge').flatMap((e) => e.files);
+  try {
+    stageAll();
+    const r = drive(root, ['merge', '--stage', S, '--max-ms', '60000']);
+    assert.equal(r.code, 0, r.stderr);
+    assert.deepEqual(merges(), ['task-c.json', 'task-d.json', 'task-e.json', 'task-a.json'], 'the swarm order: task-a grew in era 5, the rest never');
+    assert.deepEqual(r.json.results.map((x) => [x.task, x.promoted, x.generated]), [['task-a', true, 10]]);
+    const why = Object.fromEntries(r.json.refused.map((x) => [x.task, x.why]));
+    assert.deepEqual(why, {
+      stray: 'the ledger holds no task "stray": not merged (left in the stage)',
+      'task-b': why['task-b'],
+      'task-c': 'not merged: the merge left it (left in the stage)',
+      'task-d': 'merge: stub refused task-d.json',
+      'task-e': 'not merged: the merge skipped it (that stage was merged before)',
+    });
+    assert.match(why['task-b'], /^verifier: the staged file is not JSON/);
+    assert.deepEqual(r.json.left, ['stray', 'task-c']);
+    assert.deepEqual(fs.readdirSync(S).sort(), ['stray.json', 'task-c.json']);
+    assert.deepEqual([r.json.files, r.json.grown, r.json.promoted, r.json.merge.files], [6, 1, 1, 4]);
+    // the guard: no merge starts under it, every file stays
+    fs.rmSync(path.join(root, 'events.log'), { force: true });
+    stageAll();
+    const g = drive(root, ['merge', '--stage', S, '--max-ms', '5000']);
+    assert.equal(g.code, 0, g.stderr);
+    assert.deepEqual(merges(), []);
+    assert.deepEqual(g.json.left, ['stray', 'task-a', 'task-b', 'task-c', 'task-d', 'task-e']);
+    assert.ok(g.json.refused.filter((x) => x.task !== 'stray').every((x) => /^not merged: \d+ ms left, under the merge guard of 12000 ms \(left in the stage\)$/.test(x.why)), JSON.stringify(g.json.refused));
+    assert.equal(fs.readdirSync(S).length, 6);
+    // a merge that fails: named, it stays, and nothing after it merges
+    put(root, 'swarm-plan.json', JSON.stringify({ features: ['stage'], mergeFail: true }));
+    fs.rmSync(path.join(S, 'task-b.json'));
+    fs.rmSync(path.join(root, 'events.log'), { force: true });
+    const f = drive(root, ['merge', '--stage', S, '--max-ms', '60000']);
+    assert.equal(f.code, 0, f.stderr);
+    assert.deepEqual(merges(), ['task-c.json']);
+    assert.equal(f.json.blocked.length, 1);
+    assert.match(f.json.blocked[0], /^node grow\/neo\.mjs merge exited 1: .*merge failed: stub.* \(merging task-c\)$/);
+    assert.deepEqual(f.json.left, ['stray', 'task-a', 'task-c', 'task-d', 'task-e']);
+    assert.ok(['task-a', 'task-d', 'task-e'].every((t) => f.json.refused.find((x) => x.task === t).why.startsWith('not merged: an earlier merge failed')));
+    // an engine without "stage": nothing merged, every file stays
+    put(root, 'swarm-plan.json', JSON.stringify({ features: ['gate'] }));
+    fs.rmSync(path.join(root, 'events.log'), { force: true });
+    const n = drive(root, ['merge', '--stage', S]);
+    assert.equal(n.code, 0, n.stderr);
+    assert.deepEqual(events(root).map((e) => e.verb), ['status']);
+    assert.deepEqual(n.json.blocked, ['node grow/neo.mjs status features lack "stage": nothing merged (contract c3)']);
+    assert.deepEqual(n.json.left, ['stray', 'task-a', 'task-c', 'task-d', 'task-e']);
+    assert.equal(fs.readdirSync(S).length, 5);
+  } finally { clean(root, S); }
+});
+
+test('STALE: a task grown ' + STALE_AFTER + ' times without a gain on the same inputs is skipped and named; once less, or after its inputs change, it grows', () => {
+  const tasks = ['task-a', 'task-b'];
+  const root = makeRoot({ tasks, plan: { features: ['stage'] } });
+  try {
+    const era = (n) => ({ era: 2, eras: [], lastGrown: {}, stale: { 'task-a': { sig: taskSig(root, 'task-a'), n, era: 2 } } });
+    put(root, 'neo/ERA.json', JSON.stringify(era(STALE_AFTER)));
+    const grew = () => events(root).filter((e) => e.verb === 'grow' && e.phase === 'start').map((e) => e.task).sort();
+    const r = drive(root, ['grow', '--max-ms', '60000']);
+    assert.equal(r.code, 0, r.stderr);
+    assert.deepEqual([grew(), r.json.stale, r.json.tasks], [['task-b'], ['task-a'], 1]);
+    fs.rmSync(path.join(root, 'events.log'));
+    put(root, 'neo/ERA.json', JSON.stringify(era(STALE_AFTER - 1)));
+    const once = drive(root, ['grow', '--max-ms', '60000']);
+    assert.deepEqual([grew(), once.json.stale], [tasks, []]);
+    fs.rmSync(path.join(root, 'events.log'));
+    put(root, 'neo/ERA.json', JSON.stringify(era(STALE_AFTER)));
+    put(root, 'neo/GENOME.json', JSON.stringify({ v: 2 }));
+    const changed = drive(root, ['grow', '--max-ms', '60000']);
+    assert.deepEqual([grew(), changed.json.stale], [tasks, []], 'a new genome is a new input');
+    fs.rmSync(path.join(root, 'events.log'));
+    put(root, 'neo/ERA.json', '{ not json');
+    const broken = drive(root, ['grow', '--max-ms', '60000']);
+    assert.equal(broken.code, 0, broken.stderr);
+    assert.deepEqual([grew(), broken.json.stale], [tasks, []]);
+    assert.ok(broken.json.blocked.some((b) => /^neo\/ERA\.json: .* \(ledger order, no task skipped as stale\)$/.test(b)), JSON.stringify(broken.json.blocked));
+  } finally { clean(root); }
+});
+
+test('stageDirOf: a stage under the tree\'s neo/ or grown/ is refused; outside it is made (or must exist, for a merge)', () => {
+  const root = tmp('grow-swarm-sd-');
+  try {
+    for (const rel of ['neo', 'grown', 'neo/x', 'grown/a/b']) assert.throws(() => stageDirOf(root, path.join(root, rel)), (e) => e.code === 2, rel);
+    const ok = path.join(root, 'stage-here');
+    assert.equal(stageDirOf(root, ok), path.resolve(ok));
+    assert.ok(fs.statSync(ok).isDirectory());
+    assert.equal(stageDirOf(root, path.join(root, 'neon')), path.resolve(root, 'neon'), 'a sibling that only starts with neo is not under neo/');
+    assert.throws(() => stageDirOf(root, path.join(root, 'absent'), false), (e) => e.code === 2);
+    assert.ok(!fs.existsSync(path.join(root, 'absent')));
+  } finally { clean(root); }
 });

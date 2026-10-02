@@ -1,36 +1,49 @@
 #!/usr/bin/env node
-// grow/swarm.mjs: THE SWARM (grow/NEO.md, ERA; contract c1 "swarm grow", contract c3 STAGE). The grow step of an era,
-// many tasks at once: the tasks of neo/LEDGER.json in the order that needs growing most (a mastered task skipped, the
-// least recently grown first, the lowest held-out score next, then ledger order), W worker processes at a time (default
-// every core, at least 1, at most 8), each `node grow/neo.mjs grow --task <t> --gen <g> --stage <dir>` with its own
-// deadline and its whole process tree killed when it runs over. The workers only READ the tree; each writes one file
-// <dir>/<task>.json into a stage directory outside the tree. A VERIFIER checks every staged file before anything lands
-// (it parses, it names its own task, its colony module text passes `node --check` in a child), and only then
-// `node grow/neo.mjs merge --stage <dir>` applies what passed, serially, one child a file (each timed and named on its
-// own; none starts while the time left is under the guard, so no merge is killed while it writes grown/). ROUNDS: the
-// serial merge is the throughput limit, so a round admits no more tasks than its merges have time for (MERGE_FILE_MS a
-// file until the run measures its own), and the time a round leaves goes to the next. A worker that dies, hangs or
-// stages a bad file costs only its own task (named in `refused`); the others land.
+// grow/swarm.mjs: THE SWARM (grow/NEO.md, ERA; contract c1 "swarm grow", contract c3 STAGE, contract c8 SHARDS). The
+// grow step of an era, many tasks at once: the tasks of neo/LEDGER.json in the order that needs growing most (a mastered
+// task skipped, a STALE task skipped: grown twice without a gain on the same inputs, neo/ERA.json `stale` read through
+// era.mjs staleSkip; the least recently grown first, the lowest held-out score next, then ledger order), W worker
+// processes at a time (default every core, at least 1, at most 8), each `node grow/neo.mjs grow --task <t> --gen <g>
+// --stage <dir>` with its own deadline and its whole process tree killed when it runs over. The workers only READ the
+// tree; each writes one file <dir>/<task>.json into a stage directory outside the tree. A VERIFIER checks every staged
+// file before anything lands (it parses, it names its own task, its colony module text passes `node --check` in a child),
+// and only then `node grow/neo.mjs merge --stage <dir>` applies what passed, serially, one child a file (each timed and
+// named on its own; none starts while the time left is under the guard, so no merge is killed while it writes grown/).
+// ROUNDS: the serial merge is the throughput limit, so a round admits no more tasks than its merges have time for
+// (MERGE_FILE_MS a file until the run measures its own), and the time a round leaves goes to the next. A worker that dies,
+// hangs or stages a bad file costs only its own task (named in `refused`); the others land.
+// SHARDS (c8): `grow --shard <i>/<n>` grows only the tasks whose stable hash (sha256 of the name) mod n is i, so n
+// shards on n machines never grow one task twice; `--stage <dir> --no-merge` leaves each verified file in <dir> (written
+// whole, atomically) and merges nothing; `merge --stage <dir>` then merges every staged file one child at a time in the
+// swarm's own order (the engine's merge holds its proofs), each verified again as it is read, so a merge of all the
+// shards' files is one unsharded run's. A file merged (or refused for good) leaves the stage; one the time did not reach
+// stays for the next merge.
 // FEATURE-DETECTED: when `node grow/neo.mjs status` features lack "stage" (the engine has not landed contract c3), the
-// swarm grows task by task in the tree, one child at a time, exactly as the era did before it ("fallback":"serial").
+// swarm grows task by task in the tree, one child at a time, exactly as the era did before it ("fallback":"serial"); a
+// --no-merge grow then grows nothing ("fallback":"none": it never writes into the tree) and a merge merges nothing.
 // It never opens state/, judge/ or any neo/tasks/*/heldout.jsonl (the engine's children score them), calls no model and
-// writes nothing itself under the tree: the stage and the verifier's scratch live under the OS temp dir and are removed.
+// writes nothing itself under the tree: the stage and the verifier's scratch live under the OS temp dir and are removed
+// (a --stage directory is the caller's, never under the tree's neo/ or grown/).
 // Success prints ONE JSON line (tasks, workers, grown, cells, mastered, ms, cellsPerSecond, refused, fallback, rounds,
 // merge { files, ms, slowest } and the per-task results); a failure one stderr line and a non-zero exit (1 failure, 2 usage).
-//   node grow/swarm.mjs grow [--max-ms 300000] [--workers <w>] [--gen <g>] [--era <e>] [--root <dir>]
-// Author: Opus 5.5 builder (ERA) for the Fable 5.1 orchestrator, 2026-10-01, his Order 7.
+//   node grow/swarm.mjs grow [--max-ms 300000] [--workers <w>] [--gen <g>] [--era <e>] [--shard <i>/<n>] [--stage <dir> --no-merge] [--root <dir>]
+//   node grow/swarm.mjs merge --stage <dir> [--max-ms 300000] [--root <dir>]
+// Author: Opus 5.5 builder (ERA) for the Fable 5.1 orchestrator, 2026-10-01, his Order 7; shards 2026-10-02.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { nextGeneration, redact, DEFAULT_ROOT, lastJson } from './generation.mjs';
-import { runChild, runProc, readEra, ledgerTasks, colonies, isMastered, masteredCount, isObj, scoreOf, whyOf, Fail } from './era.mjs';
+import { runChild, runProc, readEra, ledgerTasks, colonies, isMastered, masteredCount, isObj, scoreOf, whyOf, staleSkip, Fail } from './era.mjs';
 
 export const ENGINE = 'grow/neo.mjs';
 export const DEFAULT_MS = 300000;
 /** --workers: an integer in this range; the default is every core, at least 1, at most DEFAULT_MAX. */
 export const WORKERS = Object.freeze({ min: 1, max: 64 });
 export const DEFAULT_MAX = 8;
+/** --shard <i>/<n>: n from 1 to this. */
+export const MAX_SHARDS = 1024;
 /** One worker's own deadline is at most this (a hung task never holds a worker for the whole era). */
 export const PER_TASK_CAP_MS = 240000;
 /** No worker starts with less than this before the grow ends (the first task of a run always starts). */
@@ -55,11 +68,14 @@ export const CHECK_MS = 30000;
 /** Where a staged file may carry its colony's module text (the first present wins): itself, its colony, its result. */
 export const MODULE_KEYS = Object.freeze(['module', 'moduleText', 'source']);
 export const USAGE = [
-  'usage: node grow/swarm.mjs grow [flags]   (--root <dir>: another tree root)',
+  'usage: node grow/swarm.mjs <verb> [flags]   (--root <dir>: another tree root)',
   '  grow [--max-ms ' + DEFAULT_MS + '] [--workers <w> (default every core, at most ' + DEFAULT_MAX + ')] [--gen <g> (default the next generation)] [--era <e>]',
-  '      the unmastered tasks of neo/LEDGER.json, W at a time through ' + ENGINE + ' grow --stage, verified, then ' + ENGINE + ' merge one child a file,',
+  '       [--shard <i>/<n> (the tasks whose stable hash mod n is i)] [--stage <dir> --no-merge (stage the verified files there, merge nothing)]',
+  '      the unmastered tasks of neo/LEDGER.json that are not stale, W at a time through ' + ENGINE + ' grow --stage, verified, then ' + ENGINE + ' merge one child a file,',
   '      in rounds that admit no more tasks than the merges have time for;',
   '      task by task in the tree when ' + ENGINE + ' status features lack "stage" ("fallback":"serial")',
+  '  merge --stage <dir> [--max-ms ' + DEFAULT_MS + ']',
+  '      every staged <task>.json verified again and merged by its own ' + ENGINE + ' merge child, in the swarm order',
 ].join('\n');
 
 const numOr = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
@@ -70,6 +86,16 @@ const sum = (xs) => xs.reduce((s, x) => s + (typeof x === 'number' && Number.isF
 export function defaultWorkers(n = typeof os.availableParallelism === 'function' ? os.availableParallelism() : os.cpus().length) {
   const k = Number.isInteger(n) ? n : 1;
   return Math.max(WORKERS.min, Math.min(DEFAULT_MAX, k));
+}
+
+/** The shard of a task among n: the first 8 hex of sha256(name) mod n (the same on every machine and every run). */
+export const shardOf = (task, n) => parseInt(createHash('sha256').update(String(task)).digest('hex').slice(0, 8), 16) % n;
+/** `<i>/<n>` as { i, n }, or a usage failure. */
+export function parseShard(s) {
+  const m = /^(\d{1,4})\/(\d{1,4})$/.exec(String(s));
+  const i = m ? Number(m[1]) : NaN, n = m ? Number(m[2]) : NaN;
+  if (!m || n < 1 || n > MAX_SHARDS || i >= n) throw new Fail('--shard is <i>/<n> with 0 <= i < n <= ' + MAX_SHARDS + ', not ' + s, 2);
+  return { i, n };
 }
 
 /**
@@ -201,20 +227,79 @@ async function pool(items, n, fn) {
 }
 
 /**
+ * One file's merge: the text the verifier read, alone in a fresh one-file stage `one` (nothing else in a stage, a refused
+ * file, a killed worker's late write, a stray name, ever reaches a merge), `node grow/neo.mjs merge`, the engine's verdict.
+ * @returns {Promise<{ state: 'merged'|'refused'|'left'|'skipped'|'failed', why?: string, result?: object }>}
+ */
+async function mergeFile(root, t, s, { one, exec, env, timeout }) {
+  fs.rmSync(one, { recursive: true, force: true });
+  fs.mkdirSync(one, { recursive: true });
+  fs.writeFileSync(path.join(one, t + '.json'), s.text);
+  const m = await exec(ENGINE, ['merge', '--stage', one, '--root', root], { env, timeout });
+  const mj = m.code === 0 ? lastJson(m.stdout) : null;
+  if (m.code !== 0 || !isObj(mj)) return { state: 'failed', why: 'node ' + ENGINE + ' merge ' + (m.timedOut ? 'was killed at its deadline (' + timeout + ' ms)' : m.code !== 0 ? 'exited ' + m.code + ': ' + whyOf(m) : 'printed no JSON line') };
+  const v = mergeVerdict(mj);
+  if (v.refused.has(t)) return { state: 'refused', why: 'merge: ' + redact(v.refused.get(t)) };
+  if (v.merged && !v.merged.has(t)) {
+    if (v.skipped.has(t)) return { state: 'skipped', why: 'not merged: the merge skipped it (that stage was merged before)' };
+    return { state: 'left', why: 'not merged: ' + (v.left.has(t) ? 'the merge left it' : 'the merge line does not name it') };
+  }
+  const res = isObj(s.j.result) ? s.j.result : s.j;
+  const row = mergeRows(mj).get(t) || {};
+  // promoted: the merge's own row, else its promoted list (the staged module id, or the task), else the stage's
+  const id = isObj(s.j.module) && typeof s.j.module.id === 'string' ? s.j.module.id : typeof res.id === 'string' ? res.id : null;
+  const promoted = typeof row.promoted === 'boolean' ? row.promoted : v.promoted ? v.promoted.has(t) || (id !== null && v.promoted.has(id)) : res.promoted;
+  return { state: 'merged', result: resultOf(t, { ...res, ...row, promoted }, s.ms) };
+}
+
+/** The engine's features ({ stage, why }): `node grow/neo.mjs status` features include "stage" (contract c3). */
+async function engineStages(root, exec, env, deadline, now) {
+  const st = await exec(ENGINE, ['status', '--root', root], { env, timeout: Math.max(1000, Math.min(STATUS_MS, deadline - now())) });
+  const sj = st.code === 0 ? lastJson(st.stdout) : null;
+  if (st.code !== 0 || !isObj(sj)) return { stage: false, why: 'node ' + ENGINE + ' status ' + (st.code !== 0 ? 'exited ' + st.code + ': ' + whyOf(st) : 'printed no JSON line') };
+  return { stage: Array.isArray(sj.features) && sj.features.includes('stage'), why: null };
+}
+
+/** A --stage directory: resolved, never the tree's neo/ or grown/ (nor under them), made when missing. */
+export function stageDirOf(root, dir, make = true) {
+  const abs = path.resolve(String(dir));
+  const low = (p) => (process.platform === 'win32' ? p.toLowerCase() : p);
+  for (const top of ['neo', 'grown']) {
+    const t = low(path.resolve(root, top));
+    if (low(abs) === t || low(abs).startsWith(t + path.sep)) throw new Fail('--stage ' + dir + ' is under the tree\'s ' + top + '/: a stage lives outside neo/ and grown/', 2);
+  }
+  if (make) fs.mkdirSync(abs, { recursive: true });
+  else if (!fs.existsSync(abs) || !fs.statSync(abs).isDirectory()) throw new Fail('--stage ' + dir + ' is not a directory', 2);
+  return abs;
+}
+/** Write a file whole: a temporary name beside it, then a rename (a reader never sees half of it). */
+function writeWhole(file, text) {
+  const t = file + '.tmp-' + process.pid + '-' + Date.now();
+  fs.writeFileSync(t, text);
+  fs.renameSync(t, file);
+}
+
+/**
  * One swarm grow.
  * @param {string} root the tree
- * @param {{ maxMs?: number, workers?: number|null, gen?: number|null, era?: number|null, env?: object, now?: () => number,
- *   exec?: Function, tmp?: string, mergeFileMs?: number, mergeGuardMs?: number }} opts exec (script, args, { env, timeout })
+ * @param {{ maxMs?: number, workers?: number|null, gen?: number|null, era?: number|null, shard?: {i:number,n:number}|null,
+ *   stage?: string|null, noMerge?: boolean, env?: object, now?: () => number, exec?: Function, tmp?: string,
+ *   mergeFileMs?: number, mergeGuardMs?: number }} opts exec (script, args, { env, timeout })
  *   -> Promise<{ code, stdout, stderr, timedOut }> replaces the children (a test's), tmp the parent of the stage (the OS
- *   temp dir), mergeFileMs and mergeGuardMs the plan's first cost of a file and its guard floor (MERGE_FILE_MS, MERGE_GUARD_MS)
+ *   temp dir), mergeFileMs and mergeGuardMs the plan's first cost of a file and its guard floor (MERGE_FILE_MS, MERGE_GUARD_MS);
+ *   shard grows only its tasks; stage with noMerge leaves the verified files in that directory and merges nothing
  * @returns {Promise<object>} the line
  */
 export async function swarmGrow(root, opts = {}) {
-  const { maxMs = DEFAULT_MS, workers = null, gen = null, era = null, env = process.env, now = Date.now, tmp = os.tmpdir(), mergeFileMs = MERGE_FILE_MS, mergeGuardMs = MERGE_GUARD_MS } = opts;
+  const { maxMs = DEFAULT_MS, workers = null, gen = null, era = null, shard = null, stage: stageOut = null, noMerge = false, env = process.env, now = Date.now, tmp = os.tmpdir(), mergeFileMs = MERGE_FILE_MS, mergeGuardMs = MERGE_GUARD_MS } = opts;
   if (!Number.isInteger(maxMs) || maxMs < 1) throw new Fail('--max-ms is an integer from 1, not ' + maxMs, 2);
   if (workers !== null && (!Number.isInteger(workers) || workers < WORKERS.min || workers > WORKERS.max)) throw new Fail('--workers is an integer from ' + WORKERS.min + ' to ' + WORKERS.max + ', not ' + workers, 2);
   if (gen !== null && (!Number.isInteger(gen) || gen < 1)) throw new Fail('--gen is an integer from 1, not ' + gen, 2);
   if (era !== null && (!Number.isInteger(era) || era < 1)) throw new Fail('--era is an integer from 1, not ' + era, 2);
+  if (shard !== null && !(isObj(shard) && Number.isInteger(shard.n) && shard.n >= 1 && shard.n <= MAX_SHARDS && Number.isInteger(shard.i) && shard.i >= 0 && shard.i < shard.n)) throw new Fail('--shard is <i>/<n> with 0 <= i < n <= ' + MAX_SHARDS, 2);
+  if (noMerge && stageOut === null) throw new Fail('--no-merge needs --stage <dir> (where the verified files wait for merge)', 2);
+  if (stageOut !== null && !noMerge) throw new Fail('--stage needs --no-merge (grow stages, then merge --stage <dir> merges)', 2);
+  const outDir = stageOut === null ? null : stageDirOf(root, stageOut);
   const exec = opts.exec || ((script, args, x) => runChild(root, script, args, x));
   const t0 = now(), deadline = t0 + maxMs;
   const g = gen ?? nextGeneration(root);
@@ -223,17 +308,24 @@ export async function swarmGrow(root, opts = {}) {
   for (const t of led.bad) blocked.push('the ledger task ' + JSON.stringify(t) + ' is not a task name: not grown');
   const cols = colonies(root);
   if (cols === null) blocked.push('grown/index.json is not JSON: no task is skipped as mastered');
-  let lastGrown = {};
-  try { lastGrown = readEra(root).lastGrown; } catch (e) { blocked.push('neo/ERA.json: ' + redact(first(e)) + ' (ledger order)'); }
-  const { order, mastered } = swarmOrder(led.tasks, lastGrown, cols);
+  let eraDoc = null;
+  try { eraDoc = readEra(root); } catch (e) { blocked.push('neo/ERA.json: ' + redact(first(e)) + ' (ledger order, no task skipped as stale)'); }
+  const lastGrown = eraDoc ? eraDoc.lastGrown : {};
+  const sw = swarmOrder(led.tasks, lastGrown, cols);
+  // STALE: a task grown STALE_AFTER times in a row without a gain on the same inputs waits for new inputs
+  const staleSet = eraDoc ? staleSkip(root, eraDoc, sw.order) : new Set();
+  const fresh = sw.order.filter((t) => !staleSet.has(t));
+  // SHARD: only the tasks whose stable hash mod n is i
+  const order = shard ? fresh.filter((t) => shardOf(t, shard.n) === shard.i) : fresh;
+  const mastered = sw.mastered;
   const W = workers ?? defaultWorkers();
   // FEATURES: the engine's status says whether it stages (contract c3)
   let stage = false;
   if (order.length) {
-    const st = await exec(ENGINE, ['status', '--root', root], { env, timeout: Math.max(1000, Math.min(STATUS_MS, deadline - now())) });
-    const sj = st.code === 0 ? lastJson(st.stdout) : null;
-    if (st.code !== 0 || !isObj(sj)) blocked.push('node ' + ENGINE + ' status ' + (st.code !== 0 ? 'exited ' + st.code + ': ' + whyOf(st) : 'printed no JSON line') + ': grown task by task');
-    else stage = Array.isArray(sj.features) && sj.features.includes('stage');
+    const f = await engineStages(root, exec, env, deadline, now);
+    if (f.why) blocked.push(f.why + (noMerge ? ': a --no-merge grow stages nothing' : ': grown task by task'));
+    else if (!f.stage && noMerge) blocked.push('node ' + ENGINE + ' status features lack "stage": a --no-merge grow stages nothing (it never grows into the tree)');
+    stage = f.stage;
   }
   let started = 0, rounds = 0;
   const merged = []; // the wall ms of every file's merge child, in order
@@ -246,7 +338,7 @@ export async function swarmGrow(root, opts = {}) {
   };
   const failed = (t, r, timeout) => refused.push({ task: t, why: 'node ' + ENGINE + ' grow ' + (r.timedOut ? 'was killed at its deadline (' + timeout + ' ms)' : r.code !== 0 ? 'exited ' + r.code + ': ' + whyOf(r) : 'printed no JSON line') });
   let poolSize = 1;
-  if (!stage) {
+  if (!stage && !noMerge) {
     // SERIAL: one child at a time, in the tree (the engine's own grow, as the era ran it before the swarm), no reserve
     for (const t of order) {
       const c = clock(deadline);
@@ -258,7 +350,7 @@ export async function swarmGrow(root, opts = {}) {
       if (r.code !== 0 || !isObj(j)) { failed(t, r, c.timeout); continue; }
       results.push(resultOf(t, j, now() - t1));
     }
-  } else {
+  } else if (stage) {
     poolSize = Math.max(1, Math.min(W, order.length));
     const base = fs.mkdtempSync(path.join(tmp, 'swarm-'));
     const dir = path.join(base, 'stage'), one = path.join(base, 'merge'), checkDir = path.join(base, 'check');
@@ -270,11 +362,12 @@ export async function swarmGrow(root, opts = {}) {
     let broken = null; // why a merge child failed: nothing more is merged and no further round grows
     try {
       // ROUNDS: each admits no more tasks than its merges can apply (roundPlan), grows them W at a time into the stage,
-      // verifies them, then merges them one child a file; the time a round leaves goes to the next round's tasks
+      // verifies them, then merges them one child a file; the time a round leaves goes to the next round's tasks. With
+      // --no-merge one round takes every task to the deadline and each verified file goes whole into the --stage directory
       for (;;) {
         const rest = order.filter((t) => !tried.has(t));
         if (!rest.length) break;
-        const { planned, reserve } = roundPlan(deadline - now(), rest.length, fileMs(), guard());
+        const { planned, reserve } = noMerge ? { planned: rest.length, reserve: 0 } : roundPlan(deadline - now(), rest.length, fileMs(), guard());
         const growEnd = deadline - reserve;
         const staged = new Map(); // task -> { j, text (as the verifier read it), ms }
         const before = started;
@@ -294,41 +387,32 @@ export async function swarmGrow(root, opts = {}) {
         });
         if (started === before) break; // no time left for one more task: the swarm is done
         rounds++;
+        if (noMerge) {
+          // the verified text, whole, into the caller's stage (the swarm order), for `merge --stage <dir>`
+          for (const t of order.filter((x) => staged.has(x))) {
+            const s = staged.get(t);
+            writeWhole(path.join(outDir, t + '.json'), s.text);
+            results.push(resultOf(t, isObj(s.j.result) ? s.j.result : s.j, s.ms));
+          }
+          break;
+        }
         // MERGE: one child a file (the fastest grown first), so each file's merge is timed and named on its own, and none
-        // starts while the time left is under the guard (a merge killed while it writes grown/ is the one thing to avoid).
-        // Each merge stage holds the one file as the verifier read it: nothing else in the stage (a refused file, a killed
-        // worker's late write, a stray name) ever reaches a merge
+        // starts while the time left is under the guard (a merge killed while it writes grown/ is the one thing to avoid)
         const queue = [...staged.keys()].sort((a, b) => (staged.get(a).ms - staged.get(b).ms) || (order.indexOf(a) - order.indexOf(b)));
         for (const t of queue) {
-          const s = staged.get(t);
           const left = deadline - now(), gd = guard();
           if (broken || left < gd) { refused.push({ task: t, why: 'not merged: ' + (broken || left + ' ms left, under the merge guard of ' + gd + ' ms') }); continue; }
-          fs.rmSync(one, { recursive: true, force: true });
-          fs.mkdirSync(one);
-          fs.writeFileSync(path.join(one, t + '.json'), s.text);
           const tm = now();
-          const m = await exec(ENGINE, ['merge', '--stage', one, '--root', root], { env, timeout: left });
+          const out = await mergeFile(root, t, staged.get(t), { one, exec, env, timeout: left });
           merged.push(now() - tm);
-          const mj = m.code === 0 ? lastJson(m.stdout) : null;
-          if (m.code !== 0 || !isObj(mj)) {
-            const why = 'node ' + ENGINE + ' merge ' + (m.timedOut ? 'was killed at its deadline (' + left + ' ms)' : m.code !== 0 ? 'exited ' + m.code + ': ' + whyOf(m) : 'printed no JSON line');
-            blocked.push(why + ' (merging ' + t + ')');
-            refused.push({ task: t, why: 'not merged: ' + why });
-            broken = 'an earlier merge failed (' + why + ')';
+          if (out.state === 'failed') {
+            blocked.push(out.why + ' (merging ' + t + ')');
+            refused.push({ task: t, why: 'not merged: ' + out.why });
+            broken = 'an earlier merge failed (' + out.why + ')';
             continue;
           }
-          const v = mergeVerdict(mj);
-          if (v.refused.has(t)) { refused.push({ task: t, why: 'merge: ' + redact(v.refused.get(t)) }); continue; }
-          if (v.merged && !v.merged.has(t)) {
-            refused.push({ task: t, why: 'not merged: ' + (v.left.has(t) ? 'the merge left it' : v.skipped.has(t) ? 'the merge skipped it (that stage was merged before)' : 'the merge line does not name it') });
-            continue;
-          }
-          const res = isObj(s.j.result) ? s.j.result : s.j;
-          const row = mergeRows(mj).get(t) || {};
-          // promoted: the merge's own row, else its promoted list (the staged module id, or the task), else the stage's
-          const id = isObj(s.j.module) && typeof s.j.module.id === 'string' ? s.j.module.id : typeof res.id === 'string' ? res.id : null;
-          const promoted = typeof row.promoted === 'boolean' ? row.promoted : v.promoted ? v.promoted.has(t) || (id !== null && v.promoted.has(id)) : res.promoted;
-          results.push(resultOf(t, { ...res, ...row, promoted }, s.ms));
+          if (out.state !== 'merged') { refused.push({ task: t, why: out.why }); continue; }
+          results.push(out.result);
         }
         if (broken) break; // a merge that fails ends the swarm: no further round grows what could not be applied
       }
@@ -338,15 +422,89 @@ export async function swarmGrow(root, opts = {}) {
   const cells = sum(results.map((r) => r.generated));
   const after = colonies(root);
   return {
-    tasks: started, workers: !order.length ? 0 : stage ? poolSize : 1, grown: results.length, cells, kept: sum(results.map((r) => r.kept)),
+    tasks: started, workers: !order.length ? 0 : stage ? poolSize : noMerge ? 0 : 1, grown: results.length, cells, kept: sum(results.map((r) => r.kept)),
     mastered: masteredCount(after), promoted: results.filter((r) => r.promoted === true).length, ms,
-    cellsPerSecond: ms > 0 ? Math.round(cells / (ms / 1000)) : null, refused, fallback: order.length && !stage ? 'serial' : null,
-    rounds, merge: { files: merged.length, ms: sum(merged), slowest: merged.length ? Math.max(...merged) : 0 }, generation: g, era, queued: order.length - started, masteredSkipped: mastered.length, results, blocked,
+    cellsPerSecond: ms > 0 ? Math.round(cells / (ms / 1000)) : null, refused, fallback: order.length && !stage ? (noMerge ? 'none' : 'serial') : null,
+    rounds, merge: noMerge ? null : { files: merged.length, ms: sum(merged), slowest: merged.length ? Math.max(...merged) : 0 }, generation: g, era, queued: order.length - started,
+    masteredSkipped: mastered.length, stale: [...staleSet], shard: shard ? { i: shard.i, n: shard.n, tasks: order.length, others: fresh.length - order.length } : null,
+    stage: outDir, results, blocked,
+  };
+}
+
+/**
+ * MERGE (c8): every <task>.json in the stage directory, verified again as it is read, merged by its own child in the
+ * swarm's order at merge time (the same order whichever shard staged it), none started under the guard. A file merged,
+ * refused by the verifier or by the engine, or skipped as merged before leaves the stage; one the merge left, the time
+ * did not reach, or that names no ledger task stays.
+ * @param {string} root the tree
+ * @param {{ stage: string, maxMs?: number, env?: object, now?: () => number, exec?: Function, tmp?: string, mergeGuardMs?: number }} opts
+ * @returns {Promise<object>} the line
+ */
+export async function swarmMerge(root, opts = {}) {
+  const { stage: stageIn = null, maxMs = DEFAULT_MS, env = process.env, now = Date.now, tmp = os.tmpdir(), mergeGuardMs = MERGE_GUARD_MS } = opts;
+  if (stageIn === null) throw new Fail('merge needs --stage <dir>', 2);
+  if (!Number.isInteger(maxMs) || maxMs < 1) throw new Fail('--max-ms is an integer from 1, not ' + maxMs, 2);
+  const dir = stageDirOf(root, stageIn, false);
+  const exec = opts.exec || ((script, args, x) => runChild(root, script, args, x));
+  const t0 = now(), deadline = t0 + maxMs;
+  const blocked = [], refused = [], results = [], merged = [], kept = [];
+  const names = fs.readdirSync(dir).filter((f) => f.endsWith('.json')).map((f) => f.slice(0, -'.json'.length)).sort();
+  const led = ledgerTasks(root);
+  const cols = colonies(root);
+  let lastGrown = {};
+  try { lastGrown = readEra(root).lastGrown; } catch (e) { blocked.push('neo/ERA.json: ' + redact(first(e)) + ' (ledger order)'); }
+  const sw = swarmOrder(led.tasks, lastGrown, cols);
+  const rank = new Map([...sw.order, ...sw.mastered].map((t, i) => [t, i]));
+  for (const t of names.filter((x) => !rank.has(x))) { refused.push({ task: t, why: 'the ledger holds no task ' + JSON.stringify(t) + ': not merged (left in the stage)' }); kept.push(t); }
+  const queue = names.filter((x) => rank.has(x)).sort((a, b) => rank.get(a) - rank.get(b));
+  let stages = false;
+  if (queue.length) {
+    const f = await engineStages(root, exec, env, deadline, now);
+    if (f.why || !f.stage) blocked.push((f.why || 'node ' + ENGINE + ' status features lack "stage"') + ': nothing merged (contract c3)');
+    stages = f.stage;
+  }
+  const guard = () => mergeGuard(merged.length ? Math.max(...merged) : 0, mergeGuardMs);
+  const drop = (t) => { try { fs.rmSync(path.join(dir, t + '.json'), { force: true }); } catch { /* the next merge sees it again */ } };
+  if (stages) {
+    const base = fs.mkdtempSync(path.join(tmp, 'swarm-merge-'));
+    const one = path.join(base, 'merge'), checkDir = path.join(base, 'check');
+    let broken = null;
+    try {
+      for (const t of queue) {
+        const left = deadline - now(), gd = guard();
+        if (broken || left < gd) { refused.push({ task: t, why: 'not merged: ' + (broken || left + ' ms left, under the merge guard of ' + gd + ' ms') + ' (left in the stage)' }); kept.push(t); continue; }
+        const v = await verifyStaged(path.join(dir, t + '.json'), t, { checkDir, env });
+        if (!v.ok) { refused.push({ task: t, why: 'verifier: ' + v.why }); drop(t); continue; }
+        const tm = now();
+        const out = await mergeFile(root, t, { j: v.j, text: v.text, ms: null }, { one, exec, env, timeout: Math.max(1000, deadline - now()) });
+        merged.push(now() - tm);
+        if (out.state === 'failed') {
+          blocked.push(out.why + ' (merging ' + t + ')');
+          refused.push({ task: t, why: 'not merged: ' + out.why + ' (left in the stage)' });
+          kept.push(t);
+          broken = 'an earlier merge failed (' + out.why + ')';
+          continue;
+        }
+        if (out.state === 'left') { refused.push({ task: t, why: out.why + ' (left in the stage)' }); kept.push(t); continue; }
+        drop(t);
+        if (out.state !== 'merged') { refused.push({ task: t, why: out.why }); continue; }
+        results.push(out.result);
+      }
+    } finally { fs.rmSync(base, { recursive: true, force: true }); }
+  } else kept.push(...queue);
+  const ms = now() - t0;
+  const cells = sum(results.map((r) => r.generated));
+  return {
+    stage: dir, files: names.length, grown: results.length, cells, kept: sum(results.map((r) => r.kept)), mastered: masteredCount(colonies(root)),
+    promoted: results.filter((r) => r.promoted === true).length, ms, merge: { files: merged.length, ms: sum(merged), slowest: merged.length ? Math.max(...merged) : 0 },
+    left: [...new Set(kept)].sort(), refused, results, blocked,
   };
 }
 
 // ---- arguments and main
-const VALUE = new Set(['max-ms', 'workers', 'gen', 'era', 'root']);
+const VALUE = new Set(['max-ms', 'workers', 'gen', 'era', 'root', 'shard', 'stage']);
+const BOOL = new Set(['no-merge']);
+const OF_VERB = Object.freeze({ grow: new Set([...VALUE, ...BOOL]), merge: new Set(['max-ms', 'stage', 'root']) });
 export function parseArgs(argv) {
   const pos = [], flags = {};
   for (let i = 0; i < argv.length; i++) {
@@ -355,6 +513,7 @@ export function parseArgs(argv) {
     if (!a.startsWith('--')) { pos.push(a); continue; }
     const eq = a.indexOf('=');
     const name = eq > 0 ? a.slice(2, eq) : a.slice(2);
+    if (BOOL.has(name)) { if (eq > 0) throw new Fail('--' + name + ' takes no value', 2); flags[name] = true; continue; }
     if (!VALUE.has(name)) throw new Fail('unknown flag --' + name + ' (see --help)', 2);
     const v = eq > 0 ? a.slice(eq + 1) : argv[++i];
     if (v === undefined || v === '') throw new Fail('--' + name + ' needs a value', 2);
@@ -374,11 +533,15 @@ export async function main(argv, env = process.env) {
   const { verb, pos, flags } = parseArgs(argv);
   if (flags.help || !verb || verb === 'help') return { usage: true };
   if (pos.length) throw new Fail('unexpected argument ' + pos[0] + ' (see --help)', 2);
-  if (verb !== 'grow') throw new Fail('unknown verb ' + verb + ': grow (--help)', 2);
+  if (!Object.hasOwn(OF_VERB, verb)) throw new Fail('unknown verb ' + verb + ': grow or merge (--help)', 2);
+  for (const k of Object.keys(flags)) if (!OF_VERB[verb].has(k)) throw new Fail('--' + k + ' is not a flag of ' + verb + ' (see --help)', 2);
   const root = flags.root ? path.resolve(flags.root) : DEFAULT_ROOT;
+  const maxMs = intFlag(flags, 'max-ms', 1) ?? DEFAULT_MS;
+  if (verb === 'merge') return swarmMerge(root, { stage: flags.stage ?? null, maxMs, env });
   return swarmGrow(root, {
-    maxMs: intFlag(flags, 'max-ms', 1) ?? DEFAULT_MS, workers: intFlag(flags, 'workers', WORKERS.min, WORKERS.max),
-    gen: intFlag(flags, 'gen', 1), era: intFlag(flags, 'era', 1), env,
+    maxMs, workers: intFlag(flags, 'workers', WORKERS.min, WORKERS.max),
+    gen: intFlag(flags, 'gen', 1), era: intFlag(flags, 'era', 1), shard: flags.shard === undefined ? null : parseShard(flags.shard),
+    stage: flags.stage ?? null, noMerge: flags['no-merge'] === true, env,
   });
 }
 

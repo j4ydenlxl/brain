@@ -19,9 +19,9 @@ import { spawnSync } from 'node:child_process';
 import {
   step, status, main, verdictOf, decide, lastJson, writeAtomic, copyRoot, closureOf, sampleTasks, ledgerTasks, masteredTasks, counts,
   readTrials, readMacros, mineMacros, retireMacros, grownCells, genomeCandidate, macroCandidate, sweepStale, runEngine, engineFeatures, Fail,
-  KNOBS, TRIALS_FILE, MACROS_FILE,
+  KNOBS, TRIALS_FILE, MACROS_FILE, tooClose, partners, overrun,
 } from '../grow/evolve.mjs';
-import { genomeOf, genomeId, DEFAULTS, readGenomeDoc } from '../grow/genome.mjs';
+import { genomeOf, genomeId, genomeFrom, DEFAULTS, readGenomeDoc } from '../grow/genome.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const EVOLVE = path.join(HERE, '..', 'grow', 'evolve.mjs');
@@ -78,7 +78,9 @@ const FAKE = put(TMP, 'fake-engine.mjs', [
   "  fs.appendFileSync(path.join(root, 'neo', 'tasks', task, 'colony.jsonl'), '{}\\n');",
   "  fs.writeFileSync(path.join(root, 'neo', 'LEDGER.json'), JSON.stringify({ tasks: [{ task, touched: true }] }));",
   '  const target = Number(E.FAKE_TARGET || 7), bonus = Number(E.FAKE_MACRO_BONUS || 0);',
-  '  const ok = Math.min(10, Math.max(0, 10 - Math.abs(maxCost - target)) + bonus * macros.length);',
+  "  const tb = E.FAKE_MUT_BONUS ? JSON.parse(E.FAKE_MUT_BONUS) : {};",
+  '  if (E.FAKE_SLEEP_MS) Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, Number(E.FAKE_SLEEP_MS));',
+  '  const ok = Math.min(10, Math.max(0, 10 - Math.abs(maxCost - target)) + bonus * macros.length + (mut ? Number(tb[task] || 0) : 0));',
   "  const sp = E.FAKE_SPEED || '';",
   '  let cps = 1000;',
   "  if (sp === 'enum') cps = Math.round(1000 / enumShare);",
@@ -303,7 +305,8 @@ test('the step finds and keeps a better genome within a few eras, under one budg
   for (const r of rows) {
     for (const k of ['at', 'era', 'kind', 'change', 'before', 'after', 'kept']) assert.ok(Object.hasOwn(r, k), k);
     for (const k of ['sample', 'budget', 'gen', 'faster', 'verdicts', 'runs', 'seed', 'beforeId', 'afterId', 'lineage', 'why', 'ms']) assert.ok(Object.hasOwn(r, k), 'every number a trial used is in its row: ' + k);
-    assert.deepEqual(r.before, { heldoutOk: r.runs[0].base.heldoutOk, n: 20, mastered: r.runs[0].base.mastered, cps: 1000, generated: 40000, ms: r.runs[0].base.ms });
+    assert.deepEqual(r.before, { heldoutOk: r.runs[0].base.heldoutOk, n: 20, mastered: r.runs[0].base.mastered, cps: 1000, generated: 15000, ms: r.runs[0].base.ms });
+    assert.deepEqual(r.budget, { maxGenerated: 7500, maxMs: 7500 }, 'a quarter of the step over the tasks, and KNOBS.cpsFloor cells a second of it');
     assert.equal(r.runs[0].base.tasks.length, 2);
     if (r.kept) {
       assert.deepEqual(r.verdicts, ['better', 'better']);
@@ -317,7 +320,7 @@ test('the step finds and keeps a better genome within a few eras, under one budg
   const grows = readLog(log).filter((l) => l.verb === 'grow');
   assert.ok(grows.length >= 8);
   for (const g of grows) {
-    assert.deepEqual([g.maxGenerated, g.maxMs], ['20000', String(Math.floor(60000 / 8))], 'the SAME budget for every grow of both arms');
+    assert.deepEqual([g.maxGenerated, g.maxMs], ['7500', String(Math.floor(60000 / 8))], 'the SAME budget for every grow of both arms');
     assert.ok(path.resolve(g.root).startsWith(path.resolve(tmp) + path.sep), 'an arm root lies in the scratch directory');
     assert.equal(g.judgeHeldout, false, 'judge/heldout/ is not copied');
     assert.equal(g.state, false, 'state/ is not copied');
@@ -425,6 +428,30 @@ test('a hanging engine is killed at its budget plus slack, a hanging mutant is r
   assert.ok(Date.now() - t1 < 2500 + 4000, 'the step clock bounds a child: ' + (Date.now() - t1) + ' ms');
   assert.deepEqual(fs.readdirSync(tmp), []);
   assert.equal(readGenomeDoc(root), null);
+});
+
+test('a grow killed by the step clock (what was left, under its own cap) is the clock running out, never the mutant failing: the row is blocked, graded nothing, and the same mutant is drawn again', async () => {
+  const root = fixture();
+  const tmp = scratchDir();
+  const want = genomeCandidate(root, 1, { genes: ['maxCost'] });
+  const a = await step(root, opts(tmp, { FAKE_MODE: 'hang-mut' }, { era: 1, kind: 'genome', genes: ['maxCost'], maxMs: 2500, slackMs: 600000 }));
+  assert.equal(a.kept, false);
+  assert.match(a.why, /^the clock ran out in the mutant arm: out of time in t\d \(the step clock killed its grow after \d+ ms, under its cap of 600\d{3} ms\)$/);
+  const ra = lastRow(root);
+  assert.ok(typeof ra.blocked === 'string' && ra.blocked === a.why, JSON.stringify(ra.blocked));
+  assert.deepEqual(status(root).blocked, 1);
+  assert.equal(genomeCandidate(root, 1, { genes: ['maxCost'] }).afterId, want.afterId, 'graded nothing: the same mutant is drawn again');
+  // the present arm killed by the step clock is the clock too
+  const root2 = fixture();
+  const b = await step(root2, opts(tmp, { FAKE_MODE: 'hang' }, { era: 1, kind: 'genome', genes: ['maxCost'], maxMs: 2500, slackMs: 600000 }));
+  assert.match(b.why, /^the clock ran out in the present arm: out of time in t\d /);
+  // a grow killed at its own cap with time left is the engine's failure (the mutant's, in the mutant arm)
+  const root3 = fixture();
+  const c = await step(root3, opts(tmp, { FAKE_MODE: 'hang-mut' }, { era: 1, kind: 'genome', genes: ['maxCost'], maxMs: 8000, slackMs: 300 }));
+  assert.match(c.why, /^the mutant made the engine fail: grow t\d timed out after \d+ ms$/);
+  assert.equal(lastRow(root3).blocked, undefined);
+  assert.notEqual(genomeCandidate(root3, 1, { genes: ['maxCost'] }).afterId, lastRow(root3).afterId, 'graded: not drawn again');
+  assert.deepEqual(fs.readdirSync(tmp), []);
 });
 
 test('the step never opens a held-out file, state/ or judge/control.jsonl, writes only under <root>/neo and its scratch directory, and prints no held-out row', async () => {
@@ -669,4 +696,212 @@ test('the scratch directory may not lie inside the tree; stale scratch roots of 
   assert.equal(sweepStale(tmp), 1);
   assert.deepEqual(fs.readdirSync(tmp).sort(), ['evolve-foreign', 'evolve-young']);
   assert.equal(sweepStale(path.join(tmp, 'missing')), 0);
+});
+
+// ---------------------------------------------------------------- too close to call: the sample grows
+test('tooClose: arms that score some task differently yet sum KNOBS.close rows apart or fewer are too close to call; arms alike on every task are a clear call', () => {
+  assert.deepEqual([KNOBS.close, KNOBS.grow, KNOBS.crossEvery], [1, 2, 3]);
+  const arm = (pairs) => ({ heldoutOk: pairs.reduce((s, [, ok]) => s + ok, 0), tasks: pairs.map(([task, ok]) => ({ task, ok })) });
+  assert.deepEqual(tooClose(arm([['a', 8], ['b', 8]]), arm([['a', 9], ['b', 8]])), { close: true, apart: 1 });
+  assert.deepEqual(tooClose(arm([['a', 8], ['b', 8]]), arm([['a', 7], ['b', 8]])), { close: true, apart: 1 }, 'worse by one row is as close');
+  assert.deepEqual(tooClose(arm([['a', 8], ['b', 8]]), arm([['a', 9], ['b', 7]])), { close: true, apart: 0 }, 'a tie that differs task by task');
+  assert.deepEqual(tooClose(arm([['a', 8], ['b', 8]]), arm([['a', 8], ['b', 8]])), { close: false, apart: 0 }, 'alike on every task');
+  assert.deepEqual(tooClose(arm([['a', 8], ['b', 8]]), arm([['a', 9], ['b', 9]])), { close: false, apart: 2 });
+  assert.deepEqual(tooClose(arm([['a', 8], ['b', 8]]), arm([['a', 10], ['b', 8]]), 2), { close: true, apart: 2 });
+  assert.deepEqual(tooClose(arm([['a', 8]]), arm([['c', 8]])), { close: true, apart: 0 }, 'a task one arm did not score differs');
+});
+
+test('a first run too close to call grows the sample to twice its tasks (the next of the same draw, their files copied in), and the grown sample decides in both orders: it keeps a mutant it confirms and reverts one it refutes', async () => {
+  const run = async (bonus) => {
+    const root = fixture();
+    const tmp = scratchDir();
+    const log = fresh('log') + '.jsonl';
+    const s1 = sampleTasks(root, 1, 2).tasks, s2 = sampleTasks(root, 1, 4).tasks;
+    assert.deepEqual(s2.slice(0, 2), s1, 'the grown sample starts with the first');
+    const map = bonus(s1, s2.slice(2));
+    const line = await step(root, opts(tmp, { FAKE_TARGET: '9', FAKE_MUT_BONUS: JSON.stringify(map), FAKE_LOG: log }, { era: 1, kind: 'genome', genes: ['decimals'] }));
+    assert.deepEqual(fs.readdirSync(tmp), []);
+    return { root, line, row: lastRow(root), s1, s2, grows: readLog(log).filter((l) => l.verb === 'grow') };
+  };
+  const yes = await run((s1, extra) => ({ [s1[0]]: 1, ...Object.fromEntries(extra.map((t) => [t, 1])) }));
+  assert.equal(yes.line.kept, true);
+  assert.deepEqual(yes.line.grew, { from: 2, to: 4 });
+  assert.deepEqual(yes.row.verdicts, ['better', 'better', 'better']);
+  assert.equal(yes.row.close, 1);
+  assert.deepEqual(yes.row.grew, { from: 2, to: 4, tasks: yes.s2 });
+  assert.deepEqual(yes.row.runs.map((r) => r.order), [['base', 'mut'], ['base', 'mut'], ['mut', 'base']]);
+  assert.deepEqual(yes.row.runs.map((r) => r.base.tasks.length), [2, 4, 4]);
+  assert.equal(yes.line.why, 'the first run was too close to call (1 held-out row apart); on the sample grown to 4 tasks: more held-out rows right in both runs');
+  assert.deepEqual([yes.row.before.heldoutOk, yes.row.after.heldoutOk, yes.row.before.n], [32, 35, 40], 'before and after: the grown sample\'s first run');
+  assert.notEqual(genomeOf(yes.root).decimals, 2, 'kept: the genome moved');
+  const extraGrows = yes.grows.filter((g) => !yes.s1.includes(g.task));
+  assert.ok(extraGrows.length === 8 && extraGrows.every((g) => g.taskHeldout === true && g.run >= 1), 'the added tasks grow in the two grown runs only, their held-out file copied in for the engine');
+  assert.ok(yes.grows.every((g) => g.maxMs === String(Math.floor(60000 / 8))), 'the SAME per-grow budget on the grown sample');
+  const no = await run((s1, extra) => ({ [s1[0]]: 1, ...Object.fromEntries(extra.map((t) => [t, -1])) }));
+  assert.equal(no.line.kept, false);
+  assert.deepEqual(no.row.verdicts, ['better', 'worse']);
+  assert.equal(no.row.runs.length, 2, 'worse in the grown sample\'s first run: reverted at once');
+  assert.equal(no.line.why, 'the first run was too close to call (1 held-out row apart); on the sample grown to 4 tasks: the mutant scored worse than the present engine');
+  assert.equal(readGenomeDoc(no.root), null);
+  assert.notEqual(genomeCandidate(no.root, 1, { genes: ['decimals'] }).afterId, no.row.afterId, 'a mutant the grown sample refuted is graded: not drawn again');
+});
+
+test('the grow budget fits the step: a quarter of it over the sample, and cells sized to that time (KNOBS.cpsFloor a second, KNOBS.generated at most, KNOBS.minGenerated at least)', async () => {
+  assert.deepEqual([KNOBS.cpsFloor, KNOBS.minGenerated, KNOBS.generated], [1000, 1000, 20000]);
+  const tmp = scratchDir();
+  const cases = [[240000, 3, { maxGenerated: 20000, maxMs: 20000 }], [96000, 3, { maxGenerated: 8000, maxMs: 8000 }], [4000, 2, { maxGenerated: 1000, maxMs: 500 }]];
+  for (const [maxMs, sample, want] of cases) {
+    const root = fixture();
+    await step(root, opts(tmp, {}, { era: 1, kind: 'genome', genes: ['maxCost'], maxMs, sample }));
+    assert.deepEqual(lastRow(root).budget, want, maxMs + ' ms over ' + sample + ' tasks');
+  }
+  assert.deepEqual(fs.readdirSync(tmp), []);
+});
+
+test('OVERRUN: the engine\'s time over its told time, from the latest trial whose first run finished both arms, divides the next grow budget (never under 1)', async () => {
+  const run = (base, mut, n = 3) => ({ order: ['base', 'mut'], base: { ms: base, tasks: Array.from({ length: n }, (_, i) => ({ task: 't' + i })) }, mut: mut === null ? null : { ms: mut, tasks: [] } });
+  const trial = (budgetMs, ...runs) => ({ era: 1, kind: 'genome', change: null, budget: { maxGenerated: budgetMs, maxMs: budgetMs }, runs });
+  assert.equal(overrun([]), 1);
+  assert.equal(overrun(undefined), 1);
+  // the arms of a first run of 3 grows told 9583 ms took 37953 ms and 37455 ms (a copy of the tree, step told 115000 ms)
+  assert.equal(overrun([trial(9583, run(37953, 37455))]), 1.31);
+  // the latest finished first run decides; a later skipped row, a row whose mutant blocked, one with no budget, one with no runs are passed over
+  const blocked = trial(1000, { ...run(5000, 900), mut: { ms: 900, tasks: [], blocked: 'out of time in t1' } });
+  const noBudget = { ...trial(1000, run(9000, 9000)), budget: null };
+  assert.equal(overrun([trial(1000, run(3000, 3000)), trial(2000, run(12000, 12000)), blocked, noBudget, { era: 2, skipped: 'x' }, trial(1000)]), 2);
+  assert.equal(overrun([trial(1000, run(3000, 3000)), trial(2000, run(5000, 7000, 1))]), 3, 'over the run\'s own task count: 12000 / (2 x 1 x 2000)');
+  assert.equal(overrun([trial(2000, run(12000, 12000)), trial(1000, run(300, 300))]), 1, 'faster than told is 1');
+  assert.equal(overrun([trial(1000, run(5000, null))]), 1, 'a first run that never reached its mutant arm is passed over');
+  // in a step: a quarter of 96000 ms over 3 tasks over an overrun of 2 is 4000 ms a grow and 4000 cells, the overrun on the row
+  const tmp = scratchDir();
+  const root = fixture();
+  fs.appendFileSync(path.join(root, TRIALS_FILE), JSON.stringify({ ...trial(8000, run(48000, 48000)), kind: 'macro', at: '2026-10-01T00:00:00.000Z', era: 0 }) + '\n');
+  const line = await step(root, opts(tmp, {}, { era: 1, kind: 'genome', genes: ['maxCost'], maxMs: 96000, sample: 3 }));
+  assert.deepEqual(line.budget, { maxGenerated: 4000, maxMs: 4000, overrun: 2 });
+  assert.deepEqual(lastRow(root).budget, { maxGenerated: 4000, maxMs: 4000, overrun: 2 });
+  // the stub's own run took far less than told: the next step's budget is a quarter of the step again
+  await step(root, opts(tmp, {}, { era: 3, kind: 'genome', genes: ['maxCost'], maxMs: 96000, sample: 3 }));
+  assert.deepEqual(lastRow(root).budget, { maxGenerated: 8000, maxMs: 8000 });
+  assert.deepEqual(fs.readdirSync(tmp), []);
+});
+
+test('the grown sample is KNOBS.grow times the first sample, no more, when the ledger holds more tasks than that', async () => {
+  const tasks = ['t1', 't2', 't3', 't4', 't5', 't6'];
+  const root = fixture({ tasks, mastered: [] });
+  const tmp = scratchDir();
+  const s1 = sampleTasks(root, 1, 2).tasks, s2 = sampleTasks(root, 1, 4).tasks;
+  assert.equal(sampleTasks(root, 1, 5).tasks.length, 5, 'a fifth task exists to draw');
+  const line = await step(root, opts(tmp, { FAKE_TARGET: '9', FAKE_MUT_BONUS: JSON.stringify(Object.fromEntries(tasks.map((t) => [t, t === s1[0] ? 1 : 0]))) }, { era: 1, kind: 'genome', genes: ['decimals'] }));
+  const row = lastRow(root);
+  assert.deepEqual(line.grew, { from: 2, to: 4 });
+  assert.deepEqual(row.grew, { from: 2, to: 4, tasks: s2 });
+  assert.deepEqual(row.runs.map((r) => r.base.tasks.length), [2, 4, 4].slice(0, row.runs.length));
+  assert.deepEqual(fs.readdirSync(tmp), []);
+});
+
+test('too close to call with no task left to add: the second run on the same sample decides; with no time to grow: an unconfirmed row, drawn again; alike on every task: one run, no growth', async () => {
+  const root = fixture({ tasks: ['t1', 't2'], mastered: [] });
+  const tmp = scratchDir();
+  const s1 = sampleTasks(root, 1, 2).tasks;
+  const a = await step(root, opts(tmp, { FAKE_TARGET: '9', FAKE_MUT_BONUS: JSON.stringify({ [s1[0]]: 1 }) }, { era: 1, kind: 'genome', genes: ['decimals'] }));
+  const ra = lastRow(root);
+  assert.deepEqual([a.kept, ra.verdicts, ra.close, ra.grew, a.grew], [true, ['better', 'better'], 1, null, null]);
+  assert.deepEqual(ra.runs.map((r) => r.order), [['base', 'mut'], ['mut', 'base']]);
+  // no time: each grow sleeps, so the grown sample (four times the first run) cannot fit the clock
+  const root2 = fixture();
+  const s = sampleTasks(root2, 1, 2).tasks;
+  const b = await step(root2, opts(tmp, { FAKE_TARGET: '9', FAKE_SLEEP_MS: '400', FAKE_MUT_BONUS: JSON.stringify({ [s[0]]: 1 }) }, { era: 1, kind: 'genome', genes: ['decimals'], maxMs: 4000 }));
+  const rb = lastRow(root2);
+  assert.equal(b.kept, false);
+  assert.match(b.why, /^the first run was too close to call \(1 held-out row apart\) and no time is left to grow the sample to 4 tasks \(\d+ ms needed, \d+ ms were left\)$/);
+  assert.deepEqual([rb.unconfirmed, rb.verdicts, rb.grew, rb.close], [true, ['better'], null, 1]);
+  assert.equal(genomeCandidate(root2, 1, { genes: ['decimals'] }).seed, rb.seed, 'an unconfirmed trial graded nothing: the same mutant is drawn again');
+  assert.equal(readGenomeDoc(root2), null);
+  // alike on every task: a tie is a clear call
+  const root3 = fixture();
+  const c = await step(root3, opts(tmp, { FAKE_TARGET: '9' }, { era: 1, kind: 'genome', genes: ['decimals'] }));
+  const rc = lastRow(root3);
+  assert.deepEqual([c.kept, rc.verdicts, rc.close, rc.grew, rc.runs.length], [false, ['equal'], null, null, 1]);
+  assert.deepEqual(fs.readdirSync(tmp), []);
+});
+
+// ---------------------------------------------------------------- crossover
+const gid = (over) => genomeId(genomeFrom({ ...DEFAULTS, ...over }));
+const trialRow = (era, change, verdicts, extra = {}) => ({
+  at: '2026-10-02T00:00:00.000Z', era, kind: 'genome', change, kept: false, verdicts, before: { heldoutOk: 16, cps: 1000 }, after: { heldoutOk: 16, cps: 1000 },
+  beforeId: genomeId(DEFAULTS), afterId: gid(Object.fromEntries(change.map((c) => [c.gene, c.to]))), ...extra,
+});
+const P1 = trialRow(1, [{ gene: 'maxCost', from: 7, to: 9 }], ['better', 'equal'], { after: { heldoutOk: 20, cps: 1000 } });
+const P2 = trialRow(2, [{ gene: 'enumShare', from: 0.8, to: 0.6 }], ['faster', 'equal'], { after: { heldoutOk: 16, cps: 1333 } });
+
+test('partners: the promising mutants no trial kept, over the present genome, ranked by held-out gain then speed then era; kept, skipped, blocked, refuted and present-equal rows are not partners', () => {
+  const rows = [
+    P2, P1,
+    trialRow(3, [{ gene: 'decimals', from: 2, to: 3 }], ['better', 'better'], { kept: true }),
+    trialRow(4, [{ gene: 'decimals', from: 2, to: 4 }], ['better'], { blocked: 'x' }),
+    trialRow(5, [{ gene: 'decimals', from: 2, to: 5 }], ['better'], { skipped: 'x' }),
+    trialRow(6, [{ gene: 'decimals', from: 2, to: 1 }], ['worse']),
+    trialRow(7, [{ gene: 'decimals', from: 2, to: 0 }], ['better', 'worse'], { grew: { from: 2, to: 4, tasks: [] } }),
+    trialRow(8, [{ gene: 'maxCost', from: 9, to: 7 }], ['better', 'equal']),
+    trialRow(9, [{ gene: 'maxCost', from: 7, to: 9 }], ['faster', 'equal']),
+    { kind: 'macro', change: { op: 'add' }, verdicts: ['better'] },
+  ];
+  const ps = partners(rows, DEFAULTS);
+  assert.deepEqual(ps.map((p) => p.id), [gid({ maxCost: 9 }), gid({ enumShare: 0.6 })]);
+  assert.deepEqual(ps.map((p) => p.gain), [[4, 1], [0, 1.333]]);
+  assert.equal(ps[0].era, 1, 'one per genome: the first row of it');
+  assert.deepEqual(partners(rows, DEFAULTS, { genes: ['maxCost'] }).map((p) => p.id), [gid({ maxCost: 9 })]);
+  assert.deepEqual(partners(rows, genomeFrom({ ...DEFAULTS, maxCost: 9 })).map((p) => p.id), [gid({ maxCost: 9, enumShare: 0.6 }), gid({ maxCost: 7 })], 'over a moved present genome: a change it already holds is no partner');
+  assert.deepEqual(partners([trialRow(1, [{ gene: 'decimals', from: 2, to: 3 }], ['equal', 'better'], { grew: { from: 2, to: 4 } })], DEFAULTS).length, 1, 'a grown row is promising by its grown sample\'s first run');
+});
+
+test('CROSSOVER: every third graded genome trial is a child of the two most promising unkept mutants, never a parent, the present genome or a tried pair; with one partner the present genome is the other parent; else a mutant', async () => {
+  const root = fixture();
+  put(root, TRIALS_FILE, [P1, P2].map((r) => JSON.stringify(r)).join('\n') + '\n');
+  const c = genomeCandidate(root, 3);
+  assert.equal(c.op, 'crossover');
+  assert.deepEqual(c.parents, [gid({ maxCost: 9 }), gid({ enumShare: 0.6 })]);
+  assert.deepEqual(c.change, [{ gene: 'maxCost', from: 7, to: 9 }, { gene: 'enumShare', from: 0.8, to: 0.6 }], 'the one child that is neither parent nor the present genome');
+  assert.match(c.seed, /^cross:era:3:lineage:0:try:\d+$/);
+  assert.deepEqual(genomeCandidate(root, 3, { crossEvery: 0 }).op, 'mutate', 'crossEvery 0: never');
+  assert.deepEqual(genomeCandidate(root, 3, { crossEvery: 2 }).op, 'mutate', 'two graded rows: not the turn of every second');
+  assert.equal(genomeCandidate(root, 3, { genes: ['maxCost'] }).op, 'mutate', 'one partner and the present genome: every child is one of them, so a mutant');
+  // the step trials the child and keeps it through the same keep rule
+  const tmp = scratchDir();
+  const line = await step(root, opts(tmp, { FAKE_TARGET: '9', FAKE_SPEED: 'enum' }, { era: 3, kind: 'genome' }));
+  assert.equal(line.op, 'crossover');
+  assert.equal(line.kept, true, line.why);
+  const row = lastRow(root);
+  assert.deepEqual([row.op, row.parents, row.verdicts], ['crossover', c.parents, ['better', 'better']]);
+  assert.deepEqual([genomeOf(root).maxCost, genomeOf(root).enumShare], [9, 0.6]);
+  assert.equal(readGenomeDoc(root).history.at(-1).op, 'crossover');
+  // the next two genome trials are mutants (n = 3, 4), the one after a crossover turn again
+  assert.equal(genomeCandidate(root, 4).op, 'mutate');
+  fs.appendFileSync(path.join(root, ...TRIALS_FILE.split('/')), JSON.stringify(trialRow(4, [{ gene: 'decimals', from: 2, to: 1 }], ['worse'])) + '\n');
+  assert.equal(genomeCandidate(root, 5).op, 'mutate');
+  // a crossover child already graded is not drawn again: with no untried child the turn falls back to a mutant
+  const root2 = fixture();
+  const child = genomeFrom({ ...DEFAULTS, maxCost: 9, enumShare: 0.6 });
+  put(root2, TRIALS_FILE, [P1, P2, trialRow(3, [{ gene: 'decimals', from: 2, to: 1 }], ['worse']), trialRow(4, [{ gene: 'decimals', from: 2, to: 3 }], ['worse']),
+    { ...trialRow(5, [], ['worse']), change: [{ gene: 'maxCost', from: 7, to: 9 }, { gene: 'enumShare', from: 0.8, to: 0.6 }], afterId: genomeId(child) }].map((r) => JSON.stringify(r)).join('\n') + '\n');
+  const d = genomeCandidate(root2, 6);
+  assert.equal(d.op, 'mutate', JSON.stringify(d.change));
+  assert.deepEqual(fs.readdirSync(tmp), []);
+});
+
+test('CROSSOVER over a genome that moved since its partners were tried: a child equal to a parent is never drawn, though no tried pair names it', () => {
+  // the present genome holds decimals 3, the partners were tried over the defaults: every child of the two holds
+  // decimals 3 and is the present genome, parent 1, parent 2 or the one new genome; only the new one is drawn
+  const root = fixture({ genome: { version: 1, genes: { decimals: 3 }, lineage: 0 } });
+  put(root, TRIALS_FILE, [P1, P2].map((r) => JSON.stringify(r)).join('\n') + '\n');
+  const p1 = gid({ decimals: 3, maxCost: 9 }), p2 = gid({ decimals: 3, enumShare: 0.6 }), both = gid({ decimals: 3, maxCost: 9, enumShare: 0.6 });
+  const seen = new Set();
+  for (let era = 1; era <= 16; era++) {
+    const c = genomeCandidate(root, era);
+    assert.equal(c.op, 'crossover');
+    assert.deepEqual(c.parents, [p1, p2]);
+    assert.equal(c.afterId, both, 'era ' + era + ': ' + JSON.stringify(c.change));
+    seen.add(c.seed);
+  }
+  assert.ok([...seen].some((s) => !/:try:0$/.test(s)), 'some era drew a parent or the present genome first and skipped it');
 });
