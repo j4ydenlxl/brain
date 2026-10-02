@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "871d7d3773ad58081fee551c3191b7ed680e4b7be9d31bcbfa6053106d2c0311";
+const VERSION = "802f26eee2cb105ba1e5b33db6516577d94b13e7ae4fe219a5b42d4fa7a8d6a3";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"206b89e1c2c4deb5201db0bd7a9dbe3830235cbee3b9f54204b48035fd29585e"},
+  {"url":"/organism/cells.json","sha256":"38d4f36ad6806e5e12ecb74b9a24820b06187b334dde024e7525f87654aafbc0"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -122,10 +122,11 @@ const PRECACHE = [
   {"url":"/organism/cells/season-of-air-date-6fe0-compare-neo-g8.mjs","sha256":"398618466ed890911ee6068a61318f656ec4153ed0a67a4a1cc87cef5937417f"},
   {"url":"/organism/cells/season-of-air-date-6fe0-smaller-neo-g8.mjs","sha256":"8031529bb80d1c8b23f92dbe54167b529d8f5a0c0e3f1e9f71312ec08ed698c2"},
   {"url":"/organism/cells/season-of-air-date-6fe0-sum-neo-g8.mjs","sha256":"66d88855936886d80ee7792cfd15cfd76b522b8a4bb1363e2d3de347d51a6f31"},
+  {"url":"/organism/cells/tld-types-top-level-domain-to-spon-a4347b-neo-g8.mjs","sha256":"b12e7dc458d99946514e3cdfec65f5e3b734bae277545041871b2a659c1f8f22"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"767cc07567b145169dd17d77ee54df9dc01bbfe34acb8913434e4128a1db29bc"}
+  {"url":"/organism/era/tasks.json","sha256":"f21215d9de3d832e1e2fd115588f33404ba87ca55c7b2e15d934311a96e8431f"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -139,6 +140,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/2014-rank-of-breed-f138.json","sha256":"badf6c10856df2b3407df906c20dc86446a216060e2a3de7005ec5edf77cf070"},
   {"url":"/organism/era/tasks/2015-rank-of-breed-366c.json","sha256":"8bb8c0723eccaad9ff5034f648a56e0ad4c98bdf25108bd9c061ca6b86db1410"},
   {"url":"/organism/era/tasks/abbreviation-of-country-9dfe-rev.json","sha256":"997dc3a76bf6e6bdf32465e16e6018f516db1f8c64626d94b56ae3a98ec628fb"},
+  {"url":"/organism/era/tasks/adult-of-title-bf78.json","sha256":"159f4910532790375e500607a6ee59f1edc1ee0082fa1ee56577e84aef123167"},
   {"url":"/organism/era/tasks/airline-country.json","sha256":"cf3524a09f6e36a460d31f56fb18ca2c1245f123a65ded2ea00ad5e3ef26c668"},
   {"url":"/organism/era/tasks/airline-country-rev.json","sha256":"b27f00a798a62a2636c22ccb8d822d1d64de0182f6a41ec54f897a96adb5c22c"},
   {"url":"/organism/era/tasks/airline-icao-name.json","sha256":"9120e71ba8f79c9b99a2384fe8cc89b8a03911e550c334f394694a42d4ebd0c6"},
@@ -167,6 +169,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/annual-increase-of-ye-e31a-larger.json","sha256":"25cdb48dbd44fbaaa02e18b298d3272c922ea50237b2a88ac50b895604a1b0ac"},
   {"url":"/organism/era/tasks/annual-increase-of-ye-e31a-smaller.json","sha256":"0901776d341cb16c24050fcf7d19bc37a902b8c6595fff781f526818bb04f008"},
   {"url":"/organism/era/tasks/annual-increase-of-ye-e31a-sum.json","sha256":"b989be54776d092d319fb90c46901a48aa760e6882ac412e68e952807763e100"},
+  {"url":"/organism/era/tasks/article-title-of-title-442b-rev.json","sha256":"67ab27bbaeec80d46111a553b084b4094465f88538f78f52996d67c9d1fcc423"},
   {"url":"/organism/era/tasks/artist-of-song-abad.json","sha256":"2858478ea8e3a4dab9732dcd1ffbbdffa56446662abb3d665bc937ceae8a67c1"},
   {"url":"/organism/era/tasks/artist-of-title-3684.json","sha256":"cf65cd67125b8a148200e8ccafe6619d6f43d419b667ce683f6ef2f8fec1c43e"},
   {"url":"/organism/era/tasks/artist-of-title-3684-rev.json","sha256":"c1bd35fdafb170f9799152dba4911ec4d6d3134ad9bab98bca2fcaafdfb848cc"},
@@ -232,6 +235,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/column-of-title-0e66-rev.json","sha256":"0d48dd179e4b984f6eb063f902708e8fe0e63c791d123dd403de3f23e645d125"},
   {"url":"/organism/era/tasks/column-of-title-6d3f.json","sha256":"c288e10e2647bfb1a88cd2b42edafcc069fd30f3bd9b35f6d8190fb031a318ae"},
   {"url":"/organism/era/tasks/column-of-title-6d3f-rev.json","sha256":"0133c1fa8e9acad00d8260f4dd61bc82f1f94b97e98c0f9757a75f031ea91962"},
+  {"url":"/organism/era/tasks/community-type-of-campus-37d9.json","sha256":"c689178251322772c16a67e9afd2ea4efe31627b58e29b40dc67f6307e39923f"},
   {"url":"/organism/era/tasks/company-location-of-most-5f0b.json","sha256":"ff7c299ff3049deb6fe21ca98936729ca904fbd13bf9abbb2c47232c7121a369"},
   {"url":"/organism/era/tasks/company-manufacturer-of-m-4d63.json","sha256":"659c0d3c4c0742ea8dcca644885cadb492066592c03ace57469765eff65346af"},
   {"url":"/organism/era/tasks/company-manufacturer-of-m-4d63-rev.json","sha256":"d18daa30cb97f09f981bb4a66a888d6d4b6f1ee5ada377bb12c47eb0980963e5"},
@@ -302,6 +306,8 @@ const LAZY = [
   {"url":"/organism/era/tasks/datasets-language-codes-language-c-627a99.json","sha256":"5597b0adb206bf4f5fd776b22f3236772266d90a045bb7e44a5ba760cdcf6497"},
   {"url":"/organism/era/tasks/datasets-language-codes-language-t-52b85a.json","sha256":"4ae9a287d27fc8c8b16e9ce94a31fd4c53dc15f2987d8c33c3c965311103eed0"},
   {"url":"/organism/era/tasks/date-of-publication-b331.json","sha256":"abee29274ebd29bdf770f452b8cd33cf70133eb0c7f6816187c172a5f38670be"},
+  {"url":"/organism/era/tasks/date-of-title-200e.json","sha256":"14f34fe8616fc6935957ab68b6fc822cdcd980f965764bd4ae3303bc1870c6e4"},
+  {"url":"/organism/era/tasks/date-of-title-200e-rev.json","sha256":"768b8208982e47512c275522aa34ac448d4d029b2cd3fdb877fe085b05564a58"},
   {"url":"/organism/era/tasks/date-of-wreck-no-94ff-rev.json","sha256":"bb2add69b40b0f9a73f9ce976fcc10819c920270e4e26b7087a08a8dccd4bff7"},
   {"url":"/organism/era/tasks/death-of-name-017f-rev.json","sha256":"0680884aff77fe523819b53c22b213f1e4ece5b1d85c7dee8f1410f98da562fa"},
   {"url":"/organism/era/tasks/density-of-country-146f.json","sha256":"29f143b95537436a398cee5c736f5017e536b84c9954a22b97c5c2020fa1752c"},
@@ -365,19 +371,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/fr-finance-vix-vix-daily-065995-hi-4cfb42.json","sha256":"e267f26a7bd60d7091c5e9bc6c0f308abbad60312a82d74630c228b3489e19a1"},
   {"url":"/organism/era/tasks/fr-finance-vix-vix-daily-065995-hi-ba582e.json","sha256":"8a913f55fb2a94885493e9984c9bab4a34df10cb29c702e8bd431bc44249e183"},
   {"url":"/organism/era/tasks/fr-finance-vix-vix-daily-065995-op-b5e052.json","sha256":"d783221b59eb7b215f8708ade6711727dead65823e024c0026717fac66e76f1f"},
-  {"url":"/organism/era/tasks/fr-finance-vix-vix-daily-065995-op-bb1986.json","sha256":"3c53cf5e6bf64dfec91aab549c9785ce25f15bf31092c429564acaa6c8482c4f"},
-  {"url":"/organism/era/tasks/fr-finance-vix-vix-monthly-e0dd17-5a13b6.json","sha256":"7399bc3ba31739f70fafd586d3dc321c29d0ffc069fe8a67b7df9204f7c36493"},
-  {"url":"/organism/era/tasks/fr-finance-vix-vix-monthly-e0dd17-c14489.json","sha256":"d2906e5d2325dfc9790dc22441a91b19a275f7da7128938639367c39fe015869"},
-  {"url":"/organism/era/tasks/fr-natural-gas-daily-4cc47b-date-to-price.json","sha256":"5b6d46ac70e225c8daf47fbd9eaf50c9af57db00bf5a20538a9da4d5fbef2216"},
-  {"url":"/organism/era/tasks/fr-natural-gas-daily-4cc47b-price-to-date.json","sha256":"cd1ead8f7ceca0c95910d1d5fcf8d8c189d40d5e8e3f9018547232fc1fb93093"},
-  {"url":"/organism/era/tasks/fr-natural-gas-monthly-984ace-mont-f12891.json","sha256":"7de5abc188075d3d44d702df4577549aeddc9c398ae987f3ca0c40aa6448333e"},
-  {"url":"/organism/era/tasks/french-of-alpha3-b-1798.json","sha256":"e27df6df22ed6f1dccf46c5411a9863804ca8a4b6935d4601409a6785ca5924e"},
-  {"url":"/organism/era/tasks/french-of-alpha3-b-1798-rev.json","sha256":"61ff46bc89b3c72813394698961bad978d7cf0a92d55e15d36ec8f8227a5c3fe"},
-  {"url":"/organism/era/tasks/fruit-member.json","sha256":"aed5454e20511e2b84ded17ad4d5d08dd3a6a05df7396254c9f05a01d115c28f"},
-  {"url":"/organism/era/tasks/fruit-which.json","sha256":"fc60027e660f5c4a6674269bf9d77a36e33af5c48f7303ae0c4c5ce9a5ed3141"},
-  {"url":"/organism/era/tasks/gemoji-emoji-name-to-emoji-category.json","sha256":"82d51b3dc85ca817005026dd5ae84ce2d0e2c55d2acdfd37f8f8749590100e08"},
-  {"url":"/organism/era/tasks/gemoji-emoji-name-to-emoji-shortcode.json","sha256":"ccd1903e09b86b9555e96d8e3c840fe1bd9dfffc0b727f65bd91df4b89edf6d9"},
-  {"url":"/organism/era/tasks/gemoji-emoji-shortcode-to-emoji.json","sha256":"9d253f520d1ddb569afb4a5b071852c076e2cd1c58c0b9cb81d486e106728caf"}
+  {"url":"/organism/era/tasks/fr-finance-vix-vix-daily-065995-op-bb1986.json","sha256":"3c53cf5e6bf64dfec91aab549c9785ce25f15bf31092c429564acaa6c8482c4f"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
