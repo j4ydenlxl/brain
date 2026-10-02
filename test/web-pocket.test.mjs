@@ -1,20 +1,25 @@
 // test/web-pocket.test.mjs: THE POCKET (web/pocket.mjs) and its router (act/cells-tab.mjs). Offline: the network is
 // a stub, the service worker runs in a node vm with stubbed self, caches, fetch and clients; every temp directory
-// is removed. The route rule is proved THE SERVER'S on every prompt of judge/dev/*.jsonl (never a held-out row).
+// is removed. Nothing here reads the tree's grown/ or neo/: every build runs on a FIXTURE tree written below (its
+// grown/index.mjs rendered by grow/store.mjs renderIndexMjs, the server's own renderer), so the suite holds whatever
+// the organism grows next. THE GATE (contract c2) is proved at the build and in the tab with an unmastered colony.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, readdirSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, readdirSync, copyFileSync, statSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL, fileURLToPath } from 'node:url';
-import { generatePocket, askColors, iconSvg, swSource, pocketVersion, ROOT, CACHE_PREFIX, SAFE_RADIUS, ICON_SIZE, START_URL, SCOPE, POCKET_HEAD, REGISTER_SW } from '../web/pocket.mjs';
-import { loadCells, route, askTab, BUDGET_MS, OFFLINE_LINE, API } from '../act/cells-tab.mjs';
+import {
+  generatePocket, askColors, iconSvg, swSource, pocketVersion, planCore, planTasks, shipsRow, webManifest, parseArgs, ROOT, CACHE_PREFIX,
+  SAFE_RADIUS, ICON_SIZE, START_URL, SCOPE, SW_URL, SW_SCOPE, POCKET_HEAD, REGISTER_SW, NO_CORE, TASK_FILE_CAP, ERA_CAP,
+} from '../web/pocket.mjs';
+import { loadCells, route, askTab, serves, BUDGET_MS, OFFLINE_LINE, API, MAX_TEMPLATES } from '../act/cells-tab.mjs';
 import { generateAsk } from '../web/ask.mjs';
-import { grownAnswer } from '../grown/index.mjs';
 import { renderIndexMjs } from '../grow/store.mjs';
+import * as CORE from '../grow/neo-core.mjs';
 
 const sha = (b) => crypto.createHash('sha256').update(b).digest('hex');
 const temps = [];
@@ -29,18 +34,17 @@ const fileFetch = async (url) => {
 };
 const dirUrl = (d) => pathToFileURL(d + path.sep).href;
 const readJson = (f) => JSON.parse(readFileSync(f, 'utf8'));
-
-// ---------------------------------------------------------------- the real build, once
-
-const REAL = {};
-before(() => {
-  REAL.dist = tmp('real');
-  generateAsk(REAL.dist);
-  REAL.result = generatePocket({ dist: REAL.dist });
-  REAL.index = readJson(path.join(ROOT, 'grown', 'index.json'));
-  REAL.cells = readJson(path.join(REAL.dist, 'organism', 'cells.json'));
-  REAL.sw = readFileSync(path.join(REAL.dist, 'ask', 'sw.js'), 'utf8');
-});
+const fits = (t, q) => CORE.fitsTemplates(t, q);
+/** Every file under a directory, as [relative path with /, bytes]. */
+function filesUnder(dir, pre = '') {
+  const out = [];
+  for (const name of readdirSync(dir)) {
+    const abs = path.join(dir, name), rel = pre ? pre + '/' + name : name;
+    if (statSync(abs).isDirectory()) out.push(...filesUnder(abs, rel));
+    else out.push([rel, readFileSync(abs)]);
+  }
+  return out;
+}
 
 // ---------------------------------------------------------------- fixtures
 
@@ -66,29 +70,59 @@ const cellSrc = ({ id, cls, gen = 3, lane = 'direct', head = '', can, answer, ta
   '',
 ].join('\n');
 
+// Two locked cells (one with a sibling), two NEO colonies that serve (shout's can is always true: only its template
+// keeps it from every prompt), and an UNMASTERED colony (serve false, held-out 0.5) whose can is always true too.
 const FIXTURE_CELLS = {
   'greet-direct-g3': cellSrc({ id: 'greet-direct-g3', cls: 'greet', can: 'return q.startsWith("hello");', answer: 'return "hello from a grown cell";' }),
   'echo-direct-g3': cellSrc({ id: 'echo-direct-g3', cls: 'echo', head: "import { WORD } from './echo-direct-g3-word.mjs';", can: 'return q.startsWith("echo ");', answer: 'return WORD + ": " + q.slice(5);' }),
-  'sum-neo-g3': cellSrc({ id: 'sum-neo-g3', cls: 'sum', lane: 'neo', can: 'return q.startsWith("sum of ");', answer: 'const p = q.slice(7).split(" and ").map(Number); return p.length === 2 && p.every(Number.isFinite) ? String(p[0] + p[1]) : null;', tail: 'export const colony = { cells: 2, kernel: 1 };' }),
+  'shout-neo-g3': cellSrc({ id: 'shout-neo-g3', cls: 'shout-word', lane: 'neo', can: 'return true;', answer: 'const w = String(q).trim().split(" ").pop(); return w ? w.toUpperCase() : null;', tail: 'export const colony = { cells: 1, kernel: 1 };' }),
+  'reverse-neo-g3': cellSrc({ id: 'reverse-neo-g3', cls: 'reverse-word', lane: 'neo', can: 'return q.startsWith("reverse the word ");', answer: 'return q.slice(17).split("").reverse().join("");', tail: 'export const colony = { cells: 1, kernel: 1 };' }),
+  'sum-neo-g3': cellSrc({ id: 'sum-neo-g3', cls: 'sum', lane: 'neo', can: 'return true;', answer: 'return "from the unmastered colony";', tail: 'export const colony = { cells: 2, kernel: 1 };' }),
 };
 const SIBLING = "export const WORD = 'echoed';\n";
+const neoRow = (id, task, o) => ({ id, class: task, generation: 3, lane: 'neo', tier: 'neo', task, file: 'cells/' + id + '.mjs', promotedAt: 'x', ...o });
+const ROWS = [
+  { id: 'greet-direct-g3', class: 'greet', generation: 3, lane: 'direct', file: 'cells/greet-direct-g3.mjs', heldout: { score: 1, n: 4 }, promotedAt: 'x' },
+  { id: 'echo-direct-g3', class: 'echo', generation: 3, lane: 'direct', file: 'cells/echo-direct-g3.mjs', heldout: { score: 1, n: 4 }, promotedAt: 'x' },
+  neoRow('shout-neo-g3', 'shout-word', { serve: true, templates: ['shout the word {1-3}'], heldout: { score: 1, n: 4, ok: 4 } }),
+  neoRow('reverse-neo-g3', 'reverse-word', { serve: true, templates: ['reverse the word {1-3}'], heldout: { score: 1, n: 4, ok: 4 } }),
+  neoRow('sum-neo-g3', 'sum', { serve: false, templates: ['sum of {#1-2} and {#1-2}'], heldout: { score: 0.5, n: 4, ok: 2 } }),
+];
+const SILENT = 'sum-neo-g3';
+const MARKER = 'HELDOUT-ONLY-ROW-7f3a';
+const W = ['apple', 'river', 'stone', 'cloud', 'tiger', 'lemon', 'piano', 'candle'];
+const devOf = (f) => W.map((w) => { const a = f(w); return { q: a[0], expect: { equals: a[1] }, answer: a[1] }; });
+const TASKS = {
+  'shout-word': devOf((w) => ['shout the word ' + w, w.toUpperCase()]),
+  'reverse-word': devOf((w) => ['reverse the word ' + w, w.split('').reverse().join('')]),
+  sum: W.map((w, i) => ({ q: 'sum of ' + i + ' and ' + (i + 2), expect: { equals: String(2 * i + 2) }, answer: String(2 * i + 2) })),
+  'count-letters': devOf((w) => ['how many letters in ' + w, String(w.length)]),
+  tiny: devOf((w) => ['tiny ' + w, w]).slice(0, 3),
+};
 
-/** A grown/ of three cells: two hand grown, then a NEO colony (tier "neo"), with grown/index.mjs from the store's own renderer. */
-function fixtureRoot(root, { cells = FIXTURE_CELLS, rows = null } = {}) {
+/** A tree: grow/ (the core, unless core is false or a text), grown/ (cells, index.json, index.mjs) and neo/tasks/. */
+function fixtureRoot(root, { cells = FIXTURE_CELLS, rows = ROWS, core = true, tasks = TASKS, heldoutDir = false } = {}) {
   const grown = path.join(root, 'grown');
   mkdirSync(path.join(grown, 'cells'), { recursive: true });
   for (const [id, src] of Object.entries(cells)) writeFileSync(path.join(grown, 'cells', id + '.mjs'), src);
   writeFileSync(path.join(grown, 'cells', 'echo-direct-g3-word.mjs'), SIBLING);
-  const index = {
-    generation: 3,
-    cells: rows || [
-      { id: 'greet-direct-g3', class: 'greet', generation: 3, lane: 'direct', file: 'cells/greet-direct-g3.mjs', heldout: { score: 1, n: 4 }, promotedAt: 'x' },
-      { id: 'echo-direct-g3', class: 'echo', generation: 3, lane: 'direct', file: 'cells/echo-direct-g3.mjs', heldout: { score: 1, n: 4 }, promotedAt: 'x' },
-      { id: 'sum-neo-g3', class: 'sum', generation: 3, lane: 'neo', tier: 'neo', file: 'cells/sum-neo-g3.mjs', heldout: { score: 1, n: 4, ok: 4 }, promotedAt: 'x' },
-    ],
-  };
+  const index = { generation: 3, cells: rows };
   writeFileSync(path.join(grown, 'index.json'), JSON.stringify(index, null, 2));
   writeFileSync(path.join(grown, 'index.mjs'), renderIndexMjs(index));
+  mkdirSync(path.join(root, 'grow'), { recursive: true });
+  if (core === true) for (const f of ['neo-core.mjs', 'neo-kernel.mjs']) copyFileSync(path.join(ROOT, 'grow', f), path.join(root, 'grow', f));
+  else if (typeof core === 'string') { writeFileSync(path.join(root, 'grow', 'neo-core.mjs'), core); copyFileSync(path.join(ROOT, 'grow', 'neo-kernel.mjs'), path.join(root, 'grow', 'neo-kernel.mjs')); }
+  for (const [task, dev] of Object.entries(tasks)) {
+    const d = path.join(root, 'neo', 'tasks', task);
+    mkdirSync(d, { recursive: true });
+    writeFileSync(path.join(d, 'task.json'), JSON.stringify({ task, skill: 'fixture', domain: 'words' }));
+    writeFileSync(path.join(d, 'dev.jsonl'), dev.map((r) => JSON.stringify(r)).join('\n') + '\n');
+    // a held-out file: never opened by the build (a directory when heldoutDir, so a read of it would throw)
+    if (heldoutDir) mkdirSync(path.join(d, 'heldout.jsonl'));
+    else writeFileSync(path.join(d, 'heldout.jsonl'), JSON.stringify({ q: MARKER + ' ' + task, expect: { equals: MARKER }, answer: MARKER }) + '\n');
+  }
+  mkdirSync(path.join(root, 'neo', 'tasks', 'no-dev'), { recursive: true });
+  writeFileSync(path.join(root, 'neo', 'tasks', 'no-dev', 'task.json'), '{}');
   return root;
 }
 
@@ -99,19 +133,82 @@ function fixture(tag, o = {}) {
   return { root, dist };
 }
 
+// ---------------------------------------------------------------- the build of the fixture tree, once (the real page)
+
+const REAL = {};
+before(() => {
+  REAL.root = fixtureRoot(path.join(tmp('real'), 'root'));
+  REAL.dist = tmp('real-dist');
+  REAL.result = generateAsk(REAL.dist, { root: REAL.root }).pocket;
+  REAL.index = readJson(path.join(REAL.root, 'grown', 'index.json'));
+  REAL.cells = readJson(path.join(REAL.dist, 'organism', 'cells.json'));
+  REAL.sw = readFileSync(path.join(REAL.dist, 'ask', 'sw.js'), 'utf8');
+  REAL.tasks = readJson(path.join(REAL.dist, 'organism', 'era', 'tasks.json'));
+});
+
 // ---------------------------------------------------------------- the pocket build
 
-test('every live cell of grown/index.json is copied byte for byte, and cells.json carries its sha256 in index order', () => {
-  assert.equal(REAL.result.cells, REAL.index.cells.length);
-  assert.deepEqual(REAL.cells.cells.map((r) => r.id), REAL.index.cells.map((r) => r.id));
+test('every shipping cell of grown/index.json is copied byte for byte, and cells.json carries its sha256 in index order', () => {
+  const ships = REAL.index.cells.filter((r) => r.id !== SILENT);
+  assert.equal(REAL.result.cells, ships.length);
+  assert.deepEqual(REAL.cells.cells.map((r) => r.id), ships.map((r) => r.id));
   for (const row of REAL.cells.cells) {
-    const src = readFileSync(path.join(ROOT, 'grown', ...row.file.split('/')));
+    const src = readFileSync(path.join(REAL.root, 'grown', ...row.file.split('/')));
     const copy = readFileSync(path.join(REAL.dist, 'organism', ...row.file.split('/')));
     assert.ok(copy.equals(src), row.id + ' is a byte copy');
     assert.equal(row.sha256, sha(src), row.id + ' carries the sha256 of its source');
     assert.equal(row.bytes, src.length);
   }
   assert.equal(REAL.cells.generation, REAL.index.generation);
+  // a NEO row carries its task, serve true and its templates (the tab asks it only on a fit); a locked row none of them
+  const shout = REAL.cells.cells.find((r) => r.id === 'shout-neo-g3');
+  assert.deepEqual([shout.tier, shout.task, shout.serve, shout.templates], ['neo', 'shout-word', true, ['shout the word {1-3}']]);
+  const greet = REAL.cells.cells.find((r) => r.id === 'greet-direct-g3');
+  assert.deepEqual(['task', 'serve', 'templates'].filter((k) => k in greet), []);
+});
+
+test('THE GATE at the build: an unmastered colony is neither copied nor listed nor precached; with no core no NEO row ships', () => {
+  assert.equal(existsSync(path.join(REAL.dist, 'organism', 'cells', SILENT + '.mjs')), false, 'the unmastered colony was copied');
+  assert.ok(!REAL.cells.cells.some((r) => r.id === SILENT), 'the unmastered colony is in cells.json');
+  assert.ok(!REAL.sw.includes(SILENT), 'the service worker names the unmastered colony');
+  assert.equal(REAL.result.era.silent, 1);
+  // the same tree with no search core: the locked cells ship, no NEO row does, and the body says why
+  const { root, dist } = fixture('nocore', { core: false });
+  const r = generatePocket({ root, dist });
+  const cells = readJson(path.join(dist, 'organism', 'cells.json')).cells;
+  assert.deepEqual(cells.map((x) => x.id), ['greet-direct-g3', 'echo-direct-g3']);
+  assert.equal(r.era.core, false);
+  assert.equal(r.era.silent, 3);
+  assert.equal(r.era.why, NO_CORE + ': grow/neo-core.mjs does not exist');
+  const list = readJson(path.join(dist, 'organism', 'era', 'tasks.json'));
+  assert.deepEqual([list.core, list.why], [null, r.era.why]);
+  assert.equal(existsSync(path.join(dist, 'organism', 'grow')), false, 'no core file was written');
+  for (const id of ['shout-neo-g3', 'reverse-neo-g3', SILENT]) assert.equal(existsSync(path.join(dist, 'organism', 'cells', id + '.mjs')), false, id);
+  // a core that holds a node: import is not the browser's core: NO_CORE, and the same gate
+  const n = fixture('nodecore', { core: "import fs from 'node:fs';\nexport const x = fs;\n" });
+  const rn = generatePocket(n);
+  assert.equal(rn.era.core, false);
+  assert.equal(rn.era.why, NO_CORE + ': grow/neo-core.mjs still holds a node: import or a require');
+  assert.deepEqual(readJson(path.join(n.dist, 'organism', 'cells.json')).cells.map((x) => x.id), ['greet-direct-g3', 'echo-direct-g3']);
+  // a core importing anything but its kernel is refused too
+  const o = fixture('othercore', { core: "import { x } from './elsewhere.mjs';\nexport const y = x;\n" });
+  assert.equal(planCore(o.root).why, NO_CORE + ': grow/neo-core.mjs imports ./elsewhere.mjs');
+  assert.equal(planCore(REAL.root).ok, true);
+  assert.equal(REAL.result.era.core, true);
+});
+
+test('shipsRow: a locked row ships; a NEO row only when it serves AND the core is published AND the rule is the core', () => {
+  const serving = ROWS.find((r) => r.id === 'reverse-neo-g3');
+  assert.equal(shipsRow(ROWS[0], false), true);
+  assert.equal(shipsRow(serving, true), true);
+  assert.equal(shipsRow(serving, false), false);
+  assert.equal(shipsRow(serving, true, null), false);
+  assert.equal(shipsRow(ROWS.find((r) => r.id === SILENT), true), false);
+  assert.equal(shipsRow({ ...serving, serve: 'true' }, true), false);
+  assert.equal(shipsRow({ ...serving, templates: [] }, true), false);
+  assert.equal(shipsRow({ ...serving, templates: ['no slot here'] }, true), false);
+  assert.equal(shipsRow({ ...serving, templates: Array.from({ length: 33 }, () => 'reverse the word {1-3}') }, true), false);
+  assert.equal(shipsRow(null, true), true, 'no row is not a NEO row');
 });
 
 test('a copy whose bytes are not its source throws the build', () => {
@@ -145,14 +242,14 @@ test('a cell sibling it imports is copied with its sha256, and the tab imports i
   assert.equal((await route(router, 'echo hi')).text, 'echoed: hi');
 });
 
-test('the manifest: Dilation, /ask/, standalone, the ask page CSS colours, one maskable SVG icon', () => {
+test('the manifest: Dilation, id, start_url and scope /ask (the path the host serves), standalone, the page colours, one maskable icon', () => {
   const { root, dist } = fixture('manifest', { bg: '#123456', acc: '#abcdef' });
   generatePocket({ root, dist });
   const m = readJson(path.join(dist, 'ask', 'manifest.webmanifest'));
   assert.equal(m.name, 'Dilation');
   assert.equal(m.short_name, 'Dilation');
-  assert.equal(m.start_url, '/ask/');
-  assert.equal(m.scope, '/ask/');
+  assert.deepEqual([m.id, m.start_url, m.scope], [START_URL, START_URL, SCOPE]);
+  assert.equal(START_URL, '/ask');
   assert.equal(m.display, 'standalone');
   assert.equal(m.background_color, '#123456');
   assert.equal(m.theme_color, '#123456');
@@ -160,6 +257,19 @@ test('the manifest: Dilation, /ask/, standalone, the ask page CSS colours, one m
   assert.equal(m.icons[0].src, 'icon.svg');
   assert.equal(m.icons[0].type, 'image/svg+xml');
   assert.ok(m.icons[0].purpose.split(' ').includes('maskable'));
+  // the published rules: start_url within scope; the page the host serves (/ask, vercel.json trailingSlash false) is
+  // inside the navigation scope AND inside the service worker's scope, so the worker controls the installed app
+  const within = (u, scope) => new URL(u, 'https://d.test').pathname.startsWith(new URL(scope, 'https://d.test').pathname);
+  assert.ok(within(m.start_url, m.scope));
+  assert.ok(within('/ask', SW_SCOPE) && within('/organism/web/pocket-era.mjs', SW_SCOPE));
+  assert.ok(within('/ask?q=hey', m.scope));
+  assert.ok(!within('/ask', '/ask/'), 'the old scope /ask/ does not hold the page at /ask (the defect this fixes)');
+  const vercel = readJson(path.join(ROOT, 'vercel.json'));
+  assert.deepEqual([vercel.cleanUrls, vercel.trailingSlash], [true, false], 'the host serves /ask, not /ask/');
+  const h = vercel.headers.find((x) => x.source === SW_URL);
+  assert.ok(h, 'vercel.json sends headers for ' + SW_URL);
+  assert.deepEqual(h.headers.find((x) => x.key === 'Service-Worker-Allowed'), { key: 'Service-Worker-Allowed', value: SW_SCOPE }, 'the published way to widen a worker scope past its own path');
+  assert.ok(vercel.functions && vercel.functions['api/ask.mjs'], 'the function entry is kept');
   const icon = readFileSync(path.join(dist, 'ask', 'icon.svg'), 'utf8');
   assert.match(icon, /<rect width="512" height="512" fill="#123456"\/>/);
   assert.match(icon, /stroke="#abcdef"/);
@@ -167,6 +277,7 @@ test('the manifest: Dilation, /ask/, standalone, the ask page CSS colours, one m
   const page = readFileSync(path.join(REAL.dist, 'ask', 'index.html'), 'utf8');
   assert.ok(page.includes('background: ' + real.background_color), 'the real manifest takes its background from the real ask page');
   assert.deepEqual(askColors(page), { background: real.background_color, theme: real.theme_color, accent: askColors(page).accent });
+  assert.equal(webManifest({ background: '#000', theme: '#111' }).start_url, START_URL);
   assert.throws(() => askColors('<html><body>no style</body></html>'), /no <style>/);
 });
 
@@ -184,21 +295,28 @@ test('the icon glyph lies inside the maskable safe zone and the background bleed
   for (const [x, y] of pts) assert.ok(Math.hypot(x - c, y - c) + sw / 2 <= SAFE_RADIUS, x + ',' + y + ' leaves the safe zone');
 });
 
-test('the version is a sha256 over every precached file: the same files give the same worker, one changed cell another', () => {
+test('the version is a sha256 over every listed file: the same files give the same worker; a changed cell or task file another; a silent colony none', () => {
   const { root, dist } = fixture('version');
   const a = generatePocket({ root, dist });
   const swA = readFileSync(path.join(dist, 'ask', 'sw.js'), 'utf8');
   const b = generatePocket({ root, dist });
   assert.equal(b.version, a.version);
   assert.equal(readFileSync(path.join(dist, 'ask', 'sw.js'), 'utf8'), swA);
-  const f = path.join(root, 'grown', 'cells', 'sum-neo-g3.mjs');
+  const quiet = path.join(root, 'grown', 'cells', SILENT + '.mjs');
+  writeFileSync(quiet, readFileSync(quiet, 'utf8') + '// a newer unmastered colony\n');
+  assert.equal(generatePocket({ root, dist }).version, a.version, 'a colony that does not ship does not move the version');
+  const f = path.join(root, 'grown', 'cells', 'reverse-neo-g3.mjs');
   writeFileSync(f, readFileSync(f, 'utf8') + '// the next generation\n');
   const c = generatePocket({ root, dist });
   assert.notEqual(c.version, a.version);
   assert.match(c.version, /^[0-9a-f]{64}$/);
   const swC = readFileSync(path.join(dist, 'ask', 'sw.js'), 'utf8');
   assert.ok(swC.includes(JSON.stringify(c.version)) && !swC.includes(a.version));
+  const dev = path.join(root, 'neo', 'tasks', 'count-letters', 'dev.jsonl');
+  writeFileSync(dev, readFileSync(dev, 'utf8') + JSON.stringify({ q: 'how many letters in rose', expect: { equals: '4' }, answer: '4' }) + '\n');
+  assert.notEqual(generatePocket({ root, dist }).version, c.version, 'a task file is listed (lazy), so a new dev row is a new worker');
   assert.equal(pocketVersion([{ url: '/a', sha256: 'x' }]), sha('/a x'));
+  assert.equal(pocketVersion([{ url: '/a', sha256: 'x' }], [{ url: '/b', sha256: 'y' }]), sha('/a x\n/b y'));
 });
 
 test('an organism module whose bytes are not the sha256 of organism/manifest.json throws', () => {
@@ -209,51 +327,116 @@ test('an organism module whose bytes are not the sha256 of organism/manifest.jso
 
 test('no ask page, no pocket: the build says what writes it first', () => {
   const dist = tmp('noask');
-  assert.throws(() => generatePocket({ dist }), /no ask page at .*generateAsk/);
+  assert.throws(() => generatePocket({ root: REAL.root, dist }), /no ask page at .*generateAsk/);
 });
 
-test('a cell of an older generation left in organism/cells is removed; its neighbours are not', () => {
+test('a cell, a core file or a task file of an older build left in dist is removed; its neighbours are not', () => {
   const { root, dist } = fixture('stale');
   mkdirSync(path.join(dist, 'organism', 'cells'), { recursive: true });
   writeFileSync(path.join(dist, 'organism', 'cells', 'old-direct-g1.mjs'), 'export const old = 1;\n');
+  writeFileSync(path.join(dist, 'organism', 'cells', SILENT + '.mjs'), 'export const old = 1;\n');
   writeFileSync(path.join(dist, 'organism', 'cells', 'notes.txt'), 'kept\n');
+  mkdirSync(path.join(dist, 'organism', 'era', 'tasks'), { recursive: true });
+  writeFileSync(path.join(dist, 'organism', 'era', 'tasks', 'gone.json'), '{}');
   generatePocket({ root, dist });
   assert.equal(existsSync(path.join(dist, 'organism', 'cells', 'old-direct-g1.mjs')), false);
+  assert.equal(existsSync(path.join(dist, 'organism', 'cells', SILENT + '.mjs')), false, 'an older build of an unmastered colony is removed');
   assert.equal(existsSync(path.join(dist, 'organism', 'cells', 'notes.txt')), true);
-  assert.equal(existsSync(path.join(dist, 'organism', 'cells', 'sum-neo-g3.mjs')), true);
+  assert.equal(existsSync(path.join(dist, 'organism', 'cells', 'reverse-neo-g3.mjs')), true);
+  assert.equal(existsSync(path.join(dist, 'organism', 'era', 'tasks', 'gone.json')), false);
+  // the core is gone from the tree: its old copies are removed with it
+  rmSync(path.join(root, 'grow', 'neo-core.mjs'));
+  generatePocket({ root, dist });
+  assert.deepEqual(readdirSync(path.join(dist, 'organism', 'grow')), []);
 });
 
-test('node web/pocket.mjs --dist <dir> prints { cells, bytes, precache, version } as one JSON line', () => {
+test('node web/pocket.mjs --dist <dir> --root <tree> prints { cells, bytes, precache, version, lazy, lazyBytes, era } as one JSON line', () => {
   const dist = tmp('cli');
-  const r = spawnSync(process.execPath, [path.join(ROOT, 'web', 'pocket.mjs'), '--dist', dist], { cwd: ROOT, encoding: 'utf8', windowsHide: true });
+  const r = spawnSync(process.execPath, [path.join(ROOT, 'web', 'pocket.mjs'), '--dist', dist, '--root', REAL.root], { cwd: ROOT, encoding: 'utf8', windowsHide: true });
   assert.equal(r.status, 0, r.stderr);
   const lines = r.stdout.trim().split(/\r?\n/);
   assert.equal(lines.length, 1);
   const out = JSON.parse(lines[0]);
-  assert.deepEqual(Object.keys(out).sort(), ['bytes', 'cells', 'precache', 'version']);
-  assert.deepEqual(out, REAL.result, 'the command line and generatePocket agree');
-  assert.equal(out.cells, REAL.index.cells.length);
+  assert.deepEqual(Object.keys(out).sort(), ['bytes', 'cells', 'era', 'lazy', 'lazyBytes', 'precache', 'version']);
+  assert.deepEqual(out, REAL.result, 'the command line and generateAsk agree');
   const bad = spawnSync(process.execPath, [path.join(ROOT, 'web', 'pocket.mjs'), '--bogus'], { cwd: ROOT, encoding: 'utf8', windowsHide: true });
   assert.equal(bad.status, 2);
+  assert.deepEqual(parseArgs(['--dist']), { usage: '--dist needs a directory' });
+  assert.deepEqual(parseArgs(['-h']), { help: true });
 });
 
-test('the head line and the register line name the files the build writes, under the scope', () => {
+test('the head line and the register line name the files the build writes; the worker scope / holds the page and the body', () => {
   assert.equal(START_URL, SCOPE);
+  assert.equal(SW_SCOPE, '/');
   for (const href of [...POCKET_HEAD.matchAll(/href="([^"]+)"/g)].map((m) => m[1])) {
-    assert.ok(href.startsWith(SCOPE));
+    assert.ok(href.startsWith(SCOPE + '/'));
     assert.ok(existsSync(path.join(REAL.dist, ...href.split('/').filter(Boolean))), href);
   }
-  assert.match(REGISTER_SW, /register\('\/ask\/sw\.js', \{ scope: '\/ask\/' \}\)/);
+  assert.match(REGISTER_SW, /register\('\/ask\/sw\.js', \{ scope: '\/' \}\)/);
   assert.ok(existsSync(path.join(REAL.dist, 'ask', 'sw.js')));
+});
+
+// ---------------------------------------------------------------- the body's files
+
+test('the body ships: the core and the kernel byte for byte, the body module, tasks.json, and one dev-row file per unmastered task', () => {
+  for (const [url, src] of [['/organism/grow/neo-core.mjs', path.join(REAL.root, 'grow', 'neo-core.mjs')], ['/organism/grow/neo-kernel.mjs', path.join(REAL.root, 'grow', 'neo-kernel.mjs')], ['/organism/web/pocket-era.mjs', path.join(ROOT, 'web', 'pocket-era.mjs')]]) {
+    const copy = readFileSync(path.join(REAL.dist, ...url.split('/').filter(Boolean)));
+    assert.ok(copy.equals(readFileSync(src)), url + ' is a byte copy');
+    assert.ok(REAL.sw.includes(JSON.stringify({ url, sha256: sha(copy) })), url + ' is precached with its sha256');
+  }
+  const by = Object.fromEntries(REAL.tasks.tasks.map((t) => [t.task, t]));
+  assert.deepEqual(Object.keys(by).sort(), ['count-letters', 'reverse-word', 'shout-word', 'sum']);
+  assert.deepEqual([by['shout-word'].mastered, by['shout-word'].file, by['reverse-word'].mastered, by['reverse-word'].file], [true, null, true, null], 'a task the cloud serves is the cloud\'s: no file');
+  assert.deepEqual([by.sum.mastered, by.sum.file], [false, 'tasks/sum.json'], 'the unmastered colony\'s task is the body\'s to grow');
+  assert.deepEqual(REAL.tasks.left.map((l) => l.task + ': ' + l.why).sort(), ['no-dev: no dev.jsonl', 'tiny: 3 dev rows, under 4']);
+  assert.equal(REAL.tasks.core, 'grow/neo-core.mjs');
+  const file = readJson(path.join(REAL.dist, 'organism', 'era', 'tasks', 'count-letters.json'));
+  assert.equal(file.task, 'count-letters');
+  assert.deepEqual(file.rows, TASKS['count-letters'], 'the dev rows, { q, expect, answer } each, in file order');
+  assert.equal(by['count-letters'].sha256, sha(readFileSync(path.join(REAL.dist, 'organism', 'era', 'tasks', 'count-letters.json'))));
+  // the lazy list: every task file with its sha256, never in the precache
+  const lazy = worker(REAL.sw, new Map()).value('LAZY').map((f) => f.url).sort();
+  assert.deepEqual(lazy, ['/organism/era/tasks/count-letters.json', '/organism/era/tasks/sum.json']);
+  assert.deepEqual([REAL.result.lazy, REAL.result.era.tasks, REAL.result.era.mastered, REAL.result.era.left], [2, 2, 2, 2]);
+  assert.deepEqual(REAL.result.era.files.map((f) => f.url), ['/organism/grow/neo-core.mjs', '/organism/grow/neo-kernel.mjs', '/organism/web/pocket-era.mjs', '/organism/era/tasks.json', ...lazy]);
+  for (const f of REAL.result.era.files) assert.equal(f.bytes, readFileSync(path.join(REAL.dist, ...f.url.split('/').filter(Boolean))).length, f.url);
+});
+
+test('a held-out row never reaches the phone: no file the build writes holds one, and the build never opens a heldout.jsonl', () => {
+  for (const [rel, bytes] of filesUnder(REAL.dist)) assert.ok(!bytes.includes(MARKER), rel + ' holds a held-out row');
+  // every heldout.jsonl a directory: a build that read one would throw
+  const { root, dist } = fixture('heldout', { heldoutDir: true });
+  const r = generatePocket({ root, dist });
+  assert.equal(r.era.tasks, 2);
+  assert.equal(statSync(path.join(root, 'neo', 'tasks', 'sum', 'heldout.jsonl')).isDirectory(), true);
+  assert.deepEqual(filesUnder(path.join(dist, 'organism', 'era')).map(([rel]) => rel).sort(), ['tasks.json', 'tasks/count-letters.json', 'tasks/sum.json']);
+});
+
+test('the task file caps: one file over TASK_FILE_CAP, or all of them past ERA_CAP, is left out with its reason', () => {
+  assert.deepEqual([TASK_FILE_CAP, ERA_CAP], [65536, 4194304]);
+  const small = planTasks(REAL.root, { taskCap: 200 });
+  assert.deepEqual(small.tasks.filter((t) => t.file).map((t) => t.task), []);
+  assert.ok(small.left.some((l) => l.task === 'count-letters' && /bytes, over the task file cap 200$/.test(l.why)), JSON.stringify(small.left));
+  const one = readFileSync(path.join(REAL.dist, 'organism', 'era', 'tasks', 'count-letters.json')).length;
+  const era = planTasks(REAL.root, { eraCap: one });
+  assert.deepEqual(era.tasks.filter((t) => t.file).map((t) => t.task), ['count-letters']);
+  assert.deepEqual(era.left.find((l) => l.task === 'sum'), { task: 'sum', why: 'past the cap ' + one + ' on every task file together' });
+  // a dev row that is not a row is dropped; a tree with no neo/tasks has no task
+  const { root } = fixture('rows', { tasks: { mixed: [...TASKS['count-letters'], { q: '', expect: { equals: 'x' } }, { q: 'no expect' }, { prompt: 'how many letters in rose', expect: { equals: '4' }, reply: '4' }] } });
+  const m = planTasks(root);
+  const rows = JSON.parse(m.files.get('tasks/mixed.json').toString('utf8')).rows;
+  assert.equal(rows.length, TASKS['count-letters'].length + 1);
+  assert.deepEqual(rows.at(-1), { q: 'how many letters in rose', expect: { equals: '4' }, answer: '4' });
+  assert.deepEqual(planTasks(tmp('empty')), { tasks: [], left: [], files: new Map() });
 });
 
 // ---------------------------------------------------------------- the service worker, in a vm
 
 const ORIGIN = 'https://dilation.dev';
 
-/** The bytes the server would answer for every precached url of a dist. */
+/** The bytes the server would answer for every listed url of a dist (/ask is the page, as the host serves it). */
 function served(dist, urls) {
-  return new Map(urls.map((u) => [u, readFileSync(u === '/ask/' ? path.join(dist, 'ask', 'index.html') : path.join(dist, ...u.split('/').filter(Boolean)))]));
+  return new Map(urls.map((u) => [u, readFileSync(u === '/ask' ? path.join(dist, 'ask', 'index.html') : path.join(dist, ...u.split('/').filter(Boolean)))]));
 }
 
 /** Run a worker source with stubbed self, caches, fetch and clients; fire its events by hand. */
@@ -281,7 +464,7 @@ function worker(src, files) {
   };
   const self = {
     addEventListener: (type, fn) => { listeners[type] = fn; },
-    location: new URL('/ask/sw.js', ORIGIN),
+    location: new URL(SW_URL, ORIGIN),
     skipWaiting: async () => { flags.skipped++; },
     clients: { claim: async () => { flags.claimed++; } },
     registration: { update: async () => { flags.updates++; } },
@@ -300,20 +483,21 @@ function worker(src, files) {
   return { fire, get, store, net, flags, value, cached, cache: CACHE_PREFIX + value('VERSION') };
 }
 
-const urlsOf = (src) => worker(src, new Map()).value('PRECACHE').map((f) => f.url);
+const listOf = (src, name) => worker(src, new Map()).value(name).map((f) => f.url);
 async function installed() {
-  const urls = urlsOf(REAL.sw);
+  const urls = listOf(REAL.sw, 'PRECACHE').concat(listOf(REAL.sw, 'LAZY'));
   const w = worker(REAL.sw, served(REAL.dist, urls));
   await w.fire('install').done;
   return w;
 }
 const bodyOf = async (res) => Buffer.from(await res.arrayBuffer());
 
-test('install precaches every file it lists: the ask page, the organism modules, cells.json and every cell', async () => {
+test('install precaches every file it lists: the page at /ask, the organism modules, cells.json, every cell, the core, the body and tasks.json', async () => {
   const w = await installed();
   const om = readJson(path.join(REAL.dist, 'organism', 'manifest.json'));
-  const want = ['/ask/', '/ask/manifest.webmanifest', '/ask/icon.svg', ...om.files.map((f) => '/organism/' + f.file), '/organism/cells.json',
-    ...REAL.cells.cells.flatMap((r) => ['/organism/' + r.file, ...r.deps.map((d) => '/organism/' + d.file)])];
+  const want = ['/ask', '/ask/manifest.webmanifest', '/ask/icon.svg', ...om.files.map((f) => '/organism/' + f.file), '/organism/cells.json',
+    ...REAL.cells.cells.flatMap((r) => ['/organism/' + r.file, ...r.deps.map((d) => '/organism/' + d.file)]),
+    '/organism/grow/neo-core.mjs', '/organism/grow/neo-kernel.mjs', '/organism/web/pocket-era.mjs', '/organism/era/tasks.json'];
   const list = w.value('PRECACHE');
   assert.deepEqual(list.map((f) => f.url).sort(), [...want].sort());
   assert.equal(list.length, REAL.result.precache);
@@ -323,14 +507,37 @@ test('install precaches every file it lists: the ask page, the organism modules,
     assert.ok(res, u + ' is in the cache');
     assert.ok((await bodyOf(res.clone())).equals(w.net.files.get(u)), u + ' is cached with the bytes the server sent');
   }
+  for (const u of listOf(REAL.sw, 'LAZY')) assert.equal(w.cached(w.cache, u), undefined, u + ' is lazy: not fetched at install');
   assert.ok(w.net.calls.every((c) => c.init.cache === 'reload'), 'install fetches past the HTTP cache');
+  assert.equal(w.net.calls.length, want.length);
   assert.equal(w.flags.skipped, 1);
-  assert.equal(REAL.result.bytes, [...w.net.files.values()].reduce((s, b) => s + b.length, 0));
+  assert.equal(REAL.result.bytes, want.reduce((s, u) => s + w.net.files.get(u).length, 0));
+});
+
+test('a lazy task file is fetched on first need, checked, cached and then served with the network down; other bytes are never cached', async () => {
+  const w = await installed();
+  const u = '/organism/era/tasks/count-letters.json';
+  const first = w.get(u);
+  assert.ok((await bodyOf(await first.responded)).equals(w.net.files.get(u)));
+  assert.deepEqual(await first.done, ['filled']);
+  assert.ok(w.cached(w.cache, u));
+  w.net.online = false;
+  const again = w.get(u);
+  assert.ok((await bodyOf(await again.responded)).equals(readFileSync(path.join(REAL.dist, ...u.split('/').filter(Boolean)))));
+  assert.deepEqual(await again.done, ['offline']);
+  // a task file that is not this version's bytes: served (the network said so) but never cached, and the update asked
+  w.net.online = true;
+  const v = '/organism/era/tasks/sum.json';
+  w.net.files.set(v, Buffer.from('{"task":"sum","rows":[]}\n'));
+  const odd = w.get(v);
+  await odd.responded;
+  assert.deepEqual(await odd.done, ['newer']);
+  assert.equal(w.cached(w.cache, v), undefined);
+  assert.equal(w.flags.updates, 1);
 });
 
 test('a stale file (not the bytes of this version) fails the install and nothing is cached', async () => {
-  const urls = urlsOf(REAL.sw);
-  const files = served(REAL.dist, urls);
+  const files = served(REAL.dist, listOf(REAL.sw, 'PRECACHE'));
   files.set('/organism/cells.json', Buffer.from('{"cells":[]}\n'));
   const w = worker(REAL.sw, files);
   await assert.rejects(w.fire('install').done, /is not the file of version/);
@@ -347,7 +554,7 @@ test('activate deletes an older version cache, keeps this version and every cach
   assert.equal(w.flags.claimed, 1);
 });
 
-test('a GET of a precached file is served from the cache with the network down; /ask/?q=, /ask and /ask/index.html are the ask page', async () => {
+test('a GET of a precached file is served from the cache with the network down; /ask?q=, /ask/ and /ask/index.html are the ask page', async () => {
   const w = await installed();
   w.net.online = false;
   const cell = '/organism/' + REAL.cells.cells[0].file;
@@ -355,15 +562,14 @@ test('a GET of a precached file is served from the cache with the network down; 
   assert.ok(e.responded, 'the worker answered');
   assert.ok((await bodyOf(await e.responded)).equals(w.net.files.get(cell)));
   assert.deepEqual(await e.done, ['offline'], 'the background revalidate found no network and kept the entry');
-  const nav = w.get('/ask/?q=hey', { mode: 'navigate' });
-  assert.ok((await bodyOf(await nav.responded)).equals(w.net.files.get('/ask/')));
-  await nav.done;
-  for (const name of ['/ask', '/ask/index.html', '/ask/index.html?q=hey']) {
+  for (const name of ['/ask', '/ask?q=hey', '/ask/', '/ask/index.html', '/ask/index.html?q=hey']) {
     const other = w.get(name, { mode: 'navigate' });
     assert.ok(other.responded, name + ' is answered by the worker');
-    assert.ok((await bodyOf(await other.responded)).equals(w.net.files.get('/ask/')), name + ' is the cached ask page');
+    assert.ok((await bodyOf(await other.responded)).equals(w.net.files.get('/ask')), name + ' is the cached ask page');
     await other.done;
   }
+  // the body's own files, the way its worker asks for them
+  for (const u of ['/organism/web/pocket-era.mjs', '/organism/grow/neo-core.mjs', '/organism/era/tasks.json']) assert.ok((await bodyOf(await w.get(u).responded)).equals(w.net.files.get(u)), u);
 });
 
 test('a POST is never intercepted or cached, /api/ is never intercepted, nor a page or an origin that is not the pocket', async () => {
@@ -374,6 +580,7 @@ test('a POST is never intercepted or cached, /api/ is never intercepted, nor a p
     { url: ORIGIN + '/organism/cells.json', method: 'POST' },
     { url: ORIGIN + '/api/ask', method: 'GET' },
     { url: ORIGIN + '/ladder/', method: 'GET', mode: 'navigate' },
+    { url: ORIGIN + '/organism/cells/' + SILENT + '.mjs', method: 'GET' },
     { url: 'https://elsewhere.test/organism/cells.json', method: 'GET' },
   ]) {
     const e = w.fire('fetch', { request: req });
@@ -384,11 +591,11 @@ test('a POST is never intercepted or cached, /api/ is never intercepted, nor a p
 });
 
 test('the /api/ door holds even for a list that names a file under /api/', async () => {
-  const src = swSource({ version: 'v1', precache: [{ url: '/api/ask', sha256: sha('x') }, { url: '/ask/', sha256: sha('page') }] });
-  const w = worker(src, new Map([['/api/ask', Buffer.from('x')], ['/ask/', Buffer.from('page')]]));
+  const src = swSource({ version: 'v1', precache: [{ url: '/api/ask', sha256: sha('x') }, { url: '/ask', sha256: sha('page') }] });
+  const w = worker(src, new Map([['/api/ask', Buffer.from('x')], ['/ask', Buffer.from('page')]]));
   await w.fire('install').done;
   assert.equal(w.get('/api/ask').responded, null);
-  assert.ok(w.get('/ask/').responded);
+  assert.ok(w.get('/ask').responded);
 });
 
 test('revalidate: the same bytes refresh the entry; other bytes are a newer generation, never mixed in, and ask for the update', async () => {
@@ -419,50 +626,89 @@ test('a precached file missing from the cache is fetched, checked, cached and se
   assert.ok(w.cached(w.cache, u));
 });
 
-test('a redirected answer for /ask/ (the host 308s it) is cached as a plain response a navigation may use', async () => {
-  const urls = urlsOf(REAL.sw);
-  const w = worker(REAL.sw, served(REAL.dist, urls));
-  w.net.redirect.add('/ask/');
+test('a redirected answer for /ask is cached as a plain response a navigation may use', async () => {
+  const w = worker(REAL.sw, served(REAL.dist, listOf(REAL.sw, 'PRECACHE')));
+  w.net.redirect.add('/ask');
   await w.fire('install').done;
-  const res = w.cached(w.cache, '/ask/');
+  const res = w.cached(w.cache, '/ask');
   assert.equal(res.redirected, false);
-  assert.ok((await bodyOf(res.clone())).equals(w.net.files.get('/ask/')));
+  assert.ok((await bodyOf(res.clone())).equals(w.net.files.get('/ask')));
 });
 
 // ---------------------------------------------------------------- the tab router
 
-test('the tab routes every dev prompt to the same cell with the same text as the server (grownAnswer)', async (t) => {
-  const router = await loadCells(dirUrl(path.join(REAL.dist, 'organism')), { fetch: fileFetch });
-  const devDir = path.join(ROOT, 'judge', 'dev');
-  const rows = readdirSync(devDir).filter((f) => f.endsWith('.jsonl')).sort()
-    .flatMap((f) => readFileSync(path.join(devDir, f), 'utf8').split(/\r?\n/).filter((l) => l.trim()).map((l) => JSON.parse(l)));
-  let same = 0, byCell = 0;
-  for (const r of rows) {
-    const s = grownAnswer(r.q);
-    const tab = await route(router, r.q);
-    assert.deepEqual(tab ? { cell: tab.cell, class: tab.class, text: tab.text } : null, s ? { cell: s.id, class: s.class, text: s.answer } : null, r.q);
-    if (tab) { byCell++; assert.ok(Number.isFinite(tab.ms) && tab.ms >= 0); }
-    same++;
-  }
-  assert.ok(rows.length > 0);
-  assert.ok(byCell > 0, 'at least one dev prompt reaches a grown cell, or the comparison proves nothing');
-  t.diagnostic('dev prompts routed identically by the tab and the server: ' + same + ' of ' + rows.length + ' (' + byCell + ' by a grown cell, ' + (same - byCell) + ' by none on both)');
-});
+/** A router over the fixture build, its imports recorded (a file import, as the origin would serve the copy). */
+async function realRouter(o = {}) {
+  const imported = [];
+  const importer = (url) => { imported.push(url.split('/').pop().replace(/\.mjs$/, '')); return import(url); };
+  const router = await loadCells(dirUrl(path.join(REAL.dist, 'organism')), { fetch: fileFetch, importer, ...o });
+  return { router, imported };
+}
+const PROMPTS = ['hello there', 'echo hi', 'reverse the word apple', 'Reverse the word: Apple!', 'shout the word stone', 'sum of 2 and 3',
+  'reverse the word a b c d e', 'what is the capital of mars', 'nothing carries this', '', 'shout', 'reverse the word'];
 
-test('a NEO colony row (tier "neo") ships and routes exactly as the server renderer routes it', async () => {
-  const { root, dist } = fixture('neo');
-  generatePocket({ root, dist });
-  const cells = readJson(path.join(dist, 'organism', 'cells.json')).cells;
-  assert.deepEqual(cells.map((r) => [r.id, r.tier]), [['greet-direct-g3', null], ['echo-direct-g3', null], ['sum-neo-g3', 'neo']]);
-  const server = await import(pathToFileURL(path.join(root, 'grown', 'index.mjs')).href);
-  const router = await loadCells(dirUrl(path.join(dist, 'organism')), { fetch: fileFetch });
-  assert.equal(router.rows.find((r) => r.id === 'sum-neo-g3').tier, 'neo');
-  for (const q of ['hello there', 'sum of 2 and 3', 'echo hi', 'sum of x and y', 'nothing carries this', '']) {
+test('the tab routes every prompt to the same cell with the same text as the server (the fixture grown/index.mjs, THE GATE inside)', async (t) => {
+  const server = await import(pathToFileURL(path.join(REAL.root, 'grown', 'index.mjs')).href);
+  assert.ok(server.GATE, 'the server index carries THE GATE');
+  const { router } = await realRouter({ fits });
+  let byCell = 0;
+  for (const q of PROMPTS) {
     const s = server.grownAnswer(q);
     const tab = await route(router, q);
     assert.deepEqual(tab ? { cell: tab.cell, class: tab.class, text: tab.text } : null, s ? { cell: s.id, class: s.class, text: s.answer } : null, q);
+    if (tab) { byCell++; assert.ok(Number.isFinite(tab.ms) && tab.ms >= 0); }
   }
-  assert.equal((await route(router, 'sum of 2 and 3')).cell, 'sum-neo-g3');
+  assert.equal((await route(router, 'reverse the word apple')).text, 'elppa');
+  assert.equal((await route(router, 'shout the word stone')).text, 'STONE');
+  t.diagnostic('fixture prompts routed identically by the tab and the server: ' + PROMPTS.length + ' (' + byCell + ' by a grown cell)');
+});
+
+test('THE GATE in the tab: the unmastered colony is never imported or asked; a colony is asked only on an exact template fit', async () => {
+  const { router, imported } = await realRouter({ fits });
+  assert.deepEqual(router.rows.map((r) => r.id), ['greet-direct-g3', 'echo-direct-g3', 'shout-neo-g3', 'reverse-neo-g3']);
+  // shout's can is true for every prompt: only its template keeps it from answering "reverse the word apple"
+  assert.equal((await route(router, 'reverse the word apple')).cell, 'reverse-neo-g3');
+  assert.ok(!imported.includes('shout-neo-g3'), 'a colony whose template does not fit was imported');
+  assert.equal(await route(router, 'sum of 2 and 3'), null, 'the unmastered colony answered');
+  assert.equal(await route(router, 'what is the capital of mars'), null);
+  assert.ok(!imported.includes(SILENT));
+  // no fits (a page whose core did not load): no colony is ever asked, the locked cells still are
+  const bare = await realRouter();
+  assert.equal(await route(bare.router, 'reverse the word apple'), null);
+  assert.equal(await route(bare.router, 'shout the word stone'), null);
+  assert.equal((await route(bare.router, 'hello there')).cell, 'greet-direct-g3');
+  assert.deepEqual(bare.imported, ['greet-direct-g3', 'echo-direct-g3'], 'only the locked cells were imported');
+  // a fits that says anything but exactly true, throws, or does not answer within the budget is a closed gate
+  for (const bad of [() => 'true', () => 1, () => { throw new Error('no core'); }, () => new Promise(() => {}), async () => false]) {
+    const r = await realRouter({ fits: bad, budgetMs: 30 });
+    assert.equal(await route(r.router, 'reverse the word apple'), null);
+    assert.ok(!r.imported.some((id) => id.includes('-neo-')), r.imported.join(','));
+  }
+  const yes = await realRouter({ fits: async () => true });
+  assert.equal((await route(yes.router, 'shout the word stone')).cell, 'shout-neo-g3', 'an async exact true opens it');
+});
+
+test('cells.json is data too: a NEO row that does not serve is dropped at load and never imported, whatever its can says', async () => {
+  const always = (id) => ({ meta: { id, class: 'x' }, can: () => true, answer: () => 'from ' + id });
+  const rows = [
+    { id: 'quiet-neo-g1', class: 'x', tier: 'neo', serve: false, templates: ['say the word {1-3}'], file: 'cells/quiet-neo-g1.mjs' },
+    { id: 'string-neo-g1', class: 'x', tier: 'neo', serve: 'true', templates: ['say the word {1-3}'], file: 'cells/string-neo-g1.mjs' },
+    { id: 'empty-neo-g1', class: 'x', tier: 'neo', serve: true, templates: [], file: 'cells/empty-neo-g1.mjs' },
+    { id: 'many-neo-g1', class: 'x', tier: 'neo', serve: true, templates: Array.from({ length: MAX_TEMPLATES + 1 }, () => 'say the word {1-3}'), file: 'cells/many-neo-g1.mjs' },
+    { id: 'nolist-neo-g1', class: 'x', tier: 'neo', serve: true, file: 'cells/nolist-neo-g1.mjs' },
+    { id: 'open-neo-g1', class: 'x', tier: 'neo', serve: true, templates: ['say the word {1-3}'], file: 'cells/open-neo-g1.mjs' },
+  ];
+  const imported = [];
+  const router = await loadCells('https://pocket.test/organism/', { fetch: async () => new Response(JSON.stringify({ generation: 1, cells: rows })), importer: async (u) => { const id = u.split('/').pop().replace(/\.mjs$/, ''); imported.push(id); return always(id); }, fits });
+  assert.deepEqual(router.rows.map((r) => r.id), ['open-neo-g1']);
+  assert.deepEqual(router.rows[0].templates, ['say the word {1-3}']);
+  assert.equal(await route(router, 'something else'), null);
+  assert.deepEqual(imported, []);
+  assert.equal((await route(router, 'say the word hi')).cell, 'open-neo-g1');
+  assert.deepEqual(imported, ['open-neo-g1']);
+  assert.equal(MAX_TEMPLATES, 32);
+  assert.equal(serves({ serve: true, templates: ['a {1-2}'] }), true);
+  for (const r of [null, {}, { serve: true }, { serve: true, templates: [''] }, { serve: true, templates: [7] }, { serve: true, templates: ['x'.repeat(401)] }]) assert.equal(serves(r), false, JSON.stringify(r));
 });
 
 const mod = (id, can, answer) => ({ meta: { id, class: id.split('-')[0] }, can, answer });
@@ -547,9 +793,10 @@ test('cells.json is data: a row naming a file outside <base>/cells/ is refused b
   }
 });
 
-test('browser safe: the router and the worker carry nothing of node and no static import; the router passes the web/ask.mjs copy gate', () => {
+test('browser safe: the router, the worker and the body carry nothing of node and no static import; the router passes the web/ask.mjs copy gate', () => {
   const tab = readFileSync(path.join(ROOT, 'act', 'cells-tab.mjs'), 'utf8');
-  for (const [src, what] of [[tab, 'act/cells-tab.mjs'], [REAL.sw, 'ask/sw.js']]) {
+  const body = readFileSync(path.join(ROOT, 'web', 'pocket-era.mjs'), 'utf8');
+  for (const [src, what] of [[tab, 'act/cells-tab.mjs'], [REAL.sw, 'ask/sw.js'], [body, 'web/pocket-era.mjs']]) {
     assert.doesNotMatch(src, /\bfrom\s*['"]node:|\bprocess\b|\bBuffer\b|\brequire\b|\bimportScripts\b/, what);
     assert.doesNotMatch(src, /^\s*import\s[^'"]*?from\s*['"]/m, what + ' has no static import');
   }

@@ -12,8 +12,9 @@
 // THE CONVERSATION. Turns stack in a thread (the person's prompt, then the organism's answer with its
 // route line); the box stays at the bottom; Enter sends and Shift+Enter is a new line; the thread
 // scrolls to the newest turn; "new chat" clears it. The thread survives a reload: localStorage holds ONE
-// key (THREAD_KEY), the newest KEEP_TURNS turns as [{ prompt, text, read?, route? }], every read and
-// write wrapped in try/catch, nothing else stored. A corrupt or throwing store is an empty thread.
+// key for it (THREAD_KEY), the newest KEEP_TURNS turns as [{ prompt, text, read?, route? }], every read
+// and write wrapped in try/catch (the body's switch is the only other key). A corrupt or throwing store
+// is an empty thread.
 //
 // FOLLOW-UPS. Every prompt goes through carry(turns, prompt) of act/thread.mjs first. When it carried,
 // the turn prints one dim line "read as: <standalone prompt>" and the standalone prompt is what every
@@ -22,8 +23,10 @@
 //
 // THE ORDER OF THE TAB: (1) converse(prompt), the conversation region; (2) the exact reader; (3) the
 // word problem reader (readExact with opts.word); (4) route() of act/cells-tab.mjs over the grown cells
-// web/pocket.mjs bundled under /organism/ (route line "grown cell <id>, generation <n>, no server");
-// (5) the server: a prompt none of them carries is POSTed ONCE to /api/ask on the same origin, and the
+// web/pocket.mjs bundled under /organism/ (route line "grown cell <id>, generation <n>, no server"; a
+// NEO colony is asked only when THE GATE's template test, web/pocket-era.mjs gateFits, says it fits);
+// (4b) a cell grown on THIS device by the body, web/pocket-era.mjs deviceAnswer, only on an exact
+// template fit and only a cell that passed all its check rows (route line DEVICE_ROUTE); (5) the server: a prompt none of them carries is POSTed ONCE to /api/ask on the same origin, and the
 // SERVER BLOCK renders first ("asking the organism on the server ..."), replaced by the answer or its
 // failure; the tab's refusal lines follow it, dim, every one printed. Offline (navigator.onLine false,
 // or the request fails while offline) the server block is OFFLINE_LINE, one honest line, not a spinner.
@@ -37,8 +40,15 @@
 // THE POCKET. generateAsk() calls web/pocket.mjs generatePocket() after it writes the page, so the cells,
 // cells.json, the web app manifest, the icon and the service worker are written on every build. The page
 // links the manifest, sets the theme colour (the body background, which is what the manifest takes) and
-// the apple mobile web app metas, and registers /ask/sw.js (scope /ask/) only when serviceWorker is in
-// navigator and the page is on https or localhost.
+// the apple mobile web app metas, and registers /ask/sw.js with scope / (vercel.json sends the
+// Service-Worker-Allowed header for it; the page /ask and the body's worker /organism/web/pocket-era.mjs
+// are both inside it) only when serviceWorker is in navigator and the page is on https or localhost; a
+// registration of the same worker under another scope is removed.
+//
+// THE BODY. The page imports /organism/web/pocket-era.mjs apart (a failure leaves the chat as it was),
+// starts its module worker, prints its ONE dim line ("this device: <n> cells kept for <m> tasks, <k>
+// tried, running|paused (<why>)") and shows its switch; the switch is one more localStorage key
+// (web/pocket-era.mjs SWITCH_KEY), written only when it is used.
 //
 // The view functions below are exported so the tests call them in node, and the page carries their
 // source text (Function.prototype.toString), so the tested function IS the page's function. The *Html
@@ -51,8 +61,11 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { generatePocket, POCKET_HEAD } from './pocket.mjs';
+import { generatePocket, POCKET_HEAD, SW_URL, SW_SCOPE } from './pocket.mjs';
+import { ROUTE_LINE } from './pocket-era.mjs';
 import { OFFLINE_LINE } from '../act/cells-tab.mjs';
+
+export { SW_URL, SW_SCOPE };
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const DIST = path.join(ROOT, 'web', 'dist');
@@ -81,10 +94,11 @@ export const SERVER_TIMEOUT_MS = 25000;
 export const THREAD_KEY = 'dilation.thread';
 export const KEEP_TURNS = 20;
 export const TEXT_CAP = 8000;
-// Where web/pocket.mjs puts cells.json and the cells, and where the service worker lives.
+// Where web/pocket.mjs puts cells.json, the cells and the body (the service worker's URL and scope are pocket.mjs's).
 export const CELLS_BASE = '/organism/';
-export const SW_URL = '/ask/sw.js';
-export const SW_SCOPE = '/ask/';
+export const BODY_URL = '../organism/web/pocket-era.mjs';
+// The route line of an answer from a cell grown on this device (web/pocket-era.mjs deviceAnswer).
+export const DEVICE_ROUTE = ROUTE_LINE;
 // The page background: the CSS body background, the theme-color meta and (through web/pocket.mjs
 // askColors) the manifest's theme and background colours are this one value.
 export const BACKGROUND = '#02030a';
@@ -94,7 +108,7 @@ const sha256 = (b) => crypto.createHash('sha256').update(b).digest('hex');
 
 // ---------------------------------------------------------------- the page functions
 // Each is pure, references only the page functions above it, the page constants (THREAD_KEY,
-// KEEP_TURNS, TEXT_CAP, OFFLINE_LINE) and the globals of every browser and of Node 24 (performance),
+// KEEP_TURNS, TEXT_CAP, OFFLINE_LINE, DEVICE_ROUTE) and the globals of every browser and of Node 24 (performance),
 // and is written into the page by page().
 
 /** Escape text for HTML text and attribute values (the node side serialisation and the tests). */
@@ -168,6 +182,14 @@ export function cellView(hit, gen) {
     ['pre', { class: 'reply', 'data-answer': hit.text, 'data-cell': hit.cell }, hit.text],
     ['div', { class: 'foot', 'data-route': 'cell', 'data-provenance': 'grown' }, 'route ', ['span', { class: 'ok' }, 'grown cell ' + hit.cell + ', generation ' + (gen == null ? 'unknown' : gen) + ', no server'],
       '  class ' + (hit.class == null ? 'unknown' : hit.class) + '  model none  tokens 0  ' + (Number.isFinite(ms) ? ms : 0) + ' ms in this tab']];
+}
+
+/** A prompt a cell grown on THIS device carried (web/pocket-era.mjs deviceAnswer): no server. */
+export function deviceView(d) {
+  return ['div', { class: 'tab' },
+    ['pre', { class: 'reply', 'data-answer': d.text, 'data-device': d.task }, d.text],
+    ['div', { class: 'foot', 'data-route': 'device', 'data-provenance': 'grown' }, 'route ', ['span', { class: 'ok' }, DEVICE_ROUTE],
+      '  task ' + d.task + '  cells ' + d.cells + '  model none  tokens 0']];
 }
 
 /** The server block while the request is in flight; waitedS > 0 says how long it has waited. */
@@ -306,7 +328,7 @@ export function sendsOnKey(ev) {
 }
 
 // The page functions in the order the page script declares them.
-export const PAGE_FUNCTIONS = Object.freeze({ esc, clock, mount, helloView, youView, tabNativeView, tabExactView, cellView, pendingView, refusalView, offlineView, modelParts, answerOnce, serverView, restoredView, clip, cleanTurns, loadTurns, saveTurns, swAllowed, sendsOnKey });
+export const PAGE_FUNCTIONS = Object.freeze({ esc, clock, mount, helloView, youView, tabNativeView, tabExactView, cellView, deviceView, pendingView, refusalView, offlineView, modelParts, answerOnce, serverView, restoredView, clip, cleanTurns, loadTurns, saveTurns, swAllowed, sendsOnKey });
 const pageSource = () => Object.entries(PAGE_FUNCTIONS).map(([name, fn]) => (/^function\s/.test(fn.toString()) ? fn.toString() : 'const ' + name + ' = ' + fn.toString() + ';')).join('\n');
 
 // ---------------------------------------------------------------- the node side serialisation
@@ -412,6 +434,8 @@ button { font: inherit; cursor: pointer; }
 .chips { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { background: transparent; color: var(--dim); border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; font-size: 11px; max-width: 100%; overflow-wrap: anywhere; text-align: left; }
 .chip:hover { color: var(--ink); border-color: var(--acc); }
+#bodyrow { margin-top: 10px; }
+[hidden] { display: none !important; }
 details.foot { margin-top: 10px; }
 summary { cursor: pointer; }
 nav { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 18px; }
@@ -427,6 +451,7 @@ code { color: var(--ink); overflow-wrap: anywhere; }
 <div style="margin-top:8px">${shas}</div>
 <details class="foot"><summary>how every answer prints its route</summary>Every answer prints how it was reached: <b>route</b> (which path answered), <b>provenance</b> (native: the conversation region; exact: computed with BigInt rationals, never rounded; grown: a cell the organism grew; memory; model), <b>model</b> (none: no language model was called, or the provider and model the server called), and its clock: a tab answer prints the nanoseconds per ask measured on YOUR device (median of 7 timed batches of the same ask) or the milliseconds a grown cell took; a server answer prints the microseconds <code>ask()</code> took on the server and the round trip this tab measured in milliseconds. The same question on the command line: <code>node bin/brain.mjs ask dilation "hey" --provider null</code>. The distance to the frontier is on the <a href="../ladder/">ladder</a>, from the verdict files.</details>
 <div class="chips">${chips}</div>
+<div class="foot" id="bodyrow"><span id="body"></span> <button id="bodysw" class="chip" type="button" hidden>stop the body</button></div>
 <div id="term" aria-live="polite">${toHtml(helloView())}</div>
 <form id="f" autocomplete="off"><span class="acc prompt-label">brain ask dilation &gt;</span><textarea id="q" name="q" rows="1" placeholder="hey, or what is 17 times 23" spellcheck="false" enterkeyhint="send" aria-label="your prompt"></textarea><button id="go" type="submit">ask</button></form>
 </main>
@@ -438,7 +463,7 @@ ${hasThread ? "import { carry } from '../organism/act/thread.mjs';" : 'const car
 ${hasCells ? "import { loadCells, route, OFFLINE_LINE } from '../organism/act/cells-tab.mjs';" : 'const loadCells = null, route = null, OFFLINE_LINE = ' + JSON.stringify(OFFLINE_LINE) + ';'}
 const $ = (s) => document.querySelector(s);
 const opts = readWord ? { word: readWord } : {};
-const THREAD_KEY = ${JSON.stringify(THREAD_KEY)}, KEEP_TURNS = ${KEEP_TURNS}, TEXT_CAP = ${TEXT_CAP}, HELLO_LINE = ${JSON.stringify(HELLO_LINE)};
+const THREAD_KEY = ${JSON.stringify(THREAD_KEY)}, KEEP_TURNS = ${KEEP_TURNS}, TEXT_CAP = ${TEXT_CAP}, HELLO_LINE = ${JSON.stringify(HELLO_LINE)}, DEVICE_ROUTE = ${JSON.stringify(DEVICE_ROUTE)};
 ${pageSource()}
 // The one request this page ever makes: a prompt the tab refused, POSTed once to the same origin.
 const API = '/api/ask';
@@ -473,14 +498,24 @@ function record(my, typed, c, text, how) {
   turns = cleanTurns(turns.concat([t]));
   saveTurns(store(), turns);
 }
+// THE BODY (web/pocket-era.mjs), imported apart so a tab without it still chats: THE GATE's template test, the cells
+// grown on this device, the worker, its one dim line and its switch.
+const era = import(${JSON.stringify(BODY_URL)}).then((m) => m, () => null);
+const fits = async (t, s) => { const m = await era; return m ? m.gateFits(t, s) : false; };
+era.then((m) => {
+  const sw = $('#bodysw');
+  if (!m) return;
+  if (sw) sw.hidden = false;
+  m.startBody({ document, navigator: typeof navigator === 'undefined' ? null : navigator, Worker: typeof Worker === 'function' ? Worker : null, storage: store(), lineEl: $('#body'), switchEl: sw });
+}).catch(() => {});
 // The grown cells web/pocket.mjs bundled: cells.json read once, a cell imported the first time a prompt reaches it.
 let cells = null;
 function grown() {
-  if (!cells) cells = loadCells(new URL(${JSON.stringify(CELLS_BASE)}, location.href).href).catch((err) => { cells = null; throw err; });
+  if (!cells) cells = loadCells(new URL(${JSON.stringify(CELLS_BASE)}, location.href).href, { fits }).catch((err) => { cells = null; throw err; });
   return cells;
 }
 // The order of the tab: the follow-up carry, then (1) the conversation region, (2) the exact reader, (3) the word
-// problem reader, (4) the grown cells, (5) the server.
+// problem reader, (4) the grown cells, (4b) a cell grown on this device, (5) the server.
 async function ask(q) {
   const typed = String(q || '').trim(); if (!typed) return null;
   const my = epoch;
@@ -521,6 +556,16 @@ async function ask(q) {
       note = 'the grown cells did not load in this tab (' + String((err && err.message) || err) + '), so none was asked.';
     }
   }
+  // (4b) a cell grown on this device, only on an exact template fit and only one that passed all its check rows.
+  try {
+    const m = await era;
+    const d = m && my === epoch ? await m.deviceAnswer(q) : null;
+    if (d && typeof d.text === 'string') {
+      put(e, deviceView(d)); show(e);
+      record(my, typed, c, d.text, DEVICE_ROUTE + ', task ' + d.task);
+      return { tab: true, answer: d.text, route: 'device', provenance: 'grown', task: d.task, read };
+    }
+  } catch {}
   // A new chat started while the cells were read: this prompt belongs to the cleared thread, so it is not sent.
   if (my !== epoch) return { tab: false, dropped: true, read };
   const refusal = refusalView(spokenLeftover(q).slice(0, 8), wordRefusal ? wordRefusal(q) : null, note);
@@ -562,16 +607,21 @@ $('#f').addEventListener('submit', (ev) => { ev.preventDefault(); submit(); });
 box.addEventListener('keydown', (ev) => { if (sendsOnKey(ev)) { ev.preventDefault(); submit(); } });
 box.addEventListener('input', fit);
 $('#new').addEventListener('click', newChat);
-for (const b of document.querySelectorAll('.chip')) b.addEventListener('click', () => send(b.dataset.q));
+for (const b of document.querySelectorAll('[data-q]')) b.addEventListener('click', () => send(b.dataset.q));
 if (turns.length) {
   const hello = $('#hello'); if (hello) hello.remove();
   let last = null;
   for (const t of turns) { last = mount(document, ['div', { class: 'entry', 'data-restored': '1' }, youView(t.prompt, t.read || null), restoredView(t)]); $('#term').appendChild(last); }
   show(last);
 }
-// The pocket: the service worker of /ask/, on https or localhost only.
+// The pocket: the service worker, scope ${SW_SCOPE} (it holds /ask and the body's worker under /organism/), on https or
+// localhost only; a registration of the same worker under another scope (the old /ask/) is removed.
 if (swAllowed(typeof navigator === 'undefined' ? null : navigator, location)) {
-  try { const p = navigator.serviceWorker.register(${JSON.stringify(SW_URL)}, { scope: ${JSON.stringify(SW_SCOPE)} }); if (p && typeof p.catch === 'function') p.catch(() => {}); } catch {}
+  try {
+    const sw = navigator.serviceWorker, path = (u) => { try { return new URL(u, location.href).pathname; } catch { return ''; } };
+    const p = sw.register(${JSON.stringify(SW_URL)}, { scope: ${JSON.stringify(SW_SCOPE)} }); if (p && typeof p.catch === 'function') p.catch(() => {});
+    if (typeof sw.getRegistrations === 'function') Promise.resolve(sw.getRegistrations()).then((rs) => { for (const r of rs || []) { const w = r.active || r.waiting || r.installing; if (w && path(w.scriptURL) === ${JSON.stringify(SW_URL)} && path(r.scope) !== ${JSON.stringify(SW_SCOPE)}) r.unregister(); } }).catch(() => {});
+  } catch {}
 }
 const pre = new URLSearchParams(location.search).get('q'); if (pre) send(pre);
 window.__brainAsk = { ready: true, spoken: spokenExpression, ask, send, newChat, turns: () => turns.slice() };
@@ -582,8 +632,11 @@ box.focus();
 `;
 }
 
-/** Build /ask into dist (web/dist by default; a bench passes a scratch directory), then the pocket beside it. */
-export function generateAsk(dist = DIST) {
+/**
+ * Build /ask into dist (web/dist by default; a bench passes a scratch directory), then the pocket beside it. root is
+ * where the pocket reads grown/, neo/ and the search core (the repository by default; a test passes a fixture tree).
+ */
+export function generateAsk(dist = DIST, { root = ROOT } = {}) {
   const manifest = copyOrganism(dist);
   const html = page(manifest);
   const dir = path.join(dist, 'ask');
@@ -592,7 +645,7 @@ export function generateAsk(dist = DIST) {
   // THE POCKET (web/pocket.mjs): the cells, cells.json, the manifest, the icon and the service worker, on every build.
   // It reads the page and the organism manifest just written, so it runs after them; a cell that breaks the contract
   // or a copy whose sha256 differs throws here, and the build with it.
-  const pocket = generatePocket({ dist });
+  const pocket = generatePocket({ root, dist });
   return { bytes: Buffer.byteLength(html), modules: manifest.files.length, manifest, html, dist, pocket };
 }
 

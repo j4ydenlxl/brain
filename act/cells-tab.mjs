@@ -7,8 +7,13 @@
 //
 // THE ROUTE RULE IS THE SERVER'S (grown/index.mjs grownAnswer, written by grow/store.mjs renderIndexMjs): the cells
 // in index order; the first whose can(q) is exactly true and whose answer(q) is a non-empty string answers; a throw
-// in can is a false, a throw in answer is a null, and a null passes the prompt to the next cell. NEO colonies (rows
-// with tier "neo", grow/NEO.md PROMOTE) are rows like any other and route the same way, in the same order.
+// in can is a false, a throw in answer is a null, and a null passes the prompt to the next cell.
+//
+// THE GATE (contract c2, grow/neo-core.mjs; the server's grown/index.mjs carries the same): a row with tier "neo" is a
+// NEO colony. It is kept only when it serves (serve exactly true and 1 to 32 templates), and it is asked only when the
+// injected fits(templates, prompt) says exactly true (the page passes grow/neo-core.mjs fitsTemplates). With no fits
+// a colony is never asked; a colony that does not serve is dropped at load and its module is never imported. A row of
+// any other tier is locked and never gated.
 //
 // What the tab adds, and only this:
 // - LAZY: loadCells() reads cells.json and imports no cell; a cell module is imported the first time a prompt's walk
@@ -44,7 +49,17 @@ function baseOf(base) {
   return u;
 }
 
-/** One row of cells.json, checked: an id, and a file under <base>/cells/ (data never points the loader elsewhere). */
+/** Whether a NEO row serves: serve exactly true and 1 to MAX_TEMPLATES templates, each a short string. */
+export const MAX_TEMPLATES = 32;
+export function serves(r) {
+  return !!r && r.serve === true && Array.isArray(r.templates) && r.templates.length > 0 && r.templates.length <= MAX_TEMPLATES
+    && r.templates.every((t) => typeof t === 'string' && t.length > 0 && t.length <= 400);
+}
+
+/**
+ * One row of cells.json, checked: an id, and a file under <base>/cells/ (data never points the loader elsewhere). A
+ * tier "neo" row that does not serve is null (THE GATE: it is never asked and never imported).
+ */
 function rowOf(r, i, base) {
   if (!r || typeof r !== 'object') throw new Error('cells-tab: cells.json row ' + i + ' is not an object');
   const id = String(r.id ?? '');
@@ -53,6 +68,8 @@ function rowOf(r, i, base) {
   if (!FILE_RE.test(file)) throw new Error('cells-tab: cells.json row ' + id + ' names ' + JSON.stringify(file) + ', not a file under cells/');
   const url = new URL(file, base);
   if (url.origin !== base.origin || !url.href.startsWith(base.href + 'cells/')) throw new Error('cells-tab: cells.json row ' + id + ' leaves ' + base.href);
+  const neo = r.tier === 'neo';
+  if (neo && !serves(r)) return null;
   return Object.freeze({
     id,
     class: typeof r.class === 'string' ? r.class : null,
@@ -60,15 +77,17 @@ function rowOf(r, i, base) {
     tier: typeof r.tier === 'string' ? r.tier : null,
     file,
     url: url.href,
+    ...(neo ? { task: typeof r.task === 'string' ? r.task : null, templates: Object.freeze([...r.templates]) } : {}),
   });
 }
 
 /**
  * The router: <base>/cells.json read, no cell imported yet.
  * @param {string} base the organism directory (absolute, or relative to the page)
- * @param {{ fetch?: Function, importer?: (url: string) => Promise<object>, budgetMs?: number, now?: () => number }} o
+ * @param {{ fetch?: Function, importer?: (url: string) => Promise<object>, budgetMs?: number, now?: () => number, fits?: (templates: string[], q: string) => boolean|Promise<boolean> }} o
+ *   fits is THE GATE's template test; without it no NEO row is ever asked
  */
-export async function loadCells(base, { fetch: get = globalThis.fetch, importer = (url) => import(url), budgetMs = BUDGET_MS, now = clockNow } = {}) {
+export async function loadCells(base, { fetch: get = globalThis.fetch, importer = (url) => import(url), budgetMs = BUDGET_MS, now = clockNow, fits = null } = {}) {
   if (typeof get !== 'function') throw new Error('cells-tab: there is no fetch to read cells.json with');
   if (typeof importer !== 'function') throw new Error('cells-tab: the importer is not a function');
   const b = baseOf(base);
@@ -77,8 +96,16 @@ export async function loadCells(base, { fetch: get = globalThis.fetch, importer 
   if (!res || !res.ok) throw new Error('cells-tab: ' + at + ' answered ' + (res ? res.status : 'nothing'));
   const index = await res.json();
   if (!index || !Array.isArray(index.cells)) throw new Error('cells-tab: ' + at + ' is not { cells: [..] }');
-  const rows = index.cells.map((r, i) => rowOf(r, i, b));
-  return { base: b.href, generation: Number.isInteger(index.generation) ? index.generation : null, rows: Object.freeze(rows), importer, budgetMs, now, mods: new Map() };
+  const rows = index.cells.map((r, i) => rowOf(r, i, b)).filter(Boolean);
+  return { base: b.href, generation: Number.isInteger(index.generation) ? index.generation : null, rows: Object.freeze(rows), importer, budgetMs, now, fits: typeof fits === 'function' ? fits : null, mods: new Map() };
+}
+
+/** THE GATE for one row: a locked row passes; a NEO row passes only when fits says exactly true within the budget. */
+async function gateOpen(router, row, text) {
+  if (row.tier !== 'neo') return true;
+  if (typeof router.fits !== 'function') return false;
+  const ok = await within(Promise.resolve().then(() => router.fits(row.templates, text)).then((v) => v, () => false), router.budgetMs);
+  return ok === true;
 }
 
 /** p, or LATE when it has not settled within ms; the timer never outlives the race. */
@@ -118,6 +145,7 @@ export async function route(router, prompt) {
   const text = String(prompt ?? '');
   const t0 = router.now();
   for (const row of router.rows) {
+    if (!(await gateOpen(router, row, text))) continue;
     const mod = await within(moduleOf(router, row), router.budgetMs);
     if (!mod || mod === LATE) continue;
     const c0 = router.now();

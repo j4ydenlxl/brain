@@ -7,27 +7,32 @@
 // ai data center in ur pocket"): turns stack in a thread that survives a reload, a follow-up is carried by
 // act/thread.mjs, the grown cells answer in the tab, the page is installable and says so honestly when offline,
 // and every answer reaches the DOM as text.
-// The page must run the organism's own bytes, answer what the CLI answers, and reach nothing.
+// THE POCKET BODY: THE GATE in the tab (an unmastered colony is never bundled nor asked), a cell grown on this
+// device answers after the cloud's cells and before the server, and the body's one dim line and its switch.
+// The page must run the organism's own bytes, answer what the CLI answers, and reach nothing. Nothing here reads the
+// tree's grown/ or neo/: the page is built from a FIXTURE tree written below into a temp directory (its
+// grown/index.mjs rendered by grow/store.mjs renderIndexMjs, the server's own renderer), so the suite holds whatever
+// the organism grows next.
 import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync, mkdtempSync, rmSync, readdirSync } from 'node:fs';
+import { readFileSync, existsSync, mkdtempSync, rmSync, mkdirSync, writeFileSync, copyFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import {
-  generateAsk, EXAMPLES, MODULES, ROOT, DIST, PENDING_LINE, refusedHtml, serverHtml, answerOnce, tabNativeHtml, clock,
+  generateAsk, EXAMPLES, MODULES, ROOT, PENDING_LINE, refusedHtml, serverHtml, answerOnce, tabNativeHtml, clock,
   esc, mount, toHtml, helloView, pendingView, refusalView, PAGE_FUNCTIONS, clip, cleanTurns, loadTurns, saveTurns, swAllowed,
-  sendsOnKey, THREAD_KEY, KEEP_TURNS, TEXT_CAP, BACKGROUND, SW_URL, SW_SCOPE, HELLO_LINE,
+  sendsOnKey, THREAD_KEY, KEEP_TURNS, TEXT_CAP, BACKGROUND, SW_URL, SW_SCOPE, HELLO_LINE, BODY_URL, DEVICE_ROUTE, deviceView,
 } from '../web/ask.mjs';
 import { askColors, POCKET_HEAD } from '../web/pocket.mjs';
+import { ROUTE_LINE, SWITCH_KEY, WHY, bodyLine } from '../web/pocket-era.mjs';
 import { OFFLINE_LINE } from '../act/cells-tab.mjs';
-import { grownAnswer } from '../grown/index.mjs';
+import { renderIndexMjs } from '../grow/store.mjs';
 import { solve } from '../act/solve.mjs';
 import { converse } from '../act/converse.mjs';
 
 const sha = (f) => crypto.createHash('sha256').update(readFileSync(f)).digest('hex');
-const built = generateAsk();
 const count = (hay, needle) => hay.split(needle).length - 1;
 const ASK_PAGE_CAP = 32768;     // the /ask page alone
 const ASK_TOTAL_CAP = 262144;   // the page plus every organism module it imports
@@ -37,6 +42,59 @@ after(() => {
   for (const d of temps) rmSync(d, { recursive: true, force: true });
   for (const d of temps) assert.equal(existsSync(d), false, 'a temp directory was left behind: ' + d);
 });
+
+// ---------------------------------------------------------------- the fixture tree and its build
+
+const cellSrc = ({ id, cls, gen = 1, lane = 'direct', can, answer, tail = '' }) => [
+  "export const meta = { id: '" + id + "', class: '" + cls + "', generation: " + gen + ", lane: '" + lane + "', grownFrom: ['x'], version: 1 };",
+  'export function can(q) { ' + can + ' }',
+  'export function answer(q) { ' + answer + ' }',
+  "export const examples = [{ q: 'x', expect: { notRefusal: true } }];",
+  tail,
+  '',
+].join('\n');
+const CAPITAL = 'capital-of-direct-g1', REVERSE = 'reverse-neo-g1', SILENT = 'sum-neo-g1';
+const TOKYO = 'Tokyo is the capital of Japan.';
+// A locked cell, a NEO colony that serves (its can is ALWAYS true: only its template keeps it from every prompt), and
+// an UNMASTERED colony (serve false, held-out 0.5) whose can is always true too.
+const CELLS = {
+  [CAPITAL]: cellSrc({ id: CAPITAL, cls: 'capital', can: 'return /^capital of japan$/i.test(String(q).trim());', answer: 'return ' + JSON.stringify(TOKYO) + ';' }),
+  [REVERSE]: cellSrc({ id: REVERSE, cls: 'reverse-word', lane: 'neo', can: 'return true;', answer: 'const w = String(q).trim().split(" ").pop(); return w ? w.split("").reverse().join("") : null;', tail: 'export const colony = { cells: 1, kernel: 1 };' }),
+  [SILENT]: cellSrc({ id: SILENT, cls: 'sum', lane: 'neo', can: 'return true;', answer: 'return "from the unmastered colony";', tail: 'export const colony = { cells: 2, kernel: 1 };' }),
+};
+const ROWS = [
+  { id: CAPITAL, class: 'capital', generation: 1, lane: 'direct', file: 'cells/' + CAPITAL + '.mjs', heldout: { score: 1, n: 4 }, promotedAt: 'x' },
+  { id: REVERSE, class: 'reverse-word', generation: 1, lane: 'neo', tier: 'neo', task: 'reverse-word', serve: true, templates: ['reverse the word {1-3}'], file: 'cells/' + REVERSE + '.mjs', heldout: { score: 1, n: 4, ok: 4 }, promotedAt: 'x' },
+  { id: SILENT, class: 'sum', generation: 1, lane: 'neo', tier: 'neo', task: 'sum', serve: false, templates: ['sum of {#1-2} and {#1-2}'], file: 'cells/' + SILENT + '.mjs', heldout: { score: 0.5, n: 4, ok: 2 }, promotedAt: 'x' },
+];
+const W = ['apple', 'river', 'stone', 'cloud', 'tiger', 'lemon', 'piano', 'candle'];
+const TASKS = {
+  'reverse-word': W.map((w) => ({ q: 'reverse the word ' + w, expect: { equals: w.split('').reverse().join('') }, answer: w.split('').reverse().join('') })),
+  sum: W.map((w, i) => ({ q: 'sum of ' + i + ' and ' + (i + 2), expect: { equals: String(2 * i + 2) }, answer: String(2 * i + 2) })),
+  'count-letters': W.map((w) => ({ q: 'how many letters in ' + w, expect: { equals: String(w.length) }, answer: String(w.length) })),
+};
+function fixtureRoot(root) {
+  const grown = path.join(root, 'grown');
+  mkdirSync(path.join(grown, 'cells'), { recursive: true });
+  for (const [id, src] of Object.entries(CELLS)) writeFileSync(path.join(grown, 'cells', id + '.mjs'), src);
+  const index = { generation: 1, cells: ROWS };
+  writeFileSync(path.join(grown, 'index.json'), JSON.stringify(index, null, 2));
+  writeFileSync(path.join(grown, 'index.mjs'), renderIndexMjs(index));
+  mkdirSync(path.join(root, 'grow'), { recursive: true });
+  for (const f of ['neo-core.mjs', 'neo-kernel.mjs']) copyFileSync(path.join(ROOT, 'grow', f), path.join(root, 'grow', f));
+  for (const [task, dev] of Object.entries(TASKS)) {
+    const d = path.join(root, 'neo', 'tasks', task);
+    mkdirSync(d, { recursive: true });
+    writeFileSync(path.join(d, 'task.json'), JSON.stringify({ task, skill: 'fixture', domain: 'words' }));
+    writeFileSync(path.join(d, 'dev.jsonl'), dev.map((r) => JSON.stringify(r)).join('\n') + '\n');
+  }
+  return root;
+}
+const FIX = fixtureRoot(path.join(tmp('root'), 'root'));
+const DIST = tmp('dist');
+const built = generateAsk(DIST, { root: FIX });
+const { grownAnswer } = await import(pathToFileURL(path.join(FIX, 'grown', 'index.mjs')).href);
+const realEra = await import(pathToFileURL(path.join(DIST, 'organism', 'web', 'pocket-era.mjs')).href);
 
 test('every organism module the page imports is a byte for byte copy of its source, with its sha256 in the manifest', () => {
   assert.ok(built.modules >= 2, 'exact-read and exact at least');
@@ -199,7 +257,8 @@ class El {
   querySelector(sel) { return this.querySelectorAll(sel)[0] || null; }
 }
 function makeDoc() {
-  const doc = { scrolled: [], focused: null };
+  const doc = { scrolled: [], focused: null, on: {}, visibilityState: 'visible' };
+  doc.addEventListener = (t, f) => { (doc.on[t] ||= []).push(f); };
   doc.createElement = (tag) => new El(doc, String(tag).toLowerCase());
   doc.createTextNode = (s) => new TextNode(s);
   doc.write = () => markup('document.write');
@@ -228,10 +287,12 @@ const script = (html) => html.match(/<script type="module">([\s\S]*?)<\/script>/
 /**
  * The page script against a planted fetch, a small DOM, a planted Storage and navigator, and the grown cells served
  * from DIST (the build the page came from) as the origin would serve them: the code path, never a live network.
- * order records converse and readExact; flow records carry, converse, readExact, route and the server request; asked
- * records the prompt each reader got.
+ * order records converse and readExact; flow records carry, converse, readExact, route, device and the server
+ * request; asked records the prompt each reader got. era is the body module the page imports apart: 'real' (the copy
+ * the build wrote, its deviceAnswer recorded in flow), null (the import fails) or a planted module. Worker is the
+ * page's Worker global (none by default, as in node).
  */
-async function runPage({ order = null, flow = null, asked = null, store = memStore(), nav = { onLine: true }, loc = {}, cells = null, cellsGate = null } = {}) {
+async function runPage({ order = null, flow = null, asked = null, store = memStore(), nav = { onLine: true }, loc = {}, cells = null, cellsGate = null, era = 'real', Worker = undefined } = {}) {
   const html = readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8');
   let src = script(html);
   const mods = {};
@@ -242,7 +303,7 @@ async function runPage({ order = null, flow = null, asked = null, store = memSto
   mods['../organism/act/converse.mjs'] = { ...cv, converse: rec('converse', cv.converse, true) };
   mods['../organism/act/exact-read.mjs'] = { ...ex, readExact: rec('readExact', ex.readExact, true) };
   mods['../organism/act/thread.mjs'] = { ...th, carry: (...a) => { note(flow, 'carry'); return th.carry(...a); } };
-  const bases = [], cellFetches = [], imported = [];
+  const bases = [], cellFetches = [], imported = [], dynamic = [];
   const cellFetch = async (u) => {
     cellFetches.push(String(u));
     if (cells) return new Response(JSON.stringify(cells.index));
@@ -261,7 +322,16 @@ async function runPage({ order = null, flow = null, asked = null, store = memSto
     loadCells: async (base, o = {}) => { bases.push(base); if (cellsGate) await cellsGate; return ct.loadCells(base, { ...o, fetch: cellFetch, importer: cellImport }); },
     route: rec('route', ct.route, false, 1),
   };
+  // the page's one dynamic import, the body: what the origin serves under /organism/, or the planted module
+  const body = era === 'real' ? { ...realEra, deviceAnswer: (...a) => { note(flow, 'device'); return realEra.deviceAnswer(...a); } } : era;
+  const imp = async (u) => {
+    dynamic.push(String(u));
+    assert.equal(u, BODY_URL, 'the page imports nothing else at run time');
+    if (!body) throw new Error('the body did not load');
+    return body;
+  };
   src = src.replace(/import\s*\{([^}]*)\}\s*from\s*'([^']+)';/g, (m, names, from) => 'const {' + names + '} = __mods[' + JSON.stringify(from) + '];');
+  src = src.replace(/\bimport\(/g, '__imp(');
   const calls = [];
   let reply = null;
   const fetch = async (url, init) => {
@@ -289,12 +359,20 @@ async function runPage({ order = null, flow = null, asked = null, store = memSto
   form.setAttribute('id', 'f');
   const box = form.appendChild(doc.createElement('textarea'));
   box.setAttribute('id', 'q');
+  // the body row as the page writes it: the line, and the switch hidden until the body loads
+  const bodyRow = main.appendChild(doc.createElement('div'));
+  const bodyLineEl = bodyRow.appendChild(doc.createElement('span'));
+  bodyLineEl.setAttribute('id', 'body');
+  const bodySw = bodyRow.appendChild(doc.createElement('button'));
+  bodySw.setAttribute('id', 'bodysw');
+  bodySw.setAttribute('class', 'chip');
+  bodySw.hidden = true;
   const window = { get localStorage() { if (store === 'throws') throw new Error('SecurityError: the store is blocked'); return store; } };
-  const location = { search: '', href: ORIGIN + '/ask/', protocol: 'https:', hostname: 'dilation.dev', ...loc };
+  const location = { search: '', href: ORIGIN + '/ask', protocol: 'https:', hostname: 'dilation.dev', ...loc };
   const AsyncFunction = (async () => {}).constructor;
-  await new AsyncFunction('__mods', 'document', 'window', 'location', 'navigator', 'fetch', src)(mods, doc, window, location, nav, fetch);
+  await new AsyncFunction('__mods', '__imp', 'document', 'window', 'location', 'navigator', 'fetch', 'Worker', src)(mods, imp, doc, window, location, nav, fetch, Worker);
   const api = window.__brainAsk;
-  return { ...api, calls, term, doc, box, form, newBtn, chips, store, nav, bases, cellFetches, imported, setReply: (r) => { reply = r; } };
+  return { ...api, calls, term, doc, box, form, newBtn, chips, store, nav, bases, cellFetches, imported, dynamic, bodyLineEl, bodySw, setReply: (r) => { reply = r; } };
 }
 const respond = (status, json, retry = null) => ({ status, headers: { get: (k) => (k.toLowerCase() === 'retry-after' ? retry : null) }, json: async () => json });
 const memory = (text) => respond(200, { ok: true, text, route: 'direct', provenance: { answer: 'memory', memoryHits: 0, webPages: 0 }, llm: { provider: null, reason: 'not configured' }, serverUs: 9, host: 'local', knowledge: { ready: true } });
@@ -562,12 +640,13 @@ test('a prompt a grown cell carries is answered IN THE TAB by the cell web/pocke
   assert.match(last(q).querySelector('[data-cells]').textContent, /^the grown cells did not load in this tab \(cells-tab: .*\), so none was asked\.$/);
 });
 
-test('the order of the tab: carry, the conversation region, the exact reader (with the word reader), the grown cells, then the server', async () => {
+
+test('the order of the tab: carry, the conversation region, the exact reader (with the word reader), the grown cells, a cell grown on this device, then the server', async () => {
   const flow = [];
   const p = await runPage({ flow });
   p.setReply(memory('nothing in memory matches rome.'));
   await p.send(SERVER_ONLY);
-  assert.deepEqual(flow, ['carry', 'converse', 'readExact', 'route', 'server']);
+  assert.deepEqual(flow, ['carry', 'converse', 'readExact', 'route', 'device', 'server']);
   assert.match(last(p).querySelector('[data-cells]').textContent, /^the grown cells in this tab: none of the \d+ carries it\.$/);
   flow.length = 0;
   await p.send('capital of Japan');
@@ -576,7 +655,7 @@ test('the order of the tab: carry, the conversation region, the exact reader (wi
   const t = await p.send('what is 17 times 23');
   assert.equal(t.route, 'exact');
   assert.deepEqual(flow.slice(0, 3), ['carry', 'converse', 'readExact']);
-  assert.ok(!flow.includes('route') && !flow.includes('server'), flow.join(','));
+  assert.ok(!flow.includes('route') && !flow.includes('server') && !flow.includes('device'), flow.join(','));
   flow.length = 0;
   const w = await p.send(EXAMPLES.find((x) => /Natalia/.test(x)));
   assert.equal(w.route, 'exact', 'the word problem reader answers inside the exact reader');
@@ -585,6 +664,7 @@ test('the order of the tab: carry, the conversation region, the exact reader (wi
   await p.send('hey');
   assert.deepEqual(flow.slice(0, 2), ['carry', 'converse']);
   assert.ok(!flow.includes('readExact') && !flow.includes('route'), flow.join(','));
+  assert.deepEqual(p.dynamic, [BODY_URL], 'the body is imported once, apart');
 });
 
 test('offline: a prompt no tab reader carries prints ONE honest line in place of the server block, no spinner and no request; the tab readers and the cells still answer', async () => {
@@ -672,15 +752,15 @@ test('the page never writes markup: no innerHTML, outerHTML, insertAdjacentHTML,
   assert.ok(html.includes('<div id="term" aria-live="polite">' + toHtml(helloView()) + '</div>'), 'the empty thread is the hello line');
 });
 
-test('the service worker /ask/sw.js (scope /ask/) is registered only when serviceWorker is in navigator and the page is on https or localhost', async () => {
+test('the service worker /ask/sw.js (scope /, so it controls /ask and the body under /organism/) is registered only when serviceWorker is in navigator and the page is on https or localhost', async () => {
   assert.equal(SW_URL, '/ask/sw.js');
-  assert.equal(SW_SCOPE, '/ask/');
+  assert.equal(SW_SCOPE, '/');
   const cases = [
     [{}, true],
-    [{ protocol: 'http:', hostname: 'dilation.dev', href: 'http://dilation.dev/ask/' }, false],
-    [{ protocol: 'http:', hostname: 'localhost', href: 'http://localhost:8080/ask/' }, true],
-    [{ protocol: 'http:', hostname: '127.0.0.1', href: 'http://127.0.0.1:8080/ask/' }, true],
-    [{ protocol: 'http:', hostname: '192.168.1.5', href: 'http://192.168.1.5/ask/' }, false],
+    [{ protocol: 'http:', hostname: 'dilation.dev', href: 'http://dilation.dev/ask' }, false],
+    [{ protocol: 'http:', hostname: 'localhost', href: 'http://localhost:8080/ask' }, true],
+    [{ protocol: 'http:', hostname: '127.0.0.1', href: 'http://127.0.0.1:8080/ask' }, true],
+    [{ protocol: 'http:', hostname: '192.168.1.5', href: 'http://192.168.1.5/ask' }, false],
     [{ protocol: 'file:', hostname: '', href: 'file:///C:/ask/index.html' }, false],
   ];
   for (const [loc, want] of cases) {
@@ -689,12 +769,20 @@ test('the service worker /ask/sw.js (scope /ask/) is registered only when servic
     await runPage({ nav, loc });
     assert.deepEqual(regs, want ? [[SW_URL, { scope: SW_SCOPE }]] : [], JSON.stringify(loc));
   }
-  // no serviceWorker in navigator, or a register that throws or rejects: nothing breaks
+  // the old registration of the same worker under /ask/ (which never controlled /ask) is removed; no other is touched
+  const gone = [];
+  const reg = (scope, script) => ({ scope: ORIGIN + scope, active: { scriptURL: ORIGIN + script }, unregister: () => { gone.push(scope); return Promise.resolve(true); } });
+  const regsNow = [reg('/ask/', '/ask/sw.js'), reg('/', '/ask/sw.js'), reg('/other/', '/other/sw.js'), { scope: ORIGIN + '/ask/', installing: { scriptURL: ORIGIN + '/elsewhere/sw.js' }, unregister: () => { gone.push('foreign'); } }];
+  await runPage({ nav: { onLine: true, serviceWorker: { register: () => Promise.resolve({}), getRegistrations: () => Promise.resolve(regsNow) } } });
+  await until(() => gone.length >= 1);
+  await new Promise((r) => setTimeout(r, 10));
+  assert.deepEqual(gone, ['/ask/']);
+  // no serviceWorker in navigator, or a register that throws or rejects, or a getRegistrations that throws: nothing breaks
   const plain = await runPage({ nav: { onLine: true } });
   assert.equal((await plain.send('what is 17 times 23')).answer, '391');
   const throws = await runPage({ nav: { onLine: true, serviceWorker: { register: () => { throw new Error('denied'); } } } });
   assert.equal((await throws.send('what is 17 times 23')).answer, '391');
-  const rejects = await runPage({ nav: { onLine: true, serviceWorker: { register: () => Promise.reject(new Error('denied')) } } });
+  const rejects = await runPage({ nav: { onLine: true, serviceWorker: { register: () => Promise.reject(new Error('denied')), getRegistrations: () => { throw new Error('denied'); } } } });
   assert.equal((await rejects.send('what is 17 times 23')).answer, '391');
   assert.equal(swAllowed({}, { protocol: 'https:' }), false);
   assert.equal(swAllowed(null, { protocol: 'https:' }), false);
@@ -722,20 +810,26 @@ test('the head links the manifest, sets the theme colour to the body background 
   assert.match(head, /<meta name="apple-mobile-web-app-status-bar-style" content="black">/);
 });
 
-test('generateAsk() writes the pocket beside the page: cells.json, the cells, the manifest, the icon and /ask/sw.js precaching the page it just wrote', (t) => {
+test('generateAsk() writes the pocket beside the page: cells.json, the cells, the body, the core, the manifest, the icon and /ask/sw.js precaching the page it just wrote', (t) => {
   const dist = tmp('gen');
-  const r = generateAsk(dist);
-  for (const f of ['ask/index.html', 'ask/sw.js', 'ask/manifest.webmanifest', 'ask/icon.svg', 'organism/cells.json', 'organism/manifest.json', 'organism/act/thread.mjs', 'organism/act/cells-tab.mjs']) assert.ok(existsSync(path.join(dist, ...f.split('/'))), f);
+  const r = generateAsk(dist, { root: FIX });
+  for (const f of ['ask/index.html', 'ask/sw.js', 'ask/manifest.webmanifest', 'ask/icon.svg', 'organism/cells.json', 'organism/manifest.json', 'organism/act/thread.mjs', 'organism/act/cells-tab.mjs',
+    'organism/web/pocket-era.mjs', 'organism/grow/neo-core.mjs', 'organism/grow/neo-kernel.mjs', 'organism/era/tasks.json']) assert.ok(existsSync(path.join(dist, ...f.split('/'))), f);
   const index = JSON.parse(readFileSync(path.join(dist, 'organism', 'cells.json'), 'utf8'));
-  assert.ok(index.cells.length > 0);
+  assert.deepEqual(index.cells.map((x) => x.id), [CAPITAL, REVERSE], 'THE GATE: the unmastered colony is not bundled');
+  assert.equal(existsSync(path.join(dist, 'organism', 'cells', SILENT + '.mjs')), false);
   assert.equal(r.pocket.cells, index.cells.length);
   for (const row of index.cells) assert.ok(existsSync(path.join(dist, 'organism', ...row.file.split('/'))), row.file);
   const sw = readFileSync(path.join(dist, 'ask', 'sw.js'), 'utf8');
-  for (const u of ['/organism/act/thread.mjs', '/organism/act/cells-tab.mjs', '/organism/act/converse.mjs', '/organism/cells.json', '/organism/' + index.cells[0].file]) assert.ok(sw.includes('{"url":"' + u + '","sha256":"'), u);
-  assert.ok(sw.includes('{"url":"/ask/","sha256":"' + sha(path.join(dist, 'ask', 'index.html')) + '"}'), 'the precached page is the page generateAsk wrote');
+  for (const u of ['/organism/act/thread.mjs', '/organism/act/cells-tab.mjs', '/organism/act/converse.mjs', '/organism/cells.json', '/organism/' + index.cells[0].file, '/organism/web/pocket-era.mjs', '/organism/grow/neo-core.mjs']) assert.ok(sw.includes('{"url":"' + u + '","sha256":"'), u);
+  assert.ok(sw.includes('{"url":"/ask","sha256":"' + sha(path.join(dist, 'ask', 'index.html')) + '"}'), 'the precached page is the page generateAsk wrote, at the URL the host serves it');
+  assert.ok(!sw.includes(SILENT));
   assert.equal(r.bytes, Buffer.byteLength(readFileSync(path.join(dist, 'ask', 'index.html'))));
+  // the build is a function of the tree it reads: the same fixture, the same bytes
+  assert.equal(readFileSync(path.join(dist, 'ask', 'sw.js'), 'utf8'), readFileSync(path.join(DIST, 'ask', 'sw.js'), 'utf8'));
   t.diagnostic('pocket  cells ' + r.pocket.cells + '  precache ' + r.pocket.precache + ' files  ' + r.pocket.bytes + ' bytes');
 });
+
 
 test('the thread survives a reload: ONE localStorage key, the newest 20 turns of { prompt, text, read?, route? }, nothing else stored', async () => {
   assert.equal(KEEP_TURNS, 20);
@@ -927,29 +1021,172 @@ test('the box stays at the bottom and the look is kept: a sticky form, the same 
   assert.ok(html.indexOf('id="term"') < html.indexOf('<form id="f"'), 'the box is below the thread');
 });
 
-test('every dev prompt the tab answers by a grown cell gets the cell and the text the server (grownAnswer) gives, and none a cell carries is sent to the server', async (t) => {
-  const devDir = path.join(ROOT, 'judge', 'dev');
-  const rows = readdirSync(devDir).filter((f) => f.endsWith('.jsonl')).sort()
-    .flatMap((f) => readFileSync(path.join(devDir, f), 'utf8').split(/\r?\n/).filter((l) => l.trim()).map((l) => JSON.parse(l)));
+
+const FIXTURE_PROMPTS = [...Object.values(TASKS).flat().map((r) => r.q), 'capital of Japan', 'Capital of Japan', 'capital of france', 'reverse the word', 'reverse the word a b c d e', 'write a poem about the sea', 'hey', 'what is 17 times 23'];
+
+test('every fixture prompt the tab answers by a grown cell gets the cell and the text the server (grownAnswer, THE GATE inside) gives, and none a cell carries is sent to the server', async (t) => {
   const p = await runPage();
   p.setReply(memory('nothing.'));
   let byCell = 0, byTab = 0, bySrv = 0, shadow = 0;
-  for (const r of rows) {
+  for (const q of FIXTURE_PROMPTS) {
     p.newChat();
-    const s = grownAnswer(r.q);
-    const a = await p.send(r.q);
-    if (!a) continue;
+    const s = grownAnswer(q);
+    const a = await p.send(q);
+    assert.ok(a, q);
     if (a.route === 'cell') {
       byCell++;
-      assert.deepEqual({ cell: a.cell, answer: a.answer }, { cell: s && s.id, answer: s && s.answer }, r.q);
+      assert.deepEqual({ cell: a.cell, answer: a.answer }, { cell: s && s.id, answer: s && s.answer }, q);
     } else if (a.tab) {
       byTab++;
       if (s) shadow++;
     } else {
       bySrv++;
-      assert.equal(s, null, 'the tab sent to the server a prompt a grown cell carries: ' + r.q);
+      assert.equal(s, null, 'the tab sent to the server a prompt a grown cell carries: ' + q);
     }
   }
-  assert.ok(rows.length > 0 && byCell > 0, 'at least one dev prompt reaches a grown cell, or the comparison proves nothing');
-  t.diagnostic('dev prompts ' + rows.length + ': by a grown cell in the tab ' + byCell + ' (cell and text equal to grownAnswer), by converse or the exact reader ' + byTab + ' (a grown cell also carries ' + shadow + ' of them), to the server ' + bySrv);
+  assert.equal(byCell, TASKS['reverse-word'].length + 2, 'every reverse prompt by the colony, both capital of Japan prompts by the locked cell');
+  assert.ok(bySrv >= TASKS.sum.length + TASKS['count-letters'].length, 'the unmastered colony and the task no cell carries went to the server');
+  t.diagnostic('fixture prompts ' + FIXTURE_PROMPTS.length + ': by a grown cell in the tab ' + byCell + ' (cell and text equal to grownAnswer), by converse or the exact reader ' + byTab + ' (a grown cell also carries ' + shadow + ' of them), to the server ' + bySrv);
+});
+
+test('THE GATE on the page: the unmastered colony is neither bundled nor asked; a serving colony whose can is always true is imported and asked only on an exact template fit', async () => {
+  const rows = JSON.parse(readFileSync(path.join(DIST, 'organism', 'cells.json'), 'utf8')).cells;
+  assert.deepEqual(rows.map((r) => r.id), [CAPITAL, REVERSE]);
+  assert.deepEqual([rows[1].serve, rows[1].templates], [true, ['reverse the word {1-3}']]);
+  assert.equal(existsSync(path.join(DIST, 'organism', 'cells', SILENT + '.mjs')), false, 'the unmastered colony is not bundled');
+  assert.equal(grownAnswer('sum of 2 and 3'), null, 'nor served');
+  const p = await runPage();
+  p.setReply(memory('nothing in memory matches sum.'));
+  const s = await p.send('sum of 2 and 3');
+  assert.equal(s.tab, false, 'the unmastered colony answered in the tab');
+  assert.equal(p.calls.length, 1);
+  const ids = () => p.imported.map((u) => u.split('/').pop().replace(/\.mjs$/, ''));
+  assert.deepEqual(ids(), [CAPITAL], 'a colony whose template does not fit was imported');
+  await p.send('write a poem about the sea');
+  assert.deepEqual(ids(), [CAPITAL]);
+  const r = await p.send('reverse the word apple');
+  assert.deepEqual({ route: r.route, cell: r.cell, answer: r.answer }, { route: 'cell', cell: REVERSE, answer: 'elppa' });
+  assert.deepEqual(ids(), [CAPITAL, REVERSE]);
+  assert.equal(p.calls.length, 2, 'the colony answer made no request');
+  // the body module does not load: no template test, so no colony is asked; the locked cell still is
+  const q = await runPage({ era: null });
+  q.setReply(memory('nothing.'));
+  const n = await q.send('reverse the word apple');
+  assert.equal(n.tab, false);
+  assert.equal(q.calls.length, 1);
+  assert.ok(!q.imported.some((u) => u.includes(REVERSE)), q.imported.join(' '));
+  assert.equal((await q.send('capital of Japan')).cell, CAPITAL);
+  assert.equal(q.bodySw.hidden, true, 'no body, no switch');
+  assert.equal(q.bodyLineEl.textContent, '');
+  // a body whose template test says anything but exactly true is a closed gate
+  for (const gateFits of [() => 'true', () => 1, () => { throw new Error('broken core'); }, async () => false]) {
+    const g = await runPage({ era: { ...realEra, gateFits } });
+    g.setReply(memory('nothing.'));
+    assert.equal((await g.send('reverse the word apple')).tab, false);
+    assert.ok(!g.imported.some((u) => u.includes(REVERSE)));
+  }
+});
+
+test('a cell grown on THIS device answers in the tab after the cloud cells and before the server: route device, its route line, no request, its turn stored', async () => {
+  const seen = [];
+  const device = async (q) => { seen.push(q); return q === 'how many letters in apple' ? { text: '5', task: 'count-letters', cells: 2, route: ROUTE_LINE } : null; };
+  const store = memStore();
+  const p = await runPage({ store, era: { ...realEra, deviceAnswer: device } });
+  p.setReply(memory('nothing.'));
+  const t = await p.send('how many letters in apple');
+  assert.deepEqual({ tab: t.tab, route: t.route, provenance: t.provenance, task: t.task, answer: t.answer }, { tab: true, route: 'device', provenance: 'grown', task: 'count-letters', answer: '5' });
+  assert.equal(p.calls.length, 0, 'a device answer made a request');
+  const e = last(p);
+  const foot = e.querySelector('[data-route="device"]');
+  assert.equal(foot.getAttribute('data-provenance'), 'grown');
+  assert.equal(foot.querySelector('.ok').textContent, ROUTE_LINE);
+  assert.equal(DEVICE_ROUTE, ROUTE_LINE);
+  assert.equal(ROUTE_LINE, 'grown on this device, no server');
+  assert.equal(foot.textContent, 'route ' + ROUTE_LINE + '  task count-letters  cells 2  model none  tokens 0');
+  assert.equal(e.querySelector('[data-device]').textContent, '5');
+  assert.equal(e.querySelectorAll('[data-server-pending]').length + e.querySelectorAll('[data-refusal]').length, 0);
+  assert.deepEqual(stored(p)[0], { prompt: 'how many letters in apple', text: '5', route: ROUTE_LINE + ', task count-letters' });
+  assert.equal(toHtml(deviceView({ text: '<b>', task: 't', cells: 1 })).includes('<b>'), false, 'text is text');
+  // the cloud's cells first: a prompt they carry never reaches the device
+  seen.length = 0;
+  assert.equal((await p.send('reverse the word apple')).route, 'cell');
+  assert.equal((await p.send('what is 2 times 2')).route, 'exact');
+  assert.deepEqual(seen, []);
+  // a prompt the device does not carry, or a device that throws, goes to the server
+  assert.equal((await p.send('how many letters in river')).tab, false);
+  assert.equal(p.calls.length, 1);
+  const bad = await runPage({ era: { ...realEra, deviceAnswer: async () => { throw new Error('store broke'); } } });
+  bad.setReply(memory('nothing.'));
+  assert.equal((await bad.send('how many letters in apple')).tab, false);
+  assert.equal(bad.calls.length, 1);
+  // offline, the device still answers
+  const off = await runPage({ nav: { onLine: false }, era: { ...realEra, deviceAnswer: device } });
+  assert.equal((await off.send('how many letters in apple')).route, 'device');
+  // the real body in node: no IndexedDB, so no device answer, and the prompt goes on to the server
+  assert.equal(await realEra.deviceAnswer('how many letters in apple'), null);
+});
+
+/** A planted Worker class: records what it was built with, what it was told and whether it was stopped. */
+function plantWorker() {
+  const made = [];
+  class FakeWorker {
+    constructor(url, opts) { this.url = String(url); this.opts = opts; this.sent = []; this.ended = false; made.push(this); }
+    postMessage(m) { this.sent.push(m); }
+    terminate() { this.ended = true; }
+  }
+  return { FakeWorker, made };
+}
+
+test('THE BODY on the page: one dim line from the worker, a switch that stops it and is remembered, the page state sent to it', async () => {
+  const html = readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8');
+  assert.match(html, /<div class="foot" id="bodyrow"><span id="body"><\/span> <button id="bodysw" class="chip" type="button" hidden>stop the body<\/button><\/div>/);
+  assert.ok(html.includes('import(' + JSON.stringify(BODY_URL) + ')'), 'the body is imported apart, at run time');
+  // no Worker in this browser: the line says so, from the store (none in node)
+  const none = await runPage();
+  await until(() => none.bodyLineEl.textContent !== '');
+  assert.equal(none.bodyLineEl.textContent, bodyLine({ why: WHY.worker }));
+  assert.equal(none.bodyLineEl.textContent, 'this device: 0 cells kept for 0 tasks, 0 tried, paused (this browser runs no module worker)');
+  assert.equal(none.bodySw.hidden, false);
+  // a module worker on the body's own URL, told the page's state
+  const { FakeWorker, made } = plantWorker();
+  const store = memStore();
+  const p = await runPage({ store, Worker: FakeWorker });
+  await until(() => made.length === 1 && made[0].sent.length === 1);
+  const w = made[0];
+  assert.ok(w.url.endsWith('/organism/web/pocket-era.mjs'), w.url);
+  assert.deepEqual(w.opts, { type: 'module', name: 'pocket-era' });
+  assert.deepEqual(w.sent[0], { type: 'env', stopped: false, hidden: false, saveData: false, battery: null });
+  w.onmessage({ data: { type: 'status', status: { line: 'this device: 3 cells kept for 2 tasks, 900 tried, running' } } });
+  assert.equal(p.bodyLineEl.textContent, 'this device: 3 cells kept for 2 tasks, 900 tried, running');
+  w.onmessage({ data: { type: 'status', status: { line: 7 } } });
+  w.onmessage({ data: '<b>not a status</b>' });
+  assert.equal(p.bodyLineEl.textContent, 'this device: 3 cells kept for 2 tasks, 900 tried, running', 'only a status line is printed');
+  assert.equal(p.bodySw.textContent, 'stop the body');
+  assert.equal(p.bodySw.getAttribute('aria-pressed'), 'true');
+  assert.deepEqual([...store.map.keys()], [], 'the switch is written only when it is used');
+  // the page hides: the worker is told
+  p.doc.visibilityState = 'hidden';
+  for (const f of p.doc.on.visibilitychange || []) f();
+  assert.equal(w.sent.at(-1).hidden, true);
+  // the switch: the worker stops, the choice is remembered, the line says why
+  p.bodySw.fire('click');
+  await until(() => w.ended && p.bodyLineEl.textContent.endsWith('(' + WHY.stopped + ')'));
+  assert.equal(store.getItem(SWITCH_KEY), '0');
+  assert.equal(p.bodySw.textContent, 'start the body');
+  assert.equal(p.bodySw.getAttribute('aria-pressed'), 'false');
+  // a reload keeps it stopped: no worker is started
+  const q = await runPage({ store, Worker: FakeWorker });
+  await until(() => q.bodyLineEl.textContent !== '');
+  assert.equal(made.length, 1, 'a stopped body started a worker on reload');
+  assert.equal(q.bodyLineEl.textContent, bodyLine({ why: WHY.stopped }));
+  assert.equal(q.bodySw.textContent, 'start the body');
+  q.bodySw.fire('click');
+  await until(() => made.length === 2);
+  assert.equal(store.getItem(SWITCH_KEY), '1');
+  // a worker that fails is stopped and the line says so
+  made[1].onerror(new Error('boom'));
+  await until(() => q.bodyLineEl.textContent.endsWith('(' + WHY.failed + ')'));
+  assert.equal(made[1].ended, true);
+  // the chat runs beside it untouched
+  assert.equal((await q.send('what is 17 times 23')).answer, '391');
 });

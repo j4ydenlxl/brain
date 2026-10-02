@@ -17,8 +17,10 @@
 // hud.js come out the other side character for character.
 //
 // Run: node web/build.mjs
+//      node web/build.mjs --pocket <dir> [--root <dir>]   only /ask, the pocket and THE BODY into <dir>, with the list
+//      and sizes of what the body's worker needs (web/pocket-era.mjs); nothing under web/dist is written
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 // The findings page is part of the site, so it is built when the site is built. It reads
 // the verdict files at generation time and refuses to emit a number it did not read, which
@@ -494,7 +496,39 @@ export function write(opts = {}) {
   };
 }
 
-if (process.argv[1] && process.argv[1].endsWith('build.mjs')) {
+/**
+ * The lines the build prints for the pocket and THE BODY (web/pocket.mjs, web/pocket-era.mjs): the pocket's counts, the
+ * search core's state, and every file the body's worker needs with its size.
+ * @param {{ bytes: number, pocket: object }} r what web/ask.mjs generateAsk returned
+ */
+export function pocketLines(r) {
+  const p = r.pocket, e = p.era;
+  const lines = ['dist ask/index.html ' + r.bytes + ' bytes; pocket: cells ' + p.cells + ', precache ' + p.precache + ' files ' + p.bytes + ' bytes, lazy '
+    + p.lazy + ' files ' + p.lazyBytes + ' bytes, version ' + p.version.slice(0, 12)];
+  lines.push('era: core ' + (e.core ? 'published' : 'NOT published (' + e.why + ')') + '; tasks with dev rows ' + e.tasks + ', mastered by the cloud ' + e.mastered
+    + ', left out ' + e.left + '; NEO rows not served (kept off the tab) ' + e.silent);
+  for (const f of e.files) lines.push('era ' + String(f.bytes).padStart(9) + ' bytes  ' + f.url);
+  lines.push('era total ' + e.files.reduce((s, f) => s + f.bytes, 0) + ' bytes in ' + e.files.length + ' files');
+  return lines;
+}
+
+const IS_MAIN = Boolean(process.argv[1] && process.argv[1].endsWith('build.mjs'));
+const POCKET_AT = process.argv.indexOf('--pocket');
+// --pocket <dir> [--root <dir>]: only /ask, the pocket and the body, into <dir>; nothing under web/dist is written.
+const POCKET_MODE = IS_MAIN && POCKET_AT >= 0;
+
+if (POCKET_MODE) {
+  const dir = process.argv[POCKET_AT + 1];
+  const rootAt = process.argv.indexOf('--root');
+  const root = rootAt >= 0 ? process.argv[rootAt + 1] : ROOT_DIR;
+  if (!dir || dir.startsWith('--') || !root || root.startsWith('--')) {
+    process.stderr.write('usage: node web/build.mjs --pocket <dir> [--root <dir>]\n');
+    process.exitCode = 2;
+  } else {
+    const r = generateAsk(resolve(dir), { root: resolve(root) });
+    for (const l of pocketLines(r)) console.log(l);
+  }
+} else if (IS_MAIN) {
   const r = write();
   const raw = ORDER.reduce((a, f) => a + Buffer.byteLength(readFileSync(join(SRC, f), 'utf8')), 0);
   for (const f of ORDER) console.log('src  ' + f.padEnd(14) + String(Buffer.byteLength(readFileSync(join(SRC, f), 'utf8'))).padStart(7) + ' bytes');
@@ -520,6 +554,7 @@ if (process.argv[1] && process.argv[1].endsWith('build.mjs')) {
     + (r.handoff.missing ? 'docs/HANDOFF.md absent: run node tools/handoff.mjs' : r.handoff.sections + ' sections, ' + r.handoff.blocks + ' blocks, '
       + r.handoff.commands + ' command lines from docs/HANDOFF.md (' + r.handoff.mdBytes + ' bytes, served as handoff/HANDOFF.md)'));
   console.log('dist ask/index.html ' + String(r.ask.bytes).padStart(12) + ' bytes   organism modules ' + r.ask.modules + ' copied byte for byte: ' + r.ask.manifest.files.map((f) => f.file + ' sha256 ' + f.sha256.slice(0, 12)).join(', '));
+  for (const l of pocketLines(r.ask)) console.log(l);
   const al = r.alive;
   console.log('dist alive/index.html ' + String(al.bytes).padStart(10) + ' bytes   cap ' + al.cap + '; ' + al.generations + ' generations, ' + al.cells + ' cells, newest '
     + (al.newest === null ? 'none yet' : 'generation ' + al.newest + ' (' + al.survivors + ' of ' + al.candidates + ' survived)') + ', ' + al.dreams + ' dreams, cortex ' + al.pointer
@@ -541,5 +576,7 @@ if (process.argv[1] && process.argv[1].endsWith('build.mjs')) {
 // /tools: the Code Universe factory (his 2026-09-13 order; it lived at dilation.dev/tools/ from the
 // universe/factory deploy and a later whole-site deploy of web/dist removed it). Static, copied verbatim.
 import { cpSync as cpSyncTools } from 'node:fs';
-cpSyncTools(new URL('./tools/', import.meta.url), new URL('./dist/tools/', import.meta.url), { recursive: true });
-console.log('tools: /tools copied from web/tools');
+if (!POCKET_MODE) {
+  cpSyncTools(new URL('./tools/', import.meta.url), new URL('./dist/tools/', import.meta.url), { recursive: true });
+  console.log('tools: /tools copied from web/tools');
+}
