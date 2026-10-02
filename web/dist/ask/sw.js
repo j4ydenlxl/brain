@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "5f33a267126aaeb51c9ac95904688cebb03ef6b05aaf0855d3fba1c23699c0d1";
+const VERSION = "50cab740695ae1bde1483c36f26bd470b30304b59e24ff9e45b8131b824528b5";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"28ab36fac53e59c29345637a23f05c9bee6cb97e8348e0ccb059984f80bbb9ab"},
+  {"url":"/organism/cells.json","sha256":"cda7ea55d2ffbb68e799d345ce77a03fb41a8c6cb258641e0e6bbec135e1c572"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -111,10 +111,12 @@ const PRECACHE = [
   {"url":"/organism/cells/gdp-per-capita-of-cou-c914-neo-g7.mjs","sha256":"9c95602302d37b688b52d303886a55e76202f500d6cb8aa6a6ecb2275e53c232"},
   {"url":"/organism/cells/mime-types-file-extension-to-media-type-neo-g7.mjs","sha256":"b4723d40834bc00653326638cc9ea57d81d76dda8e206283f3661c10d1e33bcb"},
   {"url":"/organism/cells/featuring-of-song-a238-neo-g7.mjs","sha256":"302c50102edce17c9076249c93fc0b49087637c14828aaef0d8bfef7ef0af7b1"},
+  {"url":"/organism/cells/gender-of-title-bf3d-neo-g7.mjs","sha256":"3e3888e592705d84e5eeb8d287859ff8714521ec8aea25be9644613a5d94e2cc"},
+  {"url":"/organism/cells/cpi-of-year-month-f845-sum-neo-g7.mjs","sha256":"9846bf27d6a14f221ce3da4309972f75c02f2e492e2acc4851877aa0696bdf38"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"2e2cce79180087bf3601ae356ad84c2fc8828c26b70bcff02a6ffadd7b8543d7"}
+  {"url":"/organism/era/tasks.json","sha256":"ef618501e0f26c9e6eccfccbd44c5afbc2eee128334fc2eb57bdd3054755fc57"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -160,6 +162,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/az-phoenix-of-date-f2c7-larger.json","sha256":"6338adcafc32006c5f12d5851a4070400442dea6c6a46ad0eb8a032ff2499177"},
   {"url":"/organism/era/tasks/az-phoenix-of-date-f2c7-smaller.json","sha256":"fbf1a6802cc79d4863211f62b5b65cd5f221a0de53f72f7889ce87ea68738747"},
   {"url":"/organism/era/tasks/az-phoenix-of-date-f2c7-sum.json","sha256":"58763a9b4b3272bcb630cd0d2357f598d00aba599683fdfc88f2a154cf6a3b4b"},
+  {"url":"/organism/era/tasks/birth-of-name-d631-rev.json","sha256":"c3ef78aa4cefcb29a6d6c3aabba0b709986f0009f3d4d6acaa4fc01008ed1808"},
   {"url":"/organism/era/tasks/birthday-of-name-226a-rev.json","sha256":"589a176d27ae14209268ee187da77dae046e22eadce7912f035663269ba981c4"},
   {"url":"/organism/era/tasks/ca-los-angeles-of-dat-beeb.json","sha256":"5a066d0e50fafd0b3f7e410e4627c9cdd64cadb2a8d09d72ef29a127c3db8548"},
   {"url":"/organism/era/tasks/ca-los-angeles-of-dat-beeb-compare.json","sha256":"4278f15e45a36d764935325953616de5aeb4eec65b9023ff23ad67dc7f80160b"},
@@ -174,7 +177,9 @@ const LAZY = [
   {"url":"/organism/era/tasks/calling-code-country.json","sha256":"6b2dd4bc559e9dc503cccbcd112cf9d267bb2aed1fce7349c6cec705d7b4154e"},
   {"url":"/organism/era/tasks/capital-country.json","sha256":"38b673b861a6da3b61b4db771b05d091306a153f71af1acf590b0a0e2007478c"},
   {"url":"/organism/era/tasks/category-of-password-193f.json","sha256":"f0d0d91bf7b4641c0a9bfaa0373d798f4284956b400063215d7f70e8d703de4c"},
+  {"url":"/organism/era/tasks/category-of-person-d7fa.json","sha256":"2b3bb654b9b9ce3e9f57ffd7b692703fcdaedaa1eb285ec1df99daaaaa0c0031"},
   {"url":"/organism/era/tasks/category-of-title-1920.json","sha256":"f7391c3d124352f89e2925b21a75f9226c15909c9b12ab5a25b61ea406d1096c"},
+  {"url":"/organism/era/tasks/characters-speaking-of-ch-03fb.json","sha256":"2fe31933a0320db00273cb0c478d33c1b744eb70bf53ab96349df6e9c2bf2fca"},
   {"url":"/organism/era/tasks/china-of-date-6872.json","sha256":"793637ac25696a6fdd32f6d24cc12209e246e226046b8717ddcee7ac1952f184"},
   {"url":"/organism/era/tasks/china-of-date-6872-compare.json","sha256":"9c88cbbf252608aa971c1cedfda6e3c8d2ecfd12555af9220241f3a8449f5bf1"},
   {"url":"/organism/era/tasks/china-of-date-6872-larger.json","sha256":"cfe06fb4255a5ea040f52f31b48588a36ff44baaae2663f353cb7ab2bd7b98d0"},
@@ -229,6 +234,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/country-name-of-country-c-4749.json","sha256":"8c68786e5f11a77a861ec1516a922b50c8afd665ebe78ca6add7d6410463eedc"},
   {"url":"/organism/era/tasks/country-name-of-country-c-4749-rev.json","sha256":"64621dbae146ab4838c4156c3a6ee8e32ae3e7b8d58dd19674774973c44b63cf"},
   {"url":"/organism/era/tasks/country-numeric-code.json","sha256":"c3a3dd30129adc5c6648b4a2b7b7a0e3bb7af07c932c877c4707e7667e64f76f"},
+  {"url":"/organism/era/tasks/country-of-volcano-name-d399.json","sha256":"2fb35f2c93d1d71c2cc31e2d39ef6d20fe36d1e19b1d366037a31f53941183f7"},
   {"url":"/organism/era/tasks/country-population.json","sha256":"c62ed6ec34c7864cd9fcf6e190ff8338396ebd95ea12bb40af052b969376dd0c"},
   {"url":"/organism/era/tasks/country-population-compare.json","sha256":"8d7c0fecaf07e954abffa112606dd86a745b62acbe2b917ac42a139119475f8d"},
   {"url":"/organism/era/tasks/country-population-larger.json","sha256":"dfe806e9ec63c17cc6f00050bd3b306cc275b0d8daf2802c7b1efbb6b346d1b7"},
@@ -236,10 +242,10 @@ const LAZY = [
   {"url":"/organism/era/tasks/country-population-sum.json","sha256":"c49ce3521e9a3eb672aa994970c887e82ee2021554f0f6528d12c36445e8b6f6"},
   {"url":"/organism/era/tasks/country-subregion.json","sha256":"4a06f03649800c5cb6bf9f75884b96a614127c03651ced5b82108900f5e81e41"},
   {"url":"/organism/era/tasks/country-tld.json","sha256":"b5657b73b90029bb27fdfa98f3804f05aacb4e64c3764f0695cd429bbec9fe1a"},
+  {"url":"/organism/era/tasks/cover-artist-of-character-c0a5.json","sha256":"cca97094e73309e31ed463bc3ee523d0b220deaeafdeff136a592c6b91a4a51a"},
   {"url":"/organism/era/tasks/cpi-of-year-month-f845-compare.json","sha256":"1c81b4017359b9b016c80b3e7c448e4a730d45cc9b31f5f2d787f26922945908"},
   {"url":"/organism/era/tasks/cpi-of-year-month-f845-larger.json","sha256":"5cebbd1052abefcc520e6757df2a397e6e2311a587e4976eebb98596a7f7d031"},
   {"url":"/organism/era/tasks/cpi-of-year-month-f845-smaller.json","sha256":"8c7d2c278e019172dbda001e36f29e783329ae7c3314034dccd688522646c637"},
-  {"url":"/organism/era/tasks/cpi-of-year-month-f845-sum.json","sha256":"f0477596836cafd2d9053dd49df23002d1af3163dfeb8cdd5476d312788a690d"},
   {"url":"/organism/era/tasks/crayola-color-hex.json","sha256":"170719600e9803a959b6214e703cceb7c8a1e8cfc178e586ff4444770491eed5"},
   {"url":"/organism/era/tasks/crypto-ticker-name.json","sha256":"8cda823a2d28b87990517196d8b9103e757b061a1ce7f6fc156c3d00cadbec48"},
   {"url":"/organism/era/tasks/crypto-tickers-crypto-ticker-to-cr-655025.json","sha256":"39ab2d29f8fd9d2c42b83408a3230ba4332afd14f880436f772314c110ed4fdd"},
@@ -261,6 +267,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/datasets-language-codes-language-t-52b85a.json","sha256":"4ae9a287d27fc8c8b16e9ce94a31fd4c53dc15f2987d8c33c3c965311103eed0"},
   {"url":"/organism/era/tasks/date-of-publication-b331.json","sha256":"abee29274ebd29bdf770f452b8cd33cf70133eb0c7f6816187c172a5f38670be"},
   {"url":"/organism/era/tasks/date-of-wreck-no-94ff-rev.json","sha256":"bb2add69b40b0f9a73f9ce976fcc10819c920270e4e26b7087a08a8dccd4bff7"},
+  {"url":"/organism/era/tasks/death-of-name-017f-rev.json","sha256":"0680884aff77fe523819b53c22b213f1e4ece5b1d85c7dee8f1410f98da562fa"},
   {"url":"/organism/era/tasks/density-of-country-146f.json","sha256":"29f143b95537436a398cee5c736f5017e536b84c9954a22b97c5c2020fa1752c"},
   {"url":"/organism/era/tasks/density-of-country-146f-compare.json","sha256":"fa359bdd0f7f6845cf67d54a9a36607e75b0ebbc304ec3708e016a1a422418de"},
   {"url":"/organism/era/tasks/density-of-country-146f-larger.json","sha256":"c6edc9a8f347259be55d552fc13a3445b881a49215a563ab8b4285e3374126d3"},
@@ -315,7 +322,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/gemoji-emoji-shortcode-to-emoji-category.json","sha256":"0dd5ca59649e6986f20a7dffea89406991ac88a72cc1f953f2b06b516f87d985"},
   {"url":"/organism/era/tasks/gemoji-emoji-to-emoji-category.json","sha256":"adccc31e52c4ef05d7af9c33a091906aa5d17953049db39deb26683b6f0378be"},
   {"url":"/organism/era/tasks/gemoji-emoji-to-emoji-shortcode.json","sha256":"b39a34b043763ae6d7b6180e0cb89d0703d8964e155af8384cb1c84c35ffd124"},
-  {"url":"/organism/era/tasks/gender-of-title-bf3d.json","sha256":"68162805efe2cff6fca9cd3ccb4dcb73d3acf160fde91641ccb3cae0b56371a6"},
+  {"url":"/organism/era/tasks/gender-of-person-4904.json","sha256":"ae0d559bad4549ed4916078b073a6adb93a151ae2438b66db5aec0aa81c7991c"},
   {"url":"/organism/era/tasks/gmsl-monthly-of-time-c212-compare.json","sha256":"f4d5e601892dcde8dad3cfc387d87825c4f19ed126753ce77e1db933828a19b7"},
   {"url":"/organism/era/tasks/gmsl-monthly-of-time-c212-larger.json","sha256":"43b6ae8d330da7424df443b2a1b24adb3393f87a51c0169d2b2c1b894713f215"},
   {"url":"/organism/era/tasks/gmsl-monthly-of-time-c212-smaller.json","sha256":"915583c8a423fe4f1aeca36856d5f2e923a23827c022dd36e78d02b50d024ade"},
@@ -349,11 +356,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/id-of-legal-nature-740f.json","sha256":"8bf786ab8261f780378dcb21dfabb797ea68311b52cb4439b16835bd3299543f"},
   {"url":"/organism/era/tasks/id-of-legal-nature-740f-compare.json","sha256":"4b78f681b7cab1682bbb71355f17e5f1a539bc2f2969739b1a34032f5b360909"},
   {"url":"/organism/era/tasks/id-of-legal-nature-740f-larger.json","sha256":"e0bff69eccf88e8f44880571f21f424947a3fd2adcd8480a3fe9b7ff48ead54c"},
-  {"url":"/organism/era/tasks/id-of-legal-nature-740f-smaller.json","sha256":"7d75a5ddc037bcf1bcc9f7c4ef3a870734b1da7ad4bb64c2573e2f90b9f386b9"},
-  {"url":"/organism/era/tasks/id-of-legal-nature-740f-sum.json","sha256":"9be4e7ace5df1e1d399b98a6f8082e35ba2f982b08d0060048fa126c4a3d7433"},
-  {"url":"/organism/era/tasks/id-of-owner-qualifica-2d36.json","sha256":"86c8b181bb234d47fc460f684e726d119da88e23fc335defc6dce395099c9984"},
-  {"url":"/organism/era/tasks/id-of-owner-qualifica-2d36-compare.json","sha256":"d7de1bc1291e148b9401a4b7edb079b3c838fee9d6d3731f6fcbbeac634f31e3"},
-  {"url":"/organism/era/tasks/instrument-member.json","sha256":"727a1136c2774bbecf15875307900b7945679f16d8f3f8ed1ea86001b9a1e75e"}
+  {"url":"/organism/era/tasks/id-of-legal-nature-740f-smaller.json","sha256":"7d75a5ddc037bcf1bcc9f7c4ef3a870734b1da7ad4bb64c2573e2f90b9f386b9"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
