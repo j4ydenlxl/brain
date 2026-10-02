@@ -39,18 +39,23 @@
 // The engine never opens judge/heldout/, judge/control.jsonl, state/ or a task's heldout.jsonl while spawning: every
 // file it reads goes through readData, which REFUSES those paths. Only SELECT reads a task's heldout.jsonl and the q
 // of judge/control.jsonl, through its own reader.
-// Author: NEO board builder (THE ENGINE), 2026-10-01.
+// THE TEMPORAL GRADE (part 4): a task whose task.json says "temporal": true is graded walk-forward: its held-out rows
+// are only the ones later than every dev row (a row's time: its t, else the latest year or date its prompt writes,
+// else the file order), and its line and index row carry heldout.placebo, persistence (each row answered with the last
+// value seen before it). Such a colony is mastered only above its placebo; regate refuses a temporal row without one.
+// Author: NEO board builder (THE ENGINE), 2026-10-01; part 4 (the series and table slices, the temporal grade), 2026-10-02.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { KERNEL_VERSION, PRIMS, norm, makeColony, checkCell, knowNorm } from './neo-kernel.mjs';
+import { KERNEL_VERSION, PRIMS, norm, makeColony, checkCell, knowNorm, expandMacros } from './neo-kernel.mjs';
 import {
   BUDGET, MAX_COST, ENUM_SHARE, BUILTIN_NEGATIVES, BUILTIN_LIST, Fail, spawn as coreSpawn, rowsOf as coreRowsOf, passesRow, familyOf,
   deriveTemplates, fitsTemplates, isMastered, rowServes, withKnowledge, usesKnow,
 } from './neo-core.mjs';
 import * as CORE from './neo-core.mjs';
 import { loadPacks } from './know.mjs';
+import { genomeOf } from './genome.mjs';
 import { validateCell, validateTest, FORBIDDEN, TEST_FORBIDDEN, parseJsonl, ID_RE, MAX_SOURCE_BYTES, REFUSAL_RE } from './contract.mjs';
 import { expectOk } from '../judge/judge.mjs';
 import { renderIndexMjs, answersOf } from './store.mjs';
@@ -71,8 +76,12 @@ export function spawn(spec = {}) { return coreSpawn({ ...spec, expectOk: typeof 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KERNEL_FILE = path.join(HERE, 'neo-kernel.mjs');
 export const LANE = 'neo';
-/** The most examples a compiled module carries. */
+/** The most examples a compiled module carries (the maxExamples gene's default: the genome in force decides). */
 export const MAX_EXAMPLES = 20;
+/** The share of what is left of grow's --max-ms its search is told (the rest compiles, selects, promotes or stages). */
+export const GROW_SPAWN_SHARE = 0.7;
+/** The why of a grow that reached its --max-ms: it kept what it had. */
+export const DEADLINE_WHY = 'deadline: --max-ms reached, the grow kept what it had';
 export const USAGE = [
   'usage: node grow/neo.mjs spawn --class <cls> --gen <n> [--out <dir>] [--max-generated <k>] [--max-ms <ms>] [--root <dir>]',
   '       node grow/neo.mjs grow --task <task> --gen <n> [--stage <dir>] [--knowledge <dir>|none] [--max-generated <k>] [--max-ms <ms>] [--root <dir>]',
@@ -90,7 +99,7 @@ const first = (e) => String((e && e.message) || e).split(/\r?\n/)[0].trim();
 const errLine = (t) => { const ls = String(t ?? '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean); return ls.find((l) => /^\w*Error\b/.test(l)) || ls[0] || ''; };
 /** A digit-masked norm level 1: two prompts of one shape differ only in their digits. */
 const shapeOf = (q) => norm(q, 1).replace(/\d+/g, '#');
-const writeText = (f, t) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, t); };
+const writeText = (f, t) => writeAtomic(f, t); // every file the engine writes: whole or not at all
 const writeJson = (f, o) => writeText(f, JSON.stringify(o, null, 2) + '\n');
 
 // ---------------------------------------------------------------- reading: the spawn reader refuses the held-out files
@@ -183,16 +192,24 @@ const cellLine = (c) => JSON.stringify({ id: c.id, guard: c.guard, pyramid: c.py
 /**
  * Where each know primitive's node names its pack and the pack columns it reads: [pack place, column places], the
  * places counted in the node ([name, ...args], the prompt text not an argument). null columns: every column (know.row);
- * null: no pack (know.num). test/neo-know.test.mjs fails when a know primitive of the kernel is missing here.
+ * null: no pack (know.num). A series primitive ends in its pack, key column and value column, a table primitive in its
+ * pack, entity, time and value columns, so their places are read off their manifests. test/neo-know.test.mjs fails when
+ * a primitive of the kernel that reads a pack is missing here.
  */
 const KNOW_COLS = Object.freeze({
   'know.find': [1, [2]], 'know.has': [2, [3]], 'know.lookup': [2, [3, 4]], 'know.reverse': [2, [3, 4]], 'know.where': [2, [3, 4]], 'know.row': [2, null], 'know.num': null,
+  ...Object.fromEntries(Object.keys(PRIMS).filter((n) => PRIMS[n].family === 'series' || PRIMS[n].family === 'table').map((n) => {
+    const k = PRIMS[n].in.length, c = PRIMS[n].family === 'series' ? 2 : 3; // node place i holds argument i (the name is place 0)
+    return [n, [k - c, Array.from({ length: c }, (_, i) => k - c + 1 + i)]];
+  })),
 });
+/** The families whose primitives read a pack. */
+const PACK_FAMILIES = new Set(['know', 'series', 'table']);
 const SLICE_SEPS = Object.freeze(['|', '~', '^', '\t', '\u0001']);
 const isLit = (a) => isObj(a) && Object.hasOwn(a, 'lit');
 function knowNodesOf(node, out = []) {
   if (!Array.isArray(node)) return out;
-  if (typeof node[0] === 'string' && node[0].startsWith('know.') && Object.hasOwn(PRIMS, node[0])) out.push(node);
+  if (typeof node[0] === 'string' && Object.hasOwn(PRIMS, node[0]) && PACK_FAMILIES.has(PRIMS[node[0]].family)) out.push(node);
   for (const c of node.slice(1)) knowNodesOf(c, out);
   return out;
 }
@@ -311,7 +328,7 @@ export function knowSlices(cells, packs) {
   const want = new Map();
   const add = (pid, cols) => { let s = want.get(pid); if (!s) want.set(pid, (s = new Set())); for (const col of cols) s.add(col); };
   for (const c of Array.isArray(cells) ? cells : []) {
-    for (const n of knowNodesOf(isObj(c) ? c.pyramid : null)) {
+    for (const n of knowNodesOf(isObj(c) ? expandMacros(c.pyramid) : null)) { // a macro reads what its body reads
       const places = Object.hasOwn(KNOW_COLS, n[0]) ? KNOW_COLS[n[0]] : null;
       if (places === null) continue;
       const [at, cols] = places, pid = isLit(n[at]) ? n[at].lit : null;
@@ -338,13 +355,13 @@ export function knowSlices(cells, packs) {
   return out;
 }
 
-function moduleText({ id, cls, gen, lane, lines, examples, grownFrom, slices = [] }) {
+function moduleText({ id, cls, gen, lane, lines, examples, grownFrom, slices = [], macros = [] }) {
   return [
     '// ' + id + '.mjs: a NEO colony compiled by grow/neo.mjs (grow/NEO.md, "The engine"). The cells are DATA run by the',
     '// kernel of grow/neo-kernel.mjs, inlined verbatim between its markers; the first cell that answers wins.',
     'export const meta = Object.freeze(' + JSON.stringify({ id, class: cls, generation: gen, lane, grownFrom, version: 1 }) + ');',
     '',
-    kernelRegion() + (slices.length ? '// the facts the cells read (grow/know.mjs packs, only the columns the cells name)\nknowLoad(' + JSON.stringify(slices) + ');\n' : '') + 'const COLONY = [',
+    kernelRegion() + (macros.length ? '// the macros the cells name (neo/MACROS.json, contract c6)\nmacroLoad(' + JSON.stringify(macros) + ');\n' : '') + (slices.length ? '// the facts the cells read (grow/know.mjs packs, only the columns the cells name)\nknowLoad(' + JSON.stringify(slices) + ');\n' : '') + 'const COLONY = [',
     lines.join(',\n'),
     '];',
     'const RUN = makeColony(COLONY);',
@@ -357,11 +374,11 @@ function moduleText({ id, cls, gen, lane, lines, examples, grownFrom, slices = [
     '',
   ].join('\n');
 }
-/** The dev rows the first k cells answer right, FORBIDDEN-free, at most MAX_EXAMPLES, the row of `first` first. */
+/** The dev rows the first k cells answer right, FORBIDDEN-free, at most the maxExamples gene (MAX_EXAMPLES), the row of `first` first. */
 function examplesOf(cells, rows, first) {
-  const colony = makeColony(cells), out = [];
+  const colony = makeColony(cells), out = [], most = CORE.genomeInForce().maxExamples;
   for (const r of rows) {
-    if (out.length >= MAX_EXAMPLES) break;
+    if (out.length >= most) break;
     const ex = { q: r.q, expect: r.expect };
     if (tripped(JSON.stringify(ex)) || out.some((x) => x.q === r.q)) continue;
     const a = colony.answer(r.q);
@@ -369,6 +386,12 @@ function examplesOf(cells, rows, first) {
   }
   const at = typeof first === 'string' ? out.findIndex((x) => x.q === first) : -1;
   if (at > 0) out.unshift(...out.splice(at, 1));
+  return out;
+}
+/** The definitions of the macros a list of cells names, each once, in order of first use (a module loads exactly these). */
+export function macrosOfCells(cells) {
+  const out = [], seen = new Set();
+  for (const c of Array.isArray(cells) ? cells : []) for (const m of CORE.macrosOf(isObj(c) ? c.pyramid : null)) if (!seen.has(m.name)) { seen.add(m.name); out.push(m); }
   return out;
 }
 /**
@@ -389,15 +412,15 @@ export function compileModule({ id, cls, gen, lane = LANE, cells = [], examples 
   for (const c of Array.isArray(cells) ? cells : []) {
     if (!checkCell(c).ok) { invalid++; continue; }
     const line = cellLine(c);
-    if (tripped(line)) { forbidden++; continue; }
+    if (tripped(line) || tripped(JSON.stringify(CORE.macrosOf(c.pyramid)))) { forbidden++; continue; }
     ok.push(c); lines.push(line);
   }
   const rows = rowsOf(examples);
   const build = (k) => {
-    const cs = ok.slice(0, k), slices = knowSlices(cs, packs);
+    const cs = ok.slice(0, k), slices = knowSlices(cs, packs), macros = macrosOfCells(cs);
     const exs = withKnowledge(slices, () => examplesOf(cs, rows, first));
-    const source = moduleText({ id, cls, gen, lane, lines: lines.slice(0, k), examples: exs, grownFrom: exs.map((x) => x.q), slices });
-    return { k, exs, source, bytes: Buffer.byteLength(source), slices };
+    const source = moduleText({ id, cls, gen, lane, lines: lines.slice(0, k), examples: exs, grownFrom: exs.map((x) => x.q), slices, macros });
+    return { k, exs, source, bytes: Buffer.byteLength(source), slices, macros };
   };
   let best = build(ok.length);
   if (best.bytes > maxBytes) { // the most cells that fit, by halving (the lowest in the order are left out)
@@ -406,7 +429,7 @@ export function compileModule({ id, cls, gen, lane = LANE, cells = [], examples 
     while (lo <= hi) { const mid = (lo + hi) >> 1, b = build(mid); if (b.bytes <= maxBytes) { best = b; lo = mid + 1; } else hi = mid - 1; }
     if (!best) best = build(0);
   }
-  const base = { included: best.k, leftOut: ok.length - best.k, forbidden, invalid, examples: best.exs, bytes: best.bytes, cells: ok.slice(0, best.k), slices: best.slices };
+  const base = { included: best.k, leftOut: ok.length - best.k, forbidden, invalid, examples: best.exs, bytes: best.bytes, cells: ok.slice(0, best.k), slices: best.slices, macros: best.macros };
   if (!best.k) return { ...base, source: null, why: 'no kept cell fits in a module' };
   if (!best.exs.length) return { ...base, source: null, why: 'no dev row is answered right by the kept cells' };
   return { ...base, source: best.source };
@@ -452,6 +475,27 @@ export function testOf(id, silent = []) {
 /** The built-in greetings and plain arithmetic the colony is silent on (each verified), for its test.mjs. */
 const silentFor = (cells) => { const c = makeColony(cells); return [...BUILTIN_NEGATIVES.greetings, ...BUILTIN_NEGATIVES.arithmetic].filter((q) => !c.can(q) && !tripped(q)); };
 
+// ---------------------------------------------------------------- THE GENOME and THE MACROS of a tree (contract c6)
+/** Where a tree keeps the macros grow/evolve.mjs mined and a trial kept ({ macros: [...] }). */
+export const MACROS_FILE = 'neo/MACROS.json';
+/**
+ * Put a tree's genome and macros in force for the searches of this process: neo/GENOME.json through grow/genome.mjs
+ * genomeOf (a gene missing, corrupt or out of bounds is today's constant), and neo/MACROS.json through grow/neo-core.mjs
+ * macroCells (a macro the kernel's type check refuses is left out), with `extra` macros after the tree's (a stage's own:
+ * the first of a name wins). Every verb that spawns, compiles or merges calls it first.
+ * @param {string} root the tree
+ * @param {object[]} [extra] more macro definitions
+ * @returns {{ rejected: string[], macros: string[] }} the genes that kept their default, the macros loaded
+ */
+export function engineOf(root, extra = []) {
+  const g = CORE.applyGenome(genomeOf(root));
+  let doc = null;
+  try { const t = readData(root, MACROS_FILE); doc = t === null ? null : JSON.parse(t); } catch { doc = null; }
+  const list = isObj(doc) && Array.isArray(doc.macros) ? doc.macros : [];
+  const m = CORE.macroCells([...list, ...(Array.isArray(extra) ? extra : [])]);
+  return { rejected: g.rejected, macros: m.loaded };
+}
+
 // ---------------------------------------------------------------- spawn --class: a lane-neo candidate for a locked class
 const uniqQ = (rows) => { const seen = new Set(); return rows.filter((r) => { const k = norm(r.q, 1); if (seen.has(k)) return false; seen.add(k); return true; }); };
 function briefOf(id, cls, gen, stats, comp) {
@@ -486,6 +530,7 @@ export function spawnClass(root, { cls, gen, out = null, budget = {} } = {}) {
   const rows = uniqQ(rowsOf([...dev, ...dreams], retired));
   if (!rows.length) throw new Fail('no row for the class ' + cls + ' in judge/dev/' + cls + '.jsonl or grow/dreams.jsonl');
   const id = armId(cls, LANE, gen);
+  engineOf(root);
   const { packs } = loadPacks(root);
   const { cells, stats } = spawn({ task: cls, rows, negatives: negativeGroupsFor(root, { cls, rows }), gen, parents: [], budget, packs });
   const comp = compileModule({ id, cls, gen, lane: LANE, cells, examples: rows, packs });
@@ -514,6 +559,96 @@ export async function organismOf(root, knowledge) {
   return (rows) => runOrganism(rows, { knowledge: k });
 }
 const score = (ok, n) => ({ ok, n, score: n ? round4(ok / n) : 0 });
+
+// ---------------------------------------------------------------- THE TEMPORAL GRADE: walk-forward, against persistence
+// A task whose task.json says "temporal": true is graded WALK-FORWARD: its held-out rows are only the ones later than
+// every dev row, and next to the colony's score stands a placebo, persistence: each held-out row answered with the
+// answer of the latest row before it (the dev rows, then the held-out rows already passed). The colony is mastered only
+// when it scores above that placebo (grow/neo-core.mjs isMastered reads heldout.placebo).
+const TIME_TEXT = /^(\d{4})(?:-(\d{1,2})(?:-(\d{1,2}))?)?$/;
+const TIME_IN = /(?<!\d|\d[.,])(\d{4})(?:-(\d{1,2})(?:-(\d{1,2}))?)?(?!\d|[.,]\d)/g;
+const dateValue = (y, m, d) => { const mo = Number(m || 1), dd = Number(d || 1); return mo >= 1 && mo <= 12 && dd >= 1 && dd <= 31 ? Number(y) + (mo - 1) / 12 + (dd - 1) / 372 : null; };
+/**
+ * A time as a number in order: a finite number as it is; a year, a year and month or a full date ("2020", "2020-03",
+ * "2020-03-05") as a fractional year; any other text that is a number; else null.
+ * @param {unknown} v
+ * @returns {number|null}
+ */
+export function timeOf(v) {
+  if (typeof v === 'number') return Number.isFinite(v) ? v : null;
+  if (typeof v !== 'string' || !v.trim()) return null;
+  const t = v.trim(), m = TIME_TEXT.exec(t);
+  if (m) return dateValue(m[1], m[2], m[3]);
+  const x = Number(t.replace(/,/g, ''));
+  return Number.isFinite(x) ? x : null;
+}
+/** A row's time: its own t, else the latest year or date its prompt writes, else null. */
+export function rowTime(r) {
+  if (!isObj(r)) return null;
+  if (r.t !== undefined) return timeOf(r.t);
+  const q = typeof r.q === 'string' ? r.q : typeof r.prompt === 'string' ? r.prompt : '';
+  let best = null;
+  for (const m of q.slice(0, 4000).matchAll(TIME_IN)) { const x = dateValue(m[1], m[2], m[3]); if (x !== null && (best === null || x > best)) best = x; }
+  return best;
+}
+/** The last value a row shows: its expect's equals (the exact value), else its contains joined, else its answer text. */
+function lastValue(r) {
+  const e = r.expect;
+  if (isObj(e) && typeof e.equals === 'string') return e.equals;
+  if (isObj(e) && Array.isArray(e.contains)) { const c = e.contains.filter((x) => typeof x === 'string'); if (c.length) return c.join(' '); }
+  if (typeof r.answer === 'string' && r.answer.trim()) return r.answer;
+  return null;
+}
+/**
+ * The walk-forward held-out set of a temporal task and its placebo. With a time on some rows: the held-out rows whose
+ * time is later than every dev row's, in time order (a row with no time is left out); with a time on no row, the file
+ * order is the time (every dev row, then every held-out row). The placebo answers each kept row with the last value of
+ * the latest row strictly before it.
+ * @param {object[]} devRaw the dev rows as the file holds them
+ * @param {object[]} heldRaw the held-out rows as the file holds them
+ * @param {(got: string|null, expect: object) => boolean} [ok] the grader (judge/judge.mjs expectOk)
+ * @returns {{ held: object[], placebo: { ok: number, n: number, score: number }, left: number }} held in the engine's row
+ *   shape; left: the held-out rows left out
+ */
+export function walkForward(devRaw, heldRaw, ok = expectOk) {
+  const eng = (list) => (Array.isArray(list) ? list : []).map((raw) => ({ raw, row: rowsOf([raw])[0] ?? null })).filter((x) => x.row);
+  const dev = eng(devRaw), held = eng(heldRaw);
+  const timed = [...dev, ...held].some((x) => rowTime(x.raw) !== null);
+  let D, H;
+  if (!timed) {
+    D = dev.map((x, i) => ({ ...x, t: i }));
+    H = held.map((x, i) => ({ ...x, t: dev.length + i }));
+  } else {
+    D = dev.map((x) => ({ ...x, t: rowTime(x.raw) })).filter((x) => x.t !== null);
+    const last = D.reduce((m, x) => Math.max(m, x.t), -Infinity);
+    H = held.map((x) => ({ ...x, t: rowTime(x.raw) })).filter((x) => x.t !== null && x.t > last);
+  }
+  const byTime = (a, b) => a.t - b.t;
+  H.sort(byTime);
+  const all = [...D, ...H].sort(byTime); // stable: among equal times the file order, dev rows first
+  let pok = 0;
+  for (const x of H) {
+    let prev = null;
+    for (const y of all) { if (y.t >= x.t) break; prev = y; }
+    const guess = prev ? lastValue(prev.row) : null;
+    if (guess !== null && ok(guess, x.row.expect)) pok++;
+  }
+  return { held: H.map((x) => x.row), placebo: score(pok, H.length), left: held.length - H.length };
+}
+/** Whether a task's task.json marks it temporal ("temporal": true); an unreadable task.json is not. */
+export function isTemporal(root, task) {
+  let doc = null;
+  try { const t = readData(root, TASKS_DIR + '/' + task + '/task.json'); doc = t === null ? null : JSON.parse(t); } catch { doc = null; }
+  return isObj(doc) && doc.temporal === true;
+}
+/** The held-out rows a task is graded on: every row, or for a temporal task the walk-forward rows and their placebo. */
+function heldOf(root, task, heldText) {
+  const heldRaw = parseJsonl(heldText);
+  if (!isTemporal(root, task)) return { held: rowsOf(heldRaw), placebo: null };
+  const devText = readData(root, TASKS_DIR + '/' + task + '/dev.jsonl');
+  const w = walkForward(devText === null ? [] : parseJsonl(devText), heldRaw);
+  return { held: w.held, placebo: w.placebo };
+}
 /**
  * The atomic read-modify-write of the ledger's generated total and, given a task and a cursor, THE CURSOR of the task:
  * set on the task's latest entry, where its next grow continues (every other key is kept as it is).
@@ -560,7 +695,7 @@ function prune(cells, qs, bad) {
 /** Byte-exact snapshot of files, restored by put(). */
 function snapshot(files) {
   const saved = files.map((f) => ({ f, data: fs.existsSync(f) ? fs.readFileSync(f) : null }));
-  return () => { for (const { f, data } of saved) { try { if (data === null) fs.rmSync(f, { force: true }); else fs.writeFileSync(f, data); } catch { /* best effort, the next file still goes back */ } } };
+  return () => { for (const { f, data } of saved) { try { if (data === null) fs.rmSync(f, { force: true }); else writeAtomic(f, data); } catch { /* best effort, the next file still goes back */ } } };
 }
 const ENGINE_FILE = fileURLToPath(import.meta.url);
 const readText = (f) => (fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : null);
@@ -648,7 +783,7 @@ async function shadowOf(root, rows, load = loaderOf(root)) {
   return (q) => { const e = earlier.find(({ m, templates }) => takes(m, templates, q)); return e ? e.id : null; };
 }
 /** Why a colony does not serve, in words. */
-const notServing = (heldout, templates) => (!isMastered(heldout) ? 'not mastered: held-out ' + (heldout ? heldout.ok + ' of ' + heldout.n : 'none') : !templates.length ? 'no template: the dev prompts share no question shape' : null);
+const notServing = (heldout, templates) => (!isMastered(heldout) ? 'not mastered: held-out ' + (heldout ? heldout.ok + ' of ' + heldout.n + (isObj(heldout.placebo) ? ', placebo ' + heldout.placebo.ok + ' of ' + heldout.placebo.n : '') : 'none') : !templates.length ? 'no template: the dev prompts share no question shape' : null);
 
 /**
  * SELECT of grow/NEO.md for a task's kept cells, and the PROMOTE plan when the colony wins: compile, the held-out score
@@ -657,7 +792,8 @@ const notServing = (heldout, templates) => (!isMastered(heldout) ? 'not mastered
  * template of the task). Reads, never writes.
  * @returns {Promise<{ fail: object|null, sel: object|null, pruned: number, plan: object|null, out: object|null }>}
  */
-async function selectOf(root, { task, gen, frozen, rows, negs, cells, ran, baselineOf, now, packs = null }) {
+async function selectOf(root, { task, gen, frozen, rows, negs, cells, ran, baselineOf, now, packs = null, deadline = null }) {
+  const late = () => deadline !== null && Date.now() > deadline; // grow --max-ms: past it, SELECT stops where it is
   const tdir = TASKS_DIR + '/' + task;
   const cellsDir = path.join(root, 'grown', 'cells');
   let k = 1;
@@ -665,24 +801,28 @@ async function selectOf(root, { task, gen, frozen, rows, negs, cells, ran, basel
   const id = armId(task, LANE, gen, k);
   const comp = compileModule({ id, cls: task, gen, lane: LANE, cells, examples: rows, packs });
   if (!comp.source) return { fail: { ...ran, why: [comp.why] } };
+  if (late()) return { fail: { ...ran, cells: comp.included, why: [DEADLINE_WHY + ' (after the compile)'], deadline: true } };
   // SELECT: the frozen held-out set, the control prompts, the organism, the present colony
   const heldText = readSelect(root, tdir + '/heldout.jsonl');
   if (heldText === null || shaText(heldText) !== frozen.heldoutSha) return { fail: { ...ran, cells: comp.included, why: ["the task's held-out set changed since it was opened"] } };
-  const held = rowsOf(parseJsonl(heldText));
+  const { held, placebo } = heldOf(root, task, heldText); // a temporal task: the walk-forward rows and their placebo
   const controlText = readSelect(root, 'judge/control.jsonl');
   const controlQ = controlText === null ? [] : parseJsonl(controlText).map((r) => (isObj(r) && typeof r.q === 'string' ? r.q : null)).filter(Boolean);
   // every colony is measured with the slices its module carries loaded, never across an await (the kernel holds one set)
   const whole = makeColony(comp.cells); // grow/NEO.md: the held-out score is measured BEFORE any pruning
   const heldout = withKnowledge(comp.slices, () => score(held.filter((r) => expectOk(whole.answer(r.q), r.expect)).length, held.length));
+  if (placebo) heldout.placebo = placebo;
   const ctl = withKnowledge(comp.slices, () => prune(comp.cells, [...controlQ, ...negs], () => true));
+  if (late()) return { fail: { ...ran, cells: comp.included, heldout, control: ctl.removed, why: [DEADLINE_WHY + ' (before the baseline)'], deadline: true } };
   const baseline = await baselineOf(held);
   const index = readIndex(root);
   const present = index.cells.find((r) => isNeoRow(r) && taskOfRow(r) === task) || null;
   const why = [];
   if (!(heldout.score > baseline.score)) why.push('the colony does not score above the organism');
   if (present && !(heldout.score > (present.heldout && Number.isFinite(present.heldout.score) ? present.heldout.score : -1))) why.push('the present colony scores as high');
-  const sel = { ...ran, cells: comp.included, leftOut: comp.leftOut, forbidden: comp.forbidden, heldout, baseline, control: ctl.removed };
+  const sel = { ...ran, cells: comp.included, leftOut: comp.leftOut, forbidden: comp.forbidden, heldout, ...(placebo ? { placebo } : {}), baseline, control: ctl.removed };
   if (why.length) return { fail: { ...sel, why } };
+  if (late()) return { fail: { ...sel, why: [DEADLINE_WHY + ' (before the prune)'], deadline: true } };
   // PROMOTE: cell by cell, a cell that answered a held-out row wrong is removed; the first example no earlier cell answers
   const kept = withKnowledge(comp.slices, () => prune(ctl.cells, held.map((r) => r.q), (q, a) => !expectOk(a, held.find((r) => r.q === q).expect)));
   const shadowed = await shadowOf(root, [...index.cells.filter((r) => !isNeoRow(r)), ...index.cells.filter((r) => isNeoRow(r) && taskOfRow(r) !== task)]);
@@ -697,10 +837,11 @@ async function selectOf(root, { task, gen, frozen, rows, negs, cells, ran, basel
   }
   if (!free) free = pre.examples.find((x) => !shadowed(x.q)) || null;
   if (!free) return { fail: { ...sel, pruned: kept.removed, why: ['every example is answered first by an earlier cell'] } };
+  if (late()) return { fail: { ...sel, pruned: kept.removed, why: [DEADLINE_WHY + ' (before the last compile)'], deadline: true } };
   const fin = compileModule({ id, cls: task, gen, lane: LANE, cells: kept.cells, examples: rows, first: free.q, packs });
   const row = {
     id, class: task, task, generation: gen, lane: LANE, tier: LANE, file: 'cells/' + id + '.mjs', cells: fin.included, generated: ran.generated,
-    heldout: { score: heldout.score, n: heldout.n, ok: heldout.ok }, promotedAt: now().toISOString(), serve: gate === null, templates, ...(gate === null ? {} : { gate }),
+    heldout: { score: heldout.score, n: heldout.n, ok: heldout.ok, ...(placebo ? { placebo } : {}) }, promotedAt: now().toISOString(), serve: gate === null, templates, ...(gate === null ? {} : { gate }),
     ...(fin.cells.some(usesKnow) ? { know: true } : {}), // a knowledge-backed colony: a cell reads a pack's facts
   };
   return { fail: null, sel, pruned: kept.removed, plan: { id, source: fin.source, row }, out: { ...sel, id, cells: fin.included, pruned: kept.removed, serve: row.serve } };
@@ -724,11 +865,13 @@ async function promotePlan(root, plan, render) {
   const putBack = snapshot([indexPath, mjsPath, file, ...(oldFile && oldFile !== file ? [oldFile] : [])]);
   try {
     fs.mkdirSync(cellsDir, { recursive: true });
-    fs.writeFileSync(file, plan.source, { flag: 'wx' });
+    // every file of grown/ is written whole or not at all (a temporary sibling renamed over it); the module never over an existing one
+    if (fs.existsSync(file)) throw new Fail('grown/cells/' + plan.id + '.mjs is already on disk');
+    writeAtomic(file, plan.source);
     if (oldFile && oldFile !== file && fs.existsSync(oldFile)) fs.rmSync(oldFile);
     const next = { ...index, cells: [...others, plan.row] };
-    fs.writeFileSync(indexPath, JSON.stringify(next, null, 2) + '\n');
-    fs.writeFileSync(mjsPath, render(next));
+    writeAtomic(indexPath, JSON.stringify(next, null, 2) + '\n');
+    writeAtomic(mjsPath, render(next));
     const chk = spawnSync(process.execPath, ['--check', mjsPath], { encoding: 'utf8', windowsHide: true });
     if (chk.status !== 0) throw new Fail('node --check grown/index.mjs failed: ' + errLine(chk.stderr || chk.stdout));
     const mod = await import(pathToFileURL(file).href + '?v=' + Date.now().toString(36));
@@ -760,6 +903,10 @@ export async function growTask({ root = DEFAULT_ROOT, task, gen, organism = null
   const t0 = Date.now();
   if (!TASK_RE.test(String(task ?? ''))) throw new Fail('usage: --task names a task (' + TASK_RE + ')\n' + USAGE, 2);
   if (!Number.isInteger(gen) || gen < 1) throw new Fail('usage: --gen is an integer from 1\n' + USAGE, 2);
+  // THE DEADLINE: with --max-ms the whole grow ends by it. The search is told GROW_SPAWN_SHARE of what is left; past the
+  // deadline the grow keeps what it has (the stage file, or colony.json and the ledger) and says so (deadline: true)
+  const deadline = budget && Number.isInteger(budget.maxMs) && budget.maxMs > 0 ? t0 + budget.maxMs : null;
+  engineOf(root);
   const frozen = frozenOf(root, task);
   const line = (o) => ({ task, generation: gen, generated: 0, kept: 0, cells: 0, heldout: null, baseline: null, promoted: false, why: [], pruned: 0, control: 0, ...o, ms: Date.now() - t0 });
   // a mastered task is skipped: its colony answers every held-out row; the budget goes to the tasks still unmastered
@@ -775,25 +922,30 @@ export async function growTask({ root = DEFAULT_ROOT, task, gen, organism = null
   const { packs } = loadPacks(root);
   const source = typeof frozen.by === 'string' && frozen.by.startsWith('absorb:') ? frozen.by.slice('absorb:'.length) : null;
   // THE CURSOR: the search continues where the task's last grow stopped
-  const { cells, stats } = spawn({ task, rows, negatives: grouped, gen, parents: col.cells, budget, packs, source, cursor: isObj(frozen.cursor) ? frozen.cursor : null });
+  const told = deadline === null ? budget : { ...budget, maxMs: Math.max(1, Math.floor((deadline - Date.now()) * GROW_SPAWN_SHARE)) };
+  const { cells, stats } = spawn({ task, rows, negatives: grouped, gen, parents: col.cells, budget: told, packs, source, cursor: isObj(frozen.cursor) ? frozen.cursor : null });
   const ran = { generated: stats.generated, kept: stats.kept, cellsPerSecond: stats.cellsPerSecond };
   const known = { packs: stats.packs, know: stats.know, round: stats.cursor.round };
+  const late = () => deadline !== null && Date.now() > deadline;
+  const lateFail = (where) => ({ fail: { ...ran, why: [DEADLINE_WHY + ' (' + where + ')'], deadline: true } });
   if (stage) {
-    const s = await selectOf(root, { task, gen, frozen, rows, negs, cells, ran, baselineOf: baselineFn(root, organism, knowledge), now, packs });
+    const s = late() ? lateFail('after the search') : await selectOf(root, { task, gen, frozen, rows, negs, cells, ran, baselineOf: baselineFn(root, organism, knowledge), now, packs, deadline });
     const result = line({ ...(s.fail || s.out), ...known, promotable: !!s.plan });
     const file = path.join(path.resolve(stage), task + '.json');
+    const macros = macrosOfCells(cells);
     const doc = {
       kind: STAGE_KIND, version: STAGE_VERSION, task, generation: gen, at: now().toISOString(), kernel: KERNEL_VERSION,
       shas: { dev: frozen.devSha, heldout: frozen.heldoutSha }, index: indexAt, ledger: { generated: stats.generated, cursor: stats.cursor },
-      stats, result, module: s.plan ? { id: s.plan.id, source: s.plan.source } : null, cells,
+      stats, result, module: s.plan ? { id: s.plan.id, source: s.plan.source } : null, cells, ...(macros.length ? { macros } : {}),
     };
     writeAtomic(file, JSON.stringify(doc) + '\n');
     return { ...result, staged: file, ms: Date.now() - t0 };
   }
   ran.ledgerGenerated = addGenerated(root, stats.generated, { task, cursor: stats.cursor });
   writeColony(root, { task, gen, at: now().toISOString(), stats, cells, old: col.cells, stages: col.stages });
-  const s = await selectOf(root, { task, gen, frozen, rows, negs, cells, ran: { ...ran, ...known }, baselineOf: baselineFn(root, organism, knowledge), now, packs });
-  if (!s.plan) return line(s.fail);
+  const s = late() ? lateFail('after the search') : await selectOf(root, { task, gen, frozen, rows, negs, cells, ran: { ...ran, ...known }, baselineOf: baselineFn(root, organism, knowledge), now, packs, deadline });
+  if (!s.plan) return line({ ...s.fail, ...known });
+  if (late()) return line({ ...s.sel, ...known, pruned: s.pruned, why: [DEADLINE_WHY + ' (before the promote)'], deadline: true });
   const p = await promotePlan(root, s.plan, render);
   if (!p.ok) return line({ ...s.sel, pruned: s.pruned, why: [p.why] });
   return line({ ...s.out, promoted: true, replaced: p.replaced });
@@ -839,6 +991,7 @@ async function mergeOne(root, file, { organism, knowledge, render, now }) {
     const text = fs.readFileSync(file, 'utf8'), key = shaText(text);
     try { doc = JSON.parse(text); } catch { return { task: null, refused: 'not JSON' }; }
     task = isObj(doc) && typeof doc.task === 'string' ? doc.task : null;
+    engineOf(root, isObj(doc) && Array.isArray(doc.macros) ? doc.macros : []); // the tree's genome and macros, then the stage's own
     const bad = stageErrors(doc, name);
     if (bad) return { task, refused: bad };
     const gen = doc.generation;
@@ -855,7 +1008,9 @@ async function mergeOne(root, file, { organism, knowledge, render, now }) {
     const baselineOf = organism ? baselineFn(root, organism, knowledge) : childBaseline(root, task, knowledge);
     const s = await selectOf(root, { task, gen, frozen, rows: dev.rows, negs, cells: doc.cells, ran, baselineOf, now, packs: loadPacks(root).packs });
     const heldNow = s.sel ? s.sel.heldout : s.fail && s.fail.heldout ? s.fail.heldout : null;
-    if (JSON.stringify(heldNow ?? null) !== JSON.stringify(doc.result.heldout ?? null)) return { task, refused: 'the staged held-out score is not what its cells score (' + JSON.stringify(doc.result.heldout ?? null) + ' staged, ' + JSON.stringify(heldNow ?? null) + ' now)' };
+    // a stage its deadline stopped before the held-out measure claims no score: the merge's own SELECT decides it
+    const unclaimed = doc.result.deadline === true && (doc.result.heldout ?? null) === null;
+    if (!unclaimed && JSON.stringify(heldNow ?? null) !== JSON.stringify(doc.result.heldout ?? null)) return { task, refused: 'the staged held-out score is not what its cells score (' + JSON.stringify(doc.result.heldout ?? null) + ' staged, ' + JSON.stringify(heldNow ?? null) + ' now)' };
     if (same && s.plan && doc.module && doc.module.id === s.plan.id && doc.module.source !== s.plan.source) return { task, refused: 'the staged module is not what its cells compile to' };
     let promoted = false;
     if (s.plan) {
@@ -903,7 +1058,7 @@ export async function baselineOfTask({ root = DEFAULT_ROOT, task, organism = nul
   const frozen = frozenOf(root, task);
   const heldText = readSelect(root, TASKS_DIR + '/' + task + '/heldout.jsonl');
   if (heldText === null || shaText(heldText) !== frozen.heldoutSha) throw new Fail("the task's held-out set changed since it was opened");
-  return { task, baseline: await baselineFn(root, organism, knowledge)(rowsOf(parseJsonl(heldText))) };
+  return { task, baseline: await baselineFn(root, organism, knowledge)(heldOf(root, task, heldText).held) };
 }
 
 // ---------------------------------------------------------------- REGATE: serve only while mastered (contract c2)
@@ -924,6 +1079,7 @@ async function gateOfRow(root, row, led, retired, load) {
   if (heldText === null || shaText(heldText) !== frozen.heldoutSha) return { serve: false, templates, why: "the task's held-out set changed since it was opened" };
   const no = notServing(row.heldout, templates);
   if (no) return { serve: false, templates, why: no };
+  if (isTemporal(root, task) && !(isObj(row.heldout) && isObj(row.heldout.placebo))) return { serve: false, templates, why: 'not mastered: a temporal task graded without its placebo' };
   const f = path.join(root, 'grown', ...String(row.file || '').split('/'));
   if (!row.file || !fs.existsSync(f)) return { serve: false, templates, why: 'its module is not on disk' };
   const m = await load(row);
@@ -986,8 +1142,8 @@ export async function regate({ root = DEFAULT_ROOT, render = renderIndexMjs } = 
     const putBack = snapshot([indexPath, mjsPath]);
     let flip = [];
     try {
-      fs.writeFileSync(indexPath, jsonText);
-      fs.writeFileSync(mjsPath, mjsText);
+      writeAtomic(indexPath, jsonText);
+      writeAtomic(mjsPath, mjsText);
       const chk = spawnSync(process.execPath, ['--check', mjsPath], { encoding: 'utf8', windowsHide: true });
       if (chk.status !== 0) throw new Fail('node --check grown/index.mjs failed: ' + errLine(chk.stderr || chk.stdout));
       const { mod: idx, answers } = await answersOf(mjsPath);
@@ -1033,6 +1189,7 @@ export function featuresOf() {
  * @returns {{ tasks: number, colonies: number, cells: number, mastered: number, serving: number, generated: number, kept: number, byFamily: object, features: string[], at: string }}
  */
 export function status(root = DEFAULT_ROOT) {
+  engineOf(root); // a cell that names a macro is counted under the family of its body
   const led = readLedger(root);
   let rows = [];
   try { rows = readIndex(root).cells.filter(isNeoRow); } catch { rows = []; }

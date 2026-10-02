@@ -6,7 +6,7 @@
 //   spawn({ task, rows, negatives, gen, parents, budget, expectOk, packs, source, cursor, trace })  the kept cells of a
 //                               task and the search's stats (stats.cursor: where the next grow of the task continues)
 //   withKnowledge(packs, fn)    fn run with exactly these knowledge packs in the kernel (a module's own slices)
-//   usesKnow(cell)              whether a cell uses the know family (its index row is tagged know: true)
+//   usesKnow(cell)              whether a cell reads a pack (the know, series or table family; its index row is tagged know: true)
 //   OPEN_MAX, OPEN_WORDS, OPEN_TOPIC_DIV, OPEN_FAIL_DIV  the open guard: spawn also keeps a knowledge-backed pyramid guarded by exclusion
 //                               only (negatives as { q, group } name the groups its topic rule counts)
 //   cursorBasis(rows, packs)    what a search depends on, as a sha; resumeCursor(cursor, basis) where it continues
@@ -24,11 +24,22 @@
 //   templateSource(spec)        the anchored regular expression of one template, as text
 //   validTemplate(spec)         whether a template is well formed (only words and slots)
 //   fitsTemplates(specs, q)     whether q fits one of the templates exactly
-//   isMastered(heldout)         the engine's mastered rule: held-out score 1 (every row of n > 0 right)
+//   isMastered(heldout)         the engine's mastered rule: held-out score 1 (every row of n > 0 right), and above
+//                               heldout.placebo when the held-out carries one (a temporal task, grow/neo.mjs)
 //   GATE_SOURCE                 the gate as source text, inlined by grow/store.mjs renderIndexMjs into grown/index.mjs
-// Author: THE ENGINE builder, part 1 (gate, stage, core), 2026-10-01; part 2 (knowledge-backed cells, THE CURSOR), 2026-10-01.
+// THE GENOME and THE MACROS (contract c6, grow/evolve.mjs): the search reads every tunable through the genome in force.
+//   TUNABLES, GENOME_DEFAULTS   the tunables with their bounds (equal to grow/genome.mjs GENES) and today's constants
+//   applyGenome(genome)         the genome in force becomes this one, gene by gene (a gene out of bounds keeps its default)
+//   macroCells(macros)          the macros of neo/MACROS.json become kernel-level composites the enumeration places
+// SPEED (part 3): candidates are evaluated over all rows at once with every sub-pyramid memoised by its structure, a
+// primitive's value on a value it already met is reused, a row's guard features are computed once, and a candidate is
+// dropped at the first row or negative that refutes it. The kept cells are the same cells (test/neo-genome.test.mjs).
+// Author: THE ENGINE builder, part 1 (gate, stage, core), 2026-10-01; part 2 (knowledge-backed cells, THE CURSOR), 2026-10-01;
+// part 3 (the genome, the macros, speed), 2026-10-02; part 4 (series, two-key tables and matrices reached from a pack
+// or the prompt, a yes/no split kept only when no one phrase passes both sides, the placebo in isMastered), 2026-10-02.
 import {
-  PRIMS, STOP_WORDS, argTypes, evalNode, guardOk, runCell, norm, makeColony, makeCell, checkCell, canon, numbersIn, knowLoad, knowNorm, sha256Hex,
+  PRIMS, STOP_WORDS, MAX_DEPTH, argTypes, evalNode, guardOk, norm, makeColony, makeCell, checkCell, canon, numbersIn, knowLoad, knowNorm, sha256Hex,
+  heightOf, macroLoad, macroInfo, expandMacros, familyOfName, promptFeatures, guardWith, runCell,
 } from './neo-kernel.mjs';
 
 /** The default search budget: candidates evaluated and milliseconds (grow/NEO.md, "The engine", step 1). */
@@ -37,6 +48,111 @@ export const BUDGET = Object.freeze({ maxGenerated: 200000, maxMs: 60000 });
 export const MAX_COST = 7;
 /** The share of the budget the enumeration may spend; the templates, memory, yes/no pairs and mutants spend the rest. */
 export const ENUM_SHARE = 0.8;
+
+// ---------------------------------------------------------------- THE GENOME (contract c6): every tunable of the search
+const FAMILY_ORDER = Object.freeze(['aggregate', 'compare', 'compute', 'iterate', 'transform']);
+const SOURCE_ORDER = Object.freeze(['parent', 'template', 'memory', 'yesno', 'mutant']);
+const KEY_WORDS0 = Object.freeze(['of', 'for', 'to', 'about', 'on', 'in', 'from', 'is', 'called', 'named', 'word', 'phrase', 'into']);
+/**
+ * The tunables the search reads through the genome in force, each [kind, default, ...bounds], the same as grow/genome.mjs
+ * GENES (test/neo-genome.test.mjs proves the defaults and bounds equal): int and real [min, max]; ints [minLen, maxLen,
+ * lo, hi] (distinct integers); words [minLen, maxLen] (distinct lower case words); perm a permutation of the default.
+ * Every default is the engine's constant of 2026-10-01, so the default genome searches exactly as the engine did.
+ */
+export const TUNABLES = Object.freeze({
+  maxGenerated: ['int', BUDGET.maxGenerated, 1000, 5000000], maxMs: ['int', BUDGET.maxMs, 1000, 600000],
+  maxCost: ['int', MAX_COST, 2, 12], enumShare: ['real', ENUM_SHARE, 0.05, 0.95], maxExamples: ['int', 20, 1, 100],
+  mutantCap: ['int', 2000, 0, 50000], mutantSwaps: ['int', 24, 0, 200], maxExtra: ['int', 6, 0, 16],
+  notFeatures: ['int', 50, 0, 400], offWords: ['int', 400, 0, 4000], spanPool: ['int', 3000, 100, 30000], spanMaxCost: ['int', 4, 1, 12],
+  templateSlots: ['int', 4, 1, 12], templateAlts: ['int', 8, 0, 64], lineNums: ['int', 2, 1, 8], lineSubjects: ['int', 3, 0, 12],
+  poolNums: ['int', 10, 0, 64], poolExpect: ['int', 10, 0, 64], poolWords: ['int', 6, 0, 32], poolContent: ['int', 6, 0, 32],
+  namedCost: ['int', 1, 1, 4], costAggregate: ['int', 2, 1, 4], costCompare: ['int', 2, 1, 4], costCompute: ['int', 2, 1, 4],
+  costIterate: ['int', 2, 1, 4], costTransform: ['int', 2, 1, 4], familyOrder: ['perm', FAMILY_ORDER], sourceOrder: ['perm', SOURCE_ORDER],
+  decimals: ['int', 2, 0, 6], numPool: ['ints', Object.freeze([0, 1, 2, 3, 4, 5, 10, 12, 100, 1000]), 0, 32, -1000000, 1000000],
+  keyWords: ['words', KEY_WORDS0, 0, 32], nthPool: ['ints', Object.freeze([1, 2, 3]), 0, 12, -12, 12],
+  wordAtPool: ['ints', Object.freeze([1, 2, 3, -1]), 0, 12, -12, 12], bigList: ['int', 300, 10, 3000], bigText: ['int', 4000, 100, 40000],
+});
+/** The genes that bound a run but do not change what a search tries (left out of THE CURSOR's basis). */
+const RUN_GENES = new Set(['maxGenerated', 'maxMs', 'maxExamples']);
+/** Whether a value is an allele of a tunable: of its kind, inside its bounds. */
+function alleleOk(spec, v) {
+  const [kind, def, a, b, lo, hi] = spec;
+  switch (kind) {
+    case 'int': return Number.isInteger(v) && v >= a && v <= b;
+    case 'real': return typeof v === 'number' && Number.isFinite(v) && v >= a && v <= b;
+    case 'perm': return Array.isArray(v) && v.length === def.length && new Set(v).size === v.length && def.every((x) => v.includes(x));
+    case 'ints': return Array.isArray(v) && v.length >= a && v.length <= b && new Set(v).size === v.length && v.every((x) => Number.isInteger(x) && x >= lo && x <= hi);
+    case 'words': return Array.isArray(v) && v.length >= a && v.length <= b && new Set(v).size === v.length && v.every((x) => typeof x === 'string' && /^[a-z]{1,16}$/.test(x));
+    default: return false;
+  }
+}
+const freezeAllele = (v) => (Array.isArray(v) ? Object.freeze(v.slice()) : v);
+/** Today's constants as a genome. */
+export const GENOME_DEFAULTS = Object.freeze(Object.fromEntries(Object.entries(TUNABLES).map(([k, s]) => [k, s[1]])));
+let GN = GENOME_DEFAULTS;
+let GN_KEY = null; // the search genes that differ from today's, as a canon text (null: the default search)
+/**
+ * The genome in force becomes this one (grow/neo.mjs passes grow/genome.mjs genomeOf(root)): each tunable's value when
+ * it is an allele inside its bounds, its default otherwise (a value out of bounds is never used); a name that is no
+ * tunable is ignored. A spawn may also carry a genome of its own (spawn({ genome })), in force for that spawn only.
+ * @param {object|null} genome a flat object of genes, or a GENOME.json ({ genes: {...} }); null or {} is today's constants
+ * @returns {{ genome: Readonly<object>, rejected: string[] }} the genome in force and the genes that kept their default
+ */
+export function applyGenome(genome) {
+  const src = isObj(genome) && isObj(genome.genes) ? genome.genes : isObj(genome) ? genome : {};
+  const out = {}, rejected = [], diff = {};
+  for (const [name, spec] of Object.entries(TUNABLES)) {
+    if (!Object.hasOwn(src, name)) { out[name] = spec[1]; continue; }
+    if (alleleOk(spec, src[name])) out[name] = freezeAllele(src[name]); else { out[name] = spec[1]; rejected.push(name); }
+    if (!RUN_GENES.has(name) && canon(out[name]) !== canon(spec[1])) diff[name] = out[name];
+  }
+  GN = Object.freeze(out);
+  GN_KEY = Object.keys(diff).length ? canon(diff) : null;
+  return { genome: GN, rejected };
+}
+/** The genome in force (frozen). */
+export function genomeInForce() { return GN; }
+/** The enumeration weight of a family's unnamed primitive (the cost genes; 2 for a family without one). */
+const familyCost = (f) => (f === 'aggregate' ? GN.costAggregate : f === 'compare' ? GN.costCompare : f === 'compute' ? GN.costCompute : f === 'iterate' ? GN.costIterate : f === 'transform' ? GN.costTransform : 2);
+
+// ---------------------------------------------------------------- THE MACROS (contract c6): composites as kernel-level cells
+// A macro of neo/MACROS.json ({ name, body, params, in, out, ... }, mined by grow/evolve.mjs from kept cells) is loaded
+// into the kernel (macroLoad: type-checked, every parameter used at one type, a body of primitives only) and becomes an
+// operator of the enumeration like a primitive: its node ["macro.<slug>", a1, .., ak] takes arguments of its in types
+// and yields its out type; a macro of no parameter is a sensed value of cost 2. A cell keeps the macro node in its
+// pyramid (grow/evolve.mjs counts a macro's use by its name in the kept cells), and a compiled module carries the
+// definitions of the macros its cells name.
+let MACRO_OPS = Object.freeze([]);
+let MACRO_OPS_BY = new Map();
+/** The primitive names of a node (its literals and parameters aside), in order of first use. */
+function primNamesOf(node, out = []) {
+  if (Array.isArray(node)) { if (typeof node[0] === 'string' && !out.includes(node[0])) out.push(node[0]); for (let i = 1; i < node.length; i++) primNamesOf(node[i], out); }
+  return out;
+}
+/**
+ * The macros in force become these (neo/MACROS.json, or its list): each one the kernel's macroLoad accepts is an
+ * operator the enumeration places from then on; any other is left out. An empty list or null clears them.
+ * @param {object[]|{ macros: object[] }|null} macros
+ * @returns {{ loaded: string[], rejected: number }}
+ */
+export function macroCells(macros) {
+  const list = Array.isArray(macros) ? macros : isObj(macros) && Array.isArray(macros.macros) ? macros.macros : [];
+  const loaded = macroLoad(list);
+  const ops = [];
+  for (const name of loaded) {
+    const m = macroInfo(name);
+    ops.push(Object.freeze({ name, in: m.in, out: m.out, family: m.family, prims: Object.freeze(primNamesOf(m.body)) }));
+  }
+  MACRO_OPS = Object.freeze(ops);
+  MACRO_OPS_BY = new Map(ops.map((o) => [o.name, o]));
+  return { loaded, rejected: list.length - loaded.length };
+}
+/** The definitions of the loaded macros a pyramid names (a compiled module loads exactly these). */
+export function macrosOf(pyramid) {
+  const out = [];
+  for (const n of primNamesOf(pyramid)) { const m = macroInfo(n); if (m) out.push({ name: m.name, params: m.params, in: m.in.slice(), out: m.out, body: m.body }); }
+  return out;
+}
 
 /** Prompts every cell must stay silent on (grow/NEO.md step 3): greetings, questions about the organism, plain arithmetic. */
 export const BUILTIN_NEGATIVES = Object.freeze({
@@ -172,15 +288,16 @@ function holds(ft, f) {
 // ---------------------------------------------------------------- the search: pools, named primitives, enumeration
 const PRIM_NAMES = Object.freeze(Object.keys(PRIMS));
 const ARGS = Object.freeze(Object.fromEntries(PRIM_NAMES.map((n) => [n, argTypes(n)])));
-const INTERIOR = new Set(['transform', 'aggregate', 'compare', 'compute', 'iterate']);
+/** The families whose primitives read the packs: their pack, column and key literals are names, never words. */
+const KNOW_LIKE = new Set(['know', 'series', 'table']);
+const INTERIOR = new Set(['transform', 'aggregate', 'compare', 'compute', 'iterate', 'matrix']);
 const ALIAS_FAMILIES = new Set(['transform', 'aggregate', 'compare', 'compute']);
 const SPAN_TYPES = new Set(['num', 'str', 'nums', 'strs']);
-const KEY_WORDS = Object.freeze(['of', 'for', 'to', 'about', 'on', 'in', 'from', 'is', 'called', 'named', 'word', 'phrase', 'into']);
-const NUM_POOL = Object.freeze([0, 1, 2, 3, 4, 5, 10, 12, 100, 1000]);
-const MUTANT_CAP = 2000;
-/** The entries of one template window (THE CURSOR: round r takes the r-th window) and the most slots a template fills. */
-const SPAN_WINDOW = 3000;
+// the keywords, number pool, mutant cap and template window are the genes keyWords, numPool, mutantCap and spanPool
+/** The most slots a template fills (the first pass fills templateSlots of them). */
 const MAX_SLOTS = 6;
+/** The primitives the search may run once per value it met (no prompt, no mem): their value on a value is reused. */
+const PURE = new Set(PRIM_NAMES.filter((n) => !PRIMS[n].in.includes('text') && PRIMS[n].family !== 'memory'));
 
 /** The primitives the prompts name: an alias phrase (not all stop words) in a prompt, or a word stem of one. */
 function namedPrims(qs) {
@@ -201,9 +318,9 @@ function namedPrims(qs) {
 function poolsOf(rows) {
   const n = rows.length, df = new Map();
   for (const r of rows) for (const w of new Set(words1(r.q))) df.set(w, (df.get(w) || 0) + 1);
-  const keywords = KEY_WORDS.filter((w) => (df.get(w) || 0) >= Math.min(2, n));
+  const keywords = GN.keyWords.filter((w) => (df.get(w) || 0) >= Math.min(2, n));
   const content = [...df].filter(([w, c]) => !STOP.has(w) && !isNumWord(w) && w.length >= 3 && c >= Math.max(2, n / 2))
-    .sort((a, b) => b[1] - a[1] || cmpStr(a[0], b[0])).map(([w]) => w).slice(0, 6);
+    .sort((a, b) => b[1] - a[1] || cmpStr(a[0], b[0])).map(([w]) => w).slice(0, GN.poolContent);
   const numDf = new Map(), wordDf = new Map(), expDf = new Map();
   for (const r of rows) {
     if (typeof r.answer === 'string') {
@@ -214,15 +331,15 @@ function poolsOf(rows) {
     for (const s of said) if (typeof s === 'string' && s.trim()) expDf.set(s, (expDf.get(s) || 0) + 1);
   }
   const shared = (m, cap) => [...m].filter(([, c]) => c >= 2).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)).map(([k]) => k).slice(0, cap);
-  const nums = [...new Set([...NUM_POOL, ...shared(numDf, 10)])];
-  const strs = [...new Set([...shared(expDf, 10), ...shared(wordDf, 6)])];
+  const nums = [...new Set([...GN.numPool, ...shared(numDf, GN.poolNums)])];
+  const strs = [...new Set([...shared(expDf, GN.poolExpect), ...shared(wordDf, GN.poolWords)])];
   return { keywords: [...new Set([...keywords, ...content])], nums, strs };
 }
 /** A value too large to compare cheaply is left out of the pool (the kernel still computes it; the search skips it). */
 function tooBig(v) {
-  if (typeof v === 'string') return v.length > 4000;
+  if (typeof v === 'string') return v.length > GN.bigText;
   if (typeof v === 'bigint') return v.toString(16).length > 1700;
-  if (Array.isArray(v)) return v.length > 300 || v.some(tooBig);
+  if (Array.isArray(v)) return v.length > GN.bigList || v.some(tooBig);
   if (isObj(v)) return Object.keys(v).length > 100;
   return false;
 }
@@ -239,19 +356,53 @@ function newSearch(rows, budget, t0, named, at = {}) {
     outsSeen: new Set(), cands: [], phrases: [],
     // THE CURSOR: the round of this task's search, the enumeration combos the rounds before it offered (rebuilt here
     // without offering), the highest cost it reaches and the template window; combos counts every combo evaluated
-    round: at.round || 0, replay: at.replay || 0, maxCost: at.maxCost || MAX_COST, window: at.window || 0, combos: 0, where: null,
+    round: at.round || 0, replay: at.replay || 0, maxCost: at.maxCost || GN.maxCost, window: at.window || 0, combos: 0, where: null,
     trace: at.trace ? [] : null,
+    // SPEED: the sub-pyramid memo (structure -> values over the rows), a primitive's value per value it met, the pass
+    // rule per row and output, and each row's guard features (computed once, on first use)
+    memo: new Map(), memoMem: new WeakMap(), memoN: 0, vmemo: new Map(), vmemoN: 0, pm: rows.map(() => new Map()), kf: null,
   };
 }
+/**
+ * SPEED on (the default) or off: off, every value is computed row by row through the kernel (evalNode, runCell), no
+ * value, pass or sub-pyramid is memoised and no negative is tried first. The kept cells are the same either way
+ * (test/neo-genome.test.mjs proves it on real searches); off is the engine as it was before part 3.
+ * @param {boolean} on
+ * @returns {boolean} the setting before
+ */
+export function setSpeed(on) { const was = FAST; FAST = on !== false; return was; }
+let FAST = true;
+/** The most sub-pyramid vectors and primitive values a search memoises (past them it computes again). */
+const MEMO_MAX = 60000;
+const VMEMO_MAX = 400000;
+/** The most outputs a row remembers the pass rule of. */
+const PASS_MAX = 65536;
+/** Whether an output passes row i (the pass rule, memoised per row and output: the rule is pure for one grader). */
+function passAt(S, o, i) {
+  if (typeof o !== 'string') return false;
+  if (!FAST) return passes(o, S.rows[i]);
+  const m = S.pm[i];
+  let p = m.get(o);
+  if (p === undefined) { p = passes(o, S.rows[i]); if (m.size < PASS_MAX) m.set(o, p); }
+  return p;
+}
+/** The kernel's guard features of every dev row, computed once. */
+function rowFeatures(S) { return S.kf || (S.kf = S.rows.map((r) => promptFeatures(r.q))); }
 function spent(S) {
   if (S.stop) return true;
   if (S.generated >= S.limit) { S.stop = 'generated'; return true; }
   if ((++S.ticks & 255) === 0 && Date.now() - S.t0 > S.msLimit) { S.stop = 'ms'; S.capped = 'ms'; return true; }
   return false;
 }
+/** canon of a vector of values of a type that holds no object: JSON is the same text, and faster (a BigInt throws: canon). */
+const SCALAR_TYPES = new Set(['num', 'str', 'bool', 'nums', 'strs', 'mat']);
+function vecKey(type, vec) {
+  if (!SCALAR_TYPES.has(type)) return canon(vec);
+  try { return JSON.stringify(vec); } catch { return canon(vec); }
+}
 function addEntry(S, node, type, vec, cost, konst = null) {
   if (!vec.some((v) => v !== null)) return null;
-  const key = type + '|' + canon(vec);
+  const key = type + '|' + vecKey(type, vec);
   if (S.seen.has(key)) return null;
   const e = { id: S.entries.length, node, type, vec, cost, konst: konst ?? isConst(vec) };
   S.seen.set(key, e.id);
@@ -262,14 +413,31 @@ function addEntry(S, node, type, vec, cost, konst = null) {
 }
 /** One primitive over argument entries on every dev prompt, with evalNode's rule: a null argument is a null value. */
 function applyPrim(S, name, args) {
-  const fn = PRIMS[name].fn, k = args.length, out = new Array(S.n);
+  const m = Object.hasOwn(PRIMS, name) ? null : macroInfo(name);
+  if (!m && !Object.hasOwn(PRIMS, name)) return null;
+  const fn = m ? null : PRIMS[name].fn, k = args.length, out = new Array(S.n), vals = new Array(k);
+  // a pure primitive of one or two arguments runs once per argument value it meets (a value of a scalar kind: a -0 and
+  // an object are computed every time); the kernel copies its arguments, so one array serves every row
+  let memo = null;
+  if (FAST && !m && k >= 1 && k <= 2 && PURE.has(name)) { const mk = k + name; memo = S.vmemo.get(mk); if (!memo) S.vmemo.set(mk, (memo = new Map())); } // one memo per arity
   let any = false;
   for (let i = 0; i < S.n; i++) {
-    const vals = new Array(k);
-    let miss = false;
-    for (let j = 0; j < k; j++) { const v = args[j].vec[i]; if (v === null) { miss = true; break; } vals[j] = v; }
+    let miss = false, scalar = memo !== null;
+    for (let j = 0; j < k; j++) {
+      const v = args[j].vec[i];
+      if (v === null) { miss = true; break; }
+      vals[j] = v;
+      if (scalar && (typeof v === 'object' || (v === 0 && Object.is(v, -0)))) scalar = false;
+    }
     if (miss) { out[i] = null; continue; }
-    const v = fn(vals, S.ctx[i]);
+    let v;
+    if (scalar) {
+      let at = memo;
+      if (k === 2) { let m2 = memo.get(vals[0]); if (m2 === undefined) { m2 = new Map(); if (S.vmemoN < VMEMO_MAX) memo.set(vals[0], m2); } at = m2; }
+      const key = vals[k - 1];
+      v = at.get(key);
+      if (v === undefined) { v = fn(vals, S.ctx[i]); if (S.vmemoN < VMEMO_MAX) { at.set(key, v); S.vmemoN++; } }
+    } else v = m ? evalNode(m.body, S.ctx[i].q, S.ctx[i].mem, 1, vals) : fn(vals, S.ctx[i]);
     if (v !== null && tooBig(v)) return null;
     out[i] = v;
     if (v !== null) any = true;
@@ -284,8 +452,14 @@ function seed(S, pools) {
     const vec = applyPrim(S, name, []);
     if (vec) addEntry(S, [name], PRIMS[name].out, vec, 1);
   }
+  for (const mc of MACRO_OPS) { // a macro of no parameter is a sensed value of its own (cost 2)
+    if (mc.in.length) continue;
+    S.generated++;
+    const vec = applyPrim(S, mc.name, []);
+    if (vec) addEntry(S, [mc.name], mc.out, vec, 2);
+  }
   const lit = (v) => ({ vec: new Array(S.n).fill(v) });
-  for (const [name, vals] of [['sense.after', pools.keywords], ['sense.before', pools.keywords], ['sense.nth', [1, 2, 3]], ['sense.wordAt', [1, 2, 3, -1]], ['sense.dateAt', [2]]]) {
+  for (const [name, vals] of [['sense.after', pools.keywords], ['sense.before', pools.keywords], ['sense.nth', GN.nthPool], ['sense.wordAt', GN.wordAtPool], ['sense.dateAt', [2]], ['sense.matrixAt', [2]]]) {
     for (const v of vals) {
       S.generated++;
       const vec = applyPrim(S, name, [lit(v)]);
@@ -326,7 +500,34 @@ export function withKnowledge(packs, fn) {
 }
 const isPack = (p) => isObj(p) && typeof p.id === 'string' && Array.isArray(p.columns) && p.columns.every((c) => typeof c === 'string');
 const PACK_INFO = new WeakMap();
-/** The number columns (every non-empty cell a number) and class columns (their values, sorted) of a pack in row form. */
+/** A time key: a year, a year and month, a full date with or without a UTC time (the kernel orders these), or a number. */
+const TIME_KEY = /^(?:\d{4}(?:-\d{1,2}(?:-\d{1,2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d{1,9})?)?Z?)?)?)?|-?\d+(?:\.\d+)?)$/;
+/** The most columns a pack is searched for long tables (pairs grow with the square). */
+const LONG_COLS = 12;
+/**
+ * The long tables of a pack in row form: [entity column, time column] pairs where every time cell is a time key, both
+ * columns repeat a value, and no (entity, time) pair is two rows. A pack's own long field naming two of its columns is
+ * the one pair (know shelve writes it).
+ */
+function longPairs(p, rows, num) {
+  if (Array.isArray(p.long) && p.long.length === 2 && p.long.every((c) => p.columns.includes(c)) && p.long[0] !== p.long[1]) return [[...p.long]];
+  if (p.columns.length > LONG_COLS || rows.length < 4) return [];
+  const cell = (r, j) => { const v = Array.isArray(r) ? r[j] : undefined; return typeof v === 'number' && Number.isFinite(v) ? String(v) : typeof v === 'string' && v.trim() ? v.trim() : null; };
+  const cols = p.columns.map((c, j) => { const vs = rows.map((r) => cell(r, j)), keys = new Set(vs.filter((v) => v !== null).map((v) => knowNorm(v))); return { c, j, vs, n: keys.size, time: vs.every((v) => v === null || TIME_KEY.test(v)) && keys.size >= 2 }; });
+  const out = [];
+  for (const t of cols) {
+    if (!t.time || t.n >= rows.length) continue;
+    for (const e of cols) {
+      if (e === t || num.has(e.c) || e.n < 2 || e.n >= rows.length) continue;
+      const seen = new Set();
+      let ok = true;
+      for (let i = 0; i < rows.length && ok; i++) { if (e.vs[i] === null || t.vs[i] === null) continue; const k = knowNorm(e.vs[i]) + '|' + knowNorm(t.vs[i]); if (seen.has(k)) ok = false; else seen.add(k); }
+      if (ok && seen.size >= 4) out.push([e.c, t.c]);
+    }
+  }
+  return out;
+}
+/** The number columns (every non-empty cell a number), class columns (their values, sorted) and long tables of a pack in row form. */
 function packInfo(p) {
   let info = PACK_INFO.get(p);
   if (info) return info;
@@ -344,7 +545,7 @@ function packInfo(p) {
     if (nums && !other) num.add(c);
     if (!nums && vals.size >= 2 && vals.size <= KNOW_CLASSES && rows.length >= 2 * vals.size) classes.set(c, [...vals.values()].sort(cmpStr));
   });
-  info = { num, classes };
+  info = { num, classes, long: longPairs(p, rows, num) };
   PACK_INFO.set(p, info);
   return info;
 }
@@ -408,9 +609,41 @@ function knowSeed(S, use) {
           put(['compare.sameText', Ls[0], lit(v)], 3);
           put(['transform.nthStr', ['know.where', F, id, lit(kc), lit(vc), lit(v)], lit(1)], 3);
         }
+        if (info.num.has(vc)) seriesSeed(put, E, hasE, id, lit(kc), lit(vc));
       }
     }
+    for (const [ec, tc] of info.long) for (const vc of p.columns) if (vc !== ec && vc !== tc) tableSeed(put, id, lit(ec), lit(tc), lit(vc), info.num.has(vc));
   }
+}
+/** The series of one key column and one number column, keyed by the keys a prompt names (the series family). */
+const SERIES_ONE = Object.freeze(['series.at', 'series.prev', 'series.next', 'series.prevKey', 'series.nextKey', 'series.step']);
+const SERIES_TWO = Object.freeze(['series.delta', 'series.ratio', 'series.change', 'series.mean', 'series.sum', 'series.max', 'series.min', 'series.argmaxIn', 'series.argminIn', 'series.higher', 'series.lower', 'series.greater']);
+const SERIES_ALL = Object.freeze(['series.first', 'series.last', 'series.firstKey', 'series.lastKey', 'series.argmax', 'series.argmin']);
+/** The directed two-key series values (the order the prompt names its keys matters); the rest are the same either way. */
+const SERIES_DIRECTED = new Set(['series.delta', 'series.ratio', 'series.change', 'series.greater']);
+function seriesSeed(put, E, hasE, id, kc, vc) {
+  if (evalNode(['series.first', id, kc, vc], '', null) === null) return; // the keys do not order: no series
+  for (const n of SERIES_ALL) put([n, id, kc, vc], 2);
+  for (const n of ['series.countAbove', 'series.countBelow']) for (const x of ['sense.first', 'sense.last']) put([n, [x], id, kc, vc], 3);
+  if (!hasE[0]) return;
+  for (const n of SERIES_ONE) put([n, E[0], id, kc, vc], 2);
+  if (!hasE[1]) return;
+  for (const n of SERIES_TWO) {
+    put([n, E[0], E[1], id, kc, vc], 3);
+    if (SERIES_DIRECTED.has(n)) put([n, E[1], E[0], id, kc, vc], 3);
+  }
+}
+/** A long table (one row per entity and time): the value of a pair, an entity's ends, a time's extremes, a rank, a change. */
+function tableSeed(put, id, ec, tc, vc, isNum) {
+  const Fe = ['know.find', id, ec], Ft = ['know.find', id, tc];
+  const e1 = ['transform.nthStr', Fe, { lit: 1 }], t1 = ['transform.nthStr', Ft, { lit: 1 }], t2 = ['transform.nthStr', Ft, { lit: 2 }];
+  const hasE = put(e1, 1), hasT = put(t1, 1), hasT2 = hasT && put(t2, 1);
+  if (hasE && hasT) put(['table.get', e1, t1, id, ec, tc, vc], 2);
+  if (!isNum) return;
+  if (hasE && hasT) { put(['table.at', e1, t1, id, ec, tc, vc], 2); put(['table.rank', e1, t1, id, ec, tc, vc], 3); }
+  if (hasE) for (const n of ['table.latest', 'table.latestKey', 'table.earliest', 'table.earliestKey']) put([n, e1, id, ec, tc, vc], 2);
+  if (hasT) for (const n of ['table.top', 'table.bottom']) put([n, t1, id, ec, tc, vc], 2);
+  if (hasE && hasT2) { put(['table.delta', e1, t1, t2, id, ec, tc, vc], 3); put(['table.delta', e1, t2, t1, id, ec, tc, vc], 3); }
 }
 function splits(rem, k) {
   if (k === 1) return [[rem]];
@@ -424,12 +657,18 @@ function splits(rem, k) {
  * offered: they are evaluated again (the pool they build is the arguments of every later combo) but offer nothing.
  */
 function enumerate(S) {
-  const weight = (name) => (S.named.has(name) ? 1 : 2);
-  const order = PRIM_NAMES.filter((n) => INTERIOR.has(PRIMS[n].family) && ARGS[n].length && !ARGS[n].includes('tpl'))
-    .sort((a, b) => (S.named.has(b) - S.named.has(a)) || cmpStr(a, b));
+  // the weight of an operator: a primitive the prompts name namedCost, any other its family's cost gene; a macro the
+  // weight of its lightest primitive (an invented primitive costs what a primitive costs)
+  const primWeight = (name) => (S.named.has(name) ? GN.namedCost : familyCost(PRIMS[name].family));
+  const weights = new Map(), argsOf = new Map(), rank = new Map(GN.familyOrder.map((f, i) => [f, i]));
+  const named = (n) => (MACRO_OPS_BY.has(n) ? MACRO_OPS_BY.get(n).prims.some((p) => S.named.has(p)) : S.named.has(n));
+  for (const n of PRIM_NAMES) if (INTERIOR.has(PRIMS[n].family) && ARGS[n].length && !ARGS[n].includes('tpl')) { weights.set(n, primWeight(n)); argsOf.set(n, ARGS[n]); }
+  for (const mc of MACRO_OPS) if (mc.in.length && !mc.in.includes('tpl')) { weights.set(mc.name, Math.min(...mc.prims.map(primWeight))); argsOf.set(mc.name, mc.in); }
+  const famRank = (n) => { const f = MACRO_OPS_BY.has(n) ? MACRO_OPS_BY.get(n).family : PRIMS[n].family; return rank.has(f) ? rank.get(f) : rank.size; };
+  const order = [...weights.keys()].sort((a, b) => (named(b) - named(a)) || famRank(a) - famRank(b) || cmpStr(a, b));
   for (let c = 2; c <= S.maxCost; c++) {
     for (const name of order) {
-      const ts = ARGS[name], rem = c - weight(name);
+      const ts = argsOf.get(name), rem = c - weights.get(name);
       if (rem < ts.length) continue;
       for (const sp of splits(rem, ts.length)) {
         const lists = ts.map((t, j) => (S.byCost[t] && S.byCost[t][sp[j]]) || null);
@@ -441,7 +680,7 @@ function enumerate(S) {
   return true;
 }
 function product(S, name, lists, cost) {
-  const k = lists.length, idx = new Array(k).fill(0), args = new Array(k), out = PRIMS[name].out;
+  const k = lists.length, idx = new Array(k).fill(0), args = new Array(k), out = Object.hasOwn(PRIMS, name) ? PRIMS[name].out : MACRO_OPS_BY.get(name).out;
   for (;;) {
     let konst = true;
     for (let j = 0; j < k; j++) { args[j] = lists[j][idx[j]]; if (!args[j].konst) konst = false; }
@@ -474,24 +713,38 @@ function apexChains(S, e) {
   switch (e.type) {
     case 'num':
       out.push([['render.number']]);
-      if (e.vec.some((v) => typeof v === 'number' && !Number.isInteger(v))) out.push([['render.decimals', 2]]);
+      if (e.vec.some((v) => typeof v === 'number' && !Number.isInteger(v))) out.push([['render.decimals', GN.decimals]]);
       for (const r of ['render.percent', 'render.money', 'render.ordinal']) if (nm.has(r)) out.push([[r]]);
       break;
     case 'nums': out.push([['render.listNums']], [['transform.asText'], ['render.and']]); break;
     case 'str': out.push([['render.str']]); for (const r of ['render.sentence', 'render.code']) if (nm.has(r)) out.push([[r]]); break;
     case 'strs': out.push([['render.list']], ...(asTextOfNums(e) ? [] : [[['render.and']]]), [['render.lines']]); for (const r of ['render.numbered', 'render.bullets']) if (nm.has(r)) out.push([[r]]); break;
     case 'kv': out.push([['render.json']], [['render.kvLines']]); if (nm.has('render.date')) out.push([['render.date']]); break;
+    case 'mat': out.push([['render.matrix']]); if (nm.has('render.matrixRows')) out.push([['render.matrixRows']]); break;
     case 'bool': S.bools.push(e); break;
     default: break;
   }
   return out;
 }
 function chainNode(node, chain) { let n = node; for (const [name, ...extra] of chain) n = [name, n, ...extra.map((v) => ({ lit: v }))]; return n; }
+/** A render step's value per value (a pure primitive on a scalar value of the row: once per value, as in applyPrim). */
+function stepOf(S, name, v, extra, ctx) {
+  const k = 1 + extra.length;
+  if (!FAST || k > 2 || !PURE.has(name) || typeof v === 'object' || (v === 0 && Object.is(v, -0)) || (k === 2 && (typeof extra[0] === 'object' || Object.is(extra[0], -0)))) return PRIMS[name].fn([v, ...extra], ctx);
+  const mk = k + name;
+  let memo = S.vmemo.get(mk);
+  if (!memo) S.vmemo.set(mk, (memo = new Map()));
+  let at = memo, key = v;
+  if (k === 2) { let m2 = memo.get(v); if (m2 === undefined) { m2 = new Map(); if (S.vmemoN < VMEMO_MAX) memo.set(v, m2); } at = m2; key = extra[0]; }
+  let r = at.get(key);
+  if (r === undefined) { r = PRIMS[name].fn([v, ...extra], ctx); if (S.vmemoN < VMEMO_MAX) { at.set(key, r); S.vmemoN++; } }
+  return r;
+}
 function chainOuts(S, vec, chain) {
   const out = new Array(S.n);
   for (let i = 0; i < S.n; i++) {
     let v = vec[i];
-    for (const [name, ...extra] of chain) { if (v === null) break; v = PRIMS[name].fn([v, ...extra], S.ctx[i]); }
+    for (const [name, ...extra] of chain) { if (v === null) break; v = stepOf(S, name, v, extra, S.ctx[i]); }
     out[i] = strOrNull(v);
   }
   return out;
@@ -506,14 +759,104 @@ function apex(S, e) {
 /** A candidate that passes at least one dev row joins the candidates (dedupe: one per vector of outputs). */
 function offer(S, cand, dedupe = true) {
   if (S.trace && cand.src !== 'parent') S.trace.push(cand.src + ' ' + canon([cand.pyramid, cand.mem])); // a parent is kept, not generated
-  if (dedupe) { const k = canon(cand.outs); if (S.outsSeen.has(k)) return false; S.outsSeen.add(k); }
-  const pass = cand.outs.map((o, i) => passes(o, S.rows[i]));
+  if (dedupe) { const k = JSON.stringify(cand.outs); if (S.outsSeen.has(k)) return false; S.outsSeen.add(k); } // outputs are texts or null: JSON is canon
+  const pass = cand.outs.map((o, i) => passAt(S, o, i));
   if (!pass.includes(true)) return false;
   cand.pass = pass;
   S.cands.push(cand);
   return true;
 }
-const evalOuts = (S, pyramid, mem) => S.rows.map((r) => strOrNull(evalNode(pyramid, r.q, mem)));
+
+// ---------------------------------------------------------------- SPEED: a pyramid over every row at once, memoised
+// vecOf is evalNode over the dev rows as one vector, the same value on every row (test/neo-genome.test.mjs proves it on
+// every candidate of real searches): a literal is its clean value, an unknown name or a wrong argument count a null, a
+// null argument a null unless the primitive is lazy, a throw a null, a macro its body on its argument values. Each
+// sub-pyramid is computed once per search and mem (keyed by its structure), so the candidates that share a sub-pyramid
+// (the render chains of one value, the slots of the templates, a mutant and its parent) share its computation. A
+// pyramid that reaches deeper than MEMO_DEPTH (where the kernel's depth bar could bite) is run row by row instead.
+const MEMO_DEPTH = 24;
+const NODE_KEY = new WeakMap();
+/** The structural key of a node: equal keys are equal nodes (cached per node object). */
+function keyOf(node) {
+  if (node === null || typeof node !== 'object') return 'x'; // a bare scalar is no node: null on every row
+  let k = NODE_KEY.get(node);
+  if (k !== undefined) return k;
+  if (Array.isArray(node)) { k = '(' + JSON.stringify(String(node[0])) + (typeof node[0] === 'string' ? '' : '!'); for (let i = 1; i < node.length; i++) k += ' ' + keyOf(node[i]); k += ')'; }
+  else k = 'L' + canon(node);
+  NODE_KEY.set(node, k);
+  return k;
+}
+/** How deep the kernel's evaluation of a node reaches (a macro: its body below it), at most limit + 1. */
+function reachOf(node, limit, d = 0) {
+  if (d > limit) return d;
+  if (!Array.isArray(node)) return d;
+  let r = d;
+  for (let i = 1; i < node.length; i++) r = Math.max(r, reachOf(node[i], limit, d + 1));
+  const m = Object.hasOwn(PRIMS, node[0]) ? null : macroInfo(node[0]);
+  if (m) r = Math.max(r, d + 1 + heightOf(m.body));
+  return r;
+}
+const kvLike = (v) => v !== null && typeof v === 'object' && !Array.isArray(v) && [Object.prototype, null].includes(Object.getPrototypeOf(v));
+/** The rows' contexts for a mem, as evalNode builds them ({ q, mem } with a mem that is no plain object as null). */
+function ctxOf(S, mem) {
+  if (mem === null || mem === undefined) return S.ctx;
+  if (!S.ctxMem) S.ctxMem = new WeakMap();
+  if (typeof mem !== 'object') return S.rows.map((r) => ({ q: r.q, mem: null }));
+  let c = S.ctxMem.get(mem);
+  if (!c) { const m = kvLike(mem) ? mem : null; c = S.rows.map((r) => ({ q: r.q, mem: m })); S.ctxMem.set(mem, c); }
+  return c;
+}
+function memoOf(S, mem) {
+  if (mem === null || mem === undefined || typeof mem !== 'object') return S.memo;
+  let m = S.memoMem.get(mem);
+  if (!m) S.memoMem.set(mem, (m = new Map()));
+  return m;
+}
+function vecRec(S, node, mem, memo, ctx) {
+  const key = keyOf(node);
+  let v = memo.get(key);
+  if (v !== undefined) return v;
+  const n = S.n;
+  v = new Array(n);
+  if (isObj(node) && Object.hasOwn(node, 'lit')) { const x = evalNode(node, '', null); v.fill(x); }
+  else if (!Array.isArray(node) || typeof node[0] !== 'string') v.fill(null);
+  else if (Object.hasOwn(PRIMS, node[0])) {
+    const p = PRIMS[node[0]], ts = ARGS[node[0]], k = node.length - 1;
+    if (k < ts.length || (k > ts.length && !p.rest)) v.fill(null);
+    else {
+      const args = new Array(k);
+      for (let j = 0; j < k; j++) args[j] = vecRec(S, node[j + 1], mem, memo, ctx);
+      const vals = new Array(k);
+      for (let i = 0; i < n; i++) {
+        let miss = false;
+        for (let j = 0; j < k; j++) { const a = args[j][i]; if (a === null && !p.lazy) { miss = true; break; } vals[j] = a; }
+        if (miss) { v[i] = null; continue; }
+        try { v[i] = p.fn(vals, ctx[i]); } catch { v[i] = null; }
+      }
+    }
+  } else {
+    const m = macroInfo(node[0]), k = node.length - 1;
+    if (!m || k !== m.in.length) v.fill(null);
+    else {
+      const args = new Array(k);
+      for (let j = 0; j < k; j++) args[j] = vecRec(S, node[j + 1], mem, memo, ctx);
+      for (let i = 0; i < n; i++) {
+        const vals = new Array(k);
+        let miss = false;
+        for (let j = 0; j < k; j++) { const a = args[j][i]; if (a === null) { miss = true; break; } vals[j] = a; }
+        v[i] = miss ? null : evalNode(m.body, ctx[i].q, ctx[i].mem, 1, vals);
+      }
+    }
+  }
+  if (S.memoN < MEMO_MAX) { memo.set(key, v); S.memoN++; }
+  return v;
+}
+/** The value of a pyramid on every dev row (evalNode's value, row by row), memoised by structure per mem. */
+function vecOf(S, pyramid, mem) {
+  if (!FAST || reachOf(pyramid, MEMO_DEPTH) > MEMO_DEPTH) return S.rows.map((r) => evalNode(pyramid, r.q, mem));
+  return vecRec(S, pyramid, mem, memoOf(S, mem), ctxOf(S, mem));
+}
+const evalOuts = (S, pyramid, mem) => vecOf(S, pyramid, mem).map(strOrNull);
 
 // ---------------------------------------------------------------- templates: anti-unification of prompt and answer
 const WORDCH = /[\p{L}\p{N}]/u;
@@ -538,7 +881,7 @@ function spanModes(type) {
  * name of a know primitive (a slot is a value of the prompt, or a fact a pack holds for it).
  */
 function wordLiteral(node, parent = null) {
-  if (isObj(node)) return typeof node.lit === 'string' && !(parent && (PRIMS[parent].family === 'sense' || PRIMS[parent].family === 'know'));
+  if (isObj(node)) return typeof node.lit === 'string' && !(parent && (KNOW_LIKE.has(familyOfName(parent)) || familyOfName(parent) === 'sense'));
   return Array.isArray(node) && node.slice(1).some((c) => wordLiteral(c, node[0]));
 }
 /** Every whole-word occurrence of needle in hay (both lower case), at most 8. */
@@ -553,9 +896,9 @@ function allBounded(hay, needle) {
  */
 function spanPool(S, ans, low) {
   const spans = [], need = Math.min(2, ans.length);
-  // THE CURSOR: a round takes the SPAN_WINDOW entries past the ones the rounds before it took, so each round fills other
+  // THE CURSOR: a round takes the spanPool entries past the ones the rounds before it took, so each round fills other
   // templates (the entries come in the same order in every round: a round rebuilds the earlier rounds' pool first)
-  const pool = S.entries.filter((e) => e.cost <= 4 && !e.konst && SPAN_TYPES.has(e.type) && !wordLiteral(e.node)).slice(S.window, S.window + SPAN_WINDOW);
+  const pool = S.entries.filter((e) => e.cost <= GN.spanMaxCost && !e.konst && SPAN_TYPES.has(e.type) && !wordLiteral(e.node)).slice(S.window, S.window + GN.spanPool);
   S.tplNext = S.window + pool.length;
   for (const e of pool) {
     for (const chain of spanModes(e.type).filter((ch) => !(asTextOfNums(e) && ch.length === 1 && ch[0][0] === 'render.and'))) {
@@ -609,15 +952,16 @@ function templateCands(S) {
   const keep = (pyr) => { const k = canon(pyr); if (!tpls.has(k)) tpls.set(k, pyr); };
   for (const i of ans) {
     const a = S.rows[i].answer;
-    // four slots, and up to MAX_SLOTS when the answer holds more values (two facts compared: two names, two numbers, the winner)
-    for (const k of [4, MAX_SLOTS]) {
+    // templateSlots slots (four), and up to MAX_SLOTS when the answer holds more values (two facts compared: two names, two numbers, the winner)
+    const T = GN.templateSlots;
+    for (const k of T < MAX_SLOTS ? [T, MAX_SLOTS] : [T]) {
       const pick = pickSpans(spans, i, 0, a.length, k);
-      if (!pick.length || (k > 4 && pick.length <= 4)) continue;
+      if (!pick.length || (k > T && pick.length <= T)) continue;
       keep(tplNode(a, 0, a.length, pick));
       // the same place filled by another value of the same text ("35" is the last number, the largest and the median)
       pick.forEach((p, j0) => {
         const alts = spans.filter((s) => s !== p.s && s.texts[i] !== null && s.texts[i].length === p.len && (s.hits.get(i) || []).includes(p.at))
-          .map((s) => ({ s, len: p.len })).sort(spanOrder).slice(0, 8);
+          .map((s) => ({ s, len: p.len })).sort(spanOrder).slice(0, GN.templateAlts);
         for (const { s } of alts) keep(tplNode(a, 0, a.length, pick.map((x, j) => (j === j0 ? { s, at: p.at, len: p.len } : x))));
         if (pick.length > 1) keep(tplNode(a, 0, a.length, pick.filter((_, j) => j !== j0))); // or the place kept as its text
       });
@@ -642,7 +986,7 @@ const numAt = (line, j) => firstBounded(line.toLowerCase(), String(j));
  */
 function lineTemplates(S, ans, low, spans, keep) {
   const bodyOf = (i, h) => { const ls = S.rows[i].answer.split('\n').map((l) => l.replace(/\r$/, '')); const b = ls.slice(h); return b.length >= 2 && b.every((l, j) => numAt(l, j + 1) >= 0) ? { ls, b } : null; };
-  const nums = S.entries.filter((e) => e.type === 'num' && e.cost <= 4 && !e.konst);
+  const nums = S.entries.filter((e) => e.type === 'num' && e.cost <= GN.spanMaxCost && !e.konst);
   const subjects = spans.filter((s) => s.e.type === 'str' && !s.chain.length);
   for (const h of [0, 1]) {
     const shaped = new Map();
@@ -652,10 +996,10 @@ function lineTemplates(S, ans, low, spans, keep) {
     for (const [i, { ls, b }] of shaped) {
       const m = b.length;
       const ns = nums.filter((e) => e.vec[i] !== null && Number(e.vec[i]) === m).map((e) => ({ e, c: numCons(e) }))
-        .sort((x, y) => y.c - x.c || x.e.cost - y.e.cost || x.e.id - y.e.id).slice(0, 2).map((x) => x.e);
+        .sort((x, y) => y.c - x.c || x.e.cost - y.e.cost || x.e.id - y.e.id).slice(0, GN.lineNums).map((x) => x.e);
       if (!ns.length) continue;
       const subs = subjects.filter((s) => s.texts[i] && b.every((l) => firstBounded(l.toLowerCase(), s.texts[i].toLowerCase()) >= 0))
-        .sort((x, y) => y.cons - x.cons || y.texts[i].length - x.texts[i].length || x.e.cost - y.e.cost || x.e.id - y.e.id).slice(0, 3);
+        .sort((x, y) => y.cons - x.cons || y.texts[i].length - x.texts[i].length || x.e.cost - y.e.cost || x.e.id - y.e.id).slice(0, GN.lineSubjects);
       const bodies = [];
       for (const s of [null, ...subs]) {
         let tpl = null, ok = true;
@@ -679,7 +1023,7 @@ function lineTemplates(S, ans, low, spans, keep) {
         if (ok && tpl) bodies.push({ s, tpl });
       }
       let head = null;
-      if (h === 1) { const hl = ls[0]; head = hl.trim() ? tplNode(S.rows[i].answer, 0, hl.length, pickSpans(spans, i, 0, hl.length, 4)) : null; if (!head) continue; }
+      if (h === 1) { const hl = ls[0]; head = hl.trim() ? tplNode(S.rows[i].answer, 0, hl.length, pickSpans(spans, i, 0, hl.length, GN.templateSlots)) : null; if (!head) continue; }
       for (const { s, tpl } of bodies) for (const N of ns) {
         const lines = s ? ['render.lines', ['iterate.mapTemplateStrs', { lit: tpl }, ['iterate.repeat', s.e.node, N.node]]]
           : ['render.lines', ['iterate.mapTemplate', { lit: tpl }, ['iterate.range', N.node]]];
@@ -724,7 +1068,7 @@ function memoryCands(S) {
   const everywhere = (w) => df.get(w) === S.n;
   const valW = vals.map((v) => (v === null ? null : new Set(words1(v))));
   for (const e of S.entries) {
-    if (e.type !== 'str' || e.konst || !Array.isArray(e.node) || PRIMS[e.node[0]].family !== 'sense' || e.node[0] === 'sense.text') continue;
+    if (e.type !== 'str' || e.konst || !Array.isArray(e.node) || !Object.hasOwn(PRIMS, e.node[0]) || PRIMS[e.node[0]].family !== 'sense' || e.node[0] === 'sense.text') continue;
     const rel = {}, by = new Map();
     let ok = true, n = 0;
     S.rows.forEach((r, i) => {
@@ -745,7 +1089,7 @@ function yesNoCands(S) {
   for (const e of S.entries) if (e.type === 'str' && e.konst && !Array.isArray(e.node)) phrases.push({ node: e.node, outs: e.vec.map(strOrNull) });
   for (const p of S.phrases) phrases.push(p);
   if (!phrases.length || !S.bools.length) return;
-  const pm = phrases.map((p) => p.outs.map((o, i) => passes(o, S.rows[i])));
+  const pm = phrases.map((p) => p.outs.map((o, i) => passAt(S, o, i)));
   for (const b of S.bools) {
     if (spent(S)) return;
     S.generated += phrases.length;
@@ -754,6 +1098,7 @@ function yesNoCands(S) {
     if (T.length < 2 || Fa.length < 2) continue;
     // a truth splits the rows only when one phrase passes every true row and one every false row
     const best = (rows) => pm.findIndex((m) => rows.every((i) => m[i]));
+    if (best([...T, ...Fa]) >= 0) continue; // one phrase already passes both sides: the truth adds nothing but a literal
     const a = best(T), c = best(Fa);
     if (a < 0 || c < 0) continue;
     const A = phrases[a], C = phrases[c];
@@ -780,7 +1125,7 @@ function parentCands(S, parents) {
 }
 function mutantCands(S, parents, pools) {
   let n = 0;
-  const go = () => n < MUTANT_CAP && !spent(S);
+  const go = () => n < GN.mutantCap && !spent(S);
   const tryPyr = (pyramid, mem, p, guard = null) => {
     if (!go()) return;
     n++; S.generated++;
@@ -794,8 +1139,9 @@ function mutantCands(S, parents, pools) {
     let swaps = 0;
     for (const [at, node] of nodesOf(p.pyramid)) {
       if (Array.isArray(node)) {
+        if (!Object.hasOwn(PRIMS, node[0])) continue; // a macro node is swapped as a whole by no other (its body is fixed)
         const sig = sigOf(node[0]);
-        for (const other of PRIM_NAMES) { if (swaps >= 24) break; if (other !== node[0] && sigOf(other) === sig) { swaps++; tryPyr(replaceAt(p.pyramid, at, [other, ...node.slice(1)]), p.mem, p); } }
+        for (const other of PRIM_NAMES) { if (swaps >= GN.mutantSwaps) break; if (other !== node[0] && sigOf(other) === sig) { swaps++; tryPyr(replaceAt(p.pyramid, at, [other, ...node.slice(1)]), p.mem, p); } }
       } else if (isObj(node) && Object.hasOwn(node, 'lit')) {
         const v = node.lit;
         const alts = typeof v === 'number' ? [v + 1, v - 1, v * 2, ...pools.nums.slice(0, 4)] : typeof v === 'string' ? pools.keywords.slice(0, 4) : [];
@@ -809,7 +1155,6 @@ function mutantCands(S, parents, pools) {
 }
 
 // ---------------------------------------------------------------- guard induction: the SENSE face of a candidate
-const MAX_EXTRA = 6;
 function guardContext(S, negatives) {
   const rowF = S.rows.map((r) => featOf(r.q));
   const rowW = rowF.map((f) => [...new Set(f.words)].filter((w) => !isNumWord(w)));
@@ -823,13 +1168,15 @@ function guardContext(S, negatives) {
     negs.push({ q, f, group: isObj(e) && typeof e.group === 'string' ? e.group : '' });
     for (const w of new Set(f.words)) { const at = index.get(w); if (at) at.push(j); else index.set(w, [j]); }
   }
-  return { rowF, rowW, negs, index };
+  // kf: each negative's kernel guard features (computed on first use); hot: the negatives that refuted a candidate last
+  // (keepCell tries them first: a negative that fires on one pyramid fires on its kin)
+  return { rowF, rowW, negs, index, kf: new Array(negs.length).fill(null), hot: [] };
 }
 /** The phrases of a pyramid's interior primitives (their manifest words), the words a prompt names them by. */
 function aliasWordsOf(pyramid) {
   const out = new Set();
   for (const [, node] of nodesOf(pyramid)) {
-    if (!Array.isArray(node) || !ALIAS_FAMILIES.has(PRIMS[node[0]]?.family)) continue;
+    if (!Array.isArray(node) || !Object.hasOwn(PRIMS, node[0]) || !ALIAS_FAMILIES.has(PRIMS[node[0]].family)) continue;
     for (const w of PRIMS[node[0]].words) { const p = norm(w, 1); if (p && p.length >= 3 && !/\d/.test(p) && !p.split(' ').every((x) => STOP.has(x))) out.add(p); }
   }
   return [...out].sort(cmpStr);
@@ -869,9 +1216,9 @@ function featurePool(G, rows, others) {
   const common = G.rowW[rows[0]].filter((w) => fs0.every((f) => holds(['has', w], f)));
   for (const w of common) pool.push(['has', w]);
   const offW = new Set();
-  for (const f of others) for (const w of f.words) if (!isNumWord(w) && offW.size < 400) offW.add(w);
+  for (const f of others) for (const w of f.words) if (!isNumWord(w) && offW.size < GN.offWords) offW.add(w);
   let k = 0;
-  for (const w of [...offW].sort(cmpStr)) { if (k >= 50) break; if (!fs0.some((f) => holds(['has', w], f))) { pool.push(['not', ['has', w]]); k++; } }
+  for (const w of [...offW].sort(cmpStr)) { if (k >= GN.notFeatures) break; if (!fs0.some((f) => holds(['has', w], f))) { pool.push(['not', ['has', w]]); k++; } }
   const nums = fs0.map((f) => f.nums), wc = fs0.map((f) => f.words.length);
   if (nums.every((x) => x === nums[0])) pool.push(['nums==', nums[0]]);
   if (Math.min(...nums) > 0) pool.push(['nums>=', Math.min(...nums)]);
@@ -879,10 +1226,10 @@ function featurePool(G, rows, others) {
   pool.push(['words<=', Math.max(...wc)], ['words>=', Math.min(...wc)]);
   return pool;
 }
-/** Add up to MAX_EXTRA features to extra, each the one that removes the most of the given prompts (features of them). */
+/** Add up to the maxExtra gene's features to extra, each the one that removes the most of the given prompts (features of them). */
 function tighten(pool, targets, extra) {
   let left = targets;
-  while (left.length && extra.length < MAX_EXTRA) {
+  while (left.length && extra.length < GN.maxExtra) {
     let best = null, bestN = 0;
     for (const ft of pool) { if (extra.some((x) => canon(x) === canon(ft))) continue; let n = 0; for (const f of left) if (!holds(ft, f)) n++; if (n > bestN) { bestN = n; best = ft; } }
     if (!best) break;
@@ -938,9 +1285,8 @@ function induceGuard(S, G, cand) {
   return [all.length === 1 ? ['has', all[0]] : ['hasAny', [...new Set(all)].sort(cmpStr)], ...extra];
 }
 /** A kept cell, or null: every dev row it fires on passes, at least one does, and it is silent on every negative it reaches. */
-function keepCell(S, G, cand, guard, task, gen) {
-  const rec = cand.keepRecord || null;
-  const cell = makeCell({ task, gen: rec ? rec.gen : gen, parents: rec ? rec.parents : cand.parents || [], guard, pyramid: cand.pyramid, mem: cand.mem });
+/** keepCell with SPEED off: the kernel's runCell on every dev row, then on every negative the guard reaches. */
+function keepSlow(S, G, cell, guard) {
   let ok = 0, fired = 0;
   for (const r of S.rows) { const o = runCell(cell, r.q); if (o === null) continue; fired++; if (!passes(o, r)) return null; ok++; }
   if (!ok) return null;
@@ -948,6 +1294,41 @@ function keepCell(S, G, cand, guard, task, gen) {
   for (const ft of guard) if (ft[0] === 'has') ws.push(ft[1]); else if (ft[0] === 'hasAny') ws.push(...ft[1]);
   const js = ws.length ? reachNegs(G, ws) : G.negs.map((_, j) => j);
   for (const j of js) if (runCell(cell, G.negs[j].q) !== null) return null;
+  cell.fit = { ok, fired, rows: S.n };
+  return checkCell(cell).ok ? cell : null;
+}
+function keepCell(S, G, cand, guard, task, gen) {
+  const rec = cand.keepRecord || null;
+  const cell = makeCell({ task, gen: rec ? rec.gen : gen, parents: rec ? rec.parents : cand.parents || [], guard, pyramid: cand.pyramid, mem: cand.mem });
+  // the kernel's runCell on every dev row and every negative it reaches, with each prompt's guard features computed once
+  // and the pyramid's values over the rows taken from the memo (vecOf); the first refuting row or negative drops it
+  if (!FAST) return keepSlow(S, G, cell, guard);
+  const kf = rowFeatures(S);
+  let vec = null, ok = 0, fired = 0;
+  for (let i = 0; i < S.n; i++) {
+    const q = S.rows[i].q;
+    if (typeof q !== 'string' || !q.trim() || !guardWith(cell.guard, kf[i])) continue;
+    if (vec === null) vec = vecOf(S, cell.pyramid, cell.mem);
+    const o = strOrNull(vec[i]);
+    if (o === null) continue;
+    fired++;
+    if (!passAt(S, o, i)) return null;
+    ok++;
+  }
+  if (!ok) return null;
+  const ws = [];
+  for (const ft of guard) if (ft[0] === 'has') ws.push(ft[1]); else if (ft[0] === 'hasAny') ws.push(...ft[1]);
+  const js = ws.length ? reachNegs(G, ws) : G.negs.map((_, j) => j);
+  const fires = (j) => {
+    const q = G.negs[j].q;
+    const f = G.kf[j] || (G.kf[j] = promptFeatures(q));
+    return guardWith(cell.guard, f) && strOrNull(evalNode(cell.pyramid, q, cell.mem)) !== null;
+  };
+  if (G.hot.length && js.length) { // the negatives that refuted the last candidates first (the same verdict, sooner)
+    const reach = ws.length ? new Set(js) : null;
+    for (const j of G.hot) if ((reach === null || reach.has(j)) && fires(j)) return null;
+  }
+  for (const j of js) if (fires(j)) { if (!G.hot.includes(j)) { G.hot.unshift(j); if (G.hot.length > 8) G.hot.pop(); } return null; }
   cell.fit = { ok, fired, rows: S.n };
   return checkCell(cell).ok ? cell : null;
 }
@@ -1004,7 +1385,8 @@ function factTest(packs, pyramid, cache) {
 /** The open guard of a candidate's pyramid (see above), or null when no word list silences it where it must be silent. */
 function openGuard(S, G, cell, isFact) {
   const P = [], F = [];
-  S.rows.forEach((r, i) => { const o = strOrNull(evalNode(cell.pyramid, r.q, cell.mem)); if (o === null) return; (passes(o, r) ? P : F).push(i); });
+  const vec = vecOf(S, cell.pyramid, cell.mem);
+  S.rows.forEach((r, i) => { const o = strOrNull(vec[i]); if (o === null) return; (passAt(S, o, i) ? P : F).push(i); });
   if (!P.length || F.length * OPEN_FAIL_DIV > P.length + F.length) return null;
   const own = new Set(P.flatMap((i) => G.rowF[i].words));
   const gdf = groupFreq(G), tier = (w) => (STOP.has(w) ? 3 : isFact(w) || isNumWord(w) ? 2 : (gdf.get(w) || 0) <= G.topicMax ? 0 : 1);
@@ -1058,17 +1440,20 @@ function openCells(S, G, kept, packs, task, gen) {
 // ---------------------------------------------------------------- spawn
 const posInt = (v, d) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Math.floor(Number(v)) : d);
 /** The family a cell is counted under: its first primitive below the render apex, depth first (render when none). */
+const hasMacro = (node) => Array.isArray(node) && (!Object.hasOwn(PRIMS, node[0]) || node.some((c, i) => i > 0 && hasMacro(c)));
+/** A pyramid with its macro nodes replaced by their bodies (the pyramid itself when it names none). */
+const flatOf = (pyramid) => (hasMacro(pyramid) ? expandMacros(pyramid) : pyramid);
 export function familyOf(cell) {
-  for (const [, n] of nodesOf(cell.pyramid)) if (Array.isArray(n) && PRIMS[n[0]].family !== 'render') return PRIMS[n[0]].family;
+  for (const [, n] of nodesOf(flatOf(cell.pyramid))) if (Array.isArray(n) && Object.hasOwn(PRIMS, n[0]) && PRIMS[n[0]].family !== 'render') return PRIMS[n[0]].family;
   return 'render';
 }
 /** Whether a cell is a fallback: its pyramid answers with the nearest remembered prompt's answer (memory.nearest). */
 export function isFallback(cell) {
-  return isObj(cell) && nodesOf(cell.pyramid).some(([, n]) => Array.isArray(n) && n[0] === 'memory.nearest');
+  return isObj(cell) && nodesOf(flatOf(cell.pyramid)).some(([, n]) => Array.isArray(n) && n[0] === 'memory.nearest');
 }
-/** Whether a cell's pyramid uses a primitive of the know family (its index row is then tagged know: true). */
+/** Whether a cell's pyramid uses a primitive of a family that reads the packs (know, series, table), inside a macro too (its index row is then tagged know: true). */
 export function usesKnow(cell) {
-  return isObj(cell) && nodesOf(cell.pyramid).some(([, n]) => Array.isArray(n) && Object.hasOwn(PRIMS, n[0]) && PRIMS[n[0]].family === 'know');
+  return isObj(cell) && nodesOf(flatOf(cell.pyramid)).some(([, n]) => Array.isArray(n) && Object.hasOwn(PRIMS, n[0]) && KNOW_LIKE.has(PRIMS[n[0]].family));
 }
 
 // ---------------------------------------------------------------- THE CURSOR: every grow continues where the last stopped
@@ -1085,7 +1470,10 @@ export const MAX_COST_CEIL = 12;
  */
 export function cursorBasis(rows, use = []) {
   const R = Array.isArray(rows) ? rows : [];
-  return sha256Hex(canon({ v: CURSOR_VERSION, prims: PRIM_NAMES, rows: R.map((r) => [r.q ?? null, r.answer ?? null, r.expect ?? null]), packs: packsKey(use) }));
+  // a search gene off its default or a macro in force changes what the rounds try, so it is part of the basis (absent at
+  // today's constants and no macro, so a cursor written before them continues)
+  const ext = { ...(GN_KEY ? { genome: GN_KEY } : {}), ...(MACRO_OPS.length ? { macros: MACRO_OPS.map((m) => m.name) } : {}) };
+  return sha256Hex(canon({ v: CURSOR_VERSION, prims: PRIM_NAMES, rows: R.map((r) => [r.q ?? null, r.answer ?? null, r.expect ?? null]), packs: packsKey(use), ...ext }));
 }
 /**
  * THE CURSOR (contract c3, "cursor"): where the next grow of a task continues, from the cursor its last grow wrote in
@@ -1102,7 +1490,7 @@ export function resumeCursor(cursor, basis) {
   const int = (v, lo) => Number.isInteger(v) && v >= lo;
   const ok = isObj(cursor) && cursor.v === CURSOR_VERSION && typeof basis === 'string' && cursor.basis === basis && int(cursor.round, 0) &&
     int(cursor.at, 0) && int(cursor.maxCost, 2) && cursor.maxCost <= MAX_COST_CEIL && int(cursor.tpl ?? 0, 0);
-  if (!ok) return { round: 0, replay: 0, maxCost: MAX_COST, window: 0 };
+  if (!ok) return { round: 0, replay: 0, maxCost: GN.maxCost, window: 0 };
   const deeper = cursor.done === true && cursor.maxCost < MAX_COST_CEIL;
   return { round: cursor.round + 1, replay: cursor.at, maxCost: deeper ? cursor.maxCost + 1 : cursor.maxCost, window: cursor.tpl ?? 0 };
 }
@@ -1121,13 +1509,13 @@ export function resumeCursor(cursor, basis) {
 function spawnWith({ task, rows, negatives = [], gen = 1, parents = [], budget = {}, packs = null, source = null, cursor = null, trace = false } = {}) {
   const t0 = Date.now();
   if (typeof task !== 'string' || !task.trim()) throw new Fail('spawn: the task is not a word');
-  const B = { maxGenerated: posInt(budget && budget.maxGenerated, BUDGET.maxGenerated), maxMs: posInt(budget && budget.maxMs, BUDGET.maxMs) };
+  const B = { maxGenerated: posInt(budget && budget.maxGenerated, GN.maxGenerated), maxMs: posInt(budget && budget.maxMs, GN.maxMs) };
   const R = rowsOf(rows).map(prepRow);
   knowUse(Array.isArray(packs) ? packs : EMPTY_PACKS);
   const use = R.length ? knowPacks(R, packs, source) : [];
   const basis = cursorBasis(R, use);
   const at = resumeCursor(cursor, basis);
-  const S = newSearch(R, { maxGenerated: Math.floor(B.maxGenerated * ENUM_SHARE), maxMs: Math.floor(B.maxMs * ENUM_SHARE) }, t0, namedPrims(R.map((r) => r.q)), { ...at, trace: trace === true });
+  const S = newSearch(R, { maxGenerated: Math.floor(B.maxGenerated * GN.enumShare), maxMs: Math.floor(B.maxMs * GN.enumShare) }, t0, namedPrims(R.map((r) => r.q)), { ...at, trace: trace === true });
   const pools = poolsOf(R);
   let done = true;
   if (R.length) { knowSeed(S, use); seed(S, pools); done = enumerate(S); }
@@ -1138,10 +1526,15 @@ function spawnWith({ task, rows, negatives = [], gen = 1, parents = [], budget =
   };
   S.stop = null; S.limit = B.maxGenerated; S.msLimit = B.maxMs;
   const P = Array.isArray(parents) ? parents : [];
-  if (R.length) {
-    parentCands(S, P);
-    next.tpl = templateCands(S);
-    if (!S.round) { memoryCands(S); yesNoCands(S); mutantCands(S, P, pools); }
+  if (R.length) { // the sources in the order of the sourceOrder gene (memory, yes/no pairs and mutants are round 0's)
+    for (const src of GN.sourceOrder) {
+      if (src === 'parent') parentCands(S, P);
+      else if (src === 'template') next.tpl = templateCands(S);
+      else if (S.round) continue;
+      else if (src === 'memory') memoryCands(S);
+      else if (src === 'yesno') yesNoCands(S);
+      else if (src === 'mutant') mutantCands(S, P, pools);
+    }
   }
   const G = guardContext(S, negatives), g = Number.isInteger(gen) && gen >= 0 ? gen : 1;
   const cells = [], ids = new Set(), src = new Map();
@@ -1156,7 +1549,7 @@ function spawnWith({ task, rows, negatives = [], gen = 1, parents = [], budget =
   // part 2 come around it: a FALLBACK (the nearest remembered prompt's answer: it answers every prompt its guard takes, so
   // a prompt no dev row holds gets another prompt's answer) goes after every other cell, and at equal rows a cell that
   // reads a pack's facts goes first (a fact holds for a key no dev row names).
-  const aff = new Map(cells.map((c) => [c.id, new Set(nodesOf(c.pyramid).filter(([, n]) => Array.isArray(n) && S.named.has(n[0]) && !['sense', 'render'].includes(PRIMS[n[0]].family)).map(([, n]) => n[0])).size]));
+  const aff = new Map(cells.map((c) => [c.id, new Set(nodesOf(flatOf(c.pyramid)).filter(([, n]) => Array.isArray(n) && S.named.has(n[0]) && !['sense', 'render'].includes(familyOfName(n[0]))).map(([, n]) => n[0])).size]));
   const late = new Map(cells.map((c) => [c.id, isFallback(c) ? 1 : 0])), fact = new Map(cells.map((c) => [c.id, usesKnow(c) ? 1 : 0]));
   cells.sort((a, b) => late.get(a.id) - late.get(b.id) || b.fit.ok - a.fit.ok || fact.get(b.id) - fact.get(a.id) || aff.get(b.id) - aff.get(a.id) || a.size - b.size || cmpStr(a.id, b.id));
   const byFamily = {}, bySource = {};
@@ -1186,9 +1579,12 @@ function spawnWith({ task, rows, negatives = [], gen = 1, parents = [], budget =
  * @returns {{ cells: object[], stats: object }}
  */
 export function spawn(spec = {}) {
-  const prev = OK;
+  const prev = OK, prevGN = GN, prevKey = GN_KEY;
   OK = spec && typeof spec.expectOk === 'function' ? spec.expectOk : expectOk;
-  try { return spawnWith(spec); } finally { OK = prev; }
+  try {
+    if (spec && spec.genome !== undefined && spec.genome !== null) applyGenome(spec.genome); // this spawn's own genome
+    return spawnWith(spec);
+  } finally { OK = prev; GN = prevGN; GN_KEY = prevKey; }
 }
 
 // ---------------------------------------------------------------- THE GATE (contract c2): mastered, and the template exactly
@@ -1304,14 +1700,16 @@ export function deriveTemplates(prompts) {
 }
 
 /**
- * The engine's mastered rule: a held-out score of exactly 1, with every one of n > 0 rows right where n and ok are given.
- * @param {{ score: number, n?: number, ok?: number }|null} h a row's heldout
+ * The engine's mastered rule: a held-out score of exactly 1, with every one of n > 0 rows right where n and ok are given;
+ * a temporal task's heldout carries its placebo (persistence: the last value seen), and the score must beat it.
+ * @param {{ score: number, n?: number, ok?: number, placebo?: { score: number } }|null} h a row's heldout
  * @returns {boolean}
  */
 export function isMastered(h) {
   if (!isObj(h) || h.score !== 1) return false;
   if (h.n !== undefined && !(Number.isInteger(h.n) && h.n > 0)) return false;
   if (h.ok !== undefined && h.ok !== h.n) return false;
+  if (h.placebo !== undefined && !(isObj(h.placebo) && typeof h.placebo.score === 'number' && h.score > h.placebo.score)) return false;
   return true;
 }
 

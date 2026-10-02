@@ -13,7 +13,7 @@
 //
 // TYPES: text (the prompt; implicit, see below), num (a finite number, or a BigInt once an integer passes 2^53),
 // nums (a list of num), str, strs (a list of str), bool, kv (a plain object), tpl (a template: a list whose parts
-// are strings and slot references { slot: i }).
+// are strings and slot references { slot: i }), mat (a matrix: 1 to 12 rows of one length, 1 to 12, of num).
 //
 // A PRIMITIVE: PRIMS[name] = { family, in, out, words, fn, lazy?, rest? }, name "family.name".
 //   in      the input types in order. A "text" in it is the prompt: evalNode fills it from the cell's q and a node
@@ -61,6 +61,19 @@
 //              (lookup), the key of a value (reverse), the row of a key, whether a key is listed (has), the keys
 //              among some whose column holds a value (where), and a text as a number (num). Keys match after
 //              knowNorm (no accents, lower case, no punctuation, no leading "the"); a key with two values is no answer.
+//   series     a pack's value column in the order of its key column (dates YYYY, YYYY-MM, YYYY-MM-DD, or numbers):
+//              the value at a key, before it and after it (and those keys), the step from the one before, the delta,
+//              ratio and percent change between two keys, mean, sum, max, min and values over a window of keys, the
+//              key of the max and min in a window and overall, the higher and lower of two keys, first and last
+//              (value and key), every value and key, how many values lie above or below a number.
+//   table      a long table (one row per entity and time): the value of a pair (text and number), an entity's latest
+//              and earliest value and time, its values in time order, the entity with the most and the least at a
+//              time, every value at a time, an entity's rank at a time, the change between two times.
+//   matrix     rows, columns, shape, a row, a column, an entry, transpose, add, subtract, multiply, scale, determinant
+//              (exact for integers), inverse, trace, identity, flatten, power, a list reshaped into rows.
+//   (text and code, in transform, aggregate and compute: camel, pascal, snake and kebab case, substring, the
+//              character at, pad, caesar shift, character codes and back, base64 and back, a dotted path into JSON,
+//              the position of a text, the most common letter, a line count, edit distance, hamming distance)
 //   route     if (text, number, list), first non-null (text, number, list), when, unless, a case table (text, num).
 //   iterate    a range 1..N, a range a..b, steps, multiples, squares, powers, fibonacci terms, countdown, running
 //              sum, differences, growth by a percent per period, collatz path, digits, repeat, and a template
@@ -70,7 +83,8 @@
 //              BigInt in full), a number in full (plain: every digit, a float to 15 significant digits), fixed decimals, a percent, money, an ordinal, a number with its unit, a label with a
 //              number, a list joined by commas, a list with "and", numbers joined, lines, a numbered list, bullets,
 //              a yes/no phrase pair, yes or no, a sentence template with slots (text and number), a sentence, a JSON
-//              object, key: value lines, a code span, a written date, a text as is.
+//              object, key: value lines, a code span, a written date, a text as is, a matrix in brackets or in rows.
+//   (sense also reads the matrices a prompt writes, the first and the nth, and the first JSON object it writes)
 //
 // A NODE: [primName, ...args]; an arg is a node or a literal { lit: value }. evalNode(node, q, mem) -> value or null:
 // a null argument makes the node null (a lazy route excepted), a wrong argument count is a null, a throw is a null,
@@ -101,15 +115,18 @@
 // Author: NEO board kernel builder, 2026-10-01.
 
 // <KERNEL>
-const KERNEL_VERSION = 1;
+const KERNEL_VERSION = 2;
 const MAX_DEPTH = 64;
 const MAX_LIST = 10000;
 const MAX_BITS = 65536;
 const MAX_TEXT = 100000;
 const SAFE = 9007199254740991n;
 const NEAR = 0.5;
-const TYPES = Object.freeze(['text', 'num', 'nums', 'str', 'strs', 'bool', 'kv', 'tpl']);
-const FAMILIES = Object.freeze(['sense', 'transform', 'aggregate', 'compare', 'compute', 'memory', 'know', 'route', 'iterate', 'render']);
+const TYPES = Object.freeze(['text', 'num', 'nums', 'str', 'strs', 'bool', 'kv', 'tpl', 'mat']);
+const FAMILIES = Object.freeze(['sense', 'transform', 'aggregate', 'compare', 'compute', 'memory', 'know', 'series', 'table', 'matrix', 'route', 'iterate', 'render']);
+/** A matrix holds at most MAT_MAX rows and columns; its determinant and inverse are taken up to MAT_SOLVE. */
+const MAT_MAX = 12;
+const MAT_SOLVE = 10;
 const STOP_WORDS = Object.freeze(('a an the is are was were be been being am of to in on at by for with from and or but ' +
   'what whats which who whom whose how when where why do does did can could would should will shall may might must ' +
   'please me my i im you your it its this that these those tell give show find there their them they we us our ' +
@@ -125,10 +142,12 @@ function isKv(v) { return v !== null && typeof v === 'object' && !Array.isArray(
 function isNum(v) { return (typeof v === 'number' && Number.isFinite(v)) || typeof v === 'bigint'; }
 function isInt(v) { return typeof v === 'bigint' || (typeof v === 'number' && Number.isInteger(v)); }
 function isTpl(v) { return Array.isArray(v) && v.every((p) => typeof p === 'string' || (isKv(p) && Number.isInteger(p.slot) && p.slot >= 0 && p.slot < 100)); }
+/** A matrix: 1 to MAT_MAX rows of one length (1 to MAT_MAX) of numbers. */
+function isMat(v) { return Array.isArray(v) && v.length >= 1 && v.length <= MAT_MAX && Array.isArray(v[0]) && v[0].length >= 1 && v[0].length <= MAT_MAX && v.every((r) => Array.isArray(r) && r.length === v[0].length && r.every(isNum)); }
 const CHECK = Object.freeze({
   text: (v) => typeof v === 'string', str: (v) => typeof v === 'string', num: isNum, bool: (v) => typeof v === 'boolean',
   nums: (v) => Array.isArray(v) && v.every(isNum), strs: (v) => Array.isArray(v) && v.every((s) => typeof s === 'string'),
-  kv: isKv, tpl: isTpl,
+  kv: isKv, tpl: isTpl, mat: isMat,
 });
 function nz(b) { return b <= SAFE && b >= -SAFE ? Number(b) : b; }
 function fin(x) { return typeof x === 'number' && Number.isFinite(x) ? x + 0 : null; }
@@ -630,7 +649,7 @@ function knowLoad(packs) {
     try { rows = knowRows(p); } catch { rows = null; }
     if (!rows) continue;
     const clean = rows.filter(Boolean).map((r) => r.map((v) => (typeof v === 'string' || (typeof v === 'number' && Number.isFinite(v)) ? v : '')));
-    KNOW.set(p.id, { id: p.id, cols: p.columns.slice(), col: new Map(p.columns.map((c, j) => [c, j])), rows: clean, keys: new Map(), grams: new Map() });
+    KNOW.set(p.id, { id: p.id, cols: p.columns.slice(), col: new Map(p.columns.map((c, j) => [c, j])), rows: clean, keys: new Map(), grams: new Map(), series: new Map(), tables: new Map() });
   }
   return KNOW.size;
 }
@@ -734,6 +753,117 @@ function knowWhere(keys, id, kc, vc, value) {
   return keys.filter((k) => { const v = knowGet(id, kc, k, vc); return v !== null && knowNorm(v) === want; });
 }
 
+// ---- series and long tables (the series and table families). A SERIES is a pack's value column read in the order of
+// its key column: the keys order when every one is a date written YYYY, YYYY-MM or YYYY-MM-DD, or else every one is a
+// number; a row whose value is no number is left out, and so is a key with two different values. A LONG TABLE holds one
+// row per entity and time: a value is read by the pair (a pair with two different values is no answer), an entity's
+// values in the order of its times, a time's values in the order of the entities' match forms. Both are built once per
+// pack and columns while the pack is loaded, and neither depends on the order of the pack's rows.
+// A date key: a year, a month or a day, and a day may carry a UTC time to the second ("2026-10-02T12:34:56Z").
+const DATE_KEY = /^(\d{4})(?:-(\d{1,2})(?:-(\d{1,2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,9}))?)?Z?)?)?)?$/;
+const dateOrder = (m) => [m[2], m[3], m[4], m[5], m[6]].reduce((s, x) => s * 100 + Number(x || 0), Number(m[1])) + (m[7] ? Number('0.' + m[7]) : 0);
+/** The place in order of each key (all dates, else all numbers), or null when the keys do not order. */
+function orderOf(keys) {
+  const ts = keys.map((k) => String(k).trim());
+  if (!ts.length) return null;
+  if (ts.every((t) => DATE_KEY.test(t))) return ts.map((t) => dateOrder(DATE_KEY.exec(t)));
+  const ns = ts.map((t) => parseNum(t));
+  return ns.every((x) => x !== null) ? ns.map(F) : null;
+}
+/** A cell as a number: a finite number, or text that is one (thousands commas allowed), else null. */
+/** A float to 12 significant digits (the noise of float arithmetic on pack values goes); any other value as it is. */
+function fx(v) { return typeof v === 'number' && Number.isFinite(v) && !Number.isInteger(v) ? Number(v.toPrecision(12)) + 0 : v; }
+function cellNum(v) { return typeof v === 'number' ? fin(v) : typeof v === 'string' ? parseNum(v.trim()) : null; }
+function seriesOf(id, kc, vc) {
+  const p = typeof id === 'string' ? KNOW.get(id) : null;
+  if (!p) return null;
+  const ki = knowCol(p, kc), vi = knowCol(p, vc);
+  if (ki < 0 || vi < 0 || ki === vi) return null;
+  const tag = ki + ',' + vi;
+  if (p.series.has(tag)) return p.series.get(tag);
+  const by = new Map();
+  for (const r of p.rows) {
+    const k = knowCell(r[ki]), n = k === null ? '' : knowNorm(k), v = cellNum(r[vi]);
+    if (!n || v === null) continue;
+    const e = by.get(n);
+    if (!e) by.set(n, { n, k, v, bad: false });
+    else { if (cmp(e.v, v) !== 0) e.bad = true; if (k < e.k) e.k = k; }
+  }
+  const list = [...by.values()].filter((e) => !e.bad), os = orderOf(list.map((e) => e.k));
+  let s = null;
+  if (os) {
+    // keys written two ways for one place in order (2020-2 and 2020-02) are one item when they agree, none when not
+    const all = list.map((e, i) => ({ n: e.n, k: e.k, v: e.v, o: os[i] })).sort((a, b) => a.o - b.o || cmp(a.k, b.k));
+    const items = [], at = new Map();
+    for (let i = 0; i < all.length;) {
+      let j = i;
+      while (j < all.length && all[j].o === all[i].o) j++;
+      const g = all.slice(i, j);
+      if (g.every((x) => cmp(x.v, g[0].v) === 0)) { for (const x of g) at.set(x.n, items.length); items.push(g[0]); }
+      i = j;
+    }
+    s = { items, at };
+  }
+  p.series.set(tag, s);
+  return s;
+}
+function serIdx(s, key) { if (!s || typeof key !== 'string') return -1; const i = s.at.get(knowNorm(key)); return i === undefined ? -1 : i; }
+/** The item a step from the key (0 the key's own), or null. */
+function serItem(s, key, step) { const i = serIdx(s, key); return i < 0 ? null : s.items[i + step] ?? null; }
+/** The items from one key to the other, both included, in order (either may come first). */
+function serSpan(s, k1, k2) { const i = serIdx(s, k1), j = serIdx(s, k2); return i < 0 || j < 0 ? null : s.items.slice(Math.min(i, j), Math.max(i, j) + 1); }
+function serPair(s, k1, k2) { const i = serIdx(s, k1), j = serIdx(s, k2); return i < 0 || j < 0 ? null : [s.items[i].v, s.items[j].v]; }
+/** The key of the one largest (dir 1) or smallest (dir -1) value of items; null for none or a tie. */
+function argExt(items, dir) {
+  if (!ne(items)) return null;
+  let best = items[0], tie = false;
+  for (const x of items.slice(1)) { const c = cmp(x.v, best.v) * dir; if (c > 0) { best = x; tie = false; } else if (c === 0) tie = true; }
+  return tie ? null : best;
+}
+function tableOf(id, ec, tc, vc) {
+  const p = typeof id === 'string' ? KNOW.get(id) : null;
+  if (!p) return null;
+  const ei = knowCol(p, ec), ti = knowCol(p, tc), vi = knowCol(p, vc);
+  if (ei < 0 || ti < 0 || vi < 0 || ei === ti || ei === vi || ti === vi) return null;
+  const tag = ei + ',' + ti + ',' + vi;
+  if (p.tables.has(tag)) return p.tables.get(tag);
+  const pairs = new Map(), ents = new Map(), times = new Map();
+  for (const r of p.rows) {
+    const e = knowCell(r[ei]), t = knowCell(r[ti]), v = knowCell(r[vi]);
+    const en = e === null ? '' : knowNorm(e), tn = t === null ? '' : knowNorm(t);
+    if (!en || !tn || v === null) continue;
+    if (!ents.has(en) || e < ents.get(en)) ents.set(en, e);
+    if (!times.has(tn) || t < times.get(tn)) times.set(tn, t);
+    const k = en + '\u0000' + tn, x = pairs.get(k), vn = knowNorm(v) || v;
+    if (!x) pairs.set(k, { en, tn, v, vn, x: cellNum(r[vi]), bad: false });
+    else if (x.vn !== vn) x.bad = true;
+    else if (v < x.v) x.v = v;
+  }
+  const tl = [...times.keys()], os = orderOf(tl.map((tn) => times.get(tn)));
+  const ord = os ? new Map(tl.map((tn, i) => [tn, os[i]])) : null;
+  const byE = new Map(), byT = new Map();
+  for (const x of pairs.values()) {
+    if (x.bad) continue;
+    const item = { en: x.en, tn: x.tn, e: ents.get(x.en), t: times.get(x.tn), v: x.v, x: x.x };
+    (byE.get(x.en) || byE.set(x.en, []).get(x.en)).push(item);
+    (byT.get(x.tn) || byT.set(x.tn, []).get(x.tn)).push(item);
+  }
+  if (ord) for (const l of byE.values()) l.sort((a, b) => ord.get(a.tn) - ord.get(b.tn) || cmp(a.tn, b.tn));
+  for (const l of byT.values()) l.sort((a, b) => cmp(a.en, b.en));
+  const t = { pairs, byE, byT, ord };
+  p.tables.set(tag, t);
+  return t;
+}
+function tabPair(t, e, time) {
+  if (!t || typeof e !== 'string' || typeof time !== 'string') return null;
+  const x = t.pairs.get(knowNorm(e) + '\u0000' + knowNorm(time));
+  return x && !x.bad ? x : null;
+}
+/** An entity's items with a number, in time order (null when the times do not order). */
+function tabNums(t, e) { if (!t || !t.ord || typeof e !== 'string') return null; const l = t.byE.get(knowNorm(e)); return l ? ne(l.filter((x) => x.x !== null)) : null; }
+/** A time's items with a number, as { k: entity, v: number } in the order of the entities' match forms. */
+function tabAt(t, time) { if (!t || typeof time !== 'string') return null; const l = t.byT.get(knowNorm(time)); return l ? ne(l.filter((x) => x.x !== null).map((x) => ({ k: x.e, v: x.x }))) : null; }
+
 // ---- sha256 (pure; the cell id)
 const SHA_P = sieve(311);
 const SHA_H = SHA_P.slice(0, 8).map((p) => ((Math.sqrt(p) % 1) * 4294967296) | 0);
@@ -796,6 +926,210 @@ function logN(x, b) {
   return fin(r);
 }
 function caseOf(table, key) { return isKv(table) && typeof key === 'string' ? lookup({ table }, key) : null; }
+
+// ---- matrices (type mat): parsed from the prompt as [[1, 2], [3, 4]] or as rows split by ";" (1 2; 3 4), the entries
+// exact (BigInt for integers) where the arithmetic is; a determinant of integers is exact (Bareiss), an inverse is taken
+// in floats with each entry snapped to an integer within 1e-9 and otherwise to 12 significant digits; a singular one is null
+const MAT_BRACKET = /\[\s*\[[^[\]]*\](?:\s*(?:,\s*)?\[[^[\]]*\])*\s*\]/g;
+const MAT_ROWS = /-?\d+(?:\.\d+)?(?:(?:[ \t]*,[ \t]*|[ \t]+)-?\d+(?:\.\d+)?)*(?:[ \t]*;[ \t]*-?\d+(?:\.\d+)?(?:(?:[ \t]*,[ \t]*|[ \t]+)-?\d+(?:\.\d+)?)*)+/g;
+function rowNums(s) { const ts = s.split(/[\s,]+/).filter(Boolean), xs = ts.map(parseNum); return xs.length && !xs.includes(null) ? xs : null; }
+function matOfRows(rows) { const m = rows.map(rowNums); return m.every(Boolean) && isMat(m) ? m : null; }
+/** The matrices a prompt writes, in prompt order (the first 4000 characters are read). */
+function matricesIn(q) {
+  if (typeof q !== 'string') return [];
+  const src = q.slice(0, 4000), found = [];
+  let rest = src;
+  for (const m of src.matchAll(MAT_BRACKET)) {
+    const mat = matOfRows([...m[0].matchAll(/\[([^[\]]*)\]/g)].map((x) => x[1]));
+    if (mat) found.push([m.index, mat]);
+    rest = rest.slice(0, m.index) + ' '.repeat(m[0].length) + rest.slice(m.index + m[0].length);
+  }
+  for (const m of rest.matchAll(MAT_ROWS)) { const mat = matOfRows(m[0].split(';')); if (mat) found.push([m.index, mat]); }
+  return found.sort((a, b) => a[0] - b[0]).map((x) => x[1]);
+}
+function M(v) { if (!isMat(v)) throw new TypeError('not a matrix'); return v; }
+function matT(m) { return M(m)[0].map((_, j) => m.map((r) => r[j])); }
+function matZip(a, b, op) { M(a); M(b); return a.length === b.length && a[0].length === b[0].length ? a.map((r, i) => r.map((x, j) => op(x, b[i][j]))) : null; }
+function matMul(a, b) {
+  M(a); M(b);
+  if (a[0].length !== b.length) return null;
+  return a.map((r) => b[0].map((_, j) => { let s = 0; for (let k = 0; k < b.length; k++) s = add(s, mul(r[k], b[k][j])); return s; }));
+}
+function isSquare(m) { return isMat(m) && m.length === m[0].length && m.length <= MAT_SOLVE; }
+function matId(n) { const k = int(n); return k !== null && k >= 1 && k <= MAT_MAX ? Array.from({ length: k }, (_, i) => Array.from({ length: k }, (x, j) => (i === j ? 1 : 0))) : null; }
+/** A float near an integer (1e-9 relative) is that integer; any other to 12 significant digits. */
+function snap(x) {
+  if (typeof x !== 'number' || !Number.isFinite(x)) return null;
+  const r = Math.round(x);
+  return Math.abs(x - r) <= 1e-9 * Math.max(1, Math.abs(x)) ? r + 0 : Number(x.toPrecision(12)) + 0;
+}
+function detOf(m) {
+  if (!isSquare(m)) return null;
+  const n = m.length;
+  if (m.every((r) => r.every(isInt))) { // Bareiss: every division is exact
+    const a = m.map((r) => r.map(big));
+    let sign = 1n, prev = 1n;
+    for (let k = 0; k < n - 1; k++) {
+      if (a[k][k] === 0n) {
+        let s = k + 1;
+        while (s < n && a[s][k] === 0n) s++;
+        if (s === n) return 0;
+        [a[k], a[s]] = [a[s], a[k]];
+        sign = -sign;
+      }
+      for (let i = k + 1; i < n; i++) for (let j = k + 1; j < n; j++) a[i][j] = (a[i][j] * a[k][k] - a[i][k] * a[k][j]) / prev;
+      prev = a[k][k];
+    }
+    return capB(sign * a[n - 1][n - 1]);
+  }
+  const a = m.map((r) => r.map(F));
+  let d = 1;
+  for (let k = 0; k < n; k++) {
+    let p = k;
+    for (let i = k + 1; i < n; i++) if (Math.abs(a[i][k]) > Math.abs(a[p][k])) p = i;
+    if (a[p][k] === 0) return 0;
+    if (p !== k) { [a[k], a[p]] = [a[p], a[k]]; d = -d; }
+    d *= a[k][k];
+    for (let i = k + 1; i < n; i++) { const f = a[i][k] / a[k][k]; for (let j = k; j < n; j++) a[i][j] -= f * a[k][j]; }
+  }
+  return snap(d);
+}
+function invOf(m) {
+  if (!isSquare(m)) return null;
+  const d = detOf(m);
+  if (d === null || F(d) === 0) return null;
+  const n = m.length, a = m.map((r, i) => [...r.map(F), ...Array.from({ length: n }, (_, j) => (i === j ? 1 : 0))]);
+  for (let k = 0; k < n; k++) {
+    let p = k;
+    for (let i = k + 1; i < n; i++) if (Math.abs(a[i][k]) > Math.abs(a[p][k])) p = i;
+    if (Math.abs(a[p][k]) < 1e-12) return null;
+    [a[k], a[p]] = [a[p], a[k]];
+    const pv = a[k][k];
+    for (let j = 0; j < 2 * n; j++) a[k][j] /= pv;
+    for (let i = 0; i < n; i++) if (i !== k && a[i][k] !== 0) { const f = a[i][k]; for (let j = 0; j < 2 * n; j++) a[i][j] -= f * a[k][j]; }
+  }
+  return a.map((r) => r.slice(n).map(snap));
+}
+function matPow(m, e) {
+  const k = int(e);
+  if (!isSquare(m) || k === null || k < 0 || k > 64) return null;
+  let out = matId(m.length);
+  for (let i = 0; i < k && out; i++) out = clean(matMul(out, m));
+  return out;
+}
+/** An entry as text: an integer in full, any other number rounded to 6 decimal places. */
+function matNum(v) { return typeof v === 'bigint' || Number.isInteger(v) ? plainNum(v) : plainNum(roundTo(v, 6)); }
+function matText(m) { return '[' + M(m).map((r) => '[' + r.map(matNum).join(', ') + ']').join(', ') + ']'; }
+
+// ---- text and code: identifier cases, substrings, codes, distances, base64, a path into JSON
+/** The words of an identifier or a phrase: camelCase and PascalCase humps split, every run of what is not a letter or a digit a break. */
+function idWords(s) { return s.slice(0, MAX_TEXT).replace(/(\p{Ll}|\p{N})(\p{Lu})/gu, '$1 $2').replace(/(\p{Lu})(\p{Lu}\p{Ll})/gu, '$1 $2').split(/[^\p{L}\p{N}]+/u).filter(Boolean).map((w) => w.toLowerCase()); }
+function cap1(w) { return w ? w[0].toUpperCase() + w.slice(1) : w; }
+function caseJoin(s, how) {
+  const ws = idWords(s);
+  if (!ws.length) return null;
+  if (how === 'camel') return ws[0] + ws.slice(1).map(cap1).join('');
+  if (how === 'pascal') return ws.map(cap1).join('');
+  return ws.join(how === 'snake' ? '_' : '-');
+}
+function caesar(s, k) {
+  const n = int(k);
+  if (n === null) return null;
+  const sh = ((n % 26) + 26) % 26;
+  return s.replace(/[A-Za-z]/g, (ch) => { const b = ch <= 'Z' ? 65 : 97; return String.fromCharCode(((ch.charCodeAt(0) - b + sh) % 26) + b); });
+}
+function editDistance(a, b) {
+  const x = [...a], y = [...b];
+  if (x.length > 2000 || y.length > 2000) return null;
+  let prev = Array.from({ length: y.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= x.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= y.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (x[i - 1] === y[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[y.length];
+}
+const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+function utf8Of(s) {
+  const out = [];
+  for (const ch of s) {
+    const c = ch.codePointAt(0);
+    if (c >= 0xd800 && c <= 0xdfff) return null;
+    if (c < 0x80) out.push(c);
+    else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 63));
+    else if (c < 0x10000) out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+    else out.push(0xf0 | (c >> 18), 0x80 | ((c >> 12) & 63), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+  }
+  return out;
+}
+/** UTF-8 bytes as text, or null when they are not well formed UTF-8. */
+function utf8Text(bytes) {
+  let s = '';
+  for (let i = 0; i < bytes.length;) {
+    const b = bytes[i], n = b < 0x80 ? 0 : b >= 0xc2 && b < 0xe0 ? 1 : b >= 0xe0 && b < 0xf0 ? 2 : b >= 0xf0 && b < 0xf5 ? 3 : -1;
+    if (n < 0 || i + n > bytes.length - 1) return null;
+    let c = n ? b & (0x3f >> n) : b;
+    for (let k = 1; k <= n; k++) { const x = bytes[i + k]; if ((x & 0xc0) !== 0x80) return null; c = (c << 6) | (x & 63); }
+    if ((n === 2 && (c < 0x800 || (c >= 0xd800 && c <= 0xdfff))) || (n === 3 && (c < 0x10000 || c > 0x10ffff))) return null;
+    s += String.fromCodePoint(c);
+    i += n + 1;
+  }
+  return s;
+}
+function b64Encode(s) {
+  const b = s.length <= MAX_TEXT ? utf8Of(s) : null;
+  if (!b) return null;
+  let out = '';
+  for (let i = 0; i < b.length; i += 3) {
+    const x = (b[i] << 16) | ((b[i + 1] ?? 0) << 8) | (b[i + 2] ?? 0);
+    out += B64[(x >> 18) & 63] + B64[(x >> 12) & 63] + (i + 1 < b.length ? B64[(x >> 6) & 63] : '=') + (i + 2 < b.length ? B64[x & 63] : '=');
+  }
+  return out;
+}
+function b64Decode(t) {
+  const s = t.trim();
+  if (!s || s.length % 4 || s.length > MAX_TEXT || !/^[A-Za-z0-9+/]+={0,2}$/.test(s)) return null;
+  const bytes = [];
+  for (let i = 0; i < s.length; i += 4) {
+    const v = [0, 1, 2, 3].map((k) => (s[i + k] === '=' ? 0 : B64.indexOf(s[i + k])));
+    const x = (v[0] << 18) | (v[1] << 12) | (v[2] << 6) | v[3];
+    bytes.push((x >> 16) & 255);
+    if (s[i + 2] !== '=') bytes.push((x >> 8) & 255);
+    if (s[i + 3] !== '=') bytes.push(x & 255);
+  }
+  return utf8Text(bytes);
+}
+/** The first JSON object the prompt writes (balanced braces outside strings, then JSON.parse), or null. */
+function jsonIn(q) {
+  if (typeof q !== 'string') return null;
+  const src = q.slice(0, MAX_TEXT);
+  for (let i = src.indexOf('{'), tries = 0; i >= 0 && tries < 20; i = src.indexOf('{', i + 1), tries++) {
+    let depth = 0, str = false, j = i;
+    for (; j < src.length; j++) {
+      const ch = src[j];
+      if (str) { if (ch === '\\') j++; else if (ch === '"') str = false; continue; }
+      if (ch === '"') str = true;
+      else if (ch === '{' || ch === '[') depth++;
+      else if (ch === '}' || ch === ']') { depth--; if (depth === 0) break; }
+    }
+    if (depth !== 0) continue;
+    try { const v = JSON.parse(src.slice(i, j + 1)); if (isKv(v)) return v; } catch { /* not JSON: the next brace */ }
+  }
+  return null;
+}
+/** The value at a dotted path of an object (a list step is a 0-based index) as text: a number in full, an object as JSON. */
+function pathGet(obj, p) {
+  let v = obj;
+  for (const step of p.split('.')) {
+    if (Array.isArray(v) && /^\d+$/.test(step)) v = v[Number(step)];
+    else if (isKv(v) && Object.hasOwn(v, step)) v = v[step];
+    else return null;
+  }
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number') return plainNum(v);
+  if (typeof v === 'boolean') return String(v);
+  return v !== null && typeof v === 'object' ? jsonText(v) : null;
+}
 function total(fn, outT) {
   const ok = CHECK[outT];
   return (args, ctx) => {
@@ -857,6 +1191,9 @@ function buildPrims() {
   P('sense.bases', 'text', 'nums', 'binary|octal|decimal|hex|hexadecimal|base', (a, c) => basesIn(c.q));
   P('sense.numeral', 'text', 'str', 'digits|binary number|hex number|code', (a, c) => rawWords(c.q).find((w) => /\d/.test(w)) ?? null);
   P('sense.has', 'text str', 'bool', 'mentions|says|contains the word', (a, c) => hasPhrase(norm(c.q, 1), S(a[0])));
+  P('sense.matrix', 'text', 'mat', 'matrix|the matrix|grid of numbers|array', (a, c) => matricesIn(c.q)[0] ?? null);
+  P('sense.matrixAt', 'text num', 'mat', 'second matrix|the other matrix|nth matrix|matrix b', (a, c) => pick(matricesIn(c.q), N(a[0])));
+  P('sense.json', 'text', 'kv', 'json|the object|this json|the record', (a, c) => jsonIn(c.q));
 
   // transform: one value in, one changed value out
   P('transform.add', 'num num', 'num', 'plus|add|added to|sum of|and|more than', (a) => add(a[0], a[1]));
@@ -920,6 +1257,19 @@ function buildPrims() {
   P('transform.trim', 'str', 'str', 'trim|strip spaces|clean up', (a) => S(a[0]).trim().replace(/\s+/g, ' '));
   P('transform.repeat', 'str num', 'str', 'repeat|say it times|copies', (a) => { const k = int(a[1]); return k !== null && k >= 0 && k * S(a[0]).length <= MAX_TEXT ? a[0].repeat(k) : null; });
   P('transform.norm', 'str num', 'str', 'normalize|normalise|simplify the text', (a) => norm(S(a[0]), int(a[1])));
+  P('transform.camel', 'str', 'str', 'camel case|camelcase|camelCase|lower camel case', (a) => caseJoin(S(a[0]), 'camel'));
+  P('transform.pascal', 'str', 'str', 'pascal case|PascalCase|upper camel case|class name', (a) => caseJoin(S(a[0]), 'pascal'));
+  P('transform.snake', 'str', 'str', 'snake case|snake_case|underscores|variable name', (a) => caseJoin(S(a[0]), 'snake'));
+  P('transform.kebab', 'str', 'str', 'kebab case|kebab-case|hyphens|slug|dashes', (a) => caseJoin(S(a[0]), 'kebab'));
+  P('transform.substr', 'str num num', 'str', 'characters from|substring|letters from to|slice of the text', (a) => { const ch = [...S(a[0]).slice(0, MAX_TEXT)], i = int(a[1]), j = int(a[2]); return i !== null && j !== null && i >= 1 && j >= i && i <= ch.length ? ch.slice(i - 1, j).join('') : null; });
+  P('transform.charAt', 'str num', 'str', 'letter at|character at|nth letter|which letter', (a) => pick([...S(a[0]).slice(0, MAX_TEXT)], a[1]));
+  P('transform.padStart', 'str num str', 'str', 'pad|pad with|leading zeros|zero pad|padded to', (a) => { const k = int(a[1]); return S(a[2]) && k !== null && k >= 0 && k <= MAX_TEXT ? S(a[0]).padStart(k, a[2]) : null; });
+  P('transform.caesar', 'str num', 'str', 'caesar cipher|shift each letter|rot13|rotate the letters|shift by', (a) => caesar(S(a[0]), N(a[1])));
+  P('transform.charCodes', 'str', 'nums', 'character codes|ascii codes|code points|unicode values|ascii', (a) => { const ch = [...S(a[0])]; return ch.length <= MAX_LIST ? ne(ch.map((x) => x.codePointAt(0))) : null; });
+  P('transform.fromCodes', 'nums', 'str', 'from character codes|from ascii|decode the codes|which characters', (a) => { const xs = ne(NS(a[0])); return xs && xs.length <= MAX_LIST && xs.every((x) => isInt(x) && F(x) >= 0 && F(x) <= 0x10ffff && !(F(x) >= 0xd800 && F(x) <= 0xdfff)) ? String.fromCodePoint(...xs.map(Number)) : null; });
+  P('transform.base64', 'str', 'str', 'base64|base 64|encode in base64|to base64', (a) => b64Encode(S(a[0])));
+  P('transform.unbase64', 'str', 'str', 'decode base64|from base64|base64 decode|decode', (a) => b64Decode(S(a[0])));
+  P('transform.get', 'kv str', 'str', 'the field|the value at|the key|get|path', (a) => (S(a[1]).trim() ? pathGet(KV(a[0]), a[1].trim()) : null));
 
   // aggregate: many values in, one value out
   P('aggregate.sum', 'nums', 'num', 'sum|total|add up|altogether|in all|combined', (a) => sumOf(a[0]));
@@ -947,6 +1297,9 @@ function buildPrims() {
   P('aggregate.chars', 'str', 'num', 'how many characters|number of characters|character count|length', (a) => [...S(a[0])].length);
   P('aggregate.occurrences', 'str str', 'num', 'how many times|occurrences|how often|count of', (a) => countSub(a[0], a[1]));
   P('aggregate.countIn', 'strs str', 'num', 'how many times in the list|occurrences in the list', (a) => SS(a[0]).filter((x) => x.toLowerCase() === S(a[1]).toLowerCase()).length);
+  P('aggregate.indexOf', 'str str', 'num', 'position of|where does|index of|at which position', (a) => { const h = [...S(a[0]).slice(0, MAX_TEXT).toLowerCase()], n = [...S(a[1]).toLowerCase()]; if (!n.length) return null; for (let i = 0; i + n.length <= h.length; i++) if (n.every((ch, k) => h[i + k] === ch)) return i + 1; return null; });
+  P('aggregate.commonLetter', 'str', 'str', 'most common letter|most frequent letter|which letter appears most', (a) => { const n = new Map(); for (const ch of S(a[0]).slice(0, MAX_TEXT).toLowerCase()) if (/\p{L}/u.test(ch)) n.set(ch, (n.get(ch) || 0) + 1); const top = Math.max(0, ...n.values()), best = [...n].filter(([, k]) => k === top); return top && best.length === 1 ? best[0][0] : null; });
+  P('aggregate.lines', 'str', 'num', 'how many lines|number of lines|line count|lines of code', (a) => S(a[0]).replace(/\r\n?/g, '\n').replace(/\n+$/, '').split('\n').length);
 
   // compare: two values in, a yes or no out
   P('compare.greater', 'num num', 'bool', 'greater than|bigger than|larger than|more than|exceeds', (a) => N(a[0]) > N(a[1]));
@@ -1022,6 +1375,8 @@ function buildPrims() {
   P('compute.year', 'kv', 'num', 'year|which year|the year', (a) => D(a[0]).y);
   P('compute.month', 'kv', 'num', 'month|which month|month number', (a) => D(a[0]).m);
   P('compute.day', 'kv', 'num', 'day of the month|which date|date number', (a) => D(a[0]).d);
+  P('compute.editDistance', 'str str', 'num', 'edit distance|levenshtein|how many edits|changes to turn', (a) => editDistance(S(a[0]), S(a[1])));
+  P('compute.hamming', 'str str', 'num', 'hamming distance|positions that differ|how many positions differ', (a) => { const x = [...S(a[0])], y = [...S(a[1])]; return x.length === y.length && x.length <= MAX_TEXT ? x.filter((ch, i) => ch !== y[i]).length : null; });
 
   // memory: what the cell holds (mem)
   P('memory.lookup', 'str', 'str', 'what is|who is|define|meaning of|capital of|look up|tell me about', (a, c) => asStr(lookup(c.mem, a[0])));
@@ -1044,6 +1399,77 @@ function buildPrims() {
   P('know.has', 'str str str', 'bool', 'is it known|is there a|is it listed', (a) => { const p = KNOW.get(S(a[1])); const j = p ? knowCol(p, S(a[2])) : -1; return j < 0 ? null : knowKeys(p, j).has(knowNorm(S(a[0]))); });
   P('know.where', 'strs str str str str', 'strs', 'which of these|the ones that are|among these', (a) => knowWhere(SS(a[0]), S(a[1]), S(a[2]), S(a[3]), S(a[4])));
   P('know.num', 'str', 'num', 'as a number|numeric value|how much', (a) => parseNum(S(a[0]).trim()));
+
+  // series: a pack's value column in the order of its key column; the keys come first, then the pack id, the key column
+  // and the value column (literal arguments, as in know)
+  const SER = (a, i) => seriesOf(S(a[i]), S(a[i + 1]), S(a[i + 2]));
+  const span = (a) => serSpan(SER(a, 2), S(a[0]), S(a[1]));
+  const pair = (a) => serPair(SER(a, 2), S(a[0]), S(a[1]));
+  P('series.at', 'str str str str', 'num', 'in|at|value in|the value for', (a) => serItem(SER(a, 1), S(a[0]), 0)?.v ?? null);
+  P('series.prev', 'str str str str', 'num', 'the one before|previous|the year before|prior', (a) => serItem(SER(a, 1), S(a[0]), -1)?.v ?? null);
+  P('series.next', 'str str str str', 'num', 'the one after|next|the year after|following', (a) => serItem(SER(a, 1), S(a[0]), 1)?.v ?? null);
+  P('series.prevKey', 'str str str str', 'str', 'the key before|which came before|the year before', (a) => serItem(SER(a, 1), S(a[0]), -1)?.k ?? null);
+  P('series.nextKey', 'str str str str', 'str', 'the key after|which came next|the year after', (a) => serItem(SER(a, 1), S(a[0]), 1)?.k ?? null);
+  P('series.step', 'str str str str', 'num', 'change from the one before|rise that year|fall that year|year on year', (a) => { const x = serItem(SER(a, 1), S(a[0]), 0), y = serItem(SER(a, 1), a[0], -1); return x && y ? fx(sub(x.v, y.v)) : null; });
+  P('series.delta', 'str str str str str', 'num', 'change from|difference between|how much did it change|rise from', (a) => { const p = pair(a); return p ? fx(sub(p[1], p[0])) : null; });
+  P('series.ratio', 'str str str str str', 'num', 'ratio|how many times|times as much', (a) => { const p = pair(a); return p ? fx(div(p[1], p[0])) : null; });
+  P('series.change', 'str str str str str', 'num', 'percent change|percentage change|grew by|growth from', (a) => { const p = pair(a); return p ? fx(div(mul(sub(p[1], p[0]), 100), p[0])) : null; });
+  P('series.mean', 'str str str str str', 'num', 'average from|mean between|average over|mean from', (a) => fx(meanOf(span(a)?.map((x) => x.v) ?? null)));
+  P('series.sum', 'str str str str str', 'num', 'total from|sum over|altogether between', (a) => fx(sumOf(ne(span(a))?.map((x) => x.v) ?? null)));
+  P('series.max', 'str str str str str', 'num', 'highest between|peak from|maximum over', (a) => sortNums(ne(span(a))?.map((x) => x.v) ?? null)?.at(-1) ?? null);
+  P('series.min', 'str str str str str', 'num', 'lowest between|minimum over', (a) => sortNums(ne(span(a))?.map((x) => x.v) ?? null)?.[0] ?? null);
+  P('series.window', 'str str str str str', 'nums', 'values from|from to|between', (a) => ne(span(a))?.map((x) => x.v) ?? null);
+  P('series.argmaxIn', 'str str str str str', 'str', 'when was it highest between|peak year between', (a) => argExt(span(a), 1)?.k ?? null);
+  P('series.argminIn', 'str str str str str', 'str', 'when was it lowest between|low year between', (a) => argExt(span(a), -1)?.k ?? null);
+  P('series.higher', 'str str str str str', 'str', 'which was higher|which is larger|more in', (a) => { const p = pair(a); return p === null || cmp(p[0], p[1]) === 0 ? null : cmp(p[0], p[1]) > 0 ? serItem(SER(a, 2), a[0], 0).k : serItem(SER(a, 2), a[1], 0).k; });
+  P('series.lower', 'str str str str str', 'str', 'which was lower|which is smaller|less in', (a) => { const p = pair(a); return p === null || cmp(p[0], p[1]) === 0 ? null : cmp(p[0], p[1]) < 0 ? serItem(SER(a, 2), a[0], 0).k : serItem(SER(a, 2), a[1], 0).k; });
+  P('series.greater', 'str str str str str', 'bool', 'higher in|more than in|greater in', (a) => { const p = pair(a); return p ? cmp(p[0], p[1]) > 0 : null; });
+  P('series.first', 'str str str', 'num', 'first value|earliest value|at the start', (a) => SER(a, 0)?.items[0]?.v ?? null);
+  P('series.last', 'str str str', 'num', 'latest value|most recent|last value', (a) => SER(a, 0)?.items.at(-1)?.v ?? null);
+  P('series.firstKey', 'str str str', 'str', 'first year|earliest|since when', (a) => SER(a, 0)?.items[0]?.k ?? null);
+  P('series.lastKey', 'str str str', 'str', 'latest year|most recent year|last on record', (a) => SER(a, 0)?.items.at(-1)?.k ?? null);
+  P('series.argmax', 'str str str', 'str', 'when was it highest|the year with the highest|peak year|record high', (a) => argExt(SER(a, 0)?.items, 1)?.k ?? null);
+  P('series.argmin', 'str str str', 'str', 'when was it lowest|the year with the lowest|record low', (a) => argExt(SER(a, 0)?.items, -1)?.k ?? null);
+  P('series.values', 'str str str', 'nums', 'all values|the whole series|every value', (a) => { const s = SER(a, 0); return s && s.items.length <= MAX_LIST ? ne(s.items.map((x) => x.v)) : null; });
+  P('series.keys', 'str str str', 'strs', 'every year|all the years|the keys', (a) => { const s = SER(a, 0); return s && s.items.length <= MAX_LIST ? ne(s.items.map((x) => x.k)) : null; });
+  P('series.countAbove', 'num str str str', 'num', 'how many years above|how many times over|count above', (a) => { const s = SER(a, 1), x = N(a[0]); return s ? s.items.filter((y) => cmp(y.v, x) > 0).length : null; });
+  P('series.countBelow', 'num str str str', 'num', 'how many years below|how many times under|count below', (a) => { const s = SER(a, 1), x = N(a[0]); return s ? s.items.filter((y) => cmp(y.v, x) < 0).length : null; });
+
+  // table: a long table, one row per entity and time; the entity and the time come first, then the pack id, the entity
+  // column, the time column and the value column
+  const TAB = (a, i) => tableOf(S(a[i]), S(a[i + 1]), S(a[i + 2]), S(a[i + 3]));
+  P('table.get', 'str str str str str str', 'str', 'of in|for in|the value of in', (a) => tabPair(TAB(a, 2), S(a[0]), S(a[1]))?.v ?? null);
+  P('table.at', 'str str str str str str', 'num', 'how much in|how many in|the number for in', (a) => tabPair(TAB(a, 2), S(a[0]), S(a[1]))?.x ?? null);
+  P('table.latest', 'str str str str str', 'num', 'latest|most recent|current|now', (a) => tabNums(TAB(a, 1), S(a[0]))?.at(-1).x ?? null);
+  P('table.latestKey', 'str str str str str', 'str', 'when was the latest|most recent year|last year on record for', (a) => tabNums(TAB(a, 1), S(a[0]))?.at(-1).t ?? null);
+  P('table.earliest', 'str str str str str', 'num', 'earliest|first recorded|at the start', (a) => tabNums(TAB(a, 1), S(a[0]))?.[0].x ?? null);
+  P('table.earliestKey', 'str str str str str', 'str', 'first year|since when|earliest year for', (a) => tabNums(TAB(a, 1), S(a[0]))?.[0].t ?? null);
+  P('table.series', 'str str str str str', 'nums', 'over the years|every year of|the history of|all values of', (a) => { const l = tabNums(TAB(a, 1), S(a[0])); return l && l.length <= MAX_LIST ? l.map((x) => x.x) : null; });
+  P('table.top', 'str str str str str', 'str', 'which had the most|the highest in|largest in|top in', (a) => argExt(tabAt(TAB(a, 1), S(a[0])), 1)?.k ?? null);
+  P('table.bottom', 'str str str str str', 'str', 'which had the least|the lowest in|smallest in|bottom in', (a) => argExt(tabAt(TAB(a, 1), S(a[0])), -1)?.k ?? null);
+  P('table.across', 'str str str str str', 'nums', 'all values in|every one in|across in', (a) => { const l = tabAt(TAB(a, 1), S(a[0])); return l && l.length <= MAX_LIST ? l.map((x) => x.v) : null; });
+  P('table.rank', 'str str str str str str', 'num', 'rank|ranked|place in|position in', (a) => { const t = TAB(a, 2), x = tabPair(t, S(a[0]), S(a[1]))?.x ?? null, l = tabAt(t, a[1]); return x === null || !l ? null : 1 + l.filter((y) => cmp(y.v, x) > 0).length; });
+  P('table.delta', 'str str str str str str str', 'num', 'change from to|difference between and for|how much did it grow', (a) => { const t = TAB(a, 3), x = tabPair(t, S(a[0]), S(a[1]))?.x ?? null, y = tabPair(t, a[0], S(a[2]))?.x ?? null; return x === null || y === null ? null : fx(sub(y, x)); });
+
+  // matrix: shape, parts, arithmetic, determinant and inverse of small square ones
+  P('matrix.rows', 'mat', 'num', 'how many rows|number of rows|rows', (a) => M(a[0]).length);
+  P('matrix.cols', 'mat', 'num', 'how many columns|number of columns|columns', (a) => M(a[0])[0].length);
+  P('matrix.shape', 'mat', 'str', 'shape|dimensions|size of the matrix|order of the matrix', (a) => M(a[0]).length + 'x' + a[0][0].length);
+  P('matrix.row', 'mat num', 'nums', 'row|the row|nth row', (a) => pick(M(a[0]), a[1]));
+  P('matrix.col', 'mat num', 'nums', 'column|the column|nth column', (a) => pick(matT(a[0]), a[1]));
+  P('matrix.at', 'mat num num', 'num', 'entry|element at|row column|entry at', (a) => { const r = pick(M(a[0]), a[1]); return r ? pick(r, a[2]) : null; });
+  P('matrix.transpose', 'mat', 'mat', 'transpose|transposed|flip rows and columns', (a) => matT(a[0]));
+  P('matrix.add', 'mat mat', 'mat', 'add|add the matrices|sum of the matrices|plus|matrix sum', (a) => matZip(a[0], a[1], add));
+  P('matrix.sub', 'mat mat', 'mat', 'subtract|subtract the matrices|difference of the matrices|minus', (a) => matZip(a[0], a[1], sub));
+  P('matrix.mul', 'mat mat', 'mat', 'multiply|multiply the matrices|matrix product|product|times', (a) => matMul(a[0], a[1]));
+  P('matrix.scale', 'mat num', 'mat', 'scale|multiply the matrix by|scalar multiple|times', (a) => { const k = N(a[1]); return M(a[0]).map((r) => r.map((x) => mul(x, k))); });
+  P('matrix.det', 'mat', 'num', 'determinant|det', (a) => detOf(M(a[0])));
+  P('matrix.inverse', 'mat', 'mat', 'inverse|invert|inverse matrix', (a) => invOf(M(a[0])));
+  P('matrix.trace', 'mat', 'num', 'trace|sum of the diagonal', (a) => (isSquare(a[0]) || (isMat(a[0]) && a[0].length === a[0][0].length) ? sumOf(a[0].map((r, i) => r[i])) : null));
+  P('matrix.identity', 'num', 'mat', 'identity matrix|identity|unit matrix', (a) => matId(N(a[0])));
+  P('matrix.flatten', 'mat', 'nums', 'flatten|all entries|every entry|entries', (a) => M(a[0]).flat());
+  P('matrix.power', 'mat num', 'mat', 'to the power|matrix power|squared|cubed', (a) => matPow(M(a[0]), N(a[1])));
+  P('matrix.reshape', 'nums num', 'mat', 'arrange in rows|reshape|in rows|into a grid', (a) => { const xs = NS(a[0]), k = int(a[1]), c = k ? xs.length / k : 0; return k !== null && k >= 1 && k <= MAT_MAX && isInt(c) && c >= 1 && c <= MAT_MAX ? Array.from({ length: k }, (_, i) => xs.slice(i * c, i * c + c)) : null; });
 
   // route: choose between values (lazy ones see a null instead of failing on it)
   P('route.if', 'bool str str', 'str', 'if|whether|otherwise|depending on', ifThen, LAZY);
@@ -1101,23 +1527,41 @@ function buildPrims() {
   P('render.code', 'str', 'str', 'code|inline code|monospace|as code', (a) => (S(a[0]).includes('`') ? '`` ' + a[0] + ' ``' : '`' + a[0] + '`'));
   P('render.date', 'kv', 'str', 'date|written date|the date', (a) => dateText(a[0]));
   P('render.str', 'str', 'str', 'say|the text|as is|exactly', (a) => S(a[0]));
+  P('render.matrix', 'mat', 'str', 'matrix|as a matrix|in brackets', (a) => matText(a[0]));
+  P('render.matrixRows', 'mat', 'str', 'rows|one row per line|as a grid', (a) => M(a[0]).map((r) => r.map(matNum).join(' ')).join('\n'));
   return Object.freeze(out);
 }
 
 // ---- evaluation: nodes, types, shape
 function isLit(node) { return isKv(node) && Object.hasOwn(node, 'lit'); }
 /** The argument types a node of this primitive carries (its in list without the implicit "text"), or null. */
-function argTypes(name) { return typeof name === 'string' && Object.hasOwn(ARGS, name) ? ARGS[name].slice() : null; }
-/** Evaluate a node on a prompt and a mem: a value of the node's type, or null (a miss, never a guess). */
-function evalNode(node, q, mem, depth = 0) {
+function argTypes(name) {
+  if (typeof name !== 'string') return null;
+  if (Object.hasOwn(ARGS, name)) return ARGS[name].slice();
+  const m = MACROS.get(name);
+  return m ? m.in.slice() : null;
+}
+/**
+ * Evaluate a node on a prompt and a mem: a value of the node's type, or null (a miss, never a guess). env holds the
+ * argument values of the macro whose body is being evaluated: a { param: j } leaf is the j-th of them.
+ */
+function evalNode(node, q, mem, depth = 0, env = null) {
   try {
     if (depth > MAX_DEPTH) return null;
     if (isLit(node)) return clean(node.lit);
-    if (!Array.isArray(node) || typeof node[0] !== 'string' || !Object.hasOwn(PRIMS, node[0])) return null;
+    if (env !== null && isParam(node)) return node.param < env.length ? env[node.param] : null;
+    if (!Array.isArray(node) || typeof node[0] !== 'string') return null;
+    if (!Object.hasOwn(PRIMS, node[0])) {
+      const m = MACROS.get(node[0]);
+      if (!m || node.length - 1 !== m.in.length) return null;
+      const vals = [];
+      for (let i = 1; i < node.length; i++) { const v = evalNode(node[i], q, mem, depth + 1, env); if (v === null) return null; vals.push(v); }
+      return evalNode(m.body, q, mem, depth + 1, vals);
+    }
     const p = PRIMS[node[0]], ts = ARGS[node[0]], n = node.length - 1;
     if (n < ts.length || (n > ts.length && !p.rest)) return null;
     const args = [];
-    for (let i = 1; i <= n; i++) { const v = evalNode(node[i], q, mem, depth + 1); if (v === null && !p.lazy) return null; args.push(v); }
+    for (let i = 1; i <= n; i++) { const v = evalNode(node[i], q, mem, depth + 1, env); if (v === null && !p.lazy) return null; args.push(v); }
     return p.fn(args, { q: typeof q === 'string' ? q : '', mem: isKv(mem) ? mem : null });
   } catch { return null; }
 }
@@ -1125,7 +1569,13 @@ function evalNode(node, q, mem, depth = 0) {
 function wellTyped(node, want, depth = 0) {
   if (depth > MAX_DEPTH) return false;
   if (isLit(node)) return typeof want === 'string' && want !== 'text' && Object.hasOwn(CHECK, want) && CHECK[want](clean(node.lit));
-  if (!Array.isArray(node) || typeof node[0] !== 'string' || !Object.hasOwn(PRIMS, node[0])) return false;
+  if (!Array.isArray(node) || typeof node[0] !== 'string') return false;
+  if (!Object.hasOwn(PRIMS, node[0])) {
+    const m = MACROS.get(node[0]);
+    if (!m || (want !== undefined && m.out !== want) || node.length - 1 !== m.in.length) return false;
+    for (let i = 1; i < node.length; i++) if (!wellTyped(node[i], m.in[i - 1], depth + 1)) return false;
+    return true;
+  }
   const p = PRIMS[node[0]], ts = ARGS[node[0]], n = node.length - 1;
   if ((want !== undefined && p.out !== want) || n < ts.length || (n > ts.length && !p.rest)) return false;
   for (let i = 1; i <= n; i++) if (!wellTyped(node[i], i <= ts.length ? ts[i - 1] : p.rest, depth + 1)) return false;
@@ -1148,8 +1598,80 @@ function sizeOf(node, depth = 0) {
 function leavesOk(node, depth = 0) {
   if (isLit(node)) return true;
   if (!Array.isArray(node) || depth > MAX_DEPTH) return false;
-  if (node.length === 1) return ['sense', 'memory'].includes(PRIMS[node[0]]?.family);
+  if (node.length === 1) return ['sense', 'memory'].includes(PRIMS[node[0]]?.family) || MACROS.has(node[0]); // a macro's own leaves were checked when it loaded
   return node.slice(1).every((x) => leavesOk(x, depth + 1));
+}
+/** The family of a primitive, or of a macro's apex primitive; null for any other name. */
+function familyOfName(name) { return typeof name !== 'string' ? null : Object.hasOwn(PRIMS, name) ? PRIMS[name].family : MACROS.has(name) ? MACROS.get(name).family : null; }
+
+// ---- macros (contract c6): composites of the primitives that grow/evolve.mjs mined from kept cells and a measured
+// trial kept (neo/MACROS.json), loaded by macroLoad. A macro node ["macro.<slug>", a1, .., ak] is the macro's body with
+// its { param: j } leaves bound to the VALUES of a1 .. ak: typed by the macro's in and out like a primitive, total like
+// every node (a null argument is a null, a throw is a null, the depth bar holds inside the body too). A body names
+// primitives only, never a macro, so no macro reaches itself; a compiled module carries the macros its cells name.
+const MACROS = new Map();
+const MACRO_NAME = /^macro\.[a-z0-9][a-z0-9-]{0,79}$/;
+/** The most macros loaded, the largest body (nodes) and the most parameters a macro takes. */
+const MACRO_MAX = 512;
+const MACRO_MAX_SIZE = 48;
+const MACRO_MAX_PARAMS = 8;
+function isParam(node) { return isKv(node) && Number.isInteger(node.param) && node.param >= 0 && Object.keys(node).length === 1; }
+/**
+ * A macro checked: { name, body, in, out, family, params, size } frozen, or null. The body is a node of primitives whose
+ * leaves are literals of their place's type, sense or memory primitives or { param: j } (j below params, each used,
+ * each place of one type); the place types are its in (a given in must equal them), its apex primitive's out its out
+ * (a given out must equal it).
+ */
+function macroOf(m) {
+  if (!isKv(m) || typeof m.name !== 'string' || !MACRO_NAME.test(m.name) || Object.hasOwn(PRIMS, m.name)) return null;
+  const k = m.params;
+  if (!Number.isInteger(k) || k < 0 || k > MACRO_MAX_PARAMS || !Array.isArray(m.body) || !Object.hasOwn(PRIMS, m.body[0])) return null;
+  const types = new Array(k).fill(undefined);
+  let size = 0;
+  const walk = (node, want, depth) => {
+    if (++size > MACRO_MAX_SIZE || depth > MAX_DEPTH) return false;
+    if (isParam(node)) {
+      if (node.param >= k || typeof want !== 'string' || want === 'text') return false;
+      if (types[node.param] !== undefined && types[node.param] !== want) return false;
+      types[node.param] = want;
+      return true;
+    }
+    if (isLit(node)) return typeof want === 'string' && want !== 'text' && Object.hasOwn(CHECK, want) && CHECK[want](clean(node.lit));
+    if (!Array.isArray(node) || typeof node[0] !== 'string' || !Object.hasOwn(PRIMS, node[0])) return false;
+    const p = PRIMS[node[0]], ts = ARGS[node[0]], n = node.length - 1;
+    if ((want !== undefined && p.out !== want) || n < ts.length || (n > ts.length && !p.rest)) return false;
+    if (n === 0 && !['sense', 'memory'].includes(p.family)) return false;
+    for (let i = 1; i <= n; i++) if (!walk(node[i], i <= ts.length ? ts[i - 1] : p.rest, depth + 1)) return false;
+    return true;
+  };
+  if (!walk(m.body, undefined, 0) || types.some((t) => t === undefined)) return null;
+  if (m.in !== undefined && m.in !== null && !(Array.isArray(m.in) && m.in.length === k && m.in.every((t, j) => t === types[j]))) return null;
+  const out = PRIMS[m.body[0]].out;
+  if (m.out !== undefined && m.out !== null && m.out !== out) return null;
+  const body = JSON.parse(JSON.stringify(m.body));
+  return Object.freeze({ name: m.name, body, in: Object.freeze(types), out, family: PRIMS[m.body[0]].family, params: k, size });
+}
+/** Load macros: the registry becomes exactly the valid macros given (the first of a name wins, MACRO_MAX at most); their names. */
+function macroLoad(list) {
+  MACROS.clear();
+  for (const m of Array.isArray(list) ? list : []) {
+    if (MACROS.size >= MACRO_MAX) break;
+    let e = null;
+    try { e = macroOf(m); } catch { e = null; }
+    if (e && !MACROS.has(e.name)) MACROS.set(e.name, e);
+  }
+  return [...MACROS.keys()];
+}
+/** The loaded macro of a name ({ name, body, in, out, family, params, size }), or null. */
+function macroInfo(name) { return typeof name === 'string' && MACROS.has(name) ? MACROS.get(name) : null; }
+/** A node with every loaded macro node replaced by its body, the arguments in place of the parameters (primitives only). */
+function expandMacros(node, depth = 0, env = null) {
+  if (depth > MAX_DEPTH) return node;
+  if (env !== null && isParam(node)) return node.param < env.length ? env[node.param] : node;
+  if (!Array.isArray(node) || typeof node[0] !== 'string') return node;
+  const args = node.slice(1).map((c) => expandMacros(c, depth + 1, env));
+  const m = Object.hasOwn(PRIMS, node[0]) ? null : MACROS.get(node[0]);
+  return m && args.length === m.in.length ? expandMacros(m.body, depth + 1, args) : [node[0], ...args];
 }
 
 // ---- guards (the SENSE face of a cell)
@@ -1187,6 +1709,10 @@ function featHolds(ft, f, depth = 0) {
   }
 }
 function guardHolds(guard, f) { if (!Array.isArray(guard)) return false; for (const ft of guard) if (featHolds(ft, f) !== true) return false; return true; }
+/** The guard features of a prompt, computed once and handed to guardWith for every guard tried on it. */
+function promptFeatures(q) { return featuresOf(q); }
+/** guardOk on the features of a prompt (promptFeatures): whether every feature of the guard holds. */
+function guardWith(guard, f) { try { return isKv(f) && guardHolds(guard, f); } catch { return false; } }
 /** Whether every feature of a guard holds on a prompt (an empty guard holds; a non-list or a non-string prompt does not). */
 function guardOk(guard, q) { try { return typeof q === 'string' && guardHolds(guard, featuresOf(q)); } catch { return false; } }
 
@@ -1224,7 +1750,7 @@ function checkCell(cell) {
   if (!Array.isArray(c.guard) || !c.guard.every((ft) => featureOk(ft))) errors.push('guard is not a list of known features');
   if (c.mem !== null && !isKv(c.mem)) errors.push('mem is not an object or null');
   if (!Array.isArray(c.pyramid) || !wellTyped(c.pyramid, 'str')) errors.push('pyramid is not a well typed node to str');
-  else if (PRIMS[c.pyramid[0]].family !== 'render') errors.push('the apex is not a render primitive');
+  else if (familyOfName(c.pyramid[0]) !== 'render') errors.push('the apex is not a render primitive');
   else if (!leavesOk(c.pyramid)) errors.push('a leaf is not a sense or memory primitive or a literal');
   if (c.height !== heightOf(c.pyramid)) errors.push('height is not the pyramid height');
   if (c.size !== sizeOf(c.pyramid)) errors.push('size is not the pyramid size');
@@ -1285,5 +1811,5 @@ const ARGS = Object.freeze(Object.fromEntries(Object.entries(PRIMS).map(([k, p])
 export {
   KERNEL_VERSION, TYPES, FAMILIES, STOP_WORDS, MAX_DEPTH, PRIMS, argTypes, listPrims, evalNode, wellTyped, heightOf, sizeOf,
   guardOk, featureOk, runCell, norm, makeColony, makeCell, cellId, checkCell, sha256Hex, canon, numbersIn, fmtNum,
-  knowLoad, knowNorm, knowGet, knowFind, plainNum,
+  knowLoad, knowNorm, knowGet, knowFind, plainNum, macroLoad, macroInfo, expandMacros, familyOfName, promptFeatures, guardWith,
 };

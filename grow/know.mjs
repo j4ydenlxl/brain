@@ -17,12 +17,17 @@
 //   lookup(pack, keyColumn, key, valueColumn)   the value, or null when the key is absent or has two values; keys match
 //                                               after knowNorm of the kernel (case, accents, punctuation, a leading "the")
 //
+// LONG TABLES (part 4): a table of one row per entity and time has no key column, so the absorber never registers it;
+// shelve also reads the root's own neo/frontier-seeds.json (datapackages and tables, open licences only, at most
+// LONG_FETCHES fetches a shelve, neo/know/LONG.json remembering what was looked at) and keeps such a table as a pack
+// lt-<repo>-<file> whose long field names its [entity, time] columns; its INDEX entry says kind "long", long and from.
+//
 //   node grow/know.mjs shelve [--max-ms <ms>] [--era <n>] [--root <dir>]
 //   node grow/know.mjs status [--root <dir>]
-// It reads neo/sources.json, neo/ABSORB.json and neo/know/, writes only neo/know/, and never opens state/, judge/heldout/,
-// judge/control.jsonl or any neo/tasks/*/heldout.jsonl. Success prints ONE JSON line and exits 0; a failure one stderr
-// line and a non-zero exit (2: usage).
-// Author: THE ENGINE builder, part 2 (knowledge and the cursor), 2026-10-01.
+// It reads neo/sources.json, neo/ABSORB.json, neo/frontier-seeds.json and neo/know/, writes only neo/know/, and never
+// opens state/, judge/heldout/, judge/control.jsonl or any neo/tasks/*/heldout.jsonl. Success prints ONE JSON line and
+// exits 0; a failure one stderr line and a non-zero exit (2: usage).
+// Author: THE ENGINE builder, part 2 (knowledge and the cursor), 2026-10-01; part 4 (long tables), 2026-10-02.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -30,6 +35,7 @@ import { FORBIDDEN } from './contract.mjs';
 import { DEFAULT_ROOT, redact } from './generation.mjs';
 import { ADAPTERS, DEFAULTS as ABSORB_DEFAULTS, fetchBytes, decode, recordsOf, keyOf, clean, numOf, mapped, getPath, listAnd, readRegistry, readAbsorb, sha256 } from './absorb.mjs';
 import { knowLoad, knowGet, knowNorm } from './neo-kernel.mjs';
+import { SEEDS, MIN_TABLE_ROWS, readSeeds, classify, linkTarget, rawParts, packageLicense, licenseName, isOpen, tableOf as frontierTable, columnStats, keyColumn } from './frontier.mjs';
 
 export const KNOW_DIR = 'neo/know';
 export const INDEX = 'neo/know/INDEX.json';
@@ -200,6 +206,181 @@ export function lookup(pk, keyColumn, key, valueColumn) {
   try { return knowGet(id, keyColumn, key, valueColumn); } finally { knowLoad([]); }
 }
 
+// ---- long tables: one row per entity and time, which no single key column addresses (grow/frontier.mjs keyColumn
+// refuses them, so the absorber never registers one). Their places are the seeds of the root's own
+// neo/frontier-seeds.json: a datapackage's table resources, or a table seed itself, each under an open licence. The bytes
+// come through absorb's fetchBytes (the host allowlist on every hop) and are parsed by the frontier's tableOf as DATA; a
+// long table becomes a pack whose long field names its [entity, time] columns (grow/neo-core.mjs reads it with the
+// table family). neo/know/LONG.json remembers each place looked at, so a shelve spends its few fetches on new ones and a
+// place is looked at again only after LONG_RECHECK_MS.
+export const LONG_STATE = 'neo/know/LONG.json';
+/** At most this many fetches a shelve spends on long tables (a datapackage and each of its tables count one). */
+export const LONG_FETCHES = 6;
+export const LONG_RECHECK_MS = 30 * 24 * 3600 * 1000;
+/** The number columns a long pack keeps beside its entity and time, and the table resources read of one datapackage. */
+export const LONG_VALUES = 3;
+export const LONG_PER_PACKAGE = 4;
+const LONG_SEEN_MAX = 2000;
+const TIME_CELL = /^\d{4}(?:-\d{1,2}(?:-\d{1,2})?)?$/;
+const slugOf = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+/**
+ * The long shape of a table's records, or null: no column is a key (frontier keyColumn finds none); a TIME column whose
+ * every value is a year, a month or a day and repeats; an ENTITY column of words that repeats; no (entity, time) pair
+ * twice and at least MIN_TABLE_ROWS pairs; and up to LONG_VALUES number columns (the first in column order).
+ * @param {object[]} recs the records (frontier tableOf)
+ * @param {string[]} columns their columns
+ * @returns {{ entity: string, time: string, values: string[] }|null}
+ */
+export function longShape(recs, columns) {
+  if (!Array.isArray(recs) || !Array.isArray(columns)) return null;
+  const stats = columnStats(recs, columns);
+  if (!stats.length || keyColumn(stats)) return null;
+  const sample = recs.slice(0, 5000);
+  const at = (r, c) => clean(getPath(r, c));
+  const repeats = (s) => s.fill >= 0.9 && s.uniq < 0.95 && s.distinct >= 2;
+  const times = stats.filter((s) => repeats(s) && sample.every((r) => { const v = at(r, s.c); return v === null || TIME_CELL.test(v); }));
+  const ents = stats.filter((s) => repeats(s) && s.letters >= 0.5 && s.nums < 0.5 && s.urlish < 0.5 && s.meanLen <= 50);
+  for (const t of times) {
+    for (const e of ents) {
+      if (e === t) continue;
+      const seen = new Set();
+      let ok = true;
+      for (const r of recs) {
+        const a = at(r, e.c), b = at(r, t.c);
+        if (a === null || b === null) continue;
+        const k = knowNorm(a) + '|' + b;
+        if (seen.has(k)) { ok = false; break; }
+        seen.add(k);
+      }
+      if (!ok || seen.size < MIN_TABLE_ROWS) continue;
+      const values = stats.filter((s) => s !== t && s !== e && s.nums >= 0.9 && s.fill >= 0.5).slice(0, LONG_VALUES).map((s) => s.c);
+      if (values.length) return { entity: e.c, time: t.c, values };
+    }
+  }
+  return null;
+}
+
+/**
+ * The long pack of a table's bytes: { id, from, sha, columns: [entity, time, ..values], rows, at, long: [entity, time],
+ * license } (plus dropped and cut), its rows FORBIDDEN-free and cut to fit maxBytes; or { why } when the bytes are no
+ * table or no long one.
+ */
+export function longPackOf(id, url, bytes, { license = null, at, sha = sha256(bytes), maxBytes = PACK_MAX_BYTES } = {}) {
+  const t = frontierTable(bytes, url);
+  if (!t.ok) return { why: 'not a table: ' + t.why };
+  const shape = longShape(t.recs, t.columns);
+  if (!shape) return { why: 'not a long table' };
+  const cols = [shape.entity, shape.time, ...shape.values];
+  const all = [];
+  for (const r of t.recs) {
+    const e = clean(getPath(r, shape.entity)), tm = clean(getPath(r, shape.time));
+    if (e === null || tm === null) continue;
+    const vs = shape.values.map((c) => { const n = numOf(getPath(r, c)); return n ? n.n : ''; });
+    if (vs.every((v) => v === '')) continue;
+    all.push([e, tm, ...vs]);
+  }
+  const rows = all.filter((r) => !r.some((v) => typeof v === 'string' && tripped(v)));
+  const dropped = all.length - rows.length;
+  const pk = { id, from: String(url), sha, columns: cols, rows, at, long: [shape.entity, shape.time], ...(license ? { license } : {}), ...(dropped ? { dropped } : {}) };
+  if (bytesOf(pk) > maxBytes) {
+    let budget = maxBytes - bytesOf({ ...pk, rows: [], cut: rows.length }), n = 0;
+    for (const r of rows) { const b = Buffer.byteLength(JSON.stringify(r)) + 1; if (b > budget) break; budget -= b; n++; }
+    pk.rows = rows.slice(0, n);
+    pk.cut = rows.length - n;
+  }
+  return pk.rows.length ? pk : { why: 'no row fits' };
+}
+
+/** neo/know/LONG.json as { seen: { url: { at, sha?, id?, why? } } }, or an empty one. */
+export function readLong(root) {
+  let doc = null;
+  try { doc = JSON.parse(fs.readFileSync(path.join(root, ...LONG_STATE.split('/')), 'utf8')); } catch { doc = null; }
+  const seen = {};
+  if (isObj(doc) && isObj(doc.seen)) for (const [u, v] of Object.entries(doc.seen)) if (isObj(v) && Number.isFinite(v.at)) seen[u] = v;
+  return { seen };
+}
+/** A long pack's id: lt- and the repository and file name of its URL, unique among the ids taken. */
+function longId(url, taken) {
+  const r = rawParts(url);
+  const file = r ? r.path.split('/').pop().replace(/\.[^.]+$/, '') : '';
+  const base = ('lt-' + slugOf((r ? r.repo + '-' : '') + file)).slice(0, 56).replace(/-+$/, '') || 'lt-table';
+  let id = base, k = 2;
+  while (taken.has(id)) id = base + '-' + k++;
+  return id;
+}
+
+/**
+ * The long phase of shelve: the root's seeds in order, at most o.fetches fetches and only while the clock allows. A
+ * datapackage seed gives its table resources (licence: the package's own, else the seed's; open only); a table seed is
+ * read itself. Writes neo/know/<lt-id>.json and LONG.json; the caller writes INDEX.json from o.index.
+ * @returns {Promise<{ shelved: string[], blocked: string[], fetched: number, bytes: number, unchanged: number, notLong: number, waiting: number, total: number }>}
+ */
+async function shelveLong(root, o) {
+  const out = { shelved: [], blocked: [], fetched: 0, bytes: 0, unchanged: 0, notLong: 0, waiting: 0, total: o.total };
+  if (!fs.existsSync(path.join(root, ...SEEDS.split('/')))) return out; // the root's own seeds only: never another tree's
+  const { seeds } = readSeeds(root);
+  const st = readLong(root), nowMs = o.clock();
+  const fresh = (u) => Object.hasOwn(st.seen, u) && nowMs - st.seen[u].at < LONG_RECHECK_MS;
+  const mark = (u, v) => { st.seen[u] = { at: nowMs, ...v }; out.dirty = true; };
+  const can = () => out.fetched < o.fetches && o.clock() < o.deadline;
+  const dir = path.join(root, ...KNOW_DIR.split('/'));
+  const get = async (u) => {
+    out.fetched++;
+    const got = await fetchBytes(u, { fetch: o.fetch, timeoutMs: Math.max(1, Math.min(o.fetchTimeoutMs, o.deadline - o.clock())), maxBytes: ABSORB_DEFAULTS.maxBytes });
+    out.bytes += got.bytes.length;
+    return got.bytes;
+  };
+  const byUrl = new Map([...o.index.values()].filter((p) => p.kind === 'long' && typeof p.from === 'string').map((p) => [p.from, p]));
+  for (const seed of seeds) {
+    const kind = classify(seed.url);
+    if ((kind !== 'datapackage' && kind !== 'table') || fresh(seed.url)) continue;
+    if (!can()) { out.waiting++; continue; }
+    let targets = [];
+    if (kind === 'table') targets = isOpen(seed.license) ? [{ u: seed.url, license: licenseName(seed.license) }] : [];
+    else {
+      let d = null;
+      try { d = JSON.parse(decode(await get(seed.url))); } catch (e) { out.blocked.push(redact(seed.url + ': ' + first(e))); mark(seed.url, { why: 'unreadable' }); continue; }
+      const lic = packageLicense(d) || licenseName(seed.license);
+      if (!lic || !isOpen(lic)) { mark(seed.url, { why: 'licence not open' }); continue; }
+      for (const res of (isObj(d) && Array.isArray(d.resources) ? d.resources : [])) {
+        if (targets.length >= LONG_PER_PACKAGE) break;
+        const p = isObj(res) ? (Array.isArray(res.path) ? res.path[0] : typeof res.path === 'string' ? res.path : res.url) : null;
+        const t = typeof p === 'string' ? linkTarget(p, seed.url) : null;
+        if (t && !t.refused && t.k === 'table') targets.push({ u: t.u, license: lic });
+      }
+    }
+    if (!targets.length) { mark(seed.url, { why: 'no open table' }); continue; }
+    let done = true;
+    for (const t of targets) {
+      if (fresh(t.u)) continue;
+      if (!can()) { done = false; out.waiting++; break; }
+      let bytes;
+      try { bytes = await get(t.u); } catch (e) { out.blocked.push(redact(t.u + ': ' + first(e))); mark(t.u, { why: 'unreadable' }); continue; }
+      const sha = sha256(bytes), have = byUrl.get(t.u);
+      if (have && have.sha === sha && o.sizeOf(have.id) > 0) { out.unchanged++; mark(t.u, { sha, id: have.id }); continue; }
+      const id = have ? have.id : longId(t.u, new Set([...o.index.keys(), ...o.reserved]));
+      let pk;
+      try { pk = longPackOf(id, t.u, bytes, { license: t.license, at: o.at, sha, maxBytes: o.maxPackBytes }); } catch (e) { pk = { why: first(e) }; }
+      if (pk.why) { out.notLong++; mark(t.u, { sha, why: pk.why.slice(0, 120) }); continue; }
+      const text = JSON.stringify(pk) + '\n', size = Buffer.byteLength(text), prev = o.sizeOf(id);
+      if (out.total - prev + size > o.maxTotalBytes) { out.blocked.push(id + ': over the ' + o.maxTotalBytes + ' bytes all packs may be: not shelved'); mark(t.u, { sha, why: 'over the byte bar' }); continue; }
+      writeAtomic(path.join(dir, id + '.json'), text);
+      out.total += size - prev;
+      o.index.set(id, { id, columns: pk.columns, rows: pk.rows.length, sha, kind: 'long', long: pk.long, from: pk.from });
+      out.shelved.push(id + ' (long' + (pk.cut ? ', ' + pk.cut + ' rows cut' : '') + ')');
+      mark(t.u, { sha, id });
+    }
+    if (done) mark(seed.url, { n: targets.length });
+  }
+  if (out.dirty) {
+    const keep = Object.entries(st.seen).sort((a, b) => b[1].at - a[1].at || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)).slice(0, LONG_SEEN_MAX);
+    writeAtomic(path.join(root, ...LONG_STATE.split('/')), JSON.stringify({ seen: Object.fromEntries(keep) }, null, 1) + '\n');
+  }
+  delete out.dirty;
+  return out;
+}
+
 // ---- shelve
 /**
  * shelve: for every source of neo/sources.json the absorber pulled (its latest pull in neo/ABSORB.json, not blocked),
@@ -210,7 +391,7 @@ export function lookup(pk, keyColumn, key, valueColumn) {
  * @param {{ fetch?: Function, maxMs?: number, fetchTimeoutMs?: number, era?: number|null, now?: () => string, clock?: () => number, maxPackBytes?: number, maxTotalBytes?: number }} o
  * @returns {Promise<object>} the JSON line
  */
-export async function shelve(root = DEFAULT_ROOT, { fetch: fetchFn = globalThis.fetch, maxMs = DEFAULTS.maxMs, fetchTimeoutMs = DEFAULTS.fetchTimeoutMs, era = null, now = () => new Date().toISOString(), clock = () => Date.now(), maxPackBytes = PACK_MAX_BYTES, maxTotalBytes = PACKS_MAX_BYTES } = {}) {
+export async function shelve(root = DEFAULT_ROOT, { fetch: fetchFn = globalThis.fetch, maxMs = DEFAULTS.maxMs, fetchTimeoutMs = DEFAULTS.fetchTimeoutMs, era = null, now = () => new Date().toISOString(), clock = () => Date.now(), maxPackBytes = PACK_MAX_BYTES, maxTotalBytes = PACKS_MAX_BYTES, longFetches = LONG_FETCHES } = {}) {
   const t0 = clock();
   const reg = readRegistry(root);
   const ab = readAbsorb(root);
@@ -248,11 +429,23 @@ export async function shelve(root = DEFAULT_ROOT, { fetch: fetchFn = globalThis.
     index.set(src.id, { id: pk.id, columns: pk.columns, rows: pk.rows.length, sha: pk.sha });
     shelved.push(src.id + (pk.cut ? ' (' + pk.cut + ' rows cut)' : ''));
   }
+  // the long tables of the root's seeds, in what is left of the time and within longFetches fetches
+  const lg = await shelveLong(root, {
+    fetch: fetchFn, fetchTimeoutMs, clock, deadline: t0 + maxMs, at, index, total, sizeOf, maxPackBytes, maxTotalBytes,
+    fetches: Number.isInteger(longFetches) && longFetches >= 0 ? longFetches : LONG_FETCHES, reserved: new Set(reg.sources.filter(isObj).map((s) => String(s.id))),
+  });
+  total = lg.total;
+  fetched += lg.fetched;
+  bytes += lg.bytes;
+  unchanged += lg.unchanged;
+  shelved.push(...lg.shelved);
+  blocked.push(...lg.blocked);
   const list = [...index.values()].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
   if (shelved.length || !fs.existsSync(path.join(root, ...INDEX.split('/')))) writeAtomic(path.join(root, ...INDEX.split('/')), JSON.stringify({ packs: list }, null, 2) + '\n');
   if (left) blocked.push('shelve: the time budget of ' + maxMs + ' ms is spent; ' + left + ' sources wait for the next shelve');
   return {
     packs: list.length, shelved, unchanged, fetched, bytes, rows: list.reduce((s, p) => s + p.rows, 0), total, blocked,
+    long: { packs: list.filter((p) => p.kind === 'long').length, notLong: lg.notLong, waiting: lg.waiting },
     ms: Math.max(0, clock() - t0), ...(era === null || era === undefined ? {} : { era }),
   };
 }

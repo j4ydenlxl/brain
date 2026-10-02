@@ -27,18 +27,19 @@ const IS = {
   nums: (v) => Array.isArray(v) && v.every((x) => IS.num(x)), strs: (v) => Array.isArray(v) && v.every((x) => typeof x === 'string'),
   kv: (v) => v !== null && typeof v === 'object' && !Array.isArray(v),
   tpl: (v) => Array.isArray(v) && v.every((p) => typeof p === 'string' || (p && Number.isInteger(p.slot))),
+  mat: (v) => Array.isArray(v) && v.length > 0 && v.every((r) => Array.isArray(r) && r.length === v[0].length && r.every((x) => IS.num(x))),
 };
 const HOSTILE = [null, undefined, NaN, Infinity, 1e308, 2n ** 300n, -0, '', '\u0000 zz?! "q" :', [], [NaN, 'x', null], { k: { j: 1 } }];
-const GOOD = { num: 12, nums: [3, 1, 2], str: 'hello world', strs: ['b', 'a'], bool: true, kv: { y: 2024, m: 3, d: 5 }, tpl: ['Day ', { slot: 0 }] };
+const GOOD = { num: 12, nums: [3, 1, 2], str: 'hello world', strs: ['b', 'a'], bool: true, kv: { y: 2024, m: 3, d: 5 }, tpl: ['Day ', { slot: 0 }], mat: [[1, 2], [3, 4]] };
 const arity = (name) => argTypes(name).length + (PRIMS[name].rest ? 1 : 0);
 const goodArgs = (name) => [...argTypes(name), ...(PRIMS[name].rest ? [PRIMS[name].rest] : [])].map((t) => GOOD[t]);
 
 // ---------------------------------------------------------------- manifests
-test('manifests: at least 100 primitives over the ten families, each typed and named family.name', () => {
+test('manifests: at least 100 primitives over the thirteen families, each typed and named family.name', () => {
   const names = Object.keys(PRIMS);
   assert.ok(names.length >= 100, 'count ' + names.length);
-  assert.equal(KERNEL_VERSION, 1);
-  assert.deepEqual([...FAMILIES], ['sense', 'transform', 'aggregate', 'compare', 'compute', 'memory', 'know', 'route', 'iterate', 'render']);
+  assert.equal(KERNEL_VERSION, 2);
+  assert.deepEqual([...FAMILIES], ['sense', 'transform', 'aggregate', 'compare', 'compute', 'memory', 'know', 'series', 'table', 'matrix', 'route', 'iterate', 'render']);
   for (const fam of FAMILIES) assert.ok(names.filter((n) => PRIMS[n].family === fam).length >= 3, fam + ' has fewer than 3');
   for (const [name, p] of Object.entries(PRIMS)) {
     assert.equal(name.split('.')[0], p.family, name);
@@ -995,6 +996,269 @@ test('know: the family runs inside the marked region alone with its packs passed
     assert.equal(K.evalNode(cell, 'capital of Mars'), null);
     knowLoad([]);
     assert.equal(R(cell, 'capital of Japan'), null, 'each module holds its own registry');
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// ---------------------------------------------------------------- series
+const CO = { id: 'co', columns: ['year', 'mean'], rows: [['1990', 354.2], ['1991', 355.6], ['1989', 352.9], [1992, '356.4'], ['1993', 357.1], ['1993', 357.1]] };
+const SR = (name, ...keys) => R([name, ...keys.map(L), L('co'), L('year'), L('mean')]);
+test('series: one key reads its value and its neighbours in key order, whatever the row order', () => {
+  knowLoad([CO]);
+  assert.equal(SR('series.at', '1990'), 354.2);
+  assert.equal(SR('series.at', '1992'), 356.4, 'a number key and a text value');
+  assert.equal(SR('series.prev', '1990'), 352.9);
+  assert.equal(SR('series.next', '1990'), 355.6);
+  assert.equal(SR('series.prevKey', '1990'), '1989');
+  assert.equal(SR('series.nextKey', '1990'), '1991');
+  assert.equal(SR('series.step', '1991'), 1.4, 'float noise goes');
+  assert.equal(SR('series.prev', '1989'), null, 'nothing before the first');
+  assert.equal(SR('series.next', '1993'), null, 'nothing after the last');
+  assert.equal(SR('series.step', '1989'), null);
+  assert.equal(SR('series.at', '2050'), null);
+  knowLoad([{ ...CO, rows: [...CO.rows].reverse() }]);
+  assert.equal(SR('series.prevKey', '1990'), '1989');
+  assert.equal(SR('series.step', '1991'), 1.4);
+});
+test('series: two keys give delta, ratio, percent change, mean, sum, extremes, window and the compare, either key first', () => {
+  knowLoad([CO]);
+  assert.equal(SR('series.delta', '1989', '1993'), 4.2);
+  assert.equal(SR('series.delta', '1993', '1989'), -4.2);
+  assert.equal(SR('series.ratio', '1989', '1993'), 1.0119013885);
+  assert.equal(SR('series.change', '1989', '1993'), 1.19013884953);
+  assert.equal(SR('series.mean', '1993', '1990'), 355.825);
+  assert.equal(SR('series.sum', '1990', '1991'), 709.8);
+  assert.equal(SR('series.max', '1989', '1991'), 355.6);
+  assert.equal(SR('series.min', '1991', '1989'), 352.9);
+  assert.deepEqual(SR('series.window', '1990', '1992'), [354.2, 355.6, 356.4]);
+  assert.equal(SR('series.argmaxIn', '1989', '1991'), '1991');
+  assert.equal(SR('series.argminIn', '1989', '1991'), '1989');
+  assert.equal(SR('series.higher', '1989', '1991'), '1991');
+  assert.equal(SR('series.lower', '1989', '1991'), '1989');
+  assert.equal(SR('series.greater', '1989', '1991'), false);
+  assert.equal(SR('series.greater', '1991', '1989'), true);
+  for (const n of ['series.delta', 'series.ratio', 'series.change', 'series.mean', 'series.window', 'series.higher', 'series.greater']) assert.equal(SR(n, '1989', '2050'), null, n);
+});
+test('series: no key gives the ends, the extreme keys, every value and every key; a number counts above and below', () => {
+  knowLoad([CO]);
+  assert.equal(SR('series.first'), 352.9);
+  assert.equal(SR('series.last'), 357.1);
+  assert.equal(SR('series.firstKey'), '1989');
+  assert.equal(SR('series.lastKey'), '1993');
+  assert.equal(SR('series.argmax'), '1993');
+  assert.equal(SR('series.argmin'), '1989');
+  assert.deepEqual(SR('series.values'), [352.9, 354.2, 355.6, 356.4, 357.1]);
+  assert.deepEqual(SR('series.keys'), ['1989', '1990', '1991', '1992', '1993']);
+  assert.equal(R(['series.countAbove', L(355), L('co'), L('year'), L('mean')]), 3);
+  assert.equal(R(['series.countBelow', L(355), L('co'), L('year'), L('mean')]), 2);
+  assert.equal(R(['series.countBelow', L(357.1), L('co'), L('year'), L('mean')]), 4, 'strictly below');
+});
+test('series: dates order by year, month and day; a conflicting key drops; a tie has no argmax; unordered keys are no series', () => {
+  knowLoad([
+    { id: 'd', columns: ['date', 'v'], rows: [['2020-10', 3], ['2020-2', 5], ['2019-12-31', 1], ['2020-02', 5], ['2021', 2]] },
+    { id: 'c', columns: ['k', 'v'], rows: [['1', 1], ['2', 9], ['2', 8], ['3', 4]] },
+    { id: 't', columns: ['k', 'v'], rows: [['1', 7], ['2', 7]] },
+    { id: 'w', columns: ['k', 'v'], rows: [['red', 1], ['blue', 2]] },
+  ]);
+  assert.deepEqual(R(['series.keys', L('d'), L('date'), L('v')]), ['2019-12-31', '2020-02', '2020-10', '2021'], 'the smallest written form of a key');
+  assert.equal(R(['series.at', L('2020-2'), L('d'), L('date'), L('v')]), 5, 'two writings of one date are one item');
+  assert.deepEqual(R(['series.keys', L('c'), L('k'), L('v')]), ['1', '3']);
+  assert.equal(R(['series.argmax', L('t'), L('k'), L('v')]), null);
+  assert.equal(R(['series.first', L('w'), L('k'), L('v')]), null);
+  assert.equal(R(['series.first', L('c'), L('k'), L('k')]), null, 'one column is no series');
+  assert.equal(R(['series.first', L('nope'), L('year'), L('mean')]), null);
+  knowLoad([{ id: 'd2', columns: ['date', 'v'], rows: [['2020-2', 5], ['2020-02', 6], ['2020-03', 1]] }]);
+  assert.deepEqual(R(['series.keys', L('d2'), L('date'), L('v')]), ['2020-03'], 'two writings that disagree drop');
+  // a day with a UTC time to the second (a snapshot's stamp) orders by the second, and its fraction after it
+  knowLoad([{ id: 's', columns: ['time', 'v'], rows: [['2026-10-02T12:00:05Z', 3], ['2026-10-02T09:59:59Z', 1], ['2026-10-02T12:00:05.5Z', 4], ['2026-10-01T23:00:00Z', 0], ['2026-10-02 10:00', 2]] }]);
+  assert.deepEqual(R(['series.values', L('s'), L('time'), L('v')]), [0, 1, 2, 3, 4]);
+  assert.equal(R(['series.prev', L('2026-10-02T12:00:05Z'), L('s'), L('time'), L('v')]), 2);
+  knowLoad([{ id: 'z', columns: ['time', 'v'], rows: [['2026-10-02T12:00:05+02:00', 1], ['2026-10-02T13:00:00Z', 2]] }]);
+  assert.equal(R(['series.first', L('z'), L('time'), L('v')]), null, 'an offset other than Z does not order');
+});
+
+// ---------------------------------------------------------------- table
+const POP = { id: 'pop', columns: ['country', 'year', 'value'], rows: [['A', 2000, 10], ['A', 2001, 12], ['B', 2000, 30], ['B', 2001, 20], ['C', 2001, 5], ['D', 2000, 'n/a']] };
+const TB = (name, ...keys) => R([name, ...keys.map(L), L('pop'), L('country'), L('year'), L('value')]);
+test('table: an (entity, time) pair reads its value as written and as a number, in any case', () => {
+  knowLoad([POP]);
+  assert.equal(TB('table.get', 'A', '2001'), '12');
+  assert.equal(TB('table.at', 'b', '2000'), 30);
+  assert.equal(TB('table.get', 'D', '2000'), 'n/a');
+  assert.equal(TB('table.at', 'D', '2000'), null, 'a value that is no number');
+  assert.equal(TB('table.at', 'C', '2000'), null);
+  assert.equal(TB('table.at', 'E', '2001'), null);
+});
+test('table: one entity over time: latest, earliest, their keys and the whole series, in time order', () => {
+  knowLoad([{ ...POP, rows: [...POP.rows].reverse() }]);
+  assert.equal(TB('table.latest', 'B'), 20);
+  assert.equal(TB('table.latestKey', 'C'), '2001');
+  assert.equal(TB('table.earliest', 'A'), 10);
+  assert.equal(TB('table.earliestKey', 'B'), '2000');
+  assert.deepEqual(TB('table.series', 'B'), [30, 20]);
+  assert.equal(TB('table.latest', 'D'), null, 'no number at all');
+  assert.equal(TB('table.delta', 'B', '2000', '2001'), -10);
+  assert.equal(TB('table.delta', 'C', '2000', '2001'), null);
+});
+test('table: one time across entities: top, bottom, every value in entity order, and a rank', () => {
+  knowLoad([POP]);
+  assert.equal(TB('table.top', '2000'), 'B');
+  assert.equal(TB('table.bottom', '2001'), 'C');
+  assert.deepEqual(TB('table.across', '2001'), [12, 20, 5]);
+  assert.equal(TB('table.rank', 'A', '2001'), 2);
+  assert.equal(TB('table.rank', 'B', '2001'), 1);
+  assert.equal(TB('table.top', '1999'), null);
+  knowLoad([{ id: 'pop', columns: ['country', 'year', 'value'], rows: [['x', 1, 4], ['y', 1, 4], ['z', 1, 2]] }]);
+  assert.equal(TB('table.top', '1'), null, 'a tie names no one');
+  assert.equal(TB('table.bottom', '1'), 'z');
+});
+test('table: a pair written twice with two values drops; the first and smallest written forms win in any row order; columns must differ', () => {
+  const rows = [['a', '2000', '1'], ['A', '2000', '1'], ['b', '2000', '2'], ['b', '2000', '3'], ['c', '2000', '0']];
+  for (const rs of [rows, [...rows].reverse()]) {
+    knowLoad([{ id: 'pop', columns: ['country', 'year', 'value'], rows: rs }]);
+    assert.equal(TB('table.at', 'b', '2000'), null);
+    assert.equal(TB('table.top', '2000'), 'A');
+  }
+  assert.equal(R(['table.at', L('a'), L('2000'), L('pop'), L('country'), L('country'), L('value')]), null);
+  assert.equal(R(['table.at', L('a'), L('2000'), L('nope'), L('country'), L('year'), L('value')]), null);
+});
+
+// ---------------------------------------------------------------- matrix
+const MX = (node, q) => R(node, q);
+test('matrix: parsed from brackets and from rows split by semicolons, printed back as plain text', () => {
+  const q = 'Multiply [[1, 2], [3, 4]] by [[5, 6], [7, 8]]';
+  assert.deepEqual(MX(['sense.matrix'], q), [[1, 2], [3, 4]]);
+  assert.deepEqual(MX(['sense.matrixAt', L(2)], q), [[5, 6], [7, 8]]);
+  assert.equal(MX(['sense.matrixAt', L(3)], q), null);
+  assert.deepEqual(MX(['sense.matrix'], 'transpose 1 2 3; 4 5 6'), [[1, 2, 3], [4, 5, 6]]);
+  assert.deepEqual(MX(['sense.matrix'], 'rows 1, -2.5; 3, 4'), [[1, -2.5], [3, 4]]);
+  assert.equal(MX(['sense.matrix'], 'ragged [[1, 2], [3]]'), null);
+  assert.equal(MX(['sense.matrix'], 'no grid here'), null);
+  assert.equal(MX(['render.matrix', ['sense.matrix']], q), '[[1, 2], [3, 4]]');
+  assert.equal(MX(['render.matrixRows', ['matrix.transpose', ['sense.matrix']]], 'transpose 1 2 3; 4 5 6'), '1 4\n2 5\n3 6');
+  assert.equal(R(['render.matrix', L([[1, 2], [3]])]), null, 'a ragged value is no matrix');
+});
+test('matrix: shape, rows, columns, a row, a column, an entry, 1-based and from the end', () => {
+  const m = L([[1, 2, 3], [4, 5, 6]]);
+  assert.equal(R(['matrix.rows', m]), 2);
+  assert.equal(R(['matrix.cols', m]), 3);
+  assert.equal(R(['matrix.shape', m]), '2x3');
+  assert.deepEqual(R(['matrix.row', m, L(2)]), [4, 5, 6]);
+  assert.deepEqual(R(['matrix.col', m, L(-1)]), [3, 6]);
+  assert.equal(R(['matrix.at', m, L(2), L(1)]), 4);
+  assert.equal(R(['matrix.at', m, L(3), L(1)]), null);
+  assert.deepEqual(R(['matrix.flatten', m]), [1, 2, 3, 4, 5, 6]);
+  assert.deepEqual(R(['matrix.reshape', L([1, 2, 3, 4, 5, 6]), L(3)]), [[1, 2], [3, 4], [5, 6]]);
+  assert.equal(R(['matrix.reshape', L([1, 2, 3, 4, 5]), L(2)]), null);
+});
+test('matrix: add, subtract, multiply, scale, power, trace and identity; shapes that do not fit are null', () => {
+  const a = L([[1, 2], [3, 4]]), b = L([[5, 6], [7, 8]]);
+  assert.deepEqual(R(['matrix.add', a, b]), [[6, 8], [10, 12]]);
+  assert.deepEqual(R(['matrix.sub', a, b]), [[-4, -4], [-4, -4]]);
+  assert.deepEqual(R(['matrix.mul', a, b]), [[19, 22], [43, 50]]);
+  assert.deepEqual(R(['matrix.mul', b, a]), [[23, 34], [31, 46]], 'order matters');
+  assert.deepEqual(R(['matrix.mul', L([[1, 2, 3]]), L([[1], [2], [3]])]), [[14]]);
+  assert.equal(R(['matrix.mul', a, L([[1, 2, 3]])]), null);
+  assert.equal(R(['matrix.add', a, L([[1, 2, 3], [4, 5, 6]])]), null);
+  assert.deepEqual(R(['matrix.scale', a, L(3)]), [[3, 6], [9, 12]]);
+  assert.equal(R(['render.matrix', ['matrix.power', L([[1, 1], [1, 0]]), L(10)]]), '[[89, 55], [55, 34]]');
+  assert.deepEqual(R(['matrix.power', a, L(0)]), [[1, 0], [0, 1]]);
+  assert.equal(R(['matrix.power', L([[1, 2, 3]]), L(2)]), null);
+  assert.equal(R(['matrix.trace', a]), 5);
+  assert.equal(R(['matrix.trace', L([[1, 2, 3]])]), null);
+  assert.deepEqual(R(['matrix.identity', L(3)]), [[1, 0, 0], [0, 1, 0], [0, 0, 1]]);
+  assert.equal(R(['matrix.identity', L(0)]), null);
+});
+test('matrix: determinant exact on integers and pivoted on floats, inverse exact where it can be, singular is null', () => {
+  assert.equal(R(['matrix.det', L([[2, 0, 1], [1, 3, 2], [1, 1, 2]])]), 6);
+  assert.equal(R(['matrix.det', L([[1.5, 2], [3, 5]])]), 1.5);
+  assert.equal(R(['matrix.det', L([[0, 1], [1, 0]])]), -1, 'a row swap flips the sign');
+  assert.equal(R(['matrix.det', L([[1, 2], [2, 4]])]), 0);
+  assert.equal(R(['matrix.det', L([[1, 2, 3]])]), null);
+  assert.equal(MX(['render.matrix', ['matrix.inverse', ['sense.matrix']]], 'invert [[4, 7], [2, 6]]'), '[[0.6, -0.7], [-0.2, 0.4]]');
+  assert.deepEqual(R(['matrix.mul', L([[2, 1], [1, 1]]), ['matrix.inverse', L([[2, 1], [1, 1]])]]), [[1, 0], [0, 1]]);
+  assert.equal(R(['matrix.inverse', L([[1, 2], [2, 4]])]), null);
+  assert.equal(R(['matrix.inverse', L([[1, 2, 3]])]), null);
+});
+
+// ---------------------------------------------------------------- text and code
+test('text: camel, pascal, snake and kebab case from any of the others, acronyms split', () => {
+  assert.equal(P('transform.camel', ['hello big world']), 'helloBigWorld');
+  assert.equal(P('transform.camel', ['user_id-field']), 'userIdField');
+  assert.equal(P('transform.pascal', ['user_id field']), 'UserIdField');
+  assert.equal(P('transform.snake', ['helloBigWorld']), 'hello_big_world');
+  assert.equal(P('transform.kebab', ['XMLHttpParser value']), 'xml-http-parser-value');
+  assert.equal(P('transform.snake', ['  ']), null);
+});
+test('text: a substring 1-based and inclusive, a letter at a place, padding, character codes both ways', () => {
+  assert.equal(P('transform.substr', ['abcdef', 2, 4]), 'bcd');
+  assert.equal(P('transform.substr', ['abcdef', 4, 2]), null);
+  assert.equal(P('transform.substr', ['abcdef', 5, 9]), 'ef', 'the end is clamped');
+  assert.equal(P('transform.substr', ['abcdef', 7, 9]), null, 'a start past the end');
+  assert.equal(P('transform.charAt', ['abc', -1]), 'c');
+  assert.equal(P('transform.charAt', ['abc', 1]), 'a');
+  assert.equal(P('transform.charAt', ['abc', 4]), null);
+  assert.equal(P('transform.padStart', ['42', 5, '0']), '00042');
+  assert.equal(P('transform.padStart', ['42', 5, '']), null);
+  assert.deepEqual(P('transform.charCodes', ['AB']), [65, 66]);
+  assert.equal(P('transform.fromCodes', [[72, 105]]), 'Hi');
+  assert.equal(P('transform.fromCodes', [[72, -1]]), null);
+});
+test('text: caesar shifts letters only and wraps both ways; base64 is UTF-8 both ways and rejects what is not', () => {
+  assert.equal(P('transform.caesar', ['Hello, World', 13]), 'Uryyb, Jbeyq');
+  assert.equal(P('transform.caesar', ['abc', -1]), 'zab');
+  assert.equal(P('transform.caesar', ['xyz', 29]), 'abc');
+  assert.equal(P('transform.base64', ['héllo']), 'aMOpbGxv');
+  assert.equal(P('transform.base64', ['ab']), 'YWI=');
+  assert.equal(P('transform.unbase64', ['aMOpbGxv']), 'héllo');
+  assert.equal(P('transform.unbase64', ['YWI=']), 'ab');
+  assert.equal(P('transform.unbase64', ['not base64!']), null);
+  assert.equal(P('transform.unbase64', ['/w==']), null, 'a byte that is no UTF-8');
+  assert.equal(P('transform.base64', ['\ud800']), null, 'a lone surrogate');
+});
+test('text: position of a part, the most common letter, lines, edit and hamming distance', () => {
+  assert.equal(P('aggregate.indexOf', ['hello', 'LL']), 3);
+  assert.equal(P('aggregate.indexOf', ['hello', 'z']), null);
+  assert.equal(P('aggregate.commonLetter', ['banana']), 'a');
+  assert.equal(P('aggregate.commonLetter', ['abab']), null, 'a tie names none');
+  assert.equal(P('aggregate.lines', ['a\nb\n']), 2);
+  assert.equal(P('aggregate.lines', ['a\r\nb\r\nc']), 3);
+  assert.equal(P('compute.editDistance', ['kitten', 'sitting']), 3);
+  assert.equal(P('compute.editDistance', ['', 'abc']), 3);
+  assert.equal(P('compute.hamming', ['karolin', 'kathrin']), 3);
+  assert.equal(P('compute.hamming', ['ab', 'abc']), null);
+});
+test('code: the first JSON object in a prompt, read by a dotted path with 0-based list places', () => {
+  const q = 'In {"a": {"b": [1, 22]}, "c": "x"} what is a.b.1?';
+  assert.deepEqual(R(['sense.json'], q), { a: { b: [1, 22] }, c: 'x' });
+  assert.equal(R(['transform.get', ['sense.json'], L('a.b.1')], q), '22');
+  assert.equal(R(['transform.get', ['sense.json'], L('c')], q), 'x');
+  assert.equal(R(['transform.get', ['sense.json'], L('a.z')], q), null);
+  assert.equal(R(['transform.get', ['sense.json'], L('a')], q), '{"b":[1,22]}', 'an object as JSON text');
+  assert.equal(R(['sense.json'], 'broken {"a": 1'), null);
+  assert.equal(R(['transform.get', ['sense.json'], L('__proto__')], '{"x": 1}'), null);
+});
+test('version 2 primitives: every one is present, typed as its family reads, and runs inside the marked region alone', async () => {
+  const want = {
+    series: 'at prev next prevKey nextKey step delta ratio change mean sum max min window argmaxIn argminIn higher lower greater first last firstKey lastKey argmax argmin values keys countAbove countBelow',
+    table: 'get at latest latestKey earliest earliestKey series top bottom across rank delta',
+    matrix: 'rows cols shape row col at transpose add sub mul scale det inverse trace identity flatten power reshape',
+    transform: 'camel pascal snake kebab substr charAt padStart caesar charCodes fromCodes base64 unbase64 get',
+    sense: 'matrix matrixAt json', aggregate: 'indexOf commonLetter lines', compute: 'editDistance hamming', render: 'matrix matrixRows',
+  };
+  for (const [fam, names] of Object.entries(want)) for (const n of names.split(' ')) assert.ok(PRIMS[fam + '.' + n], fam + '.' + n);
+  for (const n of want.series.split(' ')) assert.ok(PRIMS['series.' + n].in.slice(-3).join(' ') === 'str str str', n + ' ends in the pack, key and value');
+  for (const n of want.table.split(' ')) assert.ok(PRIMS['table.' + n].in.slice(-4).join(' ') === 'str str str str', n + ' ends in the pack and three columns');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'neo-v2-'));
+  try {
+    const alone = path.join(dir, 'alone.mjs');
+    fs.writeFileSync(alone, REGION + '\nexport { evalNode, knowLoad };\n');
+    const K = await import(pathToFileURL(alone).href);
+    assert.equal(K.knowLoad([CO, POP]), 2);
+    assert.equal(K.evalNode(['render.number', ['series.delta', L('1989'), L('1993'), L('co'), L('year'), L('mean')]], ''), '4.2');
+    assert.equal(K.evalNode(['render.str', ['table.top', L('2000'), L('pop'), L('country'), L('year'), L('value')]], ''), 'B');
+    assert.equal(K.evalNode(['render.matrix', ['matrix.mul', ['sense.matrix'], ['sense.matrixAt', L(2)]]], '[[1, 2], [3, 4]] times [[5, 6], [7, 8]]'), '[[19, 22], [43, 50]]');
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
