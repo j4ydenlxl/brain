@@ -1,0 +1,650 @@
+{
+  "task": "price-of-date-68c8-compare",
+  "generation": 7,
+  "kernel": 1,
+  "at": "2026-10-02T13:30:56.387Z",
+  "stats": {
+    "generated": 99900,
+    "distinct": 66186,
+    "kept": 2,
+    "know": 2,
+    "byFamily": {
+      "transform": 2
+    },
+    "bySource": {
+      "open": 2
+    },
+    "maxHeight": 7,
+    "devOk": 100,
+    "devN": 100,
+    "ms": 31227,
+    "cellsPerSecond": 3199,
+    "capped": "ms",
+    "packs": [
+      "fr-oil-prices-brent-weekly-f6578a"
+    ],
+    "cursor": {
+      "v": 1,
+      "basis": "c26eeceb8be8fcb356e239df873ca4d223bd24da87ed6bac355c64fea389f13a",
+      "round": 0,
+      "at": 52925,
+      "maxCost": 7,
+      "done": false,
+      "cost": 6,
+      "prim": "aggregate.stdev",
+      "tpl": 3000
+    }
+  },
+  "cells": [
+    {
+      "id": "n-e99295bf",
+      "task": "price-of-date-68c8-compare",
+      "gen": 7,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "19880122",
+              "19880520",
+              "19880729",
+              "19881230",
+              "19900810",
+              "19910927",
+              "19911115",
+              "19920207",
+              "19920306",
+              "19920619",
+              "19920717",
+              "19930709",
+              "19940527",
+              "19940722",
+              "19941007",
+              "19941202",
+              "19950915",
+              "19960412",
+              "19960426",
+              "19960621",
+              "19961025",
+              "19970117",
+              "19970214",
+              "19980130",
+              "19980612",
+              "19980828",
+              "19981016",
+              "19990806",
+              "19990917",
+              "20000121",
+              "20010608",
+              "20031226",
+              "20040924",
+              "20050107",
+              "20050909",
+              "20060317",
+              "20060414",
+              "20060630",
+              "20060721",
+              "20060825",
+              "20070608",
+              "20071102",
+              "20090612",
+              "20101105",
+              "20101112",
+              "20101224",
+              "20110715",
+              "20111007",
+              "20140418",
+              "20150109",
+              "20150320",
+              "20150501",
+              "20150828",
+              "20160902",
+              "20170630",
+              "20171215",
+              "20180817",
+              "20181228",
+              "20190614",
+              "20190621",
+              "20200508",
+              "20200731",
+              "20200807",
+              "20210212",
+              "20210813",
+              "20211001",
+              "20220923",
+              "20230106",
+              "20241122",
+              "20250207",
+              "20250307",
+              "20260918",
+              "add",
+              "close",
+              "greater",
+              "high",
+              "larger",
+              "lesser",
+              "makes",
+              "open",
+              "smaller",
+              "sp500",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The price of ",
+            {
+              "slot": 0
+            },
+            " is ",
+            {
+              "slot": 1
+            },
+            " and that of ",
+            {
+              "slot": 2
+            },
+            " is ",
+            {
+              "slot": 3
+            },
+            ", so ",
+            {
+              "slot": 4
+            },
+            " has the larger price."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-oil-prices-brent-weekly-f6578a"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-brent-weekly-f6578a"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-oil-prices-brent-weekly-f6578a"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-oil-prices-brent-weekly-f6578a"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-brent-weekly-f6578a"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "fr-oil-prices-brent-weekly-f6578a"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-oil-prices-brent-weekly-f6578a"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-oil-prices-brent-weekly-f6578a"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-oil-prices-brent-weekly-f6578a"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-oil-prices-brent-weekly-f6578a"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-brent-weekly-f6578a"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-brent-weekly-f6578a"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 62,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1d08f897",
+      "task": "price-of-date-68c8-compare",
+      "gen": 7,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "19880122",
+              "19880520",
+              "19880729",
+              "19900713",
+              "19910927",
+              "19911115",
+              "19920619",
+              "19920717",
+              "19940722",
+              "19941007",
+              "19950915",
+              "19960412",
+              "19960621",
+              "19960809",
+              "19961025",
+              "19970117",
+              "19970214",
+              "19981016",
+              "19990806",
+              "19990917",
+              "20000121",
+              "20040924",
+              "20060825",
+              "20060908",
+              "20090417",
+              "20090612",
+              "20101224",
+              "20130705",
+              "20140110",
+              "20150109",
+              "20150501",
+              "20150828",
+              "20151127",
+              "20160902",
+              "20170324",
+              "20190621",
+              "20250207",
+              "20250613",
+              "add",
+              "close",
+              "greater",
+              "high",
+              "larger",
+              "lesser",
+              "makes",
+              "open",
+              "smaller"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            " and that of ",
+            {
+              "slot": 3
+            },
+            " is ",
+            {
+              "slot": 4
+            },
+            ", so ",
+            {
+              "slot": 5
+            },
+            " has the larger price."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 5
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-oil-prices-brent-weekly-f6578a"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-brent-weekly-f6578a"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-oil-prices-brent-weekly-f6578a"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-oil-prices-brent-weekly-f6578a"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-brent-weekly-f6578a"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "fr-oil-prices-brent-weekly-f6578a"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-oil-prices-brent-weekly-f6578a"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-oil-prices-brent-weekly-f6578a"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-oil-prices-brent-weekly-f6578a"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-oil-prices-brent-weekly-f6578a"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-brent-weekly-f6578a"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-brent-weekly-f6578a"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 65,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    }
+  ],
+  "stages": [
+    "11e0c7ae11a083196775a92c9a66ecded4dedab3945a57e4bc9c492b4e69ae8b"
+  ]
+}
