@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "paper": true,
+  "note": "THE MARKET SENSE (grow/market.mjs) reads these keyless public endpoints as DATA, GET only, at most one request a second per host and slower where hostGapMs says so (geckoterminal answered 429 at one request a second on the first live step; a 429 also doubles a host's gap, kept in STATE.json). Paper only: nothing here can place a trade. Each source carries the HTTP status it answered when it was checked live (status, checkedAt). allowedHosts may narrow ALLOWED_HOSTS of grow/market.mjs, never widen it; hostGapMs may slow a host, never speed it past one a second.",
+  "userAgent": "dilation-brain-market/1 (paper only, public data, one request a second per host; dilation.dev)",
+  "hostGapMs": {
+    "api.geckoterminal.com": 2500
+  },
+  "allowedHosts": [
+    "api.dexscreener.com",
+    "api.geckoterminal.com",
+    "api.coingecko.com"
+  ],
+  "chains": [
+    "solana",
+    "base",
+    "bsc"
+  ],
+  "sources": [
+    {
+      "id": "ds-profiles",
+      "role": "discover",
+      "kind": "ds-token-list",
+      "url": "https://api.dexscreener.com/token-profiles/latest/v1",
+      "use": true,
+      "status": 200,
+      "checkedAt": "2026-10-01T23:36:15.300Z",
+      "note": "the newest token profiles (token addresses, no prices): resolved to pools by ds-tokens"
+    },
+    {
+      "id": "ds-boosts",
+      "role": "discover",
+      "kind": "ds-token-list",
+      "url": "https://api.dexscreener.com/token-boosts/latest/v1",
+      "use": true,
+      "status": 200,
+      "checkedAt": "2026-10-01T23:36:16.322Z",
+      "note": "the newest boosted tokens (token addresses, no prices): resolved to pools by ds-tokens"
+    },
+    {
+      "id": "gt-new-solana",
+      "role": "discover",
+      "kind": "gt-pools",
+      "network": "solana",
+      "url": "https://api.geckoterminal.com/api/v2/networks/solana/new_pools?page=1",
+      "use": true,
+      "status": 200,
+      "checkedAt": "2026-10-01T23:36:16.378Z",
+      "note": "the newest Solana pools with price, reserve, volume, transactions, creation time"
+    },
+    {
+      "id": "gt-trending-solana",
+      "role": "discover",
+      "kind": "gt-pools",
+      "network": "solana",
+      "url": "https://api.geckoterminal.com/api/v2/networks/solana/trending_pools?page=1",
+      "use": true,
+      "status": 200,
+      "checkedAt": "2026-10-01T23:36:17.446Z",
+      "note": "trending Solana pools, same shape"
+    },
+    {
+      "id": "ds-tokens",
+      "role": "resolve",
+      "kind": "ds-pairs",
+      "url": "https://api.dexscreener.com/tokens/v1/{chain}/{addresses}",
+      "use": true,
+      "status": 200,
+      "checkedAt": "2026-10-01T23:36:17.494Z",
+      "note": "the pools of up to 30 token addresses"
+    },
+    {
+      "id": "ds-pairs",
+      "role": "watch",
+      "kind": "ds-pairs",
+      "url": "https://api.dexscreener.com/latest/dex/pairs/{chain}/{addresses}",
+      "use": true,
+      "status": 200,
+      "checkedAt": "2026-10-01T23:36:18.631Z",
+      "note": "a re-read of up to 30 watched pools"
+    },
+    {
+      "id": "gt-multi",
+      "role": "watch",
+      "kind": "gt-pools",
+      "url": "https://api.geckoterminal.com/api/v2/networks/{chain}/pools/multi/{addresses}",
+      "use": true,
+      "status": 200,
+      "checkedAt": "2026-10-01T23:36:18.918Z",
+      "note": "a re-read of up to 30 watched pools"
+    },
+    {
+      "id": "cg-trending",
+      "role": "off",
+      "kind": "none",
+      "url": "https://api.coingecko.com/api/v3/search/trending",
+      "use": false,
+      "status": 200,
+      "checkedAt": "2026-10-01T23:36:18.984Z",
+      "note": "checked and left off: its payload names coins, not pools, so no liquidity is seen and no fill can be quoted from it"
+    }
+  ]
+}
