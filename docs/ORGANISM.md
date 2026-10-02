@@ -117,3 +117,23 @@ recorded check (`grow/self.mjs apply` runs its own). A file under a pending self
 session until the trial is judged: `node grow/self.mjs status` says which file that is.
 
 Commercial use is the last thing (his order).
+
+## Day 4, the last day (2026-10-02): the organism with no model in it
+
+The body is now the GitHub runner beat alone: `.github/workflows/heartbeat.yml` (source `body/heartbeat.yml`), cron `23 */3 * * *`,
+jobs plan, grow (one runner per shard), merge, site. No step calls a model, so it keeps running after the plan ends. The
+claude.ai routine above needed a model and is history.
+
+- One era (`node grow/era.mjs run`, cloud only): snapshot, absorb, frontier, know, teach, intake, grow, regate, evolve, promote,
+  measure, ship. An era is committed only when `grow/pipeline.mjs promote` prints a held-out rise with no fall.
+- The beat's plan (`node grow/compute.mjs plan`) reads the month's runner minutes and sets its own length, its shards and how
+  many computers it starts; a request the budget cannot pay is refused with the count it can pay.
+- Every runner drives its real browser (`node grow/machine.mjs step`: allowlist, reading only, never typing or clicking, a bot
+  check is left at once) and the merge lands the screens under neo/screens. The watch list (`node grow/tape.mjs pull`) writes
+  time-keyed packs under neo/know.
+- As printed by `node tools/organism-verdict.mjs` on 2026-10-02 10:06 EDT: eras 151 (newest 151 at 2026-10-02T13:54:20.479Z), tasks 393, colonies 129, kept cells 72281, mastered 49, serving 49, held-out 3741 of 5868, locked mean 0.9742 over 12 classes, LOCK OK 18 files; mastered by era 1:0 9:2 117:5 124:6 128:14 129:15 132:22 136:28 137:32 140:40 141:42 143:45 146:46 149:49; suites 51 files, 1312 tests, 1308 pass, 0 fail.
+- To see it: `git log --oneline master` (era commits), https://dilation.dev/alive, https://dilation.dev/datacenter/ (the wall
+  of screens, built from the organism's own records), https://dilation.dev/ask, https://dilation.dev/portfolio.
+- His hand: `gh workflow run heartbeat.yml --ref master -f computers=100` (a hundred computers; priced by the plan before it
+  starts), `gh workflow disable cloud.yml` (frees the soak's minutes), Vercel Git or a public repository (so a push deploys
+  and the minutes are not billed), a file `neo/STOP` (stops every beat).
