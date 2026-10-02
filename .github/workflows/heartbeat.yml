@@ -19,6 +19,7 @@
 # daily job spends BRAIN_WALL_MINUTES, 55 by default). The defaults here are one 6 minute beat every
 # 3 hours: 8 beats, about 56 runner minutes a day. Knobs, all repository variables (gh variable set):
 #   BRAIN_BEAT_MINUTES   minutes of eras per beat (default 6, at most 330)
+#   (dispatch input) beats   N: N beats in a row, then the relay stops by itself (8 hours = minutes 240, beats 2)
 #   BRAIN_BEAT_RELAY     true: each beat dispatches the next one, so the burn is constant (a public
 #                        repository has no minute cap; a private one spends its month in under 2 days)
 # STOP: commit a file named neo/STOP (any content) and every later beat exits 0 before it burns; or
@@ -40,6 +41,10 @@ on:
         description: "true: dispatch the next beat when this one ends"
         required: false
         default: "false"
+      beats:
+        description: "beats in a row: each one dispatches the next until the count is spent (at most 12)"
+        required: false
+        default: "1"
 
 permissions:
   contents: write
@@ -59,6 +64,7 @@ jobs:
     env:
       BEAT_MINUTES: ${{ github.event_name == 'workflow_dispatch' && inputs.minutes || vars.BRAIN_BEAT_MINUTES || '6' }}
       RELAY: ${{ github.event_name == 'workflow_dispatch' && inputs.relay || vars.BRAIN_BEAT_RELAY || 'false' }}
+      BEATS: ${{ github.event_name == 'workflow_dispatch' && inputs.beats || '1' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -88,6 +94,10 @@ jobs:
           while [ $(( end - $(date +%s) )) -ge 90 ]; do
             left_ms=$(( (end - $(date +%s) - 45) * 1000 ))
             ms=$(( left_ms < 480000 ? left_ms : 480000 ))
+            # every era starts from what the remote holds: another writer may have pushed since the last
+            # one, and an era whose push lost is dropped here and grown again on top of the newer head
+            git rebase --abort >/dev/null 2>&1 || true
+            if git fetch -q origin master; then git reset -q --hard origin/master; git clean -fdq -- neo grown; fi
             if ! out=$(node grow/era.mjs run --max-ms "$ms" --commit); then echo "the era loop failed; the beat ends here"; break; fi
             line=$(printf '%s\n' "$out" | tail -n 1)
             echo "$line"
@@ -98,9 +108,18 @@ jobs:
           git log --format='%h %s' -3 | cut -c1-120
 
       - name: relay the next beat
-        if: steps.stop.outputs.stopped == 'false' && env.RELAY == 'true'
+        if: steps.stop.outputs.stopped == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh workflow run heartbeat.yml -R "$GITHUB_REPOSITORY" --ref master -f minutes="$BEAT_MINUTES" -f relay=true
-          echo "relayed: the next beat waits in the heartbeat concurrency group"
+          case "$BEATS" in ''|*[!0-9]*) BEATS=1 ;; esac
+          [ "$BEATS" -gt 12 ] && BEATS=12
+          if [ "$RELAY" = "true" ]; then
+            gh workflow run heartbeat.yml -R "$GITHUB_REPOSITORY" --ref master -f minutes="$BEAT_MINUTES" -f relay=true
+            echo "relayed: the next beat waits in the heartbeat concurrency group"
+          elif [ "$BEATS" -gt 1 ]; then
+            gh workflow run heartbeat.yml -R "$GITHUB_REPOSITORY" --ref master -f minutes="$BEAT_MINUTES" -f beats="$(( BEATS - 1 ))"
+            echo "relayed: $(( BEATS - 1 )) more beats after this one"
+          else
+            echo "no relay: the schedule brings the next beat"
+          fi
