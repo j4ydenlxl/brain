@@ -55,7 +55,7 @@ import cryptoModule, { createHash } from 'node:crypto';
 const hashOnce = cryptoModule.hash; // crypto.hash (Node 21.7 and later), absent on an older Node: promptHash falls back (board 20 builder)
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { bundle, hvFromSeed } from '../core/signal.mjs';
 import { Brain } from '../core/brain.mjs'; // Brain.prototype.log: the ledger write's one-copy path knows the core log (board 20 builder)
 // The knowledge tier (Board 9). Importing the module opens nothing: it is classes and pure
@@ -81,7 +81,9 @@ import { askBySpawn } from './spawn.mjs'; // a question grows the cells that ans
 import { solveMath } from '../reason/math.mjs';
 import { solvedFor } from '../reason/solved.mjs'; // Board 15 item ns (board 15 builder): the solved region, right after direct
 import { converse } from './converse.mjs'; // the native conversation region (his 2026-09-26 20:20: "it cant even respond to 'hi.'")
-import { grownAnswer } from '../grown/index.mjs'; // the grown cells, right after the conversation region (grow/CONTRACT.md grown/; board 37 item misses)
+// the grown cells (grown/index.mjs, grow/CONTRACT.md grown/; board 37 item misses) load on the first ask that reaches them
+// (treeGrown below), so importing this file never pays for the cells and a grown index that fails to load answers nothing
+import { nativeAnswer } from './native.mjs'; // contract c11: a question looked up and composed over the shelved knowledge packs (neo/know), no model
 import { synthesize, entryOf as codeEntryOf, docLines as codeDocLines } from '../reason/synth.mjs';
 import { codeNative, codeNativeShape } from './code-native.mjs'; // code, code-reading, sql, command and format with no model (board 34, item code-native)
 // The program tier (board 26 builder, item wire-induce): programs bench/induce.mjs induced from development GSM8K records.
@@ -832,6 +834,78 @@ function answerFromNative(brain, text, c, started) {
 }
 
 const NOT_ASKED_GROWN = 'not asked: a grown cell answered';
+/** The provenance line of a grown cell's answer (answer.head; never part of answer.text). */
+export const grownHead = (g) => 'answered natively by a grown cell (' + g.id + ', generation ' + g.generation + '), with no model, no memory read and no network.';
+
+// ---------------------------------------------------------------- the grown root (2026-10-02)
+// opts.root names a tree whose grown/index.mjs and neo/know/ answer instead of this checkout's; opts.grownRoot and
+// opts.nativeRoot name each alone; opts.grown a function replaces grownAnswer. A root's grown/index.mjs that is missing
+// or does not load answers nothing. So a suite builds its own root and never depends on what the tree's grown/ holds.
+const GROWN_HOOKS = new Map();
+const hookOf = (m) => (m && typeof m.grownAnswer === 'function' ? m.grownAnswer : () => null);
+let TREE_GROWN = null;
+// the specifier stays the literal relative path, so a module hook that replaces grown/index.mjs for this file still does
+const treeGrown = () => TREE_GROWN || (TREE_GROWN = import('../grown/index.mjs').then(hookOf, () => () => null));
+function grownHookFor(opts) {
+  if (typeof opts.grown === 'function') return opts.grown;
+  const root = typeof opts.grownRoot === 'string' && opts.grownRoot ? opts.grownRoot : typeof opts.root === 'string' && opts.root ? opts.root : null;
+  if (root === null) return treeGrown();
+  const f = path.join(path.resolve(root), 'grown', 'index.mjs');
+  let p = GROWN_HOOKS.get(f);
+  if (!p) {
+    p = fs.existsSync(f)
+      ? import(pathToFileURL(f).href).then(hookOf, () => () => null)
+      : Promise.resolve(() => null);
+    if (GROWN_HOOKS.size >= 64) GROWN_HOOKS.clear();
+    GROWN_HOOKS.set(f, p);
+  }
+  return p;
+}
+const nativeRootOf = (opts) => (typeof opts.nativeRoot === 'string' && opts.nativeRoot ? opts.nativeRoot : typeof opts.root === 'string' && opts.root ? opts.root : undefined);
+
+const NOT_ASKED_KNOW = 'not asked: the knowledge packs answered natively';
+/**
+ * The answer object of the native answer (act/native.mjs, contract c11): from 'native', route 'native', provenance
+ * native/know, method the operation; native.via names the pack, the entity, the column and the operation.
+ * @param {object} brain
+ * @param {string} text the prompt
+ * @param {{ answer: string, via: object, ms: number }} n nativeAnswer's result
+ * @param {number} started Date.now() when ask() began
+ */
+export function answerFromKnow(brain, text, n, started) {
+  const hash = promptHash(text);
+  const ns = Math.round((Number.isFinite(n.ms) ? n.ms : 0) * 1e6);
+  const answer = {
+    ok: true,
+    promptHash: hash,
+    promptChars: text.length,
+    from: 'native',
+    text: n.answer,
+    memory: null,
+    exact: null,
+    native: { kind: 'know:' + n.via.op, answer: n.answer, form: 'know', via: n.via, ns },
+    cites: [],
+    redacted: 0,
+    redactedShapes: [],
+    provenance: {
+      answer: 'native', source: 'know', tier: 'native', title: n.via.pack, method: n.via.op, modelAgreed: null,
+      confidence: null, item: null, keyNs: 0, lookupNs: ns,
+      memoryHits: 0, webPages: 0,
+      llm: { provider: null, model: null, ms: 0, tokens: 0, ok: false, reason: NOT_ASKED_KNOW, fellBack: null, probed: null },
+    },
+    words: String(n.answer).split(/\s+/).filter(Boolean).length,
+    ms: Date.now() - started,
+    route: 'native',
+    ticks: 0,
+    hops: [],
+  };
+  answer.seq = logAsk(brain, {
+    t: clockT(brain), gen: clockGen(brain), type: ASK_EVENT, by: SURFACE, route: 'native', promptHash: hash, promptChars: text.length, from: 'native',
+    provenance: 'native', source: 'know', tier: 'native', lookupNs: ns, method: n.via.op, modelAgreed: null,
+    memoryHits: 0, webPages: 0, redacted: 0, provider: null, model: null, llmMs: 0, llmOk: false, ms: answer.ms,
+  });
+  return answer;
+}
 
 /**
  * The answer object of a grown cell (grown/index.mjs grownAnswer; board 37 item misses): the shape of
@@ -850,7 +924,10 @@ export function answerFromGrown(brain, text, g, started) {
     promptHash: hash,
     promptChars: text.length,
     from: 'cell',
-    text: 'answered natively by a grown cell (' + g.id + ', generation ' + g.generation + '), with no model, no memory read and no network.\n' + g.answer,
+    // the cell's answer alone: the provenance line is answer.head, so it never counts against a row (maxWords,
+    // notContains) the cell alone passes (2026-10-02)
+    text: String(g.answer),
+    head: grownHead(g),
     memory: null,
     exact: null,
     native: { kind: 'cell:' + g.id, answer: g.answer, form: g.class, ns },
@@ -1840,6 +1917,10 @@ async function askViaRegion(brain, prompt, opts) {
  *   learnSolved  true: a math region answer the memory verifies becomes a template
  *   programs   the program tier (board 26, item wire-induce): false turns it off; a path or a store object replaces
  *              PROGRAM_STORE; absent means PROGRAM_STORE when it is on disk. programFloor replaces PROGRAM.floor
+ *   root       a tree whose grown/index.mjs and neo/know/ answer instead of this checkout's (grownRoot, nativeRoot: each alone);
+ *              grown false skips the grown cells, a function replaces grownAnswer
+ *   native     false skips the native answer over the knowledge packs (act/native.mjs); thread (earlier prompts, newest
+ *              last) or last (the via of the answer before) carry a follow-up's relation
  * @returns {Promise<object>} the answer, with provenance
  */
 export async function ask(brain, prompt, opts = {}) {
@@ -1861,9 +1942,28 @@ export async function ask(brain, prompt, opts = {}) {
   // are copied into the tab layer and the function, so the site answers natively"): the first survivor whose can()
   // holds answers, with no model. Generation 0 holds none, so grownAnswer returns null and nothing here changes.
   // opts.grown false skips it.
-  if (opts.grown !== false) {
+  // THE SHELF READS BEFORE THE COLONIES (contract c11, 2026-10-02). The native reader (act/native.mjs) runs once here.
+  // A NEO colony is compiled from the same knowledge packs (its task is a pack column pair, grow/intake.mjs), so a prompt
+  // the shelf reads in full, one way, is not handed to a grown cell: a cell could only repeat the shelf's value or
+  // contradict it (measured on generation 6: "which country has the capital Paris" gave "Dushanbe is the capital of
+  // Tajikistan."). The shelf's answer is still served at the native tier below, after the exact path and the code
+  // readers, so the order is unchanged for every prompt the shelf cannot read; and for one it can, the colonies'
+  // modules are never loaded (a cold start). opts.native false (or prose) keeps the colonies first for every prompt.
+  // THE EXACT READER LIKEWISE (item 5 of the same brief: the forty prompts). act/solve.mjs reads arithmetic, units and
+  // equations exactly; generation 6's colonies answered five of them first and wrong ("how many seconds are in an
+  // hour" gave "congo"). It is read here once, and its answer is still served at the early exact path below, after
+  // the solved region and spawn, as before. opts.exact false (or prose) keeps the colonies first.
+  const nativeOn = opts.native !== false && opts.prose !== true;
+  const shelf = nativeOn ? nativeAnswer(text0, { root: nativeRootOf(opts), last: opts.last, thread: opts.thread }) : null;
+  const exactOn = opts.prose !== true && opts.exact !== false;
+  let exact0 = null, exactNs = 0;
+  if (exactOn) { const te = process.hrtime.bigint(); exact0 = solve(text0); exactNs = Number(process.hrtime.bigint() - te); }
+  if (opts.grown !== false && !shelf && !exact0) {
+    const hook = await grownHookFor(opts);
     const tg = process.hrtime.bigint();
-    const g = grownAnswer(text0);
+    let g = null;
+    try { g = hook(text0); } catch { g = null; }
+    if (g && !(typeof g.answer === 'string' && g.answer.trim())) g = null;
     if (g) return answerFromGrown(brain, text0, { ...g, ns: Number(process.hrtime.bigint() - tg) }, started0);
   }
   // The solved region (Board 15, item ns; board 15 builder), right after direct: a verified program
@@ -1886,13 +1986,11 @@ export async function ask(brain, prompt, opts = {}) {
   // the spawn route on purpose: a question that can grow the cells that answer it (his P7) grows them first;
   // the calculator answers what no circuit carried.
   let earlyMiss = false; // the early exact path ran solve(text0) and it computed nothing (board 20 builder)
-  if (opts.prose !== true && opts.exact !== false) {
-    const t0 = process.hrtime.bigint();
-    const early = solve(text0);
-    if (early) {
-      const ns = Number(process.hrtime.bigint() - t0);
-      learnDirect(opts, text0, { exact: early });
-      return answerFromExact(brain, text0, early, ns, started0);
+  if (exactOn) {
+    // read once, above the grown cells (exact0, exactNs)
+    if (exact0) {
+      learnDirect(opts, text0, { exact: exact0 });
+      return answerFromExact(brain, text0, exact0, exactNs, started0);
     }
     earlyMiss = true;
   }
@@ -1909,6 +2007,13 @@ export async function ask(brain, prompt, opts = {}) {
     }
     CODE_NATIVE.refused++;
   }
+  // THE NATIVE ANSWER (act/native.mjs, contract c11; his 2026-10-02 order: "$0 per token ... works Exaxtly like a
+  // FRONTEIR LLM"): after the exact path and the serving colonies, before memory, the knowledge tier and every model
+  // cell. A question read in full against the shelved knowledge packs is looked up and composed in one sentence; one it
+  // cannot read in full, or reads two ways, falls through untouched. opts.thread (the earlier prompts) or opts.last (the
+  // via of the answer before) carry a follow-up's relation. opts.native false skips it. The reading was made once, above
+  // the grown cells (shelf).
+  if (nativeOn && shelf) return answerFromKnow(brain, text0, shelf, started0);
   const route = routeFor(brain, opts);
   const started = Date.now();
   const text = String(prompt ?? '');

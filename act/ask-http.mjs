@@ -53,6 +53,17 @@
 // same row, its reply the growing head), so a cell grows for it. On no hit everything is exactly as without reach.
 // The guard's allowlist gains the two reach origins (act/reach.mjs REACH_ORIGINS) when reach is on at cold start.
 // The judged organism (act/prompt.mjs ask, judge/baseline.mjs) never reaches: only this handler imports reach.
+//
+// THE THREAD AND THE NATIVE ANSWER (contract c11, 2026-10-02). A body may carry "thread" (the earlier prompts of the
+// conversation, newest last; at most THREAD.prompts, each at most LIMITS.promptChars) and "last" (the native.via of the
+// answer before): ask() reads a follow-up ("and germany?") against them, so the server keeps no state. A native answer
+// returns native.via (the pack, the key, the column, the operation); a grown cell's provenance line is json.head, never
+// part of json.text.
+//
+// THE REQUESTS (contract c10). At the same memory miss, when a root whose neo/ is writable is named (o.requestsRoot, else
+// the environment's BRAIN_REQUESTS_ROOT, else this checkout on a GitHub Actions runner, GITHUB_ACTIONS "true"), the miss
+// is appended to <root>/neo/requests.jsonl as {"at","q","from"} (q scrubbed of credential shapes), for grow/intake.mjs to
+// open a task from. On Vercel the disk is read only and nothing is named, so the miss goes to Supabase (logMiss) alone.
 import fs from 'node:fs';
 import http from 'node:http';
 import https from 'node:https';
@@ -71,6 +82,18 @@ import { appAnswer } from '../grown/apps.mjs'; // Day 2, the builder arm: the ap
 import { reach, reachEnabled, REACH_ORIGINS } from './reach.mjs'; // Order 7, REACH: a memory miss pulled up from the open internet
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+/**
+ * What a root serves without a model (contract c11): the knowledge packs its neo/know/INDEX.json lists and the grown
+ * cells its grown/index.json lists, each counted from its index alone (no pack and no cell module is loaded), so a
+ * deploy's GET shows whether the function bundle carries them. { packs, cells }; 0 for a missing or unreadable index.
+ */
+export function servingOf(o = {}) {
+  const at = (k) => path.resolve(typeof o[k] === 'string' && o[k] ? o[k] : typeof o.root === 'string' && o.root ? o.root : ROOT);
+  const count = (f, key) => {
+    try { const j = JSON.parse(fs.readFileSync(f, 'utf8')); return j && Array.isArray(j[key]) ? j[key].length : 0; } catch { return 0; }
+  };
+  return { packs: count(path.join(at('nativeRoot'), 'neo', 'know', 'INDEX.json'), 'packs'), cells: count(path.join(at('grownRoot'), 'grown', 'index.json'), 'cells') };
+}
 // The knowledge store the function answers from: the full store when the host has it (this machine),
 // else the 200 MB pack tools/knowledge-pack.mjs wrote in the same format (bench/verdicts/knowledge-pack.json:
 // recall first 62, top five 78 on 200 held-out questions), which vercel.json includeFiles ships with the
@@ -86,6 +109,39 @@ export const MODEL_NAME = 'BRAIN_LLM_MODEL';
 export const BRAIN_NAME = 'dilation';
 export const LIMITS = Object.freeze({ promptChars: 2000, bodyBytes: 32 * 1024, ipPerMin: 20, instancePerMin: 300, ipTable: 5000, logBytes: 256 * 1024, modelMs: 25_000 });
 /** The footer fields of `brain ask`, as this endpoint returns them (GET lists them). */
+/** prompts: the earlier prompts a body's thread may carry; field: the longest string of a last field. */
+export const THREAD = Object.freeze({ prompts: 4, field: 200 });
+export const REQUESTS_FILE = 'neo/requests.jsonl';
+export const REQUESTS_ROOT_NAME = 'BRAIN_REQUESTS_ROOT';
+/** The root whose neo/requests.jsonl takes this process's misses, or null (none named, or its neo/ not writable). */
+export function requestsRootFor(o = {}, env = process.env) {
+  const named = typeof o.requestsRoot === 'string' && o.requestsRoot ? o.requestsRoot
+    : env && typeof env[REQUESTS_ROOT_NAME] === 'string' && env[REQUESTS_ROOT_NAME] ? env[REQUESTS_ROOT_NAME]
+      : env && env.GITHUB_ACTIONS === 'true' ? ROOT : null;
+  if (!named || o.requestsRoot === false) return null;
+  const neo = path.join(path.resolve(named), 'neo');
+  try { if (!fs.statSync(neo).isDirectory()) return null; fs.accessSync(neo, fs.constants.W_OK); return path.resolve(named); } catch { return null; }
+}
+/** Append one miss to <root>/neo/requests.jsonl; never throws: { appended, reason }. */
+export function appendRequest(root, q, { from = 'ask-http', at = new Date().toISOString() } = {}) {
+  if (!root) return { appended: false, reason: 'no writable root is named' };
+  try {
+    fs.appendFileSync(path.join(root, ...REQUESTS_FILE.split('/')), JSON.stringify({ at, q: scrubSecrets(String(q)).text.slice(0, LIMITS.promptChars), from }) + '\n');
+    return { appended: true, reason: 'appended to ' + REQUESTS_FILE };
+  } catch (e) { return { appended: false, reason: 'not appended (' + String((e && e.code) || 'error') + ')' }; }
+}
+/** A body's thread: its last THREAD.prompts strings, each non-empty and at most LIMITS.promptChars; null when there are none. */
+export function threadOf(x) {
+  if (!Array.isArray(x)) return null;
+  const t = x.filter((p) => typeof p === 'string' && p.trim() && p.length <= LIMITS.promptChars).slice(-THREAD.prompts);
+  return t.length ? t : null;
+}
+/** A body's last: { pack, column, keyColumn } strings of at most THREAD.field characters, or null. */
+export function lastOf(x) {
+  if (!x || typeof x !== 'object' || Array.isArray(x)) return null;
+  const ok = (v) => typeof v === 'string' && v.length > 0 && v.length <= THREAD.field;
+  return ok(x.pack) && ok(x.column) && ok(x.keyColumn) ? { pack: x.pack, column: x.column, keyColumn: x.keyColumn } : null;
+}
 export const FOOTER = Object.freeze(['text', 'from', 'route', 'provenance', 'exact', 'native', 'llm', 'promptHash', 'promptChars', 'redacted', 'serverUs', 'host', 'knowledge']);
 export const NOT_CONFIGURED = 'the model cell is not configured on this host: the environment does not hold both ' + BASE_NAME + ' and ' + KEY_NAME + ', so the null provider (offline, no model, no socket) stood in';
 export const USAGE = 'POST application/json {"prompt": "..."} to this path; the organism answers with act/prompt.mjs ask(), as `node bin/brain.mjs ask dilation "..."` does, and returns the CLI footer fields. At most ' + LIMITS.promptChars + ' chars, ' + LIMITS.ipPerMin + ' asks a minute per client.';
@@ -240,6 +296,12 @@ export function createHandler(o = {}) {
   const reachOn = (env) => o.reach !== false && reachEnabled(env);
   const reachFn = typeof o.reach === 'function' ? o.reach : reach;
 
+  // a root of its own for the grown cells and the knowledge packs (a test's fixture root), or either alone; o.native false
+  // skips the native tier. Read once, for the warm asks of coldStart and for every ask.
+  const rootOpts = {};
+  for (const k of ['root', 'grownRoot', 'nativeRoot']) if (typeof o[k] === 'string' && o[k]) rootOpts[k] = o[k];
+  if (o.native === false) rootOpts.native = false;
+
   async function coldStart(env) {
     const t0 = performance.now();
     let guard = null;
@@ -259,12 +321,16 @@ export function createHandler(o = {}) {
     // (and the ask path around it, on a throwaway brain with the null provider: no model is ever warmed)
     solve('what is 17 times 23'); solve('write a poem about the sea');
     const warm = seedBasic({ name: 'warm', ledger: 'off' });
-    for (const q of ['what is 17 times 23', 'write a poem about the sea']) await ask(warm, q, { provider: 'null', k: 5, events: [] });
+    // (never the grown cells: generation 6 holds 113 colony modules, 32 MB, about 930 ms to import, which a cold start
+    // cannot afford; they load on the first prompt that reaches them, and a prompt the shelf reads never does. The warm
+    // asks read the handler's own roots, so a test's fixture root is the one warmed. 2026-10-02)
+    const warmOpts = { provider: 'null', k: 5, events: [], grown: false, ...rootOpts };
+    for (const q of ['what is 17 times 23', 'write a poem about the sea']) await ask(warm, q, warmOpts);
     const kdir = knowledgeDir();
     const k = knowledgeReady(kdir);
     const knowledge = { ready: Boolean(k.ok), why: rel(k.ok ? (kdir ? 'the 200 MB knowledge pack is open to the tier' : 'the knowledge store is ingested and open to the tier') : k.reason), dir: kdir ? rel(kdir) : null };
     stats.coldStartMs = Number((performance.now() - t0).toFixed(3));
-    return { brain, knowledge, guard };
+    return { brain, knowledge, guard, serving: servingOf(rootOpts) };
   }
 
   function limit(ip, now) {
@@ -314,7 +380,7 @@ export function createHandler(o = {}) {
     if (method === 'GET' || method === 'HEAD') {
       if (!cold) cold = coldStart(env);
       const s = await cold;
-      return done(200, { ok: true, usage: USAGE, footer: FOOTER.slice(), host, knowledge: s.knowledge, model: { configured: modelConfigured(env), provider: modelConfigured(env) ? 'env' : 'null', names: [BASE_NAME, KEY_NAME, MODEL_NAME] } });
+      return done(200, { ok: true, usage: USAGE, footer: FOOTER.slice(), host, knowledge: s.knowledge, serving: s.serving, model: { configured: modelConfigured(env), provider: modelConfigured(env) ? 'env' : 'null', names: [BASE_NAME, KEY_NAME, MODEL_NAME] } });
     }
     if (method !== 'POST') return done(405, { ok: false, error: 'method ' + method + ' is not served: GET for usage, POST {"prompt"} to ask' }, { allow: 'GET, POST, OPTIONS' });
     // the buckets come before parsing, so a flood of bad bodies is limited too
@@ -344,6 +410,10 @@ export function createHandler(o = {}) {
       : { provider: 'null', k: 5, events: [] };
     if (s.knowledge.dir) opts.knowledge = PACK_DIR;
     if (o.grown === false) opts.grown = false; // the organism without its grown cells (tests only: grown/ grows every generation, so a test never depends on what it holds)
+    Object.assign(opts, rootOpts);
+    const thread = threadOf(obj.thread), last = lastOf(obj.last);
+    if (thread) opts.thread = thread;
+    if (last) opts.last = last;
     const t0 = process.hrtime.bigint();
     let a;
     try { a = await ask(s.brain, prompt, opts); } catch (e) {
@@ -362,7 +432,9 @@ export function createHandler(o = {}) {
       provenance: { answer: p.answer ?? null, method: p.method ?? null, memoryHits: p.memoryHits ?? 0, webPages: p.webPages ?? 0, modelAgreed: p.modelAgreed ?? null },
       exact: a.exact ? { answer: a.exact.answer, method: a.exact.method, ...(typeof a.exact.ns === 'number' ? { ns: a.exact.ns } : {}) } : null,
       // The native conversation region (act/converse.mjs): the page renders native.answer the way it renders exact.answer.
-      native: a.native && a.native.answer != null ? { kind: a.native.kind, answer: a.native.answer, form: a.native.form ?? null, ...(typeof a.native.ns === 'number' ? { ns: a.native.ns } : {}) } : null,
+      native: a.native && a.native.answer != null ? { kind: a.native.kind, answer: a.native.answer, form: a.native.form ?? null, ...(typeof a.native.ns === 'number' ? { ns: a.native.ns } : {}), ...(a.native.via ? { via: a.native.via } : {}) } : null,
+      // a grown cell's provenance line (act/prompt.mjs answerFromGrown head): shown above the answer, never part of text
+      ...(typeof a.head === 'string' && a.head ? { head: a.head } : {}),
       llm,
       promptHash: a.promptHash, promptChars: a.promptChars, redacted: a.redacted || 0,
       cites: Array.isArray(a.cites) ? a.cites.slice(0, 5) : [],
@@ -394,6 +466,9 @@ export function createHandler(o = {}) {
       const reaching = reachOn(env) ? (async () => { try { return await reachFn(prompt, o.reachOpts || {}); } catch { return null; } })() : null;
       const [g, hit] = await Promise.all([logging, reaching]);
       json.growing = { logged: Boolean(g.logged), reason: g.reason };
+      // the runner's own log of misses (contract c10): only where a root is writable, never on Vercel
+      const rq = requestsRootFor(o, env);
+      if (rq) json.growing.requested = appendRequest(rq, prompt, { from: 'ask-http:' + host, at: new Date(now).toISOString() }).appended;
       // the head says the miss is logged; when it was not, the second line says so (the first line stays the head)
       if (!json.growing.logged) json.text = GROWING_HEAD + '\n(' + g.reason + ')\n' + a.text;
       // a hit: the reached text first (its Source line last), then the growing head, so a person knows a cell is growing

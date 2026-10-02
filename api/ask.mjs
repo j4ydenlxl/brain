@@ -9,6 +9,15 @@
 //
 // Vercel's Node helpers may have read and parsed the body already (req.body): a parse error there is
 // a 400 here, an object is handed on as it is, and a raw stream is read with a byte cap.
+//
+// THE BUNDLE (contract c11, 2026-10-02). The function answers with no model from two things the organism writes in the
+// cloud: the knowledge packs (neo/know/*.json, read by act/native.mjs with fs, so no import traces them) and the
+// serving colonies (grown/index.mjs and grown/cells/*.mjs, imported on the first prompt the shelf cannot read).
+// INCLUDE_FILES is the exact includeFiles value vercel.json must carry for api/ask.mjs (vercel.json is SURFACE's file);
+// a GET shows serving: { packs, cells }, counted from the two indexes, so a deploy proves the bundle carries both.
+// The colonies are never loaded at a cold start (act/ask-http.mjs coldStart): a prompt the shelf reads is answered in
+// the time the shelf takes to open.
+export const INCLUDE_FILES = '{world/policy.json,bench/fixtures/wiki/pack-200/**,neo/know/**,grown/**}';
 import { handle, LIMITS } from '../act/ask-http.mjs';
 
 async function readBody(req) {

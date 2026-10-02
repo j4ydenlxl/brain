@@ -12,13 +12,21 @@ import path from 'node:path';
 import http from 'node:http';
 import { spawn } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { createHandler, FOOTER, LIMITS, NOT_CONFIGURED, modelConfigured, keyNameFor, OIDC_NAME, appUrl } from '../act/ask-http.mjs';
+import { createHandler as createHandlerAt, FOOTER, LIMITS, NOT_CONFIGURED, modelConfigured, keyNameFor, OIDC_NAME, appUrl, THREAD, REQUESTS_ROOT_NAME, appendRequest, lastOf, requestsRootFor, servingOf, threadOf } from '../act/ask-http.mjs';
 import { buildRequest } from '../grow/app-slug.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'ask-http-test-'));
 process.on('exit', () => { try { fs.rmSync(TMP, { recursive: true, force: true }); } catch { /* best effort */ } });
 const KEY = 'plantedkey-3141592653-not-a-real-key';
+// THE SUITE'S OWN ROOT (2026-10-02): a grown/index.mjs with no survivor and no knowledge pack, so no handler of this file
+// answers from what the tree's grown/ or neo/know/ hold (the organism changes both every era). NO_NATIVE: a root with
+// nothing, for the children whose module hook plants a grown cell over the tree's own index.
+const FIX = fs.mkdtempSync(path.join(TMP, 'root-'));
+fs.mkdirSync(path.join(FIX, 'grown'));
+fs.writeFileSync(path.join(FIX, 'grown', 'index.mjs'), 'export const GROWN = Object.freeze([]);\nexport function grownAnswer() { return null; }\n');
+const NO_NATIVE = path.join(TMP, 'no-native');
+const createHandler = (o = {}) => createHandlerAt({ root: FIX, ...o });
 const post = (prompt, extra = {}) => ({ method: 'POST', body: JSON.stringify({ prompt }), ip: '10.0.0.1', env: {}, ...extra });
 
 test('POST "what is 17 times 23" answers 391, route direct, provenance exact, an integer serverUs, the CLI footer fields', async () => {
@@ -126,7 +134,7 @@ const http = await import('node:http');
 const own = http.createServer((q, s) => s.end('own server'));
 await new Promise((r) => own.listen(0, '127.0.0.1', r));
 const m = await import(${JSON.stringify(HANDLER)});
-const h = m.createHandler({ stateDir: ${JSON.stringify(stateDir)}, grown: false });
+const h = m.createHandler({ stateDir: ${JSON.stringify(stateDir)}, grown: false, root: ${JSON.stringify(FIX)} });
 const r = await h({ method: 'POST', body: JSON.stringify({ prompt: 'write a poem about the sea' }), ip: 'c' });
 let egress = null;
 try { await fetch('http://example.com/'); egress = 'reached'; } catch (e) { egress = e.code || String(e); }
@@ -376,7 +384,7 @@ test('the guard allowlist gains the miss log origin and nothing else, in a child
   try {
     const code = [
       'const m = await import(' + JSON.stringify(HANDLER) + ');',
-      'const h = m.createHandler({ stateDir: ' + JSON.stringify(path.join(TMP, 'grow-guard')) + ', grown: false });',
+      'const h = m.createHandler({ stateDir: ' + JSON.stringify(path.join(TMP, 'grow-guard')) + ', grown: false, root: ' + JSON.stringify(FIX) + ' });',
       "const r = await h({ method: 'POST', body: JSON.stringify({ prompt: 'jgkafsjka' }), ip: 'c' });",
       'let egress = null;',
       "try { await fetch('http://example.com/'); egress = 'reached'; } catch (e) { egress = e.code || String(e); }",
@@ -411,7 +419,7 @@ test('a grown cell planted over grown/index.mjs answers through the handler: fro
       'const PLANTED = ' + JSON.stringify(pathToFileURL(planted).href) + ';',
       "registerHooks({ resolve(spec, ctx, next) { if (spec === '../grown/index.mjs' && String(ctx.parentURL).endsWith('/act/prompt.mjs')) return { url: PLANTED, shortCircuit: true }; return next(spec, ctx); } });",
       'const m = await import(' + JSON.stringify(HANDLER) + ');',
-      'const h = m.createHandler({ stateDir: ' + JSON.stringify(path.join(TMP, 'grow-planted')) + ' });',
+      'const h = m.createHandler({ stateDir: ' + JSON.stringify(path.join(TMP, 'grow-planted')) + ', nativeRoot: ' + JSON.stringify(NO_NATIVE) + ' });',
       "const r = await h({ method: 'POST', body: JSON.stringify({ prompt: 'jgkafsjka' }), ip: 'c' });",
       "const miss = await h({ method: 'POST', body: JSON.stringify({ prompt: 'qzxvbnmw' }), ip: 'c' });",
       "console.log('RESULT ' + JSON.stringify({ r: r.json, miss: { from: miss.json.from, growing: miss.json.growing } }));",
@@ -424,7 +432,9 @@ test('a grown cell planted over grown/index.mjs answers through the handler: fro
     assert.equal(x.r.provenance.method, 'mash-planted');
     assert.equal(x.r.native.kind, 'cell:mash-planted');
     assert.equal(x.r.native.answer, 'That reads as a keyboard mash.');
-    assert.match(x.r.text, /^answered natively by a grown cell \(mash-planted, generation 1\)/);
+    // the provenance line is json.head; the text is the cell's answer alone (2026-10-02)
+    assert.match(x.r.head, /^answered natively by a grown cell \(mash-planted, generation 1\)/);
+    assert.equal(x.r.text, 'That reads as a keyboard mash.');
     assert.equal('growing' in x.r, false, 'a grown answer is not a miss');
     // the matched control in the same child: a prompt the planted cell does not carry is still a logged miss
     assert.equal(x.miss.from, 'memory');
@@ -573,7 +583,7 @@ test('REACH: the guard allowlist gains the two reach origins when reach is on an
   const code = (dir) => [
     'const m = await import(' + JSON.stringify(HANDLER) + ');',
     'const s = await import(' + JSON.stringify(SERVE) + ');',
-    'const h = m.createHandler({ stateDir: ' + JSON.stringify(dir) + ', grown: false });',
+    'const h = m.createHandler({ stateDir: ' + JSON.stringify(dir) + ', grown: false, root: ' + JSON.stringify(FIX) + ' });',
     "const g = await h({ method: 'GET' });",
     'const allow = globalThis.__brainEgressGuard.allow;',
     "const check = (u) => s.checkEgress(allow, u).ok;",
@@ -590,4 +600,129 @@ test('REACH: the guard allowlist gains the two reach origins when reach is on an
   assert.deepEqual(on.entries.filter((e) => !off.entries.includes(e)).sort(), ['api.dictionaryapi.dev:443', 'en.wikipedia.org:443'], 'reach gained the two origins and nothing else');
   assert.deepEqual(off.entries.filter((e) => !on.entries.includes(e)), []);
   assert.equal(on.egress, 'EGRESS_REFUSED', 'example.com is still refused with reach on');
+});
+
+// ---------------------------------------------------------------- the native answer, the thread and the requests (contracts c11, c10)
+function knowRoot(name, { neo = true } = {}) {
+  const root = fs.mkdtempSync(path.join(TMP, name + '-'));
+  fs.mkdirSync(path.join(root, 'grown'));
+  fs.writeFileSync(path.join(root, 'grown', 'index.mjs'), 'export const GROWN = Object.freeze([]);\nexport function grownAnswer() { return null; }\n');
+  if (!neo) return root;
+  const know = path.join(root, 'neo', 'know');
+  fs.mkdirSync(know, { recursive: true });
+  const packs = {
+    'samayo-capital': { columns: ['country', 'capital'], rows: [['France', 'Paris'], ['Germany', 'Berlin'], ['Peru', 'Lima'], ['Tajikistan', 'Dushanbe']] },
+    'samayo-continent': { columns: ['country', 'continent'], rows: [['France', 'Europe'], ['Germany', 'Europe'], ['Peru', 'South America']] },
+  };
+  for (const [id, p] of Object.entries(packs)) fs.writeFileSync(path.join(know, id + '.json'), JSON.stringify({ id, from: 'fixture', sha: 's-' + id, columns: p.columns, rows: p.rows, at: 'x' }));
+  fs.writeFileSync(path.join(know, 'INDEX.json'), JSON.stringify({ packs: Object.entries(packs).map(([id, p]) => ({ id, columns: p.columns, rows: p.rows.length, sha: 's-' + id })) }));
+  return root;
+}
+
+test('a native answer through the handler: route native, native.via, no head, no growing; a thread and a last carry a follow-up', async () => {
+  const root = knowRoot('native');
+  const h = createHandlerAt({ stateDir: path.join(TMP, 'native'), grown: false, root, reach: false });
+  const r = await h(post('which country has the capital Paris'));
+  assert.equal(r.status, 200);
+  assert.deepEqual([r.json.from, r.json.route, r.json.text], ['native', 'native', 'France is the country whose capital is Paris.']);
+  assert.deepEqual(r.json.native.via, { pack: 'samayo-capital', key: 'Paris', column: 'country', keyColumn: 'capital', op: 'lookup', packs: ['samayo-capital'] });
+  assert.equal('head' in r.json, false);
+  assert.equal('growing' in r.json, false, 'a native answer is not a miss');
+  for (const k of FOOTER) assert.ok(k in r.json, 'footer field ' + k);
+  const first = await h(post('what continent is Peru in'));
+  const viaThread = await h({ method: 'POST', body: JSON.stringify({ prompt: 'and germany?', thread: ['what continent is Peru in'] }), ip: 't', env: {} });
+  assert.equal(viaThread.json.text, 'The continent of Germany is Europe.');
+  const viaLast = await h({ method: 'POST', body: JSON.stringify({ prompt: 'and germany?', last: first.json.native.via }), ip: 't', env: {} });
+  assert.equal(viaLast.json.text, 'The continent of Germany is Europe.');
+  const alone = await h({ method: 'POST', body: JSON.stringify({ prompt: 'and germany?' }), ip: 't', env: {} });
+  assert.notEqual(alone.json.route, 'native', 'no thread: no follow-up');
+  const off = createHandlerAt({ stateDir: path.join(TMP, 'native-off'), grown: false, root, native: false, reach: false });
+  assert.notEqual((await off(post('which country has the capital Paris'))).json.route, 'native', 'o.native false');
+});
+
+test('threadOf and lastOf: the last THREAD.prompts strings, each capped; a last of three short strings or null', () => {
+  assert.equal(threadOf(null), null);
+  assert.equal(threadOf('a'), null);
+  assert.equal(threadOf([1, '', '  ', {}]), null);
+  assert.deepEqual(threadOf(['a', 'b', 'c', 'd', 'e', 'x'.repeat(LIMITS.promptChars + 1)]), ['b', 'c', 'd', 'e'].slice(-THREAD.prompts));
+  assert.deepEqual(lastOf({ pack: 'p', column: 'c', keyColumn: 'k', extra: 1 }), { pack: 'p', column: 'c', keyColumn: 'k' });
+  assert.equal(lastOf({ pack: 'p', column: 'c' }), null);
+  assert.equal(lastOf({ pack: 'x'.repeat(THREAD.field + 1), column: 'c', keyColumn: 'k' }), null);
+  assert.equal(lastOf(['p', 'c', 'k']), null);
+});
+
+test('a memory miss is appended to neo/requests.jsonl only where a root is writable: o.requestsRoot, the named variable, a runner; never otherwise', async () => {
+  const runner = knowRoot('requests');
+  const h = createHandlerAt({ stateDir: path.join(TMP, 'req'), grown: false, root: FIX, reach: false, requestsRoot: runner });
+  const r = await h(post('qzxvbnmw ' + KEY.slice(0, 4)));
+  assert.equal(r.json.growing.requested, true);
+  const rows = fs.readFileSync(path.join(runner, 'neo', 'requests.jsonl'), 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l));
+  assert.equal(rows.length, 1);
+  assert.deepEqual(Object.keys(rows[0]), ['at', 'q', 'from']);
+  assert.equal(rows[0].q, 'qzxvbnmw ' + KEY.slice(0, 4));
+  assert.equal(rows[0].from, 'ask-http:local');
+  // an answer is not a miss: nothing appended
+  await h(post('what is 17 times 23'));
+  assert.equal(fs.readFileSync(path.join(runner, 'neo', 'requests.jsonl'), 'utf8').split('\n').filter(Boolean).length, 1);
+  // no root named (the PC, Vercel): no growing.requested field and no file anywhere
+  const none = createHandlerAt({ stateDir: path.join(TMP, 'req-none'), grown: false, root: FIX, reach: false });
+  const n = await none(post('qzxvbnmw'));
+  assert.equal('requested' in n.json.growing, false);
+  // the names: o.requestsRoot, BRAIN_REQUESTS_ROOT, GITHUB_ACTIONS on this checkout; a root without neo/ is not writable
+  assert.equal(requestsRootFor({ requestsRoot: runner }, {}), path.resolve(runner));
+  assert.equal(requestsRootFor({}, { [REQUESTS_ROOT_NAME]: runner }), path.resolve(runner));
+  assert.equal(requestsRootFor({}, {}), null);
+  assert.equal(requestsRootFor({ requestsRoot: knowRoot('bare', { neo: false }) }, {}), null);
+  assert.equal(requestsRootFor({ requestsRoot: false }, { [REQUESTS_ROOT_NAME]: runner }), null);
+  assert.equal(requestsRootFor({}, { GITHUB_ACTIONS: 'true' }) === null || requestsRootFor({}, { GITHUB_ACTIONS: 'true' }) === ROOT, true);
+  assert.deepEqual(appendRequest(null, 'q'), { appended: false, reason: 'no writable root is named' });
+  assert.equal(appendRequest(path.join(TMP, 'nowhere'), 'q').appended, false);
+});
+
+test('the cold start never loads the grown cells; a prompt the shelf reads never loads them; the first prompt that reaches them does, once', async () => {
+  const root = knowRoot('cold');
+  // an index that counts its own imports (generation 6's real one is 113 modules, 32 MB)
+  fs.writeFileSync(path.join(root, 'grown', 'index.mjs'), 'globalThis.__coldGrownImports = (globalThis.__coldGrownImports || 0) + 1;\nexport const GROWN = Object.freeze([]);\nexport function grownAnswer() { return null; }\n');
+  const h = createHandlerAt({ stateDir: path.join(TMP, 'cold'), root, reach: false });
+  const a = await h(post('which country has the capital Paris'));
+  assert.equal(a.json.route, 'native');
+  assert.equal(globalThis.__coldGrownImports, undefined, 'the warm asks and a shelf prompt leave the cells unloaded');
+  const b = await h(post('write a limerick about a qzxv'));
+  assert.notEqual(b.json.route, 'native');
+  assert.equal(globalThis.__coldGrownImports, 1);
+  await h(post('write a limerick about a qzxw'));
+  assert.equal(globalThis.__coldGrownImports, 1, 'once per instance');
+});
+
+// one level of braces, ** across directories, * inside one: the includeFiles glob as Vercel reads it
+const globRe = (g) => {
+  const m = /^\{(.*)\}$/.exec(g);
+  const alts = m ? m[1].split(',') : [g];
+  const one = (a) => a.split('**').map((p) => p.split('*').map((s) => s.replace(/[.+?^${}()|[\]\\]/g, '\\$&')).join('[^/]*')).join('.*');
+  return new RegExp('^(?:' + alts.map(one).join('|') + ')$');
+};
+
+test('the bundle: INCLUDE_FILES carries the packs, the colonies and what it carried before, never a task; GET counts what a root serves', async () => {
+  const { INCLUDE_FILES } = await import('../api/ask.mjs');
+  const re = globRe(INCLUDE_FILES);
+  for (const f of ['neo/know/INDEX.json', 'neo/know/samayo-capital.json', 'grown/index.mjs', 'grown/index.json', 'grown/cells/country-capital-neo-g6.mjs', 'grown/apps.mjs', 'world/policy.json', 'bench/fixtures/wiki/pack-200/meta.json']) assert.match(f, re, f);
+  for (const f of ['neo/tasks/capital-country/heldout.jsonl', 'neo/requests.jsonl', 'neo/LEDGER.json', 'judge/heldout/x.jsonl', 'state/x', 'bench/fixtures/other/x']) assert.doesNotMatch(f, re, f);
+  // servingOf: counted from the two indexes alone
+  const root = knowRoot('serving');
+  assert.deepEqual(servingOf({ root }), { packs: 2, cells: 0 });
+  fs.writeFileSync(path.join(root, 'grown', 'index.json'), JSON.stringify({ generation: 6, cells: [{ id: 'a' }, { id: 'b' }, { id: 'c' }] }));
+  assert.deepEqual(servingOf({ root }), { packs: 2, cells: 3 });
+  assert.deepEqual(servingOf({ root: path.join(TMP, 'nowhere') }), { packs: 0, cells: 0 });
+  assert.deepEqual(servingOf({ root: path.join(TMP, 'nowhere'), nativeRoot: root }), { packs: 2, cells: 0 });
+  fs.writeFileSync(path.join(root, 'neo', 'know', 'INDEX.json'), '{not json');
+  assert.deepEqual(servingOf({ root }), { packs: 0, cells: 3 });
+  const h = createHandlerAt({ stateDir: path.join(TMP, 'serving'), root: knowRoot('serving-get'), reach: false });
+  const g = await h({ method: 'GET', env: {} });
+  assert.deepEqual(g.json.serving, { packs: 2, cells: 0 });
+});
+
+test('vercel.json (SURFACE) carries INCLUDE_FILES for api/ask.mjs', async () => {
+  const { INCLUDE_FILES } = await import('../api/ask.mjs');
+  const vercel = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8'));
+  assert.equal(vercel.functions['api/ask.mjs'].includeFiles, INCLUDE_FILES);
 });
