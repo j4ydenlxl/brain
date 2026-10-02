@@ -19,7 +19,13 @@
 // Run: node web/build.mjs
 //      node web/build.mjs --pocket <dir> [--root <dir>]   only /ask, the pocket and THE BODY into <dir>, with the list
 //      and sizes of what the body's worker needs (web/pocket-era.mjs); nothing under web/dist is written
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+//      node web/build.mjs --refresh [--dist <dir>] [--root <dir>]   only the pages that read the organism (/ask with
+//      its pocket and the device tier under /organism/, and /alive) from neo/ and grown/ as they are now, into web/dist
+//      (or <dir>). The host runs it after every push (vercel.json buildCommand), so a push that carries only neo/ and
+//      grown/ still reaches the pages. It needs no secret, no network and none of what .vercelignore leaves out; it
+//      builds into a staging directory beside <dir> and swaps each part in only when every part built, prints one JSON
+//      line, and exits 0 either way (a refresh that fails leaves the committed pages as they were and says why).
+import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, renameSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 // The findings page is part of the site, so it is built when the site is built. It reads
@@ -53,6 +59,7 @@ import { injectYield } from './yield.mjs';
 // The living page (his plan: "A living page, dilation.dev/alive"; Day 3 board, alive builder): grown/ and the two grow/ jsonl
 // files rendered at /alive with the same numbers in /alive/data.json (web/alive.mjs). The stamp is this build's clock, passed in.
 import { generateAlive } from './alive.mjs';
+import { generateDatacenter } from './datacenter.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SRC = join(HERE, 'src');
@@ -488,12 +495,51 @@ export function write(opts = {}) {
   const handoff = generateHandoff();
   const ask = generateAsk();
   const alive = generateAlive({ root: ROOT_DIR, outDir: join(DIST, 'alive'), builtAt: new Date().toISOString() });
+  const datacenter = generateDatacenter({ root: ROOT_DIR, outDir: join(DIST, 'datacenter'), builtAt: new Date().toISOString() });
   return {
     js: Buffer.byteLength(js), html: Buffer.byteLength(html),
     total: Buffer.byteLength(js) + Buffer.byteLength(html),
     jsPath: join(DIST, 'app.js'), htmlPath: join(DIST, 'index.html'),
-    findings, yieldBlock, portfolio, ladder, handoff, ask, alive,
+    findings, yieldBlock, portfolio, ladder, handoff, ask, alive, datacenter,
   };
+}
+
+/** The parts of the site --refresh rebuilds: the pages that read neo/ and grown/, and the device tier they carry. */
+export const REFRESH_PARTS = Object.freeze(['ask', 'organism', 'alive', 'datacenter']);
+
+/** A part's name: one plain directory segment of the dist. */
+const PART_RE = /^[a-z][a-z0-9-]{0,40}$/;
+
+/**
+ * Rebuild the parts (REFRESH_PARTS by default) from root into dist. Everything is built in a staging directory beside
+ * dist first; only when every named part is staged is each one swapped in, so a failure, or a part the build did not
+ * stage, leaves dist as it was. Never throws.
+ * @returns {{ ok: boolean, why?: string, dist: string, parts?: string[], ask?: number, first?: number, cells?: number, alive?: number, data?: number, notRead?: string[] }}
+ */
+export function refresh({ root = ROOT_DIR, dist = DIST, builtAt = new Date().toISOString(), env = process.env, parts = REFRESH_PARTS } = {}) {
+  let stage = null;
+  try {
+    const bad = (Array.isArray(parts) && parts.length ? parts : [null]).filter((p) => typeof p !== 'string' || !PART_RE.test(p));
+    if (bad.length) throw new Error('a part is not one plain directory name: ' + bad.map(String).join(', '));
+    mkdirSync(dirname(dist), { recursive: true });
+    stage = mkdtempSync(join(dirname(dist), '.refresh-'));
+    const ask = generateAsk(stage, { root });
+    const alive = generateAlive({ root, outDir: join(stage, 'alive'), builtAt, env });
+    const datacenter = generateDatacenter({ root, outDir: join(stage, 'datacenter'), builtAt, env });
+    // all or nothing: every part must be staged before the first one is swapped in
+    const missing = parts.filter((p) => !existsSync(join(stage, p)));
+    if (missing.length) throw new Error('the build staged no ' + missing.join(', ') + '; nothing was swapped in');
+    mkdirSync(dist, { recursive: true });
+    for (const part of parts) {
+      rmSync(join(dist, part), { recursive: true, force: true });
+      renameSync(join(stage, part), join(dist, part));
+    }
+    return { ok: true, dist, parts: [...parts], ask: ask.bytes, first: ask.first.bytes, cells: ask.pocket.cells, alive: alive.bytes, data: alive.dataBytes, notRead: alive.notRead, datacenter: datacenter.bytes, screens: datacenter.screens };
+  } catch (e) {
+    return { ok: false, why: String((e && e.message) || e).split('\n')[0].slice(0, 300), dist };
+  } finally {
+    if (stage) rmSync(stage, { recursive: true, force: true });
+  }
 }
 
 /**
@@ -516,8 +562,14 @@ const IS_MAIN = Boolean(process.argv[1] && process.argv[1].endsWith('build.mjs')
 const POCKET_AT = process.argv.indexOf('--pocket');
 // --pocket <dir> [--root <dir>]: only /ask, the pocket and the body, into <dir>; nothing under web/dist is written.
 const POCKET_MODE = IS_MAIN && POCKET_AT >= 0;
+// --refresh [--dist <dir>] [--root <dir>]: only REFRESH_PARTS; one JSON line; exit 0.
+const REFRESH_MODE = IS_MAIN && !POCKET_MODE && process.argv.includes('--refresh');
 
-if (POCKET_MODE) {
+if (REFRESH_MODE) {
+  const val = (k) => { const i = process.argv.indexOf(k); const v = i >= 0 ? process.argv[i + 1] : undefined; return v && !v.startsWith('--') ? v : undefined; };
+  const r = refresh({ root: resolve(val('--root') || ROOT_DIR), dist: resolve(val('--dist') || DIST) });
+  console.log(JSON.stringify({ refresh: r.ok ? 'built' : 'kept the committed pages', ...r }));
+} else if (POCKET_MODE) {
   const dir = process.argv[POCKET_AT + 1];
   const rootAt = process.argv.indexOf('--root');
   const root = rootAt >= 0 ? process.argv[rootAt + 1] : ROOT_DIR;
@@ -575,8 +627,9 @@ if (POCKET_MODE) {
 
 // /tools: the Code Universe factory (his 2026-09-13 order; it lived at dilation.dev/tools/ from the
 // universe/factory deploy and a later whole-site deploy of web/dist removed it). Static, copied verbatim.
+// Only on a full build run as a program: importing this module (the tests do) writes nothing.
 import { cpSync as cpSyncTools } from 'node:fs';
-if (!POCKET_MODE) {
+if (IS_MAIN && !POCKET_MODE && !REFRESH_MODE) {
   cpSyncTools(new URL('./tools/', import.meta.url), new URL('./dist/tools/', import.meta.url), { recursive: true });
   console.log('tools: /tools copied from web/tools');
 }

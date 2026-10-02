@@ -16,13 +16,15 @@
 // THE NEO PART (his order 7, "visible constant improvement"; and of 20:51Z, "simple at first but infintie potential"):
 // the organism that heartbeats and iterates itself with no model, seen from outside. Read at build time from the
 // committed files the eras write (NEO_FILES: neo/LEDGER.json, neo/ERA.json, grown/measure.jsonl, neo/ABSORB.json,
-// neo/frontier.json, neo/TRIALS.jsonl), every number exactly as the file holds it, a file not written yet "not yet":
+// neo/frontier.json, neo/TRIALS.jsonl, neo/COMPUTE.json), every number exactly as the file holds it, a file not written yet "not yet":
 // iterations, eras and the last era's time and body, tasks, colonies, cells, mastered and the held-out fraction of the
 // newest measure row, the newest SERIES_ROWS rows as two inline SVG sparklines with their table, velocity and plateau
 // when the row has them, sources absorbed and the crawl queue's counts, the self-modification record (neo/TRIALS.jsonl
 // with grown/self.json and grown/cortex.json), the bodies that beat in the day before the build, and one plain sentence
-// for what is not working yet, built from those numbers. OPEN-ENDED: a velocity key the measure adds later is drawn by
-// its own name, a body the era names later is counted by its own name.
+// for what is not working yet, built from those numbers. FEATURE-DETECTED: the last promote (pipelineOf: an era row's
+// pipeline and promoted fields, grow/era.mjs) and the compute ledger (computeOf: neo/COMPUTE.json, grow/compute.mjs, read
+// generically) show only when the files carry them. A count of one takes the singular noun (pl). OPEN-ENDED: a velocity
+// key the measure adds later is drawn by its own name, a body the era names later is counted by its own name.
 // GUARDS: refusedPath keeps every reader off state/, judge/heldout/, judge/control.jsonl and neo/tasks/*/heldout.jsonl
 // (the read is refused before a file is opened); every JSON file is size-capped and a JSON-lines file is read from its
 // newest bytes (a torn line is counted and skipped); every string of the model is scrubbed (token shapes, credentials
@@ -48,15 +50,15 @@ const PROMPT_CHARS = 240;
 const EM = String.fromCharCode(0x2014);
 // the NEO part's files (kept apart from FILES so a page built before the part landed still matches its own data.json)
 export const NEO_FILES = Object.freeze({ ledger: 'neo/LEDGER.json', era: 'neo/ERA.json', measure: 'grown/measure.jsonl', absorb: 'neo/ABSORB.json',
-  frontier: 'neo/frontier.json', trials: 'neo/TRIALS.jsonl' });
+  frontier: 'neo/frontier.json', trials: 'neo/TRIALS.jsonl', compute: 'neo/COMPUTE.json' });
 // the sparkline's rows, the trial rows on the page, the window of the bodies that beat (a day before the build stamp)
 export const SERIES_ROWS = 48, TRIAL_ROWS = 8, BODY_WINDOW_MS = 24 * 60 * 60 * 1000;
 // bounds: a JSON file over jsonBytes is not parsed; a JSON-lines file is read from its newest bytes
 export const READ_LIMITS = Object.freeze({ jsonBytes: 32 * 1024 * 1024, measureBytes: 4 * 1024 * 1024, trialsBytes: 16 * 1024 * 1024 });
 
 // ------------------------------------------------------------------ guards: what may never be opened, what may never be shown
-// state/, judge/heldout/, judge/control.jsonl, neo/tasks/*/heldout.jsonl, and (wider than the rule) any path with a heldout segment
-const REFUSED = [/^state(\/|$)/i, /^judge\/heldout(\/|$)/i, /^judge\/control\.jsonl$/i, /^neo\/tasks\/[^/]+\/heldout\.jsonl$/i, /(^|\/)heldout(\.jsonl?)?(\/|$)/i];
+// exactly the rule: state/, judge/heldout/, judge/control.jsonl and neo/tasks/*/heldout.jsonl (one task segment), no wider
+const REFUSED = [/^state(\/|$)/i, /^judge\/heldout(\/|$)/i, /^judge\/control\.jsonl$/i, /^neo\/tasks\/[^/]+\/heldout\.jsonl$/i];
 /** Why a tree-relative path may not be opened (a held-out or runtime path, or a path that leaves the tree), else null. */
 export function refusedPath(rel) {
   const r = String(rel ?? '').replace(/\\/g, '/').replace(/\/+/g, '/').replace(/^(\.\/)+/, '');
@@ -174,7 +176,7 @@ function loadJsonl(root, rel, opts) {
 }
 
 /**
- * The NEO records under root, never throwing: { ledger, era, measure: [rows], absorb, frontier, trials: [rows], sources }.
+ * The NEO records under root, never throwing: { ledger, era, measure: [rows], absorb, frontier, trials: [rows], compute, sources }.
  * Each a whole object as its file holds it (or null / []); the model picks the numbers.
  */
 export function readNeo(root = ROOT) {
@@ -182,8 +184,9 @@ export function readNeo(root = ROOT) {
   const ab = loadJson(root, NEO_FILES.absorb, isObj), fr = loadJson(root, NEO_FILES.frontier, isObj);
   const me = loadJsonl(root, NEO_FILES.measure, { maxBytes: READ_LIMITS.measureBytes, tail: true });
   const tr = loadJsonl(root, NEO_FILES.trials, { maxBytes: READ_LIMITS.trialsBytes, tail: true });
-  return { ledger: led.json, era: er.json, measure: me.rows, absorb: ab.json, frontier: fr.json, trials: tr.rows,
-    sources: { ledger: led.src, era: er.src, measure: me.src, absorb: ab.src, frontier: fr.src, trials: tr.src } };
+  const co = loadJson(root, NEO_FILES.compute, isObj);
+  return { ledger: led.json, era: er.json, measure: me.rows, absorb: ab.json, frontier: fr.json, trials: tr.rows, compute: co.json,
+    sources: { ledger: led.src, era: er.src, measure: me.src, absorb: ab.src, frontier: fr.src, trials: tr.src, compute: co.src } };
 }
 
 /** The organism's records under root, never throwing: { generations, index, self, cortex, apps, dreams, curriculum, neo, sources }. */
@@ -295,16 +298,64 @@ function changeText(c) {
   return parts.length ? clip(parts.join(', '), 120) : null;
 }
 
+/** A count's noun: the singular for exactly 1, else the plural. */
+export const pl = (v, one, many) => (v === 1 ? one : many);
+
+/** The highest-numbered row among rows (a tie, the later row), or null. */
+const highest = (rows) => rows.reduce((a, r) => (!a || r.era >= a.era ? r : a), null);
+/**
+ * THE LAST PROMOTE, feature-detected: grow/era.mjs gives an era row `pipeline` (snapshot, absent or none) and, once its
+ * promote step answered, `promoted` { promoted, why, raised, fell, gained, before, after }. null when no row carries
+ * either (a tree before the pipeline landed); else the newest row's pipeline and the newest promote with its counts.
+ */
+export function pipelineOf(eraRows) {
+  const rows = (Array.isArray(eraRows) ? eraRows : []).filter((r) => isObj(r) && count(r.era) !== null);
+  const lp = highest(rows.filter((r) => text(r.pipeline) || isObj(r.promoted)));
+  if (!lp) return null;
+  const pr = highest(rows.filter((r) => isObj(r.promoted)));
+  const po = pr ? pr.promoted : null;
+  return {
+    state: text(lp.pipeline) ? clip(lp.pipeline, 24) : null, stateEra: lp.era,
+    era: pr ? pr.era : null, at: pr ? text(pr.at) : null,
+    promoted: po && typeof po.promoted === 'boolean' ? po.promoted : null,
+    why: po && text(po.why) ? clip(po.why, 200) : null,
+    raised: po ? arrLen(po.raised) : null, fell: po ? arrLen(po.fell) : null, gained: po ? arrLen(po.gained) : null,
+    before: po ? finite(po.before) : null, after: po ? finite(po.after) : null,
+  };
+}
+
+// the ledger keys of grow/compute.mjs nextLedger first, in its order; any other scalar key after them by name
+export const COMPUTE_ORDER = Object.freeze(['month', 'at', 'budgetMinutes', 'spentMinutes', 'reservePct', 'heartbeatMinutes', 'visibility', 'source']);
+const COMPUTE_FIELDS = 16;
+/** The scalar fields of an object (a finite number, a boolean, a short string, or null) as [{ key, value }], known keys first. */
+function scalarsOf(o, order = []) {
+  const keys = Object.keys(o).filter((k) => KEY_RE.test(k) && (o[k] === null || typeof o[k] === 'boolean' || finite(o[k]) !== null || typeof o[k] === 'string'));
+  const known = order.filter((k) => keys.includes(k)), other = keys.filter((k) => !order.includes(k)).sort();
+  return [...known, ...other].slice(0, COMPUTE_FIELDS).map((key) => ({ key, value: typeof o[key] === 'string' ? clip(o[key], 120) : o[key] }));
+}
+/**
+ * THE COMPUTE LEDGER, feature-detected: neo/COMPUTE.json as grow/compute.mjs writes it, read generically: its scalar
+ * fields, the size of each list or map it holds (runs, plans), and the scalar fields of its newest plan. null without it.
+ */
+export function computeOf(c) {
+  if (!isObj(c)) return null;
+  const counts = Object.keys(c).filter((k) => KEY_RE.test(k) && (Array.isArray(c[k]) || isObj(c[k]))).sort()
+    .map((key) => ({ key, n: Array.isArray(c[key]) ? c[key].length : Object.keys(c[key]).length }));
+  const plans = Array.isArray(c.plans) ? c.plans : null;
+  const lastPlan = plans && plans.length && isObj(plans[plans.length - 1]) ? scalarsOf(plans[plans.length - 1], ['at', 'beatMinutes', 'shards', 'relay', 'mergeMinutes', 'why']) : null;
+  return { fields: scalarsOf(c, COMPUTE_ORDER), counts, lastPlan };
+}
+
 /** The plain sentence of what is not working yet, from the numbers alone (each one a number the page shows beside it). */
 export function gapSentence(now, last, same) {
   if (!now || [now.tasks, now.mastered, now.ok, now.n].every((v) => v === null)) return null;
   const parts = [];
-  if (now.tasks !== null && now.mastered !== null && now.mastered < now.tasks) parts.push('only ' + now.mastered + ' of ' + now.tasks + ' tasks are mastered');
-  if (now.tasks !== null && now.colonies !== null && now.colonies < now.tasks) parts.push(now.colonies + ' of ' + now.tasks + ' tasks have a colony at all');
-  if (now.ok !== null && now.n !== null && now.ok < now.n) parts.push('the colonies answer ' + now.ok + ' of ' + now.n + ' held-out rows right' + (now.score !== null ? ' (' + now.score + ')' : ''));
-  if (now.plateau !== null && now.plateau > 0) parts.push('the held-out total has not risen for ' + now.plateau + ' eras');
+  if (now.tasks !== null && now.mastered !== null && now.mastered < now.tasks) parts.push('only ' + now.mastered + ' of ' + now.tasks + pl(now.tasks, ' task is', ' tasks are') + ' mastered');
+  if (now.tasks !== null && now.colonies !== null && now.colonies < now.tasks) parts.push(now.colonies + ' of ' + now.tasks + pl(now.tasks, ' task has', ' tasks have') + ' a colony at all');
+  if (now.ok !== null && now.n !== null && now.ok < now.n) parts.push('the colonies answer ' + now.ok + ' of ' + now.n + pl(now.n, ' held-out row', ' held-out rows') + ' right' + (now.score !== null ? ' (' + now.score + ')' : ''));
+  if (now.plateau !== null && now.plateau > 0) parts.push('the held-out total has not risen for ' + now.plateau + pl(now.plateau, ' era', ' eras'));
   if (same !== null) parts.push('the newest ' + same + ' measure rows hold the same task, colony, cell, mastered and held-out counts');
-  if (last && last.grown !== null && last.grown > 0 && last.promoted === 0) parts.push('era ' + last.era + ' grew ' + last.grown + ' tasks and promoted none');
+  if (last && last.grown !== null && last.grown > 0 && last.promoted === 0) parts.push('era ' + last.era + ' grew ' + last.grown + pl(last.grown, ' task', ' tasks') + ' and promoted none');
   return parts.length ? 'Not working yet: ' + parts.join('; ') + '.' : 'No gap shows in these numbers yet.';
 }
 
@@ -319,7 +370,7 @@ export function neoModel(raw, { builtAt = null, selfHistory = [], cortexHistory 
   // ERA: the count, the last era (the highest number; a tie, the later row), the bodies of the day before the build
   const ed = isObj(n.era) ? n.era : null;
   const eraRows = ed && Array.isArray(ed.eras) ? ed.eras.filter((r) => isObj(r) && count(r.era) !== null) : [];
-  const lr = eraRows.reduce((a, r) => (!a || r.era >= a.era ? r : a), null);
+  const lr = highest(eraRows);
   const grown = lr && Array.isArray(lr.grown) ? lr.grown.filter(isObj) : null;
   const last = lr ? { era: lr.era, at: text(lr.at), hoursBefore: hoursBefore(lr.at, built), ms: count(lr.ms), body: bodyName(lr.body), workers: count(lr.workers),
     grown: grown ? grown.length : null, promoted: grown ? grown.filter((g) => g.promoted === true).length : null, cells: count(lr.cells), mastered: count(lr.mastered) } : null;
@@ -373,6 +424,7 @@ export function neoModel(raw, { builtAt = null, selfHistory = [], cortexHistory 
   return {
     iterations: ledger ? count(ledger.generated) : null,
     eras: { count: ed ? count(ed.era) : null, last }, bodies, now, series, same, absorbed, frontier, selfMod,
+    pipeline: pipelineOf(eraRows), compute: computeOf(n.compute),
     gap: gapSentence(now, last, same), sources,
   };
 }
@@ -576,7 +628,7 @@ const rateText = (r) => {
   return (r.rate === null ? '<span class="nm">none yet</span>' : esc(r.rate)) + of;
 };
 const pillFor = (v) => (v ? '<span class="pill sm ' + esc(v.replace(/[^a-z]/gi, '').toLowerCase()) + '">' + esc(v) + '</span>' : '<span class="nm">no verdict</span>');
-const hoursText = (h) => (h === null ? 'its age is not computable (no build stamp or no ISO stamp)' : esc(Math.abs(h)) + ' hours ' + (h < 0 ? 'after' : 'before') + ' this page was built');
+const hoursText = (h) => (h === null ? 'its age is not computable (no build stamp or no ISO stamp)' : esc(Math.abs(h)) + pl(Math.abs(h), ' hour ', ' hours ') + (h < 0 ? 'after' : 'before') + ' this page was built');
 
 function laneBars(lanes) {
   return lanes.map((l) => {
@@ -598,20 +650,20 @@ function hero(m) {
   let verdict;
   if (!last) verdict = '<p class="verdict"><span class="nm">none yet</span>: ' + esc(whyEmpty(g, 'no generation yet')) + '.</p>';
   else {
-    verdict = '<p class="verdict">Generation ' + b(last.generation) + ' ran ' + (last.hoursBefore === null ? 'at ' + esc(last.at || 'an unrecorded time') : b(Math.abs(last.hoursBefore) + ' hours') + (last.hoursBefore < 0 ? ' after' : ' before') + ' this page was built')
-      + ': ' + (last.candidates ? b(last.survivors) + ' of ' + b(last.candidates) + ' candidate cells survived the locked judge' : 'it recorded no candidate')
-      + ', and ' + (m.cells.length ? b(m.cells.length) + ' cells are alive.' : 'no cell is alive yet.')
+    verdict = '<p class="verdict">Generation ' + b(last.generation) + ' ran ' + (last.hoursBefore === null ? 'at ' + esc(last.at || 'an unrecorded time') : b(Math.abs(last.hoursBefore) + pl(Math.abs(last.hoursBefore), ' hour', ' hours')) + (last.hoursBefore < 0 ? ' after' : ' before') + ' this page was built')
+      + ': ' + (last.candidates ? b(last.survivors) + ' of ' + b(last.candidates) + pl(last.candidates, ' candidate cell', ' candidate cells') + ' survived the locked judge' : 'it recorded no candidate')
+      + ', and ' + (m.cells.length ? b(m.cells.length) + pl(m.cells.length, ' cell is alive.', ' cells are alive.') : 'no cell is alive yet.')
       + (last.byHand ? ' Its record was corrected by hand; the note is under Generations.' : '') + '</p>';
   }
   const tiles = [
     tile('generations run', v.generations.value ? '<div class="val">' + esc(v.generations.value) + '</div>' : none,
       last ? 'newest: generation ' + esc(last.generation) : esc(whyEmpty(g, 'no generation yet')), v.generations.file),
     tile('cells alive', v.cells.value ? '<div class="val">' + esc(v.cells.value) + '</div>' : none,
-      v.cells.value ? 'in ' + esc(v.cells.classes) + ' classes, one arm each' : esc(whyEmpty(m.sources.index, 'no cell yet')), v.cells.file),
+      v.cells.value ? 'in ' + esc(v.cells.classes) + pl(v.cells.classes, ' class', ' classes') + ', one arm each' : esc(whyEmpty(m.sources.index, 'no cell yet')), v.cells.file),
     tile('last generation', last && last.candidates ? '<div class="val">' + esc(last.survivors) + '<span class="of">/</span>' + esc(last.candidates) + '</div>' : none,
       last ? 'survivors over candidates, generation ' + esc(last.generation) + (last.byHand ? ' <span class="pill sm hand">corrected by hand</span>' : '') : esc(whyEmpty(g, 'no generation yet')), v.lastGeneration.file),
     tile('dreams set for itself', v.dreams.value ? '<div class="val">' + esc(v.dreams.value) + '</div>' : none,
-      v.dreams.value ? 'tasks it wrote for itself, in ' + esc(v.dreams.classes) + ' classes' : esc(whyEmpty(m.sources.dreams, 'no dream yet')), v.dreams.file),
+      v.dreams.value ? 'tasks it wrote for itself, in ' + esc(v.dreams.classes) + pl(v.dreams.classes, ' class', ' classes') : esc(whyEmpty(m.sources.dreams, 'no dream yet')), v.dreams.file),
     tile('cortex', '<div class="val str">' + esc(v.cortex.pointer) + '</div>',
       'the model that runs each generation' + (v.cortex.from === 'default' ? ', by default: ' + esc(whyEmpty(m.sources.cortex, 'no pointer')) : m.cortex.since !== null ? ', since ' + (typeof m.cortex.since === 'number' ? 'generation ' : '') + esc(m.cortex.since) : ''), v.cortex.file, true),
     tile('last heartbeat', v.heartbeat.at ? '<div class="val str"><span class="pulse" aria-hidden="true"></span>' + esc(v.heartbeat.at) + '</div>' : none,
@@ -630,7 +682,7 @@ function lastHour(m) {
   out.push('<h3>The tournament</h3>' + (l.lanes.length ? laneBars(l.lanes) : noneYet('generation ' + l.generation + ' recorded no lane'))
     + '<p class="line">' + (l.candidates ? b(l.survivors) + ' of ' + b(l.candidates) + ' survived' : '<span class="nm">none yet</span>: no candidate recorded')
     + (l.parent ? '; the parent of the next generation is the ' + b(l.parent) + ' lane, the one with more survivors' : '; no parent lane recorded')
-    + (l.misses !== null ? '; it worked on ' + b(l.misses) + ' misses' : '') + '.</p>' + files(FILES.generations));
+    + (l.misses !== null ? '; it worked on ' + b(l.misses) + pl(l.misses, ' miss', ' misses') : '') + '.</p>' + files(FILES.generations));
   out.push('<h3>Cells it promoted</h3>' + (l.promoted.length
     ? '<div class="scroll"><table><tr><th>cell</th><th>class</th><th>lane</th><th class="n">held-out score</th><th class="n">rows</th></tr>'
       + l.promoted.map((c) => '<tr><td>' + esc(c.id) + '</td><td>' + esc(c.class) + '</td><td>' + esc(c.lane || '') + '</td><td class="n">' + (c.score === null ? '<span class="nm">none yet</span>' : esc(c.score)) + (c.ok !== null ? ' (' + esc(c.ok) + ' ok)' : '') + '</td><td class="n">' + (c.n === null ? '' : esc(c.n)) + '</td></tr>').join('') + '</table></div>'
@@ -639,9 +691,9 @@ function lastHour(m) {
     ? l.self.map((h) => '<p class="line">' + pillFor(h.verdict) + ' ' + esc(h.target || 'no target') + ': judged rate ' + rateText(h.judged) + ' against the baseline ' + rateText(h.baseline) + '.</p>').join('')
     : noneYet('no trial in ' + FILES.self + ' was judged by generation ' + l.generation + (m.self.pending ? '; one is pending (' + (m.self.pending.target || 'no target') + ')' : '')))
     + files(FILES.self));
-  if (l.cortex.length) out.push('<h3>Cortex</h3>' + l.cortex.map((h) => '<p class="line">' + pillFor(h.verdict) + ' ' + esc(h.challenger || 'no challenger') + ' against ' + esc(h.incumbent || 'the pointer') + (h.pairs !== null ? ' over ' + b(h.pairs) + ' pairs' : '') + '.</p>').join('') + files(FILES.cortex));
+  if (l.cortex.length) out.push('<h3>Cortex</h3>' + l.cortex.map((h) => '<p class="line">' + pillFor(h.verdict) + ' ' + esc(h.challenger || 'no challenger') + ' against ' + esc(h.incumbent || 'the pointer') + (h.pairs !== null ? ' over ' + b(h.pairs) + pl(h.pairs, ' pair', ' pairs') : '') + '.</p>').join('') + files(FILES.cortex));
   out.push('<h3>Dreams it set itself</h3>' + (l.dreams.count
-    ? '<p class="line">' + b(l.dreams.count) + ' tasks it set itself after generation ' + b(l.generation) + '.</p><div class="chips">' + l.dreams.byClass.map((x) => '<span class="chip">' + esc(x.class) + '<b>' + esc(x.n) + '</b></span>').join('') + '</div>'
+    ? '<p class="line">' + b(l.dreams.count) + pl(l.dreams.count, ' task', ' tasks') + ' it set itself after generation ' + b(l.generation) + '.</p><div class="chips">' + l.dreams.byClass.map((x) => '<span class="chip">' + esc(x.class) + '<b>' + esc(x.n) + '</b></span>').join('') + '</div>'
     : noneYet('no line of ' + FILES.dreams + ' carries generation ' + l.generation)) + files(FILES.dreams));
   return out.join('') + '</section>';
 }
@@ -653,10 +705,10 @@ function generationsSection(m) {
   const rows = shown.map((g) => '<div class="gen"><div class="ghead"><span class="gnum">Generation ' + esc(g.generation) + '</span><span class="dim">' + esc(g.at || 'no stamp') + '</span>'
     + (g.byHand ? '<span class="pill sm hand">corrected by hand</span>' : g.note ? '<span class="pill sm">note</span>' : '') + '</div>'
     + (g.lanes.length ? laneBars(g.lanes) : noneYet('no lane recorded'))
-    + '<div class="dim">' + (g.candidates ? esc(g.survivors) + ' of ' + esc(g.candidates) + ' survived' : 'none yet: no candidate recorded') + (g.parent ? ', parent ' + esc(g.parent) : '') + (g.misses !== null ? ', ' + esc(g.misses) + ' misses' : '') + '</div>'
+    + '<div class="dim">' + (g.candidates ? esc(g.survivors) + ' of ' + esc(g.candidates) + ' survived' : 'none yet: no candidate recorded') + (g.parent ? ', parent ' + esc(g.parent) : '') + (g.misses !== null ? ', ' + esc(g.misses) + pl(g.misses, ' miss', ' misses') : '') + '</div>'
     + (g.note ? '<p class="note">' + esc(g.note) + '</p>' : '') + '</div>');
   const older = m.generations.length - shown.length;
-  return head + rows.join('') + (older > 0 ? '<p class="src">' + esc(older) + ' older generations are in <a href="/alive/data.json">data.json</a>.</p>' : '') + files(FILES.generations) + '</section>';
+  return head + rows.join('') + (older > 0 ? '<p class="src">' + esc(older) + pl(older, ' older generation is', ' older generations are') + ' in <a href="/alive/data.json">data.json</a>.</p>' : '') + files(FILES.generations) + '</section>';
 }
 
 function octopus(arms, alive) {
@@ -668,7 +720,7 @@ function octopus(arms, alive) {
     return '<g class="' + (on ? 'on' : 'off') + '"><title>' + esc(a.class + (on ? ': ' + a.cells.join(', ') : ': no cell yet')) + '</title><path d="M' + p(40) + ' Q' + p(96, 0.34) + ' ' + p(136) + '"/>'
       + '<circle cx="' + tip[0] + '" cy="' + tip[1] + '" r="' + (on ? 8 : 6) + '"/></g>';
   });
-  return '<svg class="octo" viewBox="0 0 330 330" role="img" aria-label="' + esc(alive + ' cells alive on ' + arms.length + ' arms') + '">' + parts.join('')
+  return '<svg class="octo" viewBox="0 0 330 330" role="img" aria-label="' + esc(alive + pl(alive, ' cell', ' cells') + ' alive on ' + arms.length + pl(arms.length, ' arm', ' arms')) + '">' + parts.join('')
     + '<circle class="body" cx="165" cy="165" r="40"/><text class="c" x="165" y="170">' + esc(alive) + '</text><text class="l" x="165" y="186">CELLS</text></svg>';
 }
 
@@ -677,14 +729,14 @@ function cellsSection(m) {
   if (!m.arms.length) return head + noneYet(whyEmpty(m.sources.index, 'no cell yet') + '; ' + whyEmpty(m.sources.curriculum, 'no curriculum row yet')) + files(FILES.index, FILES.curriculum) + '</section>';
   const byId = new Map(m.cells.map((c) => [c.id, c]));
   const cards = m.arms.map((a) => {
-    if (!a.cells.length) return '<div class="arm"><div class="cls">' + esc(a.class) + '</div><div class="score nm">no cell yet</div><div class="k">' + (a.curriculum ? esc(a.curriculum) + ' curriculum rows wait for it' : 'no curriculum row') + '</div></div>';
+    if (!a.cells.length) return '<div class="arm"><div class="cls">' + esc(a.class) + '</div><div class="score nm">no cell yet</div><div class="k">' + (a.curriculum ? esc(a.curriculum) + pl(a.curriculum, ' curriculum row waits', ' curriculum rows wait') + ' for it' : 'no curriculum row') + '</div></div>';
     return a.cells.map((id) => {
       const c = byId.get(id);
       return '<div class="arm on"><div class="cls">' + esc(a.class) + (a.domain ? '' : ' <span class="dim">(not a curriculum domain)</span>') + '</div>'
         + '<div class="score">' + (c.score === null ? '<span class="nm">none yet</span>' : esc(c.score)) + '</div>'
-        + '<div class="k">held-out score' + (c.ok !== null && c.n !== null ? ', ' + esc(c.ok) + ' of ' + esc(c.n) + ' rows ok' : c.n !== null ? ' on ' + esc(c.n) + ' rows' : '') + '</div>'
+        + '<div class="k">held-out score' + (c.ok !== null && c.n !== null ? ', ' + esc(c.ok) + ' of ' + esc(c.n) + pl(c.n, ' row', ' rows') + ' ok' : c.n !== null ? ' on ' + esc(c.n) + pl(c.n, ' row', ' rows') : '') + '</div>'
         + '<div class="id">' + esc(c.id) + '</div><div class="k">generation ' + (c.generation === null ? 'unrecorded' : esc(c.generation)) + ', lane ' + esc(c.lane || 'unrecorded') + (c.promotedAt ? ', promoted ' + esc(c.promotedAt) : '') + '</div>'
-        + (a.curriculum ? '<div class="k">' + esc(a.curriculum) + ' curriculum rows in its class</div>' : '') + '</div>';
+        + (a.curriculum ? '<div class="k">' + esc(a.curriculum) + pl(a.curriculum, ' curriculum row', ' curriculum rows') + ' in its class</div>' : '') + '</div>';
     }).join('');
   });
   return head + octopus(m.arms, m.cells.length) + '<div class="arms">' + cards.join('') + '</div>'
@@ -701,9 +753,9 @@ function selfSection(m) {
       + (p.next !== null ? '; generation ' + esc(p.next) + ' judges it' : '') + '; baseline ' + rateText(p.baseline) + '.</p>' + (p.why ? '<p class="src">why: ' + esc(p.why) + '</p>' : ''));
   }
   if (s.history.length) {
-    out.push('<p class="line">' + b(s.count) + ' trials in the history, newest first.</p><div class="scroll"><table><tr><th>after</th><th>target</th><th>baseline rate</th><th>judged rate</th><th>verdict</th><th>reason</th></tr>'
+    out.push('<p class="line">' + b(s.count) + pl(s.count, ' trial', ' trials') + ' in the history, newest first.</p><div class="scroll"><table><tr><th>after</th><th>target</th><th>baseline rate</th><th>judged rate</th><th>verdict</th><th>reason</th></tr>'
       + s.history.map((h) => '<tr><td>' + (h.generation === null ? '' : 'generation ' + esc(h.generation)) + '</td><td>' + esc(h.target || '') + '</td><td>' + rateText(h.baseline) + '</td><td>' + rateText(h.judged) + '</td><td>' + pillFor(h.verdict) + '</td><td class="why">' + esc(h.reason || '') + '</td></tr>').join('')
-      + '</table></div>' + (s.count > s.history.length ? '<p class="src">' + esc(s.count - s.history.length) + ' older trials are in <a href="/alive/data.json">data.json</a>.</p>' : ''));
+      + '</table></div>' + (s.count > s.history.length ? '<p class="src">' + esc(s.count - s.history.length) + pl(s.count - s.history.length, ' older trial is', ' older trials are') + ' in <a href="/alive/data.json">data.json</a>.</p>' : ''));
   }
   if (!s.pending && !s.history.length) out.push(noneYet(whyEmpty(m.sources.self, 'no trial yet')));
   else if (!s.history.length) out.push(noneYet('no trial has been judged yet'));
@@ -719,10 +771,10 @@ function cortexSection(m) {
     : noneYet('no challenger is pending in ' + FILES.cortex));
   if (c.history.length) {
     const sc = (a, b2) => (a === null && b2 === null ? '' : (a === null ? '?' : esc(a)) + ' vs ' + (b2 === null ? '?' : esc(b2)));
-    out.push('<p class="line">' + b(c.count) + ' trials in the history, newest first.</p><div class="scroll"><table><tr><th>generation</th><th>pointer</th><th>challenger</th><th class="n">pairs</th><th class="n">held-out score</th><th class="n">survivors</th><th>verdict</th></tr>'
+    out.push('<p class="line">' + b(c.count) + pl(c.count, ' trial', ' trials') + ' in the history, newest first.</p><div class="scroll"><table><tr><th>generation</th><th>pointer</th><th>challenger</th><th class="n">pairs</th><th class="n">held-out score</th><th class="n">survivors</th><th>verdict</th></tr>'
       + c.history.map((h) => '<tr><td>' + (h.generation === null ? '' : esc(h.generation)) + '</td><td>' + esc(h.incumbent || '') + '</td><td>' + esc(h.challenger || '') + '</td><td class="n">' + (h.pairs === null ? '' : esc(h.pairs)) + '</td><td class="n">'
         + sc(h.incumbentScore, h.challengerScore) + '</td><td class="n">' + sc(h.incumbentSurvivors, h.challengerSurvivors) + '</td><td>' + pillFor(h.verdict) + (h.reason ? ' <span class="dim">' + esc(h.reason) + '</span>' : '') + '</td></tr>').join('')
-      + '</table></div>' + (c.count > c.history.length ? '<p class="src">' + esc(c.count - c.history.length) + ' older trials are in <a href="/alive/data.json">data.json</a>.</p>' : ''));
+      + '</table></div>' + (c.count > c.history.length ? '<p class="src">' + esc(c.count - c.history.length) + pl(c.count - c.history.length, ' older trial is', ' older trials are') + ' in <a href="/alive/data.json">data.json</a>.</p>' : ''));
   } else out.push(noneYet('no cortex trial in ' + FILES.cortex + ' yet'));
   return out.join('') + files(FILES.cortex) + '</section>';
 }
@@ -797,32 +849,42 @@ function neoSection(m) {
     tile('colonies', valOf(now ? now.colonies : null), now ? 'tasks with a grown colony' : whyM, NEO_FILES.measure + ' neo.colonies'),
     tile('cells', valOf(now ? now.cells : null), now ? 'kept cells, every colony together' : whyM, NEO_FILES.measure + ' neo.cells'),
     tile('mastered', now && now.mastered !== null ? '<div class="val">' + esc(now.mastered) + (now.tasks !== null ? '<span class="of">/</span>' + esc(now.tasks) : '') + '</div>' : valOf(null),
-      now ? 'tasks whose colony answers every held-out row' : whyM, NEO_FILES.measure + ' neo.mastered'),
-    tile('held-out fraction', valOf(now ? now.score : null), now && now.ok !== null && now.n !== null ? esc(now.ok) + ' of ' + esc(now.n) + ' held-out rows right, every colony together' : now ? 'no held-out count in the newest row' : whyM,
+      now ? pl(now.tasks, 'task', 'tasks') + ' whose colony answers every held-out row' : whyM, NEO_FILES.measure + ' neo.mastered'),
+    tile('held-out fraction', valOf(now ? now.score : null), now && now.ok !== null && now.n !== null ? esc(now.ok) + ' of ' + esc(now.n) + pl(now.n, ' held-out row', ' held-out rows') + ' right, every colony together' : now ? 'no held-out count in the newest row' : whyM,
       NEO_FILES.measure + ' neo.heldout', true),
   ];
   out.push('<div class="tiles">' + tiles.join('') + '</div>');
   // the last era and the bodies that beat
   out.push('<h3>The last era</h3>' + (last
     ? '<p class="line">Era ' + b(last.era) + ' ran ' + (last.at ? 'at ' + esc(last.at) + ', ' + hoursText(last.hoursBefore) : 'at an unrecorded time') + (last.body === 'unrecorded' ? ', on a body its row does not name' : ', on the body ' + b(last.body))
-      + (last.ms !== null ? ', for ' + b(last.ms) + ' ms' : '') + (last.workers !== null ? ' with ' + b(last.workers) + ' workers' : '')
-      + ': it grew ' + (last.grown !== null ? b(last.grown) + ' tasks and promoted ' + b(last.promoted) + ' colonies' : 'no recorded task')
-      + (last.cells !== null ? '; the organism then held ' + b(last.cells) + ' cells' : '') + (last.mastered !== null ? ' and ' + b(last.mastered) + ' mastered tasks' : '') + '.</p>'
+      + (last.ms !== null ? ', for ' + b(last.ms) + ' ms' : '') + (last.workers !== null ? ' with ' + b(last.workers) + pl(last.workers, ' worker', ' workers') : '')
+      + ': it grew ' + (last.grown !== null ? b(last.grown) + pl(last.grown, ' task', ' tasks') + ' and promoted ' + b(last.promoted) + pl(last.promoted, ' colony', ' colonies') : 'no recorded task')
+      + (last.cells !== null ? '; the organism then held ' + b(last.cells) + pl(last.cells, ' cell', ' cells') : '') + (last.mastered !== null ? ' and ' + b(last.mastered) + pl(last.mastered, ' mastered task', ' mastered tasks') : '') + '.</p>'
     : notYet(whyEmpty(s.era, 'no era yet'))));
   const bd = n.bodies;
   out.push('<h3>Bodies that beat in the day before this build</h3>' + (bd
-    ? (bd.eras ? '<p class="line">' + b(bd.eras) + ' eras since ' + esc(bd.since) + ', by body:</p><div class="chips">' + bd.by.map((x) => '<span class="chip">' + esc(x.body) + '<b>' + esc(x.eras) + '</b></span>').join('') + '</div>'
+    ? (bd.eras ? '<p class="line">' + b(bd.eras) + pl(bd.eras, ' era', ' eras') + ' since ' + esc(bd.since) + ', by body:</p><div class="chips">' + bd.by.map((x) => '<span class="chip">' + esc(x.body) + '<b>' + esc(x.eras) + '</b></span>').join('') + '</div>'
         + '<p class="src">the newest beat of each: ' + bd.by.map((x) => esc(x.body) + ' at ' + esc(x.last)).join(', ') + '</p>'
       : notYet('no era of ' + NEO_FILES.era + ' ran since ' + bd.since))
-      + (bd.ahead ? '<p class="src">' + esc(bd.ahead) + ' era rows are stamped after this build: the clock went backwards</p>' : '')
+      + (bd.ahead ? '<p class="src">' + esc(bd.ahead) + pl(bd.ahead, ' era row is', ' era rows are') + ' stamped after this build: the clock went backwards</p>' : '')
     : notYet(last ? 'no ISO build stamp given, so the window is not computable' : whyEmpty(s.era, 'no era yet'))) + files(NEO_FILES.era));
+  // the last promote (feature-detected: an era row's pipeline and promoted fields)
+  const pp = n.pipeline;
+  out.push('<h3>The last promote</h3>' + (pp
+    ? '<p class="line">The newest pipeline state, ' + eraOf(pp.stateEra) + ': ' + (pp.state ? b(pp.state) : NR) + '. '
+      + (pp.era !== null
+        ? 'The last promote, ' + eraOf(pp.era) + (pp.at ? ' at ' + esc(pp.at) : '') + ': ' + (pp.promoted === true ? b('promoted') : pp.promoted === false ? b('not promoted') : NR)
+          + (pp.why ? ' (' + esc(pp.why) + ')' : '') + '; ' + bn(pp.raised) + pl(pp.raised, ' task', ' tasks') + ' raised, ' + bn(pp.fell) + ' fell, ' + bn(pp.gained) + ' gained'
+          + (pp.before !== null || pp.after !== null ? '; held-out rows right ' + bn(pp.before) + ' before, ' + bn(pp.after) + ' after' : '') + '.'
+        : 'No era has a promote on record yet.') + '</p>'
+    : notYet(last ? 'no row of ' + NEO_FILES.era + ' carries a pipeline or a promote yet' : whyEmpty(s.era, 'no era yet'))) + files(NEO_FILES.era));
   // the series, velocity and plateau
   const sr = n.series;
   if (sr) {
-    out.push('<h3>Era by era</h3><p class="lede">The newest ' + b(sr.count) + ' rows of <code>' + esc(NEO_FILES.measure) + '</code>, oldest on the left; the newest is ' + eraOf(now.era) + (now.at ? ' at ' + esc(now.at) : '') + '.'
+    out.push('<h3>Era by era</h3><p class="lede">The newest ' + b(sr.count) + pl(sr.count, ' row', ' rows') + ' of <code>' + esc(NEO_FILES.measure) + '</code>, oldest on the left; the newest is ' + eraOf(now.era) + (now.at ? ' at ' + esc(now.at) : '') + '.'
       + (n.same !== null ? ' The newest ' + b(n.same) + ' rows hold the same counts.' : '') + '</p>');
     out.push(sparkBlock(sr, 'mastered', 'mast', 'Mastered tasks', 'a mastered count') + sparkBlock(sr, 'score', 'held', 'Held-out fraction', 'a held-out score'));
-    out.push('<details><summary>the ' + esc(sr.count) + ' rows, newest first</summary><div class="scroll"><table><tr><th class="n">era</th><th>at</th><th class="n">mastered</th><th class="n">held-out right</th><th class="n">of rows</th><th class="n">fraction</th></tr>'
+    out.push('<details><summary>the ' + esc(sr.count) + pl(sr.count, ' row', ' rows') + ', newest first</summary><div class="scroll"><table><tr><th class="n">era</th><th>at</th><th class="n">mastered</th><th class="n">held-out right</th><th class="n">of rows</th><th class="n">fraction</th></tr>'
       + sr.rows.slice().reverse().map((r) => '<tr><td class="n">' + nr(r.era) + '</td><td>' + (r.at ? esc(r.at) : NR) + '</td><td class="n">' + nr(r.mastered) + '</td><td class="n">' + nr(r.ok) + '</td><td class="n">' + nr(r.n) + '</td><td class="n">' + nr(r.score) + '</td></tr>').join('')
       + '</table></div></details>');
   } else out.push('<h3>Era by era</h3>' + notYet(whyEmpty(mv, 'no measure row yet')));
@@ -837,16 +899,17 @@ function neoSection(m) {
   // what it absorbed, the crawl queue
   const a = n.absorbed, f = n.frontier;
   out.push('<h3>What it absorbed</h3>' + (a
-    ? '<p class="line">' + bn(a.sources) + ' sources over ' + bn(a.pulls) + ' pulls: ' + bn(a.bytes) + ' bytes, ' + bn(a.rows) + ' rows; the cursor stands at ' + bn(a.cursor) + (a.blocked !== null ? '; ' + bn(a.blocked) + ' blocked pulls on record' : '') + '.</p>'
+    ? '<p class="line">' + bn(a.sources) + pl(a.sources, ' source', ' sources') + ' over ' + bn(a.pulls) + pl(a.pulls, ' pull', ' pulls') + ': ' + bn(a.bytes) + pl(a.bytes, ' byte', ' bytes') + ', ' + bn(a.rows) + pl(a.rows, ' row', ' rows')
+      + '; the cursor stands at ' + bn(a.cursor) + (a.blocked !== null ? '; ' + bn(a.blocked) + pl(a.blocked, ' blocked pull', ' blocked pulls') + ' on record' : '') + '.</p>'
     : notYet(whyEmpty(s.absorb, 'nothing absorbed yet'))) + files(NEO_FILES.absorb));
   out.push('<h3>The crawl queue</h3>' + (f
-    ? '<p class="line">' + bn(f.queue) + ' links queued, ' + bn(f.seen) + ' seen, ' + bn(f.repos) + ' repositories, ' + bn(f.added) + ' sources added.</p>'
+    ? '<p class="line">' + bn(f.queue) + pl(f.queue, ' link', ' links') + ' queued, ' + bn(f.seen) + ' seen, ' + bn(f.repos) + pl(f.repos, ' repository', ' repositories') + ', ' + bn(f.added) + pl(f.added, ' source', ' sources') + ' added.</p>'
     : notYet(whyEmpty(s.frontier, 'no queue yet'))) + files(NEO_FILES.frontier));
   // the self-modification record
   const sm = n.selfMod, t = sm.trials;
   out.push('<h3>Self-modification record</h3><p class="lede">Changes the organism tries on its own engine, a genome mutant or a macro mined from its own kept cells, each kept only when the engine\'s own printed score is better in two runs, else reverted.</p>');
   if (t) {
-    out.push('<div class="chips">' + TRIAL_VERDICTS.map((k) => '<span class="chip">' + k + '<b>' + esc(t[k]) + '</b></span>').join('') + '</div><p class="line">' + b(t.rows) + ' trial rows; the newest first:</p>'
+    out.push('<div class="chips">' + TRIAL_VERDICTS.map((k) => '<span class="chip">' + k + '<b>' + esc(t[k]) + '</b></span>').join('') + '</div><p class="line">' + b(t.rows) + pl(t.rows, ' trial row', ' trial rows') + '; the newest first:</p>'
       + '<div class="scroll"><table><tr><th class="n">era</th><th>kind</th><th>verdict</th><th>change</th><th>why</th></tr>'
       + t.newest.map((r) => '<tr><td class="n">' + nr(r.era) + '</td><td>' + (r.kind ? esc(r.kind) : NR) + '</td><td>' + pillFor(r.verdict) + '</td><td>' + (r.change ? esc(r.change) : '') + '</td><td class="why">' + (r.why ? esc(r.why) : '') + '</td></tr>').join('')
       + '</table></div>');
@@ -854,14 +917,23 @@ function neoSection(m) {
   out.push(files(NEO_FILES.trials));
   out.push('<p class="line">The routine\'s trials, by verdict: ' + verdictChips(sm.self) + '</p>' + files(FILES.self)
     + '<p class="line">The cortex trials, by verdict: ' + verdictChips(sm.cortex) + '</p>' + files(FILES.cortex));
+  // the compute ledger (feature-detected: neo/COMPUTE.json, read generically)
+  const co = n.compute;
+  const chip = (k, v) => '<span class="chip">' + esc(k) + (v === null ? ' ' + NR : '<b>' + esc(v) + '</b>') + '</span>';
+  out.push('<h3>Compute</h3><p class="lede">The month\'s runner minutes as the organism ledgers them for itself before each beat: its budget, what it spent, and the plan it made.</p>' + (co
+    ? (co.fields.length ? '<div class="chips">' + co.fields.map((x) => chip(x.key, x.value)).join('') + '</div>' : '')
+      + (co.counts.length ? '<p class="line">On record: ' + co.counts.map((x) => esc(x.key) + ' ' + b(x.n)).join(', ') + '.</p>' : '')
+      + (co.lastPlan ? '<p class="line">The newest plan: ' + co.lastPlan.map((x) => esc(x.key) + ' ' + (x.value === null ? NR : b(x.value))).join(', ') + '.</p>' : '')
+      + (co.fields.length || co.counts.length ? '' : notYet(NEO_FILES.compute + ' holds no field the page reads'))
+    : notYet(whyEmpty(s.compute, 'no compute ledger yet'))) + files(NEO_FILES.compute));
   return out.join('') + '</section>';
 }
 
 function footer(m) {
   const all = [...Object.values(m.sources), ...(m.neo && isObj(m.neo.sources) ? Object.values(m.neo.sources) : [])];
-  const rows = all.map((s) => '<li><code>' + esc(s.file) + '</code> ' + esc(s.state) + (typeof s.bytes === 'number' ? ', ' + esc(s.bytes) + ' bytes' : '')
-    + (typeof s.tailBytes === 'number' ? ', the newest ' + esc(s.tailBytes) + ' bytes read' : '')
-    + (typeof s.rows === 'number' && s.state === 'read' ? ', ' + esc(s.rows) + ' lines' : '') + (s.bad ? ', ' + esc(s.bad) + ' unreadable lines' : '') + (s.sha256 ? ', sha256 ' + esc(s.sha256.slice(0, 16)) : '') + '</li>');
+  const rows = all.map((s) => '<li><code>' + esc(s.file) + '</code> ' + esc(s.state) + (typeof s.bytes === 'number' ? ', ' + esc(s.bytes) + pl(s.bytes, ' byte', ' bytes') : '')
+    + (typeof s.tailBytes === 'number' ? ', the newest ' + esc(s.tailBytes) + pl(s.tailBytes, ' byte', ' bytes') + ' read' : '')
+    + (typeof s.rows === 'number' && s.state === 'read' ? ', ' + esc(s.rows) + pl(s.rows, ' line', ' lines') : '') + (s.bad ? ', ' + esc(s.bad) + pl(s.bad, ' unreadable line', ' unreadable lines') : '') + (s.sha256 ? ', sha256 ' + esc(s.sha256.slice(0, 16)) : '') + '</li>');
   return '<footer><p>Built at ' + (m.builtAt ? esc(m.builtAt) : '<span class="nm">no build stamp given</span>') + ' by <code>node web/build.mjs</code> from the files below. The organism rebuilds this page itself every generation, before its commit; no number on it is typed: each one is read from the file named under it, and the same numbers are served as <a href="/alive/data.json">data.json</a>.</p>'
     + '<ul class="files">' + rows.join('') + '</ul><p><a href="/">back to the organism</a></p></footer>';
 }

@@ -1,18 +1,13 @@
-// test/web-ask.test.mjs: the prompt box on dilation.dev (web/ask.mjs, queue item 12), now a chat.
-// Board 18 builder: the page now posts a refused prompt once to /api/ask; a tab answer still makes no request.
-// Board 25 (item tab-converse, his 2026-09-27 09:28 EDT "Yeah but i said hey to it and it said it couldnt
-// respond"): the conversation region runs in the tab FIRST, a refused prompt shows the server block before
-// the tab's refusal lines, and a server answer prints once.
-// pocket-frontier-surface (his 2026-10-01 "Should work exactly like llms fronteir level" and "All native btw, its
-// ai data center in ur pocket"): turns stack in a thread that survives a reload, a follow-up is carried by
-// act/thread.mjs, the grown cells answer in the tab, the page is installable and says so honestly when offline,
-// and every answer reaches the DOM as text.
-// THE POCKET BODY: THE GATE in the tab (an unmastered colony is never bundled nor asked), a cell grown on this
-// device answers after the cloud's cells and before the server, and the body's one dim line and its switch.
-// The page must run the organism's own bytes, answer what the CLI answers, and reach nothing. Nothing here reads the
-// tree's grown/ or neo/: the page is built from a FIXTURE tree written below into a temp directory (its
-// grown/index.mjs rendered by grow/store.mjs renderIndexMjs, the server's own renderer), so the suite holds whatever
-// the organism grows next.
+// test/web-ask.test.mjs: the prompt box on dilation.dev (web/ask.mjs, queue item 12), a SURFACE OF THE CLOUD.
+// His 2026-10-02 words (grow/NEO.md head): "its should be all on cloud so even phones can use no hardware constraints
+// its cloud ai". CLOUD FIRST: every prompt is POSTed to /api/ask and its answer prints with its route; the first visit
+// downloads the page and nothing of the organism before it can ask; the device tier (the conversation region, the exact
+// and word readers, the grown cells, a cell grown on this device) is only the offline fallback and says so; the device
+// worker is off by default. IT FEELS LIKE AN LLM: a thread that survives a reload, follow-ups that carry the last
+// relation, an answer streamed as it arrives when the endpoint streams, a miss that says the cloud took it as a task.
+// THE LIVE ORGANISM: a strip read from /alive/data.json after the first paint.
+// Nothing here reads the tree's grown/ or neo/: the page is built from a FIXTURE tree written below into a temp
+// directory (its grown/index.mjs rendered by grow/store.mjs renderIndexMjs, the server's own renderer).
 import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync, mkdtempSync, rmSync, mkdirSync, writeFileSync, copyFileSync } from 'node:fs';
@@ -21,9 +16,10 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import {
-  generateAsk, EXAMPLES, MODULES, ROOT, PENDING_LINE, refusedHtml, serverHtml, answerOnce, tabNativeHtml, clock,
-  esc, mount, toHtml, helloView, pendingView, refusalView, PAGE_FUNCTIONS, clip, cleanTurns, loadTurns, saveTurns, swAllowed,
-  sendsOnKey, THREAD_KEY, KEEP_TURNS, TEXT_CAP, BACKGROUND, SW_URL, SW_SCOPE, HELLO_LINE, BODY_URL, DEVICE_ROUTE, deviceView,
+  generateAsk, firstVisit, page, tierUrls, TIER, EXAMPLES, MODULES, ROOT, PENDING_LINE, serverHtml, answerOnce, clock, esc, mount, toHtml,
+  helloView, pendingView, streamView, fallbackView, deviceMissView, offlineView, tabNativeView, cellView, deviceView, PAGE_FUNCTIONS, clip, cleanTurns, loadTurns,
+  saveTurns, swAllowed, sendsOnKey, carryRelation, streamKind, readStream, missLine, viaOf, stripView, saveDataOn, THREAD_KEY, KEEP_TURNS, TEXT_CAP, BACKGROUND,
+  SW_URL, SW_SCOPE, HELLO_LINE, BODY_URL, DEVICE_ROUTE, ALIVE_URL, BODY_OFF_LINE, SERVER_TIMEOUT_MS,
 } from '../web/ask.mjs';
 import { askColors, POCKET_HEAD } from '../web/pocket.mjs';
 import { ROUTE_LINE, SWITCH_KEY, WHY, bodyLine } from '../web/pocket-era.mjs';
@@ -34,8 +30,8 @@ import { converse } from '../act/converse.mjs';
 
 const sha = (f) => crypto.createHash('sha256').update(readFileSync(f)).digest('hex');
 const count = (hay, needle) => hay.split(needle).length - 1;
-const ASK_PAGE_CAP = 32768;     // the /ask page alone
-const ASK_TOTAL_CAP = 262144;   // the page plus every organism module it imports
+const ASK_PAGE_CAP = 40960;     // the /ask page alone, which is ALL a first visit downloads before it can ask
+const ASK_TOTAL_CAP = 262144;   // the page plus every organism module the offline fallback may import
 const temps = [];
 const tmp = (tag) => { const d = mkdtempSync(path.join(os.tmpdir(), 'web-ask-' + tag + '-')); temps.push(d); return d; };
 after(() => {
@@ -93,110 +89,94 @@ function fixtureRoot(root) {
 const FIX = fixtureRoot(path.join(tmp('root'), 'root'));
 const DIST = tmp('dist');
 const built = generateAsk(DIST, { root: FIX });
+const HTML = readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8');
 const { grownAnswer } = await import(pathToFileURL(path.join(FIX, 'grown', 'index.mjs')).href);
 const realEra = await import(pathToFileURL(path.join(DIST, 'organism', 'web', 'pocket-era.mjs')).href);
+const script = (html) => html.match(/<script type="module">([\s\S]*?)<\/script>/)[1];
 
-test('every organism module the page imports is a byte for byte copy of its source, with its sha256 in the manifest', () => {
+test('every organism module the fallback imports is a byte for byte copy of its source, with its sha256 in the manifest the page lists', () => {
   assert.ok(built.modules >= 2, 'exact-read and exact at least');
   for (const f of built.manifest.files) {
     assert.ok(MODULES.includes(f.file));
     assert.equal(f.sha256, sha(path.join(ROOT, f.file)), f.file + ' source');
     assert.equal(f.sha256, sha(path.join(DIST, 'organism', f.file)), f.file + ' copy');
+    assert.ok(HTML.includes('<span class="port">' + f.file + ' ' + f.sha256.slice(0, 12) + '</span>'), f.file + ' listed');
   }
   const onDisk = JSON.parse(readFileSync(path.join(DIST, 'organism', 'manifest.json'), 'utf8'));
   assert.deepEqual(onDisk.files, built.manifest.files);
+  assert.ok(built.manifest.files.some((f) => f.file === 'act/converse.mjs'));
 });
 
-test('the manifest carries act/converse.mjs with the sha256 of the repository file, and the page lists it beside the others', () => {
-  assert.ok(MODULES.includes('act/converse.mjs'));
-  const c = built.manifest.files.find((f) => f.file === 'act/converse.mjs');
-  assert.ok(c, 'act/converse.mjs is in the manifest');
-  assert.equal(c.sha256, sha(path.join(ROOT, 'act', 'converse.mjs')));
-  assert.equal(c.bytes, readFileSync(path.join(ROOT, 'act', 'converse.mjs')).length);
-  const html = readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8');
-  for (const f of built.manifest.files) assert.ok(html.includes('<span class="port">' + f.file + ' ' + f.sha256.slice(0, 12) + '</span>'), f.file + ' listed');
-  console.log('manifest  ' + built.manifest.files.map((f) => f.file + ' ' + f.sha256.slice(0, 12)).join(', '));
-});
-
-test('the copied reader answers every page example exactly as act/solve.mjs does, and refuses the novel one', async () => {
+test('the copied readers answer every page example exactly as act/solve.mjs and act/converse.mjs do', async () => {
   const read = await import(pathToFileURL(path.join(DIST, 'organism', 'act', 'exact-read.mjs')).href);
-  let word = null;
-  if (built.manifest.files.some((f) => f.file === 'act/word.mjs')) word = (await import(pathToFileURL(path.join(DIST, 'organism', 'act', 'word.mjs')).href)).readWord;
+  const word = (await import(pathToFileURL(path.join(DIST, 'organism', 'act', 'word.mjs')).href)).readWord;
+  const copy = await import(pathToFileURL(path.join(DIST, 'organism', 'act', 'converse.mjs')).href);
   for (const q of EXAMPLES) {
-    const page = read.readExact(q, word ? { word } : {});
+    const page = read.readExact(q, { word });
     const cli = solve(q);
     assert.equal(page ? page.answer : null, cli ? cli.answer : null, q);
-    if (page) assert.equal(page.method, cli.method, q);
-  }
-  assert.equal(read.readExact('what is 17 times 23').answer, '391');
-  assert.equal(read.readExact('write a poem about the sea'), null);
-  assert.deepEqual(read.spokenLeftover('write a poem about the sea'), ['write', 'a', 'poem', 'about', 'the', 'sea']);
-});
-
-test('the copied conversation region answers every page example exactly as act/converse.mjs does, and carries no digit prompt', async () => {
-  const copy = await import(pathToFileURL(path.join(DIST, 'organism', 'act', 'converse.mjs')).href);
-  let carried = 0;
-  for (const q of EXAMPLES.concat(['hey, how are you', 'tell me a joke', 'Hey', 'yo'])) {
     const a = copy.converse(q), b = converse(q);
     assert.equal(a ? a.answer : null, b ? b.answer : null, q);
-    assert.equal(a ? a.kind : null, b ? b.kind : null, q);
-    if (a) carried++;
-    // the region never shadows the exact reader: a prompt the exact reader answers is not a turn
-    if (solve(q)) assert.equal(a, null, 'the region shadowed ' + q);
   }
-  assert.ok(carried >= 4, 'hey, who are you, hey how are you and tell me a joke at least: ' + carried);
+  assert.equal(read.readExact('what is 17 times 23').answer, '391');
   assert.equal(copy.converse('hey').kind, 'greeting');
-  assert.equal(copy.converse('who are you').kind, 'identity');
 });
 
-test('the page and the landing box import only the organism copies; the landing box makes no request; the page has ONE fetch, to /api/ask', () => {
-  const pages = [readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8'), readFileSync(path.join(ROOT, 'web', 'src', 'index.html'), 'utf8')];
-  for (const html of pages) {
-    for (const m of html.matchAll(/import\s*(?:\{[^}]*\}\s*from\s*)?\(?\s*['"]([^'"]+)['"]/g)) assert.match(m[1], /^\.{1,2}\/organism\//, 'import ' + m[1]);
-    assert.doesNotMatch(html, /XMLHttpRequest|WebSocket|sendBeacon|EventSource/);
-  }
-  assert.doesNotMatch(pages[1], /\bfetch\(/, 'the landing box answers in the tab or links to /ask');
-  assert.match(pages[1], /id="askf"/);
-  assert.match(pages[1], /href="\/ask"/);
-  // the ask page (board 18 builder): exactly one fetch call, and its target is the same origin /api/ask
-  const calls = [...pages[0].matchAll(/\bfetch\(([^,)]*)/g)].map((m) => m[1].trim());
-  assert.deepEqual(calls, ['API']);
-  assert.match(pages[0], /const API = '\/api\/ask';/);
-  assert.doesNotMatch(pages[0], /https?:\/\/[^"'\s]*\/api\//, 'no other origin');
-  for (const s of ['sk-', 'sk_', 'Bearer ', 'BRAIN_LLM_KEY=']) assert.ok(!pages[0].includes(s), s);
+// ---------------------------------------------------------------- (1) CLOUD FIRST: the first visit
+
+test('FIRST PAINT WAITS FOR NOTHING OF THE ORGANISM: the page has no static import; a first visit downloads the page alone before it can ask', () => {
+  const src = script(HTML);
+  assert.doesNotMatch(src, /^\s*import[\s{]/m, 'a static import in the page script');
+  assert.doesNotMatch(HTML, /<script\b[^>]*\bsrc=/, 'a script file the page loads by itself');
+  assert.doesNotMatch(HTML, /rel="(stylesheet|modulepreload|preload)"/);
+  assert.equal(count(src, 'import('), 1, 'one dynamic import, inside lazy()');
+  const fv = firstVisit(DIST);
+  assert.deepEqual(fv.files, []);
+  assert.equal(fv.html, Buffer.byteLength(HTML));
+  assert.equal(fv.bytes, fv.html);
+  assert.deepEqual(built.first, fv);
+  // the device tier: only the organism copies under /organism/ and the body, all imported by need
+  assert.deepEqual(tierUrls(built.manifest), Object.fromEntries(Object.entries(TIER).filter(([, f]) => built.manifest.files.some((x) => x.file === f)).map(([k, f]) => [k, '../organism/' + f])));
+  assert.ok(src.includes('const TIER = ' + JSON.stringify(tierUrls(built.manifest)) + ';'));
+  assert.ok(src.includes('body: lazy(' + JSON.stringify(BODY_URL) + ')'));
+  // two fetch targets, both on the same origin: the cloud and the live numbers
+  const calls = [...src.matchAll(/\bfetch\(([^,)]*)/g)].map((m) => m[1].trim());
+  assert.deepEqual(calls, ['API', JSON.stringify(ALIVE_URL)]);
+  assert.match(src, /const API = '\/api\/ask';/);
+  assert.doesNotMatch(HTML, /https?:\/\/[^"'\s]*\/api\//, 'no other origin');
+  assert.doesNotMatch(HTML, /XMLHttpRequest|WebSocket|sendBeacon|EventSource/);
+  for (const s of ['sk-', 'sk_', 'Bearer ', 'BRAIN_LLM_KEY=']) assert.ok(!HTML.includes(s), s);
+  console.log('first visit  ' + fv.bytes + ' bytes before it can ask: the page alone (' + fv.html + ' bytes), 0 organism files');
 });
 
-test('the generated page imports converse from ../organism/act/converse.mjs and calls it before readExact', () => {
-  const html = readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8');
-  const src = html.match(/<script type="module">([\s\S]*?)<\/script>/)[1];
-  assert.match(src, /^import \{ converse \} from '\.\.\/organism\/act\/converse\.mjs';$/m);
-  const body = src.slice(src.indexOf('async function ask(q)'));
-  assert.ok(body.length > 100, 'the ask function is in the page');
-  const iConverse = body.indexOf('converse(q)'), iExact = body.indexOf('readExact(q, opts)'), iServer = body.indexOf('server(q)');
-  assert.ok(iConverse > 0, 'ask() calls converse(q)');
-  assert.ok(iExact > iConverse, 'converse(q) at ' + iConverse + ' comes before readExact(q, opts) at ' + iExact);
-  assert.ok(iServer > iExact, 'the server comes after the exact reader: ' + iServer + ' > ' + iExact);
-  console.log('page order  converse(q) at ' + iConverse + ', readExact(q, opts) at ' + iExact + ', server(q) at ' + iServer + ' in ask()');
-});
-
-test('the one-click prompts carry "hey" and "who are you" ahead of the exact ones, and the intro names the conversation region', () => {
-  assert.deepEqual(EXAMPLES.slice(0, 2), ['hey', 'who are you']);
-  const html = readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8');
-  const iHey = html.indexOf('data-q="hey"'), iWho = html.indexOf('data-q="who are you"'), iExact = html.indexOf('data-q="what is 17 times 23"');
-  assert.ok(iHey > 0 && iWho > iHey && iExact > iWho, 'chip order ' + iHey + ' ' + iWho + ' ' + iExact);
-  assert.match(html, /conversation region/);
+test('firstVisit counts the static module graph of a page: every static import, recursively, once, and not a dynamic one', () => {
+  const d = tmp('fv');
+  const put = (rel, s) => { mkdirSync(path.dirname(path.join(d, rel)), { recursive: true }); writeFileSync(path.join(d, rel), s); };
+  put('ask/index.html', '<!doctype html><script type="module">\nimport { a } from \'../organism/a.mjs\';\nimport \'../organism/side.mjs\';\nconst x = () => import(\'../organism/lazy.mjs\');\n</script><script src="/s.js" defer></script>');
+  put('organism/a.mjs', "import { b } from './b.mjs';\nexport { c } from './c.mjs';\nexport const a = 1;\n");
+  put('organism/b.mjs', "import { a } from './a.mjs';\nexport const b = 2;\n");
+  put('organism/c.mjs', 'export const c = 3;\n');
+  put('organism/side.mjs', '1;\n');
+  put('organism/lazy.mjs', 'x'.repeat(5000));
+  const fv = firstVisit(d);
+  const by = Object.fromEntries(fv.files.map((f) => [f.url, f.bytes]));
+  assert.deepEqual(Object.keys(by).sort(), ['/organism/a.mjs', '/organism/b.mjs', '/organism/c.mjs', '/organism/side.mjs']);
+  assert.equal(fv.bytes, fv.html + Object.values(by).reduce((k, v) => k + v, 0));
+  assert.ok(!('/organism/lazy.mjs' in by), 'a dynamic import is not a first visit download');
+  // a module the page names that is not there counts 0 bytes, and a page that is not there throws
+  put('organism/a.mjs', "import { z } from './missing.mjs';\n");
+  assert.equal(firstVisit(d).files.find((f) => f.url === '/organism/missing.mjs').bytes, 0);
+  assert.throws(() => firstVisit(tmp('none')), /no page at \/ask/);
 });
 
 test('size cap and phone width: the page is small, and nothing in it is wider than a 375 px phone', () => {
-  const html = readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8');
-  const bytes = Buffer.byteLength(html);
+  const bytes = Buffer.byteLength(HTML);
   const total = bytes + built.manifest.files.reduce((k, f) => k + f.bytes, 0);
   assert.ok(bytes < ASK_PAGE_CAP, 'ask page ' + bytes + ' bytes over ' + ASK_PAGE_CAP);
   assert.ok(total < ASK_TOTAL_CAP, 'ask page plus modules ' + total + ' bytes over ' + ASK_TOTAL_CAP);
-  console.log('size  ask/index.html ' + bytes + ' bytes (cap ' + ASK_PAGE_CAP + '), with the organism modules ' + total + ' bytes (cap ' + ASK_TOTAL_CAP + ')');
-  assert.match(html, /<meta name="viewport" content="width=device-width, initial-scale=1">/);
-  const css = html.match(/<style>([\s\S]*?)<\/style>/)[1];
-  // no fixed width, min-width or flex-basis in px wider than the phone's content box (375 minus two 16 px gutters)
+  console.log('size  ask/index.html ' + bytes + ' bytes (cap ' + ASK_PAGE_CAP + '), with the fallback modules ' + total + ' bytes (cap ' + ASK_TOTAL_CAP + ')');
+  assert.match(HTML, /<meta name="viewport" content="width=device-width, initial-scale=1">/);
+  const css = HTML.match(/<style>([\s\S]*?)<\/style>/)[1];
   for (const m of css.matchAll(/(?:^|[;{\s])(width|min-width|flex-basis)\s*:\s*(\d+)px/g)) assert.ok(Number(m[2]) <= 343, m[1] + ' ' + m[2] + 'px');
   assert.doesNotMatch(css, /white-space\s*:\s*(nowrap|pre)\s*;/, 'no unwrapped line');
   assert.match(css, /#term \{[^}]*overflow-wrap: anywhere/);
@@ -206,6 +186,7 @@ test('size cap and phone width: the page is small, and nothing in it is wider th
   assert.match(css, /\.chips \{[^}]*flex-wrap: wrap/);
   assert.match(css, /nav \{[^}]*flex-wrap: wrap/);
   assert.match(css, /\.chip \{[^}]*max-width: 100%/);
+  assert.match(css, /\.strip \{[^}]*overflow-wrap: anywhere/);
   assert.match(css, /main \{[^}]*padding: \d+px 16px/);
 });
 
@@ -282,27 +263,34 @@ function distOf(u) {
   if (url.origin !== ORIGIN || !url.pathname.startsWith('/organism/')) return null;
   return path.join(DIST, ...url.pathname.split('/').filter(Boolean));
 }
-const script = (html) => html.match(/<script type="module">([\s\S]*?)<\/script>/)[1];
+
+const respond = (status, json, retry = null) => ({ status, headers: { get: (k) => (k.toLowerCase() === 'retry-after' ? retry : k.toLowerCase() === 'content-type' ? 'application/json' : null) }, json: async () => json });
+const base = { llm: { provider: null, reason: 'not asked' }, serverUs: 9, host: 'cloud.test', knowledge: { ready: true } };
+const memory = (text, extra = {}) => respond(200, { ok: true, text, route: 'direct', provenance: { answer: 'memory', memoryHits: 0, webPages: 0 }, ...base, ...extra });
+const GROWING = 'I am growing a cell for this.';
+/** The organism in the cloud, planted: the conversation region, then the exact reader, else a miss it takes as a task. */
+function organism(q) {
+  const n = converse(q);
+  if (n) return respond(200, { ok: true, text: 'answered natively by the conversation region.\n' + n.answer, native: { kind: n.kind, answer: n.answer }, exact: null, route: 'direct', provenance: { answer: 'native' }, ...base });
+  const s = solve(q);
+  if (s) return respond(200, { ok: true, text: 'answered exactly by ' + s.method + '\n' + s.answer, exact: { answer: s.answer }, route: 'direct', provenance: { answer: 'exact' }, ...base });
+  return respond(200, { ok: true, text: GROWING + '\nnothing in memory matches.', route: 'direct', provenance: { answer: 'memory' }, growing: { logged: true, reason: null }, ...base });
+}
+const cloudOf = (init) => organism(JSON.parse(init.body).prompt);
 
 /**
- * The page script against a planted fetch, a small DOM, a planted Storage and navigator, and the grown cells served
- * from DIST (the build the page came from) as the origin would serve them: the code path, never a live network.
- * order records converse and readExact; flow records carry, converse, readExact, route, device and the server
- * request; asked records the prompt each reader got. era is the body module the page imports apart: 'real' (the copy
- * the build wrote, its deviceAnswer recorded in flow), null (the import fails) or a planted module. Worker is the
- * page's Worker global (none by default, as in node).
+ * The page script against a planted fetch (the cloud at /api/ask and the live numbers at /alive/data.json), a small
+ * DOM, a planted Storage and navigator, the device tier's modules imported by need from DIST, and the grown cells served
+ * from DIST as the origin would serve them: the code path, never a live network. flow records the cloud request, carry,
+ * converse, readExact, route and device; asked records the prompt each reader got. era is the body module: 'real' (the
+ * copy the build wrote, its deviceAnswer recorded in flow), null (the import fails) or a planted module. idle() runs
+ * what the page left for after the first paint.
  */
-async function runPage({ order = null, flow = null, asked = null, store = memStore(), nav = { onLine: true }, loc = {}, cells = null, cellsGate = null, era = 'real', Worker = undefined } = {}) {
-  const html = readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8');
-  let src = script(html);
-  const mods = {};
-  for (const f of built.manifest.files) mods['../organism/' + f.file] = await import(pathToFileURL(path.join(DIST, 'organism', f.file)).href);
-  const note = (arr, v) => { if (arr && arr.length < 64) arr.push(v); };
-  const rec = (name, fn, both, at = 0) => (...a) => { if (both) note(order, name); note(flow, name); note(asked, [name, a[at], a[at + 1]]); return fn(...a); };
-  const cv = mods['../organism/act/converse.mjs'], ex = mods['../organism/act/exact-read.mjs'], th = mods['../organism/act/thread.mjs'], ct = mods['../organism/act/cells-tab.mjs'];
-  mods['../organism/act/converse.mjs'] = { ...cv, converse: rec('converse', cv.converse, true) };
-  mods['../organism/act/exact-read.mjs'] = { ...ex, readExact: rec('readExact', ex.readExact, true) };
-  mods['../organism/act/thread.mjs'] = { ...th, carry: (...a) => { note(flow, 'carry'); return th.carry(...a); } };
+async function runPage({ flow = null, asked = null, store = memStore(), nav = { onLine: true }, loc = {}, cells = null, cellsGate = null, era = 'real', Worker = undefined, alive = null } = {}) {
+  let src = script(HTML);
+  // a reader the clock calls again and again is one step of the flow: a step repeated back to back is noted once
+  const note = (arr, v) => { if (arr && arr.length < 64 && (typeof v !== 'string' || arr[arr.length - 1] !== v)) arr.push(v); };
+  const rec = (name, fn, at = 0) => (...a) => { note(flow, name); note(asked, [name, a[at], a[at + 1]]); return fn(...a); };
   const bases = [], cellFetches = [], imported = [], dynamic = [];
   const cellFetch = async (u) => {
     cellFetches.push(String(u));
@@ -317,26 +305,30 @@ async function runPage({ order = null, flow = null, asked = null, store = memSto
     if (!f) throw new Error('not on this origin: ' + u);
     return import(pathToFileURL(f).href);
   };
-  mods['../organism/act/cells-tab.mjs'] = {
-    ...ct,
-    loadCells: async (base, o = {}) => { bases.push(base); if (cellsGate) await cellsGate; return ct.loadCells(base, { ...o, fetch: cellFetch, importer: cellImport }); },
-    route: rec('route', ct.route, false, 1),
+  const load = async (rel) => import(pathToFileURL(path.join(DIST, 'organism', rel)).href);
+  const wrap = {
+    'act/converse.mjs': (m) => ({ ...m, converse: rec('converse', m.converse) }),
+    'act/exact-read.mjs': (m) => ({ ...m, readExact: rec('readExact', m.readExact) }),
+    'act/thread.mjs': (m) => ({ ...m, carry: (...a) => { note(flow, 'carry'); return m.carry(...a); } }),
+    'act/cells-tab.mjs': (m) => ({ ...m, loadCells: async (b, o = {}) => { bases.push(b); if (cellsGate) await cellsGate; return m.loadCells(b, { ...o, fetch: cellFetch, importer: cellImport }); }, route: rec('route', m.route, 1) }),
   };
-  // the page's one dynamic import, the body: what the origin serves under /organism/, or the planted module
   const body = era === 'real' ? { ...realEra, deviceAnswer: (...a) => { note(flow, 'device'); return realEra.deviceAnswer(...a); } } : era;
   const imp = async (u) => {
     dynamic.push(String(u));
-    assert.equal(u, BODY_URL, 'the page imports nothing else at run time');
-    if (!body) throw new Error('the body did not load');
-    return body;
+    if (u === BODY_URL) { if (!body) throw new Error('the body did not load'); return body; }
+    const rel = String(u).replace(/^\.\.\/organism\//, '');
+    assert.ok(String(u).startsWith('../organism/') && MODULES.includes(rel), 'the page imports only the organism copies: ' + u);
+    const m = await load(rel);
+    return wrap[rel] ? wrap[rel](m) : m;
   };
-  src = src.replace(/import\s*\{([^}]*)\}\s*from\s*'([^']+)';/g, (m, names, from) => 'const {' + names + '} = __mods[' + JSON.stringify(from) + '];');
   src = src.replace(/\bimport\(/g, '__imp(');
-  const calls = [];
-  let reply = null;
+  const calls = [], aliveCalls = [];
+  let reply = (url, init) => cloudOf(init);
   const fetch = async (url, init) => {
+    if (url === ALIVE_URL) { aliveCalls.push(url); const a = typeof alive === 'function' ? alive() : alive; if (a instanceof Error) throw a; return a || { ok: false, status: 404, json: async () => null }; }
+    assert.equal(url, '/api/ask', 'the page fetched ' + url);
     calls.push({ url, init });
-    note(flow, 'server');
+    note(flow, 'cloud');
     const r = typeof reply === 'function' ? reply(url, init) : reply;
     if (r instanceof Error) throw r;
     return r;
@@ -345,13 +337,24 @@ async function runPage({ order = null, flow = null, asked = null, store = memSto
   const main = doc.body.appendChild(doc.createElement('main'));
   const newBtn = main.appendChild(doc.createElement('button'));
   newBtn.setAttribute('id', 'new');
+  const strip = main.appendChild(doc.createElement('div'));
+  strip.setAttribute('id', 'alive');
+  strip.appendChild(doc.createTextNode('the organism, live'));
   const chips = [];
-  for (const m of html.matchAll(/<button class="chip" type="button" data-q="([^"]*)">/g)) {
+  for (const m of HTML.matchAll(/<button class="chip" type="button" data-q="([^"]*)">/g)) {
     const b = main.appendChild(doc.createElement('button'));
     b.setAttribute('class', 'chip');
     b.setAttribute('data-q', unesc(m[1]));
     chips.push(b);
   }
+  // the body row as the page writes it: the off line and the switch
+  const bodyRow = main.appendChild(doc.createElement('div'));
+  const bodyLineEl = bodyRow.appendChild(doc.createElement('span'));
+  bodyLineEl.setAttribute('id', 'body');
+  bodyLineEl.textContent = BODY_OFF_LINE;
+  const bodySw = bodyRow.appendChild(doc.createElement('button'));
+  bodySw.setAttribute('id', 'bodysw');
+  bodySw.textContent = 'grow on this device too';
   const term = main.appendChild(doc.createElement('div'));
   term.setAttribute('id', 'term');
   term.appendChild(mount(doc, helloView()));
@@ -359,230 +362,367 @@ async function runPage({ order = null, flow = null, asked = null, store = memSto
   form.setAttribute('id', 'f');
   const box = form.appendChild(doc.createElement('textarea'));
   box.setAttribute('id', 'q');
-  // the body row as the page writes it: the line, and the switch hidden until the body loads
-  const bodyRow = main.appendChild(doc.createElement('div'));
-  const bodyLineEl = bodyRow.appendChild(doc.createElement('span'));
-  bodyLineEl.setAttribute('id', 'body');
-  const bodySw = bodyRow.appendChild(doc.createElement('button'));
-  bodySw.setAttribute('id', 'bodysw');
-  bodySw.setAttribute('class', 'chip');
-  bodySw.hidden = true;
-  const window = { get localStorage() { if (store === 'throws') throw new Error('SecurityError: the store is blocked'); return store; } };
+  const idleQ = [];
+  const window = { get localStorage() { if (store === 'throws') throw new Error('SecurityError: the store is blocked'); return store; }, requestIdleCallback: (f) => { idleQ.push(f); return idleQ.length; } };
   const location = { search: '', href: ORIGIN + '/ask', protocol: 'https:', hostname: 'dilation.dev', ...loc };
   const AsyncFunction = (async () => {}).constructor;
-  await new AsyncFunction('__mods', '__imp', 'document', 'window', 'location', 'navigator', 'fetch', 'Worker', src)(mods, imp, doc, window, location, nav, fetch, Worker);
+  await new AsyncFunction('__imp', 'document', 'window', 'location', 'navigator', 'fetch', 'Worker', src)(imp, doc, window, location, nav, fetch, Worker);
   const api = window.__brainAsk;
-  return { ...api, calls, term, doc, box, form, newBtn, chips, store, nav, bases, cellFetches, imported, dynamic, bodyLineEl, bodySw, setReply: (r) => { reply = r; } };
+  const idle = async () => { while (idleQ.length) idleQ.shift()(); await new Promise((r) => setTimeout(r, 5)); };
+  return { ...api, calls, aliveCalls, term, doc, box, form, newBtn, chips, store, nav, bases, cellFetches, imported, dynamic, bodyLineEl, bodySw, strip, idleQ, idle, setReply: (r) => { reply = r; } };
 }
-const respond = (status, json, retry = null) => ({ status, headers: { get: (k) => (k.toLowerCase() === 'retry-after' ? retry : null) }, json: async () => json });
-const memory = (text) => respond(200, { ok: true, text, route: 'direct', provenance: { answer: 'memory', memoryHits: 0, webPages: 0 }, llm: { provider: null, reason: 'not configured' }, serverUs: 9, host: 'local', knowledge: { ready: true } });
 const until = async (f, ms = 5000) => { const t0 = Date.now(); while (!f()) { assert.ok(Date.now() - t0 < ms, 'timed out waiting'); await new Promise((r) => setTimeout(r, 2)); } };
 const entries = (p) => p.term.children.filter((c) => c.id !== 'hello');
 const last = (p) => p.term.children[p.term.children.length - 1];
 const stored = (p) => JSON.parse(p.store.getItem(THREAD_KEY));
+const sent = (p) => p.calls.map((c) => JSON.parse(c.init.body).prompt);
 const SERVER_ONLY = 'summarise the history of rome';
 
-test('a tab answer makes no request; a refused prompt makes exactly one POST to /api/ask and prints the server footer', async () => {
-  assert.equal(converse(SERVER_ONLY), null, 'the server-only prompt is not a turn');
-  assert.equal(solve(SERVER_ONLY), null, 'the server-only prompt is not exact');
-  const p = await runPage();
-  const t = await p.ask('what is 17 times 23');
-  assert.equal(t.tab, true);
-  assert.equal(t.answer, '391');
-  assert.equal(p.calls.length, 0, 'a tab answer made a request');
-  assert.match(p.term.children[0].innerHTML, /data-answer="391"/);
-  p.setReply(respond(200, { ok: true, text: 'nothing in memory matches write, poem, about, sea.', route: 'direct', provenance: { answer: 'memory', memoryHits: 0, webPages: 0 }, llm: { provider: 'null', model: 'null', ok: true, reason: 'the model cell is not configured on this host', fellBack: null }, serverUs: 704, host: 'local', knowledge: { ready: false, why: 'no finished ingest' } }));
-  const r = await p.ask('write a poem about the sea');
-  assert.equal(r.tab, false);
-  assert.equal(p.calls.length, 1);
-  assert.equal(p.calls[0].url, '/api/ask');
-  assert.equal(p.calls[0].init.method, 'POST');
-  assert.deepEqual(JSON.parse(p.calls[0].init.body), { prompt: 'write a poem about the sea' });
-  const h = p.term.children[1].innerHTML;
-  assert.match(h, /data-route="refused"/);
-  assert.match(h, /data-server-done="1" data-status="200" data-srv-route="direct" data-srv-provenance="memory"/);
-  assert.match(h, /704 us on the server/);
-  assert.match(h, /round trip \d+ ms in this tab/);
-  assert.match(h, /model none: the model cell is not configured on this host/);
-  assert.match(h, /knowledge store on the server: absent/);
-  assert.equal(count(h, 'nothing in memory matches write, poem, about, sea.'), 1);
-  p.setReply(respond(429, { ok: false, error: 'rate limited (per client: 20 asks a minute): retry after 3 s' }, '3'));
-  await p.ask(SERVER_ONLY);
-  assert.equal(p.calls.length, 2);
-  assert.match(p.term.children[2].innerHTML, /the server answered 429: .*retry after 3 s/);
-  await p.ask('2 to the power of 10');
-  assert.equal(p.calls.length, 2, 'a tab answer after a server answer made a request');
-});
+// ---------------------------------------------------------------- (1) CLOUD FIRST: the page
 
-test('"hey" is answered IN THE TAB by the conversation region: route direct, provenance native, model none, tokens 0, no request, the clock printed', async () => {
-  const p = await runPage();
-  for (const q of ['hey', 'who are you', 'hey, how are you', 'write a haiku']) {
-    const want = converse(q);
-    assert.ok(want, q + ' is a turn');
-    const n0 = p.calls.length;
-    const t = await p.ask(q);
-    assert.equal(p.calls.length, n0, q + ' made a request');
-    assert.equal(t.tab, true, q);
-    assert.equal(t.route, 'direct');
-    assert.equal(t.provenance, 'native');
-    assert.equal(t.answer, want.answer, q);
-    const h = p.term.children[p.term.children.length - 1].innerHTML;
-    assert.match(h, /data-route="direct" data-provenance="native"/);
-    assert.match(h, /model none  tokens 0  network 0/);
-    const ns = Number(/data-ns="(\d+)"/.exec(h)[1]);
-    assert.ok(ns >= 1, q + ' ns ' + ns);
-    assert.match(h, /ns per ask on this device<\/span> \(median of 7 batches, [\d,]+ asks\)/);
-    assert.equal(count(h, 'data-answer='), 1);
-    // the answer comes first, the how second
-    assert.ok(h.indexOf('class="ans say"') < h.indexOf('answered natively in this tab'), q + ' answer first');
-    assert.doesNotMatch(h, /refuses|refused/, q + ' reads as a refusal');
-    if (q === 'hey') console.log('tab hey  kind ' + t.kind + '  ' + ns + ' ns per ask (node, this host)  requests 0');
+test('EVERY PROMPT GOES TO THE CLOUD: a greeting, a sum and a novel prompt each make one POST of { prompt } and print the cloud route; nothing of the organism is imported', async () => {
+  const flow = [];
+  const p = await runPage({ flow });
+  const hey = await p.send('hey');
+  const sum = await p.send('what is 17 times 23');
+  const novel = await p.send(SERVER_ONLY);
+  assert.deepEqual(sent(p), ['hey', 'what is 17 times 23', SERVER_ONLY]);
+  for (const c of p.calls) {
+    assert.equal(c.init.method, 'POST');
+    assert.deepEqual(Object.keys(JSON.parse(c.init.body)), ['prompt']);
+    assert.equal(c.init.headers['content-type'], 'application/json');
+    assert.match(c.init.headers.accept, /^application\/x-ndjson, text\/event-stream;q=0\.9, application\/json;q=0\.8$/);
   }
+  assert.deepEqual([hey.cloud, sum.cloud, novel.cloud], [true, true, true]);
+  assert.equal(hey.answer, converse('hey').answer);
+  assert.equal(sum.answer, '391');
+  assert.deepEqual(flow, ['cloud', 'carry', 'cloud', 'carry', 'cloud'], 'no device reader ran: only the follow-up reader, once the thread had a turn');
+  assert.deepEqual(p.dynamic, ['../organism/act/thread.mjs'], 'the cloud answered, so nothing of the device tier was imported');
+  const e = entries(p)[1];
+  const srv = e.querySelector('[data-server-done]');
+  assert.deepEqual([srv.getAttribute('data-status'), srv.getAttribute('data-srv-route'), srv.getAttribute('data-srv-provenance'), srv.getAttribute('data-srv-once')], ['200', 'direct', 'exact', 'tail']);
+  assert.equal(e.querySelector('[data-srv-answer]').textContent, '391');
+  assert.match(srv.textContent, /cloud: route direct  provenance exact  model none: not asked  memory hits 0  web pages 0  9 us in the cloud \(cloud\.test\)  round trip \d+ ms$/);
+  assert.equal(e.querySelectorAll('[data-fallback]').length + e.querySelectorAll('[data-ns]').length, 0, 'no device line on a cloud answer');
+  assert.deepEqual(stored(p).map((t) => t.route), ['cloud, route direct, provenance native', 'cloud, route direct, provenance exact', 'cloud, route direct, provenance memory']);
 });
 
-test('the tab calls the conversation region before the exact reader, and never the exact reader for a turn it carried', async () => {
-  const order = [];
-  const p = await runPage({ order });
-  await p.ask('what is 17 times 23');
-  assert.deepEqual(order.slice(0, 2), ['converse', 'readExact']);
-  order.length = 0;
-  await p.ask('hey');
-  assert.ok(order.length > 0 && order.every((x) => x === 'converse'), 'hey reached ' + [...new Set(order)].join(','));
-  order.length = 0;
-  p.setReply(respond(200, { ok: true, text: 'nothing in memory matches rome.', route: 'direct', provenance: { answer: 'memory' }, serverUs: 5, host: 'local', knowledge: { ready: true } }));
-  await p.ask(SERVER_ONLY);
-  assert.deepEqual(order, ['converse', 'readExact'], 'a refused prompt asks each reader once, in order');
-});
-
-test('a refused prompt renders the SERVER block first ("asking the organism on the server ..."), the refusal lines after it, dim, every one printed', async () => {
-  const unit = refusedHtml(['write', 'poem'], '"one sentence" in: hey');
-  const iSrv = unit.indexOf('data-server-pending="1"'), iRef = unit.indexOf('data-refusal="1"');
-  assert.ok(iSrv >= 0 && iRef > iSrv, 'server block ' + iSrv + ' before refusal ' + iRef);
-  assert.ok(unit.startsWith('<div class="srv pending acc" data-server-pending="1">' + PENDING_LINE + '</div>'), 'the first visible line is the pending line');
-  assert.equal(PENDING_LINE, 'asking the organism on the server ...');
-  assert.match(unit, /<div class="refusal dim" data-refusal="1"><pre class="dim">no cell in this tab carries this question, so the tab refuses it, not guesses; the organism on the server answers it\.<\/pre>/);
-  assert.match(unit, /tab: route refused  provenance none  model none \(the model cell is not in the browser\)  tokens 0  words the spoken reader could not read: write, poem/);
-  assert.match(unit, /the word problem reader stopped at: &quot;one sentence&quot; in: hey/);
-  // the same order in the page, before and after the server answers
+test('the cloud block first says it is asking, then how long it has waited, then the answer; a failure prints in it, never silence', async () => {
+  assert.equal(PENDING_LINE, 'asking the organism in the cloud ...');
+  assert.equal(toHtml(pendingView(0)), '<div class="srv pending acc" data-server-pending="1">' + PENDING_LINE + '</div>');
+  assert.match(toHtml(pendingView(4)), /asking the organism in the cloud \.\.\. 4 s, still waiting/);
   const p = await runPage();
-  let reply;
-  const gate = new Promise((ok) => { reply = ok; });
+  let release;
+  const gate = new Promise((ok) => { release = ok; });
   p.setReply({ status: 200, headers: { get: () => null }, json: () => gate });
-  const pending = p.ask(SERVER_ONLY);
+  const out = p.send(SERVER_ONLY);
   try {
-    // the grown cells are asked before the server now, so the pending line appears after they answered nothing
-    await until(() => p.term.children[0] && p.term.children[0].innerHTML.includes('data-server-pending'));
-    const before = p.term.children[0].innerHTML;
-    assert.ok(before.indexOf(PENDING_LINE) > 0 && before.indexOf(PENDING_LINE) < before.indexOf('data-refusal="1"'), 'pending line before the refusal lines while in flight');
+    await until(() => p.calls.length === 1);
+    assert.equal(last(p).querySelector('[data-server-pending]').textContent, PENDING_LINE);
   } finally {
-    reply({ ok: true, text: 'nothing in memory matches rome.', route: 'direct', provenance: { answer: 'memory', memoryHits: 0, webPages: 0 }, llm: { provider: null, reason: 'not configured' }, serverUs: 142, host: 'iad1', knowledge: { ready: true } });
+    release({ ok: true, text: 'Rome was founded.', route: 'direct', provenance: { answer: 'memory' }, ...base });
   }
-  await pending;
-  const after = p.term.children[0].innerHTML;
-  assert.ok(!after.includes('data-server-pending'), 'the pending line was replaced');
-  const iDone = after.indexOf('data-server-done="1"'), iRef2 = after.indexOf('data-refusal="1"');
-  assert.ok(iDone > 0 && iRef2 > iDone, 'server answer ' + iDone + ' before refusal lines ' + iRef2);
-  assert.match(after, /data-route="refused"/, 'the tab route is still printed');
-  console.log('refused order  server block at ' + iDone + ', refusal lines at ' + iRef2 + ' (' + SERVER_ONLY + ')');
-});
-
-test('a failed request prints its failure in the server block, never silence', async () => {
-  const p = await runPage();
+  await out;
+  assert.equal(last(p).querySelectorAll('[data-server-pending]').length, 0);
+  assert.equal(last(p).querySelector('.srvtext').textContent, 'Rome was founded.');
+  // failures, each in the cloud block
   p.setReply(new Error('Failed to fetch'));
-  const r = await p.ask(SERVER_ONLY);
-  assert.equal(r.tab, false);
-  const h = p.term.children[0].innerHTML;
-  assert.match(h, /data-server-done="1" data-status="0"/);
-  assert.match(h, /the server half did not answer: Failed to fetch/);
-  assert.ok(h.indexOf('data-server-done') < h.indexOf('data-refusal="1"'));
+  await p.send(SERVER_ONLY);
+  assert.match(last(p).querySelector('[data-server-done]').textContent, /^cloud  the cloud did not answer: Failed to fetch  round trip \d+ ms$/);
   p.setReply(respond(500, null));
-  await p.ask(SERVER_ONLY);
-  assert.match(p.term.children[1].innerHTML, /the server answered 500: no JSON/);
+  await p.send(SERVER_ONLY);
+  assert.match(last(p).querySelector('[data-server-done]').textContent, /the cloud answered 500: no JSON/);
+  p.setReply(respond(429, { ok: false, error: 'too many requests' }, '30'));
+  await p.send(SERVER_ONLY);
+  assert.match(last(p).querySelector('[data-server-done]').textContent, /the cloud answered 429: too many requests \(retry after 30 s\)/);
+  assert.equal(SERVER_TIMEOUT_MS, 25000);
+  assert.ok(script(HTML).includes("'no answer in 25 s, the request was stopped'"));
 });
 
-test('a server answer prints ONCE: a native text ending with its answer prints the head dim and the answer once', () => {
-  const answer = converse('hey, how are you').answer;
-  const native = { ok: true, text: 'answered natively by the conversation region (kind greeting+wellbeing, 35945 ns), with no model, no memory read and no network.\n' + answer,
-    native: { kind: 'greeting+wellbeing', answer, form: 'hey how are you', ns: 35945 }, exact: null, route: 'direct',
-    provenance: { answer: 'native', memoryHits: 0, webPages: 0 }, llm: { provider: null, reason: 'not asked: the native conversation region answered' }, serverUs: 142, host: 'iad1', knowledge: { ready: true } };
-  const h = serverHtml({ status: 200, j: native, rttMs: 75 });
-  assert.equal(count(h, answer), 2, 'the answer text once and its data attribute once');
-  assert.equal(count(h, '>' + answer + '<'), 1, 'printed once');
-  assert.equal(count(h, 'data-srv-answer='), 1);
-  assert.match(h, /data-srv-once="tail"/);
-  assert.match(h, /<pre class="srvtext dim" data-srv-head="1">answered natively by the conversation region \(kind greeting\+wellbeing, 35945 ns\), with no model, no memory read and no network\.<\/pre>/);
-  assert.ok(h.indexOf('data-srv-answer') < h.indexOf('data-srv-head'), 'the answer first, the head second');
-  assert.match(h, /server: route <span class="acc">direct<\/span>  provenance <span class="acc">native<\/span>/);
-  assert.match(h, /142 us on the server<\/span> \(iad1\)  round trip 75 ms in this tab/);
-  // the exact shape (head line, then the answer) prints the answer once too
-  const ex = serverHtml({ status: 200, j: { ok: true, text: 'answered exactly by exact.arith\n391', exact: { answer: '391', ns: 900 }, route: 'direct', provenance: { answer: 'exact' }, serverUs: 770, host: 'iad1', knowledge: { ready: true } }, rttMs: 60 });
-  assert.equal(count(ex, '>391<'), 1);
-  assert.match(ex, /data-srv-once="tail"/);
-  // the equal case (textIsTheAnswer) prints no text block at all
-  const eq = serverHtml({ status: 200, j: { ...native, text: answer }, rttMs: 70 });
-  assert.equal(count(eq, '>' + answer + '<'), 1);
-  assert.match(eq, /data-srv-once="equal"/);
-  assert.doesNotMatch(eq, /srvtext/);
-  // a text with no such tail (memory, model) prints as it came
-  const mem = serverHtml({ status: 200, j: { ok: true, text: 'nothing in memory matches hey.', route: 'direct', provenance: { answer: 'memory' }, serverUs: 9, host: 'iad1', knowledge: { ready: true } }, rttMs: 70 });
-  assert.match(mem, /<pre class="srvtext">nothing in memory matches hey\.<\/pre>/);
-  assert.match(mem, /data-srv-once="text"/);
-  // a number that only ENDS the text, not on its own line, is not a tail
-  assert.equal(answerOnce({ text: 'the year was 1391', exact: { answer: '391' } }).mode, 'text');
-  assert.equal(answerOnce({ text: '  391 ', exact: { answer: '391' } }).mode, 'equal');
-  assert.equal(answerOnce({ text: 'a\nb\n391', exact: { answer: '391' } }).head, 'a\nb');
-  console.log('once  native tail: answer printed ' + count(h, '>' + answer + '<') + ' time(s); exact tail ' + count(ex, '>391<') + '; equal ' + count(eq, '>' + answer + '<'));
-});
-
-test('the tab view functions are the page functions byte for byte, and the clock prints a positive median', () => {
-  const html = readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8');
-  for (const [name, fn] of Object.entries(PAGE_FUNCTIONS)) assert.ok(html.includes(fn.toString()), name + ' is in the page byte for byte');
-  assert.ok(!html.includes('function toHtml'), 'the node side serialiser is not in the page: the page mounts, it never writes markup');
-  // the *Html serialisations the benches read are the views, serialised
-  assert.equal(refusedHtml(['a'], null, null), toHtml(pendingView(0)) + toHtml(refusalView(['a'], null, null)));
-  const c = clock(() => converse('hey'));
-  assert.ok(Number.isInteger(c.ns) && c.ns >= 1 && c.asks >= 56, JSON.stringify(c));
-  const h = tabNativeHtml(converse('hey'), c);
-  assert.match(h, new RegExp('data-ns="' + c.ns + '"'));
-});
-
-// ---------------------------------------------------------------- the chat (pocket-frontier-surface)
-
-test('a follow-up is carried by act/thread.mjs: "and germany?" is asked of every reader and POSTed as the question it stands for, with one dim "read as" line; "plus 9" is answered in the tab', async () => {
+test('THE DEVICE TIER IS ONLY THE OFFLINE FALLBACK: when the cloud gives no answer this device answers, in its order, and says so in one line', async () => {
+  const flow = [];
+  const p = await runPage({ flow });
+  p.setReply(new TypeError('Failed to fetch'));
+  const r = await p.send('what is 17 times 23');
+  assert.deepEqual({ cloud: r.cloud, fallback: r.fallback, answer: r.answer, route: r.route, provenance: r.provenance, why: r.why }, { cloud: false, fallback: true, answer: '391', route: 'exact', provenance: 'exact', why: 'Failed to fetch' });
+  const e = last(p);
+  const fb = e.querySelector('[data-fallback]');
+  assert.equal(fb.textContent, 'offline fallback  the cloud gave no answer (Failed to fetch), so this device answered from what it already holds:');
+  const h = e.innerHTML;
+  assert.ok(h.indexOf('data-server-done') < h.indexOf('data-fallback') && h.indexOf('data-fallback') < h.indexOf('data-answer="391"'), 'the cloud failure, the fallback line, then the answer');
+  assert.match(e.querySelector('[data-route="exact"]').textContent, /^device: route exact  method .*  model none  tokens 0  network 0  [\d,]+ ns per ask on this device$/);
+  assert.equal(stored(p)[0].route.startsWith('offline fallback on this device: exact, method '), true);
+  assert.deepEqual(flow, ['cloud', 'converse', 'readExact']);
+  // the order on this device: the conversation region, the exact reader (with the word reader), the grown cells, a cell grown here
   const asked = [];
-  const p = await runPage({ asked });
+  const q = await runPage({ flow: (flow.length = 0, flow), asked });
+  q.setReply(respond(503, { ok: false, error: 'down' }));
+  const miss = await q.send(SERVER_ONLY);
+  assert.deepEqual(flow, ['cloud', 'converse', 'readExact', 'route', 'device']);
+  assert.equal(typeof asked.find((x) => x[0] === 'readExact')[2].word, 'function', 'the exact reader is asked with the word problem reader');
+  assert.deepEqual({ cloud: miss.cloud, fallback: miss.fallback, offline: miss.offline, status: miss.status }, { cloud: false, fallback: false, offline: false, status: 503 });
+  assert.match(last(q).querySelector('[data-refusal]').textContent, /^device: nothing this device holds carries it, so it refuses it, not guesses \(none of the 2 cells it holds carries it\)\. Ask again when the cloud answers\.$/);
+  assert.deepEqual(q.dynamic, ['../organism/act/converse.mjs', '../organism/act/exact-read.mjs', '../organism/act/word.mjs', '../organism/act/cells-tab.mjs', BODY_URL]);
+  flow.length = 0;
+  const hey = await q.send('hey');
+  assert.deepEqual([hey.route, hey.provenance, hey.answer], ['direct', 'native', converse('hey').answer]);
+  assert.deepEqual(flow, ['carry', 'cloud', 'converse']);
+  assert.equal(new Set(q.dynamic).size, q.dynamic.length, 'each module is imported once');
+  const w = await q.send(EXAMPLES.find((x) => /Natalia/.test(x)));
+  assert.equal(w.route, 'exact', 'the word problem reader answers inside the exact reader');
+  assert.equal(toHtml(fallbackView('<x>')).includes('<x>'), false, 'text is text');
+});
+
+test('offline: no request; this device answers what it holds, and a prompt it does not prints ONE honest line, no spinner', async () => {
+  const p = await runPage({ nav: { onLine: false } });
+  const r = await p.send(SERVER_ONLY);
+  assert.equal(r.offline, true);
+  assert.equal(p.calls.length, 0, 'offline, nothing was sent');
+  const e = last(p);
+  const off = e.querySelectorAll('[data-offline]');
+  assert.equal(off.length, 1);
+  assert.equal(off[0].textContent, OFFLINE_LINE);
+  assert.match(OFFLINE_LINE, /the organism in the cloud/);
+  assert.equal(e.querySelectorAll('[data-server-pending]').length + e.querySelectorAll('[data-server-done]').filter((x) => !x.hasAttribute('data-offline')).length, 0);
+  assert.ok(!e.innerHTML.includes(PENDING_LINE), 'no spinner line');
+  const s = await p.send('what is 17 times 23');
+  assert.deepEqual([s.answer, s.why], ['391', 'this device is offline']);
+  assert.equal(last(p).querySelector('[data-fallback]').textContent, 'offline fallback  the cloud gave no answer (this device is offline), so this device answered from what it already holds:');
+  assert.equal((await p.send('capital of Japan')).route, 'cell');
+  assert.equal(p.calls.length, 0);
+  assert.deepEqual(stored(p).map((t) => t.route.split(':')[0]), ['offline, not sent', 'offline fallback on this device', 'offline fallback on this device']);
+  // the network drops while the request is out: the offline line, not the error
+  const nav2 = { onLine: true };
+  const q = await runPage({ nav: nav2 });
+  q.setReply(() => { nav2.onLine = false; return new TypeError('Failed to fetch'); });
+  const t = await q.send(SERVER_ONLY);
+  assert.equal(t.offline, true);
+  assert.equal(q.calls.length, 1);
+  assert.equal(last(q).querySelector('[data-offline]').textContent, OFFLINE_LINE);
+  assert.ok(!last(q).innerHTML.includes(PENDING_LINE));
+  assert.doesNotMatch(last(q).innerHTML, /did not answer/);
+});
+
+test('a prompt a grown cell carries is answered offline by the cell web/pocket.mjs bundled, read from the page origin; cells that do not load are named', async () => {
+  const want = grownAnswer('capital of Japan');
+  assert.ok(want && want.id === CAPITAL);
+  const row = JSON.parse(readFileSync(path.join(DIST, 'organism', 'cells.json'), 'utf8')).cells.find((r) => r.id === want.id);
+  const p = await runPage({ nav: { onLine: false } });
+  const t = await p.send('capital of Japan');
+  assert.deepEqual({ route: t.route, provenance: t.provenance, cell: t.cell, generation: t.generation, answer: t.answer }, { route: 'cell', provenance: 'grown', cell: want.id, generation: row.generation, answer: want.answer });
+  const e = last(p);
+  const foot = e.querySelector('[data-route="cell"]');
+  assert.equal(foot.querySelector('.ok').textContent, 'grown cell ' + want.id + ', generation ' + row.generation);
+  assert.match(foot.textContent, /^device: route grown cell .*  model none  tokens 0  [\d.]+ ms on this device$/);
+  assert.equal(e.querySelector('[data-cell]').textContent, want.answer);
+  await p.send('capital of Japan');
+  assert.deepEqual(p.bases, [ORIGIN + '/organism/']);
+  assert.deepEqual(p.cellFetches, [ORIGIN + '/organism/cells.json']);
+  assert.ok(p.imported.length > 0 && p.imported.every((u) => u.startsWith(ORIGIN + '/organism/cells/')), p.imported.join(' '));
+  const q = await runPage({ nav: { onLine: false }, cells: { index: { nope: 1 }, mod: null } });
+  await q.send('capital of Japan');
+  assert.equal(last(q).querySelectorAll('[data-offline]').length, 1);
+  const r = await runPage({ cells: { index: { nope: 1 }, mod: null } });
+  r.setReply(respond(502, null));
+  await r.send('capital of Japan');
+  assert.match(last(r).querySelector('[data-refusal]').textContent, /\(its cells did not load: cells-tab: .*\)/);
+});
+
+test('every fixture prompt this device answers offline by a grown cell gets the cell and the text the cloud (grownAnswer, THE GATE inside) gives', async (t) => {
+  const FIXTURE_PROMPTS = [...Object.values(TASKS).flat().map((r) => r.q), 'capital of Japan', 'Capital of Japan', 'capital of france', 'reverse the word', 'reverse the word a b c d e', 'write a poem about the sea', 'hey', 'what is 17 times 23'];
+  const p = await runPage({ nav: { onLine: false } });
+  let byCell = 0, byReader = 0, none = 0;
+  for (const q of FIXTURE_PROMPTS) {
+    p.newChat();
+    const s = grownAnswer(q);
+    const a = await p.send(q);
+    if (a.route === 'cell') { byCell++; assert.deepEqual({ cell: a.cell, answer: a.answer }, { cell: s && s.id, answer: s && s.answer }, q); }
+    else if (a.fallback) byReader++;
+    else { none++; assert.equal(s, null, 'this device refused a prompt a grown cell carries: ' + q); }
+  }
+  assert.equal(byCell, TASKS['reverse-word'].length + 2);
+  assert.ok(none >= TASKS.sum.length + TASKS['count-letters'].length);
+  assert.equal(p.calls.length, 0);
+  t.diagnostic('fixture prompts ' + FIXTURE_PROMPTS.length + ' offline: by a grown cell ' + byCell + ', by a reader ' + byReader + ', refused ' + none);
+});
+
+test('THE GATE on this device: the unmastered colony is neither bundled nor asked; a serving colony is imported and asked only on an exact template fit', async () => {
+  const rows = JSON.parse(readFileSync(path.join(DIST, 'organism', 'cells.json'), 'utf8')).cells;
+  assert.deepEqual(rows.map((r) => r.id), [CAPITAL, REVERSE]);
+  assert.equal(existsSync(path.join(DIST, 'organism', 'cells', SILENT + '.mjs')), false);
+  const p = await runPage({ nav: { onLine: false } });
+  assert.equal((await p.send('sum of 2 and 3')).fallback, false);
+  const ids = () => p.imported.map((u) => u.split('/').pop().replace(/\.mjs$/, ''));
+  assert.deepEqual(ids(), [CAPITAL]);
+  const r = await p.send('reverse the word apple');
+  assert.deepEqual({ route: r.route, cell: r.cell, answer: r.answer }, { route: 'cell', cell: REVERSE, answer: 'elppa' });
+  assert.deepEqual(ids(), [CAPITAL, REVERSE]);
+  // the body module does not load: no template test, so no colony is asked; the locked cell still is
+  const q = await runPage({ nav: { onLine: false }, era: null });
+  assert.equal((await q.send('reverse the word apple')).fallback, false);
+  assert.ok(!q.imported.some((u) => u.includes(REVERSE)));
+  assert.equal((await q.send('capital of Japan')).cell, CAPITAL);
+  for (const gateFits of [() => 'true', () => 1, () => { throw new Error('broken core'); }, async () => false]) {
+    const g = await runPage({ nav: { onLine: false }, era: { ...realEra, gateFits } });
+    assert.equal((await g.send('reverse the word apple')).fallback, false);
+    assert.ok(!g.imported.some((u) => u.includes(REVERSE)));
+  }
+});
+
+test('a cell grown on THIS device answers offline after the cloud cells: route device, its route line, its turn stored', async () => {
+  const seen = [];
+  const device = async (q) => { seen.push(q); return q === 'how many letters in apple' ? { text: '5', task: 'count-letters', cells: 2, route: ROUTE_LINE } : null; };
+  const store = memStore();
+  const p = await runPage({ store, nav: { onLine: false }, era: { ...realEra, deviceAnswer: device } });
+  const t = await p.send('how many letters in apple');
+  assert.deepEqual({ route: t.route, provenance: t.provenance, task: t.task, answer: t.answer }, { route: 'device', provenance: 'grown', task: 'count-letters', answer: '5' });
+  const foot = last(p).querySelector('[data-route="device"]');
+  assert.equal(foot.querySelector('.ok').textContent, ROUTE_LINE);
+  assert.equal(DEVICE_ROUTE, ROUTE_LINE);
+  assert.equal(foot.textContent, 'device: route ' + ROUTE_LINE + '  task count-letters  cells 2  model none  tokens 0');
+  assert.deepEqual(stored(p)[0], { prompt: 'how many letters in apple', text: '5', route: 'offline fallback on this device: ' + ROUTE_LINE + ', task count-letters' });
+  seen.length = 0;
+  assert.equal((await p.send('reverse the word apple')).route, 'cell');
+  assert.equal((await p.send('what is 2 times 2')).route, 'exact');
+  assert.deepEqual(seen, [], 'what the cloud cells or the readers carry never reaches the device cell');
+  const bad = await runPage({ nav: { onLine: false }, era: { ...realEra, deviceAnswer: async () => { throw new Error('store broke'); } } });
+  assert.equal((await bad.send('how many letters in apple')).fallback, false);
+  assert.equal(toHtml(deviceView({ text: '<b>', task: 't', cells: 1 })).includes('<b>'), false, 'text is text');
+  assert.equal(await realEra.deviceAnswer('how many letters in apple'), null, 'the real body in node: no IndexedDB, no device answer');
+});
+
+// ---------------------------------------------------------------- (2) IT FEELS LIKE AN LLM
+
+test('STREAMING by feature detection: an NDJSON or SSE answer prints as it arrives, then the final JSON; a whole JSON answer is read whole', async () => {
+  assert.equal(streamKind('application/x-ndjson; charset=utf-8'), 'ndjson');
+  assert.equal(streamKind('application/jsonl'), 'ndjson');
+  assert.equal(streamKind('text/event-stream'), 'sse');
+  for (const ct of ['application/json', '', null, undefined, 'text/plain']) assert.equal(streamKind(ct), null, String(ct));
+  const enc = new TextEncoder();
+  const streamed = (kind, pieces, holdAt = -1, hold = null) => {
+    let i = 0;
+    return { status: 200, headers: { get: (k) => (k.toLowerCase() === 'content-type' ? (kind === 'sse' ? 'text/event-stream' : 'application/x-ndjson') : null) },
+      body: { getReader: () => ({ read: async () => { if (i === holdAt && hold) await hold; return i < pieces.length ? { done: false, value: enc.encode(pieces[i++]) } : { done: true, value: undefined }; } }) },
+      json: async () => { throw new Error('a stream is read as a stream'); } };
+  };
+  const final = { ok: true, text: 'Rome grew from a village.', route: 'direct', provenance: { answer: 'memory' }, ...base };
+  const p = await runPage();
+  let release;
+  const hold = new Promise((ok) => { release = ok; });
+  // a line split across two chunks, a line that does not parse, then the final object
+  p.setReply(streamed('ndjson', ['{"delta":"Rome gr', 'ew"}\n{"delta":" from"}\nnot json\n', '{"delta":" a village."}\n' + JSON.stringify(final) + '\n'], 2, hold));
+  const out = p.send(SERVER_ONLY);
+  try {
+    await until(() => last(p).querySelector('[data-streaming]'));
+    const s = last(p).querySelector('[data-streaming]');
+    assert.equal(s.querySelector('.reply').textContent, 'Rome grew from');
+    assert.equal(s.querySelector('.foot').textContent, 'streaming from the cloud ...');
+    assert.equal(last(p).querySelectorAll('[data-server-pending]').length, 0);
+  } finally { release(); }
+  const r = await out;
+  assert.deepEqual({ cloud: r.cloud, streamed: r.streamed, answer: r.answer }, { cloud: true, streamed: true, answer: final.text });
+  const done = last(p).querySelector('[data-server-done]');
+  assert.equal(done.getAttribute('data-streamed'), '1');
+  assert.equal(done.querySelector('.srvtext').textContent, final.text);
+  assert.equal(last(p).querySelectorAll('[data-streaming]').length, 0);
+  // SSE: data lines, [DONE] skipped; a stream with no final object answers with the text it carried
+  const q = await runPage();
+  q.setReply(streamed('sse', ['event: x\ndata: {"delta":"Hel"}\n\n', 'data: {"delta":"lo."}\n\ndata: [DONE]\n']));
+  const s = await q.send('say hello');
+  assert.deepEqual({ answer: s.answer, route: s.route, streamed: s.streamed }, { answer: 'Hello.', route: 'stream', streamed: true });
+  // a JSON body is read whole, never as a stream, even when the body has a reader
+  const j = await runPage();
+  j.setReply({ ...organism('what is 17 times 23'), body: { getReader: () => { throw new Error('read as a stream'); } } });
+  assert.equal((await j.send('what is 17 times 23')).streamed, false);
+  // readStream alone: an empty stream is no answer; the final object wins over the deltas for the JSON, keeping its text
+  const empty = await readStream(streamed('ndjson', []), 'ndjson');
+  assert.deepEqual(empty, { j: null, text: '', events: 0 });
+  const noText = await readStream(streamed('ndjson', ['{"delta":"a"}\n{"delta":"b"}\n{"ok":true,"route":"r"}']), 'ndjson');
+  assert.deepEqual(noText.j, { ok: true, route: 'r', text: 'ab' });
+  assert.equal(noText.events, 3);
+  const deltas = [];
+  await readStream(streamed('ndjson', ['{"delta":"a"}\n[1]\n{"delta":""}\n{"delta":"b"}\n']), 'ndjson', (t) => deltas.push(t));
+  assert.deepEqual(deltas, ['a', 'ab']);
+});
+
+test('A MISS IS NEVER A DEAD END: when the cloud says it took the prompt as a task the page says so plainly; an answer says nothing of the kind', async () => {
+  assert.equal(missLine({ ok: true, task: 'history-of-rome' }), 'the cloud has taken this as a task (history-of-rome) and grows cells for it in its next era; ask again after that.');
+  assert.equal(missLine({ growing: { task: 'x', logged: true } }), 'the cloud has taken this as a task (x) and grows cells for it in its next era; ask again after that.');
+  assert.equal(missLine({ growing: { logged: true } }), 'the cloud has taken this as a task: it is logged, and its next era grows cells for it; ask again after that.');
+  assert.equal(missLine({ queued: true }), 'the cloud has taken this as a task: it is queued, and its next era grows cells for it; ask again after that.');
+  assert.equal(missLine({ growing: { logged: false, reason: 'no store' } }), 'the cloud could not log this as a task (no store), so nothing grows for it yet.');
+  assert.equal(missLine({ growing: { logged: false } }), 'the cloud could not log this as a task (no reason given), so nothing grows for it yet.');
+  for (const j of [null, 'x', {}, { ok: true }, { growing: null }, { growing: { logged: 'yes' } }, { queued: 1 }, { task: '  ' }, { task: 7 }]) assert.equal(missLine(j), null, JSON.stringify(j));
+  const p = await runPage();
+  const r = await p.send(SERVER_ONLY);
+  assert.equal(r.miss, 'the cloud has taken this as a task: it is logged, and its next era grows cells for it; ask again after that.');
+  const m = last(p).querySelector('[data-miss]');
+  assert.equal(m.textContent, 'taken as a task  ' + r.miss);
+  assert.ok(last(p).innerHTML.indexOf('srvtext') < last(p).innerHTML.indexOf('data-miss'), 'the cloud text first, the task line under it');
+  assert.equal(last(p).querySelectorAll('[data-fallback]').length, 0, 'a miss the cloud took is not a fallback');
+  await p.send('what is 17 times 23');
+  assert.equal(last(p).querySelectorAll('[data-miss]').length, 0);
+});
+
+test('FOLLOW-UPS CARRY THE LAST RELATION: after a lookup, "and X?" asks the same relation of X; the cloud gets the standalone question and the turn one "read as" line', async () => {
+  const last0 = { prompt: 'population of japan', text: '125 million', via: { pack: 'countries', key: 'Japan', column: 'population', op: 'lookup' } };
+  assert.deepEqual(carryRelation(last0, 'and what about india?'), { prompt: 'population of india', carried: true, from: 'population of japan', rule: 'relation' });
+  assert.deepEqual(carryRelation(last0, 'And India'), { prompt: 'population of India', carried: true, from: 'population of japan', rule: 'relation' });
+  assert.equal(carryRelation(last0, 'same for peru??').prompt, 'population of peru');
+  assert.equal(carryRelation({ ...last0, read: 'the population of japan' }, 'how about chile').prompt, 'the population of chile', 'the carried question of the turn, not what was typed');
+  assert.deepEqual(carryRelation({ prompt: 'how many live in nippon', via: { pack: 'p', key: 'Japan', column: 'population' } }, 'what about india?'), { prompt: 'what is the population of india', carried: true, from: 'how many live in nippon', rule: 'relation' });
+  for (const [l, t] of [[last0, 'india'], [last0, 'and'], [last0, ''], [{ prompt: 'x' }, 'and india?'], [null, 'and india?'], [{ prompt: 'x', via: { pack: 'p' } }, 'and india?'], [last0, 'and ' + 'x'.repeat(121)]]) assert.equal(carryRelation(l, t), null, t);
+  // viaOf: the lookup the answer names, strings only, from native.via or via
+  assert.deepEqual(viaOf({ native: { via: { pack: 'countries', key: 'Japan', column: 'population', op: 'lookup', n: 3 } } }), { pack: 'countries', key: 'Japan', column: 'population', op: 'lookup' });
+  assert.deepEqual(viaOf({ via: { column: 'capital', key: 7 } }), { pack: null, key: null, column: 'capital', op: null });
+  for (const j of [null, {}, { via: 'text' }, { via: { key: 'k' } }, { native: { via: null } }]) assert.equal(viaOf(j), null, JSON.stringify(j));
+  const looked = (q, answer, key) => respond(200, { ok: true, text: answer, native: { kind: 'know:lookup', answer, via: { pack: 'countries', key, column: 'population', op: 'lookup' } }, route: 'direct', provenance: { answer: 'native' }, ...base });
+  const store = memStore();
+  const flow = [];
+  const p = await runPage({ store, flow });
+  p.setReply((u, init) => { const q = JSON.parse(init.body).prompt; return q === 'population of japan' ? looked(q, 'The population of Japan is 125 million.', 'Japan') : looked(q, 'The population of India is 1.4 billion.', 'India'); });
+  await p.send('population of japan');
+  assert.equal(last(p).querySelector('[data-via]').textContent, 'looked up: pack countries, key Japan, column population, op lookup');
+  assert.deepEqual(stored(p)[0].via, { pack: 'countries', key: 'Japan', column: 'population', op: 'lookup' });
+  const b = await p.send('and india?');
+  assert.equal(b.read, 'population of india');
+  assert.deepEqual(sent(p), ['population of japan', 'population of india']);
+  assert.equal(last(p).querySelector('[data-read]').textContent, 'read as: population of india');
+  assert.equal(last(p).querySelector('.you').textContent, '> and india?');
+  assert.ok(!flow.includes('carry') && !p.dynamic.length, 'the relation carried with nothing imported');
+  // a reload keeps the relation: the next follow-up carries against the stored turn
+  const q = await runPage({ store });
+  q.setReply((u, init) => looked(JSON.parse(init.body).prompt, 'The population of Peru is 34 million.', 'Peru'));
+  assert.equal((await q.send('what about peru')).read, 'population of peru', 'carried against the last stored turn (India, read as population of india)');
+});
+
+test('a follow-up with no relation is carried by act/thread.mjs, imported only once the thread has a turn: "and germany?" and "plus 9"', async () => {
+  const flow = [];
+  const p = await runPage({ flow });
   p.setReply(memory('Paris is the capital of France.'));
   const a = await p.send('what is the capital of france');
   assert.equal(a.read, null);
-  assert.equal(entries(p)[0].querySelectorAll('[data-read]').length, 0, 'a prompt that stands alone prints no read-as line');
+  assert.deepEqual(p.dynamic, [], 'no turn yet, so the follow-up reader was not imported');
   p.setReply(memory('Berlin is the capital of Germany.'));
-  asked.length = 0;
   const b = await p.send('and germany?');
   assert.equal(b.read, 'what is the capital of germany');
-  assert.deepEqual(p.calls.map((c) => JSON.parse(c.init.body).prompt), ['what is the capital of france', 'what is the capital of germany']);
-  assert.deepEqual(asked.map((x) => x[0]), ['converse', 'readExact', 'route']);
-  for (const [name, q] of asked) assert.equal(q, 'what is the capital of germany', name + ' got the standalone prompt');
-  assert.equal(typeof asked[1][2].word, 'function', 'the exact reader is asked with the word problem reader');
-  const e = last(p);
-  const reads = e.querySelectorAll('[data-read]');
+  assert.deepEqual(p.dynamic, ['../organism/act/thread.mjs']);
+  assert.deepEqual(sent(p), ['what is the capital of france', 'what is the capital of germany']);
+  const reads = last(p).querySelectorAll('[data-read]');
   assert.equal(reads.length, 1);
-  assert.equal(reads[0].textContent, 'read as: what is the capital of germany');
   assert.ok(reads[0].getAttribute('class').split(' ').includes('dim'));
-  assert.equal(e.querySelector('.you').textContent, '> and germany?', 'the turn shows what was typed');
-  const c = await p.send('what is 17 times 23');
-  assert.equal(c.answer, '391');
+  p.setReply((u, init) => cloudOf(init));
+  assert.equal((await p.send('what is 17 times 23')).answer, '391');
   const d = await p.send('plus 9');
-  assert.deepEqual({ tab: d.tab, answer: d.answer, read: d.read }, { tab: true, answer: '400', read: 'what is 391 plus 9' });
-  assert.equal(p.calls.length, 2, 'the carried sum made no request');
-  assert.equal(last(p).querySelector('[data-read]').textContent, 'read as: what is 391 plus 9');
+  assert.deepEqual({ cloud: d.cloud, answer: d.answer, read: d.read }, { cloud: true, answer: '400', read: 'what is 391 plus 9' });
+  assert.equal(sent(p).at(-1), 'what is 391 plus 9');
   assert.equal(stored(p).at(-1).read, 'what is 391 plus 9');
-  // the same follow-up with no turn before it stands alone and is asked as typed
+  assert.deepEqual(flow.filter((x) => x === 'carry').length, 3);
+  // the same follow-up with no turn before it stands alone
   const q = await runPage();
-  q.setReply(memory('nothing in memory matches germany.'));
-  const r = await q.send('and germany?');
-  assert.equal(r.read, null);
-  assert.equal(JSON.parse(q.calls[0].init.body).prompt, 'and germany?');
-  assert.equal(last(q).querySelectorAll('[data-read]').length, 0);
+  q.setReply(memory('nothing.'));
+  assert.equal((await q.send('and germany?')).read, null);
+  assert.equal(sent(q)[0], 'and germany?');
 });
 
 test('one prompt at a time: a follow-up typed while the answer before it is in flight is carried against that answer', async () => {
@@ -598,129 +738,70 @@ test('one prompt at a time: a follow-up typed while the answer before it is in f
     assert.equal(p.calls.length, 1, 'the follow-up waited for the answer before it');
     p.setReply(memory('Berlin.'));
   } finally {
-    release({ ok: true, text: 'Paris.', route: 'direct', provenance: { answer: 'memory' }, serverUs: 1, host: 'local', knowledge: { ready: true } });
+    release({ ok: true, text: 'Paris.', route: 'direct', provenance: { answer: 'memory' }, ...base });
   }
   await first;
   const b = await second;
   assert.equal(b.read, 'what is the capital of germany');
-  assert.deepEqual(p.calls.map((c) => JSON.parse(c.init.body).prompt), ['what is the capital of france', 'what is the capital of germany']);
+  assert.deepEqual(sent(p), ['what is the capital of france', 'what is the capital of germany']);
   assert.deepEqual(p.turns().map((t) => t.prompt), ['what is the capital of france', 'and germany?']);
 });
 
-test('a prompt a grown cell carries is answered IN THE TAB by the cell web/pocket.mjs bundled: route line "grown cell <id>, generation <n>, no server", no request, the text the server gives', async () => {
-  const want = grownAnswer('capital of Japan');
-  assert.ok(want && want.id === 'capital-of-direct-g1', 'the server answers it by a grown cell');
-  const row = JSON.parse(readFileSync(path.join(DIST, 'organism', 'cells.json'), 'utf8')).cells.find((r) => r.id === want.id);
-  const p = await runPage();
-  const t = await p.send('capital of Japan');
-  assert.equal(p.calls.length, 0, 'a cell answer made a request');
-  assert.deepEqual({ tab: t.tab, route: t.route, provenance: t.provenance, cell: t.cell, generation: t.generation, answer: t.answer },
-    { tab: true, route: 'cell', provenance: 'grown', cell: want.id, generation: row.generation, answer: want.answer });
-  const line = 'grown cell ' + want.id + ', generation ' + row.generation + ', no server';
-  const e = last(p);
-  const foot = e.querySelector('[data-route="cell"]');
-  assert.equal(foot.getAttribute('data-provenance'), 'grown');
-  assert.equal(foot.querySelector('.ok').textContent, line);
-  assert.match(foot.textContent, /^route grown cell .*  model none  tokens 0  [\d.]+ ms in this tab$/);
-  assert.equal(e.querySelector('[data-cell]').textContent, want.answer);
-  assert.equal(e.querySelector('[data-cell]').getAttribute('data-cell'), want.id);
-  assert.equal(e.querySelectorAll('[data-refusal]').length + e.querySelectorAll('[data-server-pending]').length, 0, 'no refusal and no server block');
-  assert.equal(stored(p)[0].route, line);
-  assert.equal(stored(p)[0].text, want.answer);
-  // the cells are read from the page's own origin, cells.json once, a cell only under /organism/cells/
-  await p.send('capital of Japan');
-  assert.deepEqual(p.bases, [ORIGIN + '/organism/']);
-  assert.deepEqual(p.cellFetches, [ORIGIN + '/organism/cells.json']);
-  assert.ok(p.imported.length > 0 && p.imported.every((u) => u.startsWith(ORIGIN + '/organism/cells/')), p.imported.join(' '));
-  // cells.json that does not load: the prompt goes to the server and the refusal says why no cell was asked
-  const q = await runPage({ cells: { index: { nope: 1 }, mod: null } });
-  q.setReply(memory('nothing.'));
-  await q.send('capital of Japan');
-  assert.equal(q.calls.length, 1);
-  assert.match(last(q).querySelector('[data-cells]').textContent, /^the grown cells did not load in this tab \(cells-tab: .*\), so none was asked\.$/);
+test('a cloud answer prints ONCE: a text ending with its answer prints the head dim and the answer once', () => {
+  const answer = converse('hey, how are you').answer;
+  const native = { ok: true, text: 'answered natively by the conversation region (kind greeting+wellbeing, 35945 ns), with no model, no memory read and no network.\n' + answer,
+    native: { kind: 'greeting+wellbeing', answer, form: 'hey how are you', ns: 35945 }, exact: null, route: 'direct',
+    provenance: { answer: 'native', memoryHits: 0, webPages: 0 }, llm: { provider: null, reason: 'not asked: the native conversation region answered' }, serverUs: 142, host: 'iad1', knowledge: { ready: true } };
+  const h = serverHtml({ status: 200, j: native, rttMs: 75 });
+  assert.equal(count(h, '>' + answer + '<'), 1, 'printed once');
+  assert.match(h, /data-srv-once="tail"/);
+  assert.ok(h.indexOf('data-srv-answer') < h.indexOf('data-srv-head'), 'the answer first, the head second');
+  assert.match(h, /cloud: route <span class="acc">direct<\/span>  provenance <span class="acc">native<\/span>/);
+  assert.match(h, /142 us in the cloud<\/span> \(iad1\)  round trip 75 ms/);
+  const eq = serverHtml({ status: 200, j: { ...native, text: answer }, rttMs: 70 });
+  assert.equal(count(eq, '>' + answer + '<'), 1);
+  assert.match(eq, /data-srv-once="equal"/);
+  assert.doesNotMatch(eq, /srvtext/);
+  const mem = serverHtml({ status: 200, j: { ok: true, text: 'nothing in memory matches hey.', route: 'direct', provenance: { answer: 'memory' }, serverUs: 9, host: 'iad1', knowledge: { ready: false, why: 'not ingested here' } }, rttMs: 70 });
+  assert.match(mem, /<pre class="srvtext">nothing in memory matches hey\.<\/pre>/);
+  assert.match(mem, /knowledge store in the cloud: absent \(not ingested here\)\./);
+  assert.equal(answerOnce({ text: 'the year was 1391', exact: { answer: '391' } }).mode, 'text');
+  assert.equal(answerOnce({ text: '  391 ', exact: { answer: '391' } }).mode, 'equal');
+  assert.equal(answerOnce({ text: 'a\nb\n391', exact: { answer: '391' } }).head, 'a\nb');
+  assert.match(serverHtml({ status: 200, j: { ...native, llm: { ok: true, provider: 'p', model: 'm', ms: 12.4, tokens: 30 } }, rttMs: 1 }), /model p\/m 12 ms 30 tokens/);
+  assert.match(serverHtml({ status: 200, j: { ...native, llm: { provider: null, reason: 'r', fellBack: 'x' } }, rttMs: 1 }), /model none: r  <span class="warn">fell back from x<\/span>/);
 });
 
-
-test('the order of the tab: carry, the conversation region, the exact reader (with the word reader), the grown cells, a cell grown on this device, then the server', async () => {
-  const flow = [];
-  const p = await runPage({ flow });
-  p.setReply(memory('nothing in memory matches rome.'));
-  await p.send(SERVER_ONLY);
-  assert.deepEqual(flow, ['carry', 'converse', 'readExact', 'route', 'device', 'server']);
-  assert.match(last(p).querySelector('[data-cells]').textContent, /^the grown cells in this tab: none of the \d+ carries it\.$/);
-  flow.length = 0;
-  await p.send('capital of Japan');
-  assert.deepEqual(flow, ['carry', 'converse', 'readExact', 'route']);
-  flow.length = 0;
-  const t = await p.send('what is 17 times 23');
-  assert.equal(t.route, 'exact');
-  assert.deepEqual(flow.slice(0, 3), ['carry', 'converse', 'readExact']);
-  assert.ok(!flow.includes('route') && !flow.includes('server') && !flow.includes('device'), flow.join(','));
-  flow.length = 0;
-  const w = await p.send(EXAMPLES.find((x) => /Natalia/.test(x)));
-  assert.equal(w.route, 'exact', 'the word problem reader answers inside the exact reader');
-  assert.ok(!flow.includes('route') && !flow.includes('server'), flow.join(','));
-  flow.length = 0;
-  await p.send('hey');
-  assert.deepEqual(flow.slice(0, 2), ['carry', 'converse']);
-  assert.ok(!flow.includes('readExact') && !flow.includes('route'), flow.join(','));
-  assert.deepEqual(p.dynamic, [BODY_URL], 'the body is imported once, apart');
+test('the view functions are the page functions byte for byte, and the clock prints a positive median', () => {
+  for (const [name, fn] of Object.entries(PAGE_FUNCTIONS)) assert.ok(HTML.includes(fn.toString()), name + ' is in the page byte for byte');
+  assert.ok(!HTML.includes('function toHtml'), 'the node side serialiser is not in the page: the page mounts, it never writes markup');
+  const c = clock(() => converse('hey'));
+  assert.ok(Number.isInteger(c.ns) && c.ns >= 1 && c.asks >= 56, JSON.stringify(c));
+  assert.match(toHtml(tabNativeView(converse('hey'), c)), new RegExp('data-ns="' + c.ns + '"'));
+  assert.equal(page(built.manifest), HTML, 'the build writes what page() returns');
 });
 
-test('offline: a prompt no tab reader carries prints ONE honest line in place of the server block, no spinner and no request; the tab readers and the cells still answer', async () => {
-  const nav = { onLine: false };
-  const p = await runPage({ nav });
-  const r = await p.send(SERVER_ONLY);
-  assert.equal(r.offline, true);
-  assert.equal(p.calls.length, 0, 'offline, nothing was sent');
-  const e = last(p);
-  const off = e.querySelectorAll('[data-offline]');
-  assert.equal(off.length, 1);
-  assert.equal(off[0].textContent, OFFLINE_LINE);
-  assert.ok(!e.innerHTML.includes(PENDING_LINE), 'no spinner line');
-  assert.equal(e.querySelectorAll('[data-server-pending]').length, 0);
-  assert.ok(e.innerHTML.indexOf('data-offline') < e.innerHTML.indexOf('data-refusal="1"'), 'the line first, the refusal lines after it');
-  assert.equal((await p.send('what is 17 times 23')).answer, '391');
-  assert.equal((await p.send('capital of Japan')).route, 'cell');
-  assert.equal(p.calls.length, 0);
-  // the network drops while the request is out: the same line, not the error
-  const nav2 = { onLine: true };
-  const q = await runPage({ nav: nav2 });
-  q.setReply(() => { nav2.onLine = false; return new TypeError('Failed to fetch'); });
-  const s = await q.send(SERVER_ONLY);
-  assert.equal(s.offline, true);
-  assert.equal(q.calls.length, 1);
-  assert.equal(last(q).querySelector('[data-offline]').textContent, OFFLINE_LINE);
-  assert.ok(!last(q).innerHTML.includes(PENDING_LINE));
-  assert.doesNotMatch(last(q).innerHTML, /did not answer/);
-});
+// ---------------------------------------------------------------- text is text
 
 const EVIL = '<img src=x onerror="alert(1)"><script>alert(2)</script>';
 const VIEW_TAGS = ['div', 'pre', 'span', 'b', 'code'];
 const foreign = (el) => el.elements.map((c) => c.localName).filter((t) => !VIEW_TAGS.includes(t));
 
-test('text is text: a server answer, a cell answer, a stored turn and the prompt reach the DOM as text nodes, never markup', async () => {
+test('text is text: a cloud answer, a streamed delta, a cell answer, a stored turn, the strip and the prompt reach the DOM as text nodes, never markup', async () => {
   const p = await runPage();
-  p.setReply(respond(200, { ok: true, text: EVIL, route: '<b>r</b>', provenance: { answer: '<i>m</i>' }, serverUs: 1, host: '<x>', knowledge: { ready: true } }));
-  const r = await p.send(EVIL);
-  assert.equal(r.tab, false);
+  p.setReply(respond(200, { ok: true, text: EVIL, route: '<b>r</b>', provenance: { answer: '<i>m</i>' }, task: EVIL, native: { via: { pack: EVIL, column: EVIL } }, serverUs: 1, host: '<x>', knowledge: { ready: true } }));
+  await p.send(EVIL);
   const e = last(p);
   assert.deepEqual(foreign(e), []);
   assert.equal(e.querySelector('.srvtext').textContent, EVIL);
   assert.equal(e.querySelector('.you').textContent, '> ' + EVIL);
   assert.equal(e.querySelector('[data-srv-route]').getAttribute('data-srv-route'), '<b>r</b>');
   assert.ok(e.innerHTML.includes(esc(EVIL)) && !e.innerHTML.includes(EVIL));
-  // a cell's text (a planted cell, served as the origin would serve it)
   const cells = { index: { generation: 7, cells: [{ id: 'evil-cell-g7', class: 'evil', generation: 7, file: 'cells/evil-cell-g7.mjs' }] }, mod: { meta: { id: 'evil-cell-g7', class: 'evil' }, can: () => true, answer: () => EVIL } };
-  const q = await runPage({ cells });
-  const t = await q.send(SERVER_ONLY);
-  assert.equal(t.route, 'cell');
-  assert.equal(q.calls.length, 0);
-  const ce = last(q);
-  assert.deepEqual(foreign(ce), []);
-  assert.equal(ce.querySelector('[data-cell]').textContent, EVIL);
-  assert.equal(ce.querySelector('[data-route="cell"]').querySelector('.ok').textContent, 'grown cell evil-cell-g7, generation 7, no server');
-  // a stored turn read back after a reload
+  const q = await runPage({ cells, nav: { onLine: false } });
+  assert.equal((await q.send(SERVER_ONLY)).route, 'cell');
+  assert.deepEqual(foreign(last(q)), []);
+  assert.equal(last(q).querySelector('[data-cell]').textContent, EVIL);
   const store = memStore({ [THREAD_KEY]: JSON.stringify([{ prompt: EVIL, text: EVIL, route: '<b>' + EVIL + '</b>', read: EVIL }]) });
   const s = await runPage({ store });
   const re = s.term.children[0];
@@ -728,7 +809,11 @@ test('text is text: a server answer, a cell answer, a stored turn and the prompt
   assert.deepEqual(foreign(re), []);
   assert.equal(re.querySelector('.reply').textContent, EVIL);
   assert.equal(re.querySelector('[data-read]').textContent, 'read as: ' + EVIL);
-  assert.equal(re.querySelector('.you').textContent, '> ' + EVIL);
+  const a = await runPage({ alive: { ok: true, json: async () => ({ builtAt: EVIL, neo: { now: { era: 1, cells: 2 } } }) } });
+  await a.idle();
+  await until(() => a.strip.querySelector('[data-alive]'));
+  assert.deepEqual(foreign(a.strip), []);
+  assert.ok(a.strip.textContent.includes(EVIL.slice(0, 40)) && !a.strip.innerHTML.includes('<img'));
 });
 
 test('mount() builds only its own tags and class, id and data-* attributes; anything else throws', () => {
@@ -744,15 +829,15 @@ test('mount() builds only its own tags and class, id and data-* attributes; anyt
 });
 
 test('the page never writes markup: no innerHTML, outerHTML, insertAdjacentHTML, document.write, eval or new Function anywhere in it', () => {
-  const html = readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8');
-  for (const s of ['innerHTML', 'outerHTML', 'insertAdjacentHTML', 'document.write', 'eval(', 'new Function', 'createContextualFragment', 'DOMParser', 'srcdoc']) assert.ok(!html.includes(s), s);
-  const src = script(html);
-  assert.match(src, /mount\(document, /);
-  assert.match(html, /<div id="term" aria-live="polite">/);
-  assert.ok(html.includes('<div id="term" aria-live="polite">' + toHtml(helloView()) + '</div>'), 'the empty thread is the hello line');
+  for (const s of ['innerHTML', 'outerHTML', 'insertAdjacentHTML', 'document.write', 'eval(', 'new Function', 'createContextualFragment', 'DOMParser', 'srcdoc']) assert.ok(!HTML.includes(s), s);
+  assert.match(script(HTML), /mount\(document, /);
+  assert.ok(HTML.includes('<div id="term" aria-live="polite">' + toHtml(helloView()) + '</div>'), 'the empty thread is the hello line');
+  assert.match(HELLO_LINE, /every prompt goes to the organism in the cloud/);
 });
 
-test('the service worker /ask/sw.js (scope /, so it controls /ask and the body under /organism/) is registered only when serviceWorker is in navigator and the page is on https or localhost', async () => {
+// ---------------------------------------------------------------- installable, and the live organism
+
+test('INSTALLABLE: the service worker /ask/sw.js (scope /) is registered after the first paint, only on https or localhost, never on save-data', async () => {
   assert.equal(SW_URL, '/ask/sw.js');
   assert.equal(SW_SCOPE, '/');
   const cases = [
@@ -766,24 +851,31 @@ test('the service worker /ask/sw.js (scope /, so it controls /ask and the body u
   for (const [loc, want] of cases) {
     const regs = [];
     const nav = { onLine: true, serviceWorker: { register: (u, o) => { regs.push([u, o]); return Promise.resolve({}); } } };
-    await runPage({ nav, loc });
+    const p = await runPage({ nav, loc });
+    assert.deepEqual(regs, [], 'nothing registered before the first paint');
+    await p.idle();
     assert.deepEqual(regs, want ? [[SW_URL, { scope: SW_SCOPE }]] : [], JSON.stringify(loc));
   }
-  // the old registration of the same worker under /ask/ (which never controlled /ask) is removed; no other is touched
+  const saver = [];
+  const sd = await runPage({ nav: { onLine: true, connection: { saveData: true }, serviceWorker: { register: (u) => { saver.push(u); return Promise.resolve({}); } } } });
+  await sd.idle();
+  assert.deepEqual(saver, [], 'no precache on save-data');
+  assert.deepEqual(sd.aliveCalls, [], 'no live strip on save-data');
+  assert.equal(saveDataOn({ connection: { saveData: true } }), true);
+  for (const n of [null, {}, { connection: null }, { connection: { saveData: 'on' } }]) assert.equal(saveDataOn(n), false);
+  // the old registration of the same worker under /ask/ is removed; no other is touched
   const gone = [];
-  const reg = (scope, script) => ({ scope: ORIGIN + scope, active: { scriptURL: ORIGIN + script }, unregister: () => { gone.push(scope); return Promise.resolve(true); } });
+  const reg = (scope, scriptUrl) => ({ scope: ORIGIN + scope, active: { scriptURL: ORIGIN + scriptUrl }, unregister: () => { gone.push(scope); return Promise.resolve(true); } });
   const regsNow = [reg('/ask/', '/ask/sw.js'), reg('/', '/ask/sw.js'), reg('/other/', '/other/sw.js'), { scope: ORIGIN + '/ask/', installing: { scriptURL: ORIGIN + '/elsewhere/sw.js' }, unregister: () => { gone.push('foreign'); } }];
-  await runPage({ nav: { onLine: true, serviceWorker: { register: () => Promise.resolve({}), getRegistrations: () => Promise.resolve(regsNow) } } });
+  const g = await runPage({ nav: { onLine: true, serviceWorker: { register: () => Promise.resolve({}), getRegistrations: () => Promise.resolve(regsNow) } } });
+  await g.idle();
   await until(() => gone.length >= 1);
-  await new Promise((r) => setTimeout(r, 10));
   assert.deepEqual(gone, ['/ask/']);
-  // no serviceWorker in navigator, or a register that throws or rejects, or a getRegistrations that throws: nothing breaks
-  const plain = await runPage({ nav: { onLine: true } });
-  assert.equal((await plain.send('what is 17 times 23')).answer, '391');
-  const throws = await runPage({ nav: { onLine: true, serviceWorker: { register: () => { throw new Error('denied'); } } } });
-  assert.equal((await throws.send('what is 17 times 23')).answer, '391');
-  const rejects = await runPage({ nav: { onLine: true, serviceWorker: { register: () => Promise.reject(new Error('denied')), getRegistrations: () => { throw new Error('denied'); } } } });
-  assert.equal((await rejects.send('what is 17 times 23')).answer, '391');
+  for (const nav of [{ onLine: true, serviceWorker: { register: () => { throw new Error('denied'); } } }, { onLine: true, serviceWorker: { register: () => Promise.reject(new Error('denied')), getRegistrations: () => { throw new Error('denied'); } } }]) {
+    const t = await runPage({ nav });
+    await t.idle();
+    assert.equal((await t.send('what is 17 times 23')).answer, '391');
+  }
   assert.equal(swAllowed({}, { protocol: 'https:' }), false);
   assert.equal(swAllowed(null, { protocol: 'https:' }), false);
   assert.equal(swAllowed({ serviceWorker: {} }, null), false);
@@ -793,21 +885,104 @@ test('the service worker /ask/sw.js (scope /, so it controls /ask and the body u
 });
 
 test('the head links the manifest, sets the theme colour to the body background (what the manifest takes) and the apple mobile web app metas', () => {
-  const html = readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8');
-  const head = html.slice(0, html.indexOf('</head>'));
+  const head = HTML.slice(0, HTML.indexOf('</head>'));
   assert.ok(head.includes(POCKET_HEAD), 'the manifest and icon links');
   assert.match(head, /<link rel="manifest" href="\/ask\/manifest\.webmanifest">/);
   const theme = /<meta name="theme-color" content="([^"]+)">/.exec(head);
-  assert.ok(theme, 'a theme-color meta');
   assert.equal(theme[1], BACKGROUND);
-  assert.equal(askColors(html).theme, theme[1], 'the theme colour is the body background');
+  assert.equal(askColors(HTML).theme, theme[1], 'the theme colour is the body background');
   const wm = JSON.parse(readFileSync(path.join(DIST, 'ask', 'manifest.webmanifest'), 'utf8'));
   assert.equal(wm.theme_color, theme[1]);
   assert.equal(wm.background_color, BACKGROUND);
-  assert.match(head, /<meta name="mobile-web-app-capable" content="yes">/);
-  assert.match(head, /<meta name="apple-mobile-web-app-capable" content="yes">/);
-  assert.match(head, /<meta name="apple-mobile-web-app-title" content="Dilation">/);
-  assert.match(head, /<meta name="apple-mobile-web-app-status-bar-style" content="black">/);
+  for (const m of ['mobile-web-app-capable" content="yes', 'apple-mobile-web-app-capable" content="yes', 'apple-mobile-web-app-title" content="Dilation', 'apple-mobile-web-app-status-bar-style" content="black']) assert.ok(head.includes('<meta name="' + m + '">'), m);
+});
+
+test('THE LIVE STRIP reads /alive/data.json after the first paint and prints the organism numbers; counts of one are singular; nothing it cannot read', async () => {
+  const d = { builtAt: '2026-10-02T01:02:03.000Z', neo: { now: { era: 12, cells: 1, tasks: 3, mastered: 1, ok: 7, n: 9, score: 0.778, velocity: [{ key: 'eraMs', value: 900 }, { key: 'cellsPerSecond', value: 4.5 }], plateau: 2 }, pipeline: { promoted: false, era: 11 } } };
+  const want = 'live  the organism in the cloud: era 12, 1 cell, 3 tasks, 1 mastered, held-out 7 of 9 (0.778), 4.5 cells per second, plateau 2, last promote refused at era 11 (built 2026-10-02T01:02:03.000Z)';
+  assert.equal(mount(makeDoc(), stripView(d)).textContent, want);
+  assert.equal(mount(makeDoc(), stripView({ neo: { now: { era: 1, cells: 2, tasks: 1 }, pipeline: { promoted: true } } })).textContent, 'live  the organism in the cloud: era 1, 2 cells, 1 task, last promote kept');
+  for (const x of [null, {}, { neo: null }, { neo: {} }, { neo: { now: {} } }, { neo: { now: { era: 'x', cells: null } } }]) assert.equal(stripView(x), null, JSON.stringify(x));
+  // the trials and the compute ledger, feature-detected as web/alive.mjs writes them into data.json
+  const more = { neo: { now: { era: 3 }, selfMod: { trials: { rows: 6, kept: 2 } }, compute: { fields: [{ key: 'month', value: '2026-10' }, { key: 'budgetMinutes', value: 3000 }, { key: 'spentMinutes', value: 1234 }] } } };
+  assert.equal(mount(makeDoc(), stripView(more)).textContent, 'live  the organism in the cloud: era 3, trials 2 kept of 6, compute 1234 of 3000 minutes');
+  const spentOnly = { neo: { now: { era: 3 }, compute: { fields: [{ key: 'spentMinutes', value: 1 }, { key: 'budgetMinutes', value: null }] } } };
+  assert.equal(mount(makeDoc(), stripView(spentOnly)).textContent, 'live  the organism in the cloud: era 3, compute 1 minute');
+  // one minute against a budget reads against the budget's plural: "1 of 60 minutes"
+  const oneOfBudget = { neo: { now: { era: 3 }, compute: { fields: [{ key: 'spentMinutes', value: 1 }, { key: 'budgetMinutes', value: 60 }] } } };
+  assert.equal(mount(makeDoc(), stripView(oneOfBudget)).textContent, 'live  the organism in the cloud: era 3, compute 1 of 60 minutes');
+  for (const odd of [{ selfMod: { trials: { rows: '6', kept: 2 } } }, { selfMod: { trials: null } }, { selfMod: 5 }, { compute: { fields: 'x' } }, { compute: { fields: [{ key: 'spentMinutes', value: 'n/a' }] } }, { compute: null }]) {
+    assert.equal(mount(makeDoc(), stripView({ neo: { now: { era: 3 }, ...odd } })).textContent, 'live  the organism in the cloud: era 3', JSON.stringify(odd));
+  }
+  const p = await runPage({ alive: { ok: true, json: async () => d } });
+  assert.deepEqual(p.aliveCalls, [], 'nothing fetched before the first paint');
+  assert.equal(p.strip.textContent, 'the organism, live');
+  await p.idle();
+  await until(() => p.strip.querySelector('[data-alive]'));
+  assert.deepEqual(p.aliveCalls, [ALIVE_URL]);
+  assert.equal(p.strip.textContent, want);
+  assert.equal(ALIVE_URL, '/alive/data.json');
+  assert.ok(HTML.includes('<div class="foot strip" id="alive"><a href="/alive">the organism, live</a></div>'), 'the full page one tap away, before any fetch');
+  // a strip that cannot be read leaves the link: a 404, a fetch that throws, JSON with no numbers
+  for (const alive of [null, new Error('offline'), { ok: true, json: async () => ({ neo: null }) }, { ok: true, json: async () => { throw new Error('not json'); } }]) {
+    const q = await runPage({ alive });
+    await q.idle();
+    await new Promise((r) => setTimeout(r, 10));
+    assert.equal(q.strip.textContent, 'the organism, live');
+    assert.equal((await q.send('what is 17 times 23')).answer, '391');
+  }
+});
+
+test('THE DEVICE WORKER IS OFF BY DEFAULT: never imported or started by itself; the switch starts it and is remembered; never on a metered connection', async () => {
+  assert.ok(HTML.includes('<div class="foot" id="bodyrow"><span id="body">' + esc(BODY_OFF_LINE) + '</span> <button id="bodysw" class="chip" type="button" aria-pressed="false">grow on this device too</button></div>'));
+  const plantWorker = () => {
+    const made = [];
+    class FakeWorker { constructor(url, opts) { this.url = String(url); this.opts = opts; this.sent = []; this.ended = false; made.push(this); } postMessage(m) { this.sent.push(m); } terminate() { this.ended = true; } }
+    return { FakeWorker, made };
+  };
+  const { FakeWorker, made } = plantWorker();
+  const store = memStore();
+  const p = await runPage({ store, Worker: FakeWorker });
+  await p.idle();
+  await p.send('what is 17 times 23');
+  assert.deepEqual([made.length, p.dynamic.length], [0, 0], 'no worker and no body import by itself');
+  assert.equal(p.bodyLineEl.textContent, BODY_OFF_LINE);
+  // the switch: imports the body, starts the worker on its own URL, remembers the choice
+  p.bodySw.fire('click');
+  await until(() => made.length === 1 && made[0].sent.length === 1);
+  assert.deepEqual(p.dynamic, [BODY_URL]);
+  assert.ok(made[0].url.endsWith('/organism/web/pocket-era.mjs'), made[0].url);
+  assert.deepEqual(made[0].opts, { type: 'module', name: 'pocket-era' });
+  assert.deepEqual(made[0].sent[0], { type: 'env', stopped: false, hidden: false, saveData: false, metered: false, battery: null });
+  assert.equal(store.getItem(SWITCH_KEY), '1');
+  assert.equal(p.bodySw.textContent, 'stop growing on this device');
+  assert.equal(p.bodySw.getAttribute('aria-pressed'), 'true');
+  made[0].onmessage({ data: { type: 'status', status: { line: 'this device: 3 cells kept for 2 tasks, 900 tried, running' } } });
+  assert.equal(p.bodyLineEl.textContent, 'this device: 3 cells kept for 2 tasks, 900 tried, running');
+  // one click is one toggle (the page binds the click, startBody does not)
+  p.bodySw.fire('click');
+  await until(() => made[0].ended && p.bodyLineEl.textContent.endsWith('(' + WHY.stopped + ')'));
+  assert.equal(store.getItem(SWITCH_KEY), '0');
+  assert.equal(p.bodySw.textContent, 'grow on this device too');
+  // a reload with the switch on starts it after the first paint, not before
+  store.setItem(SWITCH_KEY, '1');
+  const q = await runPage({ store, Worker: FakeWorker });
+  assert.equal(made.length, 1, 'nothing before the first paint');
+  await q.idle();
+  await until(() => made.length === 2);
+  // a metered connection, save-data or a low battery: never started, and the line says why
+  for (const [nav, why] of [[{ onLine: true, connection: { type: 'cellular' } }, WHY.metered], [{ onLine: true, connection: { metered: true } }, WHY.metered], [{ onLine: true, connection: { saveData: true } }, WHY.saveData], [{ onLine: true, getBattery: async () => ({ level: 0.1, charging: false }) }, WHY.battery]]) {
+    const r = await runPage({ store: memStore({ [SWITCH_KEY]: '1' }), Worker: FakeWorker, nav });
+    await r.idle();
+    await until(() => r.bodyLineEl.textContent.endsWith('(' + why + ')'));
+    assert.equal(made.length, 2, 'a worker started on ' + JSON.stringify(nav));
+    assert.equal(r.bodyLineEl.textContent, bodyLine({ why }));
+  }
+  // the body that does not load: the line says so and the chat runs on
+  const n = await runPage({ era: null, Worker: FakeWorker });
+  n.bodySw.fire('click');
+  await until(() => n.bodyLineEl.textContent === 'this browser could not load the device worker.');
+  assert.equal((await n.send('what is 17 times 23')).answer, '391');
 });
 
 test('generateAsk() writes the pocket beside the page: cells.json, the cells, the body, the core, the manifest, the icon and /ask/sw.js precaching the page it just wrote', (t) => {
@@ -817,21 +992,20 @@ test('generateAsk() writes the pocket beside the page: cells.json, the cells, th
     'organism/web/pocket-era.mjs', 'organism/grow/neo-core.mjs', 'organism/grow/neo-kernel.mjs', 'organism/era/tasks.json']) assert.ok(existsSync(path.join(dist, ...f.split('/'))), f);
   const index = JSON.parse(readFileSync(path.join(dist, 'organism', 'cells.json'), 'utf8'));
   assert.deepEqual(index.cells.map((x) => x.id), [CAPITAL, REVERSE], 'THE GATE: the unmastered colony is not bundled');
-  assert.equal(existsSync(path.join(dist, 'organism', 'cells', SILENT + '.mjs')), false);
   assert.equal(r.pocket.cells, index.cells.length);
-  for (const row of index.cells) assert.ok(existsSync(path.join(dist, 'organism', ...row.file.split('/'))), row.file);
   const sw = readFileSync(path.join(dist, 'ask', 'sw.js'), 'utf8');
-  for (const u of ['/organism/act/thread.mjs', '/organism/act/cells-tab.mjs', '/organism/act/converse.mjs', '/organism/cells.json', '/organism/' + index.cells[0].file, '/organism/web/pocket-era.mjs', '/organism/grow/neo-core.mjs']) assert.ok(sw.includes('{"url":"' + u + '","sha256":"'), u);
-  assert.ok(sw.includes('{"url":"/ask","sha256":"' + sha(path.join(dist, 'ask', 'index.html')) + '"}'), 'the precached page is the page generateAsk wrote, at the URL the host serves it');
+  for (const u of ['/organism/act/thread.mjs', '/organism/act/cells-tab.mjs', '/organism/act/converse.mjs', '/organism/cells.json', '/organism/web/pocket-era.mjs', '/organism/grow/neo-core.mjs']) assert.ok(sw.includes('{"url":"' + u + '","sha256":"'), u);
+  assert.ok(sw.includes('{"url":"/ask","sha256":"' + sha(path.join(dist, 'ask', 'index.html')) + '"}'), 'the precached page is the page generateAsk wrote');
   assert.ok(!sw.includes(SILENT));
   assert.equal(r.bytes, Buffer.byteLength(readFileSync(path.join(dist, 'ask', 'index.html'))));
-  // the build is a function of the tree it reads: the same fixture, the same bytes
-  assert.equal(readFileSync(path.join(dist, 'ask', 'sw.js'), 'utf8'), readFileSync(path.join(DIST, 'ask', 'sw.js'), 'utf8'));
-  t.diagnostic('pocket  cells ' + r.pocket.cells + '  precache ' + r.pocket.precache + ' files  ' + r.pocket.bytes + ' bytes');
+  assert.equal(readFileSync(path.join(dist, 'ask', 'sw.js'), 'utf8'), readFileSync(path.join(DIST, 'ask', 'sw.js'), 'utf8'), 'the same fixture, the same bytes');
+  assert.equal(r.first.bytes, r.bytes, 'the first visit is the page alone');
+  t.diagnostic('pocket  cells ' + r.pocket.cells + '  precache ' + r.pocket.precache + ' files  ' + r.pocket.bytes + ' bytes; first visit ' + r.first.bytes + ' bytes');
 });
 
+// ---------------------------------------------------------------- the thread
 
-test('the thread survives a reload: ONE localStorage key, the newest 20 turns of { prompt, text, read?, route? }, nothing else stored', async () => {
+test('the thread survives a reload: ONE localStorage key, the newest 20 turns of { prompt, text, read?, route?, via? }, nothing else stored', async () => {
   assert.equal(KEEP_TURNS, 20);
   const store = memStore();
   const p = await runPage({ store });
@@ -840,24 +1014,23 @@ test('the thread survives a reload: ONE localStorage key, the newest 20 turns of
   const turns = stored(p);
   assert.equal(turns.length, KEEP_TURNS);
   assert.deepEqual(turns.map((x) => x.prompt), Array.from({ length: 20 }, (_, k) => 'what is ' + (k + 6) + ' times 2'));
-  for (const x of turns) assert.deepEqual(Object.keys(x).filter((k) => !['prompt', 'text', 'read', 'route'].includes(k)), [], JSON.stringify(x));
-  assert.equal(turns.at(-1).text, '50');
-  assert.equal(p.turns().length, 20);
+  for (const x of turns) assert.deepEqual(Object.keys(x).filter((k) => !['prompt', 'text', 'read', 'route', 'via'].includes(k)), [], JSON.stringify(x));
+  assert.equal(turns.at(-1).text, 'answered exactly by exact.arith\n50');
   assert.equal(entries(p).length, 25, 'the page keeps every turn of this visit on screen');
-  // the reload
   const q = await runPage({ store });
   assert.ok(q.term.querySelector('#hello') === null, 'no hello line over a restored thread');
   const back = q.term.children;
   assert.equal(back.length, 20);
   assert.ok(back.every((x) => x.getAttribute('data-restored') === '1'));
-  assert.equal(back[19].querySelector('.reply').textContent, '50');
   assert.equal(back[19].querySelector('.you').textContent, '> what is 25 times 2');
-  assert.match(back[19].querySelector('.foot').textContent, /^restored from this device: exact, method /);
+  assert.equal(back[19].querySelector('.foot').textContent, 'restored from this device: cloud, route direct, provenance exact');
   assert.ok(q.doc.scrolled.at(-1) === back[19], 'the restored thread scrolls to its newest turn');
   const f = await q.send('plus 9');
   assert.deepEqual({ read: f.read, answer: f.answer }, { read: 'what is 50 plus 9', answer: '59' });
   assert.equal(stored(q).length, 20);
-  assert.deepEqual([...store.map.keys()], [THREAD_KEY]);
+  // via is kept only as its four strings
+  assert.deepEqual(cleanTurns([{ prompt: 'a', text: 'b', via: { pack: 'p', key: 'k', column: 'c', op: 'o', extra: 'x' } }, { prompt: 'c', text: 'd', via: { key: 'k' } }, { prompt: 'e', text: 'f', via: 'v' }]),
+    [{ prompt: 'a', text: 'b', via: { pack: 'p', key: 'k', column: 'c', op: 'o' } }, { prompt: 'c', text: 'd' }, { prompt: 'e', text: 'f' }]);
 });
 
 test('a store that throws, corrupt JSON or 500 stored turns is an empty or a capped thread, never a broken page; the page writes only its own key', async () => {
@@ -865,6 +1038,7 @@ test('a store that throws, corrupt JSON or 500 stored turns is an empty or a cap
   assert.equal((await p.send('what is 17 times 23')).answer, '391');
   const bad = { getItem() { throw new Error('denied'); }, setItem() { throw new Error('quota'); }, removeItem() { throw new Error('denied'); } };
   const q = await runPage({ store: bad });
+  await q.idle();
   assert.equal((await q.send('what is 17 times 23')).answer, '391');
   q.newChat();
   assert.ok(q.term.querySelector('#hello'));
@@ -880,9 +1054,8 @@ test('a store that throws, corrupt JSON or 500 stored turns is an empty or a cap
   const s = JSON.parse(store.getItem(THREAD_KEY));
   assert.equal(s.length, 20);
   assert.equal(s[0].prompt, 'q481');
-  assert.ok(s.every((x) => !('secret' in x)), 'only prompt, text, read and route are stored');
+  assert.ok(s.every((x) => !('secret' in x)));
   assert.equal(store.getItem('other'), 'kept', 'the page writes its own key only');
-  // a long answer is stored as its head and its last lines (the numeric answer a follow-up reads)
   const r = await runPage();
   r.setReply(memory('h'.repeat(20000) + '\nthe answer is 12345'));
   await r.send(SERVER_ONLY);
@@ -901,24 +1074,20 @@ test('"new chat" clears the thread on the page and in the store, and the next fo
   const p = await runPage({ store });
   p.setReply(memory('Paris.'));
   await p.send('what is the capital of france');
-  await p.send('what is 17 times 23');
   assert.equal(store.map.size, 1);
   p.newBtn.fire('click');
   assert.equal(store.map.size, 0, 'the stored thread is removed');
   assert.deepEqual(p.turns(), []);
   assert.equal(p.term.children.length, 1);
-  assert.equal(p.term.children[0].id, 'hello');
   assert.equal(p.term.children[0].textContent, HELLO_LINE);
   assert.ok(p.doc.focused === p.box, 'the box has the focus');
   p.setReply(memory('nothing.'));
   const r = await p.send('and germany?');
   assert.equal(r.read, null, 'carried against a cleared thread');
-  assert.equal(JSON.parse(p.calls.at(-1).init.body).prompt, 'and germany?');
-  const again = await runPage({ store });
-  assert.equal(again.term.children.length, 1, 'a reload after a new chat shows its one new turn');
+  assert.equal(sent(p).at(-1), 'and germany?');
 });
 
-test('a new chat while an answer is in flight: the old answer is not written to the new thread, and a prompt still at the cells is not sent', async () => {
+test('a new chat while an answer is in flight: the old answer is not written to the new thread, and a prompt still at the device cells is dropped', async () => {
   const store = memStore();
   const p = await runPage({ store });
   let release;
@@ -929,18 +1098,16 @@ test('a new chat while an answer is in flight: the old answer is not written to 
     await until(() => p.calls.length === 1);
     p.newChat();
   } finally {
-    release({ ok: true, text: 'late', route: 'direct', provenance: { answer: 'memory' }, serverUs: 1, host: 'local', knowledge: { ready: true } });
+    release({ ok: true, text: 'late', route: 'direct', provenance: { answer: 'memory' }, ...base });
   }
   await pending;
   assert.deepEqual(p.turns(), []);
   assert.equal(store.map.size, 0);
-  assert.equal(p.term.children.length, 1);
   assert.equal(p.term.children[0].id, 'hello');
   let open;
   const cellsGate = new Promise((ok) => { open = ok; });
-  const q = await runPage({ cellsGate });
-  q.setReply(memory('never asked'));
-  const out = q.send(SERVER_ONLY);
+  const q = await runPage({ cellsGate, nav: { onLine: false } });
+  const out = q.send('capital of Japan');
   try {
     await until(() => q.bases.length === 1);
     q.newChat();
@@ -949,244 +1116,73 @@ test('a new chat while an answer is in flight: the old answer is not written to 
   }
   const r = await out;
   assert.equal(r.dropped, true);
-  assert.equal(q.calls.length, 0, 'a prompt of the cleared thread was sent');
+  assert.deepEqual(q.turns(), []);
 });
 
 test('Enter sends and Shift+Enter is a new line; the box empties on send; the form and a chip send too', async () => {
-  const html = readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8');
-  assert.match(html, /<textarea id="q" name="q" rows="1"[^>]*enterkeyhint="send"/);
+  assert.match(HTML, /<textarea id="q" name="q" rows="1"[^>]*enterkeyhint="send"/);
   const p = await runPage();
   p.box.value = 'what is 17 times 23';
-  const shift = p.box.fire('keydown', { key: 'Enter', shiftKey: true });
-  assert.equal(shift.prevented, false, 'Shift+Enter is left to the textarea');
-  assert.equal(p.box.value, 'what is 17 times 23');
-  const ime = p.box.fire('keydown', { key: 'Enter', isComposing: true });
-  assert.equal(ime.prevented, false);
+  assert.equal(p.box.fire('keydown', { key: 'Enter', shiftKey: true }).prevented, false, 'Shift+Enter is left to the textarea');
+  assert.equal(p.box.fire('keydown', { key: 'Enter', isComposing: true }).prevented, false);
   await new Promise((r) => setTimeout(r, 5));
   assert.equal(entries(p).length, 0);
-  const ev = p.box.fire('keydown', { key: 'Enter' });
-  assert.equal(ev.prevented, true);
+  assert.equal(p.box.fire('keydown', { key: 'Enter' }).prevented, true);
   assert.equal(p.box.value, '');
-  await until(() => entries(p).length === 1 && entries(p)[0].querySelector('[data-answer]'));
-  assert.equal(entries(p)[0].querySelector('[data-answer]').textContent, '391');
+  await until(() => entries(p).length === 1 && entries(p)[0].querySelector('[data-srv-answer]'));
+  assert.equal(entries(p)[0].querySelector('[data-srv-answer]').textContent, '391');
   p.box.value = 'what is 2 times 2';
   assert.equal(p.form.fire('submit').prevented, true);
-  await until(() => entries(p).length === 2 && entries(p)[1].querySelector('[data-answer]'));
-  assert.equal(entries(p)[1].querySelector('[data-answer]').textContent, '4');
+  await until(() => entries(p).length === 2 && entries(p)[1].querySelector('[data-srv-answer]'));
   p.chips[0].fire('click');
-  await until(() => entries(p).length === 3 && entries(p)[2].querySelector('[data-answer]'));
-  assert.equal(entries(p)[2].querySelector('[data-answer]').textContent, converse(p.chips[0].getAttribute('data-q')).answer);
-  assert.equal(p.calls.length, 0);
+  await until(() => entries(p).length === 3 && entries(p)[2].querySelector('[data-server-done]'));
+  assert.deepEqual(sent(p), ['what is 17 times 23', 'what is 2 times 2', EXAMPLES[0]]);
   assert.equal(sendsOnKey({ key: 'Enter' }), true);
   assert.equal(sendsOnKey({ key: 'Enter', shiftKey: true }), false);
   assert.equal(sendsOnKey({ key: 'Enter', isComposing: true }), false);
   assert.equal(sendsOnKey({ key: 'Enter', keyCode: 229 }), false);
   assert.equal(sendsOnKey({ key: 'a' }), false);
   assert.equal(sendsOnKey(null), false);
+  // ?q= asks on load
+  const pre = await runPage({ loc: { search: '?q=' + encodeURIComponent('what is 3 times 3') } });
+  await until(() => pre.calls.length === 1);
+  assert.deepEqual(sent(pre), ['what is 3 times 3']);
 });
 
 test('the thread scrolls to the newest turn, at the prompt and again at its answer', async () => {
   const p = await runPage();
   await p.send('what is 17 times 23');
-  assert.ok(p.doc.scrolled.at(-1) === entries(p)[0], 'scrolled to the answered turn');
+  assert.ok(p.doc.scrolled.at(-1) === entries(p)[0]);
   let release;
   const gate = new Promise((ok) => { release = ok; });
   p.setReply({ status: 200, headers: { get: () => null }, json: () => gate });
   const pending = p.send(SERVER_ONLY);
   let e = null, n = 0;
   try {
-    await until(() => p.calls.length === 1);
+    await until(() => p.calls.length === 2);
     e = entries(p)[1];
     assert.ok(p.doc.scrolled.at(-1) === e, 'scrolled to the new turn while it is in flight');
     n = p.doc.scrolled.length;
   } finally {
-    release({ ok: true, text: 'nothing.', route: 'direct', provenance: { answer: 'memory' }, serverUs: 1, host: 'local', knowledge: { ready: true } });
+    release({ ok: true, text: 'nothing.', route: 'direct', provenance: { answer: 'memory' }, ...base });
   }
   await pending;
   assert.ok(p.doc.scrolled.length > n && p.doc.scrolled.at(-1) === e, 'scrolled again when the answer landed');
 });
 
-test('the box stays at the bottom and the look is kept: a sticky form, the same fonts and colours, the dim class', () => {
-  const html = readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8');
-  const css = html.match(/<style>([\s\S]*?)<\/style>/)[1];
+test('the box stays at the bottom and the look is kept: a sticky form, the same fonts and colours, the dim class, the nav to /alive', () => {
+  const css = HTML.match(/<style>([\s\S]*?)<\/style>/)[1];
   assert.match(css, /form \{[^}]*position: sticky; bottom: 0;/);
   assert.match(css, /form \{[^}]*background: #02030a;/);
   assert.match(css, /html, body \{[^}]*background: #02030a;[^}]*font: 13px\/1\.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;/);
-  assert.match(css, /--dim: #7f8ba6;/);
-  assert.match(css, /--ok: #7fffb0;/);
-  assert.match(css, /--acc: #7fb0ff;/);
+  for (const v of ['--dim: #7f8ba6;', '--ok: #7fffb0;', '--acc: #7fb0ff;']) assert.ok(css.includes(v), v);
   assert.match(css, /\.dim \{ color: var\(--dim\); \}/);
   assert.match(css, /#q \{[^}]*resize: none;[^}]*max-height: 40vh;/);
-  assert.match(html, /<button id="new" type="button">new chat<\/button>/);
-  assert.ok(html.indexOf('id="term"') < html.indexOf('<form id="f"'), 'the box is below the thread');
-});
-
-
-const FIXTURE_PROMPTS = [...Object.values(TASKS).flat().map((r) => r.q), 'capital of Japan', 'Capital of Japan', 'capital of france', 'reverse the word', 'reverse the word a b c d e', 'write a poem about the sea', 'hey', 'what is 17 times 23'];
-
-test('every fixture prompt the tab answers by a grown cell gets the cell and the text the server (grownAnswer, THE GATE inside) gives, and none a cell carries is sent to the server', async (t) => {
-  const p = await runPage();
-  p.setReply(memory('nothing.'));
-  let byCell = 0, byTab = 0, bySrv = 0, shadow = 0;
-  for (const q of FIXTURE_PROMPTS) {
-    p.newChat();
-    const s = grownAnswer(q);
-    const a = await p.send(q);
-    assert.ok(a, q);
-    if (a.route === 'cell') {
-      byCell++;
-      assert.deepEqual({ cell: a.cell, answer: a.answer }, { cell: s && s.id, answer: s && s.answer }, q);
-    } else if (a.tab) {
-      byTab++;
-      if (s) shadow++;
-    } else {
-      bySrv++;
-      assert.equal(s, null, 'the tab sent to the server a prompt a grown cell carries: ' + q);
-    }
-  }
-  assert.equal(byCell, TASKS['reverse-word'].length + 2, 'every reverse prompt by the colony, both capital of Japan prompts by the locked cell');
-  assert.ok(bySrv >= TASKS.sum.length + TASKS['count-letters'].length, 'the unmastered colony and the task no cell carries went to the server');
-  t.diagnostic('fixture prompts ' + FIXTURE_PROMPTS.length + ': by a grown cell in the tab ' + byCell + ' (cell and text equal to grownAnswer), by converse or the exact reader ' + byTab + ' (a grown cell also carries ' + shadow + ' of them), to the server ' + bySrv);
-});
-
-test('THE GATE on the page: the unmastered colony is neither bundled nor asked; a serving colony whose can is always true is imported and asked only on an exact template fit', async () => {
-  const rows = JSON.parse(readFileSync(path.join(DIST, 'organism', 'cells.json'), 'utf8')).cells;
-  assert.deepEqual(rows.map((r) => r.id), [CAPITAL, REVERSE]);
-  assert.deepEqual([rows[1].serve, rows[1].templates], [true, ['reverse the word {1-3}']]);
-  assert.equal(existsSync(path.join(DIST, 'organism', 'cells', SILENT + '.mjs')), false, 'the unmastered colony is not bundled');
-  assert.equal(grownAnswer('sum of 2 and 3'), null, 'nor served');
-  const p = await runPage();
-  p.setReply(memory('nothing in memory matches sum.'));
-  const s = await p.send('sum of 2 and 3');
-  assert.equal(s.tab, false, 'the unmastered colony answered in the tab');
-  assert.equal(p.calls.length, 1);
-  const ids = () => p.imported.map((u) => u.split('/').pop().replace(/\.mjs$/, ''));
-  assert.deepEqual(ids(), [CAPITAL], 'a colony whose template does not fit was imported');
-  await p.send('write a poem about the sea');
-  assert.deepEqual(ids(), [CAPITAL]);
-  const r = await p.send('reverse the word apple');
-  assert.deepEqual({ route: r.route, cell: r.cell, answer: r.answer }, { route: 'cell', cell: REVERSE, answer: 'elppa' });
-  assert.deepEqual(ids(), [CAPITAL, REVERSE]);
-  assert.equal(p.calls.length, 2, 'the colony answer made no request');
-  // the body module does not load: no template test, so no colony is asked; the locked cell still is
-  const q = await runPage({ era: null });
-  q.setReply(memory('nothing.'));
-  const n = await q.send('reverse the word apple');
-  assert.equal(n.tab, false);
-  assert.equal(q.calls.length, 1);
-  assert.ok(!q.imported.some((u) => u.includes(REVERSE)), q.imported.join(' '));
-  assert.equal((await q.send('capital of Japan')).cell, CAPITAL);
-  assert.equal(q.bodySw.hidden, true, 'no body, no switch');
-  assert.equal(q.bodyLineEl.textContent, '');
-  // a body whose template test says anything but exactly true is a closed gate
-  for (const gateFits of [() => 'true', () => 1, () => { throw new Error('broken core'); }, async () => false]) {
-    const g = await runPage({ era: { ...realEra, gateFits } });
-    g.setReply(memory('nothing.'));
-    assert.equal((await g.send('reverse the word apple')).tab, false);
-    assert.ok(!g.imported.some((u) => u.includes(REVERSE)));
-  }
-});
-
-test('a cell grown on THIS device answers in the tab after the cloud cells and before the server: route device, its route line, no request, its turn stored', async () => {
-  const seen = [];
-  const device = async (q) => { seen.push(q); return q === 'how many letters in apple' ? { text: '5', task: 'count-letters', cells: 2, route: ROUTE_LINE } : null; };
-  const store = memStore();
-  const p = await runPage({ store, era: { ...realEra, deviceAnswer: device } });
-  p.setReply(memory('nothing.'));
-  const t = await p.send('how many letters in apple');
-  assert.deepEqual({ tab: t.tab, route: t.route, provenance: t.provenance, task: t.task, answer: t.answer }, { tab: true, route: 'device', provenance: 'grown', task: 'count-letters', answer: '5' });
-  assert.equal(p.calls.length, 0, 'a device answer made a request');
-  const e = last(p);
-  const foot = e.querySelector('[data-route="device"]');
-  assert.equal(foot.getAttribute('data-provenance'), 'grown');
-  assert.equal(foot.querySelector('.ok').textContent, ROUTE_LINE);
-  assert.equal(DEVICE_ROUTE, ROUTE_LINE);
-  assert.equal(ROUTE_LINE, 'grown on this device, no server');
-  assert.equal(foot.textContent, 'route ' + ROUTE_LINE + '  task count-letters  cells 2  model none  tokens 0');
-  assert.equal(e.querySelector('[data-device]').textContent, '5');
-  assert.equal(e.querySelectorAll('[data-server-pending]').length + e.querySelectorAll('[data-refusal]').length, 0);
-  assert.deepEqual(stored(p)[0], { prompt: 'how many letters in apple', text: '5', route: ROUTE_LINE + ', task count-letters' });
-  assert.equal(toHtml(deviceView({ text: '<b>', task: 't', cells: 1 })).includes('<b>'), false, 'text is text');
-  // the cloud's cells first: a prompt they carry never reaches the device
-  seen.length = 0;
-  assert.equal((await p.send('reverse the word apple')).route, 'cell');
-  assert.equal((await p.send('what is 2 times 2')).route, 'exact');
-  assert.deepEqual(seen, []);
-  // a prompt the device does not carry, or a device that throws, goes to the server
-  assert.equal((await p.send('how many letters in river')).tab, false);
-  assert.equal(p.calls.length, 1);
-  const bad = await runPage({ era: { ...realEra, deviceAnswer: async () => { throw new Error('store broke'); } } });
-  bad.setReply(memory('nothing.'));
-  assert.equal((await bad.send('how many letters in apple')).tab, false);
-  assert.equal(bad.calls.length, 1);
-  // offline, the device still answers
-  const off = await runPage({ nav: { onLine: false }, era: { ...realEra, deviceAnswer: device } });
-  assert.equal((await off.send('how many letters in apple')).route, 'device');
-  // the real body in node: no IndexedDB, so no device answer, and the prompt goes on to the server
-  assert.equal(await realEra.deviceAnswer('how many letters in apple'), null);
-});
-
-/** A planted Worker class: records what it was built with, what it was told and whether it was stopped. */
-function plantWorker() {
-  const made = [];
-  class FakeWorker {
-    constructor(url, opts) { this.url = String(url); this.opts = opts; this.sent = []; this.ended = false; made.push(this); }
-    postMessage(m) { this.sent.push(m); }
-    terminate() { this.ended = true; }
-  }
-  return { FakeWorker, made };
-}
-
-test('THE BODY on the page: one dim line from the worker, a switch that stops it and is remembered, the page state sent to it', async () => {
-  const html = readFileSync(path.join(DIST, 'ask', 'index.html'), 'utf8');
-  assert.match(html, /<div class="foot" id="bodyrow"><span id="body"><\/span> <button id="bodysw" class="chip" type="button" hidden>stop the body<\/button><\/div>/);
-  assert.ok(html.includes('import(' + JSON.stringify(BODY_URL) + ')'), 'the body is imported apart, at run time');
-  // no Worker in this browser: the line says so, from the store (none in node)
-  const none = await runPage();
-  await until(() => none.bodyLineEl.textContent !== '');
-  assert.equal(none.bodyLineEl.textContent, bodyLine({ why: WHY.worker }));
-  assert.equal(none.bodyLineEl.textContent, 'this device: 0 cells kept for 0 tasks, 0 tried, paused (this browser runs no module worker)');
-  assert.equal(none.bodySw.hidden, false);
-  // a module worker on the body's own URL, told the page's state
-  const { FakeWorker, made } = plantWorker();
-  const store = memStore();
-  const p = await runPage({ store, Worker: FakeWorker });
-  await until(() => made.length === 1 && made[0].sent.length === 1);
-  const w = made[0];
-  assert.ok(w.url.endsWith('/organism/web/pocket-era.mjs'), w.url);
-  assert.deepEqual(w.opts, { type: 'module', name: 'pocket-era' });
-  assert.deepEqual(w.sent[0], { type: 'env', stopped: false, hidden: false, saveData: false, battery: null });
-  w.onmessage({ data: { type: 'status', status: { line: 'this device: 3 cells kept for 2 tasks, 900 tried, running' } } });
-  assert.equal(p.bodyLineEl.textContent, 'this device: 3 cells kept for 2 tasks, 900 tried, running');
-  w.onmessage({ data: { type: 'status', status: { line: 7 } } });
-  w.onmessage({ data: '<b>not a status</b>' });
-  assert.equal(p.bodyLineEl.textContent, 'this device: 3 cells kept for 2 tasks, 900 tried, running', 'only a status line is printed');
-  assert.equal(p.bodySw.textContent, 'stop the body');
-  assert.equal(p.bodySw.getAttribute('aria-pressed'), 'true');
-  assert.deepEqual([...store.map.keys()], [], 'the switch is written only when it is used');
-  // the page hides: the worker is told
-  p.doc.visibilityState = 'hidden';
-  for (const f of p.doc.on.visibilitychange || []) f();
-  assert.equal(w.sent.at(-1).hidden, true);
-  // the switch: the worker stops, the choice is remembered, the line says why
-  p.bodySw.fire('click');
-  await until(() => w.ended && p.bodyLineEl.textContent.endsWith('(' + WHY.stopped + ')'));
-  assert.equal(store.getItem(SWITCH_KEY), '0');
-  assert.equal(p.bodySw.textContent, 'start the body');
-  assert.equal(p.bodySw.getAttribute('aria-pressed'), 'false');
-  // a reload keeps it stopped: no worker is started
-  const q = await runPage({ store, Worker: FakeWorker });
-  await until(() => q.bodyLineEl.textContent !== '');
-  assert.equal(made.length, 1, 'a stopped body started a worker on reload');
-  assert.equal(q.bodyLineEl.textContent, bodyLine({ why: WHY.stopped }));
-  assert.equal(q.bodySw.textContent, 'start the body');
-  q.bodySw.fire('click');
-  await until(() => made.length === 2);
-  assert.equal(store.getItem(SWITCH_KEY), '1');
-  // a worker that fails is stopped and the line says so
-  made[1].onerror(new Error('boom'));
-  await until(() => q.bodyLineEl.textContent.endsWith('(' + WHY.failed + ')'));
-  assert.equal(made[1].ended, true);
-  // the chat runs beside it untouched
-  assert.equal((await q.send('what is 17 times 23')).answer, '391');
+  assert.match(HTML, /<button id="new" type="button">new chat<\/button>/);
+  assert.match(HTML, /<nav>[^\n]*<a href="\/alive">alive<\/a>/);
+  assert.ok(HTML.indexOf('id="term"') < HTML.indexOf('<form id="f"'), 'the box is below the thread');
+  assert.equal(toHtml(streamView('<a>')).includes('<a>'), false);
+  assert.equal(toHtml(deviceMissView('<n>')).includes('<n>'), false);
+  assert.equal(toHtml(offlineView()).includes(OFFLINE_LINE), true);
+  assert.match(toHtml(cellView({ text: 't', cell: 'c', ms: 'x' }, null)), /generation unknown.*class unknown  model none  tokens 0  0 ms on this device/);
 });

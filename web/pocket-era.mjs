@@ -14,13 +14,15 @@
 //   and the candidates it tried. A task whose kept cells answer every dev row right is mastered on this device.
 // - THE DUTY CYCLE, so the phone never suffers: a slice works at most SLICE_MS (the search gets SEARCH_SHARE of it, and
 //   the candidates it may try adapt to what the last slice took), then rests at least as long as that slice took and
-//   never less than SLICE_MS. It pauses while the page is hidden, while save-data is on, while the battery is under 20
-//   percent and not charging, and while the switch is off.
+//   never less than SLICE_MS. It pauses while the page is hidden, while save-data is on, on a metered connection, while
+//   the battery is under 20 percent and not charging, and while the switch is off.
 // - THE STORE: at most STORE_CAP bytes; over it, the oldest record of a task not mastered on this device is dropped
 //   first. A record that is not the shape this file writes (a corrupt store) is deleted and counted, never trusted.
 // THE PAGE (startBody, bodyLine, deviceAnswer, gateFits):
-// - startBody starts the worker, tells it the page's state (visibility, save-data, the battery) and keeps THE SWITCH
-//   (one localStorage key, SWITCH_KEY, written only when it is used). bodyLine is the ONE dim line the page prints from
+// - The cloud does the work, so the worker is OFF BY DEFAULT: startBody keeps THE SWITCH (one localStorage key,
+//   SWITCH_KEY, '1' is on, written only when it is used), starts the worker only when it is on, never on save-data, a
+//   metered connection or a low battery (refuseWhy), and tells it the page's state (visibility, save-data, a metered
+//   link, the battery). bodyLine is the ONE dim line the page prints from
 //   the worker's own counters: "this device: <n> cells kept for <m> tasks, <k> tried, running|paused (<why>)".
 // - deviceAnswer answers a prompt in the tab with a cell grown on THIS device only when the cell passed ALL its check
 //   rows and the prompt fits its task's template exactly (grow/neo-core.mjs fitsTemplates); its route line is ROUTE_LINE.
@@ -47,8 +49,10 @@ export const GEN = Object.freeze({ start: 200, min: 20, max: 20000 });
 export const WHY = Object.freeze({
   waiting: 'waiting for the page',
   stopped: 'stopped by you',
+  off: 'off: the cloud does the work, the switch grows cells here too',
   hidden: 'page hidden',
   saveData: 'save-data is on',
+  metered: 'a metered connection',
   battery: 'battery under 20 percent and not charging',
   core: NO_CORE,
   storage: 'no storage on this device',
@@ -283,6 +287,7 @@ export function envWhy(env) {
   if (env.stopped === true) return WHY.stopped;
   if (env.hidden === true) return WHY.hidden;
   if (env.saveData === true) return WHY.saveData;
+  if (env.metered === true) return WHY.metered;
   const b = env.battery;
   if (isObj(b) && b.charging === false && typeof b.level === 'number' && b.level < BATTERY_FLOOR) return WHY.battery;
   return null;
@@ -495,32 +500,60 @@ export async function deviceAnswer(q, { load = pageCore, store = null, openStore
   }
 }
 
-/** The page's state for the worker: visibility, save-data and the battery, as one { type: 'env' } message. */
+/** A connection the person pays for by the byte: the browser says metered, or the link is cellular. */
+export function meteredOf(nav) {
+  const c = nav && nav.connection;
+  return !!c && typeof c === 'object' && (c.metered === true || c.type === 'cellular');
+}
+
+/** The page's state for the worker: visibility, save-data, a metered link and the battery, as one { type: 'env' } message. */
 export function envOf({ document: doc, navigator: nav, battery = null, stopped = false }) {
   const c = nav && nav.connection;
   return {
     type: 'env', stopped: stopped === true,
     hidden: !!doc && doc.visibilityState === 'hidden',
     saveData: !!c && c.saveData === true,
+    metered: meteredOf(nav),
     battery: battery && typeof battery.level === 'number' ? { level: battery.level, charging: battery.charging === true } : null,
   };
 }
 
+/** Why this device must not run the worker at all, or null: save-data, a metered connection, a low battery not charging. */
+export function refuseWhy(nav, battery = null) {
+  const c = nav && nav.connection;
+  if (c && typeof c === 'object' && c.saveData === true) return WHY.saveData;
+  if (meteredOf(nav)) return WHY.metered;
+  if (battery && typeof battery === 'object' && battery.charging === false && typeof battery.level === 'number' && battery.level < BATTERY_FLOOR) return WHY.battery;
+  return null;
+}
+
 /**
- * THE BODY on the page: THE SWITCH (localStorage SWITCH_KEY, '0' is off; written only when it is used), the worker
- * (a module worker on this file's own URL), and the ONE dim line in lineEl. Every outside thing is injected.
- * @returns {{ on: () => boolean, line: () => string, toggle: () => Promise<boolean>, send: () => void, worker: () => object|null, ready: Promise<void> }}
+ * THE BODY on the page, OFF BY DEFAULT: the cloud does the work, and the worker runs only once the person turns THE
+ * SWITCH on (localStorage SWITCH_KEY '1'; written only when it is used). It never starts, and a running one is stopped,
+ * on save-data, a metered connection or a battery under BATTERY_FLOOR and not charging (refuseWhy); the line says why.
+ * The worker is a module worker on this file's own URL; lineEl holds the ONE dim line. bind false leaves the click on
+ * switchEl to the page (which calls toggle). Every outside thing is injected.
+ * @returns {{ on: () => boolean, line: () => string, toggle: () => Promise<boolean>, send: () => void, worker: () => object|null, refused: () => string|null, ready: Promise<void> }}
  */
 export function startBody({
   document: doc = globalThis.document, navigator: nav = globalThis.navigator, Worker: W = globalThis.Worker,
-  storage = null, url = HERE, lineEl = null, switchEl = null, openStore = pageStore,
+  storage = null, url = HERE, lineEl = null, switchEl = null, openStore = pageStore, bind = true,
 } = {}) {
-  let on = true;
-  try { on = !storage || storage.getItem(SWITCH_KEY) !== '0'; } catch { on = true; }
-  let worker = null, battery = null, text = '', seq = 0;
+  let stored = null;
+  try { stored = storage ? storage.getItem(SWITCH_KEY) : null; } catch { stored = null; }
+  let on = stored === '1';
+  let worker = null, battery = null, text = '', seq = 0, failed = false, readyDone = false;
   const show = (s) => { text = s; if (lineEl) lineEl.textContent = s; };
-  const label = () => { if (switchEl) { switchEl.textContent = on ? 'stop the body' : 'start the body'; switchEl.setAttribute('aria-pressed', on ? 'true' : 'false'); } };
-  const send = () => { if (worker) { try { worker.postMessage(envOf({ document: doc, navigator: nav, battery })); } catch { /* gone */ } } };
+  const label = () => { if (switchEl) { switchEl.textContent = on ? 'stop growing on this device' : 'grow on this device too'; switchEl.setAttribute('aria-pressed', on ? 'true' : 'false'); } };
+  const refused = () => refuseWhy(nav, battery);
+  /** Tell a running worker the page's state; stop it when the device now refuses it, start it when it no longer does. */
+  const send = () => {
+    const why = on ? refused() : null;
+    if (worker) {
+      if (why) { stop(); still(why); return; }
+      try { worker.postMessage(envOf({ document: doc, navigator: nav, battery })); } catch { /* gone */ }
+    } else if (on && !why && !failed && typeof W === 'function' && readyDone) start();
+  };
   /** The line from the store when no worker runs: what this device kept, paused for why. */
   async function still(why) {
     const mine = ++seq;
@@ -532,11 +565,13 @@ export function startBody({
     if (mine === seq) show(bodyLine({ cells: c.cells, tasks: c.tasks, tried, why }));
   }
   function start() {
+    const why = refused();
+    if (why) return still(why);
     if (typeof W !== 'function') return still(WHY.worker);
     try { worker = new W(url, { type: 'module', name: 'pocket-era' }); } catch { worker = null; return still(WHY.worker); }
     seq++;
     worker.onmessage = (e) => { const d = e && e.data; if (isObj(d) && d.type === 'status' && isObj(d.status) && typeof d.status.line === 'string') show(d.status.line); };
-    worker.onerror = () => { stop(); still(WHY.failed); };
+    worker.onerror = () => { failed = true; stop(); still(WHY.failed); };
     send();
     return Promise.resolve();
   }
@@ -551,16 +586,15 @@ export function startBody({
     }, () => { battery = null; })
     : Promise.resolve();
   label();
-  const ready = bat.then(() => (on ? start() : still(WHY.stopped)));
+  const ready = bat.then(() => { readyDone = true; return on ? start() : still(stored === '0' ? WHY.stopped : WHY.off); });
   async function toggle() {
     await ready;
     on = !on;
     try { if (storage) storage.setItem(SWITCH_KEY, on ? '1' : '0'); } catch { /* the switch still works for this page */ }
     label();
-    if (on) await start();
-    else { stop(); await still(WHY.stopped); }
+    if (on) { failed = false; await start(); } else { stop(); await still(WHY.stopped); }
     return on;
   }
-  if (switchEl && typeof switchEl.addEventListener === 'function') switchEl.addEventListener('click', () => { toggle(); });
-  return { on: () => on, line: () => text, toggle, send, worker: () => worker, ready };
+  if (bind && switchEl && typeof switchEl.addEventListener === 'function') switchEl.addEventListener('click', () => { toggle(); });
+  return { on: () => on, line: () => text, toggle, send, worker: () => worker, refused, ready };
 }

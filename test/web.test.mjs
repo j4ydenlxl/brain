@@ -9,12 +9,18 @@
 //
 // It also holds the three rules the deploy path depends on: the bundle builds, the bundle
 // is under the size cap, and web/src imports nothing from node.
+//
+// And the host: web/serve.mjs serves /ask with no redirect and mirrors vercel.json's headers, vercel.json keeps its keys
+// and refreshes the organism pages after the pack, and node web/build.mjs --refresh rebuilds them with an empty
+// environment into a temp dist. No test here writes into the tree's web/dist.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, copyFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { tmpdir } from 'node:os';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { buildOrganism as buildNode } from '../seeds/organism.mjs';
 import { getKind as nodeKind } from '../core/cell.mjs';
@@ -24,7 +30,9 @@ import { buildOrganism as buildWeb, REGIONS as WEB_REGIONS } from '../web/src/or
 import { portTable, getKind as webKind, listKinds } from '../web/src/kinds.js';
 import { Engine } from '../web/src/engine.js';
 import { brainLayout, pipelineLayout } from '../web/src/layout.js';
-import { bundle, minify, write, ORDER } from '../web/build.mjs';
+import { bundle, minify, ORDER, refresh, REFRESH_PARTS } from '../web/build.mjs';
+import { startSite, hostRules, headersFor, NO_SLASH } from '../web/serve.mjs';
+import { renderIndexMjs } from '../grow/store.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CAP = 225280;      // 220 KB hard cap
@@ -196,19 +204,200 @@ test('engine: a signal lands at t + 1 + delay and not a tick before or after', (
   console.log('arrival rule   ' + checked + ' in flight entries all at t + 1 + delay');
 });
 
+// The bundle is measured in memory: no test writes into the tree's web/dist (node web/build.mjs does that).
 test('bundle: it builds, and the whole site is under the cap', () => {
-  const r = write();
+  const { js, html } = bundle();
+  const r = { js: Buffer.byteLength(js), html: Buffer.byteLength(html) };
+  r.total = r.js + r.html;
   assert.ok(r.js > 20000, 'the bundle is suspiciously small: ' + r.js);
   assert.ok(r.total < CAP, 'site ' + r.total + ' bytes is over the ' + CAP + ' byte cap');
   console.log('bundle  index.html ' + r.html + ' bytes, app.js ' + r.js + ' bytes, total '
     + r.total + ' bytes (target ' + TARGET + ', cap ' + CAP + ')');
   if (r.total > TARGET) console.log('NOTE: over the ' + TARGET + ' byte target, under the cap');
   // the bundle is one script with no module syntax left in it
-  const js = readFileSync(r.jsPath, 'utf8');
   assert.ok(!/^import\s/m.test(js), 'an import survived the bundler');
   assert.ok(!/^export\s/m.test(js), 'an export survived the bundler');
   assert.ok(js.includes('#version 300 es'), 'the shaders did not survive the minifier');
-  assert.ok(readFileSync(r.htmlPath, 'utf8').includes('app.js'), 'the page does not load the bundle');
+  assert.ok(html.includes('app.js'), 'the page does not load the bundle');
+});
+
+test('import: loading web/build.mjs writes nothing and prints nothing; only a run as a program builds', () => {
+  const url = pathToFileURL(join(ROOT, 'web', 'build.mjs')).href;
+  const r = spawnSync(process.execPath, ['--input-type=module', '-e', 'const m = await import(' + JSON.stringify(url) + '); console.log(typeof m.refresh, typeof m.write);'], { encoding: 'utf8', cwd: ROOT });
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stdout.trim(), 'function function', 'the import printed ' + JSON.stringify(r.stdout));
+});
+
+// ---------------------------------------------------------------- web/serve.mjs mirrors the host (vercel.json)
+
+function siteDist() {
+  const d = mkdtempSync(join(tmpdir(), 'web-serve-'));
+  for (const [rel, body] of [['ask/index.html', '<!doctype html>ask page'], ['ask/sw.js', '// sw'], ['ladder/index.html', 'ladder page'], ['index.html', 'home']]) {
+    mkdirSync(dirname(join(d, rel)), { recursive: true });
+    writeFileSync(join(d, rel), body);
+  }
+  return d;
+}
+
+test('serve: /ask is served with no redirect, /ask/ answers 308 to /ask, and /ask/sw.js carries vercel.json\'s headers', async () => {
+  const dist = siteDist();
+  const site = await startSite({ port: 0, dist, healthUrl: 'http://127.0.0.1:9/health' });
+  try {
+    const get = (p) => fetch(site.url + p.replace(/^\//, ''), { redirect: 'manual' });
+    const ask = await get('/ask');
+    assert.equal(ask.status, 200);
+    assert.equal(ask.headers.get('location'), null);
+    assert.equal(await ask.text(), '<!doctype html>ask page');
+    const slash = await get('/ask/');
+    assert.equal(slash.status, 308);
+    assert.equal(slash.headers.get('location'), '/ask');
+    const q = await get('/ask/?x=1');
+    assert.equal(q.status, 308);
+    assert.equal(q.headers.get('location'), '/ask?x=1');
+    const sw = await get('/ask/sw.js');
+    assert.equal(sw.status, 200);
+    assert.equal(sw.headers.get('service-worker-allowed'), '/');
+    assert.equal(sw.headers.get('cache-control'), 'no-cache');
+    assert.equal(sw.headers.get('content-type'), 'text/javascript; charset=utf-8');
+    const page = await get('/ask/index.html');
+    assert.equal(page.headers.get('service-worker-allowed'), null, 'the header is on /ask/sw.js only');
+    assert.equal(page.headers.get('cache-control'), 'no-store');
+    const lad = await get('/ladder');
+    assert.equal(lad.status, 301, 'every other directory keeps its slash');
+    assert.equal(lad.headers.get('location'), '/ladder/');
+    assert.equal((await get('/nope')).status, 404);
+    for (const r of [slash, q, sw, page, lad]) await r.text();
+  } finally { await site.close(); rmSync(dist, { recursive: true, force: true }); }
+  assert.deepEqual(NO_SLASH, ['/ask']);
+});
+
+test('serve: hostRules reads the exact sources of vercel.json and nothing else; a missing file adds no header', () => {
+  const vercel = JSON.parse(readFileSync(join(ROOT, 'vercel.json'), 'utf8'));
+  const sw = vercel.headers.find((h) => h.source === '/ask/sw.js');
+  assert.deepEqual(sw.headers, [{ key: 'Service-Worker-Allowed', value: '/' }, { key: 'Cache-Control', value: 'no-cache' }]);
+  assert.deepEqual(hostRules(), { headers: [{ source: '/ask/sw.js', headers: { 'service-worker-allowed': '/', 'cache-control': 'no-cache' } }] });
+  const d = mkdtempSync(join(tmpdir(), 'web-rules-'));
+  try {
+    const f = join(d, 'vercel.json');
+    writeFileSync(f, JSON.stringify({ headers: [{ source: '/a/(.*)', headers: [{ key: 'X-A', value: '1' }] }, { source: '/b', headers: [{ key: 'X-B', value: '2' }, { key: 'bad key', value: '3' }, { key: 'X-N', value: 4 }] }, { source: 7 }, null] }));
+    const rules = hostRules(f);
+    assert.deepEqual(rules, { headers: [{ source: '/b', headers: { 'x-b': '2' } }] });
+    assert.deepEqual(headersFor('/b', rules), { 'x-b': '2' });
+    assert.deepEqual(headersFor('/b/', rules), {});
+    assert.deepEqual(headersFor('/a/x', rules), {});
+    writeFileSync(f, '{not json');
+    assert.deepEqual(hostRules(f), { headers: [] });
+    assert.deepEqual(hostRules(join(d, 'none.json')), { headers: [] });
+    assert.deepEqual(headersFor('/b', null), {});
+  } finally { rmSync(d, { recursive: true, force: true }); }
+});
+
+// ---------------------------------------------------------------- vercel.json and node web/build.mjs --refresh
+
+test('vercel.json: every key it had is kept, the host refreshes the organism pages after the pack, and the function carries neo/know and grown', () => {
+  const v = JSON.parse(readFileSync(join(ROOT, 'vercel.json'), 'utf8'));
+  for (const k of ['$schema', 'framework', 'installCommand', 'buildCommand', 'outputDirectory', 'cleanUrls', 'trailingSlash', 'github', 'headers', 'functions', 'ignoreCommand']) assert.ok(k in v, k);
+  assert.equal(v.outputDirectory, 'web/dist');
+  assert.equal(v.cleanUrls, true);
+  assert.equal(v.trailingSlash, false);
+  assert.equal(v.buildCommand, 'node tools/fetch-pack.mjs && node web/build.mjs --refresh');
+  assert.equal(v.functions['api/ask.mjs'].includeFiles, '{world/policy.json,bench/fixtures/wiki/pack-200/**,neo/know/**,grown/**}');
+  assert.equal(v.functions['api/ask.mjs'].maxDuration, 60);
+});
+
+const CELL = "export const meta = { id: 'greet-direct-g3', class: 'greet', generation: 3, lane: 'direct', grownFrom: ['x'], version: 1 };\n"
+  + "export function can(q) { return q.startsWith('hello'); }\nexport function answer(q) { return 'hello from a grown cell'; }\n"
+  + "export const examples = [{ q: 'x', expect: { notRefusal: true } }];\n";
+function refreshRoot(base) {
+  const root = join(base, 'root');
+  mkdirSync(join(root, 'grown', 'cells'), { recursive: true });
+  writeFileSync(join(root, 'grown', 'cells', 'greet-direct-g3.mjs'), CELL);
+  const index = { generation: 3, cells: [{ id: 'greet-direct-g3', class: 'greet', generation: 3, lane: 'direct', file: 'cells/greet-direct-g3.mjs', heldout: { score: 1, n: 4 }, promotedAt: 'x' }] };
+  writeFileSync(join(root, 'grown', 'index.json'), JSON.stringify(index));
+  writeFileSync(join(root, 'grown', 'index.mjs'), renderIndexMjs(index));
+  mkdirSync(join(root, 'grow'), { recursive: true });
+  for (const f of ['neo-core.mjs', 'neo-kernel.mjs']) copyFileSync(join(ROOT, 'grow', f), join(root, 'grow', f));
+  mkdirSync(join(root, 'neo'), { recursive: true });
+  writeFileSync(join(root, 'neo', 'ERA.json'), JSON.stringify({ eras: [{ era: 1, at: '2026-10-01T00:00:00.000Z', cells: 5, mastered: 1 }] }));
+  return root;
+}
+const filesOf = (dir, pre = '') => readdirSync(dir).flatMap((n) => statSync(join(dir, n)).isDirectory() ? filesOf(join(dir, n), pre + n + '/') : [pre + n]).sort();
+
+test('refresh: /ask, the device tier and /alive rebuilt from the organism into a dist, swapped in whole; the rest of the dist untouched', () => {
+  const base = mkdtempSync(join(tmpdir(), 'web-refresh-'));
+  try {
+    const root = refreshRoot(base), dist = join(base, 'dist');
+    mkdirSync(join(dist, 'organism'), { recursive: true });
+    writeFileSync(join(dist, 'organism', 'stale.mjs'), 'stale');
+    writeFileSync(join(dist, 'index.html'), 'home');
+    const r = refresh({ root, dist, builtAt: '2026-10-02T00:00:00.000Z', env: {} });
+    assert.equal(r.ok, true, r.why);
+    assert.deepEqual(r.parts, ['ask', 'organism', 'alive', 'datacenter']);
+    assert.deepEqual(REFRESH_PARTS, ['ask', 'organism', 'alive', 'datacenter']);
+    assert.equal(r.cells, 1);
+    assert.ok(r.ask > 0 && r.first >= r.ask && r.alive > 0 && r.data > 0);
+    const files = filesOf(dist);
+    for (const f of ['ask/index.html', 'ask/sw.js', 'ask/manifest.webmanifest', 'organism/manifest.json', 'organism/cells.json', 'alive/index.html', 'alive/data.json', 'index.html']) assert.ok(files.includes(f), f);
+    assert.ok(!files.includes('organism/stale.mjs'), 'the old organism part is replaced whole');
+    assert.equal(readFileSync(join(dist, 'index.html'), 'utf8'), 'home');
+    assert.equal(JSON.parse(readFileSync(join(dist, 'alive', 'data.json'), 'utf8')).builtAt, '2026-10-02T00:00:00.000Z');
+    assert.deepEqual(readdirSync(base).sort(), ['dist', 'root'], 'the staging directory is gone');
+    console.log('refresh  ' + files.length + ' files in the dist: ask ' + r.ask + ' bytes, first visit ' + r.first + ' bytes, alive ' + r.alive + ' bytes, data ' + r.data + ' bytes, cells ' + r.cells);
+    // a root the pocket cannot read: nothing in the dist changes, and it says why
+    const before = filesOf(dist).map((f) => f + ' ' + readFileSync(join(dist, f)).length);
+    const bad = refresh({ root: join(base, 'nowhere'), dist, builtAt: 'x', env: {} });
+    assert.equal(bad.ok, false);
+    assert.match(bad.why, /no grown index/);
+    assert.deepEqual(filesOf(dist).map((f) => f + ' ' + readFileSync(join(dist, f)).length), before);
+    assert.deepEqual(readdirSync(base).sort(), ['dist', 'root']);
+    // all or nothing: a named part the build did not stage swaps in none, not the ones before it
+    writeFileSync(join(dist, 'ask', 'index.html'), 'old ask');
+    const before2 = filesOf(dist).map((f) => f + ' ' + readFileSync(join(dist, f)).length);
+    const part = refresh({ root, dist, builtAt: 'y', env: {}, parts: [...REFRESH_PARTS, 'absent'] });
+    assert.equal(part.ok, false);
+    assert.match(part.why, /the build staged no absent; nothing was swapped in/);
+    assert.equal(readFileSync(join(dist, 'ask', 'index.html'), 'utf8'), 'old ask');
+    assert.deepEqual(filesOf(dist).map((f) => f + ' ' + readFileSync(join(dist, f)).length), before2);
+    // a part is one plain directory name, never a path out of the dist
+    for (const p of [['../x'], ['a/b'], [''], [], 'ask', [null], ['Ask']]) {
+      const r2 = refresh({ root, dist, builtAt: 'z', env: {}, parts: p });
+      assert.equal(r2.ok, false, JSON.stringify(p));
+      assert.match(r2.why, /not one plain directory name/, JSON.stringify(p));
+    }
+    assert.deepEqual(filesOf(dist).map((f) => f + ' ' + readFileSync(join(dist, f)).length), before2);
+    assert.deepEqual(readdirSync(base).sort(), ['dist', 'root'], 'no staging directory is left behind');
+    // a subset refreshes only what it names
+    const one = refresh({ root, dist, builtAt: '2026-10-02T01:00:00.000Z', env: {}, parts: ['alive'] });
+    assert.equal(one.ok, true, one.why);
+    assert.deepEqual(one.parts, ['alive']);
+    assert.equal(readFileSync(join(dist, 'ask', 'index.html'), 'utf8'), 'old ask');
+    assert.equal(JSON.parse(readFileSync(join(dist, 'alive', 'data.json'), 'utf8')).builtAt, '2026-10-02T01:00:00.000Z');
+    assert.deepEqual(readdirSync(base).sort(), ['dist', 'root']);
+  } finally { rmSync(base, { recursive: true, force: true }); }
+});
+
+test('refresh: the CLI runs with an EMPTY environment (no secret, no network), prints one JSON line and exits 0 both ways', () => {
+  const base = mkdtempSync(join(tmpdir(), 'web-refresh-cli-'));
+  try {
+    const root = refreshRoot(base), dist = join(base, 'out', 'dist');
+    const run = (r) => spawnSync(process.execPath, [join(ROOT, 'web', 'build.mjs'), '--refresh', '--dist', dist, '--root', r], { encoding: 'utf8', env: {}, cwd: base });
+    const ok = run(root);
+    assert.equal(ok.status, 0, ok.stderr);
+    const lines = ok.stdout.trim().split('\n');
+    assert.equal(lines.length, 1, ok.stdout);
+    const j = JSON.parse(lines[0]);
+    assert.equal(j.refresh, 'built');
+    assert.equal(j.ok, true);
+    assert.equal(j.cells, 1);
+    assert.ok(statSync(join(dist, 'ask', 'index.html')).size > 0);
+    assert.ok(!existsSync(join(dist, 'tools')), 'a refresh copies no /tools');
+    console.log('refresh cli (env {}): ' + lines[0].slice(0, 160));
+    const no = run(join(base, 'nowhere'));
+    assert.equal(no.status, 0);
+    const k = JSON.parse(no.stdout.trim());
+    assert.equal(k.refresh, 'kept the committed pages');
+    assert.equal(k.ok, false);
+  } finally { rmSync(base, { recursive: true, force: true }); }
 });
 
 test('bundle: the minifier never edits a string, a template or a regex', () => {

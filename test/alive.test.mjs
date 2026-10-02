@@ -18,7 +18,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { readAlive, readNeo, aliveHtml, aliveData, aliveModel, renderAlive, neoModel, generateAlive, jsonText, hoursBefore, gapSentence, trialVerdict, refusedPath, scrub,
-  secretValues, load, FILES, NEO_FILES, PAGE_CAP, DEFAULT_POINTER, SERIES_ROWS, TRIAL_ROWS, READ_LIMITS, BODY_WINDOW_MS, VELOCITY_ORDER } from '../web/alive.mjs';
+  secretValues, load, FILES, NEO_FILES, PAGE_CAP, DEFAULT_POINTER, SERIES_ROWS, TRIAL_ROWS, READ_LIMITS, BODY_WINDOW_MS, VELOCITY_ORDER, pipelineOf, computeOf, pl, COMPUTE_ORDER } from '../web/alive.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'alive-test-'));
@@ -118,12 +118,17 @@ const TRIAL_LINES = [
   '{ a torn trial',
   { at: '2026-10-01T10:50:00.000Z', era: 6, kind: 'genome', change: 'maxGenerated 200000 to 220000', before: { ok: 12 }, after: { ok: 13 }, kept: true, why: 'more held-out rows right in both runs' },
 ];
+// neo/COMPUTE.json as grow/compute.mjs nextLedger writes it, with a key the page has no name for
+const COMPUTE_DOC = { month: '2026-10', at: '2026-10-01T12:00:00.000Z', visibility: 'public', budgetMinutes: 3000, reservePct: 10, spentMinutes: 1234, heartbeatMinutes: 900,
+  source: 'actions-api', runs: { r1: 5, r2: 7, r3: 9 }, plans: [{ at: '2026-10-01T11:00:00.000Z', beatMinutes: 20, shards: 2, relay: false, mergeMinutes: 3, why: 'the first plan' },
+    { at: '2026-10-01T12:00:00.000Z', beatMinutes: 25, shards: 3, relay: true, mergeMinutes: 4, why: 'the month has room' }], futureKey: 7, '<bad>': 8 };
 const ERA_DOC = { era: 17, lastGrown: { 'capital-country': 17 }, eras: [
   { era: 14, at: '2026-09-30T11:00:00.000Z', body: 'claude-routine', ms: 400000, cells: 60000, mastered: 1, grown: [] },
   { era: 15, at: '2026-09-30T13:15:17.552Z', body: 'claude-routine', ms: 410000, cells: 61000, mastered: 1, grown: [] },
-  { era: 17, at: '2026-10-01T12:45:17.552Z', body: 'github', ms: 433619, workers: 4, cells: 70001, mastered: 3, blocked: [],
+  { era: 17, at: '2026-10-01T12:45:17.552Z', body: 'github', ms: 433619, workers: 4, cells: 70001, mastered: 3, blocked: [], pipeline: 'none',
     grown: [{ task: 'capital-country', generated: 200215, kept: 1138, promoted: false, heldout: { ok: 17, n: 49, score: 0.3469 } }, { task: 'government-type', promoted: false }] },
-  { era: 16, at: '2026-10-01T10:00:00.000Z', body: 'github', ms: 467440, workers: 4, cells: 68000, mastered: 2, grown: [{ task: 'x-task', promoted: true }] },
+  { era: 16, at: '2026-10-01T10:00:00.000Z', body: 'github', ms: 467440, workers: 4, cells: 68000, mastered: 2, grown: [{ task: 'x-task', promoted: true }],
+    pipeline: 'snapshot', promoted: { promoted: true, why: 'more held-out rows right', raised: ['x-task'], fell: [], gained: ['x-task'], before: 1800, after: 1805 } },
   { era: 13, at: '2026-10-01T11:00:00.000Z', ms: 1000, cells: 5, mastered: 0 },
   { era: 12, at: '2026-10-01T14:00:00.000Z', body: 'vercel', ms: 900, cells: 5, mastered: 0 },
   { era: 11, at: '2026-10-01T09:00:00.000Z', body: '<img src=x>', ms: 800, cells: 5, mastered: 0 },
@@ -136,6 +141,7 @@ const NEO = {
     bytes: 10913453, rows: 15551, blocked: [{ id: 'gone', why: 'a timeout' }] },
   [NEO_FILES.frontier]: { queue: [{ url: 'https://raw.githubusercontent.com/a/b/main/c.csv' }, { url: 'q2' }, { url: 'q3' }], seen: ['u1', 'u2', 'u3', 'u4', 'u5'], repos: { 'a/b': {}, 'c/d': {} }, added: ['s1'] },
   [NEO_FILES.trials]: jsonl(TRIAL_LINES),
+  [NEO_FILES.compute]: COMPUTE_DOC,
 };
 const ISO_RE = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z/g;
 
@@ -159,7 +165,7 @@ test('a full fixture: every number of the model and every source file reaches th
     'corrected by hand', 'recorded by hand (fixture, 2026-10-01): the first finish printed 6 and 4, kept',
     '0.8571', 'held-out score on 14 rows', '12 of 13 rows ok', '0.6667', 'pending GROW.md', 'generation 9 judges it', 'baseline 0.3333 (14 of 42, generation 8)',
     'kept', 'reverted', '0.2381 (5 of 21, generation 6)', 'claude-sonnet-5-5', 'since generation 3', 'claude-fable-5-1', '5.5833 vs 4.25', '4 vs 2', 'held',
-    'Todo', 'built from "make me a todo app"', '5 tasks set for itself', '7 curriculum rows', '1 unreadable lines', '3 tasks it set itself after generation 8']) assert.ok(seen.includes(s), 'the page shows: ' + s);
+    'Todo', 'built from "make me a todo app"', '5 tasks set for itself', '7 curriculum rows', '1 unreadable line,', '3 tasks it set itself after generation 8']) assert.ok(seen.includes(s), 'the page shows: ' + s);
   // the last hour: the cells generation 8 promoted, and only those
   const last = visible(section(html, 'last-hour'));
   assert.ok(last.includes('math-baked-g8') && !last.includes('code-direct-g7'), 'promoted cells are the newest generation\'s');
@@ -197,7 +203,7 @@ test('an empty root, a root of empty files and a root of broken files: every sec
   const empty = stub({});
   const blank = stub(Object.fromEntries(ALL.map((f) => [f, ''])));
   const broken = stub({ [FILES.generations]: '{', [FILES.index]: '[1,2]', [FILES.self]: 'null', [FILES.cortex]: '"x"', [FILES.apps]: '{"apps":7}', [FILES.dreams]: 'nope\n[1]\n', [FILES.curriculum]: '﻿{bad',
-    [NEO_FILES.ledger]: '{', [NEO_FILES.era]: '[1]', [NEO_FILES.measure]: 'nope\n[1]\n', [NEO_FILES.absorb]: 'null', [NEO_FILES.frontier]: '"x"', [NEO_FILES.trials]: '{bad\n' });
+    [NEO_FILES.ledger]: '{', [NEO_FILES.era]: '[1]', [NEO_FILES.measure]: 'nope\n[1]\n', [NEO_FILES.absorb]: 'null', [NEO_FILES.frontier]: '"x"', [NEO_FILES.trials]: '{bad\n', [NEO_FILES.compute]: '[1]' });
   for (const [name, root, why] of [['empty', empty, 'is not on disk'], ['blank', blank, 'is empty'], ['broken', broken, null]]) {
     const data = readAlive(root);
     const html = aliveHtml(data, { builtAt: BUILT });
@@ -228,7 +234,7 @@ test('an empty root, a root of empty files and a root of broken files: every sec
   assert.equal(b.sources.index.state, 'wrong shape');
   assert.equal(b.sources.dreams.state, 'no JSON line');
   assert.deepEqual(Object.fromEntries(Object.entries(b.neo.sources).map(([k, s]) => [k, s.state])),
-    { ledger: 'not JSON', era: 'wrong shape', measure: 'no JSON line', absorb: 'wrong shape', frontier: 'wrong shape', trials: 'no JSON line' });
+    { ledger: 'not JSON', era: 'wrong shape', measure: 'no JSON line', absorb: 'wrong shape', frontier: 'wrong shape', trials: 'no JSON line', compute: 'wrong shape' });
   const bv = visible(aliveHtml(b, { builtAt: BUILT }));
   assert.ok(bv.includes('grown/generations.json does not parse as JSON'));
   assert.ok(bv.includes('neo/LEDGER.json does not parse as JSON') && bv.includes('neo/ERA.json does not hold the shape the organism writes') && bv.includes('grown/measure.jsonl holds no JSON line'));
@@ -374,11 +380,14 @@ test('NEO: every number of the part equals the planted file\'s, and every one of
     'held-out fraction 0.4325 1910 of 4416 held-out rows right, every colony together',
     'Era 17 ran at 2026-10-01T12:45:17.552Z, 0.5 hours before this page was built, on the body github , for 433619 ms with 4 workers: it grew 2 tasks and promoted 0 colonies; the organism then held 70001 cells and 3 mastered tasks.',
     '6 eras since 2026-09-30T13:15:17.552Z, by body: github 2 claude-routine 1 unrecognised 1 unrecorded 1 vercel 1',
-    'the newest beat of each: github at 2026-10-01T12:45:17.552Z, claude-routine at 2026-09-30T13:15:17.552Z', '1 era rows are stamped after this build',
+    'the newest beat of each: github at 2026-10-01T12:45:17.552Z, claude-routine at 2026-09-30T13:15:17.552Z', '1 era row is stamped after this build',
     'The newest 48 rows of grown/measure.jsonl , oldest on the left; the newest is era 50 at 2026-09-30T08:20:00.000Z. The newest 3 rows hold the same counts.',
     'Mastered tasks 0 at era 3 to 2 at era 50; lowest 0, highest 2.', 'Held-out fraction 0.4083 at era 3 to 0.4325 at era 50; lowest 0.4083, highest 0.4325.',
     'cells per second 4283 tasks per minute 0.9 mastered per era 0 era ms 467440 workers 4 era 50 futureKnob 7', 'plateau 2 : the eras since the held-out total last rose.',
-    '2 sources over 3 pulls: 10913453 bytes, 15551 rows; the cursor stands at 22 ; 1 blocked pulls on record.', '3 links queued, 5 seen, 2 repositories, 1 sources added.',
+    '2 sources over 3 pulls: 10913453 bytes, 15551 rows; the cursor stands at 22 ; 1 blocked pull on record.', '3 links queued, 5 seen, 2 repositories, 1 source added.',
+    'The last promote The newest pipeline state, era 17: none . The last promote, era 16 at 2026-10-01T10:00:00.000Z: promoted (more held-out rows right); 1 task raised, 0 fell, 1 gained; held-out rows right 1800 before, 1805 after.',
+    'month 2026-10 at 2026-10-01T12:00:00.000Z budgetMinutes 3000 spentMinutes 1234 reservePct 10 heartbeatMinutes 900 visibility public source actions-api futureKey 7',
+    'On record: plans 2 , runs 3 .', 'The newest plan: at 2026-10-01T12:00:00.000Z , beatMinutes 25 , shards 3 , relay true , mergeMinutes 4 , why the month has room .',
     'kept 2 reverted 1 skipped 1 blocked 1 retired 1 6 trial rows; the newest first:', '6 genome kept maxGenerated 200000 to 220000 more held-out rows right in both runs',
     '5 macro retired op retire, name macro.old no kept cell used it for 20 eras', '4 genome blocked gene maxSize, from 7, to 9 the clock ran out', '3 genome skipped the engine cannot load a genome yet',
     "The routine's trials, by verdict: kept 1 pending 1 reverted 1 from grown/self.json", 'The cortex trials, by verdict: held 1 from grown/cortex.json',
@@ -417,8 +426,10 @@ test('NEO: each file missing from a full root reads "not yet" with its reason, a
     absorb: ['What it absorbed not yet : neo/ABSORB.json is not on disk'],
     frontier: ['The crawl queue not yet : neo/frontier.json is not on disk'],
     trials: ['not yet : neo/TRIALS.jsonl is not on disk from neo/TRIALS.jsonl The routine\'s trials, by verdict: kept 1 pending 1 reverted 1'],
+    compute: ['and the plan it made. not yet : neo/COMPUTE.json is not on disk from neo/COMPUTE.json'],
   };
-  const gone = { ledger: '28634279', era: '433619', measure: '68417', absorb: '10913453', frontier: '3 links queued', trials: 'maxGenerated' };
+  absent.era.push('The last promote not yet : neo/ERA.json is not on disk');
+  const gone = { ledger: '28634279', era: '433619', measure: '68417', absorb: '10913453', frontier: '3 links queued', trials: 'maxGenerated', compute: 'budgetMinutes' };
   for (const [k, rel] of Object.entries(NEO_FILES)) {
     const files = { ...FULL, ...NEO };
     delete files[rel];
@@ -464,7 +475,7 @@ test('NEO: a torn measure line does not break the build; the newest whole row is
   assert.equal(data.neo.now.era, 49);
   assert.deepEqual([data.neo.sources.measure.rows, data.neo.sources.measure.bad], [49, 1]);
   const html = fs.readFileSync(path.join(out, 'index.html'), 'utf8');
-  assert.ok(visible(html).includes('grown/measure.jsonl read, ' + Buffer.byteLength(torn) + ' bytes, 49 lines, 1 unreadable lines, sha256 ' + crypto.createHash('sha256').update(torn).digest('hex').slice(0, 16)));
+  assert.ok(visible(html).includes('grown/measure.jsonl read, ' + Buffer.byteLength(torn) + ' bytes, 49 lines, 1 unreadable line, sha256 ' + crypto.createHash('sha256').update(torn).digest('hex').slice(0, 16)));
   assert.ok(visible(neoOf(html)).includes('tasks 116 opened, measured at era 49'));
   // the full fixture's torn line in the middle is counted, never shown
   const mid = readAlive(stub(NEO)).neo.sources.measure;
@@ -552,10 +563,14 @@ test('NEO: nothing held-out, no token and no runtime path reaches the page or da
 
 test('refusedPath: every held-out, control, runtime or outside path is refused; the page\'s own records are not', () => {
   for (const p of ['state/x.json', 'state', 'STATE/neo.json', './state/a', 'state\\a.json', 'judge/heldout/math.jsonl', 'judge/heldout', 'Judge/HeldOut/x', 'judge/control.jsonl',
-    'neo/tasks/capital-country/heldout.jsonl', 'neo//tasks/x/heldout.jsonl', 'neo\\tasks\\x\\heldout.jsonl', 'neo/tasks/heldout.jsonl', 'grown/heldout/a.json', 'neo/tasks/a/b/heldout.jsonl',
+    'neo/tasks/capital-country/heldout.jsonl', 'neo//tasks/x/heldout.jsonl', 'neo\\tasks\\x\\heldout.jsonl', 'NEO/Tasks/x/HeldOut.jsonl',
     '../brain/grown/index.json', 'grown/../state/x', '/etc/passwd', 'C:/brain/x.json', 'c:\\x', '', null, undefined]) assert.ok(refusedPath(p), String(p) + ' is refused');
   for (const p of [...Object.values(FILES), ...Object.values(NEO_FILES), 'estate/x.json', 'grown/state.json', 'neo/tasks/capital-country/dev.jsonl', 'judge/locked.json',
-    'judge/controls.jsonl', 'grown/heldout-summary.json']) assert.equal(refusedPath(p), null, p + ' may be read');
+    'judge/controls.jsonl', 'grown/heldout-summary.json',
+    // no wider than the rule: a heldout name outside judge/heldout/ and outside one task directory of neo/tasks/ is not refused
+    'neo/tasks/heldout.jsonl', 'grown/heldout/a.json', 'neo/tasks/a/b/heldout.jsonl', 'grown/heldout.json', 'heldout', 'neo/heldout.jsonl',
+    // and a name that only begins with "state" is not the state/ directory
+    'statements/x.json', 'state.json', 'stateful', 'judge/heldout.json', 'judge/control.jsonl.bak']) assert.equal(refusedPath(p), null, p + ' may be read');
 });
 
 test('NEO: the page reads with no script and makes no external request', () => {
@@ -612,7 +627,7 @@ test('gapSentence: one plain sentence from the numbers, each part only when its 
   assert.equal(gapSentence({ ...now, plateau: 0 }, null, null),
     'Not working yet: only 2 of 116 tasks are mastered; 99 of 116 tasks have a colony at all; the colonies answer 1910 of 4416 held-out rows right (0.4325).');
   assert.equal(gapSentence({ tasks: 5, colonies: 5, mastered: 5, ok: 10, n: 10, score: null, plateau: 1 }, { era: 9, grown: 3, promoted: 1 }, 2),
-    'Not working yet: the held-out total has not risen for 1 eras; the newest 2 measure rows hold the same task, colony, cell, mastered and held-out counts.');
+    'Not working yet: the held-out total has not risen for 1 era; the newest 2 measure rows hold the same task, colony, cell, mastered and held-out counts.');
   assert.equal(gapSentence({ tasks: 5, colonies: 5, mastered: 5, ok: 9, n: 10, score: null, plateau: null }, { era: 9, grown: 3, promoted: 0 }, null),
     'Not working yet: the colonies answer 9 of 10 held-out rows right; era 9 grew 3 tasks and promoted none.');
   assert.equal(gapSentence({ tasks: null, colonies: 3, mastered: 2, ok: null, n: 10, score: null, plateau: null }, { era: 9, grown: null, promoted: null }, null), 'No gap shows in these numbers yet.',
@@ -691,7 +706,7 @@ test('NEO: only a grown row with promoted true counts as promoted; a model hande
   assert.deepEqual([last.grown, last.promoted], [4, 1]);
   const none = neoModel({ era: { era: 2, eras: [{ era: 2, grown: [{ task: 'b' }, { task: 'c', promoted: 1 }] }] } }).eras.last;
   assert.deepEqual([none.grown, none.promoted], [2, 0]);
-  assert.ok(visible(neoOf(aliveHtml({ neo: { era: eras } }, { builtAt: BUILT }))).includes('it grew 4 tasks and promoted 1 colonies'));
+  assert.ok(visible(neoOf(aliveHtml({ neo: { era: eras } }, { builtAt: BUILT }))).includes('it grew 4 tasks and promoted 1 colony'));
   // readNeo is the NEO half of readAlive
   const root = NEO_ROOT();
   assert.deepEqual(readNeo(root), readAlive(root).neo);
@@ -703,4 +718,82 @@ test('NEO: only a grown row with promoted true counts as promoted; a model hande
   const html = renderAlive(m);
   assert.ok(!html.includes('ghp_') && !html.includes('z'.repeat(24)) && !html.includes('state/neo'));
   assert.ok(visible(html).includes('see [redacted] in [a runtime path]'));
+});
+
+// ---------------------------------------------------------------- the last promote, the compute ledger, singular counts
+test('pipelineOf: feature-detected from the era rows; the newest pipeline state and the newest promote, each by its own era', () => {
+  assert.equal(pipelineOf(undefined), null);
+  assert.equal(pipelineOf([]), null);
+  assert.equal(pipelineOf([{ era: 3, at: BUILT, cells: 5 }, { era: 4, grown: [] }]), null, 'a tree before the pipeline landed has none');
+  assert.equal(pipelineOf([{ era: 'x', pipeline: 'snapshot' }, null, 7, { era: -1, promoted: { promoted: true } }]), null, 'a row without an era number is not read');
+  assert.deepEqual(pipelineOf([{ era: 2, pipeline: 'absent' }]),
+    { state: 'absent', stateEra: 2, era: null, at: null, promoted: null, why: null, raised: null, fell: null, gained: null, before: null, after: null });
+  const rows = [
+    { era: 5, at: 'a5', pipeline: 'snapshot', promoted: { promoted: false, why: 'the held-out total fell', raised: [], fell: ['t1', 't2'], gained: [], before: 12, after: 11 } },
+    { era: 7, at: 'a7', pipeline: 'snapshot', promoted: { promoted: true, why: 'w'.repeat(300), raised: ['t1', 't2', 't3'], fell: [], gained: ['t3'], before: 11, after: 14 } },
+    { era: 7, at: 'a7b', pipeline: 'snapshot', promoted: { promoted: 'yes', raised: 'no', before: '9', after: null } },
+    { era: 6, at: 'a6', pipeline: 'none' },
+    { era: 8, at: 'a8', pipeline: 'n'.repeat(40) },
+    { era: 1, pipeline: 'snapshot', promoted: { promoted: true } },
+  ];
+  const p = pipelineOf(rows);
+  assert.deepEqual(p, { state: 'n'.repeat(21) + '...', stateEra: 8, era: 7, at: 'a7b', promoted: null, why: null, raised: null, fell: null, gained: null, before: null, after: null },
+    'a tie is the later row; a field of the wrong type is null, never guessed');
+  const q = pipelineOf(rows.slice(0, 2));
+  assert.deepEqual(q, { state: 'snapshot', stateEra: 7, era: 7, at: 'a7', promoted: true, why: 'w'.repeat(197) + '...', raised: 3, fell: 0, gained: 1, before: 11, after: 14 });
+  const r = pipelineOf([rows[0], { era: 9, pipeline: 'none' }]);
+  assert.deepEqual([r.state, r.stateEra, r.era, r.promoted, r.fell, r.before, r.after], ['none', 9, 5, false, 2, 12, 11]);
+  const page = visible(neoOf(aliveHtml({ neo: { era: { era: 9, eras: [rows[0], { era: 9, pipeline: 'none' }] } } }, { builtAt: BUILT })));
+  assert.ok(page.includes('The newest pipeline state, era 9: none . The last promote, era 5 at a5: not promoted (the held-out total fell); 0 tasks raised, 2 fell, 0 gained; held-out rows right 12 before, 11 after.'), page);
+  const none = visible(neoOf(aliveHtml({ neo: { era: { era: 2, eras: [{ era: 2, pipeline: 'absent' }] } } }, { builtAt: BUILT })));
+  assert.ok(none.includes('The newest pipeline state, era 2: absent . No era has a promote on record yet.'));
+  const old = visible(neoOf(aliveHtml({ neo: { era: { era: 2, eras: [{ era: 2, cells: 1 }] } } }, { builtAt: BUILT })));
+  assert.ok(old.includes('The last promote not yet : no row of neo/ERA.json carries a pipeline or a promote yet'));
+  // data.json carries it as the page draws it, and the ask strip reads promoted and era from there
+  const data = aliveData(readAlive(NEO_ROOT()), { builtAt: BUILT });
+  assert.deepEqual(data.neo.pipeline, { state: 'none', stateEra: 17, era: 16, at: '2026-10-01T10:00:00.000Z', promoted: true, why: 'more held-out rows right', raised: 1, fell: 0, gained: 1, before: 1800, after: 1805 });
+});
+
+test('computeOf: neo/COMPUTE.json read generically: scalar fields known keys first, list and map sizes, the newest plan', () => {
+  assert.equal(computeOf(null), null);
+  assert.equal(computeOf([1]), null);
+  assert.deepEqual(computeOf({}), { fields: [], counts: [], lastPlan: null });
+  const c = computeOf(COMPUTE_DOC);
+  assert.deepEqual(c.fields.map((x) => x.key), [...COMPUTE_ORDER, 'futureKey']);
+  assert.deepEqual(c.fields.map((x) => x.value), [...COMPUTE_ORDER.map((k) => COMPUTE_DOC[k]), 7]);
+  assert.deepEqual(c.counts, [{ key: 'plans', n: 2 }, { key: 'runs', n: 3 }]);
+  assert.deepEqual(c.lastPlan, [{ key: 'at', value: '2026-10-01T12:00:00.000Z' }, { key: 'beatMinutes', value: 25 }, { key: 'shards', value: 3 }, { key: 'relay', value: true },
+    { key: 'mergeMinutes', value: 4 }, { key: 'why', value: 'the month has room' }]);
+  // null is kept (the ledger says not recorded), NaN and a nested object are not scalars, a long string is clipped, at most 16 fields
+  const odd = computeOf({ spentMinutes: null, budgetMinutes: NaN, x: { a: 1 }, s: 'v'.repeat(200), plans: [1, 'x'], ...Object.fromEntries(Array.from({ length: 30 }, (_, i) => ['k' + String(i).padStart(2, '0'), i])) });
+  assert.equal(odd.fields.length, 16);
+  assert.deepEqual(odd.fields[0], { key: 'spentMinutes', value: null });
+  assert.ok(!odd.fields.some((x) => x.key === 'budgetMinutes' || x.key === 'x'));
+  assert.equal(odd.lastPlan, null, 'a plan that is not an object is not read');
+  assert.deepEqual(odd.counts, [{ key: 'plans', n: 2 }, { key: 'x', n: 1 }]);
+  assert.equal(computeOf({ s: 'v'.repeat(200) }).fields[0].value.length, 120);
+  const page = visible(neoOf(aliveHtml({ neo: { compute: { spentMinutes: null, month: '2026-10' } } }, { builtAt: BUILT })));
+  assert.ok(page.includes('month 2026-10 spentMinutes not recorded'), page);
+  const empty = visible(neoOf(aliveHtml({ neo: { compute: {} } }, { builtAt: BUILT })));
+  assert.ok(empty.includes('not yet : neo/COMPUTE.json holds no field the page reads'));
+});
+
+test('singular counts: a count of 1 takes the singular noun everywhere on the NEO part and in the gap sentence', () => {
+  assert.deepEqual([pl(1, 'a', 'b'), pl(0, 'a', 'b'), pl(2, 'a', 'b'), pl(null, 'a', 'b'), pl(1.5, 'a', 'b')], ['a', 'b', 'b', 'b', 'b']);
+  const one = {
+    [NEO_FILES.era]: { era: 1, eras: [{ era: 1, at: '2026-10-01T12:15:17.552Z', body: 'github', ms: 1, workers: 1, cells: 1, mastered: 1, grown: [{ task: 't', promoted: true }] },
+      { era: 0, at: '2026-10-01T14:00:00.000Z', body: 'github' }] },
+    [NEO_FILES.measure]: jsonl([{ era: 1, at: '2026-10-01T12:15:17.552Z', neo: { tasks: 1, colonies: 0, cells: 1, mastered: 0, heldout: { ok: 0, n: 1, score: 0 } }, plateau: 1 }]),
+    [NEO_FILES.absorb]: { cursor: 1, pulled: [{ id: 's' }], bytes: 1, rows: 1, blocked: [{ id: 'x' }] },
+    [NEO_FILES.frontier]: { queue: ['q'], seen: ['s'], repos: ['r'], added: ['a'] },
+    [NEO_FILES.trials]: jsonl([{ era: 1, kind: 'genome', kept: true }]),
+  };
+  const seen = visible(neoOf(aliveHtml(readAlive(stub(one)), { builtAt: BUILT })));
+  for (const s of ['1 hour before this page was built', 'with 1 worker: it grew 1 task and promoted 1 colony; the organism then held 1 cell and 1 mastered task.',
+    '1 era row is stamped after this build', 'The newest 1 row of grown/measure.jsonl', 'the 1 row, newest first', '1 source over 1 pull: 1 byte, 1 row', '1 blocked pull on record',
+    '1 link queued, 1 seen, 1 repository, 1 source added.', '1 trial row; the newest first:',
+    'Not working yet: only 0 of 1 task is mastered; 0 of 1 task has a colony at all; the colonies answer 0 of 1 held-out row right (0); the held-out total has not risen for 1 era.']) assert.ok(seen.includes(s), 'the part says: ' + s);
+  assert.deepEqual(seen.match(/\b1 (workers|tasks|colonies|cells|mastered tasks|eras|era rows|rows|sources|pulls|bytes|blocked pulls|links|repositories|trial rows|hours|held-out rows)\b/g), null, 'no 1 with a plural noun');
+  const two = visible(neoOf(aliveHtml({ neo: { era: { era: 2, eras: [{ era: 2, grown: [{ task: 'a' }, { task: 'b' }] }] } } }, { builtAt: BUILT })));
+  assert.ok(two.includes('it grew 2 tasks and promoted 0 colonies'));
 });

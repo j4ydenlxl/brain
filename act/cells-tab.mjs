@@ -32,7 +32,7 @@
 
 export const BUDGET_MS = 1500;
 export const API = '/api/ask';
-export const OFFLINE_LINE = 'offline: no cell in this tab carries that prompt and there is no network to reach the organism on the server, so it was not sent. Ask again when you are online.';
+export const OFFLINE_LINE = 'offline: nothing this device holds carries that prompt and there is no network to reach the organism in the cloud, so it was not sent. Ask again when you are online.';
 const ID_RE = /^[a-z0-9][a-z0-9-]{2,63}$/;
 const FILE_RE = /^cells\/[A-Za-z0-9][A-Za-z0-9._-]*\.mjs$/;
 const LATE = Symbol('late');

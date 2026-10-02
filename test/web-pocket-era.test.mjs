@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import {
   SLICE_MS, SEARCH_SHARE, BATTERY_FLOOR, STORE_CAP, DB_NAME, DB_STORE, SWITCH_KEY, ROUTE_LINE, NO_CORE, MIN_FIT, MIN_CHECK, MAX_FIT, MAX_CELLS,
   GEN, WHY, CORE_URL, KERNEL_URL, TASKS_URL, sizeOf, loadCore, gateFits, taskRows, taskList, splitRows, fitWindow, idbStore, cleanMeta, zeroMeta,
-  cleanTask, overCap, readStore, countsOf, bodyLine, nextBudget, envWhy, startWorker, deviceAnswer, envOf, startBody, pageStore,
+  cleanTask, overCap, readStore, countsOf, bodyLine, nextBudget, envWhy, startWorker, deviceAnswer, envOf, startBody, pageStore, meteredOf, refuseWhy,
 } from '../web/pocket-era.mjs';
 import * as CORE from '../grow/neo-core.mjs';
 import * as KERNEL from '../grow/neo-kernel.mjs';
@@ -593,7 +593,7 @@ test('idbStore over a planted IndexedDB: get, put, del and all in key order; no 
 // ---------------------------------------------------------------- THE BODY on the page
 
 const until = async (f, ms = 3000) => { const t0 = Date.now(); while (!f()) { assert.ok(Date.now() - t0 < ms, 'timed out waiting'); await new Promise((r) => setTimeout(r, 2)); } };
-function pageRig({ stored = null, worker = 'ok', battery = null, connection = null, hidden = false, storeThrows = false, recs = [] } = {}) {
+function pageRig({ stored = null, worker = 'ok', battery = null, connection = null, hidden = false, storeThrows = false, recs = [], bind = true } = {}) {
   const map = new Map(stored == null ? [] : [[SWITCH_KEY, stored]]);
   const storage = {
     map,
@@ -610,98 +610,197 @@ function pageRig({ stored = null, worker = 'ok', battery = null, connection = nu
   const listen = (o) => { o.addEventListener = (t, f) => { (on[t] ||= []).push(f); }; return o; };
   const document = listen({ visibilityState: hidden ? 'hidden' : 'visible' });
   const nav = {};
-  if (connection) nav.connection = listen({ ...connection });
+  if (connection) nav.connection = listen(connection);
   if (battery) nav.getBattery = async () => listen(battery);
   const line = { textContent: '' };
   const sw = listen({ textContent: '', attrs: {}, setAttribute(k, v) { this.attrs[k] = v; } });
   const store = memStore(recs);
-  const body = startBody({ document, navigator: nav, Worker: worker ? FakeWorker : undefined, storage, url: 'https://pocket.test/organism/web/pocket-era.mjs', lineEl: line, switchEl: sw, openStore: async () => store });
+  const body = startBody({ document, navigator: nav, Worker: worker ? FakeWorker : undefined, storage, url: 'https://pocket.test/organism/web/pocket-era.mjs', lineEl: line, switchEl: sw, openStore: async () => store, bind });
   const fire = (t) => { for (const f of on[t] || []) f(); };
   return { body, made, line, sw, storage, document, nav, fire };
 }
+const tick = () => new Promise((r) => setTimeout(r, 5));
 
-test('startBody: a module worker on the body URL, told the page state at once and on every change; its status line printed', async () => {
-  const p = pageRig({ battery: { level: 0.1, charging: false }, connection: { saveData: true } });
+test('startBody is OFF BY DEFAULT: no switch stored, no worker; the line says the cloud does the work; only "1" is on', async () => {
+  const p = pageRig();
+  await p.body.ready;
+  await until(() => p.line.textContent !== '');
+  assert.equal(p.made.length, 0, 'no worker by itself');
+  assert.equal(p.body.on(), false);
+  assert.equal(p.body.worker(), null);
+  assert.equal(p.line.textContent, bodyLine({ why: WHY.off }));
+  assert.equal(WHY.off, 'off: the cloud does the work, the switch grows cells here too');
+  assert.equal(p.sw.textContent, 'grow on this device too');
+  assert.equal(p.sw.attrs['aria-pressed'], 'false');
+  assert.deepEqual([...p.storage.map.keys()], [], 'the switch is written only when it is used');
+  p.fire('visibilitychange');
+  await tick();
+  assert.equal(p.made.length, 0, 'a page change never starts a worker that is off');
+  const s = pageRig({ stored: '0' });
+  await s.body.ready;
+  await until(() => s.line.textContent !== '');
+  assert.equal(s.line.textContent, bodyLine({ why: WHY.stopped }));
+  for (const v of ['no', 'true', 'on', '']) assert.equal(pageRig({ stored: v }).body.on(), false, JSON.stringify(v));
+  assert.equal(pageRig({ stored: '1' }).body.on(), true);
+});
+
+test('switched on: a module worker on the body URL, told the page state at once and on every change; its status line printed', async () => {
+  const p = pageRig({ stored: '1', battery: { level: 0.5, charging: false }, connection: { saveData: false } });
   await p.body.ready;
   assert.equal(p.made.length, 1);
   assert.equal(p.made[0].url, 'https://pocket.test/organism/web/pocket-era.mjs');
   assert.deepEqual(p.made[0].opts, { type: 'module', name: 'pocket-era' });
-  assert.deepEqual(p.made[0].sent, [{ type: 'env', stopped: false, hidden: false, saveData: true, battery: { level: 0.1, charging: false } }]);
+  assert.deepEqual(p.made[0].sent, [{ type: 'env', stopped: false, hidden: false, saveData: false, metered: false, battery: { level: 0.5, charging: false } }]);
   p.document.visibilityState = 'hidden';
   p.fire('visibilitychange');
   assert.equal(p.made[0].sent.at(-1).hidden, true);
-  p.nav.connection.saveData = false;
   p.fire('change');
-  assert.equal(p.made[0].sent.at(-1).saveData, false);
   p.fire('levelchange');
   p.fire('chargingchange');
   assert.equal(p.made[0].sent.length, 5);
-  p.made[0].onmessage({ data: { type: 'status', status: { line: bodyLine({ cells: 1, tasks: 1, tried: 5, why: WHY.battery }) } } });
-  assert.equal(p.line.textContent, 'this device: 1 cells kept for 1 tasks, 5 tried, paused (battery under 20 percent and not charging)');
+  p.made[0].onmessage({ data: { type: 'status', status: { line: bodyLine({ cells: 1, tasks: 1, tried: 5, why: WHY.hidden }) } } });
+  assert.equal(p.line.textContent, 'this device: 1 cells kept for 1 tasks, 5 tried, paused (page hidden)');
   assert.equal(p.body.line(), p.line.textContent);
-  assert.equal(p.sw.textContent, 'stop the body');
+  assert.equal(p.sw.textContent, 'stop growing on this device');
   assert.equal(p.sw.attrs['aria-pressed'], 'true');
-  assert.deepEqual([...p.storage.map.keys()], [], 'the switch is written only when it is used');
+  assert.deepEqual([...p.storage.map], [[SWITCH_KEY, '1']], 'nothing written but the switch it was given');
   // envOf, alone
-  assert.deepEqual(envOf({ document: { visibilityState: 'hidden' }, navigator: { connection: { saveData: true } }, battery: { level: 0.5, charging: 1 }, stopped: true }), { type: 'env', stopped: true, hidden: true, saveData: true, battery: { level: 0.5, charging: false } });
-  assert.deepEqual(envOf({ document: null, navigator: null }), { type: 'env', stopped: false, hidden: false, saveData: false, battery: null });
+  assert.deepEqual(envOf({ document: { visibilityState: 'hidden' }, navigator: { connection: { saveData: true, type: 'cellular' } }, battery: { level: 0.5, charging: 1 }, stopped: true }), { type: 'env', stopped: true, hidden: true, saveData: true, metered: true, battery: { level: 0.5, charging: false } });
+  assert.deepEqual(envOf({ document: null, navigator: null }), { type: 'env', stopped: false, hidden: false, saveData: false, metered: false, battery: null });
   assert.deepEqual(envOf({ document: {}, navigator: {}, battery: { level: 'x' } }).battery, null);
   // a battery the browser will not give: no reading, the body runs
-  const nb = pageRig();
-  nb.nav.getBattery = undefined;
+  const nb = pageRig({ stored: '1' });
   await nb.body.ready;
   assert.equal(nb.made[0].sent[0].battery, null);
 });
 
-test('THE SWITCH stops the worker and is remembered; the line then comes from the store, paused for the reason', async () => {
+test('THE DEVICE REFUSES: save-data, a metered connection or a low battery not charging never starts the worker, stops a running one, and lets it start again', async () => {
+  assert.equal(refuseWhy(null), null);
+  assert.equal(refuseWhy({}), null);
+  assert.equal(refuseWhy({ connection: { saveData: true } }), WHY.saveData);
+  assert.equal(refuseWhy({ connection: { saveData: true, type: 'cellular' } }), WHY.saveData, 'save-data is named first');
+  assert.equal(refuseWhy({ connection: { type: 'cellular' } }), WHY.metered);
+  assert.equal(refuseWhy({ connection: { metered: true } }), WHY.metered);
+  assert.equal(refuseWhy({ connection: { type: 'wifi', saveData: 'yes' } }), null);
+  assert.equal(refuseWhy({}, { level: 0.1, charging: false }), WHY.battery);
+  assert.equal(refuseWhy({}, { level: 0.1, charging: true }), null);
+  assert.equal(refuseWhy({}, { level: BATTERY_FLOOR, charging: false }), null, 'the floor itself runs');
+  assert.equal(refuseWhy({}, { level: 0.1 }), null, 'a battery that does not say it is not charging');
+  assert.equal(refuseWhy({}, { level: '0.1', charging: false }), null);
+  for (const n of [null, {}, { connection: null }, { connection: 'cellular' }, { connection: { metered: 'yes' } }, { connection: { type: 'wifi' } }]) assert.equal(meteredOf(n), false, JSON.stringify(n));
+  assert.equal(meteredOf({ connection: { type: 'cellular' } }), true);
+  assert.equal(meteredOf({ connection: { metered: true } }), true);
+  for (const [conn, why] of [[{ saveData: true }, WHY.saveData], [{ type: 'cellular' }, WHY.metered], [{ metered: true }, WHY.metered]]) {
+    const p = pageRig({ stored: '1', connection: { ...conn } });
+    await p.body.ready;
+    await until(() => p.line.textContent !== '');
+    assert.equal(p.made.length, 0, JSON.stringify(conn));
+    assert.equal(p.line.textContent, bodyLine({ why }));
+    assert.equal(p.body.refused(), why);
+  }
+  // the link changes: off cellular the worker starts, back on it the worker stops and the line says why
+  const conn = { type: 'cellular' };
+  const m = pageRig({ stored: '1', connection: conn });
+  await m.body.ready;
+  assert.equal(m.made.length, 0);
+  conn.type = 'wifi';
+  m.fire('change');
+  assert.equal(m.made.length, 1, 'started once the device no longer refuses');
+  assert.equal(m.made[0].sent[0].metered, false);
+  conn.type = 'cellular';
+  m.fire('change');
+  assert.equal(m.made[0].ended, true);
+  assert.equal(m.body.worker(), null);
+  await until(() => m.line.textContent === bodyLine({ why: WHY.metered }));
+  // the battery: under the floor and not charging, then charging
+  const bat = { level: 0.1, charging: false };
+  const b = pageRig({ stored: '1', battery: bat });
+  await b.body.ready;
+  await until(() => b.line.textContent !== '');
+  assert.equal(b.made.length, 0);
+  assert.equal(b.line.textContent, bodyLine({ why: WHY.battery }));
+  bat.charging = true;
+  b.fire('chargingchange');
+  assert.equal(b.made.length, 1);
+  bat.charging = false;
+  b.fire('levelchange');
+  assert.equal(b.made[0].ended, true);
+  // the switch turned on while the device refuses: remembered, but no worker
+  const r = pageRig({ connection: { saveData: true } });
+  await r.body.ready;
+  assert.equal(await r.body.toggle(), true);
+  assert.equal(r.storage.map.get(SWITCH_KEY), '1');
+  assert.equal(r.made.length, 0);
+  await until(() => r.line.textContent === bodyLine({ why: WHY.saveData }));
+});
+
+test('THE SWITCH starts the worker and is remembered, and stops it; bind false leaves the click to the page', async () => {
   const recs = [['task:upper', rec('upper', { cells: [rec('x').cells[0], rec('y').cells[0]] })], ['meta', { ...zeroMeta(), tried: 40 }]];
   const p = pageRig({ recs });
   await p.body.ready;
+  assert.equal(await p.body.toggle(), true);
+  assert.equal(p.made.length, 1);
+  assert.equal(p.storage.map.get(SWITCH_KEY), '1');
+  assert.equal(p.sw.textContent, 'stop growing on this device');
+  assert.equal(p.made[0].sent.length, 1);
   assert.equal(await p.body.toggle(), false);
   assert.equal(p.made[0].ended, true);
   assert.equal(p.storage.map.get(SWITCH_KEY), '0');
   assert.equal(p.line.textContent, 'this device: 2 cells kept for 1 tasks, 40 tried, paused (stopped by you)');
-  assert.equal(p.sw.textContent, 'start the body');
+  assert.equal(p.sw.textContent, 'grow on this device too');
   assert.equal(p.sw.attrs['aria-pressed'], 'false');
   assert.equal(p.body.worker(), null);
-  // the next page load: stopped, no worker
+  // the next page load: stopped, no worker, the line from the store
   const q = pageRig({ stored: '0', recs });
   await q.body.ready;
+  await until(() => q.line.textContent !== '');
   assert.equal(q.made.length, 0);
-  assert.equal(q.body.on(), false);
   assert.equal(q.line.textContent, 'this device: 2 cells kept for 1 tasks, 40 tried, paused (stopped by you)');
-  // the switch on the page (a click) starts it again and remembers that
+  // a click on the switch (bound by startBody) starts it again and remembers that
   q.fire('click');
   await until(() => q.made.length === 1);
   assert.equal(q.storage.map.get(SWITCH_KEY), '1');
   assert.equal(q.body.on(), true);
-  // a storage that throws: the switch still works for this page and the body starts on
+  // bind false: the click is the page's, so startBody does not answer it; toggle does
+  const u = pageRig({ bind: false });
+  await u.body.ready;
+  u.fire('click');
+  await tick();
+  assert.deepEqual([u.made.length, u.storage.map.size, u.body.on()], [0, 0, false]);
+  assert.equal(await u.body.toggle(), true);
+  assert.equal(u.made.length, 1);
+  // a storage that throws: off by default, and the switch still works for this page
   const t = pageRig({ storeThrows: true });
   await t.body.ready;
+  assert.equal(t.made.length, 0);
+  assert.equal(await t.body.toggle(), true);
   assert.equal(t.made.length, 1);
   assert.equal(await t.body.toggle(), false);
   assert.equal(t.made[0].ended, true);
-  assert.equal(pageRig({ stored: '1' }).body.on(), true);
-  assert.equal(pageRig({ stored: 'no' }).body.on(), true, 'only "0" is off');
 });
 
-test('no module worker, or one that fails: the line says so and the page goes on', async () => {
-  const none = pageRig({ worker: null, recs: [['task:upper', rec('upper')]] });
+test('no module worker, or one that fails: the line says so and the page goes on; the switch tries again', async () => {
+  const none = pageRig({ stored: '1', worker: null, recs: [['task:upper', rec('upper')]] });
   await none.body.ready;
   await until(() => none.line.textContent !== '');
   assert.equal(none.line.textContent, 'this device: 1 cells kept for 1 tasks, 0 tried, paused (' + WHY.worker + ')');
-  const t = pageRig({ worker: 'throws' });
+  const t = pageRig({ stored: '1', worker: 'throws' });
   await t.body.ready;
   await until(() => t.line.textContent !== '');
   assert.equal(t.line.textContent, bodyLine({ why: WHY.worker }));
-  const f = pageRig();
+  const f = pageRig({ stored: '1' });
   await f.body.ready;
   f.made[0].onerror(new Error('boom'));
   await until(() => f.line.textContent.endsWith('(' + WHY.failed + ')'));
   assert.equal(f.made[0].ended, true);
   assert.equal(f.body.worker(), null);
+  f.fire('visibilitychange');
+  assert.equal(f.made.length, 1, 'a failed worker is not restarted by a page change');
+  assert.equal(await f.body.toggle(), false);
+  assert.equal(await f.body.toggle(), true);
+  assert.equal(f.made.length, 2, 'the switch tries again');
   // a status that is not one is never printed
-  const g = pageRig();
+  const g = pageRig({ stored: '1' });
   await g.body.ready;
   for (const data of [null, 'line', { type: 'status' }, { type: 'status', status: { line: 7 } }, { type: 'other', status: { line: 'x' } }]) g.made[0].onmessage({ data });
   assert.equal(g.line.textContent, '');
