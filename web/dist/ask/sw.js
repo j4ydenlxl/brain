@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "659f392951567370e074a63ef6c90e99711750d7e1cac8c669b373bccfec588e";
+const VERSION = "29001891b65ee2aa4afcbea275220d5bbcf43cdc6053a416f835094ff0385ce1";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -127,7 +127,7 @@ const PRECACHE = [
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"7d5fb173d3c0949663e0670c7d449ace63d78637b8284dbe84c6292b82b3e9c5"}
+  {"url":"/organism/era/tasks.json","sha256":"392045c21f5f4cc8245b67478a3c1fca1fe2ec42621caefb461dc62b956209ac"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -161,6 +161,10 @@ const LAZY = [
   {"url":"/organism/era/tasks/alcohol-of-location-27a2-larger.json","sha256":"5a8cf7f4d638cebd7aef10db68f42e0ebb829d4eb438d81e1d80e19341070b1e"},
   {"url":"/organism/era/tasks/alcohol-of-location-27a2-smaller.json","sha256":"c412e08aa303f52071a1454d7011ff72b1ab85d515fc4394d56a702f2b764c24"},
   {"url":"/organism/era/tasks/alcohol-of-location-27a2-sum.json","sha256":"4475a30e4b8a0cc493c8b2762145133aebd796d8923cd9b454aee962578b60d9"},
+  {"url":"/organism/era/tasks/alpha-2-of-name-913b-rev.json","sha256":"94145baaca09d04647e224f7f489c204b7565ad11c5d1647ea16aacb4cac85f9"},
+  {"url":"/organism/era/tasks/alpha-3-of-name-3572-rev.json","sha256":"52cd61bbb2d8979f5cc683301574d968a7ffee2cd730ec0b754def3e6058c791"},
+  {"url":"/organism/era/tasks/alpha-3-of-name-bf41-rev.json","sha256":"ffcef2a852ba0c2cf6f484cdb42f10270af5e8dff3244621fa30c45aa24ed69e"},
+  {"url":"/organism/era/tasks/alpha-4-of-name-8128-rev.json","sha256":"df65a7a61f9f4ce4c43fab3ac6740046daed1a24f104b2a1e3569bc2110e26b0"},
   {"url":"/organism/era/tasks/alpha2-country.json","sha256":"df048862ee3fd4afcc647ebbc18fd1d8d20b0b10ae04a09f15fef85b390a04b7"},
   {"url":"/organism/era/tasks/annual-increase-of-ye-0ec2.json","sha256":"0b0b6cf541f2bbcbe6a6b51aebd1d666b7e301127e6bb4286716aa90635c552d"},
   {"url":"/organism/era/tasks/annual-increase-of-ye-0ec2-compare.json","sha256":"c0c2cf2ceaab4c685328b0d06d38ef5c947f4086409dfcadd58de58409c5bc09"},
@@ -367,8 +371,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/firefox-of-date-f7f2.json","sha256":"1dfa733d4dc4319ab0a550331f18dd3caa5cb8e998c3c7ce9c0c9477e2c04ac3"},
   {"url":"/organism/era/tasks/firefox-of-date-f7f2-compare.json","sha256":"29079add31728e694e4217e23de0f42d6f0a5ccc01cfb246792faa2d03ecb061"},
   {"url":"/organism/era/tasks/firefox-of-date-f7f2-larger.json","sha256":"ea430da68f576b5f558ca522205162ff38075065f20c262b0cd0cda67dc055ea"},
-  {"url":"/organism/era/tasks/firefox-of-date-f7f2-smaller.json","sha256":"fe502f6819a79f03a2242da820c825f5b49caef7e0a4c96774489bac667c15e5"},
-  {"url":"/organism/era/tasks/firefox-of-date-f7f2-sum.json","sha256":"c1cd24e0ec7d683b16f26b639c7251dd645d9b75b24b03a4a9b74485bb8480c2"},
   {"url":"/organism/era/tasks/fiscal-sponsorship-model-74bf-rev.json","sha256":"2f19b4adf89988b768be087e8a231c1a532979f500d720d1942b4fe737214c58"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
