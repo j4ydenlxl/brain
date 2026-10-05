@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "29001891b65ee2aa4afcbea275220d5bbcf43cdc6053a416f835094ff0385ce1";
+const VERSION = "fb455df489b253d9a1c658f500132ddd2e33c65b19bceed1664936fdad84f849";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -127,7 +127,7 @@ const PRECACHE = [
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"392045c21f5f4cc8245b67478a3c1fca1fe2ec42621caefb461dc62b956209ac"}
+  {"url":"/organism/era/tasks.json","sha256":"9a7aa5ded2176c1bf49d0c9a611413bd094c23725049d47b83a5f2a064cef7ba"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -143,6 +143,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/2015-rank-of-breed-366c.json","sha256":"8bb8c0723eccaad9ff5034f648a56e0ad4c98bdf25108bd9c061ca6b86db1410"},
   {"url":"/organism/era/tasks/abbreviation-of-country-9dfe-rev.json","sha256":"997dc3a76bf6e6bdf32465e16e6018f516db1f8c64626d94b56ae3a98ec628fb"},
   {"url":"/organism/era/tasks/adult-of-title-bf78.json","sha256":"159f4910532790375e500607a6ee59f1edc1ee0082fa1ee56577e84aef123167"},
+  {"url":"/organism/era/tasks/agency-name-of-program-na-df6c.json","sha256":"9595a16d2ef438e6e9c7f1cf2cc9fb1103fb39a7fcb3e50e303f4fe936b70b89"},
   {"url":"/organism/era/tasks/air-date-of-episode-title-d3a3.json","sha256":"2c2288680b6c8522b7f436983577e3faf0fa82b0c08f8d5801ea4b2cdcd9a485"},
   {"url":"/organism/era/tasks/airline-country.json","sha256":"cf3524a09f6e36a460d31f56fb18ca2c1245f123a65ded2ea00ad5e3ef26c668"},
   {"url":"/organism/era/tasks/airline-country-rev.json","sha256":"b27f00a798a62a2636c22ccb8d822d1d64de0182f6a41ec54f897a96adb5c22c"},
@@ -213,6 +214,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/category-of-password-193f.json","sha256":"f0d0d91bf7b4641c0a9bfaa0373d798f4284956b400063215d7f70e8d703de4c"},
   {"url":"/organism/era/tasks/category-of-person-d7fa.json","sha256":"2b3bb654b9b9ce3e9f57ffd7b692703fcdaedaa1eb285ec1df99daaaaa0c0031"},
   {"url":"/organism/era/tasks/category-of-title-1920.json","sha256":"f7391c3d124352f89e2925b21a75f9226c15909c9b12ab5a25b61ea406d1096c"},
+  {"url":"/organism/era/tasks/cgac-code-of-bureau-name-efdf.json","sha256":"517e827ca359d85c5fe88fdb3d136fb62476fb92e9e78ac2f1d31145c0a8b7ba"},
   {"url":"/organism/era/tasks/characters-speaking-of-ch-03fb.json","sha256":"2fe31933a0320db00273cb0c478d33c1b744eb70bf53ab96349df6e9c2bf2fca"},
   {"url":"/organism/era/tasks/china-of-date-6872.json","sha256":"793637ac25696a6fdd32f6d24cc12209e246e226046b8717ddcee7ac1952f184"},
   {"url":"/organism/era/tasks/china-of-date-6872-compare.json","sha256":"9c88cbbf252608aa971c1cedfda6e3c8d2ecfd12555af9220241f3a8449f5bf1"},
@@ -314,6 +316,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/datasets-language-codes-language-c-627a99.json","sha256":"5597b0adb206bf4f5fd776b22f3236772266d90a045bb7e44a5ba760cdcf6497"},
   {"url":"/organism/era/tasks/datasets-language-codes-language-t-52b85a.json","sha256":"4ae9a287d27fc8c8b16e9ce94a31fd4c53dc15f2987d8c33c3c965311103eed0"},
   {"url":"/organism/era/tasks/date-of-publication-b331.json","sha256":"abee29274ebd29bdf770f452b8cd33cf70133eb0c7f6816187c172a5f38670be"},
+  {"url":"/organism/era/tasks/date-of-speakers-8305.json","sha256":"44df6351bf3e19d62a8127470fdc9aa46f7f7972041b0495fb36a8df65fcbe2c"},
   {"url":"/organism/era/tasks/date-of-title-200e.json","sha256":"14f34fe8616fc6935957ab68b6fc822cdcd980f965764bd4ae3303bc1870c6e4"},
   {"url":"/organism/era/tasks/date-of-title-200e-rev.json","sha256":"768b8208982e47512c275522aa34ac448d4d029b2cd3fdb877fe085b05564a58"},
   {"url":"/organism/era/tasks/date-of-wreck-no-94ff-rev.json","sha256":"bb2add69b40b0f9a73f9ce976fcc10819c920270e4e26b7087a08a8dccd4bff7"},
@@ -361,16 +364,11 @@ const LAZY = [
   {"url":"/organism/era/tasks/exchange-of-act-symbol-3f79.json","sha256":"acf852f453192a381952e4c3f24e4ed1894fa416031ae2224fc5840628ef87f4"},
   {"url":"/organism/era/tasks/extension-language.json","sha256":"ad81625d4eb87c71732905812bb387d241d6e0daac558c6081c24a34231a7d1a"},
   {"url":"/organism/era/tasks/extension-media-type.json","sha256":"b4db780efbd6ed284961237092ef3aaf34c7431ca18ea1ad255f8a6a440ab997"},
+  {"url":"/organism/era/tasks/fatalities-count-of-d-f626-compare.json","sha256":"37d8c100fed6a52d55e13161e6839281ac7fb9777e429739171f8471f30f09d7"},
+  {"url":"/organism/era/tasks/fatalities-count-of-d-f626-larger.json","sha256":"f9b945833ac4313cddd56df6035a470a2e87743cb96f1082413966c09b83ec8f"},
+  {"url":"/organism/era/tasks/fatalities-count-of-d-f626-smaller.json","sha256":"76fdf8126cd1e8ee41aa030a1203111ef7e966f2d64718290423e70183c4fc49"},
+  {"url":"/organism/era/tasks/fatalities-count-of-d-f626-sum.json","sha256":"bf1b3eca85fd75f4b9f1eb86834659f4ba88e35376217ba6998e261b212f373b"},
   {"url":"/organism/era/tasks/file-of-lang-edee.json","sha256":"a3277d714a9a7e4c6950d0d8b2ccd595478c32de3f6d86b52dc3bd9345d14c88"},
-  {"url":"/organism/era/tasks/file-of-lang-edee-rev.json","sha256":"a16830dc4ca6d9d7a18da5a9a9a596a11d9ea7a89a818d75a3284193e454a974"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db.json","sha256":"1c25acc7346151f4aa36844b20533b8e91a9dc08e451a8460143939984870f85"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db-compare.json","sha256":"605799204300f508e82cb9355bc5d3b7c056b12c2f9cbbed767d36be9ac76d4f"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db-larger.json","sha256":"5cd95666262c09b0d4c261b8e502f033dd37746268dfb86de06fc4ba5cd2e5f0"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db-smaller.json","sha256":"e296fe1b046ff99ba5277bf03be3df0e44e610439fbbedf22caffe24a3a0cc0d"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db-sum.json","sha256":"c92029ff9a38cfe2df8e71c026e3567a63cb96796895bce62c103dff41403fa5"},
-  {"url":"/organism/era/tasks/firefox-of-date-f7f2.json","sha256":"1dfa733d4dc4319ab0a550331f18dd3caa5cb8e998c3c7ce9c0c9477e2c04ac3"},
-  {"url":"/organism/era/tasks/firefox-of-date-f7f2-compare.json","sha256":"29079add31728e694e4217e23de0f42d6f0a5ccc01cfb246792faa2d03ecb061"},
-  {"url":"/organism/era/tasks/firefox-of-date-f7f2-larger.json","sha256":"ea430da68f576b5f558ca522205162ff38075065f20c262b0cd0cda67dc055ea"},
   {"url":"/organism/era/tasks/fiscal-sponsorship-model-74bf-rev.json","sha256":"2f19b4adf89988b768be087e8a231c1a532979f500d720d1942b4fe737214c58"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
