@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "5717ed26b593d4af7f1d60bd88f2b803d7a775fbad04b9d75336691fe59a8f42";
+const VERSION = "1125fb7a5eada54e55121bb3e0b4bd6780c23468bc88c41f788290484ce17012";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"65cdc10d622cb93a6bf379551ecdc919ef67992e971537545ccbac832da3dd73"},
+  {"url":"/organism/cells.json","sha256":"7b7003fa80c8006186d6fa1aa69d6d6cab6d62969d4f14746f84e1c648f055ee"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -125,10 +125,11 @@ const PRECACHE = [
   {"url":"/organism/cells/tld-types-top-level-domain-to-spon-a4347b-neo-g8.mjs","sha256":"b12e7dc458d99946514e3cdfec65f5e3b734bae277545041871b2a659c1f8f22"},
   {"url":"/organism/cells/country-of-bean-origin-of-6337-neo-g8.mjs","sha256":"6c55c163b2e92446a9169ab61586170a8175a2227a2d73e8c3f4b0d2dbcea573"},
   {"url":"/organism/cells/description-of-person-44ad-neo-g8.mjs","sha256":"bccabd4f3007a750c0f92cc510cea968c3d9157a61204a8527660410ddd2ca0d"},
+  {"url":"/organism/cells/alpha-3-of-name-bf41-rev-neo-g9.mjs","sha256":"c19ac7c52e5ea4909fa9c2f43ab08a9edc0329c50e565c42815838cffc489814"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"38efeca759c140c7711d992bf2dcb7318034120d4cd43c5f0bce33ebcbc479c7"}
+  {"url":"/organism/era/tasks.json","sha256":"145f1e01389fbf19b35c5ce77d980da4c7476ffea8c5a49e9e2349cb54eb4c28"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -168,7 +169,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/alias-of-author-dc05-rev.json","sha256":"74501db7562522b2acb581ee4039a823b135c3923af187f27725f2b41f79c626"},
   {"url":"/organism/era/tasks/alpha-2-of-name-913b-rev.json","sha256":"94145baaca09d04647e224f7f489c204b7565ad11c5d1647ea16aacb4cac85f9"},
   {"url":"/organism/era/tasks/alpha-3-of-name-3572-rev.json","sha256":"52cd61bbb2d8979f5cc683301574d968a7ffee2cd730ec0b754def3e6058c791"},
-  {"url":"/organism/era/tasks/alpha-3-of-name-bf41-rev.json","sha256":"ffcef2a852ba0c2cf6f484cdb42f10270af5e8dff3244621fa30c45aa24ed69e"},
   {"url":"/organism/era/tasks/alpha-4-of-name-8128-rev.json","sha256":"df65a7a61f9f4ce4c43fab3ac6740046daed1a24f104b2a1e3569bc2110e26b0"},
   {"url":"/organism/era/tasks/alpha2-country.json","sha256":"df048862ee3fd4afcc647ebbc18fd1d8d20b0b10ae04a09f15fef85b390a04b7"},
   {"url":"/organism/era/tasks/annual-increase-of-ye-0ec2.json","sha256":"0b0b6cf541f2bbcbe6a6b51aebd1d666b7e301127e6bb4286716aa90635c552d"},
@@ -371,7 +371,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/episode-number-of-episode-7537.json","sha256":"8c3a1f6eb2bc6b32665f738b4a96ae552f11fa26f9a0335a86796bb5420547b6"},
   {"url":"/organism/era/tasks/episode-of-airdate-0390.json","sha256":"b97ad00ac28a1dc721e1e2204e8cc5d254cbd9a7963df44f95a1c4d5aae72341"},
   {"url":"/organism/era/tasks/episode-of-airdate-0390-rev.json","sha256":"21bd4f8ae1bf78d3b7a7688a79ff9f9f45cc2367a97eb004ed2f6480c124101d"},
-  {"url":"/organism/era/tasks/fr-oil-prices-brent-year-31e1cd-da-c488a8.json","sha256":"51f22a97aecc3151050bd0bdb429f62fedf3947a7c3dbb89809b1931c6001981"}
+  {"url":"/organism/era/tasks/event-year-trend-of-name-360f-rev.json","sha256":"0f6ee3a0666a944f0f2b0764b52e0d48e58a2b0bb0d95653e7455e7e27febfb4"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
