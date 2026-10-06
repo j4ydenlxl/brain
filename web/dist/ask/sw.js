@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "33747ab07f346af60fb1ba6290ede22c1101ccde7a2d184782ee0b4f199bc02e";
+const VERSION = "8ac2c5ccd1a50ba53f08a286fc7af1c772c3485b63eb2bd2dc68f7789afad842";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"fa2fc818b1667782f59b97d368a4ab4ece5be5208c1da5cfecafbc22faaa66b5"},
+  {"url":"/organism/cells.json","sha256":"927a5728ad713b09f68a0f5df93feeabc7e592d41a0a234e5e7cabffeadf837f"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -131,10 +131,11 @@ const PRECACHE = [
   {"url":"/organism/cells/fatalities-count-of-d-f626-sum-neo-g9.mjs","sha256":"78af4d626d332ede99b4448a9990412c98acb49c3051e8f035e702678ef4ba2e"},
   {"url":"/organism/cells/fatalities-count-of-d-f626-smaller-neo-g9.mjs","sha256":"32f20cbd5d3b88d4a0ff0fdf1de55eeefc60a127a8166f82b0e9b27424a6bee4"},
   {"url":"/organism/cells/rotten-tomatoes-of-fi-bb83-sum-neo-g9.mjs","sha256":"f5958f9d6103e9e0e39dcb0c06948d6dc95e72d4f7136cc1b54f760ff9fad278"},
+  {"url":"/organism/cells/fr-sea-level-rise-csiro-alt-seas-i-1345a3-neo-g9.mjs","sha256":"8cd15f411eb3ddcf3d802c188441a4bcbd4f1df695f59cd94e242e6e34b1f702"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"0f22ca1f0539a9a9abdadd277d095944a7d6449ba5dcd7ef1e681b304b8d6c0c"}
+  {"url":"/organism/era/tasks.json","sha256":"51854a8721b4c0db81a4d44ae224798570c13b54a8f30fc597c68a0530d4893b"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -153,6 +154,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/adult-of-title-bf78.json","sha256":"159f4910532790375e500607a6ee59f1edc1ee0082fa1ee56577e84aef123167"},
   {"url":"/organism/era/tasks/agency-name-of-program-na-df6c.json","sha256":"9595a16d2ef438e6e9c7f1cf2cc9fb1103fb39a7fcb3e50e303f4fe936b70b89"},
   {"url":"/organism/era/tasks/air-date-of-episode-title-d3a3.json","sha256":"2c2288680b6c8522b7f436983577e3faf0fa82b0c08f8d5801ea4b2cdcd9a485"},
+  {"url":"/organism/era/tasks/air-date-of-title-90e0.json","sha256":"884c6067a29e26ec2c49cc3dec1c227372d55bd9a0bc27dfa678c115abcc2175"},
   {"url":"/organism/era/tasks/airline-country.json","sha256":"cf3524a09f6e36a460d31f56fb18ca2c1245f123a65ded2ea00ad5e3ef26c668"},
   {"url":"/organism/era/tasks/airline-country-rev.json","sha256":"b27f00a798a62a2636c22ccb8d822d1d64de0182f6a41ec54f897a96adb5c22c"},
   {"url":"/organism/era/tasks/airline-icao-name.json","sha256":"9120e71ba8f79c9b99a2384fe8cc89b8a03911e550c334f394694a42d4ebd0c6"},
@@ -375,8 +377,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/ep-num-of-air-date-95b5-compare.json","sha256":"c030576c315a9700241a2fd88cfb6bd9c58a32d4b9e296311fd1b36dd0c41221"},
   {"url":"/organism/era/tasks/ep-num-of-air-date-95b5-larger.json","sha256":"6dc35ebb3e67a87e60fcb99a181d2ca4cba695dba905fcc8e18267c3f7ee3443"},
   {"url":"/organism/era/tasks/ep-num-of-air-date-95b5-smaller.json","sha256":"58c9ce7a75581c261513e1f932018a3f2e06d4f31e6bee86e4cb85b57e1bfa39"},
-  {"url":"/organism/era/tasks/ep-num-of-air-date-95b5-sum.json","sha256":"38ff839d93569595eeffc32a16845a729f40668d26df9813e090f3d3faa78035"},
-  {"url":"/organism/era/tasks/exchange-of-act-symbol-3f79.json","sha256":"acf852f453192a381952e4c3f24e4ed1894fa416031ae2224fc5840628ef87f4"}
+  {"url":"/organism/era/tasks/fr-oil-prices-brent-year-31e1cd-da-c488a8.json","sha256":"51f22a97aecc3151050bd0bdb429f62fedf3947a7c3dbb89809b1931c6001981"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
