@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "6e0799f945febd894265dabebf0fa454c479d23a862fed774f762af352f0b8bd";
+const VERSION = "76e5715da62fda66401d7faacedb7f3fd009f27ea700c2e6da4a5c515192649b";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"13f31d09ccd83b0049d16a807e5f9b7c8936b5ff3f504d9e4a2808032a296922"},
+  {"url":"/organism/cells.json","sha256":"7463b3863bbad4b470bcba5ad3bfbcb75d5cf8bc74572efc51715a6d125b7f17"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -134,10 +134,11 @@ const PRECACHE = [
   {"url":"/organism/cells/fr-sea-level-rise-csiro-alt-seas-i-1345a3-neo-g9.mjs","sha256":"8cd15f411eb3ddcf3d802c188441a4bcbd4f1df695f59cd94e242e6e34b1f702"},
   {"url":"/organism/cells/fr-sea-level-rise-csiro-alt-seas-i-d42988-neo-g10.mjs","sha256":"a3e8142fdf1ebc76daa99d0549406ba1b52e6f5fd655308643d317e4dc4daf5b"},
   {"url":"/organism/cells/fr-house-prices-us-cities-month-sa-9d84e6-neo-g10.mjs","sha256":"b90768268efc654fd365701d0b973f0b7e52d7d749018bc3b5f153d75f3c3f93"},
+  {"url":"/organism/cells/fr-house-prices-us-national-month-2088bf-neo-g10.mjs","sha256":"055241bc7046aeea023019dca641b3805fb4c6e04ce59c086ce9eb045d2500a6"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"70a77c2ee5c2d604efcb47284d68622d10f1d2d3c49c5b0a0dfe91f83d03aa43"}
+  {"url":"/organism/era/tasks.json","sha256":"67261b96e9b22f99416eee6dde212d130524909b8dbee6136188f6342aee2978"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -239,6 +240,8 @@ const LAZY = [
   {"url":"/organism/era/tasks/china-of-date-6872.json","sha256":"793637ac25696a6fdd32f6d24cc12209e246e226046b8717ddcee7ac1952f184"},
   {"url":"/organism/era/tasks/china-of-date-6872-compare.json","sha256":"9c88cbbf252608aa971c1cedfda6e3c8d2ecfd12555af9220241f3a8449f5bf1"},
   {"url":"/organism/era/tasks/china-of-date-6872-larger.json","sha256":"cfe06fb4255a5ea040f52f31b48588a36ff44baaae2663f353cb7ab2bd7b98d0"},
+  {"url":"/organism/era/tasks/circuit-ref-of-name-a9c0.json","sha256":"9090430a81045bd88b923d39214a502bfb1a723e3a1fa5335e586d9776ceb311"},
+  {"url":"/organism/era/tasks/circuit-ref-of-name-a9c0-rev.json","sha256":"a75d278d59fd0a4f51e69d8d3907e2ab9b858a5091d141f2172e7f0214204e8c"},
   {"url":"/organism/era/tasks/city-of-airport-ed91.json","sha256":"48606037b598cdb8b51fefe9b5d528852b9447a7a7bb670c6b6baad16d326108"},
   {"url":"/organism/era/tasks/city-of-airport-ed91-rev.json","sha256":"0e82d1b71f8893525124c8f13c8e9604e855553e826c6af9bc4318f7143e6f42"},
   {"url":"/organism/era/tasks/city-of-name-b6cd-rev.json","sha256":"340178b0255a6b02a2d6691ea6b1ae44bd6c383199b5702a7150e3abd6af2a3b"},
@@ -308,6 +311,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/country-name-of-country-c-4749-rev.json","sha256":"64621dbae146ab4838c4156c3a6ee8e32ae3e7b8d58dd19674774973c44b63cf"},
   {"url":"/organism/era/tasks/country-numeric-code.json","sha256":"c3a3dd30129adc5c6648b4a2b7b7a0e3bb7af07c932c877c4707e7667e64f76f"},
   {"url":"/organism/era/tasks/country-of-cheese-2f13.json","sha256":"91b50ff5988ff310ab542970fa28771a58291f38a2f10431cd739136b3c42745"},
+  {"url":"/organism/era/tasks/country-of-name-a56d.json","sha256":"952ddb9300d9aaae93309d57574e395ef10690eda974d4e0099dce557a792ac8"},
   {"url":"/organism/era/tasks/country-of-name-of-exposi-fedc.json","sha256":"dae4d85676171a57aa3eaf4926223ee3eb4dfb89d9c03b26c3332a171a6d5904"},
   {"url":"/organism/era/tasks/country-of-volcano-name-d399.json","sha256":"2fb35f2c93d1d71c2cc31e2d39ef6d20fe36d1e19b1d366037a31f53941183f7"},
   {"url":"/organism/era/tasks/country-population.json","sha256":"c62ed6ec34c7864cd9fcf6e190ff8338396ebd95ea12bb40af052b969376dd0c"},
@@ -377,9 +381,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/element-number.json","sha256":"27179956e6315383bd6db9ab4373f1a142b3e7e393da4ea44ca5f04e8f77f061"},
   {"url":"/organism/era/tasks/element-symbol.json","sha256":"0f2388272e7b55693d8504ab40f689ad35ba591d24b174a7b51db343657b50d3"},
   {"url":"/organism/era/tasks/emoji-category.json","sha256":"a2384dba3fedd5d5d57f8730105f82c5eb6a74ceaa78e4683405fc86f8048760"},
-  {"url":"/organism/era/tasks/emoji-shortcode-name.json","sha256":"c4592115504662fb2703aa7adc1ec38ad825449ade3390fa19de0919844a6dda"},
-  {"url":"/organism/era/tasks/english-of-alpha3-b-75d3.json","sha256":"0a6bba453b12df4836a9b127753b0febfdc27403319d1d9ec75962400fc5a113"},
-  {"url":"/organism/era/tasks/exchange-of-act-symbol-3f79.json","sha256":"acf852f453192a381952e4c3f24e4ed1894fa416031ae2224fc5840628ef87f4"}
+  {"url":"/organism/era/tasks/english-of-alpha3-b-75d3-rev.json","sha256":"1293be21017a9d648e5f2bfbbc34f72133c8803f4540fefc53e6dc217d80cda3"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
