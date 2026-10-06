@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "8ac2c5ccd1a50ba53f08a286fc7af1c772c3485b63eb2bd2dc68f7789afad842";
+const VERSION = "40c74ad0fbed5e4dfe1021da17417e4efc809f05474a08f863602d9379378a65";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"927a5728ad713b09f68a0f5df93feeabc7e592d41a0a234e5e7cabffeadf837f"},
+  {"url":"/organism/cells.json","sha256":"d43e248a7c9dd36eaaec375deb9009ceb9eaea4b36e5314bfbe754f0d0218010"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -132,10 +132,11 @@ const PRECACHE = [
   {"url":"/organism/cells/fatalities-count-of-d-f626-smaller-neo-g9.mjs","sha256":"32f20cbd5d3b88d4a0ff0fdf1de55eeefc60a127a8166f82b0e9b27424a6bee4"},
   {"url":"/organism/cells/rotten-tomatoes-of-fi-bb83-sum-neo-g9.mjs","sha256":"f5958f9d6103e9e0e39dcb0c06948d6dc95e72d4f7136cc1b54f760ff9fad278"},
   {"url":"/organism/cells/fr-sea-level-rise-csiro-alt-seas-i-1345a3-neo-g9.mjs","sha256":"8cd15f411eb3ddcf3d802c188441a4bcbd4f1df695f59cd94e242e6e34b1f702"},
+  {"url":"/organism/cells/fr-sea-level-rise-csiro-alt-seas-i-d42988-neo-g10.mjs","sha256":"a3e8142fdf1ebc76daa99d0549406ba1b52e6f5fd655308643d317e4dc4daf5b"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"51854a8721b4c0db81a4d44ae224798570c13b54a8f30fc597c68a0530d4893b"}
+  {"url":"/organism/era/tasks.json","sha256":"b2135a9420cf92389af3fd75205f87d1cfdd9b62fc5c7b488e905ed22b0fc355"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
