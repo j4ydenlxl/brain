@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "29980d870eb3ba79062ec6687346cc99ff2712b6f476c9cacc80f963aee19d84";
+const VERSION = "b7a0786a765e2f2fc761d6f33103defaf7ba570e9fbdbf6f829690a8ec05ad75";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"c18f41dbb774aa3f96dae54fbe720c504c6b17a03dcd6a82e5476439928bfbd7"},
+  {"url":"/organism/cells.json","sha256":"bd75717151fa45ff8cf7bc8c426dd5e9a759626cebc02d5e885d1413c9161a81"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -142,10 +142,12 @@ const PRECACHE = [
   {"url":"/organism/cells/fr-nyse-other-listings-other-liste-8aa778-neo-g10.mjs","sha256":"062c8f022dbb1888bb7d00b60d3bb63e218e17c8308704ccdab4febf4f2c5751"},
   {"url":"/organism/cells/final-four-appearance-a3c0-compare-neo-g10.mjs","sha256":"8e5099104f786c17e5a24f65e9e8d25d5e42eceecbe36d9f72f450b616c007f2"},
   {"url":"/organism/cells/final-four-appearance-a3c0-larger-neo-g10.mjs","sha256":"38936578290cb4aa9cc4919851d1f291477e2ab9857167f1ab16c9e22b23f1dc"},
+  {"url":"/organism/cells/opened-of-station-nam-f32b-sum-neo-g10.mjs","sha256":"6ea9cb23dd3aab9c73ee66b679ef3383b86a024dd2fb587650d6315cb650efd3"},
+  {"url":"/organism/cells/titles-won-of-team-818a-larger-neo-g10.mjs","sha256":"9c941b0ccf38ce7239b42bff0e58e2ce642aed320d12930a46a4b330a4c84222"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"830074568e8dc47d5637e66b31f57b7fba513b330368c9f9c5d401bf5d327801"}
+  {"url":"/organism/era/tasks.json","sha256":"68ab58babca737b6404e014445fff8a606da99f7079de0f4f460d748743bfe3c"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
