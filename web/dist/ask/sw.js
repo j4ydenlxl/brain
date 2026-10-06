@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "13e8511b26fc3df1f771778dccc68720ca41ade6b9a44c4c10fd89678bc8f76c";
+const VERSION = "54d0695da1c78ddae5cdb2930a6c6abf6d7e44e3e5ee458c74ce940a0b429366";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -140,7 +140,7 @@ const PRECACHE = [
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"8b4bf75a19bc58edeaaedb3097802dea4b7160ab634e1f8e7b4e9eddf3596230"}
+  {"url":"/organism/era/tasks.json","sha256":"7effce99b8d718ef8d0fc9d3f30f6e8846f1e71b0e8dce1f94badfec3a6f2100"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
