@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "1e83985a0641065c6d302503e58b8ecdfe73727401eea073f656576d0f88d977";
+const VERSION = "a9df7f0cb7550dd6e54383679236452b148bac57f868816922768c28935b799b";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"38396b0ed7451912831d115eeb2ff086911e46835694d60d347426f932a708b5"},
+  {"url":"/organism/cells.json","sha256":"b9fee405ccecd8661fb8f03d32a8228b069b3e99413cab798dee19cce3e2e72d"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -139,10 +139,11 @@ const PRECACHE = [
   {"url":"/organism/cells/air-date-of-episode-name-7705-neo-g10.mjs","sha256":"a64b2d8925c1e252c4edd64eaa8ffd6d396cbc6a0e97647bbf639416a50877b5"},
   {"url":"/organism/cells/fr-co2-ppm-co2-gr-gl-5999be-annual-103b08-neo-g10.mjs","sha256":"719751618d0a38d4e7278886ece2bd1498ca744bf57f2314ddaea39a21644fc2"},
   {"url":"/organism/cells/fr-covid-19-worldwide-aggregate-60-d849bd-neo-g10.mjs","sha256":"5e5d0fa0a2fdbdc8df5a700cd9f923b7b79142c9f47133ef7e0c554f7d3502a8"},
+  {"url":"/organism/cells/fr-nyse-other-listings-other-liste-8aa778-neo-g10.mjs","sha256":"062c8f022dbb1888bb7d00b60d3bb63e218e17c8308704ccdab4febf4f2c5751"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"1a4f8c33e4ed3712c7f17ea3f29cc0b009522e4d7f964c821104440a450f3197"}
+  {"url":"/organism/era/tasks.json","sha256":"63905b4fef01d0b853883d7a69f022e9cc7b305574db8f6edf01e95db0d63858"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
