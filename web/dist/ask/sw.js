@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "356214701e73af5805375b2d5bfb628631dfdad66bf9d566aeecb794f0665a87";
+const VERSION = "11653f654a4e581a0520163cc6cc127ef81a389dce117a180096aba7d9f97bcc";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"8a252363cc32a09d9ff856dc72e969e978aa12020fb6ea8a2b9bd6b2b5a4838c"},
+  {"url":"/organism/cells.json","sha256":"c955170a711ece13b4107dc1bb78c20a480c3b04b37c7b03e5883a78cd1a1cf8"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -128,10 +128,12 @@ const PRECACHE = [
   {"url":"/organism/cells/alpha-3-of-name-bf41-rev-neo-g9.mjs","sha256":"c19ac7c52e5ea4909fa9c2f43ab08a9edc0329c50e565c42815838cffc489814"},
   {"url":"/organism/cells/official-name-of-name-6a0c-neo-g9.mjs","sha256":"065fb261a3b7ecc33caaf4a0d58423143db40b037a6a0c833584d0a2599e7aa7"},
   {"url":"/organism/cells/fr-oil-prices-wti-daily-2229a9-pri-82501b-neo-g9.mjs","sha256":"afadf3ac8fc1ca97109421801d290ba82a569ad375f3ca2c52d747b4f3962cc2"},
+  {"url":"/organism/cells/fatalities-count-of-d-f626-sum-neo-g9.mjs","sha256":"78af4d626d332ede99b4448a9990412c98acb49c3051e8f035e702678ef4ba2e"},
+  {"url":"/organism/cells/fatalities-count-of-d-f626-smaller-neo-g9.mjs","sha256":"32f20cbd5d3b88d4a0ff0fdf1de55eeefc60a127a8166f82b0e9b27424a6bee4"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"186c251297554aed0672b688c802b17847ea84cefda67d6f25877d16560ba93e"}
+  {"url":"/organism/era/tasks.json","sha256":"621e26a1b0f58760db6cbd1cd6289a4368fe2e0bd3073b944efe0bbe3a5b2823"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -248,6 +250,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/coastline-of-country-2328-sum.json","sha256":"4d415172e92e2555e12059797c19f65b2577bd1fbed41f3aa4b160c76a667edb"},
   {"url":"/organism/era/tasks/coat-length-of-breed-42b1.json","sha256":"bd223c098d780f2216bd638bea93f74e55adc426521ef9b005ac9b5979dc0cdd"},
   {"url":"/organism/era/tasks/coat-type-of-breed-0e95.json","sha256":"ed56aee72c7c3da3ba4fe66aaf84457829f9c9c58cddee5fe8ac59bb7ee8b776"},
+  {"url":"/organism/era/tasks/code-of-country-d8f7.json","sha256":"2a55dacadafdc1129a235cbaf964e9d6948e23389edbd5d0670fbe3eb3396140"},
   {"url":"/organism/era/tasks/code-of-country-d8f7-rev.json","sha256":"fff26556be6d0a46aa72f7c19ba84fd38036f7a0b85b82a9b14fe2f6c15f740c"},
   {"url":"/organism/era/tasks/code-of-description-en-3e06.json","sha256":"927408e2fd164b0495683072de114cb1944f34e46af32cffd7ff846f97ce2290"},
   {"url":"/organism/era/tasks/code-of-description-en-3e06-rev.json","sha256":"4098c1af37721ea4d77a262ce3f81bce528f9df40b058034ee2808953645b15e"},
@@ -372,7 +375,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/ep-num-of-air-date-95b5-larger.json","sha256":"6dc35ebb3e67a87e60fcb99a181d2ca4cba695dba905fcc8e18267c3f7ee3443"},
   {"url":"/organism/era/tasks/ep-num-of-air-date-95b5-smaller.json","sha256":"58c9ce7a75581c261513e1f932018a3f2e06d4f31e6bee86e4cb85b57e1bfa39"},
   {"url":"/organism/era/tasks/ep-num-of-air-date-95b5-sum.json","sha256":"38ff839d93569595eeffc32a16845a729f40668d26df9813e090f3d3faa78035"},
-  {"url":"/organism/era/tasks/ep-of-track-name-5aaf.json","sha256":"9b797143b8716b3039921fe47a94f03d35c80fbb74c2f0abc204c20e07fa75db"}
+  {"url":"/organism/era/tasks/exchange-of-act-symbol-3f79.json","sha256":"acf852f453192a381952e4c3f24e4ed1894fa416031ae2224fc5840628ef87f4"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
