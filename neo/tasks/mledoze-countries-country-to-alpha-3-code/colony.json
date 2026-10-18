@@ -2,29 +2,28 @@
   "task": "mledoze-countries-country-to-alpha-3-code",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T10:00:39.677Z",
+  "at": "2026-10-18T13:15:35.260Z",
   "stats": {
-    "generated": 200332,
-    "distinct": 88319,
-    "kept": 1702,
-    "know": 1210,
+    "generated": 161702,
+    "distinct": 57956,
+    "kept": 1828,
+    "know": 1212,
     "byFamily": {
       "memory": 42,
-      "transform": 1509,
+      "transform": 1591,
       "iterate": 9,
-      "aggregate": 64,
+      "aggregate": 108,
       "know": 78
     },
     "bySource": {
-      "memory": 42,
-      "enum": 574,
-      "template": 1086
+      "parent": 1702,
+      "enum": 126
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 217737,
-    "cellsPerSecond": 920,
+    "ms": 199700,
+    "cellsPerSecond": 810,
     "capped": null,
     "packs": [
       "corpora-programming-languages",
@@ -34,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "793cfec28ad6551e0e2ad92a42c5d352750421df53307926e0db3dec67da3cd1",
-      "round": 0,
-      "at": 100677,
+      "round": 1,
+      "at": 245957,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.substr",
+      "cost": 7,
+      "prim": "compare.less",
       "tpl": 969
     }
   },
@@ -6459,6 +6458,216 @@
       }
     },
     {
+      "id": "n-0701f6fc",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "dashes",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "hyphens",
+            "jordan",
+            "kebab case",
+            "kebabcase",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "slug",
+            "split into words",
+            "tonga",
+            "words"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0775f3f1",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "reverse order",
+            "reversed",
+            "split into words",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.reverseStrs",
+            [
+              "transform.words",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0b0a7ddd",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "title case",
+            "tonga",
+            "words"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0b4138e1",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -6510,6 +6719,83 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0b729fb6",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "reverse order",
+            "reversed",
+            "split into words",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.reverseStrs",
+            [
+              "transform.words",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 5,
       "fit": {
         "ok": 12,
@@ -6644,6 +6930,78 @@
       }
     },
     {
+      "id": "n-10fabea7",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-16b54a93",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -6706,6 +7064,219 @@
             "aggregate.digitCount",
             [
               "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2177f5a5",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capital letters",
+            "capitals",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "tonga",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-241a0ae9",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "dashes",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "hyphens",
+            "jordan",
+            "kebab case",
+            "kebabcase",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-250e8abc",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "armenia",
+            "benin",
+            "canada",
+            "capital letters",
+            "capitals",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "tonga",
+            "upper case",
+            "uppercase",
+            "words"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
             ]
           ]
         ]
@@ -7084,6 +7655,82 @@
       }
     },
     {
+      "id": "n-3704bd8f",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            {
+              "lit": "code"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-39f3c2d9",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -7235,6 +7882,78 @@
       }
     },
     {
+      "id": "n-42b4c048",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-4b654307",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -7295,6 +8014,148 @@
             "aggregate.digitCount",
             [
               "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-53dc4cf3",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            {
+              "lit": "code"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5b234759",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "swap case",
+            "title case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
             ]
           ]
         ]
@@ -7431,6 +8292,72 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7c5d8451",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "swap case",
+            "title case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 12,
@@ -7795,6 +8722,139 @@
       }
     },
     {
+      "id": "n-b0f6f3ee",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "armenia",
+            "benin",
+            "canada",
+            "capital letters",
+            "capitals",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "tonga",
+            "upper case",
+            "uppercase",
+            "words"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b2eeb479",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "title case",
+            "tonga",
+            "words"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b514401e",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -7862,6 +8922,71 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b57a962e",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "tonga",
+            "words"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 12,
@@ -8158,6 +9283,80 @@
       }
     },
     {
+      "id": "n-bc2444b9",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "swap case",
+            "title case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-bc2474e4",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -8213,6 +9412,358 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c5a932db",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "dashes",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "hyphens",
+            "jordan",
+            "kebab case",
+            "kebabcase",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "slug",
+            "split into words",
+            "tonga",
+            "words"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ca25fa06",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "tonga",
+            "words"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e0690dda",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "dashes",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "hyphens",
+            "jordan",
+            "kebab case",
+            "kebabcase",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e2dbfc86",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capital letters",
+            "capitals",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "tonga",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e43ddf1f",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "swap case",
+            "title case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 12,
@@ -8283,6 +9834,152 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-edbf4cc4",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "title case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fefc4d1e",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "title case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 12,
@@ -8666,6 +10363,68 @@
       }
     },
     {
+      "id": "n-8b422276",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "characters from",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "letters from to",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          [
+            "sense.first"
+          ],
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b3e373fb",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -8811,6 +10570,136 @@
       }
     },
     {
+      "id": "n-b8e62d7a",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "characters from",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "letters from to",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          [
+            "sense.first"
+          ],
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-befd2fde",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "longest",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "separate by",
+            "split",
+            "split by",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.before",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-c5526311",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -8944,6 +10833,74 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-dfd1437a",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "longest",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "separate by",
+            "split",
+            "split by",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.before",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 12,
@@ -10741,6 +12698,79 @@
       }
     },
     {
+      "id": "n-0ed9f14a",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "camel case",
+            "camelcase",
+            "canada",
+            "capital letters",
+            "capitals",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "lower camel case",
+            "luxembourg",
+            "namibia",
+            "tonga",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.upper",
+          [
+            "transform.camel",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0f8fd1d3",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -10795,6 +12825,79 @@
           "transform.pascal",
           [
             "transform.reverseWords",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-106ca464",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "dashes",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "hyphens",
+            "invert case",
+            "jordan",
+            "kebab case",
+            "kebabcase",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "swap case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.swapCase",
+          [
+            "transform.kebab",
             [
               "sense.after",
               {
@@ -11103,6 +13206,78 @@
       }
     },
     {
+      "id": "n-1c4f5e34",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "camel case",
+            "camelcase",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "liechtenstein",
+            "lower camel case",
+            "luxembourg",
+            "namibia",
+            "swap case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.swapCase",
+          [
+            "transform.camel",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-20bf3858",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -11248,6 +13423,79 @@
       }
     },
     {
+      "id": "n-2d462e6c",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "snake case",
+            "snakecase",
+            "swap case",
+            "toggle case",
+            "tonga",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.swapCase",
+          [
+            "transform.snake",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-34d14c5e",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -11320,6 +13568,298 @@
       }
     },
     {
+      "id": "n-355dad14",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "camel case",
+            "camelcase",
+            "canada",
+            "capital letters",
+            "capitals",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "lower camel case",
+            "luxembourg",
+            "namibia",
+            "tonga",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "transform.camel",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3c3c4b87",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capital letters",
+            "capitals",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "tonga",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3f242e92",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "snake case",
+            "snakecase",
+            "title case",
+            "tonga",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.title",
+          [
+            "transform.snake",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-40169ba7",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "camel case",
+            "camelcase",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "lower camel case",
+            "luxembourg",
+            "namibia",
+            "title case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.camel",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-42a33f20",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -11382,6 +13922,79 @@
       }
     },
     {
+      "id": "n-500c8049",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "class name",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "pascal case",
+            "pascalcase",
+            "swap case",
+            "toggle case",
+            "tonga",
+            "upper camel case"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.swapCase",
+          [
+            "transform.pascal",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-53230a8a",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -11434,6 +14047,78 @@
           "aggregate.shortest",
           [
             "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5da6f3d7",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "dashes",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "hyphens",
+            "jordan",
+            "kebab case",
+            "kebabcase",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
             [
               "sense.after",
               {
@@ -11668,6 +14353,79 @@
       }
     },
     {
+      "id": "n-6b30b4d3",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "dashes",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "hyphens",
+            "invert case",
+            "jordan",
+            "kebab case",
+            "kebabcase",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "swap case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.kebab",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-6bd661a2",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -11722,6 +14480,78 @@
           "transform.snake",
           [
             "transform.reverseWords",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-76d8d72e",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "camel case",
+            "camelcase",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "liechtenstein",
+            "lower camel case",
+            "luxembourg",
+            "namibia",
+            "swap case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.camel",
             [
               "sense.after",
               {
@@ -12029,6 +14859,149 @@
       }
     },
     {
+      "id": "n-8b1990e0",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "camel case",
+            "camelcase",
+            "canada",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "lower camel case",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.camel",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8d2a955a",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "class name",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "pascal case",
+            "pascalcase",
+            "split into words",
+            "tonga",
+            "upper camel case"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.pascal",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-94f2807a",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -12248,6 +15221,153 @@
       }
     },
     {
+      "id": "n-9b7dfce4",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "dashes",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "hyphens",
+            "jordan",
+            "kebab case",
+            "kebabcase",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "title case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.title",
+          [
+            "transform.kebab",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a548bda2",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "camel case",
+            "camelcase",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "lower camel case",
+            "luxembourg",
+            "namibia",
+            "title case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.title",
+          [
+            "transform.camel",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a622b41f",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -12374,6 +15494,152 @@
           "transform.pascal",
           [
             "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b0ef1601",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "title case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b5ac5413",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "snake case",
+            "snakecase",
+            "title case",
+            "tonga",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.snake",
             [
               "sense.after",
               {
@@ -12874,6 +16140,79 @@
       }
     },
     {
+      "id": "n-cc284205",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "class name",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "pascal case",
+            "pascalcase",
+            "swap case",
+            "toggle case",
+            "tonga",
+            "upper camel case"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.pascal",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ccf9b16a",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -13069,6 +16408,79 @@
           "transform.sortStrs",
           [
             "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-da3a9b28",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "snake case",
+            "snakecase",
+            "swap case",
+            "toggle case",
+            "tonga",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.snake",
             [
               "sense.after",
               {
@@ -13440,6 +16852,77 @@
       }
     },
     {
+      "id": "n-f5520659",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-f8362a69",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -13492,6 +16975,80 @@
           "transform.reverseStrs",
           [
             "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-faf00ddf",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "dashes",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "hyphens",
+            "jordan",
+            "kebab case",
+            "kebabcase",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "title case",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.kebab",
             [
               "sense.after",
               {
@@ -13646,6 +17203,84 @@
       }
     },
     {
+      "id": "n-0dc328f3",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-256b3a72",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -13776,6 +17411,73 @@
       }
     },
     {
+      "id": "n-3193a2f7",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "from position",
+            "hungary",
+            "items from to",
+            "jordan",
+            "liechtenstein",
+            "longest",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "slice",
+            "tonga"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.content"
+            ],
+            [
+              "sense.first"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-35aa9a8b",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -13852,6 +17554,83 @@
       }
     },
     {
+      "id": "n-4fe49fab",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "from position",
+            "hungary",
+            "items from to",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 5
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5b2c0032",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -13916,6 +17695,83 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-780b6d14",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "separate by",
+            "split by",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 11,
@@ -14061,6 +17917,84 @@
       }
     },
     {
+      "id": "n-8ed3b176",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-996d6524",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -14118,6 +18052,83 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9a9fa5f3",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "from position",
+            "hungary",
+            "items from to",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 2
+            },
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 11,
@@ -14408,6 +18419,83 @@
       }
     },
     {
+      "id": "n-c0f275b8",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "from position",
+            "hungary",
+            "items from to",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 5
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-c50122c8",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -14476,6 +18564,73 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c7adb91e",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "from position",
+            "hungary",
+            "items from to",
+            "jordan",
+            "liechtenstein",
+            "longest",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "slice",
+            "tonga"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.content"
+            ],
+            [
+              "sense.first"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 11,
@@ -14624,6 +18779,83 @@
       }
     },
     {
+      "id": "n-d0aa8f1b",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "separate by",
+            "split by",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d8ad2361",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -14688,6 +18920,83 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e5d0e12f",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "from position",
+            "hungary",
+            "items from to",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 2
+            },
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 11,
@@ -16012,6 +20321,82 @@
       }
     },
     {
+      "id": "n-064ef49a",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "canada",
+            "dashes",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "hyphens",
+            "jordan",
+            "kebab case",
+            "kebabcase",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "split into words"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "transform.kebab",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-08ac5a07",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -16176,6 +20561,137 @@
       }
     },
     {
+      "id": "n-1960006b",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "title case"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "transform.title",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1eddb286",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "djibouti",
+            "invert case",
+            "item number",
+            "jordan",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "nth",
+            "position",
+            "senegal",
+            "swap case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-20ac216d",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -16220,6 +20736,82 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2becb8b4",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "canada",
+            "capital letters",
+            "capitals",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "transform.upper",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 5,
       "fit": {
         "ok": 9,
@@ -16391,6 +20983,81 @@
       }
     },
     {
+      "id": "n-530979e8",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "armenia",
+            "canada",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "split into words"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.sortStrs",
+            [
+              "transform.words",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-65c710ec",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -16426,6 +21093,137 @@
         "render.str",
         [
           "transform.pascal",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-68a2ba4f",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "canada",
+            "dashes",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "hyphens",
+            "jordan",
+            "kebab case",
+            "kebabcase",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "split into words"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "transform.kebab",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-77dc76d1",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "djibouti",
+            "invert case",
+            "item number",
+            "jordan",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "nth",
+            "position",
+            "senegal",
+            "swap case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
           [
             "transform.nthStr",
             [
@@ -16661,6 +21459,81 @@
       }
     },
     {
+      "id": "n-acfd0634",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "armenia",
+            "canada",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "split into words"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.sortStrs",
+            [
+              "transform.words",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ae63b0f8",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -16708,6 +21581,306 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b087f14d",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "armenia",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "reverse order",
+            "reversed"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.reverseStrs",
+            [
+              "transform.sortStrs",
+              [
+                "sense.words"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b6b6ee98",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "armenia",
+            "canada",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "reverse order",
+            "reversed"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.reverseStrs",
+            [
+              "transform.sortStrs",
+              [
+                "sense.words"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c4801662",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "canada",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "transform.swapCase",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cd9ef68b",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "canada",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "transform.swapCase",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 5,
       "fit": {
         "ok": 9,
@@ -16820,6 +21993,82 @@
       }
     },
     {
+      "id": "n-d1ddae98",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "canada",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "title case"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "transform.title",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d48b46e2",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -16869,6 +22118,82 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ecf06b20",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "canada",
+            "capital letters",
+            "capitals",
+            "djibouti",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "split into words",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "transform.upper",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 5,
       "fit": {
         "ok": 9,
@@ -17104,6 +22429,720 @@
       }
     },
     {
+      "id": "n-149dbf45",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "characters from",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "letters from to",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          {
+            "lit": 4
+          },
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-17766b30",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "characters from",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "letters from to",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          [
+            "sense.first"
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1fdceba6",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "djibouti",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "senegal",
+            "separate by",
+            "split by",
+            "tonga"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 3
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-264255a8",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "characters from",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "letters from to",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          {
+            "lit": 4
+          },
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2d00a378",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "characters from",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "letters from to",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3f798bb7",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "characters from",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "letters from to",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-403b7bfc",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "characters from",
+            "djibouti",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "letters from to",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          [
+            "sense.first"
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-53a51c81",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "djibouti",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "senegal",
+            "separate by",
+            "split by",
+            "tonga"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 3
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5c47224b",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "djibouti",
+            "from position",
+            "items from to",
+            "jordan",
+            "liechtenstein",
+            "longest",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "senegal",
+            "slice",
+            "tonga"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 2
+            },
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9237d023",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "djibouti",
+            "from position",
+            "items from to",
+            "jordan",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "senegal",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "slice",
+            "tonga"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.shortest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.content"
+            ],
+            [
+              "sense.first"
+            ],
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9afeb81b",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "djibouti",
+            "from position",
+            "items from to",
+            "jordan",
+            "liechtenstein",
+            "longest",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "senegal",
+            "slice",
+            "tonga"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 2
+            },
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e3a6a026",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "djibouti",
+            "from position",
+            "items from to",
+            "jordan",
+            "liechtenstein",
+            "luxembourg",
+            "namibia",
+            "senegal",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "slice",
+            "tonga"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.content"
+            ],
+            [
+              "sense.first"
+            ],
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-03bc1b48",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -17183,6 +23222,75 @@
       }
     },
     {
+      "id": "n-4a4e3a38",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "canada",
+            "element",
+            "ethiopia",
+            "hungary",
+            "item number",
+            "jordan",
+            "korea",
+            "longest",
+            "longest one",
+            "longest word",
+            "namibia",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "tonga"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-bond-yields-us-10y-monthly-5a63d4"
+                },
+                {
+                  "lit": "rate"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-70a03a4f",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -17254,6 +23362,75 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-79b4b6f6",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "canada",
+            "element",
+            "ethiopia",
+            "hungary",
+            "item number",
+            "jordan",
+            "korea",
+            "longest",
+            "longest one",
+            "longest word",
+            "namibia",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "tonga"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-bond-yields-us-10y-monthly-5a63d4"
+                },
+                {
+                  "lit": "rate"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 10,
       "fit": {
         "ok": 8,
@@ -18464,6 +24641,65 @@
       }
     },
     {
+      "id": "n-31787691",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "canada",
+            "characters from",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "letters from to",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          {
+            "lit": 12
+          },
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-45487f78",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -18643,6 +24879,65 @@
       }
     },
     {
+      "id": "n-66751dcb",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "canada",
+            "characters from",
+            "ethiopia",
+            "hungary",
+            "jordan",
+            "korea",
+            "letters from to",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          {
+            "lit": 12
+          },
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-6e84694b",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -18697,6 +24992,65 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7984b8b8",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "djibouti",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "senegal",
+            "separate by",
+            "split by",
+            "tonga"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 8,
@@ -19117,6 +25471,65 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d192c919",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "djibouti",
+            "jordan",
+            "liechtenstein",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "namibia",
+            "senegal",
+            "separate by",
+            "split by",
+            "tonga"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 8,
@@ -19951,6 +26364,120 @@
       }
     },
     {
+      "id": "n-35164fd5",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "characters from",
+            "hungary",
+            "jordan",
+            "letters from to",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          [
+            "sense.first"
+          ],
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-505263e4",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "characters from",
+            "hungary",
+            "jordan",
+            "letters from to",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          [
+            "sense.first"
+          ],
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-524863db",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -20008,6 +26535,67 @@
           [
             "sense.text"
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7cfe62fe",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "characters from",
+            "hungary",
+            "jordan",
+            "letters from to",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          {
+            "lit": 4
+          },
+          {
+            "lit": 10
+          }
         ]
       ],
       "mem": null,
@@ -20089,6 +26677,120 @@
       }
     },
     {
+      "id": "n-97b424f5",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "characters from",
+            "hungary",
+            "jordan",
+            "letters from to",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b501c9e1",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "characters from",
+            "hungary",
+            "jordan",
+            "letters from to",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b7aeb95b",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -20146,6 +26848,67 @@
           [
             "sense.text"
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c7d3f082",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "armenia",
+            "benin",
+            "canada",
+            "characters from",
+            "hungary",
+            "jordan",
+            "letters from to",
+            "namibia",
+            "slice of the text",
+            "substring",
+            "tonga"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "not",
+          [
+            "has",
+            "iso"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          {
+            "lit": 4
+          },
+          {
+            "lit": 10
+          }
         ]
       ],
       "mem": null,
@@ -24455,6 +31218,57 @@
       }
     },
     {
+      "id": "n-4d616130",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "invert case",
+            "jordan",
+            "namibia",
+            "swap case",
+            "title case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5876fd28",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -24592,6 +31406,57 @@
             "aggregate.consonants",
             [
               "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-79eefb96",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "invert case",
+            "jordan",
+            "namibia",
+            "swap case",
+            "title case",
+            "toggle case",
+            "tonga"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
             ]
           ]
         ]
@@ -26832,6 +33697,54 @@
       }
     },
     {
+      "id": "n-96a95ab9",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "canada",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "item number",
+            "nth",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d8431f77",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -26867,6 +33780,101 @@
             [
               "sense.wordCount"
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e8b59ef5",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "canada",
+            "each word",
+            "ethiopia",
+            "hungary",
+            "item number",
+            "nth",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f17d27e5",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "canada",
+            "ethiopia",
+            "hungary",
+            "invert case",
+            "item number",
+            "nth",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            }
           ]
         ]
       ],
@@ -26983,6 +33991,56 @@
       }
     },
     {
+      "id": "n-3e5738b1",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "canada",
+            "ethiopia",
+            "from position",
+            "hungary",
+            "items from to",
+            "longest one",
+            "longest word"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-439649a8",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -27091,6 +34149,57 @@
       }
     },
     {
+      "id": "n-4cfc6249",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "canada",
+            "ethiopia",
+            "from position",
+            "hungary",
+            "items from to",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.shortest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-6f8c5104",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -27138,6 +34247,107 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-82bd50de",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "canada",
+            "ethiopia",
+            "from position",
+            "hungary",
+            "items from to",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a34114be",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "canada",
+            "ethiopia",
+            "from position",
+            "hungary",
+            "items from to",
+            "longest one",
+            "longest word"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.sliceStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 3,
@@ -29227,6 +36437,57 @@
       }
     },
     {
+      "id": "n-15be6ae4",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "japan",
+            "libya",
+            "no vowels",
+            "remove vowels",
+            "split into words",
+            "without vowels"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.noVowels",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1ac610c1",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -29399,6 +36660,57 @@
           "transform.noVowels",
           [
             "transform.reverseWords",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-423ae0f0",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "japan",
+            "libya",
+            "no vowels",
+            "remove vowels",
+            "split into words",
+            "without vowels"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.noVowels",
             [
               "sense.after",
               {
@@ -29963,6 +37275,59 @@
           "transform.noVowels",
           [
             "transform.snake",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8dac1a38",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "japan",
+            "libya",
+            "no vowels",
+            "remove vowels",
+            "title case",
+            "without vowels"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.title",
+          [
+            "transform.noVowels",
             [
               "sense.after",
               {
@@ -30849,6 +38214,57 @@
       }
     },
     {
+      "id": "n-e890d0d2",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "japan",
+            "libya",
+            "no vowels",
+            "remove vowels",
+            "split into words",
+            "without vowels"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.noVowels",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-e93de142",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -31027,6 +38443,59 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fc2095b4",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "japan",
+            "libya",
+            "no vowels",
+            "remove vowels",
+            "title case",
+            "without vowels"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.noVowels",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 2,
@@ -145227,6 +152696,52 @@
       }
     },
     {
+      "id": "n-2137ed3f",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "korea",
+            "nth",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-31213923",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -145304,6 +152819,51 @@
             "aggregate.commonLetter",
             [
               "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3f9543fc",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "each word",
+            "príncipe",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
             ]
           ]
         ]
@@ -145447,6 +153007,97 @@
             [
               "sense.lastWord"
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-58b70df3",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "item number",
+            "korea",
+            "nth",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-59fb9342",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "korea",
+            "nth",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 5
+            }
           ]
         ]
       ],
@@ -146983,6 +154634,56 @@
       }
     },
     {
+      "id": "n-14829eb8",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "korea",
+            "longest",
+            "longest one",
+            "longest word",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-23184ad7",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -147175,6 +154876,104 @@
       }
     },
     {
+      "id": "n-4dadd7d7",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "korea",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-568f05a6",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "korea",
+            "longest",
+            "longest one",
+            "longest word",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-65094e0e",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -147211,6 +155010,102 @@
               "lit": "of"
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6cdaa922",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "korea",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6fd86806",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "korea",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": 100
+          }
         ]
       ],
       "mem": null,
@@ -147307,6 +155202,54 @@
           [
             "sense.text"
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7f219804",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "korea",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          {
+            "lit": 100
+          }
         ]
       ],
       "mem": null,
@@ -147463,6 +155406,54 @@
       }
     },
     {
+      "id": "n-9b311bca",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "korea",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-9ea66a67",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -147559,6 +155550,102 @@
       }
     },
     {
+      "id": "n-ab64b2fc",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "korea",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d021fcd1",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "korea",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d15e5f2e",
       "task": "mledoze-countries-country-to-alpha-3-code",
       "gen": 10,
@@ -147595,6 +155682,54 @@
           [
             "sense.text"
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d2e47337",
+      "task": "mledoze-countries-country-to-alpha-3-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "korea",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "alpha"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "code"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": 100
+          }
         ]
       ],
       "mem": null,
@@ -150418,6 +158553,7 @@
     }
   ],
   "stages": [
-    "908f8f23e32d31f9731336e21ffe024124808a4c9067744e62ad88731b376636"
+    "908f8f23e32d31f9731336e21ffe024124808a4c9067744e62ad88731b376636",
+    "ee2c3068fa1c1a4bd00f86cb8314759bb268d45855f9562c156077765cb7fbc3"
   ]
 }

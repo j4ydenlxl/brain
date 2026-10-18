@@ -2,30 +2,28 @@
   "task": "datasets-currency-codes-currency-c-870ef5",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T12:09:27.637Z",
+  "at": "2026-10-18T13:26:43.681Z",
   "stats": {
-    "generated": 184278,
-    "distinct": 73381,
-    "kept": 302,
-    "know": 179,
+    "generated": 160302,
+    "distinct": 51058,
+    "kept": 331,
+    "know": 208,
     "byFamily": {
       "know": 1,
-      "transform": 214,
+      "transform": 243,
       "sense": 2,
       "memory": 83,
       "aggregate": 2
     },
     "bySource": {
-      "enum": 101,
-      "template": 115,
-      "memory": 83,
-      "open": 3
+      "parent": 302,
+      "enum": 29
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 157770,
-    "cellsPerSecond": 1168,
+    "ms": 110644,
+    "cellsPerSecond": 1449,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -35,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "fc531ffb53816da5dbd7562b9d14a944275df7dac964b0db56219d481b1bef27",
-      "round": 0,
-      "at": 113060,
+      "round": 1,
+      "at": 261016,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.swapCase",
+      "cost": 7,
+      "prim": "compare.less",
       "tpl": 1067
     }
   },
@@ -395,6 +393,85 @@
       "mem": null,
       "height": 5,
       "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-32f229be",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "currency",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "title case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "code"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
       "fit": {
         "ok": 40,
         "fired": 40,
@@ -7205,6 +7282,188 @@
       }
     },
     {
+      "id": "n-0771b34a",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "distinct",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "remove duplicates",
+            "split into words",
+            "uah",
+            "without repeats",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.uniqueStrs",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1d0f35f7",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "invert case",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "uah",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1e2dd5eb",
       "task": "datasets-currency-codes-currency-c-870ef5",
       "gen": 10,
@@ -7257,6 +7516,465 @@
           "transform.lower",
           [
             "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-20190d7d",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "dashes",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "hyphens",
+            "item number",
+            "jpy",
+            "kebab case",
+            "kebabcase",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "split into words",
+            "uah",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2197abfa",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "split into words",
+            "title case",
+            "uah",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-27647079",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "capital letters",
+            "capitals",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "split into words",
+            "uah",
+            "upper case",
+            "uppercase",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2d041f9b",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "invert case",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "uah",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-32f28be3",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "class name",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "split into words",
+            "uah",
+            "upper camel case",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.pascal",
             [
               "know.lookup",
               [
@@ -7350,6 +8068,192 @@
           "transform.swapCase",
           [
             "transform.snake",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3c28094f",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "dashes",
+            "ern",
+            "htg",
+            "huf",
+            "hyphens",
+            "item number",
+            "jpy",
+            "kebab case",
+            "kebabcase",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "title case",
+            "uah",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.kebab",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4089955e",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "split into words",
+            "title case",
+            "uah",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.title",
             [
               "know.lookup",
               [
@@ -7852,6 +8756,97 @@
       }
     },
     {
+      "id": "n-67d417ed",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "invert case",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "split into words",
+            "swap case",
+            "toggle case",
+            "uah",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-69897db7",
       "task": "datasets-currency-codes-currency-c-870ef5",
       "gen": 10,
@@ -8088,6 +9083,99 @@
           "transform.reverseWords",
           [
             "transform.upper",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-750c5a05",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "camel case",
+            "camelcase",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lower camel case",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "title case",
+            "uah",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.camel",
             [
               "know.lookup",
               [
@@ -8495,6 +9583,99 @@
       }
     },
     {
+      "id": "n-81e5d5c9",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "camel case",
+            "camelcase",
+            "capital letters",
+            "capitals",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lower camel case",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "uah",
+            "upper case",
+            "uppercase",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-850e6089",
       "task": "datasets-currency-codes-currency-c-870ef5",
       "gen": 10,
@@ -8545,6 +9726,97 @@
         "render.list",
         [
           "transform.reverseStrs",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8a874a0b",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "distinct",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "remove duplicates",
+            "split into words",
+            "uah",
+            "without repeats",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.uniqueStrs",
           [
             "transform.words",
             [
@@ -8862,6 +10134,283 @@
       }
     },
     {
+      "id": "n-ac846ff5",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "snake case",
+            "snakecase",
+            "title case",
+            "uah",
+            "underscores",
+            "variable name",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.snake",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b0d8fef9",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "capital letters",
+            "capitals",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "split into words",
+            "uah",
+            "upper case",
+            "uppercase",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b64f0892",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "camel case",
+            "camelcase",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lower camel case",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "split into words",
+            "uah",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b92d17d8",
       "task": "datasets-currency-codes-currency-c-870ef5",
       "gen": 10,
@@ -8913,6 +10462,188 @@
           "transform.sortStrs",
           [
             "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bf7a712d",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "split into words",
+            "uah",
+            "words backwards",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.reverseWords",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c3125a92",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "split into words",
+            "uah",
+            "words backwards",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.reverseWords",
             [
               "know.lookup",
               [
@@ -9045,6 +10776,98 @@
       }
     },
     {
+      "id": "n-ceece604",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "dashes",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "hyphens",
+            "item number",
+            "jpy",
+            "kebab case",
+            "kebabcase",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "split into words",
+            "uah",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d8cb1540",
       "task": "datasets-currency-codes-currency-c-870ef5",
       "gen": 10,
@@ -9097,6 +10920,97 @@
           "transform.swapCase",
           [
             "transform.camel",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d9d7ab57",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "split into words",
+            "uah",
+            "words backwards",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.reverseWords",
             [
               "know.lookup",
               [
@@ -9653,6 +11567,373 @@
           "transform.pascal",
           [
             "transform.reverseWords",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f0472e7c",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "split into words",
+            "title case",
+            "uah",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f372369c",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "distinct",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "remove duplicates",
+            "split into words",
+            "uah",
+            "without repeats",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.uniqueStrs",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f4a6a189",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "dashes",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "hyphens",
+            "item number",
+            "jpy",
+            "kebab case",
+            "kebabcase",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "split into words",
+            "uah",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fb1b8178",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "bob",
+            "bwp",
+            "capital letters",
+            "capitals",
+            "each word",
+            "ern",
+            "htg",
+            "huf",
+            "item number",
+            "jpy",
+            "lsl",
+            "mkd",
+            "mop",
+            "mvr",
+            "nth",
+            "pab",
+            "position",
+            "split into words",
+            "uah",
+            "upper case",
+            "uppercase",
+            "wst"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.upper",
             [
               "know.lookup",
               [
@@ -13219,6 +15500,83 @@
       }
     },
     {
+      "id": "n-0ed10928",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "alphabetize the letters",
+            "capital letters",
+            "capitals",
+            "item number",
+            "jpy",
+            "letters in order",
+            "nth",
+            "position",
+            "sort the letters",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-10168ae1",
       "task": "datasets-currency-codes-currency-c-870ef5",
       "gen": 10,
@@ -13525,6 +15883,81 @@
       }
     },
     {
+      "id": "n-495416f5",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "alphabetize the letters",
+            "each word",
+            "item number",
+            "jpy",
+            "letters in order",
+            "nth",
+            "position",
+            "sort the letters",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-57041dc3",
       "task": "datasets-currency-codes-currency-c-870ef5",
       "gen": 10,
@@ -13636,6 +16069,159 @@
         "render.str",
         [
           "transform.lower",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7f936046",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "alphabetize the letters",
+            "invert case",
+            "item number",
+            "jpy",
+            "letters in order",
+            "nth",
+            "position",
+            "sort the letters",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency code"
+              },
+              {
+                "lit": "currency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8388bcf1",
+      "task": "datasets-currency-codes-currency-c-870ef5",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all",
+            "alphabetize the letters",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "item number",
+            "jpy",
+            "letters in order",
+            "nth",
+            "position",
+            "sort the letters",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "currency"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
           [
             "transform.sortLetters",
             [
@@ -23036,6 +25622,7 @@
     }
   ],
   "stages": [
-    "c3acd2588ea43983589bfb7b5adc29174d69b607b87b7b2dd6e7ac9723e47cf8"
+    "c3acd2588ea43983589bfb7b5adc29174d69b607b87b7b2dd6e7ac9723e47cf8",
+    "a99f081fc2f48dde9a438f7450d1fb61d19eb300724b364576cfada5940cf94b"
   ]
 }

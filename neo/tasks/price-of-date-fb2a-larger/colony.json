@@ -2,37 +2,39 @@
   "task": "price-of-date-fb2a-larger",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T11:57:23.069Z",
+  "at": "2026-10-18T13:18:07.380Z",
   "stats": {
-    "generated": 200154,
-    "distinct": 62715,
-    "kept": 102,
-    "know": 0,
+    "generated": 164403,
+    "distinct": 43047,
+    "kept": 103,
+    "know": 1,
     "byFamily": {
-      "memory": 102
+      "memory": 102,
+      "transform": 1
     },
     "bySource": {
-      "memory": 102
+      "parent": 102,
+      "enum": 1
     },
-    "maxHeight": 3,
+    "maxHeight": 4,
     "devOk": 100,
     "devN": 100,
-    "ms": 112167,
-    "cellsPerSecond": 1784,
-    "capped": "ms",
+    "ms": 64915,
+    "cellsPerSecond": 2533,
+    "capped": null,
     "packs": [
       "fr-gold-prices-monthly-4e6a16"
     ],
     "cursor": {
       "v": 1,
       "basis": "deb90c9d31112d7c31daae0491002e18db0b6f45fb5575b66d17fc32df3ee98a",
-      "round": 0,
-      "at": 56312,
+      "round": 1,
+      "at": 203102,
       "maxCost": 7,
       "done": false,
-      "cost": 5,
-      "prim": "iterate.steps",
-      "tpl": 3000
+      "cost": 6,
+      "prim": "compare.between",
+      "tpl": 3740
     }
   },
   "cells": [
@@ -233,6 +235,80 @@
       "fit": {
         "ok": 33,
         "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7e5b8f81",
+      "task": "price-of-date-fb2a-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "nums==",
+          4
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-gold-prices-monthly-4e6a16"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.second"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-gold-prices-monthly-4e6a16"
+              },
+              {
+                "lit": "price"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
         "rows": 100
       }
     },
@@ -3939,6 +4015,7 @@
   ],
   "stages": [
     "3f4546cd51ad4497625e46ce5f68478b2f6ecba702e258c148296f55ff0d3b8f",
-    "5b276d58d513be7d20896b66f0fb4f13c99df8370a1c7de911e5d2e8234cd434"
+    "5b276d58d513be7d20896b66f0fb4f13c99df8370a1c7de911e5d2e8234cd434",
+    "adcbeb94916c0e8e19df80b3f994cd2675ef1daf800e257345fc9947a13d7cf1"
   ]
 }

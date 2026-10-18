@@ -2,29 +2,28 @@
   "task": "lukes-iso3166-country-to-numeric-code",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T12:18:19.385Z",
+  "at": "2026-10-18T13:31:10.780Z",
   "stats": {
-    "generated": 200101,
-    "distinct": 62080,
-    "kept": 589,
-    "know": 24,
+    "generated": 160589,
+    "distinct": 122033,
+    "kept": 612,
+    "know": 29,
     "byFamily": {
       "memory": 84,
-      "compute": 42,
-      "sense": 53,
-      "aggregate": 186,
-      "transform": 224
+      "compute": 50,
+      "transform": 237,
+      "aggregate": 188,
+      "sense": 53
     },
     "bySource": {
-      "memory": 84,
-      "enum": 49,
-      "template": 456
+      "parent": 589,
+      "enum": 23
     },
-    "maxHeight": 5,
+    "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 70730,
-    "cellsPerSecond": 2829,
+    "ms": 52725,
+    "cellsPerSecond": 3046,
     "capped": null,
     "packs": [
       "corpora-programming-languages",
@@ -34,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "ebdf893fb873f0535956469fb96289ff36b4857c1103b07d801d8e81382d11ff",
-      "round": 0,
-      "at": 119826,
+      "round": 1,
+      "at": 212798,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "compute.root",
+      "cost": 7,
+      "prim": "aggregate.commonLetter",
       "tpl": 1679
     }
   },
@@ -330,6 +329,58 @@
       "fit": {
         "ok": 14,
         "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-06b85b02",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "area of a triangle",
+            "half base times height",
+            "how many items",
+            "montserrat",
+            "number of items",
+            "triangle area"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.triangleArea",
+          {
+            "lit": 1000
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
         "rows": 40
       }
     },
@@ -1073,6 +1124,68 @@
       }
     },
     {
+      "id": "n-2e312739",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "goes into",
+            "how many consonants",
+            "how many whole times",
+            "integer division",
+            "item number",
+            "montserrat",
+            "nth",
+            "number of consonants",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.idiv",
+          {
+            "lit": 1000
+          },
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-3ef2d038",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -1165,6 +1278,132 @@
         "render.str",
         [
           "compute.fraction",
+          {
+            "lit": 1000
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-programming-languages"
+                },
+                {
+                  "lit": "item"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6b196948",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "area of a triangle",
+            "element",
+            "half base times height",
+            "how many words",
+            "item number",
+            "montserrat",
+            "nth",
+            "number of words",
+            "position",
+            "triangle area",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.triangleArea",
+          {
+            "lit": 1000
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-countries-585efe"
+                },
+                {
+                  "lit": "name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7e3456ce",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "goes into",
+            "how many vowels",
+            "how many whole times",
+            "integer division",
+            "item number",
+            "montserrat",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.idiv",
           {
             "lit": 1000
           },
@@ -1819,6 +2058,82 @@
       "mem": null,
       "height": 5,
       "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4d031cda",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "character count",
+            "copies",
+            "element",
+            "how many characters",
+            "item number",
+            "length",
+            "nth",
+            "number of characters",
+            "position",
+            "repeat",
+            "say it times"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.chars",
+          [
+            "transform.repeat",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-countries-585efe"
+                  },
+                  {
+                    "lit": "name"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              },
+              {
+                "lit": "official name"
+              }
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -6698,6 +7013,56 @@
       }
     },
     {
+      "id": "n-1b6dc961",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "convert to base",
+            "how many consonants",
+            "in base",
+            "in binary",
+            "in octal",
+            "namibia",
+            "number of consonants",
+            "to binary",
+            "to hex"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "compute.toBase",
+          {
+            "lit": 1000
+          },
+          [
+            "aggregate.consonants",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-2473eb3a",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -6794,6 +7159,58 @@
       }
     },
     {
+      "id": "n-2f5aabad",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "comoros",
+            "one less",
+            "percent is",
+            "predecessor",
+            "previous",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.prev",
+          [
+            "compute.asPercent",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-2f60f6f1",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -6877,6 +7294,53 @@
             {
               "lit": 3
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-37733e7e",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "area of a triangle",
+            "digit count",
+            "half base times height",
+            "how many digits",
+            "montserrat",
+            "number of digits",
+            "triangle area"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.triangleArea",
+          {
+            "lit": 1000
+          },
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
           ]
         ]
       ],
@@ -7039,6 +7503,54 @@
       }
     },
     {
+      "id": "n-3bf143ab",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "growth rate",
+            "montserrat",
+            "negate",
+            "negative",
+            "opposite",
+            "percent change",
+            "percent decrease",
+            "percent increase"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.neg",
+          [
+            "compute.percentChange",
+            {
+              "lit": 1
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-3d6bb95c",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -7183,6 +7695,146 @@
       }
     },
     {
+      "id": "n-4c9c6398",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "convert to base",
+            "in base",
+            "in binary",
+            "in octal",
+            "montserrat",
+            "n factorial",
+            "to binary",
+            "to hex"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "compute.toBase",
+          [
+            "compute.factorial",
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-54e9e327",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "convert to base",
+            "in base",
+            "in binary",
+            "in octal",
+            "montserrat",
+            "n factorial",
+            "to binary",
+            "to hex"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.toBase",
+          [
+            "compute.factorial",
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-662a7432",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "cyprus",
+            "how many characters",
+            "length",
+            "number of characters",
+            "square",
+            "squared",
+            "to the second power"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.square",
+          [
+            "aggregate.chars",
+            [
+              "sense.after",
+              {
+                "lit": "numeric"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-6d798297",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -7215,6 +7867,195 @@
             {
               "lit": 12
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-78b321cf",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "added to",
+            "cubed",
+            "hungary",
+            "to the third power"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.add",
+          {
+            "lit": 5
+          },
+          [
+            "transform.cube",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7b10b847",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "cubed",
+            "take away",
+            "to the third power"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.sub",
+          [
+            "transform.cube",
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7c52bcf3",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "convert to base",
+            "how many consonants",
+            "in base",
+            "in binary",
+            "in octal",
+            "namibia",
+            "number of consonants",
+            "to binary",
+            "to hex"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.toBase",
+          {
+            "lit": 1000
+          },
+          [
+            "aggregate.consonants",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-84c12adc",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "area of a triangle",
+            "comoros",
+            "half base times height",
+            "how many letters",
+            "letter count",
+            "number of letters",
+            "triangle area"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.triangleArea",
+          {
+            "lit": 12
+          },
+          [
+            "aggregate.letters",
+            [
+              "sense.text"
+            ]
           ]
         ]
       ],
@@ -7262,6 +8103,50 @@
             "aggregate.letters",
             [
               "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-89862368",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "benin",
+            "cubed",
+            "take away",
+            "to the third power"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.sub",
+          {
+            "lit": 12
+          },
+          [
+            "transform.cube",
+            [
+              "sense.wordCount"
             ]
           ]
         ]
@@ -7375,6 +8260,53 @@
       }
     },
     {
+      "id": "n-9495e6fc",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cocos",
+            "goes into",
+            "how many items",
+            "how many whole times",
+            "integer division",
+            "number of items",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.idiv",
+          {
+            "lit": 1000
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-9c7633ff",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -7469,6 +8401,52 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a4c546e6",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cocos",
+            "growth rate",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "round down"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.floor",
+          [
+            "compute.percentChange",
+            {
+              "lit": 3
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -7763,6 +8741,52 @@
       }
     },
     {
+      "id": "n-d43cba85",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cyprus",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "to the second power",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.square",
+          [
+            "transform.idiv",
+            {
+              "lit": 100
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d76910f6",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -7911,6 +8935,98 @@
       }
     },
     {
+      "id": "n-f7abe87e",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "halve",
+            "hypotenuse",
+            "montserrat",
+            "pythagoras",
+            "pythagorean"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.half",
+          [
+            "compute.hypot",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1000
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fbda600e",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "barthélemy",
+            "digits backwards",
+            "digits reversed",
+            "exponent",
+            "raised to",
+            "reverse the digits",
+            "to the power of"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.reverseDigits",
+          [
+            "compute.power",
+            {
+              "lit": 2
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-fd3ef75b",
       "task": "lukes-iso3166-country-to-numeric-code",
       "gen": 10,
@@ -8002,6 +9118,56 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-119f004b",
+      "task": "lukes-iso3166-country-to-numeric-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "copies",
+            "ghana",
+            "how many characters",
+            "number of characters",
+            "repeat",
+            "say it times"
+          ]
+        ],
+        [
+          "has",
+          "numeric"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.chars",
+          [
+            "transform.repeat",
+            [
+              "sense.before",
+              {
+                "lit": "of"
+              }
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -31815,6 +32981,7 @@
     }
   ],
   "stages": [
-    "48c67d9ad720a9427abc03732abba83a82a16b482407b57b2be5fe6c20158d40"
+    "48c67d9ad720a9427abc03732abba83a82a16b482407b57b2be5fe6c20158d40",
+    "a1f8e8a12311d45814a99db49d68737c45ab20908871727b2178dfa21d09f6a2"
   ]
 }
