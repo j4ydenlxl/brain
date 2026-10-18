@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "219facb993e03641b2780e1293597dbb6f5d42fe6b2212adbe41b5b5c601828b";
+const VERSION = "208dd579fe6143eff48442ad0e0587f51ec1526b2344ee1248d9cf8dcbc80555";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"d2db94f64f16681f838c1e27b3dea35322ceea136b25ee6cc44ef2d770ea8abd"},
+  {"url":"/organism/cells.json","sha256":"6e072bcbbe6513b7ecd86cdf0a3af82c23c210e20ad9069f13698b8d3bd5845b"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -173,10 +173,22 @@ const PRECACHE = [
   {"url":"/organism/cells/gold-annual-price-compare-neo-g10.mjs","sha256":"d04210477ea886925b400e57c80444a15fac3cd155eae2cbc1e00ccd55a1779d"},
   {"url":"/organism/cells/gold-annual-price-smaller-neo-g10.mjs","sha256":"873dc2c4959a8bbe56d98e1565719bbff6cf59f7fb809f37801fbb697545a421"},
   {"url":"/organism/cells/gold-annual-price-sum-neo-g10.mjs","sha256":"87c7eccccc1e16fe34c0eecd5b0521dea3e59d3e4b2475337f3597df5cd31934"},
+  {"url":"/organism/cells/fr-country-json-country-by-geo-coo-5d9228-neo-g10.mjs","sha256":"5fe4f5ff3bbb716116b39fd353aec86503fb8aeefd6d6beaea65849b74d135c8"},
+  {"url":"/organism/cells/sucode-of-suname-ce4e-rev-neo-g10.mjs","sha256":"7307d88f1cb74f076c8b3e975730a838d6efa308bd7a27f004010f21c65554f7"},
+  {"url":"/organism/cells/occupation-s-of-name-9b3c-rev-neo-g10.mjs","sha256":"3618466df2c0b9819e07832f2aad8d625fe9041363bd8e4cc272505835e4d19d"},
+  {"url":"/organism/cells/week-of-dataset-name-ebfb-sum-neo-g10.mjs","sha256":"e018574c5ac56ab5fa7ca3ec7746b50e573c32522dd44b95fa9ead2a16d341d8"},
+  {"url":"/organism/cells/year-of-name-45ac-larger-neo-g10.mjs","sha256":"83bebf33167fee08f2c9a6de053fe38b2602bd38dde915f9fb91a41f135dc646"},
+  {"url":"/organism/cells/primary-title-of-tconst-27ed-rev-neo-g10.mjs","sha256":"2c89388a302f23b28ad2a6a45af5a0f154ed437372a2192409534799f1998488"},
+  {"url":"/organism/cells/gmsl-uncertainty-of-t-b597-larger-neo-g10.mjs","sha256":"d3f0d110f6acd91a1b3ea1e5d1550571b6f60e1c61b732ab0974dd79417f1a13"},
+  {"url":"/organism/cells/temperature-of-countr-a1cc-sum-neo-g10.mjs","sha256":"7cc03de6e14a5eed4d80bc7cc40204dedd1a98284b501e943ec4fc55394c5464"},
+  {"url":"/organism/cells/month-of-paper-5f74-larger-neo-g10.mjs","sha256":"38bc349c10f7ed189f3c3cc71b7128487b085152b62eed5f1f8fd06791b5a9d0"},
+  {"url":"/organism/cells/year-of-paper-169a-smaller-neo-g10.mjs","sha256":"4246f036f2b64debb9f20d1388381cd907cd83b06ef9adfd6796f1e9dc041aaf"},
+  {"url":"/organism/cells/first-name-of-name-f117-rev-neo-g10.mjs","sha256":"6d8d69978042555e1dd2671cf9a55089087a2a4a12335845689f2535a9baf8ba"},
+  {"url":"/organism/cells/last-name-of-name-653a-rev-neo-g10.mjs","sha256":"51c219d35acec99050e2ccdb79165b8e66f099144e9ec34ebaada167516efe45"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"b371442e4a10ac1416e2c9e6393703fab0c65af9628ce9ba5e3c12fe65cd47cb"}
+  {"url":"/organism/era/tasks.json","sha256":"8ace16e5b990d6838a58744dce5b59c8cfccfd16ebd23b51792a96e83f309764"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
