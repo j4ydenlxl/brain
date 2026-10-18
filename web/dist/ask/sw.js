@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "b4aa73fc5340b6e0c51b0a0de71ba9ff591d1e414dbb107715079a7ff3fe94fd";
+const VERSION = "176148fc6b76d1b02e3a485e6284c3b5e42c318dcb0e0902f52254d1d5502de7";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"c1efa7676f307fcb6bdd48213b9d310f517b82733cf0d37d273a58e75ddb6ecb"},
+  {"url":"/organism/cells.json","sha256":"f3445618d62295dba8e332b1ad960e4e36696b735df6b97898afc0dfc5a38b66"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -148,10 +148,23 @@ const PRECACHE = [
   {"url":"/organism/cells/gold-annual-price-larger-neo-g10.mjs","sha256":"1440498e5b175776c825184deda10a4e3aad557145d7295143d98973a9f43908"},
   {"url":"/organism/cells/us-city-state-neo-g10.mjs","sha256":"7335f7124caa9fc23f2abdfbe84b0807ee0cbcb3339ede5314884b730acf745f"},
   {"url":"/organism/cells/fr-datasets-2011-february-us-airpo-188c1c-neo-g10.mjs","sha256":"e12f803bcaa9b4aa6fce9b6def4537081fde7e4fba4976d4af26129b2f785446"},
+  {"url":"/organism/cells/tld-country-neo-g10.mjs","sha256":"b7299c8eb575c33803d7bd53cee7a98036762a68f5f4dc6ff9c7e994f0eb5227"},
+  {"url":"/organism/cells/http-status-phrase-neo-g10.mjs","sha256":"ad00f64cc5a846e4782a0fce9b4abe612f3554c30a47efea66bbb03a4077e58e"},
+  {"url":"/organism/cells/tzdb-zone-country-neo-g10.mjs","sha256":"fc4d85cf9cbc19aac5ab32366d10a88670c3c19b621617564242edf38654ee85"},
+  {"url":"/organism/cells/airline-country-rev-neo-g10.mjs","sha256":"5d9eeeea6931fc65fb0c8b960e7271469fc37f5551f94223d6212f8a026ed561"},
+  {"url":"/organism/cells/close-of-date-338c-sum-neo-g10.mjs","sha256":"e139e81005ba60fe8965f521919fb500c7977d8c12ec02ed6c6b1fc923223d07"},
+  {"url":"/organism/cells/high-of-date-2fd0-neo-g10.mjs","sha256":"781a6ee8ce0dba2f6a2c884a97b289e565489fac98cbf09858f830187e9b5304"},
+  {"url":"/organism/cells/high-of-date-2fd0-compare-neo-g10.mjs","sha256":"9a5ea19ceac2debe2457fe08509496b8725008af2ac74280bff37f3f05ff4455"},
+  {"url":"/organism/cells/high-of-date-2fd0-larger-neo-g10.mjs","sha256":"7827023c95d030e16c4880b67207ebdfd4d9d2da2f14b3dda1957dfd579637b4"},
+  {"url":"/organism/cells/high-of-date-2fd0-smaller-neo-g10.mjs","sha256":"df5ae9faa56c73f106cd150ebd460f073caf1c3027c29f8ca1de84d46011bd2b"},
+  {"url":"/organism/cells/price-of-date-2a9f-compare-neo-g10.mjs","sha256":"0254344d6f30b45cabbc08f2c4b374fc3643670eecf40454e918112944c55f6b"},
+  {"url":"/organism/cells/price-of-date-2a9f-larger-neo-g10.mjs","sha256":"557debff2f05cf864ec1c45b2e086530796090985529741005f29303ad265a9a"},
+  {"url":"/organism/cells/price-of-date-2a9f-smaller-neo-g10.mjs","sha256":"8ccba3fdc4902399f4a63287d46c36a1705979623ae4b0a314fe690887d9f601"},
+  {"url":"/organism/cells/price-of-date-68c8-smaller-neo-g10.mjs","sha256":"31d20fa5cc7a19fc9b959b6000091973ddf70cd0cbba7deee2de0dabf3eef1b8"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"5633c626a66d63873e05cb8beac1c39720e09f0dbc9cd76a6a04e6296ba24688"}
+  {"url":"/organism/era/tasks.json","sha256":"4a9c1bda6338bc065ad632f992ff4af9e37e3132c17212ec7c7208d7701c5a6c"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -177,7 +190,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/air-date-of-title-90e0.json","sha256":"884c6067a29e26ec2c49cc3dec1c227372d55bd9a0bc27dfa678c115abcc2175"},
   {"url":"/organism/era/tasks/air-date-of-title-fbf4.json","sha256":"499340577ed92eb6689122419dc97b33bcd5f43c6912f24b7506f666ab64e22c"},
   {"url":"/organism/era/tasks/airline-country.json","sha256":"cf3524a09f6e36a460d31f56fb18ca2c1245f123a65ded2ea00ad5e3ef26c668"},
-  {"url":"/organism/era/tasks/airline-country-rev.json","sha256":"b27f00a798a62a2636c22ccb8d822d1d64de0182f6a41ec54f897a96adb5c22c"},
   {"url":"/organism/era/tasks/airline-icao-name.json","sha256":"9120e71ba8f79c9b99a2384fe8cc89b8a03911e550c334f394694a42d4ebd0c6"},
   {"url":"/organism/era/tasks/airline-name-icao.json","sha256":"248c5d54765b4acba303b541536f8d909bc858ad9153e2f257af212b9d862a10"},
   {"url":"/organism/era/tasks/airport-code-city.json","sha256":"3dc465c04c5c3192ff58ca6968fa89ebf2f4f89b6cf90f3072973c21b6a1f33c"},
@@ -276,7 +288,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/clean-name-of-album-565e.json","sha256":"b0142155d6747399fb1465f6b73818405c58b8d713ecf892656153a0c5291ce8"},
   {"url":"/organism/era/tasks/clean-name-of-album-565e-rev.json","sha256":"e2eeb9e693ceb53c3500d7a6ac80dae2e778ac0103e4c9de422a1a5f1051e13d"},
   {"url":"/organism/era/tasks/climbing-status-of-peak-n-b2c0.json","sha256":"267a95608353328abba54d59100709ee2a12c32eed9e734598dc38959128ac69"},
-  {"url":"/organism/era/tasks/close-of-date-338c-sum.json","sha256":"9daafce8a53b45733ec5159539188784b32bf64e26614008fb3db34a48c944d2"},
   {"url":"/organism/era/tasks/co2-annual-mean-compare.json","sha256":"c4bdf1acdeedf359e80803198664facd3d1c901a876a3010767e956fa2ded8c9"},
   {"url":"/organism/era/tasks/co2-annual-mean-sum.json","sha256":"59c61f4a6a4afc517b5d9be10369b9ca39192459c7afa5efb057facd11a37f1a"},
   {"url":"/organism/era/tasks/co2-mauna-loa-mean-co2-level-at-ma-09a152.json","sha256":"24c8137274aff50612e042a0ac08567ca181c3207b33296106fff1adb6f0758d"},
@@ -393,7 +404,10 @@ const LAZY = [
   {"url":"/organism/era/tasks/description-fr-of-descrip-d60a-rev.json","sha256":"ddb5f2f7249284ae32722e6410f4926d6fd023e572ba4de040857051e655b289"},
   {"url":"/organism/era/tasks/description-of-code-f6bc.json","sha256":"83ae5dd1c0fc9c1a21b2bf8ac1aa5fe5280600e8bc545acb43861c5a3b528a5a"},
   {"url":"/organism/era/tasks/description-of-code-f6bc-rev.json","sha256":"8874d46619dd6ee51ee334ce07751d9893a273bdac1b4bf91481b29175209f08"},
-  {"url":"/organism/era/tasks/description-of-person-e0c7.json","sha256":"8da38ccd8f527e330f0ef949cc10b74ae6dbae732af0764f680bb4fc26afb865"}
+  {"url":"/organism/era/tasks/description-of-person-44ad-rev.json","sha256":"f11717ee5dbcb08da6b0c547f8949793432786ce489f064209601d44cd13c4aa"},
+  {"url":"/organism/era/tasks/description-of-person-e0c7.json","sha256":"8da38ccd8f527e330f0ef949cc10b74ae6dbae732af0764f680bb4fc26afb865"},
+  {"url":"/organism/era/tasks/description-of-person-e0c7-rev.json","sha256":"e59e1f37b712f7a8a0368f79b830be3ed0fd0ce4ac64cbc0ca4438219e614165"},
+  {"url":"/organism/era/tasks/lt-global-temp-annual-year-to-mean.json","sha256":"64369a5a539612aaa82a4f2f48d1329c5e9d5fc2971b6d9b7555e6a98e00a623"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
