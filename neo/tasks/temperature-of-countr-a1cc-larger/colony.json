@@ -2,43 +2,42 @@
   "task": "temperature-of-countr-a1cc-larger",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T05:01:00.215Z",
+  "at": "2026-10-18T15:12:54.701Z",
   "stats": {
-    "generated": 200162,
-    "distinct": 77758,
-    "kept": 835,
-    "know": 452,
+    "generated": 36915,
+    "distinct": 56169,
+    "kept": 895,
+    "know": 492,
     "byFamily": {
-      "memory": 202,
-      "transform": 488,
+      "memory": 201,
+      "transform": 480,
       "aggregate": 40,
-      "iterate": 15,
+      "iterate": 84,
       "route": 87,
       "sense": 3
     },
     "bySource": {
-      "memory": 202,
-      "enum": 449,
-      "template": 184
+      "parent": 826,
+      "enum": 69
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 179469,
-    "cellsPerSecond": 1115,
-    "capped": null,
+    "ms": 156482,
+    "cellsPerSecond": 236,
+    "capped": "ms",
     "packs": [
       "fr-country-json-country-by-yearly-average-temperature-99c3d7"
     ],
     "cursor": {
       "v": 1,
       "basis": "594b5e4aea106a6d822c817ab29b01f7022045805e022db2c4b29ad6f7a64631",
-      "round": 0,
-      "at": 107836,
+      "round": 1,
+      "at": 123367,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compute.percentChange",
+      "prim": "iterate.squares",
       "tpl": 1181
     }
   },
@@ -3559,6 +3558,69 @@
       }
     },
     {
+      "id": "n-1cd713e3",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arab",
+            "argentina",
+            "austria",
+            "cyprus",
+            "estonia",
+            "ethiopia",
+            "french",
+            "greece",
+            "iraq",
+            "laos",
+            "lithuania",
+            "longest",
+            "longest one",
+            "longest word",
+            "mauritania",
+            "mauritius",
+            "moldova",
+            "nicaragua",
+            "republic"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "aggregate.longest",
+            [
+              "sense.list"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-65863bc7",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -3611,6 +3673,69 @@
               "lit": 2
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d985324e",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "africa",
+            "anguilla",
+            "aruba",
+            "benin",
+            "brunei",
+            "city",
+            "cyprus",
+            "eritrea",
+            "estonia",
+            "gambia",
+            "guyana",
+            "korea",
+            "lithuania",
+            "madagascar",
+            "montserrat",
+            "north",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "aggregate.shortest",
+            [
+              "sense.list"
+            ]
+          ],
+          {
+            "lit": 1
+          }
         ]
       ],
       "mem": null,
@@ -9633,6 +9758,88 @@
       }
     },
     {
+      "id": "n-301758fd",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dominica",
+            "egypt",
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "samoa",
+            "thailand",
+            "word count",
+            "zimbabwe"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cocos"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-513c3e11",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -9703,6 +9910,170 @@
             {
               "lit": 1
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6d062b89",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dominica",
+            "egypt",
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "samoa",
+            "thailand",
+            "word count",
+            "zimbabwe"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cocos"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bd67858a",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dominica",
+            "egypt",
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "samoa",
+            "thailand",
+            "word count",
+            "zimbabwe"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cocos"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
           ]
         ]
       ],
@@ -20983,6 +21354,528 @@
       }
     },
     {
+      "id": "n-5f316163",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cameroon",
+            "digit count",
+            "element",
+            "guam",
+            "how many digits",
+            "item number",
+            "montserrat",
+            "netherlands",
+            "nth",
+            "number of digits",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belarus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bac6dd75",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cameroon",
+            "digit count",
+            "element",
+            "guam",
+            "how many digits",
+            "item number",
+            "montserrat",
+            "netherlands",
+            "nth",
+            "number of digits",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belarus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f109a998",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cameroon",
+            "digit count",
+            "element",
+            "guam",
+            "how many digits",
+            "item number",
+            "montserrat",
+            "netherlands",
+            "nth",
+            "number of digits",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belarus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8d4d2a1c",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cameroon",
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "montserrat",
+            "netherlands",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belarus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8fb0b1c2",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cameroon",
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "montserrat",
+            "netherlands",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belarus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-914d1da5",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cameroon",
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "montserrat",
+            "netherlands",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belarus"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-029151c5",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -21051,6 +21944,140 @@
       }
     },
     {
+      "id": "n-05495cc6",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "costa",
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "netherlands",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-14540896",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "costa",
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "netherlands",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-74144344",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -21106,6 +22133,73 @@
             {
               "lit": 2
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e534dec9",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "costa",
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "netherlands",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
           ]
         ]
       ],
@@ -33522,6 +34616,102 @@
       }
     },
     {
+      "id": "n-039fcc67",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dashes",
+            "element",
+            "guam",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "montserrat",
+            "netherlands",
+            "nth",
+            "position",
+            "slug"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belarus"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.kebab",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-282b56f9",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -33606,6 +34796,101 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2bc1f736",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "guam",
+            "item number",
+            "montserrat",
+            "netherlands",
+            "nth",
+            "position",
+            "snake case",
+            "snakecase",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belarus"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.snake",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 5,
@@ -33709,6 +34994,189 @@
       }
     },
     {
+      "id": "n-773c115d",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "africa",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "costa",
+            "element",
+            "guam",
+            "item number",
+            "nth",
+            "position",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "african"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "albania"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.title",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8acd2380",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "africa",
+            "costa",
+            "element",
+            "guam",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "african"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "albania"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.swapCase",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-8b609973",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -33794,6 +35262,284 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-aa405ad1",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "africa",
+            "all caps",
+            "capital letters",
+            "capitals",
+            "costa",
+            "element",
+            "guam",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "african"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "albania"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.upper",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cfc28c03",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "guam",
+            "item number",
+            "montserrat",
+            "netherlands",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belarus"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e78bdc22",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "africa",
+            "costa",
+            "element",
+            "guam",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "african"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "albania"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.lower",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 5,
@@ -33907,6 +35653,112 @@
       }
     },
     {
+      "id": "n-847dc24e",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "montserrat",
+            "netherlands",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belarus"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-8d85af8f",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -34012,6 +35864,218 @@
       }
     },
     {
+      "id": "n-98782fc2",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "montserrat",
+            "netherlands",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belarus"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d086f551",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "montserrat",
+            "netherlands",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belarus"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-1dfb7888",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -34058,256 +36122,6 @@
       "fit": {
         "ok": 5,
         "fired": 5,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-023e1b7e",
-      "task": "temperature-of-countr-a1cc-larger",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "longest",
-            "longest one",
-            "longest word",
-            "portugal",
-            "snake case",
-            "snakecase",
-            "syria",
-            "underscores",
-            "variable name"
-          ]
-        ],
-        [
-          "has",
-          "temperature"
-        ],
-        [
-          "words<=",
-          9
-        ],
-        [
-          "not",
-          [
-            "has",
-            "anguilla"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bahamas"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bangladesh"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bermuda"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.snake",
-          [
-            "aggregate.longest",
-            [
-              "know.find",
-              {
-                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
-              },
-              {
-                "lit": "country"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 6,
-      "fit": {
-        "ok": 4,
-        "fired": 4,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-19c9e0bf",
-      "task": "temperature-of-countr-a1cc-larger",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "each word",
-            "longest",
-            "longest one",
-            "longest word",
-            "portugal",
-            "split into words",
-            "syria",
-            "words"
-          ]
-        ],
-        [
-          "has",
-          "temperature"
-        ],
-        [
-          "words<=",
-          9
-        ],
-        [
-          "not",
-          [
-            "has",
-            "anguilla"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bahamas"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bangladesh"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bermuda"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.lines",
-        [
-          "transform.words",
-          [
-            "aggregate.longest",
-            [
-              "know.find",
-              {
-                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
-              },
-              {
-                "lit": "country"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 6,
-      "fit": {
-        "ok": 4,
-        "fired": 4,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-6af01c8f",
-      "task": "temperature-of-countr-a1cc-larger",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "each word",
-            "longest",
-            "longest one",
-            "longest word",
-            "portugal",
-            "split into words",
-            "syria",
-            "words"
-          ]
-        ],
-        [
-          "has",
-          "temperature"
-        ],
-        [
-          "words<=",
-          9
-        ],
-        [
-          "not",
-          [
-            "has",
-            "anguilla"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bahamas"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bangladesh"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bermuda"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.words",
-          [
-            "aggregate.longest",
-            [
-              "know.find",
-              {
-                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
-              },
-              {
-                "lit": "country"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 6,
-      "fit": {
-        "ok": 4,
-        "fired": 4,
         "rows": 100
       }
     },
@@ -34374,424 +36188,6 @@
           "aggregate.longest",
           [
             "transform.sortStrs",
-            [
-              "know.find",
-              {
-                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
-              },
-              {
-                "lit": "country"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 6,
-      "fit": {
-        "ok": 4,
-        "fired": 4,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-8202619b",
-      "task": "temperature-of-countr-a1cc-larger",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "longest",
-            "longest one",
-            "longest word",
-            "portugal",
-            "reverse the words",
-            "reverse word order",
-            "syria",
-            "words backwards"
-          ]
-        ],
-        [
-          "has",
-          "temperature"
-        ],
-        [
-          "words<=",
-          9
-        ],
-        [
-          "not",
-          [
-            "has",
-            "anguilla"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bahamas"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bangladesh"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bermuda"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.reverseWords",
-          [
-            "aggregate.longest",
-            [
-              "know.find",
-              {
-                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
-              },
-              {
-                "lit": "country"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 6,
-      "fit": {
-        "ok": 4,
-        "fired": 4,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-89e9a8d5",
-      "task": "temperature-of-countr-a1cc-larger",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "dashes",
-            "hyphens",
-            "kebab case",
-            "kebabcase",
-            "longest",
-            "longest one",
-            "longest word",
-            "portugal",
-            "slug",
-            "syria"
-          ]
-        ],
-        [
-          "has",
-          "temperature"
-        ],
-        [
-          "words<=",
-          9
-        ],
-        [
-          "not",
-          [
-            "has",
-            "anguilla"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bahamas"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bangladesh"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bermuda"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.kebab",
-          [
-            "aggregate.longest",
-            [
-              "know.find",
-              {
-                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
-              },
-              {
-                "lit": "country"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 6,
-      "fit": {
-        "ok": 4,
-        "fired": 4,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-9ccf5c27",
-      "task": "temperature-of-countr-a1cc-larger",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "class name",
-            "longest",
-            "longest one",
-            "longest word",
-            "pascal case",
-            "pascalcase",
-            "portugal",
-            "syria",
-            "upper camel case"
-          ]
-        ],
-        [
-          "has",
-          "temperature"
-        ],
-        [
-          "words<=",
-          9
-        ],
-        [
-          "not",
-          [
-            "has",
-            "anguilla"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bahamas"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bangladesh"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bermuda"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.pascal",
-          [
-            "aggregate.longest",
-            [
-              "know.find",
-              {
-                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
-              },
-              {
-                "lit": "country"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 6,
-      "fit": {
-        "ok": 4,
-        "fired": 4,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-b28fea73",
-      "task": "temperature-of-countr-a1cc-larger",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "camel case",
-            "camelcase",
-            "longest",
-            "longest one",
-            "longest word",
-            "lower camel case",
-            "portugal",
-            "syria"
-          ]
-        ],
-        [
-          "has",
-          "temperature"
-        ],
-        [
-          "words<=",
-          9
-        ],
-        [
-          "not",
-          [
-            "has",
-            "anguilla"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bahamas"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bangladesh"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bermuda"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.camel",
-          [
-            "aggregate.longest",
-            [
-              "know.find",
-              {
-                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
-              },
-              {
-                "lit": "country"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 6,
-      "fit": {
-        "ok": 4,
-        "fired": 4,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-b9b957b4",
-      "task": "temperature-of-countr-a1cc-larger",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "each word",
-            "longest",
-            "longest one",
-            "longest word",
-            "portugal",
-            "split into words",
-            "syria",
-            "words"
-          ]
-        ],
-        [
-          "has",
-          "temperature"
-        ],
-        [
-          "words<=",
-          9
-        ],
-        [
-          "not",
-          [
-            "has",
-            "anguilla"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bahamas"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bangladesh"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "bermuda"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.and",
-        [
-          "transform.words",
-          [
-            "aggregate.longest",
             [
               "know.find",
               {
@@ -40200,6 +41596,89 @@
       }
     },
     {
+      "id": "n-01c7e975",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digit count",
+            "element",
+            "how many digits",
+            "iraq",
+            "item number",
+            "laos",
+            "nth",
+            "number of digits",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-01d05888",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -40417,6 +41896,89 @@
             {
               "lit": 2
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1b51ce8a",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digit count",
+            "element",
+            "how many digits",
+            "iraq",
+            "item number",
+            "laos",
+            "nth",
+            "number of digits",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
           ]
         ]
       ],
@@ -40725,6 +42287,162 @@
       }
     },
     {
+      "id": "n-7353d40a",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "iraq",
+            "item number",
+            "laos",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-75605f9a",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "botswana",
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-847475e0",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -40785,6 +42503,312 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-88178bbf",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "botswana",
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a658f9e5",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digit count",
+            "element",
+            "how many digits",
+            "iraq",
+            "item number",
+            "laos",
+            "nth",
+            "number of digits",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a89d7c6a",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "botswana",
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c502cb8e",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "iraq",
+            "item number",
+            "laos",
+            "nth",
+            "position",
+            "snake case",
+            "snakecase",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.snake",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 4,
@@ -40877,6 +42901,200 @@
       "mem": null,
       "height": 4,
       "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f7914fde",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dashes",
+            "element",
+            "hyphens",
+            "iraq",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "laos",
+            "nth",
+            "position",
+            "slug"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.kebab",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2f25177b",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many words",
+            "iraq",
+            "item number",
+            "laos",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
       "fit": {
         "ok": 4,
         "fired": 4,
@@ -40979,6 +43197,210 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-755d73a5",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many words",
+            "iraq",
+            "item number",
+            "laos",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-91bfb879",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many words",
+            "iraq",
+            "item number",
+            "laos",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 4,
@@ -48729,6 +51151,55 @@
       }
     },
     {
+      "id": "n-453db33b",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "botswana",
+            "digit count",
+            "guam",
+            "how many digits",
+            "number of digits"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-6de9be83",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -48771,6 +51242,104 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cfc1e7e3",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "botswana",
+            "digit count",
+            "guam",
+            "how many digits",
+            "number of digits"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-edd9b680",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "botswana",
+            "digit count",
+            "guam",
+            "how many digits",
+            "number of digits"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 3,
@@ -50279,6 +52848,164 @@
       }
     },
     {
+      "id": "n-6b3b5675",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "nepal",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "africa"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "aggregate.shortest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-fb7288c1",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "longest",
+            "longest one",
+            "longest word",
+            "portugal"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "anguilla"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "azerbaijan"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "aggregate.longest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-65c03a40",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -50470,6 +53197,71 @@
       }
     },
     {
+      "id": "n-04ad80bf",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-2784c3bf",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -50528,6 +53320,71 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2d6f5a7c",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 2,
@@ -51456,6 +54313,71 @@
       }
     },
     {
+      "id": "n-cc887562",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-dbfa378b",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -51839,6 +54761,208 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1e3014d3",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many words",
+            "item number",
+            "laos",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "chile"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4617418a",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many words",
+            "item number",
+            "laos",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "chile"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 2,
@@ -52389,6 +55513,107 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e678c7de",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many words",
+            "item number",
+            "laos",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "chile"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 2,
@@ -64155,6 +67380,56 @@
       }
     },
     {
+      "id": "n-0b67b601",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "capital letters",
+            "capitals",
+            "guam",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.upper",
+            [
+              "sense.subject"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-16e0dd06",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -64195,6 +67470,55 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1c8c2b77",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "guam",
+            "reverse the words",
+            "reverse word order",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.reverseWords",
+            [
+              "sense.subject"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 2,
@@ -64253,6 +67577,105 @@
       }
     },
     {
+      "id": "n-388fbf50",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "guam",
+            "how many words",
+            "number of words",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-42772cab",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "guam",
+            "snake case",
+            "snakecase",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.snake",
+            [
+              "sense.subject"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-49591207",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -64295,6 +67718,104 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-57e1c12c",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "guam",
+            "how many words",
+            "number of words",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-597bb434",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "guam",
+            "how many words",
+            "number of words",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 2,
@@ -64392,6 +67913,104 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-67183093",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "guam",
+            "how many words",
+            "number of words",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6d4cadb4",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "guam",
+            "lower case",
+            "lowercase",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.lower",
+            [
+              "sense.subject"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 2,
@@ -64538,6 +68157,253 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-97b9b469",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "guam",
+            "how many words",
+            "number of words",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ade1fc74",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "guam",
+            "invert case",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.swapCase",
+            [
+              "sense.subject"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b51554d1",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "guam",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.title",
+            [
+              "sense.subject"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bad03f23",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "dashes",
+            "guam",
+            "hyphens",
+            "kebab case",
+            "kebabcase"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.kebab",
+            [
+              "sense.subject"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cd1e4c4a",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bhutan",
+            "guam",
+            "how many words",
+            "number of words",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 2,
@@ -66112,6 +69978,66 @@
       }
     },
     {
+      "id": "n-49e3635b",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "djibouti"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-4f6f497a",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -66205,6 +70131,66 @@
       }
     },
     {
+      "id": "n-5baf6411",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "djibouti"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-7d9158f9",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -66267,6 +70253,126 @@
       }
     },
     {
+      "id": "n-b51b0349",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "djibouti"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c1d3584f",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "djibouti"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-cd18993b",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -66320,6 +70426,126 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cf98f0be",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "djibouti"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-fb061e4a",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "guam",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "djibouti"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -74195,6 +78421,50 @@
       }
     },
     {
+      "id": "n-68aa6dfc",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digit count",
+            "guam",
+            "how many digits",
+            "number of digits"
+          ]
+        ],
+        [
+          "has",
+          "djibouti"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-915c2cd1",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -74232,6 +78502,94 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9fc7aaaf",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digit count",
+            "guam",
+            "how many digits",
+            "number of digits"
+          ]
+        ],
+        [
+          "has",
+          "djibouti"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cd7c268d",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digit count",
+            "guam",
+            "how many digits",
+            "number of digits"
+          ]
+        ],
+        [
+          "has",
+          "djibouti"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -76821,39 +81179,6 @@
       }
     },
     {
-      "id": "n-b36f5d76",
-      "task": "temperature-of-countr-a1cc-larger",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "myanmar"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.nearest",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "whose temperature is larger: Myanmar or Estonia": "Myanmar has the larger temperature (23.82 against 6.34)."
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-b3fba9a4",
       "task": "temperature-of-countr-a1cc-larger",
       "gen": 10,
@@ -78139,9 +82464,711 @@
         "fired": 1,
         "rows": 100
       }
+    },
+    {
+      "id": "n-023e1b7e",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "longest",
+            "longest one",
+            "longest word",
+            "portugal",
+            "snake case",
+            "snakecase",
+            "syria",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "anguilla"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bahamas"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.snake",
+          [
+            "aggregate.longest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-19c9e0bf",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "longest",
+            "longest one",
+            "longest word",
+            "portugal",
+            "split into words",
+            "syria",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "anguilla"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bahamas"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "aggregate.longest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6af01c8f",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "longest",
+            "longest one",
+            "longest word",
+            "portugal",
+            "split into words",
+            "syria",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "anguilla"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bahamas"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "aggregate.longest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8202619b",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "longest",
+            "longest one",
+            "longest word",
+            "portugal",
+            "reverse the words",
+            "reverse word order",
+            "syria",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "anguilla"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bahamas"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.reverseWords",
+          [
+            "aggregate.longest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-89e9a8d5",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dashes",
+            "hyphens",
+            "kebab case",
+            "kebabcase",
+            "longest",
+            "longest one",
+            "longest word",
+            "portugal",
+            "slug",
+            "syria"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "anguilla"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bahamas"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.kebab",
+          [
+            "aggregate.longest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9ccf5c27",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "longest",
+            "longest one",
+            "longest word",
+            "pascal case",
+            "pascalcase",
+            "portugal",
+            "syria",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "anguilla"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bahamas"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "aggregate.longest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b28fea73",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "longest",
+            "longest one",
+            "longest word",
+            "lower camel case",
+            "portugal",
+            "syria"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "anguilla"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bahamas"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "aggregate.longest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b9b957b4",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "longest",
+            "longest one",
+            "longest word",
+            "portugal",
+            "split into words",
+            "syria",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "temperature"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "anguilla"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bahamas"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "aggregate.longest",
+            [
+              "know.find",
+              {
+                "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b36f5d76",
+      "task": "temperature-of-countr-a1cc-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "myanmar"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "whose temperature is larger: Myanmar or Estonia": "Myanmar has the larger temperature (23.82 against 6.34)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
     }
   ],
   "stages": [
-    "7ddd6a94fe0d079bc3446ac290433f81aafd8c39f9cccb21462649e894b5cbd8"
+    "7ddd6a94fe0d079bc3446ac290433f81aafd8c39f9cccb21462649e894b5cbd8",
+    "9c56a795e9f4e85e03d4eeeeb8715080ac126407b6d9cd70432e6b9726d85901"
   ]
 }
