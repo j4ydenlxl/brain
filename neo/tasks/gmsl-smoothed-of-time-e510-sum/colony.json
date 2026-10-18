@@ -1,34 +1,34 @@
 {
   "task": "gmsl-smoothed-of-time-e510-sum",
-  "generation": 7,
+  "generation": 10,
   "kernel": 2,
-  "at": "2026-10-02T14:13:14.172Z",
+  "at": "2026-10-18T05:38:49.179Z",
   "stats": {
-    "generated": 200256,
-    "distinct": 35393,
-    "kept": 288,
-    "know": 172,
+    "generated": 27749,
+    "distinct": 26165,
+    "kept": 297,
+    "know": 174,
     "byFamily": {
-      "transform": 160,
+      "transform": 168,
       "memory": 104,
       "sense": 2,
-      "compute": 8,
+      "compute": 9,
       "iterate": 6,
       "know": 2,
       "route": 2,
       "aggregate": 4
     },
     "bySource": {
+      "parent": 280,
       "open": 2,
-      "memory": 104,
-      "template": 163,
-      "enum": 19
+      "enum": 9,
+      "template": 6
     },
     "maxHeight": 8,
     "devOk": 99,
     "devN": 99,
-    "ms": 71029,
-    "cellsPerSecond": 2819,
+    "ms": 63205,
+    "cellsPerSecond": 439,
     "capped": "ms",
     "packs": [
       "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
@@ -36,13 +36,13 @@
     "cursor": {
       "v": 1,
       "basis": "7b1a5d93ac065ef016924fd3610979279ef54fa4a6a4a21e080e5a59b3247618",
-      "round": 0,
-      "at": 44401,
+      "round": 1,
+      "at": 46575,
       "maxCost": 7,
       "done": false,
       "cost": 5,
-      "prim": "iterate.growth",
-      "tpl": 3000
+      "prim": "iterate.steps",
+      "tpl": 3068
     }
   },
   "cells": [
@@ -136,6 +136,316 @@
       "mem": null,
       "height": 6,
       "size": 22,
+      "fit": {
+        "ok": 99,
+        "fired": 99,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-6081a957",
+      "task": "gmsl-smoothed-of-time-e510-sum",
+      "gen": 10,
+      "parents": [
+        "n-2eb5ec01"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "compare",
+              "greater",
+              "larger",
+              "lesser",
+              "monthly",
+              "smaller",
+              "uncertainty"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.add",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
+                  },
+                  {
+                    "lit": "time"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
+              },
+              {
+                "lit": "time"
+              },
+              {
+                "lit": "gmsl smoothed"
+              }
+            ]
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
+                  },
+                  {
+                    "lit": "time"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
+              },
+              {
+                "lit": "time"
+              },
+              {
+                "lit": "gmsl smoothed"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 22,
+      "fit": {
+        "ok": 99,
+        "fired": 99,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-109f96df",
+      "task": "gmsl-smoothed-of-time-e510-sum",
+      "gen": 10,
+      "parents": [
+        "n-8d85b188"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "compare",
+              "greater",
+              "larger",
+              "lesser",
+              "monthly",
+              "smaller",
+              "uncertainty"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The gmsl smoothed of ",
+            {
+              "slot": 0
+            },
+            " (",
+            {
+              "slot": 1
+            },
+            ") plus that of ",
+            {
+              "slot": 2
+            },
+            " (",
+            {
+              "slot": 3
+            },
+            ") is ",
+            {
+              "slot": 4
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
+            },
+            {
+              "lit": "time"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
+          },
+          {
+            "lit": "time"
+          },
+          {
+            "lit": "gmsl smoothed"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
+            },
+            {
+              "lit": "time"
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
+              },
+              {
+                "lit": "time"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
+          },
+          {
+            "lit": "time"
+          },
+          {
+            "lit": "gmsl smoothed"
+          }
+        ],
+        [
+          "render.number",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "gmsl smoothed"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
+                    },
+                    {
+                      "lit": "time"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-sea-level-rise-csiro-alt-seas-inc-9ad5d3"
+                },
+                {
+                  "lit": "time"
+                },
+                {
+                  "lit": "gmsl smoothed"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 52,
       "fit": {
         "ok": 99,
         "fired": 99,
@@ -18333,7 +18643,7 @@
     {
       "id": "n-b8f29725",
       "task": "gmsl-smoothed-of-time-e510-sum",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -18435,7 +18745,7 @@
     {
       "id": "n-27530f25",
       "task": "gmsl-smoothed-of-time-e510-sum",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -23953,7 +24263,7 @@
     {
       "id": "n-3c3a7a2a",
       "task": "gmsl-smoothed-of-time-e510-sum",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -24021,7 +24331,7 @@
     {
       "id": "n-3f0388f2",
       "task": "gmsl-smoothed-of-time-e510-sum",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -24094,7 +24404,7 @@
     {
       "id": "n-4028ec95",
       "task": "gmsl-smoothed-of-time-e510-sum",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -24162,7 +24472,7 @@
     {
       "id": "n-63e2ecb0",
       "task": "gmsl-smoothed-of-time-e510-sum",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -24230,7 +24540,7 @@
     {
       "id": "n-94b53a35",
       "task": "gmsl-smoothed-of-time-e510-sum",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -34389,6 +34699,51 @@
       }
     },
     {
+      "id": "n-a0c9ca43",
+      "task": "gmsl-smoothed-of-time-e510-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "2002nov",
+            "added to",
+            "next prime",
+            "smallest prime greater than",
+            "the prime after"
+          ]
+        ],
+        [
+          "has",
+          "add"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.nextPrime",
+          [
+            "transform.add",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 99
+      }
+    },
+    {
       "id": "n-ef573f1f",
       "task": "gmsl-smoothed-of-time-e510-sum",
       "gen": 7,
@@ -38331,7 +38686,7 @@
     {
       "id": "n-1fe17f4c",
       "task": "gmsl-smoothed-of-time-e510-sum",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -38495,6 +38850,56 @@
       }
     },
     {
+      "id": "n-29245de9",
+      "task": "gmsl-smoothed-of-time-e510-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "2002nov",
+            "invert case",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "add"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " smoothed of 2002-Nov (-6.7) plus that of 2015-Jan (29.7) is 23."
+          ]
+        },
+        [
+          "transform.swapCase",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 99
+      }
+    },
+    {
       "id": "n-4a663b96",
       "task": "gmsl-smoothed-of-time-e510-sum",
       "gen": 7,
@@ -38537,9 +38942,338 @@
         "fired": 1,
         "rows": 99
       }
+    },
+    {
+      "id": "n-c928740a",
+      "task": "gmsl-smoothed-of-time-e510-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "2002nov",
+            "difference",
+            "take away"
+          ]
+        ],
+        [
+          "has",
+          "add"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The gmsl smoothed of 2002-Nov (",
+            {
+              "slot": 0
+            },
+            ".7) plus that of 2015-Jan (29.7) is 23."
+          ]
+        },
+        [
+          "render.number",
+          [
+            "transform.sub",
+            {
+              "lit": 1996
+            },
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-0a5f78cb",
+      "task": "gmsl-smoothed-of-time-e510-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "2002nov",
+            "difference",
+            "invert case",
+            "swap case",
+            "take away",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "add"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " smoothed of 2002-Nov (",
+            {
+              "slot": 1
+            },
+            ".7) plus that of 2015-Jan (29.7) is 23."
+          ]
+        },
+        [
+          "transform.swapCase",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.sub",
+            {
+              "lit": 1996
+            },
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-792e214c",
+      "task": "gmsl-smoothed-of-time-e510-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "2002nov",
+            "difference",
+            "invert case",
+            "swap case",
+            "take away",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "add"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " smoothed of 2002-Nov (",
+            {
+              "slot": 1
+            },
+            ".7) plus that of 2015-Jan (29.7) is 23."
+          ]
+        },
+        [
+          "transform.swapCase",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "render.plain",
+          [
+            "transform.sub",
+            {
+              "lit": 1996
+            },
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-528ad698",
+      "task": "gmsl-smoothed-of-time-e510-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "2002nov",
+            "difference",
+            "each word",
+            "split into words",
+            "take away"
+          ]
+        ],
+        [
+          "has",
+          "add"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " smoothed of 2002-Nov (",
+            {
+              "slot": 1
+            },
+            ".7) plus that of 2015-Jan (29.7) is 23."
+          ]
+        },
+        [
+          "render.and",
+          [
+            "transform.words",
+            [
+              "sense.wordAt",
+              {
+                "lit": 3
+              }
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.sub",
+            {
+              "lit": 1996
+            },
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-6f81546f",
+      "task": "gmsl-smoothed-of-time-e510-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "2002nov",
+            "difference",
+            "each word",
+            "split into words",
+            "take away"
+          ]
+        ],
+        [
+          "has",
+          "add"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " smoothed of 2002-Nov (",
+            {
+              "slot": 1
+            },
+            ".7) plus that of 2015-Jan (29.7) is 23."
+          ]
+        },
+        [
+          "render.list",
+          [
+            "transform.words",
+            [
+              "sense.wordAt",
+              {
+                "lit": 3
+              }
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.sub",
+            {
+              "lit": 1996
+            },
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 99
+      }
     }
   ],
   "stages": [
-    "10e4c74e65bd81ae848931d1eb60ae5ff7b9aef1ef1e6fd47042fd8877c249a0"
+    "10e4c74e65bd81ae848931d1eb60ae5ff7b9aef1ef1e6fd47042fd8877c249a0",
+    "fb26e96609f81bbc84f67ff46f1789100649712a08229b271dd0cb765df1e020"
   ]
 }
