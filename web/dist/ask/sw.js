@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "c5e87f0043e215db4068080e7986037fc46a347f36b66a86dea626a2ad2b031d";
+const VERSION = "703b8bab91a10030da914f5d31f07d0d4f5e755f53d48fbbfedee90d7f926c5a";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"1fa767022fc4a7705999dbd9b9b3b71e1f1914ec36fa4ebd04dcb4a4023d91fa"},
+  {"url":"/organism/cells.json","sha256":"149e0086f4aa2204f02bccbf4d5cd1b789ba4e77ccd7b14aa873e5af39eba362"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -268,16 +268,21 @@ const PRECACHE = [
   {"url":"/organism/cells/mean-of-year-414b-compare-neo-g10.mjs","sha256":"7412d810600e90141f38eb467e6bd45d71d02c393cf10bf51bf482ce134a26e0"},
   {"url":"/organism/cells/mean-of-year-414b-sum-neo-g10.mjs","sha256":"3c037b24729aafcfbf7e50505f0d8453ff60234da64c3a16b57ad57cef4e70c1"},
   {"url":"/organism/cells/price-of-date-8b80-compare-neo-g10.mjs","sha256":"4d3eeba3198b36256410028a74f8ffcb48149b813b9369448552320728c90788"},
+  {"url":"/organism/cells/program-code-of-program-n-4eb0-rev-neo-g10.mjs","sha256":"0e5d84822912cebb56f81674929abf252dc7c9f0b31a7aa68f31623196512fcd"},
+  {"url":"/organism/cells/titles-won-of-team-818a-smaller-neo-g10.mjs","sha256":"5e9483b7bb56dbc5c497bf6f844570f9dff188ecfd5fd89a61410c6d25ca4523"},
+  {"url":"/organism/cells/co2-mauna-loa-mean-co2-level-at-ma-09a152-neo-g10.mjs","sha256":"be6369934f9a67409c8ae17bc52bd10c73efbc5e81e6a92c98fb5c1e9aa7a2f1"},
+  {"url":"/organism/cells/datasets-country-codes-currency-co-2ae6a4-neo-g10.mjs","sha256":"08f2bcdba8ff8815a4d51ded5f09e48525e73831515fae8c6a95eb156bfb864d"},
+  {"url":"/organism/cells/datasets-currency-codes-currency-t-fb7200-neo-g10.mjs","sha256":"ca1c548452d6f4bf1e58f96b1760cfd8f4df24b687237279589c79499676c77c"},
+  {"url":"/organism/cells/10-min-sampled-avg-of-352a-sum-neo-g10.mjs","sha256":"869707f74a575a5a9a20f6ab35359f69d204ea028b731f5ef2e5c78852cffd42"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"61b92acb0a6eec99300cb35ec14e271b09ce43a3a659154832fe854527ee6d4c"}
+  {"url":"/organism/era/tasks.json","sha256":"880f80f3b1dd5b290b59c7d6d87d89bbec23e6f6cb43e50ade61a3342c56bf7a"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-larger.json","sha256":"702c1c174f68cfdeed20c5a37e976dbfc0f11af94ed518ce64896e7d1a3c7058"},
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-smaller.json","sha256":"44a7ac9baacd44ef4adac168654551907d9d72163b3ada5c134be4229e8b1e86"},
-  {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-sum.json","sha256":"740658c731e807c9ff4043ea365a046d28dcef4f07ffebde30e2ff6a8c421ae6"},
   {"url":"/organism/era/tasks/10-min-std-dev-of-tim-2f50-compare.json","sha256":"64c20931528c4cd887828b8447a57181b23586524a8c000794a2c27af27e3fca"},
   {"url":"/organism/era/tasks/10-min-std-dev-of-tim-2f50-larger.json","sha256":"2f064431e28ed75b6799542af1ae2240cbd3458d4e6bf92833e9cceace1f1ce1"},
   {"url":"/organism/era/tasks/10-min-std-dev-of-tim-2f50-smaller.json","sha256":"917d6d3198fcfcc4a32bbb6761894f9acf4abd533770b57af4cf503fe99411cc"},
@@ -387,7 +392,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/clean-name-of-album-565e.json","sha256":"b0142155d6747399fb1465f6b73818405c58b8d713ecf892656153a0c5291ce8"},
   {"url":"/organism/era/tasks/climbing-status-of-peak-n-b2c0.json","sha256":"267a95608353328abba54d59100709ee2a12c32eed9e734598dc38959128ac69"},
   {"url":"/organism/era/tasks/co2-annual-mean-compare.json","sha256":"c4bdf1acdeedf359e80803198664facd3d1c901a876a3010767e956fa2ded8c9"},
-  {"url":"/organism/era/tasks/co2-mauna-loa-mean-co2-level-at-ma-09a152.json","sha256":"24c8137274aff50612e042a0ac08567ca181c3207b33296106fff1adb6f0758d"},
   {"url":"/organism/era/tasks/co2-mauna-loa-year-to-mean-co2-lev-a06bf5.json","sha256":"5078728443e03108a1f116ba255d7b4171c76705689a255aee16ca442f00e3bb"},
   {"url":"/organism/era/tasks/coastline-of-country-2328-compare.json","sha256":"0cdea7f719135aa1f5ec5f61d4e1c4359374ade347757eb0209b133688e21d0c"},
   {"url":"/organism/era/tasks/coastline-of-country-2328-larger.json","sha256":"b86f51f3218107e64395093d04b750f1bcbd24770f6e06134e78ec3766bf4c96"},
@@ -466,9 +470,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/currency-country.json","sha256":"dbd4e32209206638fe3796d6d651423bff2c0ddec8c3567a5a24ec084dfb66da"},
   {"url":"/organism/era/tasks/currency-name-code.json","sha256":"6ef104fca6c7fc4e550544af9ef93ddc132fc7af573b624b2d7506331373354e"},
   {"url":"/organism/era/tasks/datasets-country-codes-country-to-46e779.json","sha256":"6e96886ac351aeea53cc4f1b109fd48a5f5927d830285da48760c227577b8aad"},
-  {"url":"/organism/era/tasks/datasets-country-codes-currency-co-2ae6a4.json","sha256":"3120886c65e30e224d49280e966f220eb23539b470e77ed7447015d946fef333"},
   {"url":"/organism/era/tasks/datasets-currency-codes-currency-c-870ef5.json","sha256":"4701e62f6d6deb8704b6d23b30f7e79c54c96971bc59a185447ef38714f50e1f"},
-  {"url":"/organism/era/tasks/datasets-currency-codes-currency-t-fb7200.json","sha256":"d7f472a5f8a700a5353eabb1a3f090d818108b3eafb144d5c197abc77e4d5b04"},
   {"url":"/organism/era/tasks/datasets-language-codes-3b2-langua-7356b4.json","sha256":"52f844d13c7279572c158043044d97fc5f7bbe7ae4a9f4bfec0aff3da759c711"},
   {"url":"/organism/era/tasks/datasets-language-codes-3b2-three-fad5d1.json","sha256":"af0022072c353b27dd2c43b1ad7f2c6429455668c3d21824ef011c076c177d47"},
   {"url":"/organism/era/tasks/datasets-language-codes-language-c-627a99.json","sha256":"5597b0adb206bf4f5fd776b22f3236772266d90a045bb7e44a5ba760cdcf6497"},
@@ -518,7 +520,11 @@ const LAZY = [
   {"url":"/organism/era/tasks/ep-of-track-name-5aaf.json","sha256":"9b797143b8716b3039921fe47a94f03d35c80fbb74c2f0abc204c20e07fa75db"},
   {"url":"/organism/era/tasks/episode-number-of-episode-7537.json","sha256":"8c3a1f6eb2bc6b32665f738b4a96ae552f11fa26f9a0335a86796bb5420547b6"},
   {"url":"/organism/era/tasks/episode-of-airdate-0390.json","sha256":"b97ad00ac28a1dc721e1e2204e8cc5d254cbd9a7963df44f95a1c4d5aae72341"},
-  {"url":"/organism/era/tasks/episode-rating-of-episode-4670.json","sha256":"255700a1692d43be1e5de4b7b69116f3b050f0ddc6851105f1651f72fb1b4173"}
+  {"url":"/organism/era/tasks/episode-of-airdate-0390-rev.json","sha256":"21bd4f8ae1bf78d3b7a7688a79ff9f9f45cc2367a97eb004ed2f6480c124101d"},
+  {"url":"/organism/era/tasks/episode-rating-of-episode-4670.json","sha256":"255700a1692d43be1e5de4b7b69116f3b050f0ddc6851105f1651f72fb1b4173"},
+  {"url":"/organism/era/tasks/event-year-trend-of-name-360f-rev.json","sha256":"0f6ee3a0666a944f0f2b0764b52e0d48e58a2b0bb0d95653e7455e7e27febfb4"},
+  {"url":"/organism/era/tasks/exchange-of-act-symbol-3f79.json","sha256":"acf852f453192a381952e4c3f24e4ed1894fa416031ae2224fc5840628ef87f4"},
+  {"url":"/organism/era/tasks/extension-language.json","sha256":"ad81625d4eb87c71732905812bb387d241d6e0daac558c6081c24a34231a7d1a"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
