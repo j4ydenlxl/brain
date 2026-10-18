@@ -1,42 +1,42 @@
 {
   "task": "price-of-date-7d68",
-  "generation": 7,
-  "kernel": 1,
-  "at": "2026-10-02T13:35:09.618Z",
+  "generation": 10,
+  "kernel": 2,
+  "at": "2026-10-18T02:21:08.176Z",
   "stats": {
-    "generated": 200172,
-    "distinct": 92578,
-    "kept": 103,
-    "know": 2,
+    "generated": 200201,
+    "distinct": 90914,
+    "kept": 104,
+    "know": 3,
     "byFamily": {
       "memory": 101,
-      "transform": 1,
-      "aggregate": 1
+      "aggregate": 1,
+      "compute": 2
     },
     "bySource": {
-      "memory": 101,
-      "template": 1,
-      "enum": 1
+      "parent": 94,
+      "enum": 3,
+      "memory": 7
     },
     "maxHeight": 6,
     "devOk": 100,
     "devN": 100,
-    "ms": 44362,
-    "cellsPerSecond": 4512,
+    "ms": 44235,
+    "cellsPerSecond": 4526,
     "capped": null,
     "packs": [
       "fr-natural-gas-monthly-processed-dd1d84"
     ],
     "cursor": {
       "v": 1,
-      "basis": "aec921cc9db8db4ed67bf024e5bb56229645d4bb3ec59eacbde1de345a8c09ad",
+      "basis": "a30fd208d30181695135087ad3b231fd25ec3e03800c72f56fbe158e7228f4a9",
       "round": 0,
-      "at": 93755,
+      "at": 94576,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compute.increase",
-      "tpl": 1921
+      "prim": "compute.divisorCount",
+      "tpl": 2105
     }
   },
   "cells": [
@@ -110,97 +110,9 @@
       }
     },
     {
-      "id": "n-f9b74645",
-      "task": "price-of-date-7d68",
-      "gen": 7,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "element",
-            "item number",
-            "me",
-            "nth",
-            "position"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          [
-            "sense.second"
-          ]
-        ],
-        [
-          "sense.after",
-          {
-            "lit": "price"
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-natural-gas-monthly-processed-dd1d84"
-              },
-              {
-                "lit": "date"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-natural-gas-monthly-processed-dd1d84"
-          },
-          {
-            "lit": "date"
-          },
-          {
-            "lit": "price"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 16,
-      "fit": {
-        "ok": 4,
-        "fired": 4,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-98197f96",
       "task": "price-of-date-7d68",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -260,6 +172,155 @@
       "mem": null,
       "height": 6,
       "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-89511912",
+      "task": "price-of-date-7d68",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after years at",
+            "compound interest",
+            "compounded",
+            "element",
+            "grows to",
+            "item number",
+            "me",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.money",
+        [
+          "compute.compound",
+          [
+            "sense.howMany"
+          ],
+          [
+            "sense.howMany"
+          ],
+          [
+            "series.prev",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-natural-gas-monthly-processed-dd1d84"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-natural-gas-monthly-processed-dd1d84"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "price"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-014f07d6",
+      "task": "price-of-date-7d68",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after years at",
+            "compound interest",
+            "compounded",
+            "element",
+            "grows to",
+            "item number",
+            "me",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.decimals",
+        [
+          "compute.compound",
+          [
+            "sense.howMany"
+          ],
+          [
+            "sense.howMany"
+          ],
+          [
+            "series.prev",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-natural-gas-monthly-processed-dd1d84"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-natural-gas-monthly-processed-dd1d84"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "price"
+            }
+          ]
+        ],
+        {
+          "lit": 2
+        }
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -399,6 +460,43 @@
       }
     },
     {
+      "id": "n-071c1018",
+      "task": "price-of-date-7d68",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "price"
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the price of 2013-02-01": "The price of 2013-02-01 is 3.33."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-0a2768f8",
       "task": "price-of-date-7d68",
       "gen": 7,
@@ -498,39 +596,6 @@
       }
     },
     {
-      "id": "n-135406c4",
-      "task": "price-of-date-7d68",
-      "gen": 7,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "price"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.lookup",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "tell me the price of 1997-08-01": "The price of 1997-08-01 is 2.49."
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-15c675a2",
       "task": "price-of-date-7d68",
       "gen": 7,
@@ -553,6 +618,43 @@
       "mem": {
         "table": {
           "what is the price of 2026-04-01": "The price of 2026-04-01 is 2.77."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-17f351f0",
+      "task": "price-of-date-7d68",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "price"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the price of 1999-01-01": "The price of 1999-01-01 is 1.85."
         }
       },
       "height": 3,
@@ -630,39 +732,6 @@
       }
     },
     {
-      "id": "n-278c9f4a",
-      "task": "price-of-date-7d68",
-      "gen": 7,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "price"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.lookup",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "what is the price of 1999-01-01": "The price of 1999-01-01 is 1.85."
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-27fc44cc",
       "task": "price-of-date-7d68",
       "gen": 7,
@@ -685,6 +754,43 @@
       "mem": {
         "table": {
           "give the price of 2012-03-01": "The price of 2012-03-01 is 2.17."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-284da562",
+      "task": "price-of-date-7d68",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "price"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the price of 1997-08-01": "The price of 1997-08-01 is 2.49."
         }
       },
       "height": 3,
@@ -1063,6 +1169,43 @@
       }
     },
     {
+      "id": "n-4f496cc9",
+      "task": "price-of-date-7d68",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "price"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the price of 2025-03-01": "The price of 2025-03-01 is 4.12."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-50d02403",
       "task": "price-of-date-7d68",
       "gen": 7,
@@ -1195,39 +1338,6 @@
       }
     },
     {
-      "id": "n-53a178e0",
-      "task": "price-of-date-7d68",
-      "gen": 7,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "price"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.lookup",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "tell me the price of 2025-03-01": "The price of 2025-03-01 is 4.12."
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-53c79dc5",
       "task": "price-of-date-7d68",
       "gen": 7,
@@ -1349,39 +1459,6 @@
       "mem": {
         "table": {
           "tell me the price of 2010-09-01": "The price of 2010-09-01 is 3.89."
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-5e58e7bd",
-      "task": "price-of-date-7d68",
-      "gen": 7,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "price"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.lookup",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "tell me the price of 2018-10-01": "The price of 2018-10-01 is 3.28."
         }
       },
       "height": 3,
@@ -1822,39 +1899,6 @@
       }
     },
     {
-      "id": "n-7e92ae85",
-      "task": "price-of-date-7d68",
-      "gen": 7,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "price"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.lookup",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "what is the price of 2010-07-01": "The price of 2010-07-01 is 4.63."
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-7f49834f",
       "task": "price-of-date-7d68",
       "gen": 7,
@@ -2141,6 +2185,43 @@
       "mem": {
         "table": {
           "give the price of 2020-08-01": "The price of 2020-08-01 is 2.3."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9e34f22b",
+      "task": "price-of-date-7d68",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "price"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the price of 2018-10-01": "The price of 2018-10-01 is 3.28."
         }
       },
       "height": 3,
@@ -2618,6 +2699,43 @@
       }
     },
     {
+      "id": "n-be577931",
+      "task": "price-of-date-7d68",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "price"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the price of 2010-07-01": "The price of 2010-07-01 is 4.63."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-c2cc60bd",
       "task": "price-of-date-7d68",
       "gen": 7,
@@ -3047,6 +3165,43 @@
       }
     },
     {
+      "id": "n-ddf67db4",
+      "task": "price-of-date-7d68",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "price"
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the price of 2003-10-01": "The price of 2003-10-01 is 4.63."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-e2eee551",
       "task": "price-of-date-7d68",
       "gen": 7,
@@ -3311,39 +3466,6 @@
       }
     },
     {
-      "id": "n-f01e8e53",
-      "task": "price-of-date-7d68",
-      "gen": 7,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "price"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.lookup",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "give the price of 2003-10-01": "The price of 2003-10-01 is 4.63."
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-f06e5ee3",
       "task": "price-of-date-7d68",
       "gen": 7,
@@ -3513,39 +3635,6 @@
       }
     },
     {
-      "id": "n-f9417b7f",
-      "task": "price-of-date-7d68",
-      "gen": 7,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "price"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.lookup",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "give the price of 2013-02-01": "The price of 2013-02-01 is 3.33."
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-ff5748ef",
       "task": "price-of-date-7d68",
       "gen": 7,
@@ -3577,9 +3666,329 @@
         "fired": 1,
         "rows": 100
       }
+    },
+    {
+      "id": "n-f9b74645",
+      "task": "price-of-date-7d68",
+      "gen": 7,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "me",
+            "nth",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          [
+            "sense.second"
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-processed-dd1d84"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-natural-gas-monthly-processed-dd1d84"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "price"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-135406c4",
+      "task": "price-of-date-7d68",
+      "gen": 7,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the price of 1997-08-01": "The price of 1997-08-01 is 2.49."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-278c9f4a",
+      "task": "price-of-date-7d68",
+      "gen": 7,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the price of 1999-01-01": "The price of 1999-01-01 is 1.85."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-53a178e0",
+      "task": "price-of-date-7d68",
+      "gen": 7,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the price of 2025-03-01": "The price of 2025-03-01 is 4.12."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5e58e7bd",
+      "task": "price-of-date-7d68",
+      "gen": 7,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the price of 2018-10-01": "The price of 2018-10-01 is 3.28."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7e92ae85",
+      "task": "price-of-date-7d68",
+      "gen": 7,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the price of 2010-07-01": "The price of 2010-07-01 is 4.63."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f01e8e53",
+      "task": "price-of-date-7d68",
+      "gen": 7,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the price of 2003-10-01": "The price of 2003-10-01 is 4.63."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f9417b7f",
+      "task": "price-of-date-7d68",
+      "gen": 7,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the price of 2013-02-01": "The price of 2013-02-01 is 3.33."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
     }
   ],
   "stages": [
-    "8a9b8bb13357fd446136f3a3c324c43b2a22d8c65129c7cb6dd8b703a72d0628"
+    "8a9b8bb13357fd446136f3a3c324c43b2a22d8c65129c7cb6dd8b703a72d0628",
+    "33b3980fbe5ac0d9f7a15edf96da8b03a9414f8ad0120fea29520aa91f617f3f"
   ]
 }

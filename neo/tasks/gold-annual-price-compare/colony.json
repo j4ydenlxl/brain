@@ -1,26 +1,1739 @@
 {
   "task": "gold-annual-price-compare",
-  "generation": 7,
-  "kernel": 1,
-  "at": "2026-10-02T11:35:17.610Z",
+  "generation": 10,
+  "kernel": 2,
+  "at": "2026-10-18T02:15:26.200Z",
   "stats": {
-    "generated": 53392,
-    "distinct": 30678,
-    "kept": 104,
+    "generated": 200431,
+    "distinct": 39314,
+    "kept": 111,
+    "know": 7,
     "byFamily": {
-      "memory": 104
+      "compare": 3,
+      "memory": 104,
+      "aggregate": 3,
+      "transform": 1
     },
     "bySource": {
-      "parent": 104
+      "yesno": 2,
+      "open": 1,
+      "parent": 103,
+      "template": 4,
+      "memory": 1
     },
-    "maxHeight": 3,
+    "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 67116,
-    "cellsPerSecond": 796,
-    "capped": "ms"
+    "ms": 158229,
+    "cellsPerSecond": 1267,
+    "capped": "ms",
+    "packs": [
+      "gold-annual"
+    ],
+    "cursor": {
+      "v": 1,
+      "basis": "13d1df304b1ccc0115bff4bdd4f3eabc38aabef5a6d3423bd5138ff1860bc41f",
+      "round": 0,
+      "at": 36890,
+      "maxCost": 7,
+      "done": false,
+      "cost": 5,
+      "prim": "iterate.growth",
+      "tpl": 3000
+    }
   },
   "cells": [
+    {
+      "id": "n-89c1bbe7",
+      "task": "gold-annual-price-compare",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bigger than",
+            "compare",
+            "element",
+            "exceeds",
+            "greater than",
+            "item number",
+            "larger than",
+            "more than",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "gold"
+        ]
+      ],
+      "pyramid": [
+        "render.yesNo",
+        [
+          "compare.greater",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "gold-annual"
+                  },
+                  {
+                    "lit": "date"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              },
+              {
+                "lit": "gold price"
+              }
+            ]
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "gold-annual"
+                  },
+                  {
+                    "lit": "date"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              },
+              {
+                "lit": "gold price"
+              }
+            ]
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              "Gold was ",
+              {
+                "slot": 0
+              },
+              " US dollars an ounce in ",
+              {
+                "slot": 1
+              },
+              " and ",
+              {
+                "slot": 2
+              },
+              " US dollars an ounce in ",
+              {
+                "slot": 3
+              },
+              ", so ",
+              {
+                "slot": 4
+              },
+              " was dearer."
+            ]
+          },
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "gold price"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "gold price"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "render.number",
+            [
+              "sense.first"
+            ]
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              "Gold was ",
+              {
+                "slot": 0
+              },
+              " US dollars an ounce in ",
+              {
+                "slot": 1
+              },
+              " and ",
+              {
+                "slot": 2
+              },
+              " US dollars an ounce in ",
+              {
+                "slot": 3
+              },
+              ", so ",
+              {
+                "slot": 4
+              },
+              " was dearer."
+            ]
+          },
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "gold price"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "gold price"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "render.number",
+            [
+              "sense.second"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 86,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-570b5301",
+      "task": "gold-annual-price-compare",
+      "gen": 10,
+      "parents": [
+        "n-9d17e1bb"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "183307",
+              "183309",
+              "183502",
+              "18360201",
+              "183610",
+              "183901",
+              "184008",
+              "184302",
+              "18430201",
+              "18430701",
+              "184406",
+              "184702",
+              "18560501",
+              "18570801",
+              "18591001",
+              "18611201",
+              "186201",
+              "18620501",
+              "18620701",
+              "186209",
+              "18630501",
+              "18640801",
+              "186502",
+              "187008",
+              "18720401",
+              "18730601",
+              "18740501",
+              "18760901",
+              "187810",
+              "188610",
+              "188806",
+              "18880801",
+              "18881001",
+              "188811",
+              "189401",
+              "18940801",
+              "18990501",
+              "19030501",
+              "19080101",
+              "19080701",
+              "191003",
+              "191209",
+              "19130501",
+              "191401",
+              "19190701",
+              "192408",
+              "19300401",
+              "193305",
+              "19330601",
+              "193709",
+              "19520101",
+              "19520301",
+              "19540101",
+              "195612",
+              "197112",
+              "198304",
+              "19860121",
+              "19860317",
+              "19860630",
+              "19860915",
+              "19870410",
+              "19870630",
+              "19870826",
+              "19880122",
+              "19880217",
+              "19880520",
+              "19880630",
+              "19880729",
+              "19890215",
+              "19890315",
+              "19890421",
+              "19890615",
+              "19890623",
+              "19890626",
+              "19890719",
+              "19890814",
+              "19891115",
+              "19900202",
+              "19900515",
+              "19900630",
+              "19900713",
+              "19900810",
+              "19910227",
+              "19910402",
+              "19910630",
+              "19910927",
+              "19911115",
+              "19911118",
+              "19920310",
+              "19920619",
+              "19920717",
+              "19920817",
+              "19920911",
+              "19921103",
+              "19921115",
+              "19930215",
+              "19930630",
+              "19930909",
+              "19940204",
+              "19940515",
+              "19940630",
+              "19940722",
+              "19940819",
+              "19941007",
+              "19941104",
+              "19950407",
+              "19950601",
+              "19950630",
+              "19950915",
+              "19951102",
+              "19951127",
+              "19960515",
+              "19960630",
+              "19961025",
+              "199701",
+              "19970201",
+              "19970423",
+              "19970425",
+              "19970819",
+              "19970901",
+              "19970915",
+              "19971101",
+              "199712",
+              "19971211",
+              "19980219",
+              "199804",
+              "199805",
+              "19980615",
+              "19980630",
+              "19980807",
+              "19980814",
+              "19980815",
+              "19980817",
+              "199809",
+              "19980904",
+              "19981016",
+              "199812",
+              "19990115",
+              "19990419",
+              "19990630",
+              "19990723",
+              "19990806",
+              "19990915",
+              "19990917",
+              "199911",
+              "19991112",
+              "19991215",
+              "200001",
+              "20000121",
+              "200002",
+              "20000215",
+              "20000501",
+              "200006",
+              "20000719",
+              "200009",
+              "20001011",
+              "20001115",
+              "20010323",
+              "200107",
+              "20010815",
+              "200110",
+              "20011108",
+              "20011115",
+              "20020115",
+              "20020215",
+              "20020802",
+              "20021101",
+              "20021215",
+              "20030116",
+              "20030305",
+              "20030315",
+              "20030402",
+              "20030501",
+              "20030728",
+              "20030911",
+              "20031013",
+              "20031226",
+              "20040126",
+              "20040615",
+              "20040801",
+              "20040820",
+              "20040924",
+              "20050217",
+              "200503",
+              "20050630",
+              "20050721",
+              "20050909",
+              "20051108",
+              "20051115",
+              "20051215",
+              "20060127",
+              "20060323",
+              "20060501",
+              "20060615",
+              "20060620",
+              "20060715",
+              "20060825",
+              "20060908",
+              "20061115",
+              "20061213",
+              "20070124",
+              "20070201",
+              "20070301",
+              "20070315",
+              "20070323",
+              "20070415",
+              "20070504",
+              "20070515",
+              "20070614",
+              "20070701",
+              "200708",
+              "20070820",
+              "20070901",
+              "200712",
+              "20071218",
+              "20080101",
+              "20080111",
+              "20080115",
+              "20080124",
+              "20080301",
+              "20080522",
+              "20080630",
+              "20080922",
+              "20080929",
+              "20090310",
+              "20090401",
+              "20090414",
+              "20090612",
+              "20090901",
+              "20090918",
+              "20091001",
+              "20091012",
+              "20100215",
+              "20100301",
+              "20100413",
+              "20100501",
+              "20100512",
+              "20100630",
+              "201007",
+              "20100719",
+              "20100927",
+              "20101112",
+              "20101224",
+              "20110101",
+              "20110115",
+              "20110401",
+              "20110501",
+              "20110815",
+              "20110907",
+              "20111007",
+              "20111208",
+              "20111215",
+              "20120130",
+              "20120301",
+              "20120420",
+              "201206",
+              "20120630",
+              "20121115",
+              "20130415",
+              "20130426",
+              "20130515",
+              "20130630",
+              "20130901",
+              "20140110",
+              "20140205",
+              "20140218",
+              "20140312",
+              "201406",
+              "20140915",
+              "20150415",
+              "20150511",
+              "20150527",
+              "20150828",
+              "20150901",
+              "20151127",
+              "20160129",
+              "20160314",
+              "20160606",
+              "20160630",
+              "20160812",
+              "20160815",
+              "20160902",
+              "20160907",
+              "20161014",
+              "20170106",
+              "20170215",
+              "20170315",
+              "20170501",
+              "20170623",
+              "20170908",
+              "20180105",
+              "20180119",
+              "20180201",
+              "20180530",
+              "20180630",
+              "201807",
+              "20180815",
+              "20190515",
+              "20190522",
+              "20190621",
+              "20190630",
+              "20190701",
+              "20190718",
+              "20190724",
+              "20190725",
+              "201910",
+              "201912",
+              "20200403",
+              "20200417",
+              "20200630",
+              "20200807",
+              "20200915",
+              "202103",
+              "202110",
+              "202111",
+              "202201",
+              "202202",
+              "202209",
+              "20221015",
+              "20230201",
+              "20230302",
+              "202304",
+              "20230401",
+              "20230415",
+              "20230607",
+              "20230630",
+              "20230913",
+              "20240321",
+              "20240322",
+              "20240412",
+              "202407",
+              "202409",
+              "20240901",
+              "20250207",
+              "20250328",
+              "20250613",
+              "20250615",
+              "20250620",
+              "20250624",
+              "20250723",
+              "20250815",
+              "20250926",
+              "20251117",
+              "add",
+              "adjusted",
+              "angeles",
+              "article",
+              "artyfacts",
+              "author",
+              "bor",
+              "cb",
+              "china",
+              "close",
+              "confirmed",
+              "cpi",
+              "date",
+              "discards",
+              "dividend",
+              "explorer",
+              "fatalities",
+              "firefox",
+              "gender",
+              "gmsl",
+              "greater",
+              "high",
+              "increase",
+              "iso",
+              "larger",
+              "lesser",
+              "loa",
+              "lower",
+              "mean",
+              "national",
+              "nfl20102017",
+              "num",
+              "number",
+              "open",
+              "phoenix",
+              "plus",
+              "portrait",
+              "rate",
+              "recovered",
+              "recreational",
+              "season",
+              "slater",
+              "smaller",
+              "solid",
+              "sp500",
+              "sum",
+              "temp",
+              "together",
+              "total",
+              "ultimate",
+              "uncertainty",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.yesNo",
+        [
+          "compare.isEven",
+          [
+            "sense.wordCount"
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " was ",
+              {
+                "slot": 1
+              },
+              " US dollars an ounce in ",
+              {
+                "slot": 2
+              },
+              " and ",
+              {
+                "slot": 3
+              },
+              " US dollars an ounce in ",
+              {
+                "slot": 4
+              },
+              ", so ",
+              {
+                "slot": 5
+              },
+              " was dearer."
+            ]
+          },
+          [
+            "aggregate.shortest",
+            [
+              "sense.content"
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "gold price"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "gold price"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "gold-annual"
+                      },
+                      {
+                        "lit": "date"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "gold-annual"
+                  },
+                  {
+                    "lit": "date"
+                  },
+                  {
+                    "lit": "gold price"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "gold-annual"
+                      },
+                      {
+                        "lit": "date"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "gold-annual"
+                  },
+                  {
+                    "lit": "date"
+                  },
+                  {
+                    "lit": "gold price"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " was ",
+              {
+                "slot": 1
+              },
+              " US dollars an ounce in ",
+              {
+                "slot": 2
+              },
+              " and ",
+              {
+                "slot": 3
+              },
+              " US dollars an ounce in ",
+              {
+                "slot": 4
+              },
+              ", so ",
+              {
+                "slot": 5
+              },
+              " was dearer."
+            ]
+          },
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 5
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "gold price"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "gold price"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "gold-annual"
+                      },
+                      {
+                        "lit": "date"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "gold-annual"
+                  },
+                  {
+                    "lit": "date"
+                  },
+                  {
+                    "lit": "gold price"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "gold-annual"
+                      },
+                      {
+                        "lit": "date"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "gold-annual"
+                  },
+                  {
+                    "lit": "date"
+                  },
+                  {
+                    "lit": "gold price"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 8,
+      "size": 132,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9d17e1bb",
+      "task": "gold-annual-price-compare",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "an even number",
+            "bigger than",
+            "compare",
+            "element",
+            "even",
+            "exceeds",
+            "greater than",
+            "is even",
+            "item number",
+            "larger than",
+            "more than",
+            "nth",
+            "position",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "gold"
+        ]
+      ],
+      "pyramid": [
+        "render.yesNo",
+        [
+          "compare.isEven",
+          [
+            "sense.wordCount"
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " was ",
+              {
+                "slot": 1
+              },
+              " US dollars an ounce in ",
+              {
+                "slot": 2
+              },
+              " and ",
+              {
+                "slot": 3
+              },
+              " US dollars an ounce in ",
+              {
+                "slot": 4
+              },
+              ", so ",
+              {
+                "slot": 5
+              },
+              " was dearer."
+            ]
+          },
+          [
+            "aggregate.shortest",
+            [
+              "sense.content"
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "gold price"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "gold price"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "gold-annual"
+                      },
+                      {
+                        "lit": "date"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "gold-annual"
+                  },
+                  {
+                    "lit": "date"
+                  },
+                  {
+                    "lit": "gold price"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "gold-annual"
+                      },
+                      {
+                        "lit": "date"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "gold-annual"
+                  },
+                  {
+                    "lit": "date"
+                  },
+                  {
+                    "lit": "gold price"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ],
+        [
+          "render.template",
+          {
+            "lit": [
+              {
+                "slot": 0
+              },
+              " was ",
+              {
+                "slot": 1
+              },
+              " US dollars an ounce in ",
+              {
+                "slot": 2
+              },
+              " and ",
+              {
+                "slot": 3
+              },
+              " US dollars an ounce in ",
+              {
+                "slot": 4
+              },
+              ", so ",
+              {
+                "slot": 5
+              },
+              " was dearer."
+            ]
+          },
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 5
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "gold price"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "gold price"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "gold-annual"
+                      },
+                      {
+                        "lit": "date"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "gold-annual"
+                  },
+                  {
+                    "lit": "date"
+                  },
+                  {
+                    "lit": "gold price"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "gold-annual"
+                      },
+                      {
+                        "lit": "date"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "gold-annual"
+                  },
+                  {
+                    "lit": "date"
+                  },
+                  {
+                    "lit": "gold price"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 8,
+      "size": 132,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
     {
       "id": "n-a96c04a3",
       "task": "gold-annual-price-compare",
@@ -154,6 +1867,265 @@
       }
     },
     {
+      "id": "n-f50860cc",
+      "task": "gold-annual-price-compare",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bigger than",
+            "element",
+            "exceeds",
+            "greater than",
+            "item number",
+            "larger than",
+            "more than",
+            "nth",
+            "position",
+            "price",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "gold"
+        ],
+        [
+          "has",
+          "compare"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " was ",
+            {
+              "slot": 1
+            },
+            " US dollars an ounce in ",
+            {
+              "slot": 2
+            },
+            " and ",
+            {
+              "slot": 3
+            },
+            " US dollars an ounce in ",
+            {
+              "slot": 4
+            },
+            ", so ",
+            {
+              "slot": 5
+            },
+            " was dearer."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gold-annual"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "gold price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "gold-annual"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "gold price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "gold-annual"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "gold price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "gold-annual"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "gold price"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 64,
+      "fit": {
+        "ok": 67,
+        "fired": 67,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-59b8ef24",
       "task": "gold-annual-price-compare",
       "gen": 6,
@@ -256,14 +2228,18 @@
       }
     },
     {
-      "id": "n-474d4983",
+      "id": "n-e7f344fa",
       "task": "gold-annual-price-compare",
-      "gen": 6,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
           "has",
           "compare"
+        ],
+        [
+          "has",
+          "gold"
         ]
       ],
       "pyramid": [
@@ -321,6 +2297,597 @@
       "fit": {
         "ok": 34,
         "fired": 34,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3e3d3eec",
+      "task": "gold-annual-price-compare",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "biggest",
+            "did",
+            "element",
+            "greatest",
+            "highest",
+            "item number",
+            "largest",
+            "maximum",
+            "nth",
+            "position",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " was ",
+            {
+              "slot": 1
+            },
+            " US dollars an ounce in ",
+            {
+              "slot": 2
+            },
+            " and ",
+            {
+              "slot": 3
+            },
+            " US dollars an ounce in ",
+            {
+              "slot": 4
+            },
+            ", so ",
+            {
+              "slot": 5
+            },
+            " was dearer."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gold-annual"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "gold price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "gold-annual"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "gold price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "render.number",
+          [
+            "aggregate.max",
+            [
+              "sense.numbers"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 35,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-991c4262",
+      "task": "gold-annual-price-compare",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "biggest",
+            "did",
+            "element",
+            "greatest",
+            "highest",
+            "item number",
+            "largest",
+            "maximum",
+            "nth",
+            "position",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " was ",
+            {
+              "slot": 1
+            },
+            " US dollars an ounce in ",
+            {
+              "slot": 2
+            },
+            " and ",
+            {
+              "slot": 3
+            },
+            " US dollars an ounce in ",
+            {
+              "slot": 4
+            },
+            ", so ",
+            {
+              "slot": 5
+            },
+            " was dearer."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gold-annual"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "gold price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "gold-annual"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "gold price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "render.plain",
+          [
+            "aggregate.max",
+            [
+              "sense.numbers"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 35,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-dc0767d1",
+      "task": "gold-annual-price-compare",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bigger than",
+            "element",
+            "exceeds",
+            "greater than",
+            "item number",
+            "larger than",
+            "more than",
+            "nth",
+            "position",
+            "prices"
+          ]
+        ],
+        [
+          "has",
+          "versus"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " was ",
+            {
+              "slot": 1
+            },
+            " US dollars an ounce in ",
+            {
+              "slot": 2
+            },
+            " and ",
+            {
+              "slot": 3
+            },
+            " US dollars an ounce in ",
+            {
+              "slot": 4
+            },
+            ", so ",
+            {
+              "slot": 5
+            },
+            " was dearer."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 5
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gold-annual"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "gold price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "gold-annual"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "gold price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "gold-annual"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "route.if",
+          [
+            "compare.greater",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "gold-annual"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "gold price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "gold-annual"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "gold-annual"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "gold price"
+                }
+              ]
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gold-annual"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 65,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
         "rows": 100
       }
     },
@@ -4124,6 +6691,78 @@
         "fired": 1,
         "rows": 100
       }
+    },
+    {
+      "id": "n-474d4983",
+      "task": "gold-annual-price-compare",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "compare"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "1859 and 1908": "Gold was 18.93 US dollars an ounce in 1859 and 18.95 US dollars an ounce in 1908, so 1908 was dearer.",
+          "1848 and 1989": "Gold was 18.93 US dollars an ounce in 1848 and 381.432 US dollars an ounce in 1989, so 1989 was dearer.",
+          "1878 and 2001": "Gold was 18.94 US dollars an ounce in 1878 and 270.989 US dollars an ounce in 2001, so 2001 was dearer.",
+          "2018 and 1920": "Gold was 1269 US dollars an ounce in 2018 and 20.68 US dollars an ounce in 1920, so 2018 was dearer.",
+          "2006 and 1963": "Gold was 604 US dollars an ounce in 2006 and 35.09 US dollars an ounce in 1963, so 2006 was dearer.",
+          "1984 and 1933": "Gold was 360.478 US dollars an ounce in 1984 and 26.33 US dollars an ounce in 1933, so 1984 was dearer.",
+          "1885 and 1856": "Gold was 18.94 US dollars an ounce in 1885 and 18.93 US dollars an ounce in 1856, so 1885 was dearer.",
+          "2011 and 1881": "Gold was 1569.211 US dollars an ounce in 2011 and 18.94 US dollars an ounce in 1881, so 2011 was dearer.",
+          "1999 and 1978": "Gold was 278.768 US dollars an ounce in 1999 and 193 US dollars an ounce in 1978, so 1999 was dearer.",
+          "1862 and 1899": "Gold was 18.93 US dollars an ounce in 1862 and 18.94 US dollars an ounce in 1899, so 1899 was dearer.",
+          "1871 and 1997": "Gold was 18.93 US dollars an ounce in 1871 and 331.096 US dollars an ounce in 1997, so 1997 was dearer.",
+          "1840 and 1936": "Gold was 18.93 US dollars an ounce in 1840 and 34.87 US dollars an ounce in 1936, so 1936 was dearer.",
+          "2013 and 1866": "Gold was 1411.462 US dollars an ounce in 2013 and 18.93 US dollars an ounce in 1866, so 2013 was dearer.",
+          "1975 and 1988": "Gold was 161 US dollars an ounce in 1975 and 437 US dollars an ounce in 1988, so 1988 was dearer.",
+          "1909 and 1883": "Gold was 18.96 US dollars an ounce in 1909 and 18.94 US dollars an ounce in 1883, so 1909 was dearer.",
+          "1934 and 1837": "Gold was 34.69 US dollars an ounce in 1934 and 18.93 US dollars an ounce in 1837, so 1934 was dearer.",
+          "1941 and 1850": "Gold was 33.85 US dollars an ounce in 1941 and 18.93 US dollars an ounce in 1850, so 1941 was dearer.",
+          "2025 and 1943": "Gold was 3442 US dollars an ounce in 2025 and 33.85 US dollars an ounce in 1943, so 2025 was dearer.",
+          "1841 and 2021": "Gold was 18.93 US dollars an ounce in 1841 and 1799.629 US dollars an ounce in 2021, so 2021 was dearer.",
+          "1959 and 1972": "Gold was 35.1 US dollars an ounce in 1959 and 58 US dollars an ounce in 1972, so 1972 was dearer.",
+          "1906 and 1991": "Gold was 18.9 US dollars an ounce in 1906 and 362 US dollars an ounce in 1991, so 1991 was dearer.",
+          "1838 and 2000": "Gold was 18.93 US dollars an ounce in 1838 and 279 US dollars an ounce in 2000, so 2000 was dearer.",
+          "1915 and 1904": "Gold was 18.99 US dollars an ounce in 1915 and 18.96 US dollars an ounce in 1904, so 1915 was dearer.",
+          "1905 and 1903": "Gold was 18.92 US dollars an ounce in 1905 and 18.95 US dollars an ounce in 1903, so 1903 was dearer.",
+          "1889 and 1928": "Gold was 18.93 US dollars an ounce in 1889 and 20.66 US dollars an ounce in 1928, so 1928 was dearer.",
+          "1944 and 1938": "Gold was 33.85 US dollars an ounce in 1944 and 34.85 US dollars an ounce in 1938, so 1938 was dearer.",
+          "1868 and 1884": "Gold was 18.93 US dollars an ounce in 1868 and 18.94 US dollars an ounce in 1884, so 1884 was dearer.",
+          "1958 and 1947": "Gold was 35.1 US dollars an ounce in 1958 and 34.71 US dollars an ounce in 1947, so 1958 was dearer.",
+          "1855 and 1953": "Gold was 18.93 US dollars an ounce in 1855 and 34.84 US dollars an ounce in 1953, so 1953 was dearer.",
+          "1882 and 1964": "Gold was 18.94 US dollars an ounce in 1882 and 35.1 US dollars an ounce in 1964, so 1964 was dearer.",
+          "1973 and 2022": "Gold was 97 US dollars an ounce in 1973 and 1801 US dollars an ounce in 2022, so 2022 was dearer.",
+          "1854 and 1892": "Gold was 18.93 US dollars an ounce in 1854 and 18.96 US dollars an ounce in 1892, so 1892 was dearer.",
+          "1950 and 2019": "Gold was 34.72 US dollars an ounce in 1950 and 1392.498 US dollars an ounce in 2019, so 2019 was dearer.",
+          "1924 and 1949": "Gold was 20.69 US dollars an ounce in 1924 and 31.69 US dollars an ounce in 1949, so 1949 was dearer."
+        }
+      },
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 34,
+        "fired": 34,
+        "rows": 100
+      }
     }
+  ],
+  "stages": [
+    "6f726afa55a2992c88a35f1a245dd391074378ef33928398726246fbf4aac0b2"
   ]
 }
