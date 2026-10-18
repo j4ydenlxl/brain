@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "96f46d521b2494c1300f27d48dfe1465b9e15e3c659d36911be916c9b70af257";
+const VERSION = "246b4f4e9f5ad6c40f4cb36fdffcbed2ec16c029ac9450e7f09a6e10b46cf7ee";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"27668bf19e0a79e33da9dd6bf8f88294ac62f88ca68afebe104ee607d3bbc730"},
+  {"url":"/organism/cells.json","sha256":"90741b42dd7f96f46ab638117dbdc6bd61e43908750e39ff6efdcb6f16bc8aff"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -298,10 +298,12 @@ const PRECACHE = [
   {"url":"/organism/cells/user-nber-of-name-7927-rev-neo-g10.mjs","sha256":"1adba82567ba10500d7c31aa9dfd1ca38e89daa69d5c5c9c04bac125078b3e51"},
   {"url":"/organism/cells/title-of-production-code-77cb-rev-neo-g10.mjs","sha256":"131465a87c297bbd1f2e5c559abf920dcb726278538330a432a3fa226856f6bd"},
   {"url":"/organism/cells/contact-name-of-name-36af-rev-neo-g10.mjs","sha256":"eed924892633ae31186b80504b860cfc75572225a9d47ea3f31f69f2464c4de3"},
+  {"url":"/organism/cells/female-of-county-de5d-neo-g10.mjs","sha256":"af0cbcf5ba0a16a944e00630606ca55a0d9afdca9f618ee3bd6d3ad9e355de7c"},
+  {"url":"/organism/cells/female-of-county-de5d-larger-neo-g10.mjs","sha256":"b1380c98b31c648b4bc636e225e286e0e837e66ea37b282ec1559003a955c323"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"de0b3d5c3710ab7b0ed5cd7a3808312a6bb6717a7c9bfe815efbeef8bf1d1851"}
+  {"url":"/organism/era/tasks.json","sha256":"b89c85ca35feb4b96f5bd8f8a6bc1289ab1d2963f099c328ba908a8210138a4c"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -546,11 +548,10 @@ const LAZY = [
   {"url":"/organism/era/tasks/extension-media-type.json","sha256":"b4db780efbd6ed284961237092ef3aaf34c7431ca18ea1ad255f8a6a440ab997"},
   {"url":"/organism/era/tasks/fatalities-count-of-d-f626-compare.json","sha256":"37d8c100fed6a52d55e13161e6839281ac7fb9777e429739171f8471f30f09d7"},
   {"url":"/organism/era/tasks/fatalities-count-of-d-f626-larger.json","sha256":"f9b945833ac4313cddd56df6035a470a2e87743cb96f1082413966c09b83ec8f"},
-  {"url":"/organism/era/tasks/female-of-county-de5d.json","sha256":"9b43f406354f3d45fd7ee61da31ce84eeef87206e699de9d162055d7a38cbf39"},
   {"url":"/organism/era/tasks/female-of-county-de5d-compare.json","sha256":"166b3d28c37b14a67c741c3ae251cf760f73984b3534315912ec75d9afe2bfb1"},
-  {"url":"/organism/era/tasks/female-of-county-de5d-larger.json","sha256":"ce3a12b41de5c3c7dd38e41cf3e395be95d6c4a9d8490e262751cda88520ab98"},
   {"url":"/organism/era/tasks/female-of-county-de5d-smaller.json","sha256":"0584bcb33bc01a37859c000f8ba5c16384975397db1b776d06d3044afa6d8ef5"},
-  {"url":"/organism/era/tasks/fiscal-sponsorship-model-74bf-rev.json","sha256":"2f19b4adf89988b768be087e8a231c1a532979f500d720d1942b4fe737214c58"}
+  {"url":"/organism/era/tasks/female-of-county-de5d-sum.json","sha256":"52a06028b18ff1fcf42b530a5a454df521003e8f3f59c0358ad5d5ffbe9a294b"},
+  {"url":"/organism/era/tasks/file-of-lang-edee-rev.json","sha256":"a16830dc4ca6d9d7a18da5a9a9a596a11d9ea7a89a818d75a3284193e454a974"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
