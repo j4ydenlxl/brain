@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "176148fc6b76d1b02e3a485e6284c3b5e42c318dcb0e0902f52254d1d5502de7";
+const VERSION = "219facb993e03641b2780e1293597dbb6f5d42fe6b2212adbe41b5b5c601828b";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"f3445618d62295dba8e332b1ad960e4e36696b735df6b97898afc0dfc5a38b66"},
+  {"url":"/organism/cells.json","sha256":"d2db94f64f16681f838c1e27b3dea35322ceea136b25ee6cc44ef2d770ea8abd"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -161,10 +161,22 @@ const PRECACHE = [
   {"url":"/organism/cells/price-of-date-2a9f-larger-neo-g10.mjs","sha256":"557debff2f05cf864ec1c45b2e086530796090985529741005f29303ad265a9a"},
   {"url":"/organism/cells/price-of-date-2a9f-smaller-neo-g10.mjs","sha256":"8ccba3fdc4902399f4a63287d46c36a1705979623ae4b0a314fe690887d9f601"},
   {"url":"/organism/cells/price-of-date-68c8-smaller-neo-g10.mjs","sha256":"31d20fa5cc7a19fc9b959b6000091973ddf70cd0cbba7deee2de0dabf3eef1b8"},
+  {"url":"/organism/cells/location-of-country-f050-neo-g10.mjs","sha256":"af4d08868de0f609d001b9aa770eadee38b87d7e25a6efea01ddeb90e9cfde03"},
+  {"url":"/organism/cells/nasdaq-symbol-company-neo-g10.mjs","sha256":"6f541d0a1a0d91b616ef0f6de746e2c3916346dd03300df80f8ab0b136cfe60b"},
+  {"url":"/organism/cells/postal-of-state-c412-rev-neo-g10.mjs","sha256":"0a4856a8d116253c79333e61e36d0e818a59cffeafd3cb940ba568652d3757aa"},
+  {"url":"/organism/cells/id-of-legal-nature-740f-larger-neo-g10.mjs","sha256":"982cf89e016738bbfb52bb3dbf274a9559da3ff11838ef47c3d5897feeabf0f9"},
+  {"url":"/organism/cells/month-of-paper-5f74-smaller-neo-g10.mjs","sha256":"3f6e5b152187f5aa25b0db7c64eb3ccb59d1ce47ff36c1e5811c9c73ce8e3f46"},
+  {"url":"/organism/cells/article-title-of-title-442b-rev-neo-g10.mjs","sha256":"9cb53137fec166160c290e2ffbceeefacc8101c6083ae83433d9290323751826"},
+  {"url":"/organism/cells/name-of-code-1cf1-neo-g10.mjs","sha256":"635dc87af7615aa40111051a15b896472791ae946d755d04ad06b08cd97549f1"},
+  {"url":"/organism/cells/year-of-name-45ac-smaller-neo-g10.mjs","sha256":"c8c97bbcf11792d7aefedacd6f8b6d34f7a700071b24dfeab26512e0d13776c7"},
+  {"url":"/organism/cells/co2-annual-mean-sum-neo-g10.mjs","sha256":"836aad10f7f1aacf4dc47c5cce6169560463e0fb75f7e7455c951a48fec0f914"},
+  {"url":"/organism/cells/gold-annual-price-compare-neo-g10.mjs","sha256":"d04210477ea886925b400e57c80444a15fac3cd155eae2cbc1e00ccd55a1779d"},
+  {"url":"/organism/cells/gold-annual-price-smaller-neo-g10.mjs","sha256":"873dc2c4959a8bbe56d98e1565719bbff6cf59f7fb809f37801fbb697545a421"},
+  {"url":"/organism/cells/gold-annual-price-sum-neo-g10.mjs","sha256":"87c7eccccc1e16fe34c0eecd5b0521dea3e59d3e4b2475337f3597df5cd31934"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"4a9c1bda6338bc065ad632f992ff4af9e37e3132c17212ec7c7208d7701c5a6c"}
+  {"url":"/organism/era/tasks.json","sha256":"b371442e4a10ac1416e2c9e6393703fab0c65af9628ce9ba5e3c12fe65cd47cb"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -222,7 +234,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/annual-increase-of-ye-e31a-larger.json","sha256":"25cdb48dbd44fbaaa02e18b298d3272c922ea50237b2a88ac50b895604a1b0ac"},
   {"url":"/organism/era/tasks/annual-increase-of-ye-e31a-smaller.json","sha256":"0901776d341cb16c24050fcf7d19bc37a902b8c6595fff781f526818bb04f008"},
   {"url":"/organism/era/tasks/annual-increase-of-ye-e31a-sum.json","sha256":"b989be54776d092d319fb90c46901a48aa760e6882ac412e68e952807763e100"},
-  {"url":"/organism/era/tasks/article-title-of-title-442b-rev.json","sha256":"67ab27bbaeec80d46111a553b084b4094465f88538f78f52996d67c9d1fcc423"},
   {"url":"/organism/era/tasks/artist-of-song-343e.json","sha256":"8f8a4eb6f5dfb0c6fd290af20e5f94fc26bdd713b73b236f2277c8d78b361694"},
   {"url":"/organism/era/tasks/artist-of-song-343e-rev.json","sha256":"a55952bbf2b5331b16d1b4a6250eada9ce583532bdb53051bd2e29517914bf3e"},
   {"url":"/organism/era/tasks/artist-of-song-abad.json","sha256":"2858478ea8e3a4dab9732dcd1ffbbdffa56446662abb3d665bc937ceae8a67c1"},
@@ -289,7 +300,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/clean-name-of-album-565e-rev.json","sha256":"e2eeb9e693ceb53c3500d7a6ac80dae2e778ac0103e4c9de422a1a5f1051e13d"},
   {"url":"/organism/era/tasks/climbing-status-of-peak-n-b2c0.json","sha256":"267a95608353328abba54d59100709ee2a12c32eed9e734598dc38959128ac69"},
   {"url":"/organism/era/tasks/co2-annual-mean-compare.json","sha256":"c4bdf1acdeedf359e80803198664facd3d1c901a876a3010767e956fa2ded8c9"},
-  {"url":"/organism/era/tasks/co2-annual-mean-sum.json","sha256":"59c61f4a6a4afc517b5d9be10369b9ca39192459c7afa5efb057facd11a37f1a"},
   {"url":"/organism/era/tasks/co2-mauna-loa-mean-co2-level-at-ma-09a152.json","sha256":"24c8137274aff50612e042a0ac08567ca181c3207b33296106fff1adb6f0758d"},
   {"url":"/organism/era/tasks/co2-mauna-loa-year-to-mean-co2-lev-a06bf5.json","sha256":"5078728443e03108a1f116ba255d7b4171c76705689a255aee16ca442f00e3bb"},
   {"url":"/organism/era/tasks/coastline-of-country-2328-compare.json","sha256":"0cdea7f719135aa1f5ec5f61d4e1c4359374ade347757eb0209b133688e21d0c"},
@@ -407,6 +417,8 @@ const LAZY = [
   {"url":"/organism/era/tasks/description-of-person-44ad-rev.json","sha256":"f11717ee5dbcb08da6b0c547f8949793432786ce489f064209601d44cd13c4aa"},
   {"url":"/organism/era/tasks/description-of-person-e0c7.json","sha256":"8da38ccd8f527e330f0ef949cc10b74ae6dbae732af0764f680bb4fc26afb865"},
   {"url":"/organism/era/tasks/description-of-person-e0c7-rev.json","sha256":"e59e1f37b712f7a8a0368f79b830be3ed0fd0ce4ac64cbc0ca4438219e614165"},
+  {"url":"/organism/era/tasks/description-of-title-a4af.json","sha256":"d389f696a99d0b89e4d2446ffb68aadb9a986911b3b449d7205fd66d188b1d70"},
+  {"url":"/organism/era/tasks/dividend-of-date-9f73.json","sha256":"6b455aa9ab3bce8c317dabf61641e31534dd09b6285a88bb101b558b6d892c7e"},
   {"url":"/organism/era/tasks/lt-global-temp-annual-year-to-mean.json","sha256":"64369a5a539612aaa82a4f2f48d1329c5e9d5fc2971b6d9b7555e6a98e00a623"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
