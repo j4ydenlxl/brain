@@ -2,28 +2,28 @@
   "task": "10-min-std-dev-of-tim-2f50-larger",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T13:32:56.930Z",
+  "at": "2026-10-18T16:42:16.015Z",
   "stats": {
-    "generated": 200144,
-    "distinct": 64048,
-    "kept": 106,
-    "know": 4,
+    "generated": 54425,
+    "distinct": 61823,
+    "kept": 108,
+    "know": 6,
     "byFamily": {
       "route": 2,
+      "transform": 2,
       "compare": 2,
       "memory": 102
     },
     "bySource": {
-      "open": 2,
+      "parent": 106,
       "enum": 1,
-      "yesno": 1,
-      "memory": 102
+      "open": 1
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 117008,
-    "cellsPerSecond": 1711,
+    "ms": 106192,
+    "cellsPerSecond": 513,
     "capped": "ms",
     "packs": [
       "fr-datasets-time-series-with-error-bars-excel-54fe73"
@@ -31,13 +31,13 @@
     "cursor": {
       "v": 1,
       "basis": "18b8651975b78b19b1b1c9f46a7442945e05efb1eca86db1d1b83428da6fdc66",
-      "round": 0,
-      "at": 89156,
+      "round": 1,
+      "at": 111201,
       "maxCost": 7,
       "done": false,
       "cost": 5,
-      "prim": "iterate.growth",
-      "tpl": 3000
+      "prim": "transform.repeat",
+      "tpl": 4842
     }
   },
   "cells": [
@@ -325,6 +325,305 @@
       "mem": null,
       "height": 7,
       "size": 33,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0e628312",
+      "task": "10-min-std-dev-of-tim-2f50-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bigger than",
+            "dev",
+            "element",
+            "exceeds",
+            "greater than",
+            "item number",
+            "larger than",
+            "lower case",
+            "lowercase",
+            "more than",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "of"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "smaller"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "lesser"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min std dev"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min std dev"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 8,
+      "size": 34,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2e8057b5",
+      "task": "10-min-std-dev-of-tim-2f50-larger",
+      "gen": 10,
+      "parents": [
+        "n-0e628312"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "avg",
+              "compare",
+              "lesser",
+              "makes",
+              "smaller",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "route.if",
+            [
+              "compare.greater",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min std dev"
+                  }
+                ]
+              ],
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                      },
+                      {
+                        "lit": "time"
+                      }
+                    ],
+                    {
+                      "lit": 2
+                    }
+                  ],
+                  {
+                    "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                  },
+                  {
+                    "lit": "time"
+                  },
+                  {
+                    "lit": "10 min std dev"
+                  }
+                ]
+              ]
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-time-series-with-error-bars-excel-54fe73"
+                },
+                {
+                  "lit": "time"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 8,
+      "size": 34,
       "fit": {
         "ok": 100,
         "fired": 100,
@@ -5424,6 +5723,7 @@
     }
   ],
   "stages": [
-    "3ac62f78e90a3509e24acc85d5e30c53049b0bc1ed55f80e99c1a518954eb7bc"
+    "3ac62f78e90a3509e24acc85d5e30c53049b0bc1ed55f80e99c1a518954eb7bc",
+    "22d218e01c7bf6d117393133c2b09eecb6a30ff7ff718c70eab83e2901d36750"
   ]
 }
