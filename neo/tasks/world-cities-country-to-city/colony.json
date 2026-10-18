@@ -2,30 +2,28 @@
   "task": "world-cities-country-to-city",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T03:45:55.634Z",
+  "at": "2026-10-18T07:06:54.755Z",
   "stats": {
-    "generated": 200008,
-    "distinct": 37167,
-    "kept": 648,
-    "know": 536,
+    "generated": 160648,
+    "distinct": 111355,
+    "kept": 667,
+    "know": 555,
     "byFamily": {
       "memory": 61,
       "transform": 547,
       "aggregate": 8,
-      "sense": 30,
-      "iterate": 2
+      "iterate": 21,
+      "sense": 30
     },
     "bySource": {
-      "memory": 61,
-      "enum": 111,
-      "template": 464,
-      "open": 12
+      "parent": 648,
+      "enum": 19
     },
     "maxHeight": 5,
     "devOk": 30,
     "devN": 30,
-    "ms": 169083,
-    "cellsPerSecond": 1183,
+    "ms": 173454,
+    "cellsPerSecond": 926,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -35,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "6217b2c305736af283fdca9e99377ddfc3c21845c1fc6e73c927d75ca9f96c96",
-      "round": 0,
-      "at": 138323,
+      "round": 1,
+      "at": 238918,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compare.startsWith",
+      "prim": "transform.charCodes",
       "tpl": 2448
     }
   },
@@ -4769,6 +4767,88 @@
       }
     },
     {
+      "id": "n-289d1dd2",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digits backwards",
+            "digits reversed",
+            "element",
+            "holy",
+            "item number",
+            "nth",
+            "position",
+            "reverse the digits"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.reverseDigits",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
       "id": "n-29417b8b",
       "task": "world-cities-country-to-city",
       "gen": 10,
@@ -5320,6 +5400,89 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-3ef5afd8",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "holy",
+            "item number",
+            "nth",
+            "position",
+            "title case"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.title",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-countries-585efe"
+                },
+                {
+                  "lit": "name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -6451,6 +6614,88 @@
             {
               "lit": -1
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-56f733b3",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add the digits",
+            "digit sum",
+            "element",
+            "holy",
+            "item number",
+            "nth",
+            "position",
+            "sum of the digits"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.digitSum",
+            [
+              "sense.wordCount"
+            ]
           ]
         ]
       ],
@@ -7770,6 +8015,88 @@
       }
     },
     {
+      "id": "n-713e1ba5",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "holy",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.lower",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-countries-585efe"
+                },
+                {
+                  "lit": "name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
       "id": "n-74a41567",
       "task": "world-cities-country-to-city",
       "gen": 10,
@@ -8882,6 +9209,88 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-89d5ea72",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digits backwards",
+            "digits reversed",
+            "element",
+            "holy",
+            "item number",
+            "nth",
+            "position",
+            "reverse the digits"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.reverseDigits",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -10393,6 +10802,90 @@
       }
     },
     {
+      "id": "n-c1763ecb",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "element",
+            "holy",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.upper",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-countries-585efe"
+                },
+                {
+                  "lit": "name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
       "id": "n-c28ff06f",
       "task": "world-cities-country-to-city",
       "gen": 10,
@@ -10578,6 +11071,88 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-ca823d30",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digits backwards",
+            "digits reversed",
+            "element",
+            "holy",
+            "item number",
+            "nth",
+            "position",
+            "reverse the digits"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.reverseDigits",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -10873,6 +11448,88 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-d09a351c",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "holy",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.swapCase",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-countries-585efe"
+                },
+                {
+                  "lit": "name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -11365,6 +12022,88 @@
       }
     },
     {
+      "id": "n-dbfad9fd",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add the digits",
+            "digit sum",
+            "element",
+            "holy",
+            "item number",
+            "nth",
+            "position",
+            "sum of the digits"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.digitSum",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
       "id": "n-def21030",
       "task": "world-cities-country-to-city",
       "gen": 10,
@@ -11708,6 +12447,88 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-ea40f2e8",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add the digits",
+            "digit sum",
+            "element",
+            "holy",
+            "item number",
+            "nth",
+            "position",
+            "sum of the digits"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.digitSum",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -34530,6 +35351,288 @@
       }
     },
     {
+      "id": "n-18001df5",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "holy",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-subdivisions-eaf4dc"
+                },
+                {
+                  "lit": "type"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-1d7c4f4e",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "holy",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-31311260",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "holy",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-subdivisions-eaf4dc"
+                },
+                {
+                  "lit": "type"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
       "id": "n-38c9eb82",
       "task": "world-cities-country-to-city",
       "gen": 10,
@@ -34799,6 +35902,194 @@
                 },
                 {
                   "lit": "type"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-55b31a83",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "holy",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-579fa959",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "holy",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
                 }
               ],
               {
@@ -35777,6 +37068,100 @@
       }
     },
     {
+      "id": "n-907cc187",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "holy",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
       "id": "n-9e7720be",
       "task": "world-cities-country-to-city",
       "gen": 10,
@@ -35865,6 +37250,100 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-a587e489",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "holy",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -36153,6 +37632,100 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-c467f3e2",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "holy",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -36527,6 +38100,100 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 30
+      }
+    },
+    {
+      "id": "n-e7ebb761",
+      "task": "world-cities-country-to-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "holy",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "currency"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-countries-585efe"
+              },
+              {
+                "lit": "name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-subdivisions-eaf4dc"
+                },
+                {
+                  "lit": "type"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -47662,6 +49329,7 @@
     }
   ],
   "stages": [
-    "0023e26ba059e3195e8f29f474b0d17710eb42b69f3ca37fe9f66ccfd1308a21"
+    "0023e26ba059e3195e8f29f474b0d17710eb42b69f3ca37fe9f66ccfd1308a21",
+    "5802d06dd8cf4b2ff15d1208f8d5237ab0311f5b6f774bfc5720528d33d20e5f"
   ]
 }
