@@ -2,28 +2,29 @@
   "task": "max-temp-c-of-date-1007-smaller",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T18:36:18.474Z",
+  "at": "2026-10-19T19:52:07.815Z",
   "stats": {
-    "generated": 200683,
-    "distinct": 89535,
-    "kept": 106,
-    "know": 4,
+    "generated": 166668,
+    "distinct": 110352,
+    "kept": 117,
+    "know": 15,
     "byFamily": {
       "route": 2,
       "compare": 2,
-      "memory": 102
+      "memory": 102,
+      "transform": 8,
+      "iterate": 3
     },
     "bySource": {
-      "open": 2,
-      "enum": 1,
-      "yesno": 1,
-      "memory": 102
+      "parent": 106,
+      "enum": 10,
+      "open": 1
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 99365,
-    "cellsPerSecond": 2020,
+    "ms": 74575,
+    "cellsPerSecond": 2235,
     "capped": null,
     "packs": [
       "fr-tidytuesday-weather-07bc7b"
@@ -31,13 +32,13 @@
     "cursor": {
       "v": 1,
       "basis": "893217cff7d3910591bf70b2ba7effd7051fcfdd3e101ba042f1b63eb3ae9dd3",
-      "round": 0,
-      "at": 105938,
+      "round": 1,
+      "at": 222405,
       "maxCost": 7,
       "done": false,
-      "cost": 5,
-      "prim": "compute.toBase",
-      "tpl": 3000
+      "cost": 6,
+      "prim": "compare.between",
+      "tpl": 5979
     }
   },
   "cells": [
@@ -1578,6 +1579,950 @@
       "fit": {
         "ok": 33,
         "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1566995b",
+      "task": "max-temp-c-of-date-1007-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "delete",
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "max"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "larger"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "greater"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "of"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-weather-07bc7b"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-weather-07bc7b"
+                },
+                {
+                  "lit": "min temp c"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-weather-07bc7b"
+            },
+            {
+              "lit": "min temp c"
+            },
+            {
+              "lit": "date"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-46ded898",
+      "task": "max-temp-c-of-date-1007-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "c",
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "max"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "larger"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "of"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "greater"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-weather-07bc7b"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-weather-07bc7b"
+                },
+                {
+                  "lit": "min temp c"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-weather-07bc7b"
+            },
+            {
+              "lit": "min temp c"
+            },
+            {
+              "lit": "date"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d3c2fb04",
+      "task": "max-temp-c-of-date-1007-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "caesar cipher",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "max"
+        ],
+        [
+          "has",
+          "lesser"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-weather-07bc7b"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "series.prev",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-weather-07bc7b"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-weather-07bc7b"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "max temp c"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-dafdc39e",
+      "task": "max-temp-c-of-date-1007-smaller",
+      "gen": 10,
+      "parents": [
+        "n-46ded898"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "20200427",
+              "20210627",
+              "add",
+              "china",
+              "compare",
+              "confirmed",
+              "fatalities",
+              "greater",
+              "high",
+              "larger",
+              "makes",
+              "min",
+              "mortality",
+              "open",
+              "price",
+              "recovered",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-weather-07bc7b"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-weather-07bc7b"
+                },
+                {
+                  "lit": "min temp c"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-weather-07bc7b"
+            },
+            {
+              "lit": "min temp c"
+            },
+            {
+              "lit": "date"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f6923177",
+      "task": "max-temp-c-of-date-1007-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "max"
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-weather-07bc7b"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-weather-07bc7b"
+                  },
+                  {
+                    "lit": "date"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-weather-07bc7b"
+              },
+              {
+                "lit": "date"
+              },
+              {
+                "lit": "min temp c"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-38fb13d3",
+      "task": "max-temp-c-of-date-1007-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "from position",
+            "items from to",
+            "slice"
+          ]
+        ],
+        [
+          "has",
+          "max"
+        ],
+        [
+          "has",
+          "lesser"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.sliceStrs",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-weather-07bc7b"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          [
+            "sense.last"
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-46ac1c52",
+      "task": "max-temp-c-of-date-1007-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "max"
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-weather-07bc7b"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "series.step",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-weather-07bc7b"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-weather-07bc7b"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "min temp c"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a1ce2446",
+      "task": "max-temp-c-of-date-1007-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "max"
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-weather-07bc7b"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "series.step",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-weather-07bc7b"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-weather-07bc7b"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "min temp c"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b4619591",
+      "task": "max-temp-c-of-date-1007-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "copies",
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position",
+            "repeat",
+            "say it times"
+          ]
+        ],
+        [
+          "has",
+          "max"
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-weather-07bc7b"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "series.step",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-weather-07bc7b"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-weather-07bc7b"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "min temp c"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ea4b4ec9",
+      "task": "max-temp-c-of-date-1007-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "max"
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-weather-07bc7b"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "series.step",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-weather-07bc7b"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-weather-07bc7b"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "min temp c"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-fd6a3833",
+      "task": "max-temp-c-of-date-1007-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "max"
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-weather-07bc7b"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "series.next",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-weather-07bc7b"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-weather-07bc7b"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "min temp c"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
         "rows": 100
       }
     },
@@ -5483,6 +6428,7 @@
     }
   ],
   "stages": [
-    "9c2c7bfd12cbfe2058b028e62ef57df7f363ee3987c81158184454c9be250e1d"
+    "9c2c7bfd12cbfe2058b028e62ef57df7f363ee3987c81158184454c9be250e1d",
+    "c4469ab37a995a6149e7f7db87d5f5f9511b9ba8bbe79efe83492706d5200ce0"
   ]
 }
