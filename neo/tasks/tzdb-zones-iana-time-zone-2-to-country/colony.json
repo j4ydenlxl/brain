@@ -2,29 +2,28 @@
   "task": "tzdb-zones-iana-time-zone-2-to-country",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T07:11:22.640Z",
+  "at": "2026-10-19T08:48:35.508Z",
   "stats": {
-    "generated": 200338,
-    "distinct": 83380,
-    "kept": 849,
-    "know": 198,
+    "generated": 160849,
+    "distinct": 66349,
+    "kept": 985,
+    "know": 267,
     "byFamily": {
       "memory": 81,
-      "transform": 422,
-      "aggregate": 187,
+      "transform": 542,
+      "aggregate": 203,
       "iterate": 33,
       "sense": 126
     },
     "bySource": {
-      "memory": 81,
-      "enum": 275,
-      "template": 493
+      "parent": 849,
+      "enum": 136
     },
-    "maxHeight": 5,
+    "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 61797,
-    "cellsPerSecond": 3242,
+    "ms": 37633,
+    "cellsPerSecond": 4274,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -34,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "584299aa9679eaaeb19b49a2a986f1eb15d835c66648864678ee34e0c064fafb",
-      "round": 0,
-      "at": 106742,
+      "round": 1,
+      "at": 247856,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.replace",
+      "cost": 7,
+      "prim": "compare.equal",
       "tpl": 1117
     }
   },
@@ -532,6 +531,70 @@
       }
     },
     {
+      "id": "n-d2dfdb6c",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "change to",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.text"
+          ],
+          [
+            "sense.before",
+            {
+              "lit": "of"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-3aecf486",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -630,6 +693,148 @@
         "render.str",
         [
           "transform.remove",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            },
+            {
+              "lit": "cryptocurrency"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b02ae903",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            },
+            {
+              "lit": "cryptocurrency"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e32762aa",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
           [
             "sense.after",
             {
@@ -1313,6 +1518,55 @@
       }
     },
     {
+      "id": "n-028e721c",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "class name",
+            "indianmaldives",
+            "invert case",
+            "pacificguam",
+            "pascal case",
+            "pascalcase",
+            "swap case",
+            "toggle case",
+            "upper camel case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.pascal",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-12087e6e",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -1535,6 +1789,55 @@
       }
     },
     {
+      "id": "n-47b70cc1",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "indianmaldives",
+            "invert case",
+            "pacificguam",
+            "snake case",
+            "snakecase",
+            "swap case",
+            "toggle case",
+            "underscores",
+            "variable name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.snake",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-49b203f5",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -1624,6 +1927,54 @@
       }
     },
     {
+      "id": "n-524e8f1e",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "camel case",
+            "camelcase",
+            "indianmaldives",
+            "invert case",
+            "lower camel case",
+            "pacificguam",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.camel",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-62488511",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -1658,6 +2009,151 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-64e015b2",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "dashes",
+            "hyphens",
+            "indianmaldives",
+            "invert case",
+            "kebab case",
+            "kebabcase",
+            "pacificguam",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.kebab",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8f12a514",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "dashes",
+            "hyphens",
+            "indianmaldives",
+            "kebab case",
+            "kebabcase",
+            "pacificguam"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.kebab",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-958ad458",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "camel case",
+            "camelcase",
+            "each word",
+            "indianmaldives",
+            "lower camel case",
+            "pacificguam",
+            "split into words"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.camel",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 6,
@@ -1845,6 +2341,55 @@
       }
     },
     {
+      "id": "n-ba35af6c",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "indianmaldives",
+            "invert case",
+            "pacificguam",
+            "swap case",
+            "title case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ba5c9ac4",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -1890,6 +2435,54 @@
       }
     },
     {
+      "id": "n-cf90072f",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "indianmaldives",
+            "invert case",
+            "pacificguam",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d661f8fa",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -1919,6 +2512,103 @@
           "transform.camel",
           [
             "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f374e701",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "class name",
+            "each word",
+            "indianmaldives",
+            "pacificguam",
+            "pascal case",
+            "pascalcase",
+            "split into words",
+            "upper camel case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.pascal",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f8309d44",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "indianmaldives",
+            "pacificguam",
+            "snake case",
+            "snakecase",
+            "underscores",
+            "variable name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.snake",
             [
               "sense.after",
               {
@@ -1987,6 +2677,55 @@
       }
     },
     {
+      "id": "n-1ae2455a",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "indianmaldives",
+            "longest one",
+            "longest word",
+            "pacificguam",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 3
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-20efbea7",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -2024,6 +2763,55 @@
           [
             "sense.text"
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-48730e9f",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "characters from",
+            "indianmaldives",
+            "letters from to",
+            "pacificguam",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          {
+            "lit": 3
+          },
+          {
+            "lit": 100
+          }
         ]
       ],
       "mem": null,
@@ -2077,6 +2865,57 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-caa2ac7a",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "indianmaldives",
+            "longest",
+            "longest one",
+            "longest word",
+            "pacificguam",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.before",
+              {
+                "lit": "country"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 6,
@@ -2143,6 +2982,57 @@
       }
     },
     {
+      "id": "n-fd20686a",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "count",
+            "from position",
+            "how many",
+            "how many items",
+            "indianmaldives",
+            "items from to",
+            "number of items",
+            "pacificguam",
+            "slice"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.content"
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-607515ad",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -2176,6 +3066,52 @@
       "mem": null,
       "height": 3,
       "size": 4,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1f093d16",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "indianmaldives",
+            "invert case",
+            "item number",
+            "nth",
+            "pacificguam",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
       "fit": {
         "ok": 5,
         "fired": 5,
@@ -2404,6 +3340,98 @@
       }
     },
     {
+      "id": "n-5db8a03e",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiaeucla",
+            "indianmaldives",
+            "pacificguam",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-65d5c810",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiaeucla",
+            "indianmaldives",
+            "pacificguam",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-75022044",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -2494,6 +3522,454 @@
       "fit": {
         "ok": 5,
         "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-93b5b36c",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiaeucla",
+            "indianmaldives",
+            "pacificguam",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-95d3a4c7",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiaeucla",
+            "indianmaldives",
+            "pacificguam",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b1fe2d75",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiaeucla",
+            "indianmaldives",
+            "pacificguam",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c8fa7e9e",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiaeucla",
+            "indianmaldives",
+            "pacificguam",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cb2ced44",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "australiaeucla",
+            "indianmaldives",
+            "longest one",
+            "longest word",
+            "pacificguam",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5685c754",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarcticacasey",
+            "australiaeucla",
+            "from position",
+            "how many items",
+            "indianmaldives",
+            "items from to",
+            "number of items",
+            "pacificguam"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.words"
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ],
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d21422b1",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarcticacasey",
+            "australiaeucla",
+            "first n",
+            "how many items",
+            "indianmaldives",
+            "longest one",
+            "longest word",
+            "number of items",
+            "pacificguam"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            [
+              "aggregate.countStrs",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e5095e3a",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarcticacasey",
+            "australiaeucla",
+            "from position",
+            "how many items",
+            "indianmaldives",
+            "items from to",
+            "number of items",
+            "pacificguam"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-eb0e7313",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarcticacasey",
+            "australiaeucla",
+            "from position",
+            "how many items",
+            "indianmaldives",
+            "items from to",
+            "number of items",
+            "pacificguam"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.words"
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ],
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
         "rows": 40
       }
     },
@@ -2891,6 +4367,187 @@
       }
     },
     {
+      "id": "n-0582a59c",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "indianmaldives",
+            "pacificguam",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          {
+            "lit": "Australia"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0775c04e",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "dashes",
+            "each word",
+            "hyphens",
+            "indianmaldives",
+            "kebab case",
+            "kebabcase",
+            "longest one",
+            "longest word",
+            "split into words"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "transform.kebab",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3779f536",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "each word",
+            "indianmaldives",
+            "invert case",
+            "longest one",
+            "longest word",
+            "split into words",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "transform.swapCase",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3b12aa8b",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "indianmaldives",
+            "pacificguam",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          {
+            "lit": "Australia"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-41506275",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -2924,6 +4581,97 @@
               }
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-56b2351a",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "each word",
+            "indianmaldives",
+            "longest one",
+            "longest word",
+            "split into words"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "transform.title",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-59efe9f6",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "americabelize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "first n"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.takeStrs",
+          [
+            "transform.sortStrs",
+            [
+              "sense.words"
+            ]
+          ],
+          {
+            "lit": 1
+          }
         ]
       ],
       "mem": null,
@@ -2980,6 +4728,52 @@
       }
     },
     {
+      "id": "n-75a8457a",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "each word",
+            "indianmaldives",
+            "longest one",
+            "longest word",
+            "reverse order",
+            "reversed",
+            "split into words"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.reverseStrs",
+            [
+              "transform.words",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-836b7079",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -3005,6 +4799,138 @@
             "sense.after",
             {
               "lit": "of"
+            }
+          ],
+          {
+            "lit": "Australia"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-917a1a65",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "indianmaldives",
+            "pacificguam",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          {
+            "lit": "Australia"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9659b2b9",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "each word",
+            "indianmaldives",
+            "longest one",
+            "longest word",
+            "split into words"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.sortStrs",
+            [
+              "transform.words",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bb036e32",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "antarcticacasey",
+            "indianmaldives",
+            "pacificguam",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "country"
             }
           ],
           {
@@ -3067,6 +4993,158 @@
       }
     },
     {
+      "id": "n-d0ee6b9c",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "each word",
+            "indianmaldives",
+            "longest one",
+            "longest word",
+            "reverse the words",
+            "reverse word order",
+            "split into words",
+            "words backwards"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "transform.reverseWords",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ef397e17",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "capital letters",
+            "capitals",
+            "each word",
+            "indianmaldives",
+            "longest one",
+            "longest word",
+            "split into words",
+            "upper case",
+            "uppercase"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "transform.upper",
+              [
+                "sense.text"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-11be5949",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "americabelize",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1e7c247b",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -3119,6 +5197,123 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2f426d12",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "americabelize",
+            "capital letters",
+            "capitals",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "separate by",
+            "split by",
+            "upper case",
+            "uppercase"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.upper",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-391d66a6",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "americabelize",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 3,
@@ -3244,6 +5439,66 @@
       }
     },
     {
+      "id": "n-82e16865",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "americabelize",
+            "capital letters",
+            "capitals",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "separate by",
+            "split by",
+            "upper case",
+            "uppercase"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.upper",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-af705fde",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -3269,6 +5524,64 @@
         "render.str",
         [
           "transform.remove",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.noVowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c052d6cb",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "indianmaldives",
+            "item number",
+            "no vowels",
+            "nth",
+            "pacificguam",
+            "remove vowels",
+            "separate by",
+            "split by",
+            "without vowels"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
           [
             "sense.lastWord"
           ],
@@ -3418,6 +5731,184 @@
       }
     },
     {
+      "id": "n-e8ff5464",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "class name",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "pascal case",
+            "pascalcase",
+            "separate by",
+            "split by",
+            "upper camel case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.pascal",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0a4068b5",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "change to",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "replace"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c64e8dc3",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "change to",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b89c01ad",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -3475,6 +5966,303 @@
       "mem": null,
       "height": 5,
       "size": 12,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-54f59072",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "indianmaldives",
+            "item number",
+            "longest one",
+            "longest word",
+            "nth",
+            "pacificguam",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8d44a5a1",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "change to",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "replace"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            },
+            {
+              "lit": "cryptocurrency"
+            }
+          ],
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-59cea266",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "change to",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            },
+            {
+              "lit": "cryptocurrency"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ce8517e5",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "change to",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "replace"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            },
+            {
+              "lit": "cryptocurrency"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
       "fit": {
         "ok": 3,
         "fired": 3,
@@ -3885,6 +6673,50 @@
       }
     },
     {
+      "id": "n-3dfbed54",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "indianmaldives",
+            "pacificguam",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.shortest",
+            [
+              "sense.words"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-3fb3c46f",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -3926,6 +6758,94 @@
       }
     },
     {
+      "id": "n-5188f5fe",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "indianmaldives",
+            "pacificguam",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.shortest",
+            [
+              "sense.words"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-57c00225",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "indianmaldives",
+            "no vowels",
+            "pacificguam",
+            "remove vowels",
+            "separate by",
+            "split by",
+            "without vowels"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.noVowels",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-65d623f1",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -3959,6 +6879,50 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-68cf3ecd",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "indianmaldives",
+            "no vowels",
+            "pacificguam",
+            "remove vowels",
+            "separate by",
+            "split by",
+            "without vowels"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.noVowels",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 3,
@@ -4011,6 +6975,50 @@
       }
     },
     {
+      "id": "n-76c4f521",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "indianmaldives",
+            "pacificguam",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.shortest",
+            [
+              "sense.words"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-84e0f6f3",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -4034,6 +7042,50 @@
         "render.str",
         [
           "transform.remove",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.noVowels",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8da933b4",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "indianmaldives",
+            "no vowels",
+            "pacificguam",
+            "remove vowels",
+            "separate by",
+            "split by",
+            "without vowels"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
           [
             "sense.lastWord"
           ],
@@ -4265,6 +7317,233 @@
       "mem": null,
       "height": 3,
       "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0674ad59",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "change to",
+            "indianmaldives",
+            "pacificguam",
+            "replace"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3107bdec",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "change to",
+            "indianmaldives",
+            "pacificguam",
+            "replace"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-92e362b7",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarcticacasey",
+            "australiabrisbane",
+            "australiaeucla",
+            "characters from",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b2bce046",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "indianmaldives",
+            "longest one",
+            "longest word",
+            "pacificguam",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c2b6bd0b",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "indianmaldives",
+            "pacificguam",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
       "fit": {
         "ok": 3,
         "fired": 3,
@@ -4961,6 +8240,65 @@
       }
     },
     {
+      "id": "n-103451ae",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "separate by",
+            "split by",
+            "upper case",
+            "uppercase"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.upper",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-13e5302a",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -5519,6 +8857,65 @@
       }
     },
     {
+      "id": "n-5a4cb646",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "delete",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "strip out",
+            "upper case",
+            "uppercase"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "transform.remove",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-608b62b9",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -5559,6 +8956,64 @@
               ],
               {
                 "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-85b04796",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "indianmaldives",
+            "item number",
+            "nth",
+            "pacificguam",
+            "pascal case",
+            "pascalcase",
+            "separate by",
+            "split by",
+            "upper camel case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.pascal",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
               }
             ]
           ]
@@ -5736,6 +9191,120 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a7af9b68",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "indianmaldives",
+            "item number",
+            "lower camel case",
+            "nth",
+            "pacificguam",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.camel",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a7e67ac3",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "indianmaldives",
+            "invert case",
+            "item number",
+            "nth",
+            "pacificguam",
+            "separate by",
+            "split by",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 2,
@@ -8701,6 +12270,51 @@
       }
     },
     {
+      "id": "n-2ea06408",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "australiabrisbane",
+            "australiaeucla",
+            "characters from",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          {
+            "lit": 4
+          },
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-3ceb5cd3",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -8881,6 +12495,51 @@
       }
     },
     {
+      "id": "n-780df161",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "characters from",
+            "letters from to",
+            "pacificguam",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          {
+            "lit": 12
+          },
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-832347b4",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -9004,6 +12663,51 @@
               "lit": 3
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-dcc4e9aa",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "australiabrisbane",
+            "australiaeucla",
+            "characters from",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          {
+            "lit": 3
+          },
+          {
+            "lit": 12
+          }
         ]
       ],
       "mem": null,
@@ -10948,6 +14652,58 @@
       }
     },
     {
+      "id": "n-2f705e75",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "how many items",
+            "letters from to",
+            "number of items",
+            "pacificguam",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ],
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-35a71ccd",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -11035,6 +14791,162 @@
               }
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8498a9e4",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "how many items",
+            "letters from to",
+            "number of items",
+            "pacificguam",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ],
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9b2ebde3",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "characters from",
+            "how many items",
+            "letters from to",
+            "number of items",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a0d9c4ed",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "characters from",
+            "how many items",
+            "letters from to",
+            "number of items",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ]
+          ],
+          {
+            "lit": 10
+          }
         ]
       ],
       "mem": null,
@@ -11356,6 +15268,62 @@
       }
     },
     {
+      "id": "n-087fdd6b",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.text"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0c6fab07",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -11404,6 +15372,63 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-13eaba25",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "capital letters",
+            "capitals",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "upper case",
+            "uppercase"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.upper",
+            [
+              "sense.text"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -11471,6 +15496,177 @@
       }
     },
     {
+      "id": "n-14bcf097",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "invert case",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "strip out",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.remove",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "cryptocurrency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1aeaea7f",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "capital letters",
+            "capitals",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "upper case",
+            "uppercase"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.upper",
+            [
+              "sense.text"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1c4c168c",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "longest one",
+            "longest word",
+            "nth",
+            "pacificguam",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "aggregate.longest",
+            [
+              "sense.words"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1d378d5e",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -11519,6 +15715,120 @@
             [
               "sense.lastWord"
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1e6f27f0",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "decode",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.unbase64",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1f249c67",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
           ]
         ]
       ],
@@ -11698,6 +16008,62 @@
       }
     },
     {
+      "id": "n-30ffc9a4",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.text"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-315cea8b",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -11726,6 +16092,465 @@
           ],
           [
             "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "cryptocurrency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-320acb1c",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "item number",
+            "nth",
+            "pacificguam",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3416bd02",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "each word",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "split into words",
+            "strip out"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.remove",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "cryptocurrency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-44ebc29c",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "pacificguam",
+            "position",
+            "separate by",
+            "split by",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-470944c8",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "camel case",
+            "camelcase",
+            "item number",
+            "lower camel case",
+            "nth",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.text"
+          ],
+          [
+            "transform.camel",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4910cbb0",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "invert case",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "put together",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "cryptocurrency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4bd53e0e",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "put together",
+            "snake case",
+            "snakecase",
+            "underscores",
+            "variable name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.snake",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "cryptocurrency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-578551df",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "capital letters",
+            "capitals",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "upper case",
+            "uppercase"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.upper",
+            [
+              "sense.text"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5bc1ea96",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "delete",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "strip out",
+            "upper case",
+            "uppercase"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "transform.remove",
+            [
+              "sense.lastWord"
+            ],
             [
               "transform.nthStr",
               [
@@ -11809,6 +16634,67 @@
       }
     },
     {
+      "id": "n-5d383de4",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "append",
+            "capital letters",
+            "capitals",
+            "combine",
+            "concatenate",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "put together",
+            "upper case",
+            "uppercase"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "cryptocurrency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5ee38d42",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -11868,6 +16754,63 @@
       }
     },
     {
+      "id": "n-5f0617c0",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "capital letters",
+            "capitals",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "upper case",
+            "uppercase"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.upper",
+            [
+              "sense.text"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-609ad849",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -11908,6 +16851,62 @@
               ],
               {
                 "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-63d75578",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "decode",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.unbase64",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
               }
             ]
           ]
@@ -12027,6 +17026,119 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-75117f86",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "pacificguam",
+            "position",
+            "separate by",
+            "split by",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-75ea1c64",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "camel case",
+            "camelcase",
+            "item number",
+            "lower camel case",
+            "nth",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.text"
+          ],
+          [
+            "transform.camel",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -12438,6 +17550,176 @@
       }
     },
     {
+      "id": "n-8eb9d26a",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "pacificguam",
+            "position",
+            "separate by",
+            "split by",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-906daad7",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "camel case",
+            "camelcase",
+            "item number",
+            "lower camel case",
+            "nth",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.text"
+          ],
+          [
+            "transform.camel",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-921894d5",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "cryptocurrency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-957f6298",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -12663,6 +17945,62 @@
       }
     },
     {
+      "id": "n-9b1a1720",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.text"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a15cdb40",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -12778,6 +18116,62 @@
       }
     },
     {
+      "id": "n-adb7e6da",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "camel case",
+            "camelcase",
+            "item number",
+            "lower camel case",
+            "nth",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.text"
+          ],
+          [
+            "transform.camel",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b0bdf285",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -12831,6 +18225,122 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b27741a7",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "camel case",
+            "camelcase",
+            "item number",
+            "lower camel case",
+            "nth",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.text"
+          ],
+          [
+            "transform.camel",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b38c4353",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "upper case",
+            "uppercase"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.upper",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -12898,6 +18408,62 @@
       }
     },
     {
+      "id": "n-b92a5f48",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "no vowels",
+            "nth",
+            "pacificguam",
+            "remove vowels",
+            "separate by",
+            "split by",
+            "without vowels"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.noVowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-bb53180d",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -12946,6 +18512,176 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bf25f4d0",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.text"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c0ee290c",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "item number",
+            "lower camel case",
+            "nth",
+            "pacificguam",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.camel",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c52a721a",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.text"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -13012,6 +18748,63 @@
       }
     },
     {
+      "id": "n-c8b97925",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "capital letters",
+            "capitals",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "upper case",
+            "uppercase"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.upper",
+            [
+              "sense.text"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-cc639e21",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -13040,6 +18833,118 @@
           ],
           [
             "transform.unbase64",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d31e90a7",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "invert case",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.swapCase",
+            [
+              "sense.text"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d7969bc2",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "camel case",
+            "camelcase",
+            "item number",
+            "lower camel case",
+            "nth",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.text"
+          ],
+          [
+            "transform.camel",
             [
               "transform.nthStr",
               [
@@ -13165,6 +19070,121 @@
           ],
           [
             "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e2fa9741",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "each word",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "put together",
+            "split into words"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "cryptocurrency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f30a6c87",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "capital letters",
+            "capitals",
+            "item number",
+            "nth",
+            "separate by",
+            "split by",
+            "upper case",
+            "uppercase"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.upper",
+            [
+              "sense.text"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
           ]
         ]
       ],
@@ -13333,6 +19353,64 @@
           ],
           [
             "sense.wordAt",
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-456f845b",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "replace",
+            "substitute"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
             {
               "lit": 1
             }
@@ -13518,6 +19596,67 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-91cd1e49",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "pacificguam",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.after",
+              {
+                "lit": "country"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "cryptocurrency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 10,
       "fit": {
         "ok": 1,
@@ -16323,6 +22462,147 @@
       }
     },
     {
+      "id": "n-42861347",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "replace",
+            "substitute"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6202361c",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "nth",
+            "pacificguam",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1580c754",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -18141,6 +24421,182 @@
       "mem": null,
       "height": 5,
       "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5b5f8c58",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "from position",
+            "how many items",
+            "items from to",
+            "number of items"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.words"
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ],
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-67a697a0",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "from position",
+            "how many items",
+            "items from to",
+            "number of items"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.words"
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ],
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c7f5e1e2",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "from position",
+            "how many items",
+            "items from to",
+            "number of items"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.words"
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ],
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f181ea02",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "from position",
+            "how many items",
+            "items from to",
+            "number of items"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.sliceStrs",
+          [
+            "sense.words"
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ],
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -22550,6 +29006,48 @@
       }
     },
     {
+      "id": "n-0af04629",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.text"
+          ],
+          [
+            "aggregate.shortest",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0df01818",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -22624,6 +29122,48 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-28048258",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.text"
+          ],
+          [
+            "aggregate.shortest",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -23238,6 +29778,48 @@
       }
     },
     {
+      "id": "n-5c943119",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "invert case",
+            "item number",
+            "nth",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-667eb6a0",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -23265,6 +29847,48 @@
               {
                 "lit": "is"
               }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-686e4348",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.text"
+          ],
+          [
+            "aggregate.shortest",
+            [
+              "sense.content"
             ]
           ]
         ]
@@ -23352,6 +29976,46 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-713e5140",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "australiabrisbane",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          {
+            "lit": "Australia"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -23465,6 +30129,50 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-809cabd7",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "australiabrisbane",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "invert case",
+            "swap case",
+            "title case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -23716,6 +30424,46 @@
       }
     },
     {
+      "id": "n-b952ce05",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "australiabrisbane",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          {
+            "lit": "australia"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-e047171f",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -23886,6 +30634,48 @@
       ],
       "mem": null,
       "height": 2,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ee84f7ca",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "invert case",
+            "item number",
+            "nth",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -24594,6 +31384,49 @@
       }
     },
     {
+      "id": "n-407ed745",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "australiabrisbane",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-41d0fd16",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -24651,6 +31484,50 @@
       }
     },
     {
+      "id": "n-41efb5f4",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "americabelize",
+            "longest one",
+            "longest word",
+            "separate by",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.wordAt",
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-481c580c",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -24691,6 +31568,50 @@
           "sense.after",
           {
             "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-503638f7",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "indianmaldives",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "country"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          {
+            "lit": 100
           }
         ]
       ],
@@ -24801,6 +31722,49 @@
       ],
       "mem": null,
       "height": 2,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5e40dd43",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "australiabrisbane",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -25575,6 +32539,93 @@
       }
     },
     {
+      "id": "n-a7878c16",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "australiabrisbane",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b37d2d7c",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "australiabrisbane",
+            "characters from",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          {
+            "lit": 12
+          },
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-bb3e5eea",
       "task": "tzdb-zones-iana-time-zone-2-to-country",
       "gen": 10,
@@ -25943,6 +32994,50 @@
       ],
       "mem": null,
       "height": 2,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d04f7368",
+      "task": "tzdb-zones-iana-time-zone-2-to-country",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "letters from to",
+            "pacificguam",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -46654,6 +53749,7 @@
     }
   ],
   "stages": [
-    "9fe262d26a9315cde33e3163de5d7b5ec21bc6d60b9f597e8eec596db072aa56"
+    "9fe262d26a9315cde33e3163de5d7b5ec21bc6d60b9f597e8eec596db072aa56",
+    "87cc8c692a6997f0f752ad86ea0fffbb4005a3c42fa5dda9d79acd39ee8af047"
   ]
 }
