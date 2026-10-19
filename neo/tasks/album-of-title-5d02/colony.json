@@ -2,30 +2,30 @@
   "task": "album-of-title-5d02",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T08:21:38.216Z",
+  "at": "2026-10-19T23:20:14.444Z",
   "stats": {
-    "generated": 200861,
-    "distinct": 82156,
-    "kept": 1250,
-    "know": 955,
+    "generated": 161250,
+    "distinct": 93360,
+    "kept": 1270,
+    "know": 946,
     "byFamily": {
       "memory": 194,
-      "transform": 454,
-      "sense": 161,
-      "aggregate": 401,
-      "compute": 38,
+      "transform": 448,
+      "sense": 160,
+      "aggregate": 395,
+      "compute": 71,
       "iterate": 2
     },
     "bySource": {
-      "memory": 194,
-      "template": 984,
-      "enum": 72
+      "parent": 1236,
+      "open": 1,
+      "enum": 33
     },
     "maxHeight": 6,
     "devOk": 97,
     "devN": 97,
-    "ms": 151204,
-    "cellsPerSecond": 1328,
+    "ms": 195726,
+    "cellsPerSecond": 824,
     "capped": null,
     "packs": [
       "fr-tidytuesday-taylor-swift-lyrics-ecd247"
@@ -33,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "aaeee92db028abf75ff306920f724df9087cf707bb9550218f6687a847348d46",
-      "round": 0,
-      "at": 82160,
+      "round": 1,
+      "at": 184038,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compare.atMost",
+      "prim": "compute.sqrt",
       "tpl": 1740
     }
   },
@@ -9959,6 +9959,121 @@
           [
             "has",
             "got"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+            },
+            {
+              "lit": "title"
+            },
+            {
+              "lit": "album"
+            }
+          ],
+          [
+            "sense.roman"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-85b8f4f4",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [
+        "n-8416d63d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "act",
+              "adult",
+              "artist",
+              "author",
+              "c",
+              "captions",
+              "case",
+              "category",
+              "code",
+              "consecutive",
+              "country",
+              "d",
+              "date",
+              "description",
+              "dialogue",
+              "ep",
+              "episode",
+              "featuring",
+              "file",
+              "galaxy",
+              "gender",
+              "hex",
+              "i75",
+              "id",
+              "ii",
+              "iii",
+              "iso2",
+              "iso3",
+              "j2000",
+              "l",
+              "merge",
+              "mm",
+              "model",
+              "mxx",
+              "n3",
+              "name",
+              "ngojumba",
+              "ordinary",
+              "rating",
+              "release",
+              "scene",
+              "series",
+              "spex",
+              "talamello",
+              "taylors",
+              "test",
+              "toplevel",
+              "track",
+              "type",
+              "v",
+              "ways",
+              "writers",
+              "x"
+            ]
           ]
         ]
       ],
@@ -20729,6 +20844,219 @@
       }
     },
     {
+      "id": "n-0764b6e7",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add the digits",
+            "blank",
+            "digit sum",
+            "girl",
+            "least common multiple",
+            "lowest common multiple",
+            "off",
+            "sum of the digits"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.digitSum",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-2ce2d67f",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "girl",
+            "had",
+            "least common multiple",
+            "lowest common multiple",
+            "next prime",
+            "out",
+            "smallest prime greater than",
+            "the prime after"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.nextPrime",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-58e1700d",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bad",
+            "dreams",
+            "least common multiple",
+            "love",
+            "lowest common multiple",
+            "nth prime",
+            "the prime number in position"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.nthPrime",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-e8d3d3d7",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bad",
+            "dreams",
+            "fib",
+            "least common multiple",
+            "love",
+            "lowest common multiple"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.fibonacci",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 97
+      }
+    },
+    {
       "id": "n-e81690ca",
       "task": "album-of-title-5d02",
       "gen": 10,
@@ -20937,6 +21265,152 @@
       "mem": null,
       "height": 3,
       "size": 8,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-85e8b8b0",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dreams",
+            "how many letters",
+            "item number",
+            "lcm",
+            "least common multiple",
+            "letter count",
+            "lowest common multiple",
+            "nth",
+            "number of letters",
+            "out"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "lights"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.letters",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-e6cfbf64",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bad",
+            "character count",
+            "how many characters",
+            "item number",
+            "lcm",
+            "least common multiple",
+            "love",
+            "lowest common multiple",
+            "nth",
+            "number of characters"
+          ]
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "album"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
       "fit": {
         "ok": 2,
         "fired": 2,
@@ -25045,6 +25519,108 @@
       }
     },
     {
+      "id": "n-7774ec7a",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "had",
+            "least common multiple",
+            "lowest common multiple",
+            "off",
+            "one less",
+            "predecessor",
+            "previous"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ],
+        [
+          "has",
+          "album"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.prev",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-fe757af1",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blank",
+            "digits backwards",
+            "digits reversed",
+            "least common multiple",
+            "lowest common multiple",
+            "off",
+            "reverse the digits"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ],
+        [
+          "has",
+          "album"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.reverseDigits",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 97
+      }
+    },
+    {
       "id": "n-4ceafcb0",
       "task": "album-of-title-5d02",
       "gen": 10,
@@ -25557,6 +26133,75 @@
       "mem": null,
       "height": 3,
       "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-65344f42",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "dreams",
+            "how many consonants",
+            "item number",
+            "lcm",
+            "least common multiple",
+            "lowest common multiple",
+            "nth",
+            "number of consonants"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -28554,90 +29199,6 @@
       }
     },
     {
-      "id": "n-94b00d71",
-      "task": "album-of-title-5d02",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "clean",
-            "item number",
-            "longest",
-            "longest one",
-            "longest word",
-            "nth"
-          ]
-        ],
-        [
-          "has",
-          "title"
-        ],
-        [
-          "has",
-          "tell"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of Clean is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-              },
-              {
-                "lit": "title"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-          },
-          {
-            "lit": "title"
-          },
-          {
-            "lit": "album"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 13,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 97
-      }
-    },
-    {
       "id": "n-95387b1f",
       "task": "album-of-title-5d02",
       "gen": 10,
@@ -30444,166 +31005,6 @@
       }
     },
     {
-      "id": "n-df302ed9",
-      "task": "album-of-title-5d02",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "king",
-            "longest",
-            "longest one",
-            "longest word",
-            "nth"
-          ]
-        ],
-        [
-          "words<=",
-          8
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of King of My Heart is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-              },
-              {
-                "lit": "title"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-          },
-          {
-            "lit": "title"
-          },
-          {
-            "lit": "album"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 13,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 97
-      }
-    },
-    {
-      "id": "n-df4bac32",
-      "task": "album-of-title-5d02",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "longest",
-            "longest one",
-            "longest word",
-            "movie",
-            "nth"
-          ]
-        ],
-        [
-          "has",
-          "what"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of If This Was a Movie is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-              },
-              {
-                "lit": "title"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-          },
-          {
-            "lit": "title"
-          },
-          {
-            "lit": "album"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 13,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 97
-      }
-    },
-    {
       "id": "n-e0463954",
       "task": "album-of-title-5d02",
       "gen": 10,
@@ -31316,90 +31717,6 @@
               "slot": 0
             },
             " of Look What You Made Me Do is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-              },
-              {
-                "lit": "title"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-          },
-          {
-            "lit": "title"
-          },
-          {
-            "lit": "album"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 13,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 97
-      }
-    },
-    {
-      "id": "n-f9e2aaec",
-      "task": "album-of-title-5d02",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "live",
-            "longest",
-            "longest one",
-            "longest word",
-            "nth"
-          ]
-        ],
-        [
-          "has",
-          "title"
-        ],
-        [
-          "has",
-          "tell"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of Long Live is ",
             {
               "slot": 1
             },
@@ -39762,106 +40079,6 @@
         ],
         [
           "transform.kebab",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-                },
-                {
-                  "lit": "title"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-            },
-            {
-              "lit": "title"
-            },
-            {
-              "lit": "album"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 16,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 97
-      }
-    },
-    {
-      "id": "n-4cc32b59",
-      "task": "album-of-title-5d02",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "almost",
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "item number",
-            "longest",
-            "longest one",
-            "longest word",
-            "nth",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ],
-        [
-          "has",
-          "title"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of I ",
-            {
-              "slot": 1
-            },
-            " Do is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "transform.title",
           [
             "know.lookup",
             [
@@ -63348,113 +63565,6 @@
       }
     },
     {
-      "id": "n-5b829d3b",
-      "task": "album-of-title-5d02",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "item number",
-            "nth",
-            "ricochet",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ],
-        [
-          "has",
-          "title"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of my ",
-            {
-              "slot": 1
-            },
-            " ",
-            {
-              "slot": 2
-            },
-            " is ",
-            {
-              "slot": 3
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 4
-          }
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "transform.title",
-          [
-            "sense.lastWord"
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-              },
-              {
-                "lit": "title"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-          },
-          {
-            "lit": "title"
-          },
-          {
-            "lit": "album"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 18,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 97
-      }
-    },
-    {
       "id": "n-5caa9568",
       "task": "album-of-title-5d02",
       "gen": 10,
@@ -66389,113 +66499,6 @@
           "aggregate.longest",
           [
             "sense.words"
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-              },
-              {
-                "lit": "title"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-          },
-          {
-            "lit": "title"
-          },
-          {
-            "lit": "album"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 18,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 97
-      }
-    },
-    {
-      "id": "n-9f8a40b6",
-      "task": "album-of-title-5d02",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "dancing",
-            "item number",
-            "longest",
-            "longest one",
-            "longest word",
-            "nth",
-            "title case"
-          ]
-        ],
-        [
-          "has",
-          "title"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of ",
-            {
-              "slot": 1
-            },
-            " With Our Hands ",
-            {
-              "slot": 2
-            },
-            " is ",
-            {
-              "slot": 3
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 4
-          }
-        ],
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "transform.title",
-          [
-            "sense.lastWord"
           ]
         ],
         [
@@ -78150,119 +78153,6 @@
       }
     },
     {
-      "id": "n-71b83199",
-      "task": "album-of-title-5d02",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "item number",
-            "longest",
-            "longest one",
-            "longest word",
-            "nth",
-            "ricochet",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ],
-        [
-          "has",
-          "title"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of my ",
-            {
-              "slot": 1
-            },
-            " ",
-            {
-              "slot": 2
-            },
-            " is ",
-            {
-              "slot": 3
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 4
-          }
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "transform.title",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-                },
-                {
-                  "lit": "title"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-            },
-            {
-              "lit": "title"
-            },
-            {
-              "lit": "album"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 19,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 97
-      }
-    },
-    {
       "id": "n-71bd58ce",
       "task": "album-of-title-5d02",
       "gen": 10,
@@ -79157,119 +79047,6 @@
         ],
         [
           "transform.pascal",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-                },
-                {
-                  "lit": "title"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-            },
-            {
-              "lit": "title"
-            },
-            {
-              "lit": "album"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 19,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 97
-      }
-    },
-    {
-      "id": "n-8224d883",
-      "task": "album-of-title-5d02",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "ground",
-            "item number",
-            "longest",
-            "longest one",
-            "longest word",
-            "nth",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ],
-        [
-          "has",
-          "title"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of ",
-            {
-              "slot": 1
-            },
-            " ",
-            {
-              "slot": 2
-            },
-            " is ",
-            {
-              "slot": 3
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 4
-          }
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "transform.title",
           [
             "know.lookup",
             [
@@ -85566,119 +85343,6 @@
         ],
         [
           "transform.kebab",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-                },
-                {
-                  "lit": "title"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-            },
-            {
-              "lit": "title"
-            },
-            {
-              "lit": "album"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 19,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 97
-      }
-    },
-    {
-      "id": "n-fc8e7b03",
-      "task": "album-of-title-5d02",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "dancing",
-            "item number",
-            "longest",
-            "longest one",
-            "longest word",
-            "nth",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ],
-        [
-          "has",
-          "title"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of ",
-            {
-              "slot": 1
-            },
-            " With Our Hands ",
-            {
-              "slot": 2
-            },
-            " is ",
-            {
-              "slot": 3
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 4
-          }
-        ],
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "transform.title",
           [
             "know.lookup",
             [
@@ -98990,117 +98654,6 @@
       }
     },
     {
-      "id": "n-b526b1e6",
-      "task": "album-of-title-5d02",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "existed",
-            "item number",
-            "nth",
-            "separate by",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "words<=",
-          9
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of ",
-            {
-              "slot": 1
-            },
-            " Existed is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "render.list",
-          [
-            "transform.split",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-                },
-                {
-                  "lit": "title"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            [
-              "sense.lastWord"
-            ]
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-              },
-              {
-                "lit": "title"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-          },
-          {
-            "lit": "title"
-          },
-          {
-            "lit": "album"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 21,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 97
-      }
-    },
-    {
       "id": "n-ba10f9ef",
       "task": "album-of-title-5d02",
       "gen": 10,
@@ -99306,126 +98859,6 @@
         ],
         [
           "transform.swapCase",
-          [
-            "sense.lastWord"
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-              },
-              {
-                "lit": "title"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-          },
-          {
-            "lit": "title"
-          },
-          {
-            "lit": "album"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 21,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 97
-      }
-    },
-    {
-      "id": "n-c5fb585e",
-      "task": "album-of-title-5d02",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "dancing",
-            "item number",
-            "longest",
-            "longest one",
-            "longest word",
-            "nth",
-            "title case"
-          ]
-        ],
-        [
-          "has",
-          "title"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of ",
-            {
-              "slot": 1
-            },
-            " With Our ",
-            {
-              "slot": 2
-            },
-            " ",
-            {
-              "slot": 3
-            },
-            " is ",
-            {
-              "slot": 4
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 4
-          }
-        ],
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 4
-          }
-        ],
-        [
-          "transform.title",
           [
             "sense.lastWord"
           ]
@@ -100559,132 +99992,6 @@
         ],
         [
           "transform.pascal",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-                },
-                {
-                  "lit": "title"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
-            },
-            {
-              "lit": "title"
-            },
-            {
-              "lit": "album"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 22,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 97
-      }
-    },
-    {
-      "id": "n-156190cc",
-      "task": "album-of-title-5d02",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "dancing",
-            "item number",
-            "longest",
-            "longest one",
-            "longest word",
-            "nth",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ],
-        [
-          "has",
-          "title"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of ",
-            {
-              "slot": 1
-            },
-            " With Our ",
-            {
-              "slot": 2
-            },
-            " ",
-            {
-              "slot": 3
-            },
-            " is ",
-            {
-              "slot": 4
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 4
-          }
-        ],
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 4
-          }
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "transform.title",
           [
             "know.lookup",
             [
@@ -109292,6 +108599,61 @@
       }
     },
     {
+      "id": "n-3edd8ea1",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "girl",
+            "growth rate",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.percentChange",
+          {
+            "lit": 12
+          },
+          [
+            "compute.discount",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1989
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
       "id": "n-3fd21aff",
       "task": "album-of-title-5d02",
       "gen": 10,
@@ -109377,6 +108739,61 @@
             ],
             {
               "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-4380b76c",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "growth rate",
+            "off",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.percentChange",
+          {
+            "lit": 10
+          },
+          [
+            "compute.discount",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1989
             }
           ]
         ]
@@ -109813,6 +109230,57 @@
       }
     },
     {
+      "id": "n-8f26fa97",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "discount",
+            "lcm",
+            "least common multiple",
+            "lowest common multiple",
+            "off",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.discount",
+            [
+              "sense.wordCount"
+            ],
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
       "id": "n-919ed6cf",
       "task": "album-of-title-5d02",
       "gen": 10,
@@ -109961,6 +109429,60 @@
             [
               "sense.wordCount"
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-9ac585ce",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "growth rate",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "reduced by",
+            "sale price",
+            "wonderland"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.percentChange",
+          {
+            "lit": 5
+          },
+          [
+            "compute.discount",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1989
+            }
           ]
         ]
       ],
@@ -110366,6 +109888,56 @@
             {
               "lit": 4
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-dc9d330c",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "blank",
+            "lcm",
+            "least common multiple",
+            "lowest common multiple",
+            "reduced by",
+            "sale price"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "compute.discount",
+            {
+              "lit": 1989
+            },
+            [
+              "sense.howMany"
+            ]
           ]
         ]
       ],
@@ -114767,6 +114339,358 @@
       }
     },
     {
+      "id": "n-0332039f",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digits backwards",
+            "digits reversed",
+            "exponent",
+            "off",
+            "raised to",
+            "reverse the digits",
+            "to the power of"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.power",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.reverseDigits",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-0939bad6",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cube root",
+            "digits backwards",
+            "digits reversed",
+            "nth root",
+            "off",
+            "reverse the digits"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.root",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.reverseDigits",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-0f032d55",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add the digits",
+            "cube root",
+            "digit sum",
+            "nth root",
+            "off",
+            "sum of the digits"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.root",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.digitSum",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-143b89f2",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add the digits",
+            "digit sum",
+            "lowest terms",
+            "off",
+            "reduce the fraction",
+            "simplest form",
+            "simplify the fraction",
+            "sum of the digits"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.fraction",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.digitSum",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-18425f13",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add the digits",
+            "digit sum",
+            "exponent",
+            "off",
+            "raised to",
+            "sum of the digits",
+            "to the power of"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.power",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.digitSum",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-3895e06a",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blank",
+            "divisor count",
+            "how many factors",
+            "least common multiple",
+            "lowest common multiple",
+            "number of divisors"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.divisorCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-641b1c47",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add the digits",
+            "arrangements",
+            "digit sum",
+            "off",
+            "ordered selections",
+            "permutations",
+            "sum of the digits",
+            "ways to arrange"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.permutations",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.digitSum",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
       "id": "n-6b5a5409",
       "task": "album-of-title-5d02",
       "gen": 10,
@@ -114814,6 +114738,408 @@
       }
     },
     {
+      "id": "n-7d295047",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "off",
+            "percent is",
+            "to the second power",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.square",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-9016d108",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "girl",
+            "how many characters",
+            "least common multiple",
+            "lowest common multiple",
+            "number of characters"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.chars",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-b2e22678",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add the digits",
+            "binomial coefficient",
+            "combinations",
+            "digit sum",
+            "n choose k",
+            "off",
+            "sum of the digits",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.digitSum",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-b634a7e7",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "hypotenuse",
+            "nth prime",
+            "pythagoras",
+            "pythagorean",
+            "the prime number in position",
+            "wonderland"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.hypot",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.nthPrime",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-cd9a3888",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digits backwards",
+            "digits reversed",
+            "lowest terms",
+            "off",
+            "reduce the fraction",
+            "reverse the digits",
+            "simplest form",
+            "simplify the fraction"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.fraction",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.reverseDigits",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-d0afa7c3",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "how many characters",
+            "least common multiple",
+            "lowest common multiple",
+            "number of characters",
+            "off"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.chars",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-d55a09f2",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dreams",
+            "how many items",
+            "least common multiple",
+            "lowest common multiple",
+            "number of items"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-db0464d2",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blank",
+            "least common multiple",
+            "lowest common multiple",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.divisorSum",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
       "id": "n-e549ab61",
       "task": "album-of-title-5d02",
       "gen": 10,
@@ -114853,6 +115179,203 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-f348d1a0",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blank",
+            "lcm",
+            "least common multiple",
+            "lowest common multiple",
+            "root of",
+            "sqrt",
+            "square root"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.sqrt",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-f9600b0e",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "how many letters",
+            "least common multiple",
+            "letter count",
+            "lowest common multiple",
+            "number of letters",
+            "off"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.lcm",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.letters",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-fed8faa6",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arrangements",
+            "digits backwards",
+            "digits reversed",
+            "off",
+            "ordered selections",
+            "permutations",
+            "reverse the digits",
+            "ways to arrange"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.permutations",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.reverseDigits",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-ff716780",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "combinations",
+            "digits backwards",
+            "digits reversed",
+            "n choose k",
+            "off",
+            "reverse the digits",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.reverseDigits",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -115928,75 +116451,6 @@
       "mem": null,
       "height": 3,
       "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 97
-      }
-    },
-    {
-      "id": "n-185605d3",
-      "task": "album-of-title-5d02",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "car",
-            "longest one",
-            "longest word",
-            "shortest",
-            "shortest one",
-            "shortest word"
-          ]
-        ],
-        [
-          "words<=",
-          6
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " of ",
-            {
-              "slot": 1
-            },
-            " ",
-            {
-              "slot": 2
-            },
-            " is reputation."
-          ]
-        },
-        [
-          "sense.wordAt",
-          {
-            "lit": 3
-          }
-        ],
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 8,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -121790,9 +122244,1417 @@
         "fired": 1,
         "rows": 97
       }
+    },
+    {
+      "id": "n-94b00d71",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "clean",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Clean is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+          },
+          {
+            "lit": "title"
+          },
+          {
+            "lit": "album"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-df302ed9",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "king",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth"
+          ]
+        ],
+        [
+          "words<=",
+          8
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of King of My Heart is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+          },
+          {
+            "lit": "title"
+          },
+          {
+            "lit": "album"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-df4bac32",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "movie",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of If This Was a Movie is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+          },
+          {
+            "lit": "title"
+          },
+          {
+            "lit": "album"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-f9e2aaec",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "live",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of Long Live is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+          },
+          {
+            "lit": "title"
+          },
+          {
+            "lit": "album"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-4cc32b59",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "almost",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of I ",
+            {
+              "slot": 1
+            },
+            " Do is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "transform.title",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+            },
+            {
+              "lit": "title"
+            },
+            {
+              "lit": "album"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-5b829d3b",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "item number",
+            "nth",
+            "ricochet",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of my ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is ",
+            {
+              "slot": 3
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.title",
+          [
+            "sense.lastWord"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+          },
+          {
+            "lit": "title"
+          },
+          {
+            "lit": "album"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 18,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-9f8a40b6",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "dancing",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " With Our Hands ",
+            {
+              "slot": 2
+            },
+            " is ",
+            {
+              "slot": 3
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "transform.title",
+          [
+            "sense.lastWord"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+          },
+          {
+            "lit": "title"
+          },
+          {
+            "lit": "album"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 18,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-71b83199",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "ricochet",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of my ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is ",
+            {
+              "slot": 3
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "transform.title",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+            },
+            {
+              "lit": "title"
+            },
+            {
+              "lit": "album"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 19,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-8224d883",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "ground",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is ",
+            {
+              "slot": 3
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "transform.title",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+            },
+            {
+              "lit": "title"
+            },
+            {
+              "lit": "album"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 19,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-fc8e7b03",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "dancing",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " With Our Hands ",
+            {
+              "slot": 2
+            },
+            " is ",
+            {
+              "slot": 3
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.title",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+            },
+            {
+              "lit": "title"
+            },
+            {
+              "lit": "album"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 19,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-b526b1e6",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "existed",
+            "item number",
+            "nth",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " Existed is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "render.list",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+          },
+          {
+            "lit": "title"
+          },
+          {
+            "lit": "album"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-c5fb585e",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "dancing",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " With Our ",
+            {
+              "slot": 2
+            },
+            " ",
+            {
+              "slot": 3
+            },
+            " is ",
+            {
+              "slot": 4
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "transform.title",
+          [
+            "sense.lastWord"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+          },
+          {
+            "lit": "title"
+          },
+          {
+            "lit": "album"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 21,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-156190cc",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "dancing",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " With Our ",
+            {
+              "slot": 2
+            },
+            " ",
+            {
+              "slot": 3
+            },
+            " is ",
+            {
+              "slot": 4
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.title",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+                },
+                {
+                  "lit": "title"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-taylor-swift-lyrics-ecd247"
+            },
+            {
+              "lit": "title"
+            },
+            {
+              "lit": "album"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 22,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
+    },
+    {
+      "id": "n-185605d3",
+      "task": "album-of-title-5d02",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "car",
+            "longest one",
+            "longest word",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is reputation."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 97
+      }
     }
   ],
   "stages": [
-    "1f4145ec5fd57d745114caed531dc419cc805d8e76f4834d013a6732b1a19794"
+    "1f4145ec5fd57d745114caed531dc419cc805d8e76f4834d013a6732b1a19794",
+    "4cc734ec23722c0a4e04d8928bf0bb0bc52fe8639184be52e0e3da0609c1b96a"
   ]
 }
