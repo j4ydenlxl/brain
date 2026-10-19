@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "402976314583f85c488eac5c19b8030ddad89df30ba0dc54e15bd98a44c8e7a8";
+const VERSION = "0c4d2d8e0bd59faf85cca3d9f9369c39b133a40320f8a6470a997d04e83f3456";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"239ffd6d39e767eee94043b26a8a0063f412e1f54589b8326057a141af2bc00d"},
+  {"url":"/organism/cells.json","sha256":"13c909bf7764be7f2cda24bc94b1b2eaa13d586ca7d2a1d3651074089da19f91"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -318,10 +318,20 @@ const PRECACHE = [
   {"url":"/organism/cells/city-of-airport-ed91-rev-neo-g10.mjs","sha256":"5e5d13270ca4c42fded0c9ddb2f017cb50221c66859bf079901992afccb5fda7"},
   {"url":"/organism/cells/year-of-paper-169a-larger-neo-g10.mjs","sha256":"ed42f56d10e7fbc7c197b0838d7328216a9fbe52932b1d141f74dedb88505717"},
   {"url":"/organism/cells/population-of-county-03f4-larger-neo-g10.mjs","sha256":"d7157550d7624a337af12031f9d4098066172db01a8aaa1d18ccd3f7b8fb224f"},
+  {"url":"/organism/cells/male-of-county-ebb0-compare-neo-g10.mjs","sha256":"a3c67f65b27e9cad418a2a05ea286cc3ed960b37806e970d84b58ceada52a187"},
+  {"url":"/organism/cells/population-of-county-03f4-compare-neo-g10.mjs","sha256":"4a106057aa73a2e3d2ed76f7c06dca1b9799df3399c2d147935a447d46c4c8b1"},
+  {"url":"/organism/cells/security-name-of-act-symb-0d49-rev-neo-g10.mjs","sha256":"16634b82bbf5ae200fc7438b7a698aee28095ee631aa44c4f91801d8cafc9262"},
+  {"url":"/organism/cells/weight-of-name-1f15-rev-neo-g10.mjs","sha256":"ce60821a8c39c49f2ccefd7c70290852461a1d78876a64354aae735833856672"},
+  {"url":"/organism/cells/artist-of-title-3684-neo-g10.mjs","sha256":"b22d95d25e1e59aa643e4f9a527e5c428894679045ea4fd3f5003c14c85ede11"},
+  {"url":"/organism/cells/cpi-of-year-month-f845-compare-neo-g10.mjs","sha256":"6af173b707975e623b648a1610d960740ffac193808e4852ff4d10fb2869d08b"},
+  {"url":"/organism/cells/cpi-of-year-month-f845-smaller-neo-g10.mjs","sha256":"1cf6a40c510aedb4f1b7f814ecac576bc5c91bfa411380884565a9e81e9dd399"},
+  {"url":"/organism/cells/periodic-table-symbol-to-element-neo-g10.mjs","sha256":"6d2de299d2ceb06a0134a5ce89666aa8f19eee9cd78507be77bcab3af6f8610b"},
+  {"url":"/organism/cells/state-of-code-be8e-neo-g10.mjs","sha256":"4b0b361f2e03b69af24672727447d7450c17f4abf0af226c0f57e5b0dde5ed24"},
+  {"url":"/organism/cells/birth-of-name-d631-rev-neo-g10.mjs","sha256":"5843555fa19b5b6f9fac6a25f5f197e57ce3d3653743d41002df5c5788a41c04"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"63487e768424124143d555fe75b1d8f2bebe751e8c2a11bdcf3d032d7f590c29"}
+  {"url":"/organism/era/tasks.json","sha256":"ac7a6d14837fbd5865bed128f9128c0dd688c535737b24495451738aa4da810a"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -376,7 +386,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/artist-of-song-343e.json","sha256":"8f8a4eb6f5dfb0c6fd290af20e5f94fc26bdd713b73b236f2277c8d78b361694"},
   {"url":"/organism/era/tasks/artist-of-song-343e-rev.json","sha256":"a55952bbf2b5331b16d1b4a6250eada9ce583532bdb53051bd2e29517914bf3e"},
   {"url":"/organism/era/tasks/artist-of-song-abad.json","sha256":"2858478ea8e3a4dab9732dcd1ffbbdffa56446662abb3d665bc937ceae8a67c1"},
-  {"url":"/organism/era/tasks/artist-of-title-3684.json","sha256":"cf65cd67125b8a148200e8ccafe6619d6f43d419b667ce683f6ef2f8fec1c43e"},
   {"url":"/organism/era/tasks/artist-of-title-3684-rev.json","sha256":"c1bd35fdafb170f9799152dba4911ec4d6d3134ad9bab98bca2fcaafdfb848cc"},
   {"url":"/organism/era/tasks/artist-of-track-name-2c82.json","sha256":"86e8e46e19777ca6d38ff20d57285188a12a715e58f7f6992540c7c0766141ef"},
   {"url":"/organism/era/tasks/author-kaggle-of-title-914a.json","sha256":"14210ddeb570614240713a3b37354681b4e9d83c9dbc1214b3cf86800b385f5d"},
@@ -397,7 +406,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/az-phoenix-of-date-f2c7-larger.json","sha256":"6338adcafc32006c5f12d5851a4070400442dea6c6a46ad0eb8a032ff2499177"},
   {"url":"/organism/era/tasks/az-phoenix-of-date-f2c7-smaller.json","sha256":"fbf1a6802cc79d4863211f62b5b65cd5f221a0de53f72f7889ce87ea68738747"},
   {"url":"/organism/era/tasks/az-phoenix-of-date-f2c7-sum.json","sha256":"58763a9b4b3272bcb630cd0d2357f598d00aba599683fdfc88f2a154cf6a3b4b"},
-  {"url":"/organism/era/tasks/birth-of-name-d631-rev.json","sha256":"c3ef78aa4cefcb29a6d6c3aabba0b709986f0009f3d4d6acaa4fc01008ed1808"},
   {"url":"/organism/era/tasks/birthday-of-name-226a-rev.json","sha256":"589a176d27ae14209268ee187da77dae046e22eadce7912f035663269ba981c4"},
   {"url":"/organism/era/tasks/ca-los-angeles-of-dat-beeb.json","sha256":"5a066d0e50fafd0b3f7e410e4627c9cdd64cadb2a8d09d72ef29a127c3db8548"},
   {"url":"/organism/era/tasks/ca-los-angeles-of-dat-beeb-compare.json","sha256":"4278f15e45a36d764935325953616de5aeb4eec65b9023ff23ad67dc7f80160b"},
@@ -502,9 +510,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/court-of-title-0655.json","sha256":"a88934d1f7acb7c889a533184e1b0235b8eb2e7d246bf503af4b85adac0b412b"},
   {"url":"/organism/era/tasks/court-of-title-0655-rev.json","sha256":"d27db2d1183533a0e06d3c5b52d90bc43fdc69f9cfb6f27ca101afed9edc06a4"},
   {"url":"/organism/era/tasks/cover-artist-of-character-c0a5.json","sha256":"cca97094e73309e31ed463bc3ee523d0b220deaeafdeff136a592c6b91a4a51a"},
-  {"url":"/organism/era/tasks/cpi-of-year-month-f845-compare.json","sha256":"1c81b4017359b9b016c80b3e7c448e4a730d45cc9b31f5f2d787f26922945908"},
   {"url":"/organism/era/tasks/cpi-of-year-month-f845-larger.json","sha256":"5cebbd1052abefcc520e6757df2a397e6e2311a587e4976eebb98596a7f7d031"},
-  {"url":"/organism/era/tasks/cpi-of-year-month-f845-smaller.json","sha256":"8c7d2c278e019172dbda001e36f29e783329ae7c3314034dccd688522646c637"},
   {"url":"/organism/era/tasks/crayola-color-hex.json","sha256":"170719600e9803a959b6214e703cceb7c8a1e8cfc178e586ff4444770491eed5"},
   {"url":"/organism/era/tasks/crypto-ticker-name.json","sha256":"8cda823a2d28b87990517196d8b9103e757b061a1ce7f6fc156c3d00cadbec48"},
   {"url":"/organism/era/tasks/crypto-tickers-crypto-ticker-to-cr-655025.json","sha256":"39ab2d29f8fd9d2c42b83408a3230ba4332afd14f880436f772314c110ed4fdd"},
@@ -570,7 +576,11 @@ const LAZY = [
   {"url":"/organism/era/tasks/extension-media-type.json","sha256":"b4db780efbd6ed284961237092ef3aaf34c7431ca18ea1ad255f8a6a440ab997"},
   {"url":"/organism/era/tasks/fatalities-count-of-d-f626-compare.json","sha256":"37d8c100fed6a52d55e13161e6839281ac7fb9777e429739171f8471f30f09d7"},
   {"url":"/organism/era/tasks/fatalities-count-of-d-f626-larger.json","sha256":"f9b945833ac4313cddd56df6035a470a2e87743cb96f1082413966c09b83ec8f"},
-  {"url":"/organism/era/tasks/female-of-county-de5d-smaller.json","sha256":"0584bcb33bc01a37859c000f8ba5c16384975397db1b776d06d3044afa6d8ef5"}
+  {"url":"/organism/era/tasks/female-of-county-de5d-compare.json","sha256":"166b3d28c37b14a67c741c3ae251cf760f73984b3534315912ec75d9afe2bfb1"},
+  {"url":"/organism/era/tasks/female-of-county-de5d-smaller.json","sha256":"0584bcb33bc01a37859c000f8ba5c16384975397db1b776d06d3044afa6d8ef5"},
+  {"url":"/organism/era/tasks/female-of-county-de5d-sum.json","sha256":"52a06028b18ff1fcf42b530a5a454df521003e8f3f59c0358ad5d5ffbe9a294b"},
+  {"url":"/organism/era/tasks/file-of-lang-edee.json","sha256":"a3277d714a9a7e4c6950d0d8b2ccd595478c32de3f6d86b52dc3bd9345d14c88"},
+  {"url":"/organism/era/tasks/file-of-lang-edee-rev.json","sha256":"a16830dc4ca6d9d7a18da5a9a9a596a11d9ea7a89a818d75a3284193e454a974"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
