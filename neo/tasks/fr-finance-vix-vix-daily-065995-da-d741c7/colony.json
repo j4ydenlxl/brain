@@ -2,29 +2,27 @@
   "task": "fr-finance-vix-vix-daily-065995-da-d741c7",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T08:56:01.365Z",
+  "at": "2026-10-19T10:14:20.473Z",
   "stats": {
-    "generated": 200044,
-    "distinct": 90251,
-    "kept": 65,
-    "know": 22,
+    "generated": 160839,
+    "distinct": 62883,
+    "kept": 67,
+    "know": 24,
     "byFamily": {
       "know": 3,
       "sense": 2,
       "memory": 43,
-      "transform": 17
+      "transform": 19
     },
     "bySource": {
-      "open": 11,
-      "memory": 43,
-      "enum": 4,
-      "template": 7
+      "parent": 65,
+      "open": 2
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 152141,
-    "cellsPerSecond": 1315,
+    "ms": 149211,
+    "cellsPerSecond": 1078,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -34,13 +32,13 @@
     "cursor": {
       "v": 1,
       "basis": "aac1622517a8b5ebe5625ad2ab51a2f7f6afa4b7e93c880cfac71d462a09e1c9",
-      "round": 0,
-      "at": 101178,
+      "round": 1,
+      "at": 248058,
       "maxCost": 7,
       "done": false,
-      "cost": 5,
-      "prim": "transform.substr",
-      "tpl": 3000
+      "cost": 6,
+      "prim": "compute.asPercent",
+      "tpl": 4611
     }
   },
   "cells": [
@@ -2845,6 +2843,108 @@
       }
     },
     {
+      "id": "n-5b6fb4c5",
+      "task": "fr-finance-vix-vix-daily-065995-da-d741c7",
+      "gen": 10,
+      "parents": [
+        "n-af0be3d4"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.list",
+          [
+            "transform.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "high"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-finance-vix-vix-daily-065995"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-finance-vix-vix-daily-065995"
+          },
+          {
+            "lit": "date"
+          },
+          {
+            "lit": "high"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-9e8472b3",
       "task": "fr-finance-vix-vix-daily-065995-da-d741c7",
       "gen": 10,
@@ -2944,6 +3044,108 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-aac0a779",
+      "task": "fr-finance-vix-vix-daily-065995-da-d741c7",
+      "gen": 10,
+      "parents": [
+        "n-bf93ec67"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "high"
+          }
+        ],
+        [
+          "render.plain",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-finance-vix-vix-daily-065995"
+                  },
+                  {
+                    "lit": "date"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-finance-vix-vix-daily-065995"
+              },
+              {
+                "lit": "date"
+              },
+              {
+                "lit": "high"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 20,
       "fit": {
         "ok": 13,
@@ -4711,6 +4913,7 @@
     }
   ],
   "stages": [
-    "1b6a0f60243f5f80a259bdb2c1436f2358e7a304fed7f73ab913aa64951ef69f"
+    "1b6a0f60243f5f80a259bdb2c1436f2358e7a304fed7f73ab913aa64951ef69f",
+    "e0dc652bb16c35a18cb1c1036a56d6d023ecb2e28208de00aa614ecbf96c4d85"
   ]
 }

@@ -2,30 +2,29 @@
   "task": "fr-finance-vix-vix-daily-065995-op-bb1986",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T08:56:31.463Z",
+  "at": "2026-10-19T10:16:00.333Z",
   "stats": {
-    "generated": 200114,
-    "distinct": 57525,
-    "kept": 98,
-    "know": 55,
+    "generated": 160103,
+    "distinct": 119164,
+    "kept": 104,
+    "know": 61,
     "byFamily": {
       "know": 8,
       "sense": 3,
       "memory": 43,
-      "transform": 42,
+      "transform": 47,
       "aggregate": 1,
-      "compute": 1
+      "compute": 2
     },
     "bySource": {
-      "enum": 12,
-      "open": 5,
-      "parent": 81
+      "parent": 98,
+      "enum": 6
     },
-    "maxHeight": 6,
+    "maxHeight": 7,
     "devOk": 40,
     "devN": 40,
-    "ms": 104862,
-    "cellsPerSecond": 1908,
+    "ms": 171253,
+    "cellsPerSecond": 935,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -35,12 +34,12 @@
     "cursor": {
       "v": 1,
       "basis": "933033b01be7e2b567817f40be6c56cd47ac8d34c92d7be05106ee2cfcff43d8",
-      "round": 0,
-      "at": 122862,
+      "round": 1,
+      "at": 219092,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compute.fraction",
+      "prim": "transform.padStart",
       "tpl": 1815
     }
   },
@@ -4778,6 +4777,174 @@
       }
     },
     {
+      "id": "n-c073bfd8",
+      "task": "fr-finance-vix-vix-daily-065995-op-bb1986",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "interest earned",
+            "is",
+            "item number",
+            "nth",
+            "position",
+            "simple interest"
+          ]
+        ],
+        [
+          "has",
+          "high"
+        ],
+        [
+          "nums==",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.decimals",
+        [
+          "compute.interest",
+          {
+            "lit": 10
+          },
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-finance-vix-vix-daily-065995"
+                  },
+                  {
+                    "lit": "open"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-finance-vix-vix-daily-065995"
+              },
+              {
+                "lit": "open"
+              },
+              {
+                "lit": "high"
+              }
+            ]
+          ],
+          {
+            "lit": 10
+          }
+        ],
+        {
+          "lit": 2
+        }
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 15,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-00c02b7b",
+      "task": "fr-finance-vix-vix-daily-065995-op-bb1986",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "is",
+            "item number",
+            "left over",
+            "mod",
+            "modulo",
+            "nth",
+            "position",
+            "remainder"
+          ]
+        ],
+        [
+          "has",
+          "high"
+        ],
+        [
+          "nums==",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.decimals",
+        [
+          "transform.mod",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-finance-vix-vix-daily-065995"
+                  },
+                  {
+                    "lit": "open"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-finance-vix-vix-daily-065995"
+              },
+              {
+                "lit": "open"
+              },
+              {
+                "lit": "high"
+              }
+            ]
+          ],
+          [
+            "series.last",
+            {
+              "lit": "fr-finance-vix-vix-daily-065995"
+            },
+            {
+              "lit": "high"
+            },
+            {
+              "lit": "open"
+            }
+          ]
+        ],
+        {
+          "lit": 2
+        }
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-e8e19eda",
       "task": "fr-finance-vix-vix-daily-065995-op-bb1986",
       "gen": 8,
@@ -6306,6 +6473,96 @@
       }
     },
     {
+      "id": "n-0f71385f",
+      "task": "fr-finance-vix-vix-daily-065995-op-bb1986",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "element",
+            "high",
+            "item number",
+            "nth",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-finance-vix-vix-daily-065995"
+                },
+                {
+                  "lit": "open"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-finance-vix-vix-daily-065995"
+            },
+            {
+              "lit": "open"
+            },
+            {
+              "lit": "high"
+            }
+          ],
+          [
+            "series.prev",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-finance-vix-vix-daily-065995"
+                },
+                {
+                  "lit": "open"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-finance-vix-vix-daily-065995"
+            },
+            {
+              "lit": "open"
+            },
+            {
+              "lit": "high"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d16abb7b",
       "task": "fr-finance-vix-vix-daily-065995-op-bb1986",
       "gen": 10,
@@ -6366,6 +6623,262 @@
       "mem": null,
       "height": 6,
       "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3aa4733c",
+      "task": "fr-finance-vix-vix-daily-065995-op-bb1986",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as text",
+            "as words",
+            "element",
+            "factorise",
+            "factorize",
+            "high",
+            "item number",
+            "nth",
+            "position",
+            "prime factorisation",
+            "prime factorization",
+            "prime factors",
+            "written out"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.asText",
+          [
+            "compute.primeFactors",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-finance-vix-vix-daily-065995"
+                    },
+                    {
+                      "lit": "open"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-finance-vix-vix-daily-065995"
+                },
+                {
+                  "lit": "open"
+                },
+                {
+                  "lit": "high"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6aac2f95",
+      "task": "fr-finance-vix-vix-daily-065995-op-bb1986",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "element",
+            "high",
+            "item number",
+            "nth",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-finance-vix-vix-daily-065995"
+                },
+                {
+                  "lit": "open"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-finance-vix-vix-daily-065995"
+            },
+            {
+              "lit": "open"
+            },
+            {
+              "lit": "high"
+            }
+          ],
+          [
+            "series.step",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-finance-vix-vix-daily-065995"
+                },
+                {
+                  "lit": "open"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-finance-vix-vix-daily-065995"
+            },
+            {
+              "lit": "open"
+            },
+            {
+              "lit": "high"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a310528e",
+      "task": "fr-finance-vix-vix-daily-065995-op-bb1986",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "element",
+            "high",
+            "item number",
+            "nth",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-finance-vix-vix-daily-065995"
+                },
+                {
+                  "lit": "open"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-finance-vix-vix-daily-065995"
+            },
+            {
+              "lit": "open"
+            },
+            {
+              "lit": "high"
+            }
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-finance-vix-vix-daily-065995"
+                  },
+                  {
+                    "lit": "high"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-finance-vix-vix-daily-065995"
+              },
+              {
+                "lit": "high"
+              },
+              {
+                "lit": "open"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 21,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -8591,6 +9104,7 @@
   ],
   "stages": [
     "956e438c5d1a14940b638163f090e8ebc3d5fb7fbaadc3df949fe4432d7e79a8",
-    "24493283e3b9b05bed93dc6262dd672eba592ba9fb78e5e95320e5b9f650d16e"
+    "24493283e3b9b05bed93dc6262dd672eba592ba9fb78e5e95320e5b9f650d16e",
+    "62969e88db7305ba03775ce790c0f1441ae240b8fc1e4094ccba234184383fc5"
   ]
 }
