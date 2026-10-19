@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "5c00fd7bc30283f8bd1ef1a1fed19ed99d7f2de7205991688ed6894b77dab820";
+const VERSION = "c28fdb14810aee593c26b7caa25badebc8fb295a8ba78f2f7c3206471b5412c7";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"7ef555df1165fd60d80780dd6f36f7cc332e73fd93184f5454bd340e60bf30fe"},
+  {"url":"/organism/cells.json","sha256":"48d15f48132d731d8374461171d549e219a448744a6955abd9635773ea5b991a"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -360,10 +360,12 @@ const PRECACHE = [
   {"url":"/organism/cells/type-of-album-3af1-neo-g10.mjs","sha256":"1c1bac468ffd5c4f64794b59237a0058f7cf18569f0d8ce612144ef66a3f3690"},
   {"url":"/organism/cells/community-type-of-campus-37d9-neo-g10.mjs","sha256":"157954454493d5488f5edb1b0b391e9452112f1bfb4ceadbbdd4b1122b766992"},
   {"url":"/organism/cells/date-of-title-200e-rev-neo-g10.mjs","sha256":"a2bb9e617720ac13737a202c3efc8080a2e1af2f3caffadeacc2609838475adc"},
+  {"url":"/organism/cells/show-id-of-title-b0b4-neo-g10.mjs","sha256":"0dabcf6f8c9a40edb2d2cd80215fe187af990fd55a745a658362bdc3b171ae6b"},
+  {"url":"/organism/cells/forename-of-driver-ref-a42d-rev-neo-g10.mjs","sha256":"4d6cf05b2bc45a9a14902d036208329c6ae955dcb4e7d022814b16ffc20feff9"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"45b068593aa799466fda460df69059f2c2365d44069da8207266c99be37f5fd1"}
+  {"url":"/organism/era/tasks.json","sha256":"324150c5a127534be5d83124fe0ae1242a088f70eb6c57dcdc9e6c93ecd93fc6"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -452,6 +454,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/capital-country.json","sha256":"38b673b861a6da3b61b4db771b05d091306a153f71af1acf590b0a0e2007478c"},
   {"url":"/organism/era/tasks/case-number-of-title-56da.json","sha256":"136f7685cd396a6f1400fde2e3b9d323f3961fd0d96f7985378c10da39ba87fd"},
   {"url":"/organism/era/tasks/case-number-of-title-56da-rev.json","sha256":"7010a5476e18f331e6674f120817b8b64caef0c11d776b80ecb39545b8fa057d"},
+  {"url":"/organism/era/tasks/category-of-medicine-name-4714.json","sha256":"1e71fac4c2ffe213e64ef2b1398b7fe1a60abc3f156610856fd195c2305f1dfd"},
   {"url":"/organism/era/tasks/category-of-name-6a65.json","sha256":"d9638ba454b041a6a83423e51fe6e7c34ff3087b74067ff62697ee164ccbca9d"},
   {"url":"/organism/era/tasks/category-of-name-of-expos-2ba0.json","sha256":"0d815b078f5bc48a4de6034ca450ecaf3a0ffeb8f255dd1a247e597bbc3fd390"},
   {"url":"/organism/era/tasks/category-of-password-193f.json","sha256":"f0d0d91bf7b4641c0a9bfaa0373d798f4284956b400063215d7f70e8d703de4c"},
@@ -487,6 +490,8 @@ const LAZY = [
   {"url":"/organism/era/tasks/column-of-title-0e66-rev.json","sha256":"0d48dd179e4b984f6eb063f902708e8fe0e63c791d123dd403de3f23e645d125"},
   {"url":"/organism/era/tasks/column-of-title-6d3f.json","sha256":"c288e10e2647bfb1a88cd2b42edafcc069fd30f3bd9b35f6d8190fb031a318ae"},
   {"url":"/organism/era/tasks/column-of-title-6d3f-rev.json","sha256":"0133c1fa8e9acad00d8260f4dd61bc82f1f94b97e98c0f9757a75f031ea91962"},
+  {"url":"/organism/era/tasks/comments-of-zone-abb4-rev.json","sha256":"116af1e20215c60462d00245df840048a7cba18aa3a2ecff0cb3bba6d78e54a1"},
+  {"url":"/organism/era/tasks/common-name-of-medicine-n-6dd2-rev.json","sha256":"7482f92b72bcfed24d3ac11e86a9824ce5b5734cb194c678038e161c351a774c"},
   {"url":"/organism/era/tasks/company-name-of-act-symbo-82d7.json","sha256":"11484fbb0204b2f07c91a5bc9c3756df75721133717958bc9051a5aeb033f983"},
   {"url":"/organism/era/tasks/company-name-of-act-symbo-82d7-e82e0e.json","sha256":"3b5ac7400f33baa28f01dde62c4cf7a5119c9357281d787afb82f08a436e4840"},
   {"url":"/organism/era/tasks/company-name-of-act-symbo-82d7-rev.json","sha256":"64210f3958be42f2beba2daa8b97ec3438b15a3fb4df84c189aaa16dec95c18f"},
@@ -539,6 +544,8 @@ const LAZY = [
   {"url":"/organism/era/tasks/cover-artist-of-character-c0a5.json","sha256":"cca97094e73309e31ed463bc3ee523d0b220deaeafdeff136a592c6b91a4a51a"},
   {"url":"/organism/era/tasks/cpi-of-year-month-f845-larger.json","sha256":"5cebbd1052abefcc520e6757df2a397e6e2311a587e4976eebb98596a7f7d031"},
   {"url":"/organism/era/tasks/crayola-color-hex.json","sha256":"170719600e9803a959b6214e703cceb7c8a1e8cfc178e586ff4444770491eed5"},
+  {"url":"/organism/era/tasks/creators-of-title-bfd6.json","sha256":"9f8d97ab12761d6aa2ede30737d5428ad65492fb539cf43eb8ed308216e9c0e9"},
+  {"url":"/organism/era/tasks/creators-of-title-bfd6-rev.json","sha256":"9653b9db88d5cf0805447f6e42eb910234b4eb366b678e22ef3ae9944460146d"},
   {"url":"/organism/era/tasks/crypto-ticker-name.json","sha256":"8cda823a2d28b87990517196d8b9103e757b061a1ce7f6fc156c3d00cadbec48"},
   {"url":"/organism/era/tasks/crypto-tickers-crypto-ticker-to-cr-655025.json","sha256":"39ab2d29f8fd9d2c42b83408a3230ba4332afd14f880436f772314c110ed4fdd"},
   {"url":"/organism/era/tasks/crypto-tickers-cryptocurrency-to-c-15a721.json","sha256":"3533dc867714e6672898346afc40b16ac7092f8726d9460116491ddad39e9bc0"},
@@ -567,6 +574,8 @@ const LAZY = [
   {"url":"/organism/era/tasks/description-of-person-44ad-rev.json","sha256":"f11717ee5dbcb08da6b0c547f8949793432786ce489f064209601d44cd13c4aa"},
   {"url":"/organism/era/tasks/description-of-person-e0c7.json","sha256":"8da38ccd8f527e330f0ef949cc10b74ae6dbae732af0764f680bb4fc26afb865"},
   {"url":"/organism/era/tasks/description-of-person-e0c7-rev.json","sha256":"e59e1f37b712f7a8a0368f79b830be3ed0fd0ce4ac64cbc0ca4438219e614165"},
+  {"url":"/organism/era/tasks/description-of-title-7b38.json","sha256":"04533ed5c0d8cbde059c003e6c6a8e6154f5f309116064eb080d74df28863ffa"},
+  {"url":"/organism/era/tasks/description-of-title-7b38-rev.json","sha256":"6c5ee7ed8bfee40fa50207604a076ef11b0a2143669bb5c854538fb19f710b70"},
   {"url":"/organism/era/tasks/description-of-title-a4af.json","sha256":"d389f696a99d0b89e4d2446ffb68aadb9a986911b3b449d7205fd66d188b1d70"},
   {"url":"/organism/era/tasks/director-of-title-8f45.json","sha256":"e5c7f67953fb85428fac63079123b98b52f682d4fe7eb8e84bbad7ae24f14c6e"},
   {"url":"/organism/era/tasks/discards-of-year-2783-compare.json","sha256":"cd879fa5d1cd7ecfa7d24d8f03613a6b22b10adca09b22c590e384843919a064"},
@@ -603,14 +612,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/firefox-of-date-e7db.json","sha256":"1c25acc7346151f4aa36844b20533b8e91a9dc08e451a8460143939984870f85"},
   {"url":"/organism/era/tasks/firefox-of-date-e7db-compare.json","sha256":"605799204300f508e82cb9355bc5d3b7c056b12c2f9cbbed767d36be9ac76d4f"},
   {"url":"/organism/era/tasks/firefox-of-date-e7db-larger.json","sha256":"5cd95666262c09b0d4c261b8e502f033dd37746268dfb86de06fc4ba5cd2e5f0"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db-smaller.json","sha256":"e296fe1b046ff99ba5277bf03be3df0e44e610439fbbedf22caffe24a3a0cc0d"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db-sum.json","sha256":"c92029ff9a38cfe2df8e71c026e3567a63cb96796895bce62c103dff41403fa5"},
-  {"url":"/organism/era/tasks/firefox-of-date-f7f2.json","sha256":"1dfa733d4dc4319ab0a550331f18dd3caa5cb8e998c3c7ce9c0c9477e2c04ac3"},
-  {"url":"/organism/era/tasks/firefox-of-date-f7f2-compare.json","sha256":"29079add31728e694e4217e23de0f42d6f0a5ccc01cfb246792faa2d03ecb061"},
-  {"url":"/organism/era/tasks/firefox-of-date-f7f2-larger.json","sha256":"ea430da68f576b5f558ca522205162ff38075065f20c262b0cd0cda67dc055ea"},
-  {"url":"/organism/era/tasks/firefox-of-date-f7f2-smaller.json","sha256":"fe502f6819a79f03a2242da820c825f5b49caef7e0a4c96774489bac667c15e5"},
-  {"url":"/organism/era/tasks/fiscal-sponsorship-model-74bf-rev.json","sha256":"2f19b4adf89988b768be087e8a231c1a532979f500d720d1942b4fe737214c58"},
-  {"url":"/organism/era/tasks/fr-co2-ppm-co2-annmean-gl-eec28d-m-4221a8.json","sha256":"b41439db79c0df8f5b57ab5f2118d3cec829f31517170a6bc6f92b004b1242c0"}
+  {"url":"/organism/era/tasks/fr-bond-yields-us-10y-monthly-5a63-38e101.json","sha256":"a7f7e919b1fbab8cd8888ec725eca9d955f0b7e49745b1beb196c9f627d1244f"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
