@@ -2,26 +2,26 @@
   "task": "periodic-table-atomic-number-to-symbol",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T02:24:28.866Z",
+  "at": "2026-10-19T04:00:00.282Z",
   "stats": {
-    "generated": 200227,
-    "distinct": 78629,
-    "kept": 45,
-    "know": 1,
+    "generated": 104588,
+    "distinct": 94673,
+    "kept": 53,
+    "know": 7,
     "byFamily": {
       "memory": 43,
-      "transform": 2
+      "transform": 10
     },
     "bySource": {
-      "memory": 43,
-      "enum": 2
+      "parent": 45,
+      "enum": 8
     },
     "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 30616,
-    "cellsPerSecond": 6540,
-    "capped": null,
+    "ms": 44842,
+    "cellsPerSecond": 2332,
+    "capped": "ms",
     "packs": [
       "crypto-tickers",
       "fr-tidytuesday-breed-rank-2f2cff",
@@ -30,12 +30,12 @@
     "cursor": {
       "v": 1,
       "basis": "fbc6ac59c59333ae930f7053479f3b4971fc1f88d5e1b74675372ce1e9c8225a",
-      "round": 0,
-      "at": 110281,
+      "round": 1,
+      "at": 176232,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "iterate.powers",
+      "prim": "matrix.reshape",
       "tpl": 1687
     }
   },
@@ -237,6 +237,260 @@
       }
     },
     {
+      "id": "n-475d5e2c",
+      "task": "periodic-table-atomic-number-to-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "fib",
+            "fibonacci",
+            "fibonacci number",
+            "first n",
+            "me",
+            "take",
+            "top"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "symbol"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.takeStrs",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "cryptocurrency"
+            }
+          ],
+          [
+            "compute.fibonacci",
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f1622265",
+      "task": "periodic-table-atomic-number-to-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "join",
+            "joined with",
+            "me",
+            "month name",
+            "name of month",
+            "separated by",
+            "which month"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "symbol"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.join",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "cryptocurrency"
+            }
+          ],
+          [
+            "compute.monthName",
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-59a4b471",
+      "task": "periodic-table-atomic-number-to-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "item number",
+            "me",
+            "month name",
+            "name of month",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "which month",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "symbol"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "2x"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "compute.monthName",
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7eaa6188",
+      "task": "periodic-table-atomic-number-to-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "how many characters",
+            "item number",
+            "length",
+            "me",
+            "nth",
+            "number of characters",
+            "position"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "symbol"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "cryptocurrency"
+            }
+          ],
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2013 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a21a4367",
       "task": "periodic-table-atomic-number-to-symbol",
       "gen": 10,
@@ -306,6 +560,160 @@
       "mem": null,
       "height": 5,
       "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f67199cf",
+      "task": "periodic-table-atomic-number-to-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "me",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "symbol"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "series.countBelow",
+            [
+              "sense.first"
+            ],
+            {
+              "lit": "fr-tidytuesday-internal-calls-10b0d2"
+            },
+            {
+              "lit": "n total"
+            },
+            {
+              "lit": "n unique"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-37b218e6",
+      "task": "periodic-table-atomic-number-to-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "how many characters",
+            "item number",
+            "length",
+            "me",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of characters",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "symbol"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "act"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "aggregate.chars",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-breed-rank-2f2cff"
+                },
+                {
+                  "lit": "2013 rank"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -1672,6 +2080,57 @@
       }
     },
     {
+      "id": "n-14fb6fbf",
+      "task": "periodic-table-atomic-number-to-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "half",
+            "half of",
+            "halve",
+            "item number",
+            "me",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "symbol"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          [
+            "transform.half",
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-f13ca058",
       "task": "periodic-table-atomic-number-to-symbol",
       "gen": 10,
@@ -1719,9 +2178,62 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-0c596fdb",
+      "task": "periodic-table-atomic-number-to-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "letters from to",
+            "me",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "symbol"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.before",
+            {
+              "lit": "of"
+            }
+          ],
+          [
+            "sense.first"
+          ],
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
     }
   ],
   "stages": [
-    "89469b2d353688bcd4d9b80a83492d7c9c7c746177af52c0bcb0649411de5800"
+    "89469b2d353688bcd4d9b80a83492d7c9c7c746177af52c0bcb0649411de5800",
+    "0417d328dd1337812a0d11c2a29cd4a05efe2d2a71ebf30f25387daa6e7138ab"
   ]
 }

@@ -2,24 +2,26 @@
   "task": "sp500-company-to-sector",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T02:43:25.799Z",
+  "at": "2026-10-19T04:19:34.520Z",
   "stats": {
-    "generated": 160000,
-    "distinct": 119247,
-    "kept": 263,
-    "know": 244,
+    "generated": 160263,
+    "distinct": 103378,
+    "kept": 268,
+    "know": 246,
     "byFamily": {
-      "transform": 263
+      "transform": 263,
+      "aggregate": 5
     },
     "bySource": {
-      "open": 3,
-      "enum": 260
+      "parent": 262,
+      "enum": 5,
+      "open": 1
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 158040,
-    "cellsPerSecond": 1012,
+    "ms": 136095,
+    "cellsPerSecond": 1178,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -29,12 +31,12 @@
     "cursor": {
       "v": 1,
       "basis": "b7af37dd4d1851360ff7d2aec12587fb66a106379cf2f5e55e02313569e69d23",
-      "round": 1,
-      "at": 208190,
+      "round": 2,
+      "at": 339776,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "aggregate.countStrs",
+      "prim": "compare.coprime",
       "tpl": 1503
     }
   },
@@ -6632,6 +6634,123 @@
       }
     },
     {
+      "id": "n-05599e12",
+      "task": "sp500-company-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "akamai",
+            "analog",
+            "coherent",
+            "first",
+            "godaddy",
+            "ibm",
+            "jabil",
+            "kla",
+            "longest one",
+            "longest word",
+            "microsoft",
+            "nvidia",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            {
+              "lit": "Information Technology"
+            },
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-10c89873",
+      "task": "sp500-company-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "akamai",
+            "analog",
+            "coherent",
+            "first",
+            "godaddy",
+            "ibm",
+            "jabil",
+            "kla",
+            "microsoft",
+            "nvidia",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            {
+              "lit": "Information Technology"
+            },
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-562a6bd1",
       "task": "sp500-company-to-sector",
       "gen": 10,
@@ -6688,7 +6807,7 @@
       }
     },
     {
-      "id": "n-1e49d98b",
+      "id": "n-ee1b964b",
       "task": "sp500-company-to-sector",
       "gen": 10,
       "parents": [],
@@ -6803,6 +6922,7 @@
               "firstlevel",
               "french",
               "fruit",
+              "gc",
               "gender",
               "gics",
               "glopc",
@@ -16285,6 +16405,52 @@
       }
     },
     {
+      "id": "n-a60d0fad",
+      "task": "sp500-company-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "kinder",
+            "longest one",
+            "longest word",
+            "marathon",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            {
+              "lit": "Energy"
+            },
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ac0306ec",
       "task": "sp500-company-to-sector",
       "gen": 10,
@@ -17012,6 +17178,67 @@
       }
     },
     {
+      "id": "n-4ab09e64",
+      "task": "sp500-company-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ibm",
+            "item number",
+            "nth",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            {
+              "lit": "Information Technology"
+            },
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-511ef661",
       "task": "sp500-company-to-sector",
       "gen": 10,
@@ -17468,6 +17695,67 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cc9f261c",
+      "task": "sp500-company-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ibm",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            {
+              "lit": "Information Technology"
+            },
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -21532,9 +21820,355 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-1e49d98b",
+      "task": "sp500-company-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "15x",
+              "4q",
+              "7a",
+              "accompanying",
+              "act",
+              "add",
+              "added",
+              "adult",
+              "ai",
+              "airdate",
+              "airline",
+              "airport",
+              "ajg",
+              "albert",
+              "album",
+              "alias",
+              "alive",
+              "alpha",
+              "alpha3",
+              "altga",
+              "answers",
+              "aon",
+              "are",
+              "arroyo",
+              "artist",
+              "arvense",
+              "author",
+              "back",
+              "ball",
+              "bfb",
+              "bg",
+              "bg11",
+              "biib",
+              "birth",
+              "birthday",
+              "bkr",
+              "bolt",
+              "breed",
+              "bx",
+              "cat",
+              "category",
+              "cerro",
+              "cfg",
+              "character",
+              "characters",
+              "chtr",
+              "cigc",
+              "city",
+              "clarence",
+              "clean",
+              "climbing",
+              "cnp",
+              "code",
+              "combined",
+              "comet",
+              "command",
+              "common",
+              "company",
+              "compare",
+              "consecutive",
+              "contact",
+              "count",
+              "country",
+              "court",
+              "cpay",
+              "crv",
+              "cryptocurrency",
+              "currency",
+              "cvna",
+              "d",
+              "date",
+              "de",
+              "death",
+              "description",
+              "dhanis",
+              "dhr",
+              "director",
+              "divoire",
+              "dlrk",
+              "doing",
+              "domain",
+              "dte",
+              "earl",
+              "ebay",
+              "eclipse",
+              "elbert",
+              "element",
+              "elmer",
+              "elwood",
+              "emoji",
+              "english",
+              "ep",
+              "erma",
+              "esbi",
+              "est",
+              "etf",
+              "eugene",
+              "everett",
+              "fdx",
+              "featuring",
+              "file",
+              "first",
+              "firstlevel",
+              "french",
+              "fruit",
+              "gender",
+              "gics",
+              "glopc",
+              "gmsl",
+              "grd",
+              "greater",
+              "greek",
+              "h",
+              "halbert",
+              "harry",
+              "herbert",
+              "hex",
+              "heywood",
+              "higg",
+              "hlt",
+              "horace",
+              "hubb",
+              "iata",
+              "id",
+              "imdb",
+              "imports",
+              "industry",
+              "innf",
+              "instrument",
+              "interview",
+              "ir12",
+              "irvin",
+              "ishares",
+              "iso3",
+              "itba",
+              "itcb",
+              "ivrc",
+              "ivy",
+              "j",
+              "joe",
+              "jpmc",
+              "jr",
+              "judge1",
+              "kenneth",
+              "lang",
+              "language",
+              "larger",
+              "last",
+              "latitude",
+              "lauderdalehollywood",
+              "lbs",
+              "leon",
+              "leonard",
+              "leonelle",
+              "lesser",
+              "listed",
+              "location",
+              "long",
+              "lowcarbon",
+              "lsc",
+              "ludovic",
+              "lulu",
+              "m",
+              "makes",
+              "maurice",
+              "mccl",
+              "metaresearch",
+              "mete",
+              "methods",
+              "mexion",
+              "milton",
+              "min",
+              "model",
+              "moga",
+              "most",
+              "motivational",
+              "msci",
+              "much",
+              "municipal",
+              "muranga",
+              "n",
+              "n3",
+              "nationality",
+              "nee",
+              "network",
+              "newman",
+              "nickname",
+              "number",
+              "oaka",
+              "offset",
+              "ohare",
+              "oliver",
+              "opendate",
+              "ordinary",
+              "paso",
+              "paul",
+              "pgmba",
+              "plan",
+              "planet",
+              "postal",
+              "proposed",
+              "province",
+              "publication",
+              "published",
+              "qid",
+              "query",
+              "ramon",
+              "rancho",
+              "rank",
+              "rating",
+              "recommend",
+              "ref",
+              "regex",
+              "region",
+              "rexrc",
+              "role",
+              "rtx",
+              "russell",
+              "s",
+              "salvador",
+              "scene",
+              "schedule",
+              "season",
+              "security",
+              "series",
+              "session",
+              "short",
+              "shortname",
+              "slug",
+              "smaller",
+              "song",
+              "sort",
+              "speaker",
+              "sponsoring",
+              "srga",
+              "state",
+              "ste",
+              "stld",
+              "strcity",
+              "strstate",
+              "subcategory",
+              "subtype",
+              "sucode",
+              "sucountry",
+              "suggest",
+              "sum",
+              "suname",
+              "sutype",
+              "symbol",
+              "table",
+              "tags",
+              "tech",
+              "temp",
+              "test",
+              "theodore",
+              "thomas",
+              "ticker",
+              "tilford",
+              "time",
+              "title",
+              "tmobile",
+              "track",
+              "trades",
+              "trgp",
+              "troc",
+              "type",
+              "unit",
+              "university",
+              "updated",
+              "usbp",
+              "user",
+              "version",
+              "vlo",
+              "week",
+              "weldon",
+              "wendell",
+              "wfcy",
+              "wrbe",
+              "wrbh",
+              "write",
+              "writers",
+              "x",
+              "xom",
+              "y",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "sp500"
+            },
+            {
+              "lit": "ticker"
+            },
+            {
+              "lit": "sector"
+            }
+          ],
+          {
+            "lit": "Information Technology"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
     }
   ],
   "stages": [
-    "fa5fe866744857b4ad2bc1cf12ff8e84b26fab3e83b2cbf1c276a9d4fbf00d99"
+    "fa5fe866744857b4ad2bc1cf12ff8e84b26fab3e83b2cbf1c276a9d4fbf00d99",
+    "971b3f8021bd4403564c3cc087aef0dced9b3a3d5f943015bba0d889c6f626ae"
   ]
 }
