@@ -2,24 +2,25 @@
   "task": "sp500-company-2-to-sector",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T05:45:02.550Z",
+  "at": "2026-10-19T06:56:05.112Z",
   "stats": {
-    "generated": 160000,
-    "distinct": 106184,
-    "kept": 183,
-    "know": 164,
+    "generated": 160183,
+    "distinct": 87640,
+    "kept": 186,
+    "know": 165,
     "byFamily": {
-      "transform": 183
+      "transform": 183,
+      "aggregate": 3
     },
     "bySource": {
-      "open": 1,
-      "enum": 182
+      "parent": 183,
+      "enum": 3
     },
     "maxHeight": 6,
     "devOk": 39,
     "devN": 40,
-    "ms": 101277,
-    "cellsPerSecond": 1580,
+    "ms": 119722,
+    "cellsPerSecond": 1338,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -29,12 +30,12 @@
     "cursor": {
       "v": 1,
       "basis": "3d90b7f51ec781dd7cba652403474bcac4576b6e653bc41c382a3b4516a0728a",
-      "round": 1,
-      "at": 232770,
+      "round": 2,
+      "at": 378635,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "aggregate.indexOf",
+      "prim": "compare.endsWith",
       "tpl": 1525
     }
   },
@@ -179,6 +180,125 @@
       "fit": {
         "ok": 30,
         "fired": 30,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f87e1135",
+      "task": "sp500-company-2-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "allstate",
+            "amazon",
+            "analytics",
+            "aon",
+            "associates",
+            "athletica",
+            "bancorp",
+            "beverage",
+            "broadridge",
+            "castle",
+            "cencora",
+            "charter",
+            "chipotle",
+            "citigroup",
+            "company",
+            "dupont",
+            "edison",
+            "element",
+            "fisher",
+            "humana",
+            "ingersoll",
+            "item number",
+            "kimco",
+            "leidos",
+            "longest",
+            "longest one",
+            "longest word",
+            "northern",
+            "nth",
+            "nxp",
+            "position",
+            "semiconductor",
+            "separate by",
+            "smurfit",
+            "split",
+            "split by",
+            "vertiv"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "akamai"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "centene"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "sp500"
+                  },
+                  {
+                    "lit": "company"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              },
+              {
+                "lit": "sector"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
         "rows": 40
       }
     },
@@ -8436,6 +8556,65 @@
       }
     },
     {
+      "id": "n-fcdb9d25",
+      "task": "sp500-company-2-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cencora",
+            "fisher",
+            "humana",
+            "iqvia",
+            "longest one",
+            "longest word",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "industry"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            {
+              "lit": "Health Care"
+            },
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-2370fc17",
       "task": "sp500-company-2-to-sector",
       "gen": 10,
@@ -13256,6 +13435,56 @@
       }
     },
     {
+      "id": "n-1c5ba169",
+      "task": "sp500-company-2-to-sector",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "longest one",
+            "longest word",
+            "nxp",
+            "semiconductor",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "sector"
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            {
+              "lit": "Information Technology"
+            },
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-56adb0be",
       "task": "sp500-company-2-to-sector",
       "gen": 10,
@@ -15582,6 +15811,7 @@
     }
   ],
   "stages": [
-    "36d4da9b867c2c133309919d1641af1d0fab6dc9293f6eb166d34116cd8ba341"
+    "36d4da9b867c2c133309919d1641af1d0fab6dc9293f6eb166d34116cd8ba341",
+    "59dbedf86832a90b489418406e7832e3c8b64d82e747f55d365f56f29740c29e"
   ]
 }
