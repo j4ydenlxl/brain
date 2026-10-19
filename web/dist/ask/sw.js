@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "c28fdb14810aee593c26b7caa25badebc8fb295a8ba78f2f7c3206471b5412c7";
+const VERSION = "6b62d5b34e9422707a4d0e07f6628347881f808b0c3d9e2214edb20a024d74e2";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"48d15f48132d731d8374461171d549e219a448744a6955abd9635773ea5b991a"},
+  {"url":"/organism/cells.json","sha256":"e9f0f5636787375e3a4cf1d5b9173452fd37374f5dac7d22e4abe0a229b62ae8"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -362,10 +362,13 @@ const PRECACHE = [
   {"url":"/organism/cells/date-of-title-200e-rev-neo-g10.mjs","sha256":"a2bb9e617720ac13737a202c3efc8080a2e1af2f3caffadeacc2609838475adc"},
   {"url":"/organism/cells/show-id-of-title-b0b4-neo-g10.mjs","sha256":"0dabcf6f8c9a40edb2d2cd80215fe187af990fd55a745a658362bdc3b171ae6b"},
   {"url":"/organism/cells/forename-of-driver-ref-a42d-rev-neo-g10.mjs","sha256":"4d6cf05b2bc45a9a14902d036208329c6ae955dcb4e7d022814b16ffc20feff9"},
+  {"url":"/organism/cells/place-name-of-country-cod-d621-neo-g10.mjs","sha256":"2948a900b9baa08dec12790a8d926447ef9b26e84457224679b3413ad796cf88"},
+  {"url":"/organism/cells/fr-oil-prices-brent-daily-830bec-p-23bddb-neo-g10.mjs","sha256":"344463048a268e7f5a2622a835ebb7ed24af41f03378fd38d8a448a4575457f0"},
+  {"url":"/organism/cells/country-of-name-of-exposi-fedc-neo-g10.mjs","sha256":"889793332b3eb0d6c29d4395b0b15a2021597a201afc49b7ee84e03dda45b34f"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"324150c5a127534be5d83124fe0ae1242a088f70eb6c57dcdc9e6c93ecd93fc6"}
+  {"url":"/organism/era/tasks.json","sha256":"d1354c0c51c26deb0c5ad8eda7014623c361731c82a55e633ed78479a4a00457"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -439,6 +442,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/az-phoenix-of-date-f2c7-larger.json","sha256":"6338adcafc32006c5f12d5851a4070400442dea6c6a46ad0eb8a032ff2499177"},
   {"url":"/organism/era/tasks/az-phoenix-of-date-f2c7-smaller.json","sha256":"fbf1a6802cc79d4863211f62b5b65cd5f221a0de53f72f7889ce87ea68738747"},
   {"url":"/organism/era/tasks/az-phoenix-of-date-f2c7-sum.json","sha256":"58763a9b4b3272bcb630cd0d2357f598d00aba599683fdfc88f2a154cf6a3b4b"},
+  {"url":"/organism/era/tasks/birth-date-of-name-9f89-rev.json","sha256":"a408a34b63528a79f5bad60b102dfe280bcce910f5659d670fcf9ef6615915fd"},
   {"url":"/organism/era/tasks/birthday-of-name-226a-rev.json","sha256":"589a176d27ae14209268ee187da77dae046e22eadce7912f035663269ba981c4"},
   {"url":"/organism/era/tasks/ca-los-angeles-of-dat-beeb.json","sha256":"5a066d0e50fafd0b3f7e410e4627c9cdd64cadb2a8d09d72ef29a127c3db8548"},
   {"url":"/organism/era/tasks/ca-los-angeles-of-dat-beeb-compare.json","sha256":"4278f15e45a36d764935325953616de5aeb4eec65b9023ff23ad67dc7f80160b"},
@@ -526,7 +530,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/country-of-code-e7a9.json","sha256":"1de50822f9ed6bcfd8a4b026824774516cbb108cd15e784e5f4f1f2c72ed8589"},
   {"url":"/organism/era/tasks/country-of-code-e7a9-rev.json","sha256":"3f578748cd6e6fc6ae66f992f6c5606b70f14f4edabb3d2b0a864991b8cbf5a6"},
   {"url":"/organism/era/tasks/country-of-name-a56d.json","sha256":"952ddb9300d9aaae93309d57574e395ef10690eda974d4e0099dce557a792ac8"},
-  {"url":"/organism/era/tasks/country-of-name-of-exposi-fedc.json","sha256":"dae4d85676171a57aa3eaf4926223ee3eb4dfb89d9c03b26c3332a171a6d5904"},
   {"url":"/organism/era/tasks/country-of-season-name-499c.json","sha256":"82c54b87c54f49d2a12c98fc14803bae708f4738eb20d321c668daccb8f623d5"},
   {"url":"/organism/era/tasks/country-of-title-09a9.json","sha256":"4eb9d2c153665bb53ecdd35c1ad25496a53885b766b50657fe67a5ce94d1e0d0"},
   {"url":"/organism/era/tasks/country-of-title-09a9-rev.json","sha256":"36b1f30b6d4e2cc3380458de8b1dce2095f5861f63cd687f853f6137b6f46b09"},
@@ -562,6 +565,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/date-of-publication-b331.json","sha256":"abee29274ebd29bdf770f452b8cd33cf70133eb0c7f6816187c172a5f38670be"},
   {"url":"/organism/era/tasks/date-of-song-dc79.json","sha256":"572b6cbecbba557b6346d6ab9c22b02514d296479b92000461a0116bf06217f0"},
   {"url":"/organism/era/tasks/date-of-title-200e.json","sha256":"14f34fe8616fc6935957ab68b6fc822cdcd980f965764bd4ae3303bc1870c6e4"},
+  {"url":"/organism/era/tasks/death-date-of-name-ae85-rev.json","sha256":"89abd3dfd9ee572614320c41cebd2fd0c86f126df94ae049f71688a17f5b555e"},
   {"url":"/organism/era/tasks/density-of-country-146f.json","sha256":"29f143b95537436a398cee5c736f5017e536b84c9954a22b97c5c2020fa1752c"},
   {"url":"/organism/era/tasks/density-of-country-146f-compare.json","sha256":"fa359bdd0f7f6845cf67d54a9a36607e75b0ebbc304ec3708e016a1a422418de"},
   {"url":"/organism/era/tasks/density-of-country-146f-larger.json","sha256":"c6edc9a8f347259be55d552fc13a3445b881a49215a563ab8b4285e3374126d3"},
@@ -610,9 +614,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/final-description-of-date-d707-rev.json","sha256":"2d39279009a1e4bb06d50927b2a9a1a0078e2ccc09b851e9558ffa8759f96fc6"},
   {"url":"/organism/era/tasks/final-four-appearance-a3c0-sum.json","sha256":"8666b3230c18bc997becdf567182b6c3f88da674852efe53b89995daf4e62a3f"},
   {"url":"/organism/era/tasks/firefox-of-date-e7db.json","sha256":"1c25acc7346151f4aa36844b20533b8e91a9dc08e451a8460143939984870f85"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db-compare.json","sha256":"605799204300f508e82cb9355bc5d3b7c056b12c2f9cbbed767d36be9ac76d4f"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db-larger.json","sha256":"5cd95666262c09b0d4c261b8e502f033dd37746268dfb86de06fc4ba5cd2e5f0"},
-  {"url":"/organism/era/tasks/fr-bond-yields-us-10y-monthly-5a63-38e101.json","sha256":"a7f7e919b1fbab8cd8888ec725eca9d955f0b7e49745b1beb196c9f627d1244f"}
+  {"url":"/organism/era/tasks/firefox-of-date-e7db-larger.json","sha256":"5cd95666262c09b0d4c261b8e502f033dd37746268dfb86de06fc4ba5cd2e5f0"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
