@@ -2,31 +2,30 @@
   "task": "album-name-of-track-name-f785",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T08:23:49.362Z",
+  "at": "2026-10-19T13:27:46.324Z",
   "stats": {
-    "generated": 201045,
-    "distinct": 97230,
-    "kept": 1539,
-    "know": 1005,
+    "generated": 161539,
+    "distinct": 92161,
+    "kept": 1613,
+    "know": 1014,
     "byFamily": {
       "memory": 190,
       "know": 2,
-      "transform": 882,
+      "transform": 947,
       "sense": 151,
-      "aggregate": 200,
-      "compute": 112,
+      "aggregate": 202,
+      "compute": 119,
       "iterate": 2
     },
     "bySource": {
-      "memory": 190,
-      "enum": 205,
-      "template": 1144
+      "parent": 1539,
+      "enum": 74
     },
     "maxHeight": 6,
     "devOk": 96,
     "devN": 96,
-    "ms": 236587,
-    "cellsPerSecond": 850,
+    "ms": 208387,
+    "cellsPerSecond": 775,
     "capped": null,
     "packs": [
       "fr-tidytuesday-taylor-album-songs-e90c97"
@@ -34,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "1f47d9c23af12c2e66f72eab0c676a0014383f061d4b588f8079ac1a7ec65c31",
-      "round": 0,
-      "at": 67157,
+      "round": 1,
+      "at": 169605,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compute.discount",
+      "prim": "compute.choose",
       "tpl": 2071
     }
   },
@@ -2437,6 +2436,127 @@
       }
     },
     {
+      "id": "n-33d5b1f8",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "afterglow",
+            "americana",
+            "antihero",
+            "bad",
+            "betty",
+            "blame",
+            "boy",
+            "call",
+            "closure",
+            "cuts",
+            "daylight",
+            "dorothea",
+            "each word",
+            "go",
+            "gold",
+            "have",
+            "item number",
+            "king",
+            "lakes",
+            "longest",
+            "longest one",
+            "longest word",
+            "look",
+            "midnight",
+            "nth",
+            "off",
+            "paper",
+            "peace",
+            "question",
+            "split into words",
+            "this",
+            "tolerate",
+            "trying",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-taylor-album-songs-e90c97"
+                  },
+                  {
+                    "lit": "track name"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-taylor-album-songs-e90c97"
+              },
+              {
+                "lit": "track name"
+              },
+              {
+                "lit": "album name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 29,
+        "fired": 29,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-57e8a7a7",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -2915,6 +3035,127 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 29,
+        "fired": 29,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-c8237eff",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "afterglow",
+            "americana",
+            "antihero",
+            "bad",
+            "betty",
+            "blame",
+            "boy",
+            "call",
+            "closure",
+            "cuts",
+            "daylight",
+            "dorothea",
+            "each word",
+            "go",
+            "gold",
+            "have",
+            "item number",
+            "king",
+            "lakes",
+            "look",
+            "midnight",
+            "nth",
+            "off",
+            "paper",
+            "peace",
+            "question",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split into words",
+            "this",
+            "tolerate",
+            "trying",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-taylor-album-songs-e90c97"
+                  },
+                  {
+                    "lit": "track name"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-taylor-album-songs-e90c97"
+              },
+              {
+                "lit": "track name"
+              },
+              {
+                "lit": "album name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 12,
       "fit": {
         "ok": 29,
@@ -14327,6 +14568,89 @@
       }
     },
     {
+      "id": "n-d689f43f",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "divide",
+            "divided by",
+            "dreams",
+            "how many times",
+            "how often",
+            "item number",
+            "know",
+            "nth",
+            "occurrences",
+            "off",
+            "over",
+            "per",
+            "position",
+            "quotient",
+            "split",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.occurrences",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-album-songs-e90c97"
+                },
+                {
+                  "lit": "track name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-478bc851",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -15522,6 +15846,88 @@
       }
     },
     {
+      "id": "n-9da59974",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "dreams",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "off",
+            "quotient",
+            "this",
+            "whole division",
+            "wonderland"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "adele"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alice"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "b52s"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.idiv",
+            {
+              "lit": 10
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-02970079",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -16521,6 +16927,60 @@
       }
     },
     {
+      "id": "n-3a096813",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "divide",
+            "divided by",
+            "dreams",
+            "how many lines",
+            "line count",
+            "lines of code",
+            "number of lines",
+            "off",
+            "quotient",
+            "wonderland"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.lines",
+            [
+              "sense.after",
+              {
+                "lit": "for"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-3a18bfdb",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -16590,6 +17050,87 @@
             ],
             {
               "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-857363ae",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "dreams",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "off",
+            "quotient",
+            "whole division",
+            "wonderland"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "adele"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alice"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "b52s"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.idiv",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 5
             }
           ]
         ]
@@ -16841,6 +17382,86 @@
       }
     },
     {
+      "id": "n-cf9b6ebd",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "blood",
+            "combinations",
+            "digit count",
+            "dreams",
+            "how many digits",
+            "n choose k",
+            "number of digits",
+            "off",
+            "ways to choose",
+            "wonderland"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "adele"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alice"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "b52s"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-db5fab42",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -16983,6 +17604,209 @@
       "mem": null,
       "height": 4,
       "size": 8,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-4dc57a85",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "divide",
+            "divided by",
+            "element",
+            "how many times",
+            "how often",
+            "item number",
+            "nth",
+            "occurrences",
+            "off",
+            "per",
+            "position",
+            "quotient",
+            "split",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.occurrences",
+            [
+              "sense.text"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-album-songs-e90c97"
+                },
+                {
+                  "lit": "track name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-2ce0fa79",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "divide",
+            "divided by",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "off",
+            "quotient",
+            "wish",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-taylor-album-songs-e90c97"
+                  },
+                  {
+                    "lit": "track name"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-taylor-album-songs-e90c97"
+              },
+              {
+                "lit": "track name"
+              },
+              {
+                "lit": "album name"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
       "fit": {
         "ok": 3,
         "fired": 3,
@@ -24868,6 +25692,87 @@
       }
     },
     {
+      "id": "n-14c97dd0",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "blood",
+            "combinations",
+            "divided by",
+            "n choose k",
+            "off",
+            "quotient",
+            "ways to choose",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.choose",
+            {
+              "lit": 0
+            },
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-19aae860",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -25187,6 +26092,165 @@
       }
     },
     {
+      "id": "n-2334d021",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "how many times",
+            "how often",
+            "occurrences",
+            "off",
+            "quotient",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.occurrences",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-23d0e513",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "blood",
+            "combinations",
+            "n choose k",
+            "off",
+            "quotient",
+            "ways to choose",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.choose",
+            {
+              "lit": 5
+            },
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-282bb0a8",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -25332,6 +26396,85 @@
             [
               "sense.wordCount"
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-33cac8f0",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "are",
+            "bad",
+            "divide",
+            "divided by",
+            "left over",
+            "mod",
+            "modulo",
+            "quotient",
+            "remainder",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "adele"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.mod",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
           ]
         ]
       ],
@@ -25589,6 +26732,86 @@
       }
     },
     {
+      "id": "n-46d47e7e",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "blood",
+            "combinations",
+            "n choose k",
+            "off",
+            "quotient",
+            "ways to choose",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.choose",
+            {
+              "lit": 1000
+            },
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-46fd7611",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -25659,6 +26882,86 @@
             {
               "lit": 1000
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-480cc6e8",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "blood",
+            "combinations",
+            "n choose k",
+            "off",
+            "quotient",
+            "ways to choose",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.choose",
+            {
+              "lit": 3
+            },
+            [
+              "sense.howMany"
+            ]
           ]
         ]
       ],
@@ -25833,6 +27136,165 @@
       }
     },
     {
+      "id": "n-4c9aa4bc",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "how many times in the list",
+            "occurrences in the list",
+            "off",
+            "quotient",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.countIn",
+            [
+              "sense.words"
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-4f7e34f4",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "off",
+            "quotient",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-55c86618",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -25895,6 +27357,86 @@
             [
               "sense.howMany"
             ],
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-57e4be37",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "blood",
+            "combinations",
+            "n choose k",
+            "off",
+            "quotient",
+            "ways to choose",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.choose",
+            {
+              "lit": 12
+            },
             [
               "sense.howMany"
             ]
@@ -26074,6 +27616,164 @@
       }
     },
     {
+      "id": "n-611b6c9f",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "hypotenuse",
+            "off",
+            "pythagoras",
+            "pythagorean",
+            "quotient",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.hypot",
+            [
+              "sense.howMany"
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-6e64e57b",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "blood",
+            "off",
+            "reduced by",
+            "sale price",
+            "take away",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.discount",
+          [
+            "transform.sub",
+            {
+              "lit": 1989
+            },
+            [
+              "sense.howMany"
+            ]
+          ],
+          [
+            "sense.howMany"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-7728d537",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -26223,6 +27923,86 @@
             {
               "lit": 5
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-7f47ce4b",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "blood",
+            "combinations",
+            "n choose k",
+            "off",
+            "quotient",
+            "ways to choose",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.choose",
+            [
+              "sense.wordCount"
+            ],
+            [
+              "sense.howMany"
+            ]
           ]
         ]
       ],
@@ -26791,6 +28571,87 @@
             [
               "sense.howMany"
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-ab0717f1",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "off",
+            "quotient",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
           ]
         ]
       ],
@@ -27773,6 +29634,86 @@
       }
     },
     {
+      "id": "n-d2719f35",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "blood",
+            "combinations",
+            "n choose k",
+            "off",
+            "quotient",
+            "ways to choose",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.choose",
+            {
+              "lit": 10
+            },
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-d68e1b43",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -27918,6 +29859,65 @@
             ],
             {
               "lit": 12
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-db1aad50",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "dreams",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "quotient",
+            "whole division",
+            "wonderland"
+          ]
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.idiv",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 4
             }
           ]
         ]
@@ -28078,6 +30078,86 @@
             {
               "lit": 1000
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-df460373",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "blood",
+            "combinations",
+            "n choose k",
+            "off",
+            "quotient",
+            "ways to choose",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.choose",
+            {
+              "lit": 100
+            },
+            [
+              "sense.howMany"
+            ]
           ]
         ]
       ],
@@ -28414,6 +30494,86 @@
       }
     },
     {
+      "id": "n-f5cbbb7b",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "blood",
+            "combinations",
+            "n choose k",
+            "off",
+            "quotient",
+            "ways to choose",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.choose",
+            {
+              "lit": 4
+            },
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-f70d6cde",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -28563,6 +30723,166 @@
             {
               "lit": 1
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-fa57b7d4",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "off",
+            "quotient",
+            "this",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.idiv",
+            {
+              "lit": 12
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-fa9227c3",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "increase by",
+            "off",
+            "plus tax",
+            "quotient",
+            "raise by",
+            "wish",
+            "with tax"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.increase",
+            {
+              "lit": 1
+            },
+            [
+              "sense.howMany"
+            ]
           ]
         ]
       ],
@@ -29793,6 +32113,83 @@
       }
     },
     {
+      "id": "n-67d1cdf3",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "blood",
+            "combinations",
+            "n choose k",
+            "off",
+            "successor",
+            "ways to choose",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.next",
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-6d63e157",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -30853,6 +33250,82 @@
       "fit": {
         "ok": 3,
         "fired": 3,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-e837de22",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "at which position",
+            "divide",
+            "divided by",
+            "index of",
+            "item number",
+            "know",
+            "nth",
+            "over",
+            "per",
+            "position",
+            "position of",
+            "quotient",
+            "split",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.indexOf",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-album-songs-e90c97"
+                },
+                {
+                  "lit": "track name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.roman"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
         "rows": 96
       }
     },
@@ -32813,6 +35286,434 @@
       }
     },
     {
+      "id": "n-073b7fe7",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "quotient",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 100
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-1441b646",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blank",
+            "quotient",
+            "take away",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "track"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.sub",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-2cd6724c",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "how many times in the list",
+            "occurrences in the list",
+            "off",
+            "quotient"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "words<=",
+          12
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.countIn",
+            [
+              "sense.content"
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-368b6a03",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "quotient",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-4ea6cd1f",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "divided by",
+            "left over",
+            "mod",
+            "modulo",
+            "quotient",
+            "remainder",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "adolescents"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alicia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "amos"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "amy"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.mod",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-55012301",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blank",
+            "quotient",
+            "take away",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "track"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.sub",
+            {
+              "lit": 12
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-608fb0d1",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -32891,6 +35792,427 @@
       }
     },
     {
+      "id": "n-808572dd",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bad",
+            "divide",
+            "dreams",
+            "left over",
+            "mod",
+            "modulo",
+            "quotient",
+            "remainder"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.mod",
+            {
+              "lit": 1989
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-90547dc8",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blank",
+            "left over",
+            "mod",
+            "modulo",
+            "quotient",
+            "remainder",
+            "wonderland"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.mod",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-d811f70d",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "off",
+            "quotient"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1989
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-dbadba04",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divide",
+            "divided by",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "love",
+            "quotient",
+            "split",
+            "whole division",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "track"
+        ],
+        [
+          "words<=",
+          13
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.idiv",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-e11a1406",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "quotient",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-e35cb7c3",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "quotient",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1000
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-e52bf6d7",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -32939,6 +36261,223 @@
             [
               "sense.roman"
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-eb0cc8e9",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "quotient",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-ec81869e",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blood",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "quotient",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brothers"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-f2d57bc5",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divide",
+            "divided by",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "love",
+            "quotient",
+            "split",
+            "whole division",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "track"
+        ],
+        [
+          "words<=",
+          13
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.idiv",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
           ]
         ]
       ],
@@ -33501,6 +37040,82 @@
       }
     },
     {
+      "id": "n-25c11bfb",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "count of",
+            "divide",
+            "divided by",
+            "how many times",
+            "how often",
+            "item number",
+            "know",
+            "nth",
+            "occurrences",
+            "over",
+            "per",
+            "position",
+            "quotient",
+            "split"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.occurrences",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-album-songs-e90c97"
+                },
+                {
+                  "lit": "track name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.roman"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-4caec8a6",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -33544,6 +37159,78 @@
           },
           [
             "compute.editDistance",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-album-songs-e90c97"
+                },
+                {
+                  "lit": "track name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-4cf4e7bc",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "at which position",
+            "divide",
+            "divided by",
+            "index of",
+            "item number",
+            "nth",
+            "over",
+            "per",
+            "position",
+            "position of",
+            "quotient",
+            "split",
+            "wonderland"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "words<=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.indexOf",
             [
               "transform.nthStr",
               [
@@ -33642,6 +37329,77 @@
       "mem": null,
       "height": 5,
       "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-ea62ecbe",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "how many words",
+            "item number",
+            "n choose k",
+            "nth",
+            "number of words",
+            "ways to choose",
+            "wonderland",
+            "word count"
+          ]
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-taylor-album-songs-e90c97"
+                },
+                {
+                  "lit": "track name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -125999,6 +129757,115 @@
       }
     },
     {
+      "id": "n-086176cc",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blank",
+            "divided by",
+            "left over",
+            "mod",
+            "modulo",
+            "quotient",
+            "remainder"
+          ]
+        ],
+        [
+          "has",
+          "track"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.mod",
+            {
+              "lit": 12
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-094c127e",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "area of a triangle",
+            "half base times height",
+            "off",
+            "quotient",
+            "triangle area"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          [
+            "compute.triangleArea",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1989
+            }
+          ],
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-1540fefe",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -126040,6 +129907,63 @@
             },
             [
               "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-16a3771d",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "clean",
+            "how many vowels",
+            "number of vowels",
+            "quotient",
+            "split",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.vowels",
+            [
+              "sense.before",
+              {
+                "lit": "is"
+              }
             ]
           ]
         ]
@@ -126096,6 +130020,180 @@
             {
               "lit": 4
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-2920e9e4",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "combinations",
+            "divide",
+            "know",
+            "n choose k",
+            "quotient",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.div",
+            {
+              "lit": 12
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-397c89c9",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "count of",
+            "divide",
+            "divided by",
+            "how many times",
+            "how often",
+            "know",
+            "occurrences",
+            "quotient",
+            "split"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.occurrences",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.roman"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-3e624f94",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "clean",
+            "how many lines",
+            "line count",
+            "lines of code",
+            "number of lines",
+            "quotient",
+            "split"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.lines",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
           ]
         ]
       ],
@@ -126167,6 +130265,180 @@
       }
     },
     {
+      "id": "n-40a64c2b",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "how many consonants",
+            "number of consonants",
+            "quotient",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "adolescents"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.consonants",
+            [
+              "sense.wordAt",
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-4739f809",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "minus",
+            "quotient",
+            "take away",
+            "wonderland"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.sub",
+            {
+              "lit": 5
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-484e971d",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blank",
+            "quotient",
+            "take away"
+          ]
+        ],
+        [
+          "has",
+          "track"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.sub",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-4f77994b",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -126222,6 +130494,115 @@
       }
     },
     {
+      "id": "n-604337af",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "area of a triangle",
+            "half base times height",
+            "quotient",
+            "triangle area",
+            "wonderland"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          [
+            "compute.triangleArea",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1989
+            }
+          ],
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-6235d652",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "clean",
+            "how many words",
+            "number of words",
+            "quotient",
+            "split",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.words",
+            [
+              "sense.before",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-6c3277f1",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -126259,6 +130640,113 @@
               "sense.lastWord"
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-6f7206fc",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blank",
+            "left over",
+            "mod",
+            "modulo",
+            "quotient",
+            "remainder"
+          ]
+        ],
+        [
+          "has",
+          "track"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.mod",
+            {
+              "lit": 100
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-755124bf",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "least common multiple",
+            "lowest common multiple",
+            "quotient",
+            "wonderland"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          [
+            "compute.lcm",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1989
+            }
+          ],
+          {
+            "lit": 2
+          }
         ]
       ],
       "mem": null,
@@ -126379,6 +130867,131 @@
       }
     },
     {
+      "id": "n-7bd5d6c8",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "left over",
+            "mod",
+            "modulo",
+            "quotient",
+            "remainder",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "track"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.mod",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-866fb7e0",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divided by",
+            "how many lines",
+            "line count",
+            "lines of code",
+            "number of lines",
+            "quotient",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "black"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "not",
+          [
+            "has",
+            "adolescents"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.lines",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-87f88371",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -126421,6 +131034,111 @@
             {
               "lit": 3
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-8bd02383",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blank",
+            "quotient",
+            "take away"
+          ]
+        ],
+        [
+          "has",
+          "track"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.sub",
+            {
+              "lit": 10
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-93ed5b2f",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divide",
+            "divided by",
+            "how many words",
+            "love",
+            "number of words",
+            "per",
+            "quotient",
+            "split",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "track"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.words",
+            [
+              "sense.after",
+              {
+                "lit": "in"
+              }
+            ]
           ]
         ]
       ],
@@ -126485,6 +131203,106 @@
       }
     },
     {
+      "id": "n-b375412e",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "minus",
+            "quotient",
+            "take away",
+            "wonderland"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.sub",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-c1a7a577",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divide",
+            "divided by",
+            "how many lines",
+            "line count",
+            "lines of code",
+            "love",
+            "number of lines",
+            "per",
+            "quotient",
+            "split"
+          ]
+        ],
+        [
+          "has",
+          "track"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.lines",
+            [
+              "sense.after",
+              {
+                "lit": "in"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-c2996dc7",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -126523,6 +131341,62 @@
             [
               "sense.wordCount"
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-cb3a0c4f",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blank",
+            "left over",
+            "mod",
+            "modulo",
+            "quotient",
+            "remainder"
+          ]
+        ],
+        [
+          "has",
+          "track"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.mod",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 10
+            }
           ]
         ]
       ],
@@ -126640,6 +131514,161 @@
       }
     },
     {
+      "id": "n-d465ca6e",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divide",
+            "divided by",
+            "how many words",
+            "number of words",
+            "quotient",
+            "wonderland",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.words",
+            [
+              "sense.after",
+              {
+                "lit": "for"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-d84249b8",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "left over",
+            "mod",
+            "modulo",
+            "quotient",
+            "remainder",
+            "wish"
+          ]
+        ],
+        [
+          "has",
+          "track"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.mod",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-db47e8bf",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "combinations",
+            "know",
+            "n choose k",
+            "quotient",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "compute.choose",
+            {
+              "lit": 12
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-e3c117de",
       "task": "album-name-of-track-name-f785",
       "gen": 10,
@@ -126732,6 +131761,123 @@
             },
             [
               "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-ea2cf183",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "divide",
+            "divided by",
+            "know",
+            "n choose k",
+            "quotient",
+            "split",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "release"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 1989
+          },
+          [
+            "transform.div",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-f034f8b7",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "clean",
+            "divided by",
+            "how many words",
+            "number of words",
+            "quotient",
+            "word count"
+          ]
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.words",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
             ]
           ]
         ]
@@ -130725,6 +135871,58 @@
       "mem": null,
       "height": 3,
       "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-f9ad4a5d",
+      "task": "album-name-of-track-name-f785",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "combinations",
+            "how many vowels",
+            "n choose k",
+            "number of vowels",
+            "off",
+            "vowel count",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "album"
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 1989
+          },
+          [
+            "aggregate.vowels",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -153101,6 +158299,7 @@
     }
   ],
   "stages": [
-    "bc95a84628af99c513a875857387c17837bf0f434e70828dadcf2aa57943e073"
+    "bc95a84628af99c513a875857387c17837bf0f434e70828dadcf2aa57943e073",
+    "8b84b7389e6874d72741b025e5b91cbca3d8e4d7ae53d7a219bdf742c9fd39fc"
   ]
 }
