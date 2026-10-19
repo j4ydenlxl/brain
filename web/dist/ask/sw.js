@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "46d28f617eab70452dd66477216b7ae9fd6ef6d91f5bac667b90e6500cd4f199";
+const VERSION = "db9ba24bd2d4201a537bb7df8eb985d3a88c2d1f320170b3d79c0cacd1c8c1af";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"ec68474ed37dddd257be596811c02a165102aa788610adc1f9da0ff6e9ffdee6"},
+  {"url":"/organism/cells.json","sha256":"1f34a8e27f414783929c289e1e2238da6349243fa18efca89383b9babfe935b4"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -400,10 +400,15 @@ const PRECACHE = [
   {"url":"/organism/cells/max-temp-c-of-date-1007-sum-neo-g10.mjs","sha256":"917e4324ba0539b40b1734ddcc228665feb78dd920b7b5cb5e81a1674b17cb7f"},
   {"url":"/organism/cells/min-temp-c-of-date-8e5d-sum-neo-g10.mjs","sha256":"e7f178d2397054b963321fc4de0a0892c6c4bb0c7c9d7e78c1152d0f2a62ecd8"},
   {"url":"/organism/cells/updated-of-name-bf0f-rev-neo-g10.mjs","sha256":"f4231b29828f3c76b91e18a676901a0c21c06f5e052e85f85f18aebbb649b842"},
+  {"url":"/organism/cells/author-of-title-cff9-rev-neo-g10.mjs","sha256":"1fa94f6a864d87849ee8899acfe76e83c004ad186536f5eb33548531ff7769ce"},
+  {"url":"/organism/cells/fr-co2-fossil-global-global-6f35f5-193a71-neo-g10.mjs","sha256":"6d24ab8f16f9fb483a5c33c021df8cfef7317d1a5a90973f48878139d3d75e87"},
+  {"url":"/organism/cells/fr-house-prices-us-cities-month-ns-f1910c-neo-g10.mjs","sha256":"5d6b0fd56998958f20d4bf0f8aef1a8b59e7bb280b6d797a029b7776749d837f"},
+  {"url":"/organism/cells/fr-house-prices-us-cities-month-ns-0fe5e6-neo-g10.mjs","sha256":"f0452be6e4ee2d0554db4b38364451f8dcf7a7bcb99e84876319211f839521d3"},
+  {"url":"/organism/cells/fr-house-prices-us-cities-month-sa-8e795b-neo-g10.mjs","sha256":"a9bf62a645912047d0ca6db0b1bcd6d2826fe8f04dff6063df24ec912e56400e"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"c0d8fed9f643fa7d3ed6f84f9203fea9899d9f65b64978864253d63233997e32"}
+  {"url":"/organism/era/tasks.json","sha256":"23614525ac30cf0c868eedb9b272d115629ca1fea13272fe0167e9d221472698"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -464,7 +469,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/author-of-title-7954.json","sha256":"4b1219d50f923be54b3a5c18b1da232cc208004b2e2995f4dad665af60987d68"},
   {"url":"/organism/era/tasks/author-of-title-7954-rev.json","sha256":"7e8f7a790ce4ebb64c1db2f2ba3a7204b0d29a591b60ba15061cde0773abebd2"},
   {"url":"/organism/era/tasks/author-of-title-cff9.json","sha256":"591fef5a373699c57db39e4a95aa3b6c7d6b1a2ba3f049688743d3d6470625d3"},
-  {"url":"/organism/era/tasks/author-of-title-cff9-rev.json","sha256":"7d80332776419ab51f03d4202605f0cc431846314c7f4752b2954c37bd0256cd"},
   {"url":"/organism/era/tasks/az-phoenix-of-date-5d33.json","sha256":"052b891131652a502e6a6378663b289db261604da0e563c4b3c031d25c5840ce"},
   {"url":"/organism/era/tasks/az-phoenix-of-date-5d33-compare.json","sha256":"7a46380073f4cc14d69a6e63725f2ef49b9e29863ff4db0f631908bfee92d7cf"},
   {"url":"/organism/era/tasks/az-phoenix-of-date-5d33-larger.json","sha256":"d0da04b1b80f5f0baef861782599b839dfb4d77954991b5b8d24d8d3749ec60e"},
@@ -650,8 +654,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/feb-of-year-d181-sum.json","sha256":"65145803c2e7d82f440dc133b73b9bddfce0330a77169f85fb685459ec3cff12"},
   {"url":"/organism/era/tasks/female-of-county-de5d-compare.json","sha256":"166b3d28c37b14a67c741c3ae251cf760f73984b3534315912ec75d9afe2bfb1"},
   {"url":"/organism/era/tasks/female-of-county-de5d-smaller.json","sha256":"0584bcb33bc01a37859c000f8ba5c16384975397db1b776d06d3044afa6d8ef5"},
-  {"url":"/organism/era/tasks/fiscal-sponsorship-model-74bf-rev.json","sha256":"2f19b4adf89988b768be087e8a231c1a532979f500d720d1942b4fe737214c58"},
-  {"url":"/organism/era/tasks/lt-global-temp-annual-year-to-mean.json","sha256":"64369a5a539612aaa82a4f2f48d1329c5e9d5fc2971b6d9b7555e6a98e00a623"}
+  {"url":"/organism/era/tasks/female-of-county-de5d-sum.json","sha256":"52a06028b18ff1fcf42b530a5a454df521003e8f3f59c0358ad5d5ffbe9a294b"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
