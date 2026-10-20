@@ -2,32 +2,30 @@
   "task": "fr-nyse-other-listings-other-liste-cae7fe",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T21:11:21.917Z",
+  "at": "2026-10-20T03:50:24.114Z",
   "stats": {
-    "generated": 200169,
-    "distinct": 92752,
-    "kept": 1276,
-    "know": 877,
+    "generated": 161325,
+    "distinct": 83915,
+    "kept": 1394,
+    "know": 956,
     "byFamily": {
       "memory": 78,
       "transform": 1021,
       "sense": 12,
       "know": 99,
-      "aggregate": 50,
+      "aggregate": 168,
       "iterate": 15,
       "compute": 1
     },
     "bySource": {
-      "parent": 397,
-      "enum": 877,
-      "open": 1,
-      "template": 1
+      "parent": 1276,
+      "enum": 118
     },
-    "maxHeight": 5,
+    "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 171413,
-    "cellsPerSecond": 1168,
+    "ms": 100195,
+    "cellsPerSecond": 1610,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -37,12 +35,12 @@
     "cursor": {
       "v": 1,
       "basis": "1d32d544da40da9cbe96f15072b6cf6d23954c1306bb97e18b5b6810c2217992",
-      "round": 0,
-      "at": 94220,
+      "round": 1,
+      "at": 227763,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "transform.div",
+      "prim": "compute.gcd",
       "tpl": 2488
     }
   },
@@ -6092,6 +6090,79 @@
       }
     },
     {
+      "id": "n-a71025bf",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "alps",
+            "annaly",
+            "beneficial",
+            "blackrock",
+            "blacksky",
+            "brands",
+            "depositary",
+            "dnow",
+            "first n",
+            "floating",
+            "impact",
+            "mexico",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "words<=",
+          14
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.takeStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-727eda2c",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -7442,6 +7513,112 @@
       }
     },
     {
+      "id": "n-678ca145",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alpine",
+            "biotherapeutics",
+            "blackrock",
+            "brands",
+            "dnow",
+            "floating",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "semiconductor",
+            "separate by",
+            "series",
+            "shares",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "words<=",
+          15
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alt"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "b"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+                },
+                {
+                  "lit": "wreck name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7ec7d053",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -8640,6 +8817,73 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-790d70c4",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alpine",
+            "beneficial",
+            "biotherapeutics",
+            "blackrock",
+            "blacksky",
+            "brands",
+            "depositary",
+            "dnow",
+            "estate",
+            "first n",
+            "floating",
+            "impact",
+            "mexico",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "words<=",
+          14
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 12,
@@ -10188,6 +10432,75 @@
       }
     },
     {
+      "id": "n-bcf3bcb0",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "alpine",
+            "alps",
+            "annaly",
+            "blackrock",
+            "brands",
+            "brillia",
+            "dnow",
+            "floating",
+            "impact",
+            "item number",
+            "longest one",
+            "longest word",
+            "mexico",
+            "nth",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-4a517606",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -11410,6 +11723,75 @@
       }
     },
     {
+      "id": "n-8c7c53e7",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "alpine",
+            "beneficial",
+            "biotherapeutics",
+            "blackrock",
+            "blacksky",
+            "brands",
+            "dnow",
+            "estate",
+            "first n",
+            "floating",
+            "impact",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blackstone"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cohen"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a4ca8822",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -12244,6 +12626,81 @@
       "mem": null,
       "height": 5,
       "size": 8,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1b565d19",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alpine",
+            "alps",
+            "blackrock",
+            "blacksky",
+            "brands",
+            "depositary",
+            "dnow",
+            "floating",
+            "impact",
+            "item number",
+            "longest one",
+            "longest word",
+            "mexico",
+            "nth",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
       "fit": {
         "ok": 10,
         "fired": 10,
@@ -13911,6 +14368,64 @@
       }
     },
     {
+      "id": "n-fca3ac6e",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alpine",
+            "alps",
+            "blackrock",
+            "brands",
+            "brillia",
+            "dnow",
+            "first n",
+            "floating",
+            "impact",
+            "longest one",
+            "longest word",
+            "mexico"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-59633f73",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -15221,6 +15736,210 @@
       }
     },
     {
+      "id": "n-14c9d15d",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "alpine",
+            "biotherapeutics",
+            "brands",
+            "cef",
+            "dnow",
+            "first n",
+            "floating",
+            "longest one",
+            "longest word",
+            "mexico",
+            "semiconductor"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alt"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "b"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blackstone"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-14e02a04",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "15x",
+            "alexanders",
+            "alpine",
+            "blacksky",
+            "brands",
+            "depositary",
+            "dnow",
+            "first n",
+            "impact",
+            "mexico",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3fe0742f",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "15x",
+            "alexanders",
+            "beneficial",
+            "blackrock",
+            "blacksky",
+            "brands",
+            "depositary",
+            "dnow",
+            "first n",
+            "mexico",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "words<=",
+          14
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-474193d6",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -15277,6 +15996,86 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-52d62df5",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "alpine",
+            "biotherapeutics",
+            "brands",
+            "cef",
+            "dnow",
+            "first n",
+            "floating",
+            "longest one",
+            "longest word",
+            "mexico",
+            "semiconductor"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alt"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "b"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blackstone"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 9,
@@ -15681,6 +16480,63 @@
       "mem": null,
       "height": 3,
       "size": 6,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e3625333",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alpine",
+            "alps",
+            "blackrock",
+            "brands",
+            "dnow",
+            "first n",
+            "floating",
+            "impact",
+            "longest one",
+            "longest word",
+            "mexico"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
       "fit": {
         "ok": 8,
         "fired": 8,
@@ -18363,6 +19219,71 @@
       }
     },
     {
+      "id": "n-0da2b693",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "alpine",
+            "biotherapeutics",
+            "brands",
+            "dnow",
+            "first n",
+            "floating",
+            "longest one",
+            "longest word",
+            "mexico",
+            "semiconductor"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "b"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1c0c1901",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -18427,6 +19348,85 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-249f408c",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "alpine",
+            "biotherapeutics",
+            "brands",
+            "dnow",
+            "first n",
+            "floating",
+            "longest one",
+            "longest word",
+            "mexico",
+            "semiconductor"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alt"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "b"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blackstone"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 8,
@@ -18763,6 +19763,131 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8af815a5",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "alpine",
+            "biotherapeutics",
+            "brands",
+            "dnow",
+            "first n",
+            "floating",
+            "longest one",
+            "longest word",
+            "mexico",
+            "semiconductor"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "b"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b3a1801d",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "biotherapeutics",
+            "brands",
+            "cef",
+            "dnow",
+            "each word",
+            "etv",
+            "floating",
+            "longest",
+            "longest one",
+            "longest word",
+            "semiconductor",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 8,
@@ -21642,6 +22767,74 @@
       }
     },
     {
+      "id": "n-9a9dbcdc",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "alpine",
+            "annaly",
+            "blackrock",
+            "brands",
+            "character at",
+            "dnow",
+            "item number",
+            "letter at",
+            "mexico",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "nth letter",
+            "which letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.charAt",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-f1e34774",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -22617,6 +23810,62 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-13e77750",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "alpine",
+            "brands",
+            "brillia",
+            "depositary",
+            "dnow",
+            "each word",
+            "mexico",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "has",
+          "inc"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 7,
@@ -25188,6 +26437,80 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e5e95189",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "berkley",
+            "caesar cipher",
+            "depositary",
+            "dnow",
+            "enhanced",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "position",
+            "rotate the letters",
+            "semiconductor",
+            "shift by",
+            "shift each letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+                },
+                {
+                  "lit": "wreck name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 6,
@@ -29405,6 +30728,142 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-92d9f08b",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alps",
+            "blackrock",
+            "character at",
+            "floating",
+            "impact",
+            "item number",
+            "letter at",
+            "mexico",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "nth letter",
+            "which letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.charAt",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-aa828a36",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blacksky",
+            "brands",
+            "brillia",
+            "character at",
+            "depositary",
+            "dnow",
+            "item number",
+            "letter at",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "nth letter",
+            "which letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "has",
+          "inc"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.charAt",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 5,
@@ -34038,6 +35497,64 @@
       }
     },
     {
+      "id": "n-382f50ba",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "berkley",
+            "brillia",
+            "first n",
+            "longest one",
+            "longest word",
+            "series"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "b"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-43c209e7",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -35098,6 +36615,132 @@
       }
     },
     {
+      "id": "n-2e3458a9",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blackrock",
+            "brillia",
+            "floating",
+            "item number",
+            "joined with",
+            "mexico",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "sense.content"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-69dc6980",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blackrock",
+            "brillia",
+            "floating",
+            "item number",
+            "joined with",
+            "mexico",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "sense.words"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-869a862c",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -35285,6 +36928,71 @@
       }
     },
     {
+      "id": "n-a21582e9",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "annaly",
+            "blackrock",
+            "character at",
+            "item number",
+            "letter at",
+            "mexico",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "nth letter",
+            "which letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.charAt",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ad1e4143",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -35339,6 +37047,71 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c8a051d8",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alps",
+            "brillia",
+            "character at",
+            "floating",
+            "impact",
+            "item number",
+            "letter at",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "nth letter",
+            "which letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.charAt",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 4,
@@ -35468,6 +37241,216 @@
       "mem": null,
       "height": 4,
       "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5e952afc",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "annaly",
+            "blackrock",
+            "item number",
+            "join",
+            "joined with",
+            "mexico",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c7ced366",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "annaly",
+            "blackrock",
+            "item number",
+            "joined with",
+            "mexico",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-34381177",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "floating",
+            "inc",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "no vowels",
+            "nth",
+            "remove vowels",
+            "which letter appears most",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.noVowels",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
       "fit": {
         "ok": 4,
         "fired": 4,
@@ -35778,6 +37761,83 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bec11d2e",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "annaly",
+            "append",
+            "blackrock",
+            "combine",
+            "concatenate",
+            "item number",
+            "mexico",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "put together",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 4,
@@ -39485,6 +41545,72 @@
       }
     },
     {
+      "id": "n-8d79bffa",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "beneficial",
+            "capital",
+            "floating",
+            "most common letter",
+            "most frequent letter",
+            "no vowels",
+            "remove vowels",
+            "which letter appears most",
+            "without vowels"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bain"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blackstone"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cohen"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.noVowels",
+            [
+              "sense.after",
+              {
+                "lit": "exchange"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a1aa9b64",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -39542,6 +41668,220 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-abe46066",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "depositary",
+            "enhanced",
+            "most common letter",
+            "most frequent letter",
+            "rotate the letters",
+            "semiconductor",
+            "shift by",
+            "shift each letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "american"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ac01dd20",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "beneficial",
+            "capital",
+            "floating",
+            "most common letter",
+            "most frequent letter",
+            "no vowels",
+            "remove vowels",
+            "which letter appears most",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "active"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bain"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blackstone"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cohen"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.noVowels",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cb9de401",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "most common letter",
+            "most frequent letter",
+            "series",
+            "short form",
+            "stock",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "b"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "class"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "communications"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "fund"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "spx"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.acronym",
+            [
+              "sense.before",
+              {
+                "lit": "exchange"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 4,
@@ -41417,6 +43757,391 @@
       }
     },
     {
+      "id": "n-06aecc88",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "alpine",
+            "item number",
+            "longest one",
+            "longest word",
+            "mexico",
+            "nth",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+                },
+                {
+                  "lit": "wreck name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1e800cb0",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "cherry",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "trust",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "distributing"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": 100
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3d57cde4",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "annaly",
+            "beneficial",
+            "item number",
+            "join",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "words<=",
+          14
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "sense.content"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6bb02bff",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "annaly",
+            "floating",
+            "item number",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "sense.content"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-74c02e82",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "alps",
+            "cto",
+            "item number",
+            "longest one",
+            "longest word",
+            "nth",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-aa446148",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "annaly",
+            "floating",
+            "item number",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "sense.words"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-e9987b80",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -41464,6 +44189,204 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f0107e7e",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "annaly",
+            "beneficial",
+            "item number",
+            "join",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "words<=",
+          14
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "sense.words"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f89c2eb6",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "trust",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "inc"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": 100
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fe73ac92",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "cherry",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "mexico",
+            "nth",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 3,
@@ -42062,6 +44985,78 @@
       }
     },
     {
+      "id": "n-f87f77f1",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "annaly",
+            "brillia",
+            "item number",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "has",
+          "inc"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-4d31d35e",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -42216,6 +45211,80 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5a85a379",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "defiance",
+            "etv",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "schwab",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.acronym",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 12,
       "fit": {
         "ok": 3,
@@ -45136,6 +48205,54 @@
       }
     },
     {
+      "id": "n-5db171bb",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "floating",
+            "most common letter",
+            "most frequent letter",
+            "normalise",
+            "normalize",
+            "ordinary",
+            "simplify the text",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.norm",
+            [
+              "sense.text"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7c88546e",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -45240,6 +48357,53 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a799c071",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "floating",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "ordinary",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "sense.content"
+            ],
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 3,
@@ -46375,6 +49539,69 @@
       }
     },
     {
+      "id": "n-13ca473d",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "brillia",
+            "combine",
+            "concatenate",
+            "floating",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "put together",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1a544bb8",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -46630,6 +49857,76 @@
       }
     },
     {
+      "id": "n-2d7813fa",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alps",
+            "beneficial",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blackstone"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "cryptocurrency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-2df5d0c3",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -46686,6 +49983,68 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-31b8b4f4",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "ordinary",
+            "put together",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+                },
+                {
+                  "lit": "wreck name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 2,
@@ -47186,6 +50545,66 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-52cf8b10",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "biotherapeutics",
+            "brillia",
+            "caesar cipher",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+                },
+                {
+                  "lit": "wreck name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": 100
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 2,
@@ -48271,6 +51690,70 @@
       }
     },
     {
+      "id": "n-c8ddd1e1",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "beneficial",
+            "brillia",
+            "item number",
+            "longest one",
+            "longest word",
+            "nth",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "words<=",
+          14
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ce69adb6",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -48389,6 +51872,131 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-db5741aa",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "class",
+            "combine",
+            "concatenate",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "put together",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-de28db3f",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "brillia",
+            "combine",
+            "concatenate",
+            "floating",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "put together",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 2,
@@ -49022,6 +52630,69 @@
       }
     },
     {
+      "id": "n-48d66f0e",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alexanders",
+            "annaly",
+            "item number",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-92afae41",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -49082,6 +52753,85 @@
       "mem": null,
       "height": 5,
       "size": 11,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-16734075",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "beneficial",
+            "cherry",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "no vowels",
+            "nth",
+            "position",
+            "remove vowels",
+            "which letter appears most",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blackstone"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.noVowels",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
       "fit": {
         "ok": 2,
         "fired": 2,
@@ -49227,6 +52977,79 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4bbd4a81",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "defiance",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "schwab",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.acronym",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": -1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 12,
       "fit": {
         "ok": 2,
@@ -49514,6 +53337,156 @@
       }
     },
     {
+      "id": "n-b28f419f",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "common",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "no vowels",
+            "nth",
+            "remove vowels",
+            "which letter appears most",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "healthcare"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.noVowels",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": -1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c02c7ef7",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alpine",
+            "each word",
+            "impact",
+            "item number",
+            "longest one",
+            "longest word",
+            "nth",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-c286a2c5",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -49576,6 +53549,76 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d57fe324",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brillia",
+            "each word",
+            "impact",
+            "item number",
+            "nth",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": -1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 12,
       "fit": {
         "ok": 2,
@@ -56075,6 +60118,50 @@
       }
     },
     {
+      "id": "n-25b0dd8a",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "most common letter",
+            "most frequent letter",
+            "which letter appears most",
+            "yield"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.base64",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-2af8f234",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -56212,6 +60299,51 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-52b5f121",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "etv",
+            "iboxx",
+            "most common letter",
+            "most frequent letter",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "sense.text"
+            ],
+            {
+              "lit": 100
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 2,
@@ -56892,6 +61024,53 @@
       }
     },
     {
+      "id": "n-d8c3449c",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "biotherapeutics",
+            "brillia",
+            "convert to base",
+            "in base",
+            "in binary",
+            "in octal",
+            "most common letter",
+            "most frequent letter",
+            "to binary",
+            "to hex",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "compute.toBase",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-e06cb8c2",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -56926,6 +61105,52 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e1e7db58",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "most common letter",
+            "most frequent letter",
+            "ordinary",
+            "strip out",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.remove",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 2,
@@ -59730,6 +63955,59 @@
       }
     },
     {
+      "id": "n-370f1235",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "join",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+              },
+              {
+                "lit": "wreck name"
+              }
+            ],
+            [
+              "sense.roman"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-51bcab99",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -59823,6 +64101,54 @@
             {
               "lit": 1
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-52836ccb",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "annaly",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "separated by",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
           ]
         ]
       ],
@@ -60196,6 +64522,55 @@
       }
     },
     {
+      "id": "n-79b189c0",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "annaly",
+            "join",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "separated by",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            [
+              "sense.numeral"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-8248f3bd",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -60484,6 +64859,54 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d73aeaf8",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brillia",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "separated by",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 7,
       "fit": {
         "ok": 1,
@@ -66622,6 +71045,127 @@
       }
     },
     {
+      "id": "n-00f4c93a",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "position",
+            "rotate the letters",
+            "semiconductor",
+            "shift by",
+            "shift each letter",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-02e50b0f",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "beneficial",
+            "character at",
+            "item number",
+            "letter at",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "nth letter",
+            "which letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "doubleline"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.charAt",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-039903a3",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -67027,6 +71571,68 @@
       }
     },
     {
+      "id": "n-21cd3881",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "cherry",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-23716baf",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -67196,6 +71802,62 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-37c2bb71",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "berkley",
+            "item number",
+            "nth",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -67849,6 +72511,130 @@
       }
     },
     {
+      "id": "n-5b2035b2",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "append",
+            "combine",
+            "concatenate",
+            "element",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "position",
+            "put together",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+                },
+                {
+                  "lit": "wreck name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.roman"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-62d3991d",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "item number",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "sense.content"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+                },
+                {
+                  "lit": "wreck name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7c12e5a2",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -68145,6 +72931,121 @@
       }
     },
     {
+      "id": "n-8704c481",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "annaly",
+            "character at",
+            "item number",
+            "letter at",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "nth letter",
+            "position",
+            "which letter",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.charAt",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8a6af463",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brillia",
+            "delete",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "strip out",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.remove",
+            [
+              "sense.text"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-8c42d10e",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -68192,6 +73093,185 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8ecaa278",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brillia",
+            "delete",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "remove",
+            "strip out",
+            "which letter appears most",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.remove",
+            [
+              "sense.text"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+                },
+                {
+                  "lit": "wreck name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8f1a8b55",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "brillia",
+            "combine",
+            "concatenate",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "put together",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-937ce6b7",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "common",
+            "element",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -68320,6 +73400,66 @@
       }
     },
     {
+      "id": "n-988505ae",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "item number",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "sense.content"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-99f6f8e6",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -68371,6 +73511,66 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a15737ca",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "berkley",
+            "caesar cipher",
+            "element",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -68432,6 +73632,69 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a5afbe46",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "common",
+            "element",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "region"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -68616,6 +73879,64 @@
       }
     },
     {
+      "id": "n-b5ec9976",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alpine",
+            "character at",
+            "item number",
+            "letter at",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "nth letter",
+            "which letter",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.charAt",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-c94fd71b",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -68665,6 +73986,184 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cc93c301",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "cherry",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cd029a22",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "item number",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "sense.words"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+                },
+                {
+                  "lit": "wreck name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cd138b13",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brillia",
+            "delete",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "strip out",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.remove",
+            [
+              "sense.text"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -68790,6 +74289,69 @@
       }
     },
     {
+      "id": "n-f1d4bbfb",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "caesar cipher",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+                },
+                {
+                  "lit": "wreck name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-f3b9df94",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -68900,6 +74462,66 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f7c76dfd",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "item number",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "sense.words"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -70631,6 +76253,69 @@
       }
     },
     {
+      "id": "n-adf4f5cb",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blackrock",
+            "item number",
+            "join",
+            "joined with",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separated by",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.join",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+                },
+                {
+                  "lit": "wreck name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b54475ed",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -71223,6 +76908,74 @@
       }
     },
     {
+      "id": "n-135e1506",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dividend",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "position",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.base64",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-24bffbac",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -71416,6 +77169,69 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3069bfa6",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brillia",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.base64",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 12,
       "fit": {
         "ok": 1,
@@ -71831,6 +77647,74 @@
       }
     },
     {
+      "id": "n-842a7cbb",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "impact",
+            "item number",
+            "longest one",
+            "longest word",
+            "nth",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": -1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-9dd0dfa0",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -71901,6 +77785,75 @@
       }
     },
     {
+      "id": "n-a3b49b4d",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "impact",
+            "item number",
+            "nth",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ac645fe1",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -71961,6 +77914,73 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b2a847c2",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "growth",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.base64",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": -1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 12,
       "fit": {
         "ok": 1,
@@ -72446,6 +78466,78 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-10b93214",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "beneficial",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "separate by",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "doubleline"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -73315,6 +79407,80 @@
       }
     },
     {
+      "id": "n-5825c2a9",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "put together",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+                },
+                {
+                  "lit": "wreck name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5a2d6ccd",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -73962,6 +80128,80 @@
       }
     },
     {
+      "id": "n-861413f2",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "put together",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-86ecae97",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -74538,6 +80778,80 @@
       }
     },
     {
+      "id": "n-a383d62f",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "put together",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+                },
+                {
+                  "lit": "wreck name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a4a395b7",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -74666,6 +80980,80 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b408f6fc",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "annaly",
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "put together",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -74964,6 +81352,80 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c84eb49d",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "put together",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-wreck-inventory-c8fc4d"
+                },
+                {
+                  "lit": "wreck name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -75902,6 +82364,80 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f06a0d0e",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "append",
+            "combine",
+            "concatenate",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "put together",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -82377,6 +88913,137 @@
       }
     },
     {
+      "id": "n-0186367d",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brillia",
+            "each word",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split into words",
+            "words"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "exchange"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0516d528",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "longest",
+            "longest one",
+            "longest word",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.roman"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-06f310c4",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brillia",
+            "first n",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0dbf5cad",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -82408,6 +89075,140 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1d988ac3",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "floating",
+            "most common letter",
+            "most frequent letter",
+            "no vowels",
+            "remove vowels",
+            "which letter appears most",
+            "without vowels"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.noVowels",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-22fd042d",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blackrock",
+            "caesar cipher",
+            "most common letter",
+            "most frequent letter",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "sense.text"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2b1d9200",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blackrock",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.roman"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -82587,6 +89388,50 @@
       }
     },
     {
+      "id": "n-46a50839",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brillia",
+            "character at",
+            "letter at",
+            "most common letter",
+            "most frequent letter",
+            "nth letter",
+            "which letter",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.charAt",
+            [
+              "sense.lastWord"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-54dd80e9",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -82709,6 +89554,91 @@
       }
     },
     {
+      "id": "n-6e7ff97e",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brillia",
+            "caesar cipher",
+            "most common letter",
+            "most frequent letter",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-70a5eb79",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "brillia",
+            "first n",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-78eebad6",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -82741,6 +89671,148 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7d90991b",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "acquisition",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-87e37ae0",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "most common letter",
+            "most frequent letter",
+            "rotate the letters",
+            "schwab",
+            "shift by",
+            "shift each letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "sense.lastWord"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8ceffbb3",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "2x",
+            "caesar cipher",
+            "most common letter",
+            "most frequent letter",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "arm"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "sense.numeral"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -82786,6 +89858,50 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c0632194",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "brillia",
+            "combine",
+            "concatenate",
+            "most common letter",
+            "most frequent letter",
+            "put together",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.concat",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -82844,6 +89960,54 @@
       }
     },
     {
+      "id": "n-d8abf205",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "beneficial",
+            "character at",
+            "letter at",
+            "most common letter",
+            "most frequent letter",
+            "nth letter",
+            "which letter",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "doubleline"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.charAt",
+            [
+              "sense.lastWord"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ecd99bf6",
       "task": "fr-nyse-other-listings-other-liste-cae7fe",
       "gen": 10,
@@ -82877,6 +90041,145 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f0bc7912",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blackrock",
+            "caesar cipher",
+            "most common letter",
+            "most frequent letter",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.caesar",
+            [
+              "sense.roman"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f741de14",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character at",
+            "cto",
+            "letter at",
+            "most common letter",
+            "most frequent letter",
+            "nth letter",
+            "which letter",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.charAt",
+            [
+              "sense.text"
+            ],
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fce4ce91",
+      "task": "fr-nyse-other-listings-other-liste-cae7fe",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "first n",
+            "longest one",
+            "longest word",
+            "semiconductor"
+          ]
+        ],
+        [
+          "has",
+          "exchange"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bain"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -87546,6 +94849,7 @@
   ],
   "stages": [
     "d5989d78d3a0ed7d50dac54e97690494d607f76c7258f58e7c50005d33f310de",
-    "403b09829f237b32270a0ca625343d4eb1f8854946b881c9d93b475e5fac4c76"
+    "403b09829f237b32270a0ca625343d4eb1f8854946b881c9d93b475e5fac4c76",
+    "57a6eb12bc6efaeded36a54ad20c71dd71981016b7960162d9ba69acfa98cc4a"
   ]
 }

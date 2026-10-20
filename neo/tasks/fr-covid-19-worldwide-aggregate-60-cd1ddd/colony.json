@@ -2,28 +2,29 @@
   "task": "fr-covid-19-worldwide-aggregate-60-cd1ddd",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-06T21:05:30.645Z",
+  "at": "2026-10-20T03:37:43.427Z",
   "stats": {
-    "generated": 200018,
-    "distinct": 89123,
-    "kept": 76,
-    "know": 20,
+    "generated": 160342,
+    "distinct": 109279,
+    "kept": 78,
+    "know": 22,
     "byFamily": {
       "memory": 42,
       "aggregate": 22,
       "iterate": 2,
+      "compute": 2,
       "transform": 10
     },
     "bySource": {
-      "memory": 42,
-      "enum": 32,
+      "parent": 74,
+      "enum": 2,
       "open": 2
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 34697,
-    "cellsPerSecond": 5765,
+    "ms": 50783,
+    "cellsPerSecond": 3157,
     "capped": null,
     "packs": [
       "co2-mauna-loa",
@@ -33,13 +34,13 @@
     "cursor": {
       "v": 1,
       "basis": "361fa2f23d40a2d5d4a6959d7b6d4c48a86f81c58eff925d43a9675ba3be4f8f",
-      "round": 0,
-      "at": 103011,
+      "round": 1,
+      "at": 218504,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compare.atLeast",
-      "tpl": 3000
+      "prim": "compute.compound",
+      "tpl": 3943
     }
   },
   "cells": [
@@ -710,6 +711,71 @@
       }
     },
     {
+      "id": "n-0b8a8a72",
+      "task": "fr-covid-19-worldwide-aggregate-60-cd1ddd",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "element",
+            "how many lines",
+            "item number",
+            "line count",
+            "lines of code",
+            "name",
+            "nth",
+            "number of lines",
+            "percent is",
+            "position",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "recovered"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "aggregate.lines",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-co2-fossil-global-global-6f35f5"
+                },
+                {
+                  "lit": "total"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          [
+            "sense.first"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b4aee950",
       "task": "fr-covid-19-worldwide-aggregate-60-cd1ddd",
       "gen": 10,
@@ -774,7 +840,7 @@
       }
     },
     {
-      "id": "n-35ea93fc",
+      "id": "n-2965c680",
       "task": "fr-covid-19-worldwide-aggregate-60-cd1ddd",
       "gen": 10,
       "parents": [],
@@ -797,10 +863,12 @@
               "20211216",
               "add",
               "added",
-              "aiken",
               "angeles",
+              "annaly",
               "average",
               "birthday",
+              "capita",
+              "carolina78note",
               "china",
               "cion",
               "close",
@@ -814,24 +882,38 @@
               "eclipse",
               "explorer",
               "firefox",
+              "fuel",
+              "galaxy",
               "gmsl",
+              "going",
               "greater",
               "high",
+              "hubble",
+              "j2000",
               "larger",
+              "latitude",
               "lesser",
+              "location",
               "makes",
               "mean",
               "month",
-              "mortality",
               "multiply",
               "name",
               "national",
+              "north",
               "number",
               "open",
               "price",
+              "programme",
+              "proposal",
+              "rate",
               "share",
               "smaller",
               "sp500",
+              "std",
+              "strcity",
+              "streetaddr",
+              "strstate",
               "sum",
               "time",
               "uncertainty",
@@ -1241,55 +1323,29 @@
       }
     },
     {
-      "id": "n-a4928754",
+      "id": "n-a52fa065",
       "task": "fr-covid-19-worldwide-aggregate-60-cd1ddd",
       "gen": 10,
-      "parents": [
-        "n-a52fa065"
-      ],
+      "parents": [],
       "guard": [
         [
-          "not",
+          "hasAny",
           [
-            "hasAny",
-            [
-              "19631027",
-              "19831015",
-              "20011014",
-              "20101114",
-              "20131117",
-              "20151115",
-              "20201218",
-              "42",
-              "added",
-              "airdate",
-              "birthday",
-              "china",
-              "cion",
-              "close",
-              "confirmed",
-              "country",
-              "date",
-              "description",
-              "dividend",
-              "eclipse",
-              "explorer",
-              "firefox",
-              "gmsl",
-              "has",
-              "high",
-              "month",
-              "national",
-              "open",
-              "price",
-              "s035",
-              "sp500",
-              "time",
-              "title",
-              "updated",
-              "version"
-            ]
+            "count of",
+            "decode",
+            "element",
+            "how many times",
+            "how often",
+            "item number",
+            "name",
+            "nth",
+            "occurrences",
+            "position"
           ]
+        ],
+        [
+          "has",
+          "recovered"
         ]
       ],
       "pyramid": [
@@ -1341,29 +1397,74 @@
       }
     },
     {
-      "id": "n-a52fa065",
+      "id": "n-aa85b301",
       "task": "fr-covid-19-worldwide-aggregate-60-cd1ddd",
       "gen": 10,
-      "parents": [],
+      "parents": [
+        "n-a52fa065"
+      ],
       "guard": [
         [
-          "hasAny",
+          "not",
           [
-            "count of",
-            "decode",
-            "element",
-            "how many times",
-            "how often",
-            "item number",
-            "name",
-            "nth",
-            "occurrences",
-            "position"
+            "hasAny",
+            [
+              "19631027",
+              "19831015",
+              "20011014",
+              "20101114",
+              "20131117",
+              "20151115",
+              "20201218",
+              "42",
+              "78",
+              "added",
+              "airdate",
+              "annaly",
+              "birthday",
+              "china",
+              "cion",
+              "close",
+              "confirmed",
+              "country",
+              "date",
+              "description",
+              "dividend",
+              "eclipse",
+              "explorer",
+              "firefox",
+              "fuel",
+              "galaxy",
+              "gmsl",
+              "has",
+              "high",
+              "hubble",
+              "j2000",
+              "latitude",
+              "location",
+              "medicine",
+              "month",
+              "national",
+              "open",
+              "pm",
+              "price",
+              "programme",
+              "proposal",
+              "rebirth",
+              "rithm",
+              "s0238",
+              "s035",
+              "sp500",
+              "std",
+              "strcity",
+              "streetaddr",
+              "strstate",
+              "time",
+              "title",
+              "updated",
+              "version"
+            ]
           ]
-        ],
-        [
-          "has",
-          "recovered"
         ]
       ],
       "pyramid": [
@@ -2016,6 +2117,91 @@
       "mem": null,
       "height": 5,
       "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4535721d",
+      "task": "fr-covid-19-worldwide-aggregate-60-cd1ddd",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "element",
+            "item number",
+            "name",
+            "nth",
+            "percent is",
+            "position",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "recovered"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "series.ratio",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-co2-fossil-global-global-6f35f5"
+                },
+                {
+                  "lit": "total"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-co2-fossil-global-global-6f35f5"
+                },
+                {
+                  "lit": "total"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-co2-fossil-global-global-6f35f5"
+            },
+            {
+              "lit": "total"
+            },
+            {
+              "lit": "solid fuel"
+            }
+          ],
+          [
+            "sense.first"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -3660,9 +3846,220 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-35ea93fc",
+      "task": "fr-covid-19-worldwide-aggregate-60-cd1ddd",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "15",
+              "20171125t123925z",
+              "20201013",
+              "20201022",
+              "20201127",
+              "20201130",
+              "20201222",
+              "20201230",
+              "20211016",
+              "20211130",
+              "20211216",
+              "add",
+              "added",
+              "aiken",
+              "angeles",
+              "average",
+              "birthday",
+              "china",
+              "cion",
+              "close",
+              "compare",
+              "confirmed",
+              "cougar",
+              "country",
+              "date",
+              "description",
+              "dividend",
+              "eclipse",
+              "explorer",
+              "firefox",
+              "gmsl",
+              "greater",
+              "high",
+              "larger",
+              "lesser",
+              "makes",
+              "mean",
+              "month",
+              "mortality",
+              "multiply",
+              "name",
+              "national",
+              "number",
+              "open",
+              "price",
+              "share",
+              "smaller",
+              "sp500",
+              "sum",
+              "time",
+              "uncertainty",
+              "version",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.consonants",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-co2-fossil-global-global-6f35f5"
+                },
+                {
+                  "lit": "total"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-co2-fossil-global-global-6f35f5"
+            },
+            {
+              "lit": "total"
+            },
+            {
+              "lit": "year"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a4928754",
+      "task": "fr-covid-19-worldwide-aggregate-60-cd1ddd",
+      "gen": 10,
+      "parents": [
+        "n-a52fa065"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "19631027",
+              "19831015",
+              "20011014",
+              "20101114",
+              "20131117",
+              "20151115",
+              "20201218",
+              "42",
+              "added",
+              "airdate",
+              "birthday",
+              "china",
+              "cion",
+              "close",
+              "confirmed",
+              "country",
+              "date",
+              "description",
+              "dividend",
+              "eclipse",
+              "explorer",
+              "firefox",
+              "gmsl",
+              "has",
+              "high",
+              "month",
+              "national",
+              "open",
+              "price",
+              "s035",
+              "sp500",
+              "time",
+              "title",
+              "updated",
+              "version"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.occurrences",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-fossil-global-global-6f35f5"
+              },
+              {
+                "lit": "total"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.unbase64",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
     }
   ],
   "stages": [
-    "f117ea2129c6c806fa54e3cc0094b16368b52a14bdfed7b59b1d5f8ff3b323d9"
+    "f117ea2129c6c806fa54e3cc0094b16368b52a14bdfed7b59b1d5f8ff3b323d9",
+    "24be3706a8f765ddc32fe396736bc8621212ffaad0d6cacbe59d14168b3652de"
   ]
 }

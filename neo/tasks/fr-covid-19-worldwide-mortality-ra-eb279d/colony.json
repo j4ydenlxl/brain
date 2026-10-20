@@ -2,23 +2,25 @@
   "task": "fr-covid-19-worldwide-mortality-ra-eb279d",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-06T21:04:09.998Z",
+  "at": "2026-10-20T03:40:58.137Z",
   "stats": {
-    "generated": 200083,
-    "distinct": 75405,
-    "kept": 41,
+    "generated": 160574,
+    "distinct": 119208,
+    "kept": 42,
     "know": 0,
     "byFamily": {
-      "memory": 41
+      "memory": 41,
+      "transform": 1
     },
     "bySource": {
-      "memory": 41
+      "parent": 41,
+      "template": 1
     },
-    "maxHeight": 3,
+    "maxHeight": 4,
     "devOk": 40,
     "devN": 40,
-    "ms": 19979,
-    "cellsPerSecond": 10015,
+    "ms": 35150,
+    "cellsPerSecond": 4568,
     "capped": null,
     "packs": [
       "co2-mauna-loa",
@@ -28,13 +30,13 @@
     "cursor": {
       "v": 1,
       "basis": "35e77a01f20a5260b1c12a0debc2f48a9a8ac41c8fbee42f333f31694251fb0f",
-      "round": 0,
-      "at": 112063,
+      "round": 1,
+      "at": 218497,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compare.coprime",
-      "tpl": 3000
+      "prim": "compute.fromBase",
+      "tpl": 3473
     }
   },
   "cells": [
@@ -1543,9 +1545,92 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-919f5d72",
+      "task": "fr-covid-19-worldwide-mortality-ra-eb279d",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "decimal places",
+            "element",
+            "invert case",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "round to",
+            "rounded to",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            ".3293434097115233."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "mortality"
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.roundTo",
+            {
+              "lit": 1
+            },
+            [
+              "sense.last"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
     }
   ],
   "stages": [
-    "ac2a29a30e9ea8de9d99dd5220cb585adb4bcffca2974339ec1fd8f2782b2273"
+    "ac2a29a30e9ea8de9d99dd5220cb585adb4bcffca2974339ec1fd8f2782b2273",
+    "bfa0a90852191b7d13d749742db0b94cd10833ccc9b16a064bd0ce35a7f07ee6"
   ]
 }

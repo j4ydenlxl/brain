@@ -1,0 +1,3727 @@
+{
+  "task": "country-of-year-c102",
+  "generation": 10,
+  "kernel": 2,
+  "at": "2026-10-20T03:41:50.080Z",
+  "stats": {
+    "generated": 200024,
+    "distinct": 55799,
+    "kept": 72,
+    "know": 18,
+    "byFamily": {
+      "memory": 54,
+      "transform": 5,
+      "sense": 13
+    },
+    "bySource": {
+      "memory": 54,
+      "enum": 1,
+      "template": 17
+    },
+    "maxHeight": 5,
+    "devOk": 52,
+    "devN": 52,
+    "ms": 76616,
+    "cellsPerSecond": 2611,
+    "capped": "ms",
+    "packs": [
+      "fr-tidytuesday-timeline-df-730d0f"
+    ],
+    "cursor": {
+      "v": 1,
+      "basis": "61a4523d33c689faca59c85ecf3d5b741df1012a070e5e10a010b0a55668e0b1",
+      "round": 0,
+      "at": 80381,
+      "maxCost": 7,
+      "done": false,
+      "cost": 6,
+      "prim": "iterate.powers",
+      "tpl": 1151
+    }
+  },
+  "cells": [
+    {
+      "id": "n-b1334eba",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "the country of 1988": "The country of 1988 is Australia.",
+          "the country of 1996": "The country of 1996 is India.",
+          "the country of 1991": "The country of 1991 is Sweden.",
+          "the country of 2004": "The country of 2004 is Greece.",
+          "the country of 1998": "The country of 1998 is Taiwan.",
+          "the country of 1989": "The country of 1989 is Germany.",
+          "the country of 1994": "The country of 1994 is Hong Kong.",
+          "the country of 2001": "The country of 2001 is United States of America.",
+          "the country of 1977": "The country of 1977 is Yugoslavia.",
+          "the country of 1999": "The country of 1999 is Romania.",
+          "the country of 1962": "The country of 1962 is Czechoslovakia.",
+          "the country of 1967": "The country of 1967 is Yugoslavia.",
+          "the country of 1959": "The country of 1959 is Romania.",
+          "the country of 1973": "The country of 1973 is Union of Soviet Socialist Republics.",
+          "the country of 2009": "The country of 2009 is Germany.",
+          "the country of 1983": "The country of 1983 is France.",
+          "the country of 1985": "The country of 1985 is Finland.",
+          "the country of 2019": "The country of 2019 is United Kingdom."
+        }
+      },
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 18,
+        "fired": 18,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-9f9b1d58",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-timeline-df-730d0f"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "sense.unit"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-1de46837",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "for",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "render.listNums",
+          [
+            "sense.numbers"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-timeline-df-730d0f"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-timeline-df-730d0f"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 15,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-45a4230f",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "for",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "render.number",
+          [
+            "sense.first"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-timeline-df-730d0f"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-timeline-df-730d0f"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 15,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-94a0e1f6",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "for",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "render.plain",
+          [
+            "sense.first"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-timeline-df-730d0f"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-timeline-df-730d0f"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 15,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-2f1b0f27",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as text",
+            "as words",
+            "element",
+            "for",
+            "item number",
+            "nth",
+            "position",
+            "written out"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "render.and",
+          [
+            "transform.asText",
+            [
+              "sense.numbers"
+            ]
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-timeline-df-730d0f"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-timeline-df-730d0f"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-1ccdabcd",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "diagonal",
+            "element",
+            "for",
+            "hypotenuse",
+            "item number",
+            "nth",
+            "position",
+            "pythagoras",
+            "pythagorean"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "render.number",
+          [
+            "compute.hypot",
+            [
+              "sense.first"
+            ],
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-timeline-df-730d0f"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-timeline-df-730d0f"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-27739c8f",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "for",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-timeline-df-730d0f"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-timeline-df-730d0f"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-839e181c",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "diagonal",
+            "element",
+            "for",
+            "hypotenuse",
+            "item number",
+            "nth",
+            "position",
+            "pythagoras",
+            "pythagorean"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "render.number",
+          [
+            "compute.hypot",
+            [
+              "sense.first"
+            ],
+            [
+              "sense.howMany"
+            ]
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-timeline-df-730d0f"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-timeline-df-730d0f"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-cc7ee676",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "for",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "render.and",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-timeline-df-730d0f"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-timeline-df-730d0f"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-2157491f",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "for",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            }
+          ]
+        ],
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-timeline-df-730d0f"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "country"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 18,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-34ecf36f",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "for",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-timeline-df-730d0f"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-timeline-df-730d0f"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 18,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-40e8d26a",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "for",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.swapCase",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-timeline-df-730d0f"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-timeline-df-730d0f"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 18,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-4eb3a1df",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "element",
+            "for",
+            "item number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.pascal",
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-timeline-df-730d0f"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-timeline-df-730d0f"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 18,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-5c20f1da",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "element",
+            "for",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            }
+          ]
+        ],
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-timeline-df-730d0f"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "country"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 18,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-86482d93",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "for",
+            "item number",
+            "nth",
+            "position",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            }
+          ]
+        ],
+        [
+          "transform.title",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-timeline-df-730d0f"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "country"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 18,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-9704b266",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "for",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 3
+          }
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            }
+          ]
+        ],
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-timeline-df-730d0f"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "country"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 18,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-010334cf",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "for",
+            "item number",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.list",
+          [
+            "transform.words",
+            [
+              "sense.wordAt",
+              {
+                "lit": 3
+              }
+            ]
+          ]
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-timeline-df-730d0f"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-timeline-df-730d0f"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 19,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-447810cd",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "for",
+            "item number",
+            "nth",
+            "position",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "country"
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.and",
+          [
+            "transform.words",
+            [
+              "sense.wordAt",
+              {
+                "lit": 3
+              }
+            ]
+          ]
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-timeline-df-730d0f"
+            },
+            {
+              "lit": "year"
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-timeline-df-730d0f"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-timeline-df-730d0f"
+          },
+          {
+            "lit": "year"
+          },
+          {
+            "lit": "country"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 19,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-ac403c4a",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.after",
+            {
+              "lit": "for"
+            }
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "1961": "The country of 1961 is Hungary.",
+          "1965": "The country of 1965 is German Democratic Republic.",
+          "1968": "The country of 1968 is Union of Soviet Socialist Republics.",
+          "1974": "The country of 1974 is German Democratic Republic.",
+          "1975": "The country of 1975 is Bulgaria.",
+          "1986": "The country of 1986 is Poland.",
+          "1987": "The country of 1987 is Cuba.",
+          "1992": "The country of 1992 is Russian Federation.",
+          "1993": "The country of 1993 is Türkiye.",
+          "1995": "The country of 1995 is Canada.",
+          "2007": "The country of 2007 is Vietnam.",
+          "2013": "The country of 2013 is Colombia.",
+          "2015": "The country of 2015 is Thailand.",
+          "2016": "The country of 2016 is Hong Kong.",
+          "2021": "The country of 2021 is Russian Federation.",
+          "2022": "The country of 2022 is Norway.",
+          "2024": "The country of 2024 is United Kingdom."
+        }
+      },
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-04f2b67e",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 1973": "The country of 1973 is Union of Soviet Socialist Republics."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-08c3b60c",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 1995": "The country of 1995 is Canada."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-0b0ae930",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 2004": "The country of 2004 is Greece."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-1a27ca92",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 1965": "The country of 1965 is German Democratic Republic."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-1efe78a6",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 1959": "The country of 1959 is Romania."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-223dc312",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 2007": "The country of 2007 is Vietnam."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-23a7f83d",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 1989": "The country of 1989 is Germany."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-27e7216e",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 1975": "The country of 1975 is Bulgaria."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-391110ec",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 1969": "The country of 1969 is Romania."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-3953251f",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 2021": "The country of 2021 is Russian Federation."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-40891c5a",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 1982": "The country of 1982 is Hungary."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-41425996",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 2019": "The country of 2019 is United Kingdom."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-50b2da23",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 1970": "The country of 1970 is Hungary."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-57bc9d6a",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 2022": "The country of 2022 is Norway."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-5d4db4cc",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 1967": "The country of 1967 is Yugoslavia."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-5db1f5b2",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 1990": "The country of 1990 is People's Republic of China."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-5ec7a58d",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 1977": "The country of 1977 is Yugoslavia."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-62e42200",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 1986": "The country of 1986 is Poland."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-65c32f6f",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 1979": "The country of 1979 is United Kingdom."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-66464b2f",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 2009": "The country of 2009 is Germany."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-69d969ef",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 1972": "The country of 1972 is Poland."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-6af208df",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 2024": "The country of 2024 is United Kingdom."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-6cbd432f",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 1962": "The country of 1962 is Czechoslovakia."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-6eff5136",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 1994": "The country of 1994 is Hong Kong."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-80f1e3d0",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 1961": "The country of 1961 is Hungary."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-829e00e0",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 2005": "The country of 2005 is Mexico."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-8a3293b3",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 1993": "The country of 1993 is Türkiye."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-8e58daf5",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 2017": "The country of 2017 is Brazil."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-91f80b2a",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 1999": "The country of 1999 is Romania."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-99214356",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 2018": "The country of 2018 is Romania."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-99e91164",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 1988": "The country of 1988 is Australia."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-9b8825d9",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 1974": "The country of 1974 is German Democratic Republic."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-a1010ff8",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 2006": "The country of 2006 is Slovenia."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-a6367a5e",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 2014": "The country of 2014 is South Africa."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-b0f95535",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 1985": "The country of 1985 is Finland."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-b890c7e9",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 1987": "The country of 1987 is Cuba."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-bcebec7d",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 2001": "The country of 2001 is United States of America."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-c3822d13",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 1992": "The country of 1992 is Russian Federation."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-c4c970b1",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 1991": "The country of 1991 is Sweden."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-ca487c1d",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 1976": "The country of 1976 is Austria."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-cb93b461",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 2011": "The country of 2011 is Netherlands."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-cd8ec6a1",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 2023": "The country of 2023 is Japan."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-cedd6c2a",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 1983": "The country of 1983 is France."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-d768e6d5",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 1978": "The country of 1978 is Romania."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-d7dfa3e2",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 1998": "The country of 1998 is Taiwan."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-db359d3c",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 2003": "The country of 2003 is Japan."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-e0286d81",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 2013": "The country of 2013 is Colombia."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-f19c15a1",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "country",
+            "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the country of the year 2008": "The country of 2008 is Spain."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-f4284216",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 2016": "The country of 2016 is Hong Kong."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-fbfacda6",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 1968": "The country of 1968 is Union of Soviet Socialist Republics."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-fcd79662",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the country of 1996": "The country of 1996 is India."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    },
+    {
+      "id": "n-fed19422",
+      "task": "country-of-year-c102",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "country"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.lookup",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "give the country for 2015": "The country of 2015 is Thailand."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 52
+      }
+    }
+  ],
+  "stages": [
+    "9b551ee793ce2ea1ce33da5277f17af4ae9c656ce644fa130e9fcf0633c44c69"
+  ]
+}
