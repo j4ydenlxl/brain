@@ -2,28 +2,27 @@
   "task": "fr-datasets-time-series-with-error-d7d7d7",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T09:53:37.906Z",
+  "at": "2026-10-20T11:28:05.756Z",
   "stats": {
-    "generated": 201111,
-    "distinct": 76010,
-    "kept": 64,
+    "generated": 160064,
+    "distinct": 130548,
+    "kept": 76,
     "know": 6,
     "byFamily": {
       "memory": 46,
       "aggregate": 9,
-      "compute": 5,
-      "transform": 4
+      "compute": 13,
+      "transform": 8
     },
     "bySource": {
-      "memory": 46,
-      "enum": 14,
-      "template": 4
+      "parent": 64,
+      "enum": 12
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 37673,
-    "cellsPerSecond": 5338,
+    "ms": 50031,
+    "cellsPerSecond": 3199,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -33,12 +32,12 @@
     "cursor": {
       "v": 1,
       "basis": "cb9b97e96e518c23ae86a4093e74b1a3ab07811b6a2d44d003582d8717203118",
-      "round": 0,
-      "at": 112696,
+      "round": 1,
+      "at": 209833,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "compute.power",
+      "cost": 7,
+      "prim": "aggregate.stdev",
       "tpl": 1564
     }
   },
@@ -1102,6 +1101,62 @@
       }
     },
     {
+      "id": "n-05848bd8",
+      "task": "fr-datasets-time-series-with-error-d7d7d7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "factorise",
+            "factorize",
+            "me",
+            "negate",
+            "negative",
+            "opposite",
+            "population standard deviation",
+            "prime factorisation",
+            "prime factorization",
+            "prime factors",
+            "standard deviation",
+            "stdev"
+          ]
+        ],
+        [
+          "has",
+          "std"
+        ],
+        [
+          "nums==",
+          2
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.neg",
+          [
+            "aggregate.stdev",
+            [
+              "compute.primeFactors",
+              [
+                "sense.second"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-25393245",
       "task": "fr-datasets-time-series-with-error-d7d7d7",
       "gen": 10,
@@ -1247,6 +1302,58 @@
             "iterate.squares",
             [
               "aggregate.digitCount",
+              [
+                "sense.second"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-80c4aec4",
+      "task": "fr-datasets-time-series-with-error-d7d7d7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after",
+            "me",
+            "next",
+            "one more",
+            "population standard deviation",
+            "standard deviation",
+            "stdev",
+            "successor"
+          ]
+        ],
+        [
+          "has",
+          "std"
+        ],
+        [
+          "nums==",
+          2
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.next",
+          [
+            "aggregate.stdev",
+            [
+              "iterate.digits",
               [
                 "sense.second"
               ]
@@ -3010,6 +3117,108 @@
       }
     },
     {
+      "id": "n-310e3e8f",
+      "task": "fr-datasets-time-series-with-error-d7d7d7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cube root",
+            "divisor count",
+            "how many divisors",
+            "how many factors",
+            "me",
+            "nth root",
+            "number of divisors",
+            "root"
+          ]
+        ],
+        [
+          "has",
+          "std"
+        ],
+        [
+          "nums==",
+          2
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.root",
+          {
+            "lit": 5
+          },
+          [
+            "compute.divisorCount",
+            [
+              "sense.second"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-366d8c08",
+      "task": "fr-datasets-time-series-with-error-d7d7d7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "circumference",
+            "cube root",
+            "me",
+            "nth root",
+            "perimeter of a circle",
+            "root"
+          ]
+        ],
+        [
+          "has",
+          "std"
+        ],
+        [
+          "nums==",
+          2
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.root",
+          [
+            "compute.circumference",
+            [
+              "sense.wordCount"
+            ]
+          ],
+          [
+            "sense.second"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-3ee6e211",
       "task": "fr-datasets-time-series-with-error-d7d7d7",
       "gen": 10,
@@ -3060,6 +3269,107 @@
       }
     },
     {
+      "id": "n-56935dd1",
+      "task": "fr-datasets-time-series-with-error-d7d7d7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "first letters of the name",
+            "initials",
+            "lowest terms",
+            "me",
+            "reduce the fraction",
+            "simplest form",
+            "simplify the fraction"
+          ]
+        ],
+        [
+          "has",
+          "std"
+        ],
+        [
+          "nums==",
+          2
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.initials",
+          [
+            "compute.fraction",
+            [
+              "sense.howMany"
+            ],
+            [
+              "sense.second"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-631b1225",
+      "task": "fr-datasets-time-series-with-error-d7d7d7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "circumference",
+            "cube root",
+            "me",
+            "nth root",
+            "perimeter of a circle",
+            "root"
+          ]
+        ],
+        [
+          "has",
+          "std"
+        ],
+        [
+          "nums==",
+          2
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.root",
+          [
+            "compute.circumference",
+            [
+              "sense.second"
+            ]
+          ],
+          [
+            "sense.second"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7a8d16ad",
       "task": "fr-datasets-time-series-with-error-d7d7d7",
       "gen": 10,
@@ -3089,6 +3399,158 @@
         "render.number",
         [
           "compute.log",
+          [
+            "compute.nthPrime",
+            [
+              "sense.second"
+            ]
+          ],
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-acc863a6",
+      "task": "fr-datasets-time-series-with-error-d7d7d7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cube root",
+            "me",
+            "nth root",
+            "root",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "std"
+        ],
+        [
+          "nums==",
+          2
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.root",
+          {
+            "lit": 1000
+          },
+          [
+            "compute.divisorSum",
+            [
+              "sense.second"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ae535c29",
+      "task": "fr-datasets-time-series-with-error-d7d7d7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cube root",
+            "fib",
+            "fibonacci",
+            "fibonacci number",
+            "me",
+            "nth root",
+            "root"
+          ]
+        ],
+        [
+          "has",
+          "std"
+        ],
+        [
+          "nums==",
+          2
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.root",
+          [
+            "compute.fibonacci",
+            [
+              "sense.second"
+            ]
+          ],
+          [
+            "sense.second"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bf8b3564",
+      "task": "fr-datasets-time-series-with-error-d7d7d7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cube root",
+            "me",
+            "nth prime",
+            "nth root",
+            "root",
+            "the prime number in position"
+          ]
+        ],
+        [
+          "has",
+          "std"
+        ],
+        [
+          "nums==",
+          2
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.root",
           [
             "compute.nthPrime",
             [
@@ -3159,9 +3621,162 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-e38a2c42",
+      "task": "fr-datasets-time-series-with-error-d7d7d7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divide",
+            "me",
+            "quotient",
+            "split",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "std"
+        ],
+        [
+          "nums==",
+          2
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.div",
+          [
+            "compute.divisorSum",
+            [
+              "sense.second"
+            ]
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ed97b1aa",
+      "task": "fr-datasets-time-series-with-error-d7d7d7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cube root",
+            "me",
+            "next prime",
+            "nth root",
+            "root",
+            "smallest prime greater than",
+            "the prime after"
+          ]
+        ],
+        [
+          "has",
+          "std"
+        ],
+        [
+          "nums==",
+          2
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.root",
+          {
+            "lit": 100
+          },
+          [
+            "compute.nextPrime",
+            [
+              "sense.second"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f14d4fa4",
+      "task": "fr-datasets-time-series-with-error-d7d7d7",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cube root",
+            "me",
+            "nth root",
+            "root",
+            "sum of the first",
+            "triangular number"
+          ]
+        ],
+        [
+          "has",
+          "std"
+        ],
+        [
+          "nums==",
+          2
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.root",
+          [
+            "compute.sumTo",
+            [
+              "sense.second"
+            ]
+          ],
+          [
+            "sense.second"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
     }
   ],
   "stages": [
-    "8b4eeaf45b1586cd91972f09c6b527676fa6fdf5d89679049d6d9a9cf9c3172b"
+    "8b4eeaf45b1586cd91972f09c6b527676fa6fdf5d89679049d6d9a9cf9c3172b",
+    "2fb61159619958fd022056357a6af90fc597df9868ffbaf18d5cc14a31f224f3"
   ]
 }
