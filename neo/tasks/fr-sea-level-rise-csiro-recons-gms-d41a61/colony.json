@@ -2,32 +2,31 @@
   "task": "fr-sea-level-rise-csiro-recons-gms-d41a61",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-20T03:52:09.324Z",
+  "at": "2026-10-20T05:24:19.640Z",
   "stats": {
-    "generated": 200074,
-    "distinct": 55460,
-    "kept": 96,
-    "know": 51,
+    "generated": 160405,
+    "distinct": 69776,
+    "kept": 103,
+    "know": 58,
     "byFamily": {
       "know": 2,
       "transform": 24,
       "sense": 3,
       "memory": 45,
-      "compute": 14,
+      "compute": 21,
       "aggregate": 6,
       "iterate": 2
     },
     "bySource": {
-      "enum": 32,
-      "open": 8,
-      "template": 11,
-      "memory": 45
+      "parent": 96,
+      "enum": 5,
+      "open": 2
     },
     "maxHeight": 7,
     "devOk": 40,
     "devN": 40,
-    "ms": 89963,
-    "cellsPerSecond": 2224,
+    "ms": 103941,
+    "cellsPerSecond": 1543,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -37,13 +36,13 @@
     "cursor": {
       "v": 1,
       "basis": "9e7f5a763d0c88dab6b00037fd925bbd04062b055e5b745e2653afc258ab5622",
-      "round": 0,
-      "at": 125830,
+      "round": 1,
+      "at": 257932,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compare.divisible",
-      "tpl": 3000
+      "prim": "compute.lcm",
+      "tpl": 3143
     }
   },
   "cells": [
@@ -3833,6 +3832,81 @@
       }
     },
     {
+      "id": "n-5a5fc161",
+      "task": "fr-sea-level-rise-csiro-recons-gms-d41a61",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "divisor count",
+            "how many divisors",
+            "how many factors",
+            "item number",
+            "name",
+            "nth",
+            "number of divisors",
+            "position",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "gmsl"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "compute.divisorCount",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+                    },
+                    {
+                      "lit": "gmsl"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+                },
+                {
+                  "lit": "gmsl"
+                },
+                {
+                  "lit": "gmsl uncertainty"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-606e035e",
       "task": "fr-sea-level-rise-csiro-recons-gms-d41a61",
       "gen": 10,
@@ -4498,6 +4572,62 @@
       }
     },
     {
+      "id": "n-9986c0bd",
+      "task": "fr-sea-level-rise-csiro-recons-gms-d41a61",
+      "gen": 10,
+      "parents": [
+        "n-fe1efce2"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "transform.half",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+                    },
+                    {
+                      "lit": "gmsl"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+                },
+                {
+                  "lit": "gmsl"
+                },
+                {
+                  "lit": "gmsl uncertainty"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-9d1ed309",
       "task": "fr-sea-level-rise-csiro-recons-gms-d41a61",
       "gen": 10,
@@ -4717,6 +4847,227 @@
       }
     },
     {
+      "id": "n-f83fa372",
+      "task": "fr-sea-level-rise-csiro-recons-gms-d41a61",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "factorise",
+            "factorize",
+            "gcd of all",
+            "greatest common divisor of the list",
+            "item number",
+            "me",
+            "nth",
+            "position",
+            "prime factorisation",
+            "prime factorization",
+            "prime factors"
+          ]
+        ],
+        [
+          "has",
+          "gmsl"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.gcdAll",
+          [
+            "compute.primeFactors",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+                    },
+                    {
+                      "lit": "gmsl"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+                },
+                {
+                  "lit": "gmsl"
+                },
+                {
+                  "lit": "gmsl uncertainty"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fe1efce2",
+      "task": "fr-sea-level-rise-csiro-recons-gms-d41a61",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "gmsl",
+            "half",
+            "half of",
+            "halve",
+            "item number",
+            "nth",
+            "position",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "transform.half",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+                    },
+                    {
+                      "lit": "gmsl"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+                },
+                {
+                  "lit": "gmsl"
+                },
+                {
+                  "lit": "gmsl uncertainty"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-feb3c601",
+      "task": "fr-sea-level-rise-csiro-recons-gms-d41a61",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "before",
+            "item number",
+            "name",
+            "nth",
+            "one less",
+            "position",
+            "predecessor",
+            "previous",
+            "sum of divisors",
+            "sum of factors",
+            "sum of the divisors"
+          ]
+        ],
+        [
+          "has",
+          "gmsl"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.divisorSum",
+          [
+            "transform.prev",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+                    },
+                    {
+                      "lit": "gmsl"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+                },
+                {
+                  "lit": "gmsl"
+                },
+                {
+                  "lit": "gmsl uncertainty"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-6195fe9c",
       "task": "fr-sea-level-rise-csiro-recons-gms-d41a61",
       "gen": 10,
@@ -4858,6 +5209,189 @@
       "mem": null,
       "height": 7,
       "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-88428853",
+      "task": "fr-sea-level-rise-csiro-recons-gms-d41a61",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "gcd",
+            "gcf",
+            "gmsl",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.gcd",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+                  },
+                  {
+                    "lit": "gmsl"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+              },
+              {
+                "lit": "gmsl"
+              },
+              {
+                "lit": "gmsl uncertainty"
+              }
+            ]
+          ],
+          [
+            "series.next",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+                },
+                {
+                  "lit": "gmsl"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+            },
+            {
+              "lit": "gmsl"
+            },
+            {
+              "lit": "gmsl uncertainty"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 21,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-88943283",
+      "task": "fr-sea-level-rise-csiro-recons-gms-d41a61",
+      "gen": 10,
+      "parents": [
+        "n-88428853"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "time"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.gcd",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+                  },
+                  {
+                    "lit": "gmsl"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+              },
+              {
+                "lit": "gmsl"
+              },
+              {
+                "lit": "gmsl uncertainty"
+              }
+            ]
+          ],
+          [
+            "series.next",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+                },
+                {
+                  "lit": "gmsl"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-sea-level-rise-csiro-recons-gmsl-mo-2015-69d237"
+            },
+            {
+              "lit": "gmsl"
+            },
+            {
+              "lit": "gmsl uncertainty"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 21,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -6319,6 +6853,7 @@
     }
   ],
   "stages": [
-    "a72ffbbf4417ecdfde70c38b59a8b06c24a102e4a5ba4813ae40ed46a74ea9ad"
+    "a72ffbbf4417ecdfde70c38b59a8b06c24a102e4a5ba4813ae40ed46a74ea9ad",
+    "c3e274c97eec3776bf931e36b2eacfba5c1af2621c7593838a69a2b8a3773c7b"
   ]
 }
