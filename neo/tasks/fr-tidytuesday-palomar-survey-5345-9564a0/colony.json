@@ -2,23 +2,25 @@
   "task": "fr-tidytuesday-palomar-survey-5345-9564a0",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T08:21:18.659Z",
+  "at": "2026-10-20T19:56:12.154Z",
   "stats": {
-    "generated": 201468,
-    "distinct": 79841,
-    "kept": 44,
-    "know": 0,
+    "generated": 162577,
+    "distinct": 146357,
+    "kept": 55,
+    "know": 2,
     "byFamily": {
-      "memory": 44
+      "memory": 44,
+      "transform": 11
     },
     "bySource": {
-      "memory": 44
+      "parent": 44,
+      "template": 11
     },
-    "maxHeight": 3,
+    "maxHeight": 4,
     "devOk": 40,
     "devN": 40,
-    "ms": 28485,
-    "cellsPerSecond": 7073,
+    "ms": 39798,
+    "cellsPerSecond": 4085,
     "capped": null,
     "packs": [
       "corpora-greek-gods",
@@ -28,13 +30,13 @@
     "cursor": {
       "v": 1,
       "basis": "40d652a472267a62eb7c9222f25e45b4e45d275c154b35956e7894df40597b92",
-      "round": 0,
-      "at": 112835,
+      "round": 1,
+      "at": 204012,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compare.isSquare",
-      "tpl": 3000
+      "prim": "compute.percentChange",
+      "tpl": 3854
     }
   },
   "cells": [
@@ -306,6 +308,257 @@
       "fit": {
         "ok": 14,
         "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ff608e6e",
+      "task": "fr-tidytuesday-palomar-survey-5345-9564a0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "is",
+            "item number",
+            "left over",
+            "mod",
+            "modulo",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "remainder",
+            "simplify the text",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "words>=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is 01 59 20.",
+            {
+              "slot": 3
+            },
+            "."
+          ]
+        },
+        [
+          "transform.norm",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-greek-gods"
+              },
+              {
+                "lit": "item"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.second"
+          ]
+        ],
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "j2000"
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.mod",
+            [
+              "sense.second"
+            ],
+            {
+              "lit": 45
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 19,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8712dc39",
+      "task": "fr-tidytuesday-palomar-survey-5345-9564a0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "difference",
+            "element",
+            "invert case",
+            "is",
+            "item number",
+            "left over",
+            "less",
+            "minus",
+            "mod",
+            "modulo",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "remainder",
+            "simplify the text",
+            "subtract",
+            "swap case",
+            "take away",
+            "toggle case"
+          ]
+        ],
+        [
+          "words>=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is 01 59 ",
+            {
+              "slot": 3
+            },
+            ".",
+            {
+              "slot": 4
+            },
+            "."
+          ]
+        },
+        [
+          "transform.norm",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-greek-gods"
+              },
+              {
+                "lit": "item"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.second"
+          ]
+        ],
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "j2000"
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.sub",
+            [
+              "sense.last"
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.mod",
+            [
+              "sense.second"
+            ],
+            {
+              "lit": 45
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 23,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
         "rows": 40
       }
     },
@@ -1761,9 +2014,1125 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-474b8fbf",
+      "task": "fr-tidytuesday-palomar-survey-5345-9564a0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "left over",
+            "me",
+            "mod",
+            "modulo",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "remainder",
+            "simplify the text",
+            "swap case",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is 10 ",
+            {
+              "slot": 3
+            },
+            " 53.8."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "transform.norm",
+          [
+            "sense.numeral"
+          ],
+          [
+            "sense.last"
+          ]
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "j2000"
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.mod",
+            [
+              "sense.first"
+            ],
+            {
+              "lit": 19
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 15,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-83886991",
+      "task": "fr-tidytuesday-palomar-survey-5345-9564a0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "is",
+            "item number",
+            "left over",
+            "mod",
+            "modulo",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "remainder",
+            "simplify the text",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "ra"
+        ],
+        [
+          "words>=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is 01 59 20.",
+            {
+              "slot": 3
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "transform.norm",
+          [
+            "sense.numeral"
+          ],
+          [
+            "sense.second"
+          ]
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "j2000"
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.mod",
+            [
+              "sense.second"
+            ],
+            {
+              "lit": 45
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 15,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-982a3e0d",
+      "task": "fr-tidytuesday-palomar-survey-5345-9564a0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "invert case",
+            "item number",
+            "left over",
+            "me",
+            "mod",
+            "modulo",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "remainder",
+            "simplify the text",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "ra"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is 02 40 24.",
+            {
+              "slot": 3
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "transform.norm",
+          [
+            "sense.numeral"
+          ],
+          [
+            "sense.second"
+          ]
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "j2000"
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.mod",
+            [
+              "sense.second"
+            ],
+            {
+              "lit": 45
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 15,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b575b5f3",
+      "task": "fr-tidytuesday-palomar-survey-5345-9564a0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "invert case",
+            "is",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "simplify the text",
+            "swap case",
+            "toggle case",
+            "whole division"
+          ]
+        ],
+        [
+          "words>=",
+          9
+        ],
+        [
+          "has",
+          "ra"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is ",
+            {
+              "slot": 3
+            },
+            " 21 07.4."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "transform.norm",
+          [
+            "sense.numeral"
+          ],
+          [
+            "sense.first"
+          ]
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "j2000"
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.idiv",
+            {
+              "lit": 100
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 15,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f83cb66c",
+      "task": "fr-tidytuesday-palomar-survey-5345-9564a0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "difference",
+            "element",
+            "invert case",
+            "is",
+            "item number",
+            "left over",
+            "less",
+            "minus",
+            "mod",
+            "modulo",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "remainder",
+            "simplify the text",
+            "subtract",
+            "swap case",
+            "take away",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "ra"
+        ],
+        [
+          "words>=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is 01 59 ",
+            {
+              "slot": 3
+            },
+            ".",
+            {
+              "slot": 4
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "transform.norm",
+          [
+            "sense.numeral"
+          ],
+          [
+            "sense.second"
+          ]
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "j2000"
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.sub",
+            [
+              "sense.last"
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.mod",
+            [
+              "sense.second"
+            ],
+            {
+              "lit": 45
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 19,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-07c995a8",
+      "task": "fr-tidytuesday-palomar-survey-5345-9564a0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "difference",
+            "element",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "invert case",
+            "is",
+            "item number",
+            "left over",
+            "less",
+            "minus",
+            "mod",
+            "modulo",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "remainder",
+            "simplify the text",
+            "subtract",
+            "swap case",
+            "take away",
+            "toggle case",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "ra"
+        ],
+        [
+          "words>=",
+          9
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is ",
+            {
+              "slot": 3
+            },
+            " ",
+            {
+              "slot": 4
+            },
+            " 07.",
+            {
+              "slot": 5
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "transform.norm",
+          [
+            "sense.numeral"
+          ],
+          [
+            "sense.first"
+          ]
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "j2000"
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.idiv",
+            {
+              "lit": 100
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.sub",
+            {
+              "lit": 24
+            },
+            [
+              "sense.first"
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.mod",
+            [
+              "sense.second"
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 23,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-218e056e",
+      "task": "fr-tidytuesday-palomar-survey-5345-9564a0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "decimal places",
+            "difference",
+            "element",
+            "invert case",
+            "item number",
+            "j2000",
+            "left over",
+            "less",
+            "minus",
+            "mod",
+            "modulo",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "remainder",
+            "round to",
+            "rounded to",
+            "simplify the text",
+            "subtract",
+            "swap case",
+            "take away",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "ra"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is ",
+            {
+              "slot": 3
+            },
+            " ",
+            {
+              "slot": 4
+            },
+            " 19.",
+            {
+              "slot": 5
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "transform.norm",
+          [
+            "sense.numeral"
+          ],
+          [
+            "sense.first"
+          ]
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "j2000"
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.roundTo",
+            {
+              "lit": 13
+            },
+            [
+              "sense.second"
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.sub",
+            {
+              "lit": 32
+            },
+            [
+              "sense.second"
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.mod",
+            [
+              "sense.last"
+            ],
+            {
+              "lit": 45
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 23,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-324f2709",
+      "task": "fr-tidytuesday-palomar-survey-5345-9564a0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "difference",
+            "element",
+            "invert case",
+            "item number",
+            "left over",
+            "less",
+            "me",
+            "minus",
+            "mod",
+            "modulo",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "remainder",
+            "simplify the text",
+            "subtract",
+            "swap case",
+            "take away",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "ra"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is 02 ",
+            {
+              "slot": 3
+            },
+            " ",
+            {
+              "slot": 4
+            },
+            ".",
+            {
+              "slot": 5
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "transform.norm",
+          [
+            "sense.numeral"
+          ],
+          [
+            "sense.second"
+          ]
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "j2000"
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.sub",
+            [
+              "sense.last"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.mod",
+            {
+              "lit": 24
+            },
+            [
+              "sense.first"
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.mod",
+            [
+              "sense.second"
+            ],
+            {
+              "lit": 45
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 23,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d4d563be",
+      "task": "fr-tidytuesday-palomar-survey-5345-9564a0",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "difference",
+            "element",
+            "invert case",
+            "item number",
+            "left over",
+            "less",
+            "me",
+            "minus",
+            "mod",
+            "modulo",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "remainder",
+            "simplify the text",
+            "subtract",
+            "swap case",
+            "take away",
+            "toggle case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " ",
+            {
+              "slot": 2
+            },
+            " is ",
+            {
+              "slot": 3
+            },
+            " ",
+            {
+              "slot": 4
+            },
+            " 53.",
+            {
+              "slot": 5
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "transform.norm",
+          [
+            "sense.numeral"
+          ],
+          [
+            "sense.last"
+          ]
+        ],
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "j2000"
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.sub",
+            {
+              "lit": 19
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.mod",
+            [
+              "sense.first"
+            ],
+            {
+              "lit": 19
+            }
+          ]
+        ],
+        [
+          "render.number",
+          [
+            "transform.mod",
+            [
+              "sense.first"
+            ],
+            {
+              "lit": 13
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 23,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
     }
   ],
   "stages": [
-    "32e147547f4b7a39e5b1a02df49069b16adeb63954917fa3f1e1ab6dcc8b0fe2"
+    "32e147547f4b7a39e5b1a02df49069b16adeb63954917fa3f1e1ab6dcc8b0fe2",
+    "1bb877f87450aa9e2b9713d2935ad9cc45db3a6ceb1d6fb24f5e8f0bc6b7724f"
   ]
 }

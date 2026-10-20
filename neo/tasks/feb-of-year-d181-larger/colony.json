@@ -2,27 +2,27 @@
   "task": "feb-of-year-d181-larger",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T16:32:43.671Z",
+  "at": "2026-10-20T20:12:50.963Z",
   "stats": {
-    "generated": 200578,
-    "distinct": 36686,
+    "generated": 116145,
+    "distinct": 36983,
     "kept": 109,
     "know": 2,
     "byFamily": {
-      "compute": 2,
+      "compute": 1,
+      "transform": 1,
       "aggregate": 8,
       "memory": 99
     },
     "bySource": {
-      "enum": 9,
-      "open": 1,
-      "memory": 99
+      "parent": 108,
+      "enum": 1
     },
     "maxHeight": 5,
     "devOk": 99,
     "devN": 100,
-    "ms": 123462,
-    "cellsPerSecond": 1625,
+    "ms": 65549,
+    "cellsPerSecond": 1772,
     "capped": "ms",
     "packs": [
       "fr-tidytuesday-global-temps-673dd9"
@@ -30,13 +30,13 @@
     "cursor": {
       "v": 1,
       "basis": "baccc3c7ef8fa60cd95dbf4b9c3de07bb3dda3e82808fbbbbe9214657b5a3a68",
-      "round": 0,
-      "at": 65702,
+      "round": 1,
+      "at": 166878,
       "maxCost": 7,
       "done": false,
-      "cost": 5,
-      "prim": "iterate.growth",
-      "tpl": 3000
+      "cost": 6,
+      "prim": "compare.between",
+      "tpl": 3138
     }
   },
   "cells": [
@@ -113,46 +113,48 @@
       }
     },
     {
-      "id": "n-d7c9f864",
+      "id": "n-d98c05fc",
       "task": "feb-of-year-d181-larger",
       "gen": 10,
-      "parents": [
-        "n-85ffa9e8"
-      ],
+      "parents": [],
       "guard": [
         [
-          "not",
+          "hasAny",
           [
-            "hasAny",
-            [
-              "add",
-              "adjusted",
-              "birth",
-              "bound",
-              "compare",
-              "exhibition",
-              "gmsl",
-              "jan",
-              "larger",
-              "of",
-              "price",
-              "solid",
-              "sp500",
-              "substitute",
-              "sugar",
-              "total",
-              "winner",
-              "wreck"
-            ]
+            "between",
+            "caesar cipher",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
           ]
+        ],
+        [
+          "has",
+          "feb"
         ]
       ],
       "pyramid": [
-        "render.number",
+        "render.str",
         [
-          "compute.gcd",
+          "transform.caesar",
           [
-            "sense.first"
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-global-temps-673dd9"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
           ],
           [
             "series.step",
@@ -185,7 +187,7 @@
       ],
       "mem": null,
       "height": 5,
-      "size": 12,
+      "size": 16,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -4223,9 +4225,90 @@
         "fired": 1,
         "rows": 100
       }
+    },
+    {
+      "id": "n-d7c9f864",
+      "task": "feb-of-year-d181-larger",
+      "gen": 10,
+      "parents": [
+        "n-85ffa9e8"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "adjusted",
+              "birth",
+              "bound",
+              "compare",
+              "exhibition",
+              "gmsl",
+              "jan",
+              "larger",
+              "of",
+              "price",
+              "solid",
+              "sp500",
+              "substitute",
+              "sugar",
+              "total",
+              "winner",
+              "wreck"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.gcd",
+          [
+            "sense.first"
+          ],
+          [
+            "series.step",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-global-temps-673dd9"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-global-temps-673dd9"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "jan"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
     }
   ],
   "stages": [
-    "ac35fc379f1f0a971a15d6469cb4e73b67471e4c6fbc0579de8f904ce316999b"
+    "ac35fc379f1f0a971a15d6469cb4e73b67471e4c6fbc0579de8f904ce316999b",
+    "33708c1cec85f290e560e509a3a2689eedfd46c9eee898cb98bb15d5db455c0d"
   ]
 }

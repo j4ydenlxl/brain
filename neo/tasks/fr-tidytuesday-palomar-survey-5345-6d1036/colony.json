@@ -2,30 +2,29 @@
   "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T05:14:27.566Z",
+  "at": "2026-10-20T19:52:51.191Z",
   "stats": {
-    "generated": 200102,
-    "distinct": 63101,
-    "kept": 84,
-    "know": 39,
+    "generated": 160084,
+    "distinct": 98523,
+    "kept": 150,
+    "know": 105,
     "byFamily": {
       "know": 2,
-      "transform": 35,
+      "transform": 101,
       "sense": 3,
       "memory": 44
     },
     "bySource": {
-      "open": 6,
-      "enum": 5,
-      "template": 29,
-      "memory": 44
+      "open": 20,
+      "parent": 79,
+      "enum": 51
     },
-    "maxHeight": 5,
+    "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 75074,
-    "cellsPerSecond": 2665,
-    "capped": "ms",
+    "ms": 102464,
+    "cellsPerSecond": 1562,
+    "capped": null,
     "packs": [
       "crypto-tickers",
       "fr-tidytuesday-palomar-survey-534594",
@@ -34,18 +33,18 @@
     "cursor": {
       "v": 1,
       "basis": "dac72075413c5601831d5b938438736173ec1e178017778ba63ea3598a70c151",
-      "round": 0,
-      "at": 93206,
+      "round": 1,
+      "at": 208002,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "iterate.range",
+      "cost": 7,
+      "prim": "compare.atLeast",
       "tpl": 1329
     }
   },
   "cells": [
     {
-      "id": "n-afa6d0d1",
+      "id": "n-27b175d7",
       "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
       "gen": 10,
       "parents": [
@@ -55,8 +54,11 @@
         [
           "not",
           [
-            "has",
-            "gamma"
+            "hasAny",
+            [
+              "gamma",
+              "j2000"
+            ]
           ]
         ]
       ],
@@ -156,25 +158,28 @@
       }
     },
     {
-      "id": "n-23e9cea4",
+      "id": "n-1d1db122",
       "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
       "gen": 10,
       "parents": [
-        "n-2a0220b7"
+        "n-2810b4ad"
       ],
       "guard": [
         [
           "not",
           [
-            "has",
-            "gamma"
+            "hasAny",
+            [
+              "gamma",
+              "j2000"
+            ]
           ]
         ]
       ],
       "pyramid": [
         "render.str",
         [
-          "transform.upper",
+          "transform.lower",
           [
             "know.lookup",
             [
@@ -340,25 +345,28 @@
       }
     },
     {
-      "id": "n-361572c9",
+      "id": "n-4598f156",
       "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
       "gen": 10,
       "parents": [
-        "n-2810b4ad"
+        "n-2a0220b7"
       ],
       "guard": [
         [
           "not",
           [
-            "has",
-            "gamma"
+            "hasAny",
+            [
+              "gamma",
+              "j2000"
+            ]
           ]
         ]
       ],
       "pyramid": [
         "render.str",
         [
-          "transform.lower",
+          "transform.upper",
           [
             "know.lookup",
             [
@@ -415,6 +423,67 @@
             "nth",
             "position",
             "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-960eb553",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-46f796a4"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "gamma",
+              "j2000"
+            ]
           ]
         ]
       ],
@@ -523,7 +592,7 @@
       }
     },
     {
-      "id": "n-caeae3cf",
+      "id": "n-fef7694f",
       "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
       "gen": 10,
       "parents": [
@@ -533,8 +602,11 @@
         [
           "not",
           [
-            "has",
-            "gamma"
+            "hasAny",
+            [
+              "gamma",
+              "j2000"
+            ]
           ]
         ]
       ],
@@ -581,57 +653,132 @@
       }
     },
     {
-      "id": "n-d81fa068",
+      "id": "n-8fb1384c",
       "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
       "gen": 10,
-      "parents": [
-        "n-46f796a4"
-      ],
+      "parents": [],
       "guard": [
         [
-          "not",
+          "hasAny",
           [
-            "has",
-            "gamma"
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "hubble",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "title case",
+            "toggle case"
           ]
         ]
       ],
       "pyramid": [
         "render.str",
         [
-          "transform.title",
+          "transform.swapCase",
           [
-            "know.lookup",
+            "transform.title",
             [
-              "transform.nthStr",
+              "know.lookup",
               [
-                "know.find",
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-palomar-survey-534594"
+                  },
+                  {
+                    "lit": "galaxy name"
+                  }
+                ],
                 {
-                  "lit": "fr-tidytuesday-palomar-survey-534594"
-                },
-                {
-                  "lit": "galaxy name"
+                  "lit": 1
                 }
               ],
               {
-                "lit": 1
+                "lit": "fr-tidytuesday-palomar-survey-534594"
+              },
+              {
+                "lit": "galaxy name"
+              },
+              {
+                "lit": "hubble type"
               }
-            ],
-            {
-              "lit": "fr-tidytuesday-palomar-survey-534594"
-            },
-            {
-              "lit": "galaxy name"
-            },
-            {
-              "lit": "hubble type"
-            }
+            ]
           ]
         ]
       ],
       "mem": null,
-      "height": 5,
-      "size": 11,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c749c008",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-8fb1384c"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "gamma",
+              "j2000"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-palomar-survey-534594"
+                  },
+                  {
+                    "lit": "galaxy name"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-palomar-survey-534594"
+              },
+              {
+                "lit": "galaxy name"
+              },
+              {
+                "lit": "hubble type"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
       "fit": {
         "ok": 40,
         "fired": 40,
@@ -998,6 +1145,1594 @@
       "fit": {
         "ok": 40,
         "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-42a0e23c",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-6222bf55"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "2300",
+              "gamma",
+              "j2000"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 3
+          },
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7e30782f",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-1cad4e44"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "2300",
+              "gamma",
+              "j2000"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 3
+          },
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-89a4d93c",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-bda0d60c"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "2911",
+              "gamma",
+              "j2000"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7eda5da2",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-ea7c805c"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "2300",
+              "h",
+              "j2000"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 3
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8ee08e02",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-34a50e9f"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "2300"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 3
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-dfc7412d",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-01439761"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "2300",
+              "gamma",
+              "j2000"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 3
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 39,
+        "fired": 39,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1414d9d4",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-e1da1076"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "gamma",
+              "j2000"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "S(s)bc I-II"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e1da1076",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "hubble",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "S(s)bc I-II"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-25c25aab",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-d3f03b62"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "gamma",
+              "j2000"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "ngc"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d3f03b62",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "hubble",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "ngc"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 38,
+        "fired": 38,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5860adbd",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-d2d62d08"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "4736",
+              "gamma",
+              "j2000"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "S(s)a"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-81f8a82c",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-5f1e9e66"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "4736",
+              "gamma",
+              "j2000"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "S(s)a"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9a2f3ed6",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-b3793de4"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "4736",
+              "gamma",
+              "j2000"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "S(s)a"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9fd1e4ae",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-72662507"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "4736",
+              "gamma",
+              "j2000"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "S(s)a"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ca25dc37",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-68d7186d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "4138",
+              "gamma",
+              "j2000"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "S(r)a"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ca841de9",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-4139d514"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "4138",
+              "gamma",
+              "j2000"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "S(r)a"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1cad4e44",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "me",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 3
+          },
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 29,
+        "fired": 29,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6222bf55",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "me",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 3
+          },
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 29,
+        "fired": 29,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-01439761",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "me",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 3
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 29,
+        "fired": 29,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-34a50e9f",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "me",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 3
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 29,
+        "fired": 29,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ea7c805c",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "me",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 3
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 29,
+        "fired": 29,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bda0d60c",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "element",
+            "item number",
+            "letters from to",
+            "me",
+            "name",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring",
+            "ugc"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
         "rows": 40
       }
     },
@@ -2132,6 +3867,1327 @@
       "fit": {
         "ok": 27,
         "fired": 27,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4139d514",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "ugc",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "S(r)a"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5f1e9e66",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "ugc"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "S(s)a"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-68d7186d",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "ugc"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "S(r)a"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-72662507",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "ugc",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "S(s)a"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b3793de4",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "ugc"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "S(s)a"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d2d62d08",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "is",
+            "item number",
+            "name",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "ugc"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "S(s)a"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4e2b3e4f",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8d3d62b1",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 4
+          },
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c5afce44",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cd2bcd6a",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 4
+          },
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-32d6d443",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 4
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3d31a010",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 4
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4d3d4abb",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-be00cb08",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cc4d88fd",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 4
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d2be4c97",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "is",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "ugc",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "hubble"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-358a4f65",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "hubble",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
         "rows": 40
       }
     },
@@ -3487,6 +6543,895 @@
       }
     },
     {
+      "id": "n-3c9d17ea",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "characters from",
+            "element",
+            "item number",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring",
+            "ugc"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b44c8612",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "element",
+            "item number",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring",
+            "ugc"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e35c3016",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "element",
+            "item number",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring",
+            "ugc"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          {
+            "lit": 8
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2f0cb212",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "pec"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b1629066",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "pec"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cbd5ced8",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "pec"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d8b8ff7a",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": "pec"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0d2188c1",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-56b85e97",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cd4b1e6f",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d98f9e47",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 8
+          },
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-dad31a7d",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e06caefa",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 8
+          },
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-e814ebc6",
       "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
       "gen": 10,
@@ -3558,6 +7503,990 @@
       "mem": null,
       "height": 4,
       "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-11e94e1c",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-35ea4229",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 8
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-41ac3179",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 8
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-palomar-survey-534594"
+              },
+              {
+                "lit": "galaxy name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4546125a",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 8
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4ff49ca4",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-73531af7",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7de83455",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8b203fd1",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 8
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b077fdb1",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e56d6d7c",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-palomar-survey-534594"
+              },
+              {
+                "lit": "galaxy name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-eb7fb27b",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-palomar-survey-534594"
+              },
+              {
+                "lit": "galaxy name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f2670eaa",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "4496a",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -5114,9 +10043,297 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-afa6d0d1",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-d34c0b70"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "gamma"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-palomar-survey-534594"
+              },
+              {
+                "lit": "galaxy name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-palomar-survey-534594"
+          },
+          {
+            "lit": "galaxy name"
+          },
+          {
+            "lit": "hubble type"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-23e9cea4",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-2a0220b7"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "gamma"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-361572c9",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-2810b4ad"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "gamma"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-caeae3cf",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-964b0090"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "gamma"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d81fa068",
+      "task": "fr-tidytuesday-palomar-survey-5345-6d1036",
+      "gen": 10,
+      "parents": [
+        "n-46f796a4"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "gamma"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-palomar-survey-534594"
+                },
+                {
+                  "lit": "galaxy name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-palomar-survey-534594"
+            },
+            {
+              "lit": "galaxy name"
+            },
+            {
+              "lit": "hubble type"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 40,
+        "fired": 40,
+        "rows": 40
+      }
     }
   ],
   "stages": [
-    "9a37fcc5fe034a6691b38ef6dc098022bb8db9608c52760a84a50d5057cd89c0"
+    "9a37fcc5fe034a6691b38ef6dc098022bb8db9608c52760a84a50d5057cd89c0",
+    "509e6a70fd91f5c77412dc24d17546407273343f658c1c0c905dd053f0fc1fc0"
   ]
 }
