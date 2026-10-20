@@ -2,26 +2,28 @@
   "task": "fr-covid-19-key-countries-pivoted-694a76",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T23:15:51.466Z",
+  "at": "2026-10-20T01:59:35.483Z",
   "stats": {
-    "generated": 200003,
-    "distinct": 76700,
-    "kept": 18,
+    "generated": 78655,
+    "distinct": 55665,
+    "kept": 21,
     "know": 1,
     "byFamily": {
       "memory": 16,
-      "compute": 2
+      "compute": 2,
+      "aggregate": 2,
+      "transform": 1
     },
     "bySource": {
-      "memory": 16,
-      "enum": 2
+      "parent": 18,
+      "enum": 3
     },
-    "maxHeight": 4,
+    "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 37280,
-    "cellsPerSecond": 5365,
-    "capped": null,
+    "ms": 48798,
+    "cellsPerSecond": 1612,
+    "capped": "ms",
     "packs": [
       "crypto-tickers",
       "datasets-country-codes",
@@ -30,12 +32,12 @@
     "cursor": {
       "v": 1,
       "basis": "fe7877702620c75c24153732088d8af87553808c8d81c315ab9ab1a8355ebbf9",
-      "round": 0,
-      "at": 109305,
+      "round": 1,
+      "at": 173346,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.next",
+      "cost": 7,
+      "prim": "aggregate.product",
       "tpl": 1322
     }
   },
@@ -797,9 +799,182 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-1b7c5383",
+      "task": "fr-covid-19-key-countries-pivoted-694a76",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cube",
+            "cubed",
+            "factorise",
+            "factorize",
+            "least",
+            "lowest",
+            "me",
+            "minimum",
+            "prime factorisation",
+            "prime factorization",
+            "smallest",
+            "to the third power"
+          ]
+        ],
+        [
+          "has",
+          "us"
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.min",
+          [
+            "compute.primeFactors",
+            [
+              "transform.cube",
+              [
+                "sense.first"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6050dcde",
+      "task": "fr-covid-19-key-countries-pivoted-694a76",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cube",
+            "cubed",
+            "factorise",
+            "factorize",
+            "me",
+            "middle number",
+            "middle value",
+            "prime factorisation",
+            "prime factorization",
+            "to the third power"
+          ]
+        ],
+        [
+          "has",
+          "us"
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.median",
+          [
+            "compute.primeFactors",
+            [
+              "transform.cube",
+              [
+                "sense.first"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ee52f7fa",
+      "task": "fr-covid-19-key-countries-pivoted-694a76",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "longest one",
+            "longest word",
+            "me",
+            "remove",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "us"
+        ],
+        [
+          "nums==",
+          1
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.longest",
+            [
+              "sense.words"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
     }
   ],
   "stages": [
-    "c1079343599f63a743f9ec1ca2f9d8a02e0eee7abef6e610900a9c62e000fd6c"
+    "c1079343599f63a743f9ec1ca2f9d8a02e0eee7abef6e610900a9c62e000fd6c",
+    "75b095ce299884c8937d709f41595a24db3266568d51606a9f7a63ed5a16e79a"
   ]
 }
