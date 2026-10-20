@@ -2,25 +2,25 @@
   "task": "fr-country-json-country-by-yearly-bad82a",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-20T11:17:51.391Z",
+  "at": "2026-10-20T12:18:49.868Z",
   "stats": {
-    "generated": 200003,
-    "distinct": 79546,
-    "kept": 48,
-    "know": 4,
+    "generated": 160048,
+    "distinct": 102245,
+    "kept": 49,
+    "know": 5,
     "byFamily": {
       "memory": 44,
-      "transform": 4
+      "transform": 5
     },
     "bySource": {
-      "memory": 44,
-      "template": 4
+      "parent": 48,
+      "enum": 1
     },
-    "maxHeight": 4,
+    "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 56889,
-    "cellsPerSecond": 3516,
+    "ms": 68985,
+    "cellsPerSecond": 2320,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -30,12 +30,12 @@
     "cursor": {
       "v": 1,
       "basis": "751d0053ad51b3dedc7cb74f4dbf454275e854acd08a189836a39b9d98e5018b",
-      "round": 0,
-      "at": 107419,
+      "round": 1,
+      "at": 222593,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "iterate.repeat",
+      "cost": 7,
+      "prim": "aggregate.stdev",
       "tpl": 1548
     }
   },
@@ -316,6 +316,78 @@
       "fit": {
         "ok": 14,
         "fired": 14,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4bef7dec",
+      "task": "fr-country-json-country-by-yearly-bad82a",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "country",
+            "item number",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "nums==",
+          1
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+                },
+                {
+                  "lit": "temperature"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-country-json-country-by-yearly-average-temperature-99c3d7"
+            },
+            {
+              "lit": "temperature"
+            },
+            {
+              "lit": "country"
+            }
+          ],
+          [
+            "sense.howMany"
+          ],
+          [
+            "sense.first"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
         "rows": 40
       }
     },
@@ -2096,6 +2168,7 @@
     }
   ],
   "stages": [
-    "47529c3974433565cca9b5099e32534064b0866149e64dc7ed6f44707dc824d1"
+    "47529c3974433565cca9b5099e32534064b0866149e64dc7ed6f44707dc824d1",
+    "7589338f89b59c3ebc0d9ffead9adbc15ef6024b1cd9a95d0aca3b92bd375ef3"
   ]
 }

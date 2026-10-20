@@ -2,10 +2,10 @@
   "task": "fr-tidytuesday-country-lyrics-92d7-324887",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T13:07:26.406Z",
+  "at": "2026-10-20T12:32:45.284Z",
   "stats": {
-    "generated": 200083,
-    "distinct": 86726,
+    "generated": 160211,
+    "distinct": 94131,
     "kept": 211,
     "know": 96,
     "byFamily": {
@@ -16,16 +16,14 @@
       "sense": 1
     },
     "bySource": {
-      "template": 120,
-      "memory": 81,
-      "enum": 9,
+      "parent": 210,
       "open": 1
     },
     "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 71085,
-    "cellsPerSecond": 2815,
+    "ms": 61307,
+    "cellsPerSecond": 2613,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -35,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "ba88cb6e685e3638fbec81134bdd8c7ab6cd3e4ba2f2df85b8de53d659112e57",
-      "round": 0,
-      "at": 102051,
+      "round": 1,
+      "at": 226405,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "aggregate.chars",
+      "prim": "compute.toBase",
       "tpl": 2131
     }
   },
@@ -5567,48 +5565,47 @@
       }
     },
     {
-      "id": "n-762e4c4c",
+      "id": "n-58683306",
       "task": "fr-tidytuesday-country-lyrics-92d7-324887",
       "gen": 10,
-      "parents": [],
+      "parents": [
+        "n-762e4c4c"
+      ],
       "guard": [
         [
-          "hasAny",
-          [
-            "delete",
-            "element",
-            "item number",
-            "nth",
-            "position",
-            "remove",
-            "strip out",
-            "without",
-            "writers"
-          ]
-        ],
-        [
-          "has",
-          "of"
-        ],
-        [
           "not",
           [
-            "has",
-            "dont"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "greatest"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "hell"
+            "hasAny",
+            [
+              "album",
+              "artist",
+              "band",
+              "captions",
+              "category",
+              "character",
+              "compare",
+              "danny",
+              "director",
+              "ep",
+              "fans",
+              "featuring",
+              "first",
+              "goodnight",
+              "greater",
+              "greatest",
+              "greyblack",
+              "hell",
+              "hurt",
+              "icao",
+              "lot",
+              "origin",
+              "pirates",
+              "shortcode",
+              "smaller",
+              "subcategory",
+              "title",
+              "tonight"
+            ]
           ]
         ]
       ],
@@ -5670,45 +5667,48 @@
       }
     },
     {
-      "id": "n-b50f7f97",
+      "id": "n-762e4c4c",
       "task": "fr-tidytuesday-country-lyrics-92d7-324887",
       "gen": 10,
-      "parents": [
-        "n-762e4c4c"
-      ],
+      "parents": [],
       "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without",
+            "writers"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
         [
           "not",
           [
-            "hasAny",
-            [
-              "album",
-              "artist",
-              "band",
-              "captions",
-              "character",
-              "compare",
-              "director",
-              "ep",
-              "fans",
-              "featuring",
-              "first",
-              "goodnight",
-              "greater",
-              "greatest",
-              "greyblack",
-              "hell",
-              "holds",
-              "hurt",
-              "icao",
-              "lot",
-              "origin",
-              "shortcode",
-              "smaller",
-              "subcategory",
-              "title",
-              "tonight"
-            ]
+            "has",
+            "dont"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "greatest"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "hell"
           ]
         ]
       ],
@@ -14904,9 +14904,110 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-b50f7f97",
+      "task": "fr-tidytuesday-country-lyrics-92d7-324887",
+      "gen": 10,
+      "parents": [
+        "n-762e4c4c"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "album",
+              "artist",
+              "band",
+              "captions",
+              "character",
+              "compare",
+              "director",
+              "ep",
+              "fans",
+              "featuring",
+              "first",
+              "goodnight",
+              "greater",
+              "greatest",
+              "greyblack",
+              "hell",
+              "holds",
+              "hurt",
+              "icao",
+              "lot",
+              "origin",
+              "shortcode",
+              "smaller",
+              "subcategory",
+              "title",
+              "tonight"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+                },
+                {
+                  "lit": "song"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-country-lyrics-92d7ec"
+            },
+            {
+              "lit": "song"
+            },
+            {
+              "lit": "writers"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-lgbtq-movies-b57668"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
     }
   ],
   "stages": [
-    "b5db34d8bc968a1e664542a2fc4a446ead5c19011191cb92073431ffd1f15687"
+    "b5db34d8bc968a1e664542a2fc4a446ead5c19011191cb92073431ffd1f15687",
+    "2e0f8a1f42a59cf8672fe6a01436622fe195fb57dbfbea57fc3d0bc0bba00ca7"
   ]
 }
