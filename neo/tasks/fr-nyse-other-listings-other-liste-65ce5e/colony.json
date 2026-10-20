@@ -2,28 +2,28 @@
   "task": "fr-nyse-other-listings-other-liste-65ce5e",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-20T04:55:42.778Z",
+  "at": "2026-10-20T06:29:08.977Z",
   "stats": {
-    "generated": 200039,
-    "distinct": 80693,
-    "kept": 272,
-    "know": 152,
+    "generated": 160272,
+    "distinct": 57831,
+    "kept": 280,
+    "know": 160,
     "byFamily": {
       "transform": 190,
+      "aggregate": 8,
       "know": 1,
       "memory": 80,
       "sense": 1
     },
     "bySource": {
-      "enum": 79,
-      "template": 113,
-      "memory": 80
+      "parent": 272,
+      "enum": 8
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 142272,
-    "cellsPerSecond": 1406,
+    "ms": 145542,
+    "cellsPerSecond": 1101,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -33,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "4d847b66675af03ba2d88837e3abe10f9670f74e1e549dce0d0e17bcde0416eb",
-      "round": 0,
-      "at": 108640,
+      "round": 1,
+      "at": 254483,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "aggregate.digitSum",
+      "prim": "compute.asPercent",
       "tpl": 951
     }
   },
@@ -1114,6 +1114,147 @@
       }
     },
     {
+      "id": "n-0cdf03ad",
+      "task": "fr-nyse-other-listings-other-liste-65ce5e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "apie",
+            "aqec",
+            "asc",
+            "bizd",
+            "brn",
+            "cmay",
+            "decu",
+            "dsl",
+            "dwm",
+            "element",
+            "fms",
+            "grnj",
+            "higg",
+            "iaum",
+            "item number",
+            "jblg",
+            "jetd",
+            "julm",
+            "korp",
+            "longest",
+            "longest one",
+            "longest word",
+            "mhf",
+            "nrdy",
+            "nrgu",
+            "nth",
+            "ofg",
+            "ohi",
+            "ong",
+            "position",
+            "ppa",
+            "pplt",
+            "qsig",
+            "sbnd",
+            "sdrl",
+            "separate by",
+            "sepc",
+            "sixs",
+            "split",
+            "split by",
+            "synx",
+            "tdf",
+            "tmp",
+            "via",
+            "wd",
+            "winn",
+            "xovl"
+          ]
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "acei"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alit"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-nyse-other-listings-other-listed-886855"
+                  },
+                  {
+                    "lit": "act symbol"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-nyse-other-listings-other-listed-886855"
+              },
+              {
+                "lit": "act symbol"
+              },
+              {
+                "lit": "company name"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-cran-graph-nodes-93fac8"
+                },
+                {
+                  "lit": "name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1fbf3b9c",
       "task": "fr-nyse-other-listings-other-liste-65ce5e",
       "gen": 10,
@@ -1247,6 +1388,147 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3741e59b",
+      "task": "fr-nyse-other-listings-other-liste-65ce5e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "apie",
+            "aqec",
+            "asc",
+            "bizd",
+            "brn",
+            "cmay",
+            "decu",
+            "dsl",
+            "dwm",
+            "element",
+            "fms",
+            "grnj",
+            "higg",
+            "iaum",
+            "item number",
+            "jblg",
+            "jetd",
+            "julm",
+            "korp",
+            "mhf",
+            "nrdy",
+            "nrgu",
+            "nth",
+            "ofg",
+            "ohi",
+            "ong",
+            "position",
+            "ppa",
+            "pplt",
+            "qsig",
+            "sbnd",
+            "sdrl",
+            "separate by",
+            "sepc",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "sixs",
+            "split",
+            "split by",
+            "synx",
+            "tdf",
+            "tmp",
+            "via",
+            "wd",
+            "winn",
+            "xovl"
+          ]
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "acei"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alit"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-nyse-other-listings-other-listed-886855"
+                  },
+                  {
+                    "lit": "act symbol"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-nyse-other-listings-other-listed-886855"
+              },
+              {
+                "lit": "act symbol"
+              },
+              {
+                "lit": "company name"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-cran-graph-nodes-93fac8"
+                },
+                {
+                  "lit": "name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 17,
       "fit": {
         "ok": 37,
@@ -1949,6 +2231,148 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 37,
+        "fired": 37,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d9871f8e",
+      "task": "fr-nyse-other-listings-other-liste-65ce5e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "apie",
+            "aqec",
+            "asc",
+            "bizd",
+            "brn",
+            "cmay",
+            "decu",
+            "dsl",
+            "dwm",
+            "fms",
+            "grnj",
+            "higg",
+            "iaum",
+            "ip",
+            "item number",
+            "jblg",
+            "jetd",
+            "julm",
+            "korp",
+            "longest",
+            "longest one",
+            "longest word",
+            "mhf",
+            "nrdy",
+            "nrgu",
+            "nth",
+            "ohi",
+            "ong",
+            "ppa",
+            "pplt",
+            "qsig",
+            "sbnd",
+            "sdrl",
+            "separate by",
+            "sepc",
+            "sixs",
+            "split by",
+            "synx",
+            "tdf",
+            "tmp",
+            "via",
+            "wd",
+            "winn",
+            "xovl"
+          ]
+        ],
+        [
+          "has",
+          "company"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "back"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "be"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-nyse-other-listings-other-listed-886855"
+                  },
+                  {
+                    "lit": "act symbol"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-nyse-other-listings-other-listed-886855"
+              },
+              {
+                "lit": "act symbol"
+              },
+              {
+                "lit": "company name"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-nyse-other-listings-other-listed-886855"
+                },
+                {
+                  "lit": "act symbol"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 17,
       "fit": {
         "ok": 37,
@@ -3304,6 +3728,135 @@
       }
     },
     {
+      "id": "n-54cac86f",
+      "task": "fr-nyse-other-listings-other-liste-65ce5e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "apie",
+            "aqec",
+            "asc",
+            "bizd",
+            "brn",
+            "cmay",
+            "decu",
+            "dsl",
+            "dwm",
+            "fms",
+            "grnj",
+            "iaum",
+            "ip",
+            "item number",
+            "jblg",
+            "jetd",
+            "julm",
+            "korp",
+            "longest",
+            "longest one",
+            "longest word",
+            "mhf",
+            "nrdy",
+            "nrgu",
+            "nth",
+            "ohi",
+            "ong",
+            "ppa",
+            "pplt",
+            "qsig",
+            "sbnd",
+            "sdrl",
+            "separate by",
+            "sepc",
+            "sixs",
+            "split by",
+            "synx",
+            "tdf",
+            "tmp",
+            "via",
+            "wd",
+            "winn",
+            "xovl"
+          ]
+        ],
+        [
+          "has",
+          "company"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "back"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "be"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-nyse-other-listings-other-listed-886855"
+                  },
+                  {
+                    "lit": "act symbol"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-nyse-other-listings-other-listed-886855"
+              },
+              {
+                "lit": "act symbol"
+              },
+              {
+                "lit": "company name"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 36,
+        "fired": 36,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-732dc719",
       "task": "fr-nyse-other-listings-other-liste-65ce5e",
       "gen": 10,
@@ -3424,6 +3977,135 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 36,
+        "fired": 36,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-76b74afe",
+      "task": "fr-nyse-other-listings-other-liste-65ce5e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "apie",
+            "aqec",
+            "asc",
+            "bizd",
+            "brn",
+            "cmay",
+            "decu",
+            "dsl",
+            "dwm",
+            "fms",
+            "grnj",
+            "iaum",
+            "ip",
+            "item number",
+            "jblg",
+            "jetd",
+            "julm",
+            "korp",
+            "mhf",
+            "nrdy",
+            "nrgu",
+            "nth",
+            "ohi",
+            "ong",
+            "ppa",
+            "pplt",
+            "qsig",
+            "sbnd",
+            "sdrl",
+            "separate by",
+            "sepc",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "sixs",
+            "split by",
+            "synx",
+            "tdf",
+            "tmp",
+            "via",
+            "wd",
+            "winn",
+            "xovl"
+          ]
+        ],
+        [
+          "has",
+          "company"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "back"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "be"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-nyse-other-listings-other-listed-886855"
+                  },
+                  {
+                    "lit": "act symbol"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-nyse-other-listings-other-listed-886855"
+              },
+              {
+                "lit": "act symbol"
+              },
+              {
+                "lit": "company name"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 13,
       "fit": {
         "ok": 36,
@@ -5809,6 +6491,123 @@
       }
     },
     {
+      "id": "n-2f3ac95b",
+      "task": "fr-nyse-other-listings-other-liste-65ce5e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "apie",
+            "aqec",
+            "asc",
+            "bizd",
+            "brn",
+            "by",
+            "decu",
+            "dsl",
+            "dwm",
+            "element",
+            "fms",
+            "iaum",
+            "item number",
+            "jblg",
+            "korp",
+            "longest",
+            "longest one",
+            "longest word",
+            "mhf",
+            "nrdy",
+            "nrgu",
+            "nth",
+            "ofg",
+            "ohi",
+            "ong",
+            "position",
+            "ppa",
+            "pplt",
+            "qsig",
+            "sbnd",
+            "sdrl",
+            "separate by",
+            "sixs",
+            "split",
+            "split by",
+            "synx",
+            "tdf",
+            "tmp",
+            "via",
+            "wd",
+            "xovl"
+          ]
+        ],
+        [
+          "words<=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-nyse-other-listings-other-listed-886855"
+                  },
+                  {
+                    "lit": "act symbol"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-nyse-other-listings-other-listed-886855"
+              },
+              {
+                "lit": "act symbol"
+              },
+              {
+                "lit": "security name"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-cran-graph-nodes-93fac8"
+                },
+                {
+                  "lit": "name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 31,
+        "fired": 31,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-40ba9ae7",
       "task": "fr-nyse-other-listings-other-liste-65ce5e",
       "gen": 10,
@@ -5918,6 +6717,241 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 31,
+        "fired": 31,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5ad97906",
+      "task": "fr-nyse-other-listings-other-liste-65ce5e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "apie",
+            "aqec",
+            "asc",
+            "bizd",
+            "brn",
+            "by",
+            "decu",
+            "dsl",
+            "dwm",
+            "element",
+            "fms",
+            "iaum",
+            "item number",
+            "jblg",
+            "korp",
+            "mhf",
+            "nrdy",
+            "nrgu",
+            "nth",
+            "ofg",
+            "ohi",
+            "ong",
+            "position",
+            "ppa",
+            "pplt",
+            "qsig",
+            "sbnd",
+            "sdrl",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "sixs",
+            "split",
+            "split by",
+            "synx",
+            "tdf",
+            "tmp",
+            "via",
+            "wd",
+            "xovl"
+          ]
+        ],
+        [
+          "words<=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-nyse-other-listings-other-listed-886855"
+                  },
+                  {
+                    "lit": "act symbol"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-nyse-other-listings-other-listed-886855"
+              },
+              {
+                "lit": "act symbol"
+              },
+              {
+                "lit": "security name"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-cran-graph-nodes-93fac8"
+                },
+                {
+                  "lit": "name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 31,
+        "fired": 31,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b72140a1",
+      "task": "fr-nyse-other-listings-other-liste-65ce5e",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "apie",
+            "aqec",
+            "asc",
+            "bizd",
+            "brn",
+            "by",
+            "decu",
+            "dsl",
+            "dwm",
+            "fms",
+            "iaum",
+            "ip",
+            "item number",
+            "jblg",
+            "korp",
+            "longest",
+            "longest one",
+            "longest word",
+            "mhf",
+            "nrdy",
+            "nrgu",
+            "nth",
+            "ohi",
+            "ong",
+            "ppa",
+            "pplt",
+            "qsig",
+            "sbnd",
+            "sdrl",
+            "separate by",
+            "sixs",
+            "split by",
+            "synx",
+            "tdf",
+            "tmp",
+            "via",
+            "wd",
+            "xovl"
+          ]
+        ],
+        [
+          "has",
+          "company"
+        ],
+        [
+          "words<=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-nyse-other-listings-other-listed-886855"
+                  },
+                  {
+                    "lit": "act symbol"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-nyse-other-listings-other-listed-886855"
+              },
+              {
+                "lit": "act symbol"
+              },
+              {
+                "lit": "security name"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-nyse-other-listings-other-listed-886855"
+                },
+                {
+                  "lit": "act symbol"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 17,
       "fit": {
         "ok": 31,
@@ -21307,6 +22341,7 @@
     }
   ],
   "stages": [
-    "bcd2e92aec8d5e544ebfc84b2ed3c8ff4fbf8fd2ade55e3b3b212468d0513d50"
+    "bcd2e92aec8d5e544ebfc84b2ed3c8ff4fbf8fd2ade55e3b3b212468d0513d50",
+    "44832f145285b6a0a20ec4af1e046a397ce5437f72a2c2d9f810603b35036316"
   ]
 }
