@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "8d89e29b79cf55d68700a2cf11792246dd89379dd5770c94322c33366fda3deb";
+const VERSION = "48ed927aa1504cd2f73640f54f392339eb9eec452ffd7d816c7aec0f8d209c0f";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"f19dc22d80bb46623aba93d9fc05485b0db6487c8e4fb47c76584401f2dac608"},
+  {"url":"/organism/cells.json","sha256":"c90448a0c205bf1b1e1c6121d451da253d79fee39c9e8fc9f7bdf4c0e6c771e1"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -407,10 +407,11 @@ const PRECACHE = [
   {"url":"/organism/cells/fr-house-prices-us-cities-month-sa-8e795b-neo-g10.mjs","sha256":"a9bf62a645912047d0ca6db0b1bcd6d2826fe8f04dff6063df24ec912e56400e"},
   {"url":"/organism/cells/male-of-county-ebb0-larger-neo-g10.mjs","sha256":"fd153fab3af28c040f2bf19534aa45a4d1c1234c44c05224c0aef00cc1e29df4"},
   {"url":"/organism/cells/fr-covid-19-key-countries-pivoted-6b3cea-neo-g10.mjs","sha256":"f65f2fedebe16186de49d44f6639acdad02221b7d8f220251505a3947428916c"},
+  {"url":"/organism/cells/male-of-county-ebb0-smaller-neo-g10.mjs","sha256":"f6554e1f8c04b76af1affd46f30aa7786d9828cd809009da6a99d973dd88707d"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"bdd85002a0805642ab4079d94c9a3aee05506ff343890abf1a844d773f080bfc"}
+  {"url":"/organism/era/tasks.json","sha256":"23aba4ac8281cddbb319c392f9bd864df82f793e122bce49521d013e81234b16"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
