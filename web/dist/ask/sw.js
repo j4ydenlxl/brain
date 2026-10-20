@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "df7038bdc0fb7c8335a9d986b4ee0bf8f92d04f519b39b7d9fca9f49b5ae63e4";
+const VERSION = "8825d10cfb4f775586eecbd67d40983224080e7450182343a40fd710118307d5";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"43d2df9c91e760479e4d6363a438fd6869b0396483b0dbbc845195d42ac65183"},
+  {"url":"/organism/cells.json","sha256":"e2897939f6106807ecdaf7595d621795fec6479ca06121e9fbc6f5993cea9dc6"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -434,10 +434,14 @@ const PRECACHE = [
   {"url":"/organism/cells/country-of-year-c102-neo-g10.mjs","sha256":"19361c7f0d12213c5b95f22fa45d09e94479c5b29cca2dc92893b993fb2e328c"},
   {"url":"/organism/cells/fr-datasets-2010-alcohol-consumpti-c9aad9-neo-g10.mjs","sha256":"31ab86063fa7d86f03346113d46e6f8a983db321f6a6f9716f731ddf9eb8c512"},
   {"url":"/organism/cells/fr-datasets-1962-2006-walmart-stor-fdbb11-neo-g10.mjs","sha256":"526b0292a0fe8a0c091939dfa4f911eed6784c439c304e193fcaedee9e30110d"},
+  {"url":"/organism/cells/year-of-dataset-name-66b3-compare-neo-g10.mjs","sha256":"2a66570e48ec69691d965018dfb8194e4a507bb6d0298f69886f183ddc3f1348"},
+  {"url":"/organism/cells/us-city-population-larger-neo-g10.mjs","sha256":"c07e6c89f801d58f092782722f70942735c6f58c6dcdb6c91fba92875ecd178a"},
+  {"url":"/organism/cells/fr-datasets-2011-february-us-airpo-86800d-neo-g10.mjs","sha256":"21242741f8b30971fd62fafca31ff38fba22b240175f0647e5e7485d4ba8bc9c"},
+  {"url":"/organism/cells/fr-datasets-2011-february-us-airpo-53c139-neo-g10.mjs","sha256":"80b1abb351bc33e73dc1274f7a9db240e72ed176b3d419a8efa734ee71a9c324"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"5ee1cc8a99e86869ecf28bcf5d658c31d72386bb672b295477fa326df485b753"}
+  {"url":"/organism/era/tasks.json","sha256":"29ac186329b08d9e4e7a62fad376bdc3c80e51c1e5ddd8e849416f6d09ad4a8c"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
