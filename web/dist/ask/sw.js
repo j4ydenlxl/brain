@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "9cfcf3a0baaf4b140d78990e5fd8374d6456b74ae88bdb80b5e8bf00d5e31518";
+const VERSION = "6451caa5abbb648d78fa0448298d1136fb581bf10915c422e7e2d42fda2cffc9";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"9cdec68d8b7098273129f4459b50e96f71bd93c74f6af9f3df078b67d99ecde5"},
+  {"url":"/organism/cells.json","sha256":"fe61d4bf7a495d3f68001f35ac4d8687233eedb0f5341b1784fcb86ee04da38b"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -419,10 +419,22 @@ const PRECACHE = [
   {"url":"/organism/cells/status-id-of-status-fd89-larger-neo-g10.mjs","sha256":"61ecc3459c922fc65b632d060dbe083850dc108da4732f5267e4d46bffd2937d"},
   {"url":"/organism/cells/status-id-of-status-fd89-smaller-neo-g10.mjs","sha256":"87c97055030a760aa0266bcdc8078c83b5c715032dc69921d129993e691d19ea"},
   {"url":"/organism/cells/fr-covid-19-reference-7c87a7-iso2-58b9e4-neo-g10.mjs","sha256":"0d75db06a8c13afbe1f006885151b070dd678676a6edf46bf44e63036ad3c39d"},
+  {"url":"/organism/cells/female-of-county-de5d-smaller-neo-g10.mjs","sha256":"40bd9c0e143eaa735b0efdcf39f8dba85f10fbb3508c33a7ddb2467bad089e1e"},
+  {"url":"/organism/cells/fr-covid-19-reference-7c87a7-iso3-f46e92-neo-g10.mjs","sha256":"ec6e235a658b839e4bdab4c7673050c4c7fdaa1767e4397f4b0e76237f887451"},
+  {"url":"/organism/cells/fr-covid-19-reference-7c87a7-provi-267b6d-neo-g10.mjs","sha256":"3e8a0a174a7aabbbacbd437486811c8c33f06e32389b943cb04dfc8f2b14e2d4"},
+  {"url":"/organism/cells/air-date-of-title-fbf4-neo-g10.mjs","sha256":"752200eab54a9cc01910e1417c291deb8e56a15cd802e95b6071a0c0798882e0"},
+  {"url":"/organism/cells/fr-covid-19-worldwide-aggregate-60-48b5ab-neo-g10.mjs","sha256":"8110e7f7e7e6e754b082161f1a106353a6a84cfa29c06f9234b70041c3c85094"},
+  {"url":"/organism/cells/lng-of-station-name-7b69-larger-neo-g10.mjs","sha256":"a4b2a28d53e6769794bc0b9f0ad3886a90660e24d04195bd2c0c43b1ef35cad1"},
+  {"url":"/organism/cells/lng-of-station-name-7b69-smaller-neo-g10.mjs","sha256":"bd8ad5d752400ede0f2f4b7a954ea08c048918bff76f6351ac2a090bfb8e0b61"},
+  {"url":"/organism/cells/lng-of-station-name-7b69-sum-neo-g10.mjs","sha256":"5a5f1eda5a1d976f22339d66a91bec4a2875c3bf069c6fe81f174994edd06fc0"},
+  {"url":"/organism/cells/opened-of-station-nam-f32b-compare-neo-g10.mjs","sha256":"d8f2f135c19f8631f85f72b64f232d1eaf7a5a1bb30df1ae8dff785e3e316925"},
+  {"url":"/organism/cells/opened-of-station-nam-f32b-larger-neo-g10.mjs","sha256":"b96205962a19e02e2017a2a14a681c255ccbfceb128841656730b245af4da4a5"},
+  {"url":"/organism/cells/opened-of-station-nam-f32b-smaller-neo-g10.mjs","sha256":"bca07dbf62bb10b200c76bf88ee156fc73d61114bed087cd66e532de1f98dfdc"},
+  {"url":"/organism/cells/fr-sea-level-rise-epa-sea-level-0e-a19ba9-neo-g10.mjs","sha256":"b5618f9ab52394d745eb3642f627f2ab7d0e8c9b0b62660ef9ef6c496797cf81"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"0f837222cfef844249afba1106c60d18213f4c18970443935c22a752e435e6b4"}
+  {"url":"/organism/era/tasks.json","sha256":"7e460a0a3f99b1716b958b6cc3519969118884ed668d135a65c034b0e775e0d1"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -442,7 +454,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/air-date-of-episode-title-d3a3.json","sha256":"2c2288680b6c8522b7f436983577e3faf0fa82b0c08f8d5801ea4b2cdcd9a485"},
   {"url":"/organism/era/tasks/air-date-of-title-4f93.json","sha256":"f699543630a9725d3a69420f7f0b8b157d9af0162b0f7a0a346d842f9da42d12"},
   {"url":"/organism/era/tasks/air-date-of-title-90e0.json","sha256":"884c6067a29e26ec2c49cc3dec1c227372d55bd9a0bc27dfa678c115abcc2175"},
-  {"url":"/organism/era/tasks/air-date-of-title-fbf4.json","sha256":"499340577ed92eb6689122419dc97b33bcd5f43c6912f24b7506f666ab64e22c"},
   {"url":"/organism/era/tasks/airline-country.json","sha256":"cf3524a09f6e36a460d31f56fb18ca2c1245f123a65ded2ea00ad5e3ef26c668"},
   {"url":"/organism/era/tasks/airport-code-city.json","sha256":"3dc465c04c5c3192ff58ca6968fa89ebf2f4f89b6cf90f3072973c21b6a1f33c"},
   {"url":"/organism/era/tasks/airport-name-code.json","sha256":"c6b00015c519a6c339d804c9016b43ecfc196b8d18ea6822a8b21df0a7ebdd28"},
@@ -664,11 +675,12 @@ const LAZY = [
   {"url":"/organism/era/tasks/feb-of-year-d181-smaller.json","sha256":"33917c3652b0ccf59fc073185eb4dcf784f2f1c3fe417609f721170da7a1e5f5"},
   {"url":"/organism/era/tasks/feb-of-year-d181-sum.json","sha256":"65145803c2e7d82f440dc133b73b9bddfce0330a77169f85fb685459ec3cff12"},
   {"url":"/organism/era/tasks/female-of-county-de5d-compare.json","sha256":"166b3d28c37b14a67c741c3ae251cf760f73984b3534315912ec75d9afe2bfb1"},
-  {"url":"/organism/era/tasks/female-of-county-de5d-smaller.json","sha256":"0584bcb33bc01a37859c000f8ba5c16384975397db1b776d06d3044afa6d8ef5"},
   {"url":"/organism/era/tasks/female-of-county-de5d-sum.json","sha256":"52a06028b18ff1fcf42b530a5a454df521003e8f3f59c0358ad5d5ffbe9a294b"},
   {"url":"/organism/era/tasks/file-of-lang-edee.json","sha256":"a3277d714a9a7e4c6950d0d8b2ccd595478c32de3f6d86b52dc3bd9345d14c88"},
   {"url":"/organism/era/tasks/file-of-lang-edee-rev.json","sha256":"a16830dc4ca6d9d7a18da5a9a9a596a11d9ea7a89a818d75a3284193e454a974"},
-  {"url":"/organism/era/tasks/fiscal-sponsorship-model-74bf-rev.json","sha256":"2f19b4adf89988b768be087e8a231c1a532979f500d720d1942b4fe737214c58"}
+  {"url":"/organism/era/tasks/final-description-of-date-d707-rev.json","sha256":"2d39279009a1e4bb06d50927b2a9a1a0078e2ccc09b851e9558ffa8759f96fc6"},
+  {"url":"/organism/era/tasks/fiscal-sponsorship-model-74bf-rev.json","sha256":"2f19b4adf89988b768be087e8a231c1a532979f500d720d1942b4fe737214c58"},
+  {"url":"/organism/era/tasks/fr-co2-ppm-co2-annmean-gl-eec28d-y-092d6e.json","sha256":"65c1d15e2d6723e5ff5c771fdb7d2cad2fbe64bfd0d66c39084820b6294d4e33"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
