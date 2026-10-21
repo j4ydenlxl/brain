@@ -1,29 +1,28 @@
 {
   "task": "fr-oil-prices-brent-year-31e1cd-pr-c75167",
-  "generation": 9,
+  "generation": 10,
   "kernel": 2,
-  "at": "2026-10-06T15:07:15.404Z",
+  "at": "2026-10-21T19:01:16.100Z",
   "stats": {
-    "generated": 181471,
-    "distinct": 76688,
-    "kept": 44,
-    "know": 16,
+    "generated": 160044,
+    "distinct": 85787,
+    "kept": 53,
+    "know": 25,
     "byFamily": {
       "memory": 28,
       "aggregate": 4,
-      "transform": 12
+      "transform": 21
     },
     "bySource": {
-      "memory": 28,
-      "template": 10,
-      "enum": 2,
-      "open": 4
+      "parent": 42,
+      "open": 2,
+      "enum": 9
     },
     "maxHeight": 5,
     "devOk": 26,
     "devN": 26,
-    "ms": 31949,
-    "cellsPerSecond": 5680,
+    "ms": 62690,
+    "cellsPerSecond": 2553,
     "capped": null,
     "packs": [
       "corpora-fruits",
@@ -33,12 +32,12 @@
     "cursor": {
       "v": 1,
       "basis": "604be6f7ec12300f2f8bf56f3918b2349e7ca7167fb943b48356f455d92a25eb",
-      "round": 0,
-      "at": 109064,
+      "round": 1,
+      "at": 232910,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.half",
+      "cost": 7,
+      "prim": "compare.atMost",
       "tpl": 1406
     }
   },
@@ -661,17 +660,158 @@
       }
     },
     {
-      "id": "n-189277e1",
+      "id": "n-87fae665",
       "task": "fr-oil-prices-brent-year-31e1cd-pr-c75167",
-      "gen": 9,
+      "gen": 10,
+      "parents": [
+        "n-e8165f67"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "final",
+              "location",
+              "streetaddr"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-oil-prices-brent-year-31e1cd"
+                },
+                {
+                  "lit": "price"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-oil-prices-brent-year-31e1cd"
+            },
+            {
+              "lit": "price"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 26
+      }
+    },
+    {
+      "id": "n-d1e43347",
+      "task": "fr-oil-prices-brent-year-31e1cd-pr-c75167",
+      "gen": 10,
       "parents": [],
       "guard": [
         [
           "hasAny",
           [
-            "delete",
+            "change to",
             "element",
             "is",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "date"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-oil-prices-brent-year-31e1cd"
+                },
+                {
+                  "lit": "price"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-oil-prices-brent-year-31e1cd"
+            },
+            {
+              "lit": "price"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          [
+            "sense.numeral"
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 26
+      }
+    },
+    {
+      "id": "n-e8165f67",
+      "task": "fr-oil-prices-brent-year-31e1cd-pr-c75167",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "date",
+            "delete",
+            "element",
             "item number",
             "nth",
             "position",
@@ -713,13 +853,89 @@
             }
           ],
           [
-            "sense.numeral"
+            "sense.after",
+            {
+              "lit": "is"
+            }
           ]
         ]
       ],
       "mem": null,
       "height": 5,
-      "size": 12,
+      "size": 13,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 26
+      }
+    },
+    {
+      "id": "n-fed48706",
+      "task": "fr-oil-prices-brent-year-31e1cd-pr-c75167",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "date"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-oil-prices-brent-year-31e1cd"
+                },
+                {
+                  "lit": "price"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-oil-prices-brent-year-31e1cd"
+            },
+            {
+              "lit": "price"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          [
+            "sense.numeral"
+          ],
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
       "fit": {
         "ok": 9,
         "fired": 9,
@@ -893,13 +1109,25 @@
       }
     },
     {
-      "id": "n-e2721616",
+      "id": "n-a4014fb4",
       "task": "fr-oil-prices-brent-year-31e1cd-pr-c75167",
-      "gen": 9,
+      "gen": 10,
       "parents": [
         "n-2e34be16"
       ],
-      "guard": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "country",
+              "incident",
+              "streetaddr"
+            ]
+          ]
+        ]
+      ],
       "pyramid": [
         "render.str",
         [
@@ -951,6 +1179,536 @@
       "mem": null,
       "height": 5,
       "size": 16,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 26
+      }
+    },
+    {
+      "id": "n-144b6135",
+      "task": "fr-oil-prices-brent-year-31e1cd-pr-c75167",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "date"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-oil-prices-brent-year-31e1cd"
+                },
+                {
+                  "lit": "price"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-oil-prices-brent-year-31e1cd"
+            },
+            {
+              "lit": "price"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          [
+            "sense.numeral"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-brent-year-31e1cd"
+              },
+              {
+                "lit": "price"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 26
+      }
+    },
+    {
+      "id": "n-17b4c499",
+      "task": "fr-oil-prices-brent-year-31e1cd-pr-c75167",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "date"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-oil-prices-brent-year-31e1cd"
+                },
+                {
+                  "lit": "price"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-oil-prices-brent-year-31e1cd"
+            },
+            {
+              "lit": "price"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          [
+            "sense.numeral"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 26
+      }
+    },
+    {
+      "id": "n-80d94575",
+      "task": "fr-oil-prices-brent-year-31e1cd-pr-c75167",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "date"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-oil-prices-brent-year-31e1cd"
+                },
+                {
+                  "lit": "price"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-oil-prices-brent-year-31e1cd"
+            },
+            {
+              "lit": "price"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          [
+            "sense.numeral"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 26
+      }
+    },
+    {
+      "id": "n-bd4acabe",
+      "task": "fr-oil-prices-brent-year-31e1cd-pr-c75167",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-oil-prices-brent-year-31e1cd"
+                },
+                {
+                  "lit": "price"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-oil-prices-brent-year-31e1cd"
+            },
+            {
+              "lit": "price"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          [
+            "sense.numeral"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "corpora-fruits"
+              },
+              {
+                "lit": "item"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 26
+      }
+    },
+    {
+      "id": "n-448adacb",
+      "task": "fr-oil-prices-brent-year-31e1cd-pr-c75167",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "date"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-oil-prices-brent-year-31e1cd"
+                },
+                {
+                  "lit": "price"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-oil-prices-brent-year-31e1cd"
+            },
+            {
+              "lit": "price"
+            },
+            {
+              "lit": "date"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 26
+      }
+    },
+    {
+      "id": "n-847ac1b6",
+      "task": "fr-oil-prices-brent-year-31e1cd-pr-c75167",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "date"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-oil-prices-brent-year-31e1cd"
+                },
+                {
+                  "lit": "price"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-oil-prices-brent-year-31e1cd"
+            },
+            {
+              "lit": "price"
+            },
+            {
+              "lit": "date"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
       "fit": {
         "ok": 9,
         "fired": 9,
@@ -2536,9 +3294,141 @@
         "fired": 1,
         "rows": 26
       }
+    },
+    {
+      "id": "n-189277e1",
+      "task": "fr-oil-prices-brent-year-31e1cd-pr-c75167",
+      "gen": 9,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-oil-prices-brent-year-31e1cd"
+                },
+                {
+                  "lit": "price"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-oil-prices-brent-year-31e1cd"
+            },
+            {
+              "lit": "price"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          [
+            "sense.numeral"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 26
+      }
+    },
+    {
+      "id": "n-e2721616",
+      "task": "fr-oil-prices-brent-year-31e1cd-pr-c75167",
+      "gen": 9,
+      "parents": [
+        "n-2e34be16"
+      ],
+      "guard": [],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-oil-prices-brent-year-31e1cd"
+                },
+                {
+                  "lit": "price"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-oil-prices-brent-year-31e1cd"
+            },
+            {
+              "lit": "price"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 26
+      }
     }
   ],
   "stages": [
-    "1e264b76f968f5723343fbdb985e6edf04837742431b5f98d3c7ecbd5f9428e8"
+    "1e264b76f968f5723343fbdb985e6edf04837742431b5f98d3c7ecbd5f9428e8",
+    "2498448a8afcf106abb5f36016a0e9fa1748fe413222fcd499b3d11af621edad"
   ]
 }

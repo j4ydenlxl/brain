@@ -2,27 +2,26 @@
   "task": "fr-co2-ppm-co2-gr-gl-5999be-annual-7e5954",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T10:25:26.652Z",
+  "at": "2026-10-21T19:00:47.993Z",
   "stats": {
-    "generated": 160055,
-    "distinct": 102598,
-    "kept": 59,
-    "know": 22,
+    "generated": 160064,
+    "distinct": 65701,
+    "kept": 61,
+    "know": 24,
     "byFamily": {
-      "transform": 19,
+      "transform": 21,
       "memory": 37,
       "iterate": 3
     },
     "bySource": {
-      "open": 7,
-      "parent": 50,
-      "enum": 2
+      "parent": 59,
+      "open": 2
     },
     "maxHeight": 5,
     "devOk": 36,
     "devN": 36,
-    "ms": 70269,
-    "cellsPerSecond": 2278,
+    "ms": 85760,
+    "cellsPerSecond": 1866,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -32,12 +31,12 @@
     "cursor": {
       "v": 1,
       "basis": "7fc1e2b5d2cc44e610ad167ef92dd5a2422f69083461ba9ad1d25ddcba134aac",
-      "round": 1,
-      "at": 220234,
+      "round": 2,
+      "at": 379002,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "aggregate.variance",
+      "prim": "compare.isSquare",
       "tpl": 1516
     }
   },
@@ -2010,6 +2009,108 @@
       }
     },
     {
+      "id": "n-9f624432",
+      "task": "fr-co2-ppm-co2-gr-gl-5999be-annual-7e5954",
+      "gen": 10,
+      "parents": [
+        "n-aa71c56d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "become",
+              "schwab"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.norm",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-data-owid-co2-codebook-4bc0ff"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.first"
+          ]
+        ],
+        [
+          "sense.after",
+          {
+            "lit": "year"
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-co2-ppm-co2-gr-gl-5999be"
+              },
+              {
+                "lit": "annual increase"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-co2-ppm-co2-gr-gl-5999be"
+          },
+          {
+            "lit": "annual increase"
+          },
+          {
+            "lit": "year"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 20,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 36
+      }
+    },
+    {
       "id": "n-aa71c56d",
       "task": "fr-co2-ppm-co2-gr-gl-5999be-annual-7e5954",
       "gen": 10,
@@ -2134,6 +2235,99 @@
             "shift by",
             "shift each letter",
             "year"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-co2-ppm-co2-gr-gl-5999be"
+                },
+                {
+                  "lit": "annual increase"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-co2-ppm-co2-gr-gl-5999be"
+            },
+            {
+              "lit": "annual increase"
+            },
+            {
+              "lit": "year"
+            }
+          ],
+          [
+            "series.step",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-co2-ppm-co2-gr-gl-5999be"
+                },
+                {
+                  "lit": "annual increase"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-co2-ppm-co2-gr-gl-5999be"
+            },
+            {
+              "lit": "annual increase"
+            },
+            {
+              "lit": "uncertainty"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 36
+      }
+    },
+    {
+      "id": "n-dd9691ea",
+      "task": "fr-co2-ppm-co2-gr-gl-5999be-annual-7e5954",
+      "gen": 10,
+      "parents": [
+        "n-b0a35339"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "airdate",
+              "month",
+              "sp500",
+              "strcity",
+              "streetaddr",
+              "strstate",
+              "uncertainty"
+            ]
           ]
         ]
       ],
@@ -4653,6 +4847,7 @@
   ],
   "stages": [
     "131102f4cd7b0461deb79520a9f6cf08132038d9bba9325e59fe2fdbe88b0694",
-    "cf5caf17003c6f55727648ac0ba4a6b78b4ad954e2d542e3901278bdbfb9f299"
+    "cf5caf17003c6f55727648ac0ba4a6b78b4ad954e2d542e3901278bdbfb9f299",
+    "a74addbfcd2622daf49ea14cf64496dc2b83b59262bcf30cbd5c4292267ebad8"
   ]
 }
