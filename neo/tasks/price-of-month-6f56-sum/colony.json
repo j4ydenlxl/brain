@@ -1,42 +1,42 @@
 {
   "task": "price-of-month-6f56-sum",
-  "generation": 7,
-  "kernel": 1,
-  "at": "2026-10-02T13:51:46.518Z",
+  "generation": 10,
+  "kernel": 2,
+  "at": "2026-10-21T06:18:04.544Z",
   "stats": {
-    "generated": 200221,
-    "distinct": 124039,
-    "kept": 125,
-    "know": 21,
+    "generated": 200404,
+    "distinct": 94869,
+    "kept": 132,
+    "know": 28,
     "byFamily": {
       "memory": 104,
-      "sense": 1,
+      "sense": 8,
       "transform": 19,
       "aggregate": 1
     },
     "bySource": {
-      "memory": 104,
-      "template": 20,
+      "parent": 124,
+      "template": 7,
       "enum": 1
     },
     "maxHeight": 7,
     "devOk": 100,
     "devN": 100,
-    "ms": 95385,
-    "cellsPerSecond": 2099,
-    "capped": null,
+    "ms": 91400,
+    "cellsPerSecond": 2193,
+    "capped": "ms",
     "packs": [
       "fr-natural-gas-monthly-984ace"
     ],
     "cursor": {
       "v": 1,
-      "basis": "565b5a95c5712f900ae435f9281929c1c1d009e7974b211e52eeac74d715a9eb",
+      "basis": "5fc0ab7b53094488ace7b7817a41e3da291ece9b7c46b4bc77ed811c089030ef",
       "round": 0,
-      "at": 70422,
+      "at": 63273,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "transform.add",
+      "prim": "aggregate.sum",
       "tpl": 3000
     }
   },
@@ -509,6 +509,229 @@
       "fit": {
         "ok": 34,
         "fired": 34,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7e74769f",
+      "task": "price-of-month-6f56-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "added to",
+            "element",
+            "item number",
+            "more than",
+            "nth",
+            "plus",
+            "position"
+          ]
+        ],
+        [
+          "nums==",
+          4
+        ],
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " (",
+            {
+              "slot": 2
+            },
+            ") plus that of ",
+            {
+              "slot": 3
+            },
+            " (",
+            {
+              "slot": 4
+            },
+            ") is ",
+            {
+              "slot": 5
+            },
+            "."
+          ]
+        },
+        [
+          "sense.before",
+          {
+            "lit": "of"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-natural-gas-monthly-984ace"
+            },
+            {
+              "lit": "month"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-natural-gas-monthly-984ace"
+          },
+          {
+            "lit": "month"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-natural-gas-monthly-984ace"
+            },
+            {
+              "lit": "month"
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "fr-natural-gas-monthly-984ace"
+          },
+          {
+            "lit": "month"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "render.plain",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 54,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
         "rows": 100
       }
     },
@@ -1418,6 +1641,464 @@
       }
     },
     {
+      "id": "n-839aca60",
+      "task": "price-of-month-6f56-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "added to",
+            "element",
+            "item number",
+            "more than",
+            "nth",
+            "plus",
+            "position"
+          ]
+        ],
+        [
+          "nums==",
+          4
+        ],
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " (",
+            {
+              "slot": 2
+            },
+            ") plus that of ",
+            {
+              "slot": 3
+            },
+            " (",
+            {
+              "slot": 4
+            },
+            ") is ",
+            {
+              "slot": 5
+            },
+            "."
+          ]
+        },
+        [
+          "sense.before",
+          {
+            "lit": "of"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-natural-gas-monthly-984ace"
+            },
+            {
+              "lit": "month"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-natural-gas-monthly-984ace"
+          },
+          {
+            "lit": "month"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-natural-gas-monthly-984ace"
+            },
+            {
+              "lit": "month"
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "render.plain",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-natural-gas-monthly-984ace"
+                  },
+                  {
+                    "lit": "month"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              },
+              {
+                "lit": "price"
+              }
+            ]
+          ]
+        ],
+        [
+          "render.plain",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 56,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f156b3ec",
+      "task": "price-of-month-6f56-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "added to",
+            "element",
+            "item number",
+            "more than",
+            "nth",
+            "plus",
+            "position"
+          ]
+        ],
+        [
+          "nums==",
+          4
+        ],
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " (",
+            {
+              "slot": 2
+            },
+            ") plus that of ",
+            {
+              "slot": 3
+            },
+            " (",
+            {
+              "slot": 4
+            },
+            ") is ",
+            {
+              "slot": 5
+            },
+            "."
+          ]
+        },
+        [
+          "sense.before",
+          {
+            "lit": "of"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-natural-gas-monthly-984ace"
+            },
+            {
+              "lit": "month"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "render.plain",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-natural-gas-monthly-984ace"
+                  },
+                  {
+                    "lit": "month"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              },
+              {
+                "lit": "price"
+              }
+            ]
+          ]
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-natural-gas-monthly-984ace"
+            },
+            {
+              "lit": "month"
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "fr-natural-gas-monthly-984ace"
+          },
+          {
+            "lit": "month"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "render.plain",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 56,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-0677c694",
       "task": "price-of-month-6f56-sum",
       "gen": 7,
@@ -1550,6 +2231,702 @@
           [
             "sense.numeral"
           ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "fr-natural-gas-monthly-984ace"
+          },
+          {
+            "lit": "month"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "render.plain",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 57,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-176bc9f2",
+      "task": "price-of-month-6f56-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "added to",
+            "element",
+            "item number",
+            "more than",
+            "nth",
+            "plus",
+            "position"
+          ]
+        ],
+        [
+          "nums==",
+          4
+        ],
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " (",
+            {
+              "slot": 2
+            },
+            ") plus that of ",
+            {
+              "slot": 3
+            },
+            " (",
+            {
+              "slot": 4
+            },
+            ") is ",
+            {
+              "slot": 5
+            },
+            "."
+          ]
+        },
+        [
+          "sense.before",
+          {
+            "lit": "of"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-natural-gas-monthly-984ace"
+            },
+            {
+              "lit": "month"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-natural-gas-monthly-984ace"
+          },
+          {
+            "lit": "month"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "render.and",
+          [
+            "iterate.repeat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "fr-natural-gas-monthly-984ace"
+          },
+          {
+            "lit": "month"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "render.plain",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 57,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1e0444b5",
+      "task": "price-of-month-6f56-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "added to",
+            "element",
+            "item number",
+            "more than",
+            "nth",
+            "plus",
+            "position"
+          ]
+        ],
+        [
+          "nums==",
+          4
+        ],
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " (",
+            {
+              "slot": 2
+            },
+            ") plus that of ",
+            {
+              "slot": 3
+            },
+            " (",
+            {
+              "slot": 4
+            },
+            ") is ",
+            {
+              "slot": 5
+            },
+            "."
+          ]
+        },
+        [
+          "sense.before",
+          {
+            "lit": "of"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-natural-gas-monthly-984ace"
+            },
+            {
+              "lit": "month"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-natural-gas-monthly-984ace"
+          },
+          {
+            "lit": "month"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "render.list",
+          [
+            "iterate.repeat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "fr-natural-gas-monthly-984ace"
+          },
+          {
+            "lit": "month"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "render.plain",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 57,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b21983b0",
+      "task": "price-of-month-6f56-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "added to",
+            "element",
+            "item number",
+            "more than",
+            "nth",
+            "plus",
+            "position"
+          ]
+        ],
+        [
+          "nums==",
+          4
+        ],
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " (",
+            {
+              "slot": 2
+            },
+            ") plus that of ",
+            {
+              "slot": 3
+            },
+            " (",
+            {
+              "slot": 4
+            },
+            ") is ",
+            {
+              "slot": 5
+            },
+            "."
+          ]
+        },
+        [
+          "sense.before",
+          {
+            "lit": "of"
+          }
+        ],
+        [
+          "render.list",
+          [
+            "iterate.repeat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-natural-gas-monthly-984ace"
+          },
+          {
+            "lit": "month"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-natural-gas-monthly-984ace"
+            },
+            {
+              "lit": "month"
+            }
+          ],
+          {
+            "lit": 2
+          }
         ],
         [
           "know.lookup",
@@ -2214,6 +3591,238 @@
           ],
           [
             "sense.lastWord"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-natural-gas-monthly-984ace"
+          },
+          {
+            "lit": "month"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-natural-gas-monthly-984ace"
+            },
+            {
+              "lit": "month"
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "fr-natural-gas-monthly-984ace"
+          },
+          {
+            "lit": "month"
+          },
+          {
+            "lit": "price"
+          }
+        ],
+        [
+          "render.plain",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 57,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c3a5fd10",
+      "task": "price-of-month-6f56-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "added to",
+            "element",
+            "item number",
+            "more than",
+            "nth",
+            "plus",
+            "position"
+          ]
+        ],
+        [
+          "nums==",
+          4
+        ],
+        [
+          "has",
+          "price"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " (",
+            {
+              "slot": 2
+            },
+            ") plus that of ",
+            {
+              "slot": 3
+            },
+            " (",
+            {
+              "slot": 4
+            },
+            ") is ",
+            {
+              "slot": 5
+            },
+            "."
+          ]
+        },
+        [
+          "sense.before",
+          {
+            "lit": "of"
+          }
+        ],
+        [
+          "render.and",
+          [
+            "iterate.repeat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": 1
+            }
           ]
         ],
         [
@@ -4736,7 +6345,7 @@
     {
       "id": "n-a2b422b1",
       "task": "price-of-month-6f56-sum",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -8930,6 +10539,7 @@
     }
   ],
   "stages": [
-    "c587b659a568a05993877d0b3e9ac647ef099d05693a9e812f913f2e264f5ae6"
+    "c587b659a568a05993877d0b3e9ac647ef099d05693a9e812f913f2e264f5ae6",
+    "77c6ecef15511c500b59f190495883fc2a6f7fd1eba034a42a1251fc83d2b360"
   ]
 }

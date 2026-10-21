@@ -2,28 +2,27 @@
   "task": "jan-of-year-51e8-smaller",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T04:47:50.877Z",
+  "at": "2026-10-21T06:08:38.410Z",
   "stats": {
-    "generated": 26178,
-    "distinct": 37712,
-    "kept": 121,
-    "know": 7,
+    "generated": 307,
+    "distinct": 31566,
+    "kept": 123,
+    "know": 9,
     "byFamily": {
       "memory": 102,
-      "compute": 4,
-      "transform": 3,
+      "compute": 5,
+      "transform": 4,
       "aggregate": 12
     },
     "bySource": {
-      "parent": 115,
-      "open": 5,
-      "enum": 1
+      "parent": 121,
+      "open": 2
     },
     "maxHeight": 6,
     "devOk": 100,
     "devN": 100,
-    "ms": 91499,
-    "cellsPerSecond": 286,
+    "ms": 90825,
+    "cellsPerSecond": 3,
     "capped": "ms",
     "packs": [
       "fr-tidytuesday-global-temps-673dd9"
@@ -31,12 +30,12 @@
     "cursor": {
       "v": 1,
       "basis": "f05a680fcf069983b4b9e437669676998dddeb88ed5c00f97b41c23cd81d5aaf",
-      "round": 1,
-      "at": 99957,
+      "round": 2,
+      "at": 100015,
       "maxCost": 7,
       "done": false,
       "cost": 5,
-      "prim": "transform.sortUp",
+      "prim": "transform.split",
       "tpl": 3489
     }
   },
@@ -707,6 +706,78 @@
       }
     },
     {
+      "id": "n-140e7c9f",
+      "task": "jan-of-year-51e8-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "compare",
+              "glob",
+              "greater",
+              "larger",
+              "nhem",
+              "plus",
+              "price",
+              "rank",
+              "sp500",
+              "total",
+              "winner"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.gcd",
+          [
+            "sense.second"
+          ],
+          [
+            "series.step",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-global-temps-673dd9"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-global-temps-673dd9"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "jan"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-d291ee42",
       "task": "jan-of-year-51e8-smaller",
       "gen": 10,
@@ -776,6 +847,87 @@
       "mem": null,
       "height": 5,
       "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0a97077b",
+      "task": "jan-of-year-51e8-smaller",
+      "gen": 10,
+      "parents": [
+        "n-8e675ae5"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "compare",
+              "glob",
+              "greater",
+              "larger",
+              "nhem",
+              "plus"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-global-temps-673dd9"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "series.step",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-global-temps-673dd9"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-global-temps-673dd9"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "jan"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -5531,6 +5683,7 @@
   ],
   "stages": [
     "7a3c19446f69a3d861b70092016d8859df1340f27f85b3574f32ca9ec29014f6",
-    "3da4d5e1b5db7bb3874454129fdafada7da4e61917c1d5fa88a00e8a483659fa"
+    "3da4d5e1b5db7bb3874454129fdafada7da4e61917c1d5fa88a00e8a483659fa",
+    "c74fed7ffb1ec6b99372a3a90f82821f72ffaf509ea8e4fb444eb58288f6bd7d"
   ]
 }
