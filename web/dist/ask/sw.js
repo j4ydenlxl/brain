@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "f9fb459c58926c9edb37fe7cfa7bdf0216f815c04198445ddd80c496b036a48a";
+const VERSION = "f6dce4156f8afa2b44be65730dfb771cb259f4ae6b1f40f90f5a751e6e573f25";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"bf6f77a30854a3545aaaa670a99d4f8a3172006b5b130ec6c750a988d612c207"},
+  {"url":"/organism/cells.json","sha256":"2c22470f6e2a2fffe5f764acd8c961b29d2c1db420874bb6b86d21c7e884e499"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -464,10 +464,13 @@ const PRECACHE = [
   {"url":"/organism/cells/fr-tidytuesday-authors-bad370-auth-71138f-neo-g10.mjs","sha256":"d4b4ab6249f92bbb6a35d58c2ed75e935f97cf80e6c874c1b3418569710cb1c8"},
   {"url":"/organism/cells/fr-tidytuesday-airmen-8ab820-name-a5fa6c-neo-g10.mjs","sha256":"dddb689e6693fc8abe10f5300054490e65fee5a7462041a277b2a0b94756e42a"},
   {"url":"/organism/cells/airline-country-neo-g10-2.mjs","sha256":"77a6ee19bb9e468c68278d7c73442927ad3e35b6e1370ff28c578de0d7f8fedd"},
+  {"url":"/organism/cells/fr-tidytuesday-airmen-8ab820-last-6297f1-neo-g10.mjs","sha256":"233870129b2abc6569b8bb7f78f39acc779de131c5064a375d95d9a1b5d4a9e2"},
+  {"url":"/organism/cells/fr-tidytuesday-airmen-8ab820-last-9b1b8d-neo-g10.mjs","sha256":"ef88eb2db3d2691c5248c51905b3f8b359d92b19480fddef92b3e7b6b81d5b5f"},
+  {"url":"/organism/cells/fr-tidytuesday-airmen-8ab820-first-6a43db-neo-g10.mjs","sha256":"b5daacca20825c83a99832dfd4e34d6a8d7e55bdb7643819dc076d9ad852fd19"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"5864248a3b2b67aeda3108bd0a2c0c729203d054e3182a44ec9aeccb8b795455"}
+  {"url":"/organism/era/tasks.json","sha256":"e116dc73db0be3587959ad30ee1896b4c26085a7e7e722c81e220884a31d6b55"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -610,6 +613,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/country-capital.json","sha256":"bc0ea8ad1f07e39f3ffb5451ccb0380c31501017a074377c90149a3bc852f882"},
   {"url":"/organism/era/tasks/country-continent.json","sha256":"a151216de65c6bc3f50545f9731f33ac0ee56fc9c0d8995f0a3f6a3fdafcf47b"},
   {"url":"/organism/era/tasks/country-currency.json","sha256":"2ff3cab941d75788b7e8ab62b73cd5839ab157f189bc8c1fc4dab730d05c3d5e"},
+  {"url":"/organism/era/tasks/country-currency-code-bb199e.json","sha256":"3ce01b21d6470b58659e990eebb3256fcc1e5deb608088349e22779f8a534cf6"},
   {"url":"/organism/era/tasks/country-currency-code-rev.json","sha256":"1ed2bdc9cd3564128613f5f21b4e3a335b7c569b06069d17e546dfb607c61176"},
   {"url":"/organism/era/tasks/country-name-of-country-c-4749.json","sha256":"8c68786e5f11a77a861ec1516a922b50c8afd665ebe78ca6add7d6410463eedc"},
   {"url":"/organism/era/tasks/country-name-of-country-c-4749-rev.json","sha256":"64621dbae146ab4838c4156c3a6ee8e32ae3e7b8d58dd19674774973c44b63cf"},
@@ -711,7 +715,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/final-four-appearance-a3c0-sum.json","sha256":"8666b3230c18bc997becdf567182b6c3f88da674852efe53b89995daf4e62a3f"},
   {"url":"/organism/era/tasks/firefox-of-date-e7db.json","sha256":"1c25acc7346151f4aa36844b20533b8e91a9dc08e451a8460143939984870f85"},
   {"url":"/organism/era/tasks/firefox-of-date-e7db-compare.json","sha256":"605799204300f508e82cb9355bc5d3b7c056b12c2f9cbbed767d36be9ac76d4f"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db-sum.json","sha256":"c92029ff9a38cfe2df8e71c026e3567a63cb96796895bce62c103dff41403fa5"}
+  {"url":"/organism/era/tasks/fiscal-sponsorship-model-74bf-rev.json","sha256":"2f19b4adf89988b768be087e8a231c1a532979f500d720d1942b4fe737214c58"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
