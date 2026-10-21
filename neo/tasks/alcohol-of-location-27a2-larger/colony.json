@@ -2,28 +2,29 @@
   "task": "alcohol-of-location-27a2-larger",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T10:20:20.730Z",
+  "at": "2026-10-21T11:42:05.022Z",
   "stats": {
-    "generated": 100737,
-    "distinct": 91842,
-    "kept": 957,
-    "know": 519,
+    "generated": 16877,
+    "distinct": 68064,
+    "kept": 1015,
+    "know": 559,
     "byFamily": {
       "memory": 203,
       "transform": 553,
       "aggregate": 40,
+      "iterate": 83,
       "route": 134,
-      "iterate": 25,
       "sense": 2
     },
     "bySource": {
-      "parent": 957
+      "parent": 957,
+      "enum": 58
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 118332,
-    "cellsPerSecond": 851,
+    "ms": 144978,
+    "cellsPerSecond": 116,
     "capped": "ms",
     "packs": [
       "fr-datasets-2010-alcohol-consumption-by-country-273171"
@@ -31,12 +32,12 @@
     "cursor": {
       "v": 1,
       "basis": "ad487f34174c13094fc9628095c3a04582c07207e9dd9777181a684a56030ad0",
-      "round": 1,
-      "at": 178428,
+      "round": 2,
+      "at": 184211,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "iterate.growth",
+      "prim": "iterate.repeat",
       "tpl": 1565
     }
   },
@@ -1278,6 +1279,75 @@
               "lit": 2
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 22,
+        "fired": 22,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a71b0e60",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "afghanistan",
+            "africa",
+            "algeria",
+            "angola",
+            "argentina",
+            "bahamas",
+            "bhutan",
+            "botswana",
+            "china",
+            "egypt",
+            "equatorial",
+            "gambia",
+            "iraq",
+            "israel",
+            "italy",
+            "japan",
+            "jordan",
+            "kiribati",
+            "longest",
+            "longest one",
+            "longest word",
+            "madagascar",
+            "malaysia",
+            "niue",
+            "samoa"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "aggregate.longest",
+            [
+              "sense.list"
+            ]
+          ],
+          {
+            "lit": 1
+          }
         ]
       ],
       "mem": null,
@@ -4916,6 +4986,64 @@
       "mem": null,
       "height": 4,
       "size": 4,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2043e3f7",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "barbados",
+            "belgium",
+            "china",
+            "coast",
+            "dominican",
+            "gambia",
+            "japan",
+            "lebanon",
+            "malta",
+            "pakistan",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "zambia"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "aggregate.shortest",
+            [
+              "sense.list"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
       "fit": {
         "ok": 11,
         "fired": 11,
@@ -9222,6 +9350,403 @@
       }
     },
     {
+      "id": "n-706f05ac",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "dashes",
+            "element",
+            "hyphens",
+            "item number",
+            "japan",
+            "kebab case",
+            "kebabcase",
+            "nth",
+            "philippines",
+            "position",
+            "slug",
+            "tajikistan",
+            "turkmenistan"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.kebab",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-778ca5a1",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "digit count",
+            "element",
+            "how many digits",
+            "item number",
+            "japan",
+            "nth",
+            "number of digits",
+            "philippines",
+            "position",
+            "tajikistan",
+            "turkmenistan"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7fe39336",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "digit count",
+            "element",
+            "how many digits",
+            "item number",
+            "japan",
+            "nth",
+            "number of digits",
+            "philippines",
+            "position",
+            "tajikistan",
+            "turkmenistan"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c80d9bdd",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "digit count",
+            "element",
+            "how many digits",
+            "item number",
+            "japan",
+            "nth",
+            "number of digits",
+            "philippines",
+            "position",
+            "tajikistan",
+            "turkmenistan"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cbd85dc5",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "element",
+            "item number",
+            "japan",
+            "nth",
+            "philippines",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "tajikistan",
+            "turkmenistan",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-e6e7a4b0",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -9295,6 +9820,359 @@
       "mem": null,
       "height": 4,
       "size": 9,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ed1318eb",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "element",
+            "item number",
+            "japan",
+            "nth",
+            "philippines",
+            "position",
+            "snake case",
+            "snakecase",
+            "tajikistan",
+            "turkmenistan",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.snake",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0d1d671f",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "element",
+            "how many words",
+            "item number",
+            "japan",
+            "nth",
+            "number of words",
+            "philippines",
+            "position",
+            "tajikistan",
+            "turkmenistan",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7a2858b6",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "element",
+            "how many words",
+            "item number",
+            "japan",
+            "nth",
+            "number of words",
+            "philippines",
+            "position",
+            "tajikistan",
+            "turkmenistan",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9c1929ba",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "element",
+            "how many words",
+            "item number",
+            "japan",
+            "nth",
+            "number of words",
+            "philippines",
+            "position",
+            "tajikistan",
+            "turkmenistan",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
       "fit": {
         "ok": 10,
         "fired": 10,
@@ -12605,6 +13483,88 @@
       }
     },
     {
+      "id": "n-86ae09b2",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bosnia",
+            "china",
+            "longest",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "mexico"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "african"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "antilles"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "aggregate.longest",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-0c330539",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -12875,6 +13835,113 @@
       }
     },
     {
+      "id": "n-58e116a1",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "element",
+            "france",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "philippines",
+            "position",
+            "turkmenistan",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "burundi"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "costa"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-9f11df4e",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -12976,6 +14043,220 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-aa0e7d65",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "element",
+            "france",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "philippines",
+            "position",
+            "turkmenistan",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "burundi"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "costa"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-dc53d60c",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "element",
+            "france",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "philippines",
+            "position",
+            "turkmenistan",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "burundi"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "costa"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 8,
@@ -13562,6 +14843,180 @@
       }
     },
     {
+      "id": "n-2c75cbb4",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digit count",
+            "element",
+            "how many digits",
+            "item number",
+            "kiribati",
+            "nth",
+            "number of digits",
+            "oman",
+            "position",
+            "states"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "arabia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "denmark"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-37cba09d",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digit count",
+            "element",
+            "how many digits",
+            "item number",
+            "kiribati",
+            "nth",
+            "number of digits",
+            "oman",
+            "position",
+            "states"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "arabia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "denmark"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-8416c0b3",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -13621,6 +15076,72 @@
           {
             "lit": 10
           }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8bb5a393",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "france",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "philippines",
+            "position",
+            "tajikistan",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
         ]
       ],
       "mem": null,
@@ -13716,6 +15237,225 @@
           {
             "lit": 13
           }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9cbacf84",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digit count",
+            "element",
+            "how many digits",
+            "item number",
+            "kiribati",
+            "nth",
+            "number of digits",
+            "oman",
+            "position",
+            "states"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "arabia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "denmark"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cec2d91d",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "france",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "philippines",
+            "position",
+            "tajikistan",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d6917019",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "france",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "philippines",
+            "position",
+            "tajikistan",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
         ]
       ],
       "mem": null,
@@ -18919,6 +20659,86 @@
       }
     },
     {
+      "id": "n-76b8b841",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "malta",
+            "romania",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "africa"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "burkina"
+          ]
+        ],
+        [
+          "words<=",
+          12
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "aggregate.shortest",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-aaa11c87",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -21607,6 +23427,78 @@
       }
     },
     {
+      "id": "n-220ec91f",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "burundi",
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "suriname",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "has",
+          "which"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belgium"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-22420f03",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -21762,6 +23654,71 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-36ff3e07",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "botswana",
+            "element",
+            "how many words",
+            "item number",
+            "kiribati",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 4,
@@ -22153,6 +24110,102 @@
       }
     },
     {
+      "id": "n-4b78889d",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "democratic",
+            "dominican",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "arabia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belgium"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brazil"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.lower",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-512868b6",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -22232,6 +24285,78 @@
           },
           [
             "sense.subject"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5b3dcf5b",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "burundi",
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "suriname",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "has",
+          "which"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belgium"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
           ]
         ]
       ],
@@ -22785,6 +24910,71 @@
       }
     },
     {
+      "id": "n-7e9494ed",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "botswana",
+            "element",
+            "how many words",
+            "item number",
+            "kiribati",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "larger"
+        ],
+        [
+          "has",
+          "alcohol"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-860a4c8c",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -23276,6 +25466,71 @@
       }
     },
     {
+      "id": "n-9999b410",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "botswana",
+            "element",
+            "how many words",
+            "item number",
+            "kiribati",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-9a2c39a3",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -23433,6 +25688,71 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a31cb9a7",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "botswana",
+            "element",
+            "how many words",
+            "item number",
+            "kiribati",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "larger"
+        ],
+        [
+          "has",
+          "alcohol"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 4,
@@ -23623,6 +25943,71 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ad9df47e",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "botswana",
+            "element",
+            "how many words",
+            "item number",
+            "kiribati",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "larger"
+        ],
+        [
+          "has",
+          "alcohol"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 4,
@@ -23914,6 +26299,143 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-caa9d66e",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "burundi",
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "suriname",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "has",
+          "which"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belgium"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d1c0bb97",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "botswana",
+            "element",
+            "how many words",
+            "item number",
+            "kiribati",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 4,
@@ -24661,6 +27183,96 @@
       }
     },
     {
+      "id": "n-eec41ee7",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters",
+            "turkmenistan"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bolivia"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "burundi"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.lower",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-f47129b4",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -24840,6 +27452,104 @@
       "mem": null,
       "height": 4,
       "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-08048b6f",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "burundi",
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "suriname",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "arabia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
       "fit": {
         "ok": 4,
         "fired": 4,
@@ -25682,6 +28392,104 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-572a826e",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "burundi",
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "suriname",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "arabia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 4,
@@ -26662,6 +29470,104 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e173a8cd",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "burundi",
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "suriname",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "arabia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+              },
+              {
+                "lit": "location"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 13,
       "fit": {
         "ok": 4,
@@ -28068,6 +30974,55 @@
       }
     },
     {
+      "id": "n-0c52d6d1",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "botswana",
+            "digit count",
+            "how many digits",
+            "kiribati",
+            "number of digits"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-0efcf9fa",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -28591,6 +31546,55 @@
       }
     },
     {
+      "id": "n-5ef426eb",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "botswana",
+            "digit count",
+            "how many digits",
+            "kiribati",
+            "number of digits"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-6a954970",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -28802,6 +31806,55 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-92da2ec7",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "botswana",
+            "digit count",
+            "how many digits",
+            "kiribati",
+            "number of digits"
+          ]
+        ],
+        [
+          "has",
+          "alcohol"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 4,
@@ -43514,6 +46567,66 @@
       }
     },
     {
+      "id": "n-0c5c95dc",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "greece",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-12d206b1",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -43636,6 +46749,66 @@
       }
     },
     {
+      "id": "n-190dde55",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "greece",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-2846ec8d",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -43690,6 +46863,66 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2ccfd7fb",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "greece",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -43942,6 +47175,126 @@
       }
     },
     {
+      "id": "n-936b6b7b",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "greece",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a5ac195a",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "greece",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-a76f0d08",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -43996,6 +47349,66 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ab663489",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "greece",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2010-alcohol-consumption-by-country-273171"
+                },
+                {
+                  "lit": "location"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -82849,6 +86262,50 @@
       }
     },
     {
+      "id": "n-1b605335",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "greece",
+            "reverse the words",
+            "reverse word order",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.reverseWords",
+            [
+              "sense.subject"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-213e2dd1",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -83156,6 +86613,50 @@
       }
     },
     {
+      "id": "n-4e8822b5",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "greece",
+            "how many words",
+            "number of words",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-571309d6",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -83196,6 +86697,95 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5843c233",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "greece",
+            "snake case",
+            "snakecase",
+            "underscores",
+            "variable name"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.snake",
+            [
+              "sense.subject"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-62d1e21b",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "greece",
+            "how many words",
+            "number of words",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -83477,6 +87067,182 @@
       }
     },
     {
+      "id": "n-82125264",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "greece",
+            "how many words",
+            "number of words",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8433ada0",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digit count",
+            "greece",
+            "how many digits",
+            "number of digits"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8483ea4f",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "greece",
+            "how many words",
+            "number of words",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-87b30ab4",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "greece",
+            "lower case",
+            "lowercase",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.lower",
+            [
+              "sense.subject"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-8ae32a86",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -83699,6 +87465,50 @@
       }
     },
     {
+      "id": "n-a56d1dc7",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digit count",
+            "greece",
+            "how many digits",
+            "number of digits"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-a83bb2f2",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -83788,6 +87598,51 @@
       }
     },
     {
+      "id": "n-aadea13c",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dashes",
+            "greece",
+            "hyphens",
+            "kebab case",
+            "kebabcase"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.kebab",
+            [
+              "sense.subject"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-b089ee03",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -83828,6 +87683,50 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ba1911bd",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "greece",
+            "how many words",
+            "number of words",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -83884,6 +87783,50 @@
       }
     },
     {
+      "id": "n-e5fc5eef",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "digit count",
+            "greece",
+            "how many digits",
+            "number of digits"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "sense.subject"
+          ],
+          [
+            "aggregate.digitCount",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-e9501ad5",
       "task": "alcohol-of-location-27a2-larger",
       "gen": 10,
@@ -83921,6 +87864,50 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e9c025cb",
+      "task": "alcohol-of-location-27a2-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "greece",
+            "how many words",
+            "number of words",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "botswana"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -88095,6 +92082,7 @@
   ],
   "stages": [
     "a1cb2dec4a33d02c53672d543ad8a24227785297d69a9f7f6a44b2afe961e8ea",
-    "26c6dc73ef8d969b559c8b0ee13f7af21f9cbed1d256fd29c6f78b17a9cafc00"
+    "26c6dc73ef8d969b559c8b0ee13f7af21f9cbed1d256fd29c6f78b17a9cafc00",
+    "c41ee6070182512330474b78744a00d696ffb078b695cb32951f1e0f0962673d"
   ]
 }
