@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "ec0097026e2d7cd946d919c5e312f91c66e903b5fc8e2c3139f4d2b72e441c17";
+const VERSION = "bf0991a930d1fc85e0c6fd9b613384efa2f6be9f11548801090070529cbcb316";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -449,7 +449,7 @@ const PRECACHE = [
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"779eb6bc0d3212aeb6525cdc4624550c2981f7e6361cc7b98da600f9598abd3f"}
+  {"url":"/organism/era/tasks.json","sha256":"87c8ee66b6f8eb44d9161bf12663678732231176d6429469d8fb1fdf4a4e8bc3"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -505,6 +505,8 @@ const LAZY = [
   {"url":"/organism/era/tasks/author-kaggle-of-title-914a.json","sha256":"14210ddeb570614240713a3b37354681b4e9d83c9dbc1214b3cf86800b385f5d"},
   {"url":"/organism/era/tasks/author-name-of-title-e6b3.json","sha256":"320db7e27f8b47571edd5aeb7130f6f5426543a133808cce8508fe4efe122fae"},
   {"url":"/organism/era/tasks/author-of-name-8025-rev.json","sha256":"3822e33313d6bbb4e8e3a02d537f2509a3030cdb1e51a55c185f2b8a6378fb41"},
+  {"url":"/organism/era/tasks/author-of-name-a229.json","sha256":"0c50a88ea58b7366ca134b20cbf9f26eea8cec7a3297d88fdd940269afd31c71"},
+  {"url":"/organism/era/tasks/author-of-name-a229-rev.json","sha256":"786fbf41a1f89854a4abe38753ab1bfb7a9aa227b7e2f745adfc080498af7f4a"},
   {"url":"/organism/era/tasks/author-of-title-30cf.json","sha256":"0a43b0378bae4eaad4462cd6e6c165e08532ddec7e8badc635a2438650ee7867"},
   {"url":"/organism/era/tasks/author-of-title-7954.json","sha256":"4b1219d50f923be54b3a5c18b1da232cc208004b2e2995f4dad665af60987d68"},
   {"url":"/organism/era/tasks/author-of-title-7954-rev.json","sha256":"7e8f7a790ce4ebb64c1db2f2ba3a7204b0d29a591b60ba15061cde0773abebd2"},
@@ -599,6 +601,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/country-of-cheese-2f13.json","sha256":"91b50ff5988ff310ab542970fa28771a58291f38a2f10431cd739136b3c42745"},
   {"url":"/organism/era/tasks/country-of-code-e7a9.json","sha256":"1de50822f9ed6bcfd8a4b026824774516cbb108cd15e784e5f4f1f2c72ed8589"},
   {"url":"/organism/era/tasks/country-of-code-e7a9-rev.json","sha256":"3f578748cd6e6fc6ae66f992f6c5606b70f14f4edabb3d2b0a864991b8cbf5a6"},
+  {"url":"/organism/era/tasks/country-of-name-9adc.json","sha256":"b9b507465bdd5530abf68906405a4cebc3500cfba0901fd123a48c6612155452"},
   {"url":"/organism/era/tasks/country-of-name-a56d.json","sha256":"952ddb9300d9aaae93309d57574e395ef10690eda974d4e0099dce557a792ac8"},
   {"url":"/organism/era/tasks/country-of-season-name-499c.json","sha256":"82c54b87c54f49d2a12c98fc14803bae708f4738eb20d321c668daccb8f623d5"},
   {"url":"/organism/era/tasks/country-of-title-09a9.json","sha256":"4eb9d2c153665bb53ecdd35c1ad25496a53885b766b50657fe67a5ce94d1e0d0"},
@@ -633,6 +636,7 @@ const LAZY = [
   {"url":"/organism/era/tasks/date-of-publication-b331.json","sha256":"abee29274ebd29bdf770f452b8cd33cf70133eb0c7f6816187c172a5f38670be"},
   {"url":"/organism/era/tasks/date-of-song-dc79.json","sha256":"572b6cbecbba557b6346d6ab9c22b02514d296479b92000461a0116bf06217f0"},
   {"url":"/organism/era/tasks/date-of-title-200e.json","sha256":"14f34fe8616fc6935957ab68b6fc822cdcd980f965764bd4ae3303bc1870c6e4"},
+  {"url":"/organism/era/tasks/date-published-of-name-75e3-rev.json","sha256":"455f6480f57a1f121e80f7b838b4e511c4a96ce3b256bd502ea3d6b826b89a74"},
   {"url":"/organism/era/tasks/density-of-country-146f.json","sha256":"29f143b95537436a398cee5c736f5017e536b84c9954a22b97c5c2020fa1752c"},
   {"url":"/organism/era/tasks/density-of-country-146f-compare.json","sha256":"fa359bdd0f7f6845cf67d54a9a36607e75b0ebbc304ec3708e016a1a422418de"},
   {"url":"/organism/era/tasks/density-of-country-146f-larger.json","sha256":"c6edc9a8f347259be55d552fc13a3445b881a49215a563ab8b4285e3374126d3"},
@@ -690,10 +694,8 @@ const LAZY = [
   {"url":"/organism/era/tasks/female-of-county-de5d-compare.json","sha256":"166b3d28c37b14a67c741c3ae251cf760f73984b3534315912ec75d9afe2bfb1"},
   {"url":"/organism/era/tasks/file-of-lang-edee.json","sha256":"a3277d714a9a7e4c6950d0d8b2ccd595478c32de3f6d86b52dc3bd9345d14c88"},
   {"url":"/organism/era/tasks/file-of-lang-edee-rev.json","sha256":"a16830dc4ca6d9d7a18da5a9a9a596a11d9ea7a89a818d75a3284193e454a974"},
-  {"url":"/organism/era/tasks/final-description-of-date-d707-rev.json","sha256":"2d39279009a1e4bb06d50927b2a9a1a0078e2ccc09b851e9558ffa8759f96fc6"},
-  {"url":"/organism/era/tasks/final-four-appearance-a3c0-sum.json","sha256":"8666b3230c18bc997becdf567182b6c3f88da674852efe53b89995daf4e62a3f"},
   {"url":"/organism/era/tasks/firefox-of-date-e7db.json","sha256":"1c25acc7346151f4aa36844b20533b8e91a9dc08e451a8460143939984870f85"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db-compare.json","sha256":"605799204300f508e82cb9355bc5d3b7c056b12c2f9cbbed767d36be9ac76d4f"}
+  {"url":"/organism/era/tasks/fiscal-sponsorship-model-74bf-rev.json","sha256":"2f19b4adf89988b768be087e8a231c1a532979f500d720d1942b4fe737214c58"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
