@@ -2,36 +2,39 @@
   "task": "price-of-date-75f6-sum",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T05:21:15.743Z",
+  "at": "2026-10-21T23:07:47.542Z",
   "stats": {
-    "generated": 160099,
-    "distinct": 104990,
-    "kept": 99,
-    "know": 0,
+    "generated": 54914,
+    "distinct": 64116,
+    "kept": 101,
+    "know": 2,
     "byFamily": {
-      "memory": 99
+      "memory": 99,
+      "compute": 2
     },
     "bySource": {
-      "parent": 99
+      "parent": 99,
+      "enum": 1,
+      "open": 1
     },
-    "maxHeight": 3,
+    "maxHeight": 7,
     "devOk": 98,
     "devN": 100,
-    "ms": 35221,
-    "cellsPerSecond": 4546,
-    "capped": null,
+    "ms": 50159,
+    "cellsPerSecond": 1095,
+    "capped": "ms",
     "packs": [
       "fr-oil-prices-wti-year-774bd1"
     ],
     "cursor": {
       "v": 1,
       "basis": "6048dd279dd5b8934e6f887ebcbb4ca0e6f2fa300bca94576c05115fe98de159",
-      "round": 1,
-      "at": 141579,
+      "round": 2,
+      "at": 182046,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compare.divisible",
+      "prim": "compute.choose",
       "tpl": 2237
     }
   },
@@ -102,6 +105,220 @@
       "fit": {
         "ok": 34,
         "fired": 34,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cc5264ae",
+      "task": "price-of-date-75f6-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "add",
+            "added to",
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "element",
+            "item number",
+            "more than",
+            "n choose k",
+            "nth",
+            "plus",
+            "position",
+            "price",
+            "sum of",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-oil-prices-wti-year-774bd1"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-oil-prices-wti-year-774bd1"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-oil-prices-wti-year-774bd1"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-oil-prices-wti-year-774bd1"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 24,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-dc913325",
+      "task": "price-of-date-75f6-sum",
+      "gen": 10,
+      "parents": [
+        "n-cc5264ae"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "compare",
+              "larger",
+              "lesser",
+              "smaller"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-oil-prices-wti-year-774bd1"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-oil-prices-wti-year-774bd1"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-oil-prices-wti-year-774bd1"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-oil-prices-wti-year-774bd1"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 24,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
         "rows": 100
       }
     },
@@ -3670,6 +3887,7 @@
   "stages": [
     "3f3a790771d3cde4b230d3fe2aabf17cbb890450df418002a779599cd76381fa",
     "a13c6254fc76d3bc4c7c5648326ab2419bafa9f78453b611a56ca6b83fb79e48",
-    "a7a020bd80088a3b0a18518db2170a6e63dcdf881fbe48b7497e7dd54e305749"
+    "a7a020bd80088a3b0a18518db2170a6e63dcdf881fbe48b7497e7dd54e305749",
+    "bcab31675a2bdcf9f00f52bcac30ae3a4887bf88f4a5fd27dd46a19d4035d921"
   ]
 }

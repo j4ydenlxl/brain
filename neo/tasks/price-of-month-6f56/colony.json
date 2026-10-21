@@ -2,26 +2,26 @@
   "task": "price-of-month-6f56",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T07:19:48.892Z",
+  "at": "2026-10-21T23:18:08.474Z",
   "stats": {
-    "generated": 90425,
-    "distinct": 92942,
-    "kept": 105,
-    "know": 4,
+    "generated": 47386,
+    "distinct": 84952,
+    "kept": 106,
+    "know": 5,
     "byFamily": {
       "memory": 101,
-      "aggregate": 2,
+      "aggregate": 3,
       "compute": 2
     },
     "bySource": {
-      "parent": 103,
+      "parent": 104,
       "open": 2
     },
     "maxHeight": 6,
     "devOk": 100,
     "devN": 100,
-    "ms": 43381,
-    "cellsPerSecond": 2084,
+    "ms": 45740,
+    "cellsPerSecond": 1036,
     "capped": "ms",
     "packs": [
       "fr-natural-gas-monthly-984ace"
@@ -29,12 +29,12 @@
     "cursor": {
       "v": 1,
       "basis": "6e52669abe5b1ca2d8030c486a847d71a1ca9db2f4ff372fcae7961c7a5cdc80",
-      "round": 1,
-      "at": 136567,
+      "round": 2,
+      "at": 158245,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compute.primesUpTo",
+      "prim": "iterate.multiples",
       "tpl": 2140
     }
   },
@@ -105,6 +105,98 @@
       "fit": {
         "ok": 34,
         "fired": 34,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1b143977",
+      "task": "price-of-month-6f56",
+      "gen": 10,
+      "parents": [
+        "n-1b9189f6",
+        "n-fd50d3a9"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "20070215",
+              "20140201",
+              "20140210",
+              "20140226",
+              "20140227",
+              "20180907",
+              "20180910",
+              "add",
+              "angeles",
+              "az",
+              "close",
+              "compare",
+              "date",
+              "dividend",
+              "explorer",
+              "firefox",
+              "greater",
+              "high",
+              "larger",
+              "lesser",
+              "makes",
+              "name",
+              "open",
+              "programme",
+              "proposal",
+              "smaller",
+              "sum",
+              "tell",
+              "version"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.digitSum",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-natural-gas-monthly-984ace"
+                  },
+                  {
+                    "lit": "month"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              },
+              {
+                "lit": "price"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
         "rows": 100
       }
     },
@@ -271,33 +363,29 @@
       }
     },
     {
-      "id": "n-0b6181fa",
+      "id": "n-58f61a5f",
       "task": "price-of-month-6f56",
       "gen": 10,
-      "parents": [
-        "n-58f61a5f"
-      ],
+      "parents": [],
       "guard": [
         [
-          "not",
+          "hasAny",
           [
-            "hasAny",
-            [
-              "20180907",
-              "20180910",
-              "compare",
-              "date",
-              "larger",
-              "lesser",
-              "open",
-              "phoenix",
-              "sa",
-              "smaller",
-              "tell",
-              "temp",
-              "version"
-            ]
+            "element",
+            "from base",
+            "from binary",
+            "from hex",
+            "in decimal",
+            "item number",
+            "nth",
+            "position",
+            "price",
+            "to decimal"
           ]
+        ],
+        [
+          "has",
+          "what"
         ]
       ],
       "pyramid": [
@@ -346,29 +434,35 @@
       }
     },
     {
-      "id": "n-58f61a5f",
+      "id": "n-fa9d61d7",
       "task": "price-of-month-6f56",
       "gen": 10,
-      "parents": [],
+      "parents": [
+        "n-58f61a5f"
+      ],
       "guard": [
         [
-          "hasAny",
+          "not",
           [
-            "element",
-            "from base",
-            "from binary",
-            "from hex",
-            "in decimal",
-            "item number",
-            "nth",
-            "position",
-            "price",
-            "to decimal"
+            "hasAny",
+            [
+              "20180907",
+              "20180910",
+              "az",
+              "compare",
+              "date",
+              "larger",
+              "lesser",
+              "open",
+              "programme",
+              "proposal",
+              "sa",
+              "smaller",
+              "tell",
+              "temp",
+              "version"
+            ]
           ]
-        ],
-        [
-          "has",
-          "what"
         ]
       ],
       "pyramid": [
@@ -3771,10 +3865,86 @@
         "fired": 1,
         "rows": 100
       }
+    },
+    {
+      "id": "n-0b6181fa",
+      "task": "price-of-month-6f56",
+      "gen": 10,
+      "parents": [
+        "n-58f61a5f"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "20180907",
+              "20180910",
+              "compare",
+              "date",
+              "larger",
+              "lesser",
+              "open",
+              "phoenix",
+              "sa",
+              "smaller",
+              "tell",
+              "temp",
+              "version"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.fromBase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-natural-gas-monthly-984ace"
+            },
+            {
+              "lit": "month"
+            },
+            {
+              "lit": "price"
+            }
+          ],
+          [
+            "sense.second"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
     }
   ],
   "stages": [
     "bb80b22872d971d9b9095714a497bb583d68bd3776cc180eba7a6757194aea32",
-    "240cdd2e4055b764f3e499f4a431e1d23f0cd03ccc8b2474fda3183ef8308886"
+    "240cdd2e4055b764f3e499f4a431e1d23f0cd03ccc8b2474fda3183ef8308886",
+    "28c7249460c56731ca9ab29fced84fde18c88cfd3475c68e5c81d4c090ff7a42"
   ]
 }

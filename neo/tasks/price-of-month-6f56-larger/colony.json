@@ -2,25 +2,25 @@
   "task": "price-of-month-6f56-larger",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T07:20:45.169Z",
+  "at": "2026-10-21T23:19:39.743Z",
   "stats": {
-    "generated": 167414,
-    "distinct": 47006,
-    "kept": 107,
-    "know": 5,
+    "generated": 160107,
+    "distinct": 110871,
+    "kept": 110,
+    "know": 8,
     "byFamily": {
       "memory": 102,
-      "transform": 5
+      "transform": 8
     },
     "bySource": {
-      "parent": 102,
-      "enum": 5
+      "parent": 107,
+      "open": 3
     },
     "maxHeight": 6,
     "devOk": 100,
     "devN": 100,
-    "ms": 70438,
-    "cellsPerSecond": 2377,
+    "ms": 58602,
+    "cellsPerSecond": 2732,
     "capped": null,
     "packs": [
       "fr-natural-gas-monthly-984ace"
@@ -28,12 +28,12 @@
     "cursor": {
       "v": 1,
       "basis": "f4eab20a36d40abb8aa644988c69f99a9507d91f35da5e49f3d1aec4bb4ff343",
-      "round": 1,
-      "at": 202665,
+      "round": 2,
+      "at": 312358,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compare.between",
+      "prim": "iterate.rangeFrom",
       "tpl": 3884
     }
   },
@@ -325,6 +325,114 @@
       }
     },
     {
+      "id": "n-95b61580",
+      "task": "price-of-month-6f56-larger",
+      "gen": 10,
+      "parents": [
+        "n-b4f97338"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "19860627",
+              "20070112",
+              "20070115",
+              "20070126",
+              "20070801",
+              "201401",
+              "20140109",
+              "20140115",
+              "201808",
+              "20180815",
+              "20180830",
+              "add",
+              "angeles",
+              "az",
+              "close",
+              "compare",
+              "cpi",
+              "date",
+              "dividend",
+              "explorer",
+              "fatalities",
+              "firefox",
+              "greater",
+              "high",
+              "lesser",
+              "makes",
+              "national",
+              "programme",
+              "proposal",
+              "rate",
+              "smaller",
+              "sp500",
+              "sum",
+              "title"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "series.next",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-natural-gas-monthly-984ace"
+            },
+            {
+              "lit": "month"
+            },
+            {
+              "lit": "price"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-b4f97338",
       "task": "price-of-month-6f56-larger",
       "gen": 10,
@@ -501,6 +609,115 @@
       }
     },
     {
+      "id": "n-28148ed3",
+      "task": "price-of-month-6f56-larger",
+      "gen": 10,
+      "parents": [
+        "n-58967589"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "200702",
+              "20070215",
+              "20140201",
+              "20140207",
+              "20140210",
+              "20140226",
+              "20140227",
+              "201809",
+              "20180907",
+              "20180910",
+              "add",
+              "angeles",
+              "az",
+              "close",
+              "compare",
+              "cpi",
+              "date",
+              "dividend",
+              "explorer",
+              "fatalities",
+              "firefox",
+              "high",
+              "larger",
+              "lesser",
+              "makes",
+              "name",
+              "open",
+              "programme",
+              "proposal",
+              "smaller",
+              "sum",
+              "version"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-natural-gas-monthly-984ace"
+                  },
+                  {
+                    "lit": "month"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              },
+              {
+                "lit": "price"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-58967589",
       "task": "price-of-month-6f56-larger",
       "gen": 10,
@@ -561,6 +778,97 @@
                 ],
                 {
                   "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              },
+              {
+                "lit": "price"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6f99ecab",
+      "task": "price-of-month-6f56-larger",
+      "gen": 10,
+      "parents": [
+        "n-c15bfe6a"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "20041101",
+              "20140207",
+              "20200115",
+              "add",
+              "az",
+              "compare",
+              "cpi",
+              "firefox",
+              "greater",
+              "lesser",
+              "makes",
+              "sa",
+              "smaller",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-natural-gas-monthly-984ace"
+              },
+              {
+                "lit": "month"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-natural-gas-monthly-984ace"
+                  },
+                  {
+                    "lit": "month"
+                  }
+                ],
+                {
+                  "lit": 2
                 }
               ],
               {
@@ -4378,6 +4686,7 @@
   "stages": [
     "4c6c400f7eb31db8823c552c2e95377ab8e46ab915df1e47ad0fe60e8223c5b9",
     "75947012cf35669e9651a98154c77ea6544b09db313e5095cad5b5613818cb16",
-    "426a92d49576945757a3656da1ba435d068340ad69af38afe44a1476ec261879"
+    "426a92d49576945757a3656da1ba435d068340ad69af38afe44a1476ec261879",
+    "932e56c5410c4d9c925c08561bc2ea0f5d05507ef4c222661a6e3cb7dddbdec7"
   ]
 }
