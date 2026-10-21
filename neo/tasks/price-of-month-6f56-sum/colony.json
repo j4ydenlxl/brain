@@ -2,28 +2,27 @@
   "task": "price-of-month-6f56-sum",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T06:18:04.544Z",
+  "at": "2026-10-21T07:11:19.997Z",
   "stats": {
-    "generated": 200404,
-    "distinct": 94869,
-    "kept": 132,
-    "know": 28,
+    "generated": 104041,
+    "distinct": 121226,
+    "kept": 133,
+    "know": 29,
     "byFamily": {
       "memory": 104,
       "sense": 8,
       "transform": 19,
-      "aggregate": 1
+      "aggregate": 2
     },
     "bySource": {
-      "parent": 124,
-      "template": 7,
-      "enum": 1
+      "parent": 132,
+      "open": 1
     },
     "maxHeight": 7,
     "devOk": 100,
     "devN": 100,
-    "ms": 91400,
-    "cellsPerSecond": 2193,
+    "ms": 59309,
+    "cellsPerSecond": 1754,
     "capped": "ms",
     "packs": [
       "fr-natural-gas-monthly-984ace"
@@ -31,13 +30,13 @@
     "cursor": {
       "v": 1,
       "basis": "5fc0ab7b53094488ace7b7817a41e3da291ece9b7c46b4bc77ed811c089030ef",
-      "round": 0,
-      "at": 63273,
+      "round": 1,
+      "at": 93384,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "aggregate.sum",
-      "tpl": 3000
+      "prim": "transform.add",
+      "tpl": 3501
     }
   },
   "cells": [
@@ -6343,6 +6342,116 @@
       }
     },
     {
+      "id": "n-1a72eb11",
+      "task": "price-of-month-6f56-sum",
+      "gen": 10,
+      "parents": [
+        "n-a2b422b1"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "19970630",
+              "20071116",
+              "20230215",
+              "compare",
+              "confirmed",
+              "explorer",
+              "greater",
+              "larger",
+              "lesser",
+              "makes",
+              "national",
+              "phoenix",
+              "smaller",
+              "sum",
+              "temp"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "aggregate.digitSum",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-natural-gas-monthly-984ace"
+                    },
+                    {
+                      "lit": "month"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-natural-gas-monthly-984ace"
+                },
+                {
+                  "lit": "month"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 23,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-a2b422b1",
       "task": "price-of-month-6f56-sum",
       "gen": 10,
@@ -10540,6 +10649,7 @@
   ],
   "stages": [
     "c587b659a568a05993877d0b3e9ac647ef099d05693a9e812f913f2e264f5ae6",
-    "77c6ecef15511c500b59f190495883fc2a6f7fd1eba034a42a1251fc83d2b360"
+    "77c6ecef15511c500b59f190495883fc2a6f7fd1eba034a42a1251fc83d2b360",
+    "56e893de4eb496e215e4e053f13ec31cf41702be04ab2406a8e0964a5cb561d9"
   ]
 }
