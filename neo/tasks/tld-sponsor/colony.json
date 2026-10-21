@@ -2,27 +2,29 @@
   "task": "tld-sponsor",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T13:01:44.365Z",
+  "at": "2026-10-21T14:34:30.000Z",
   "stats": {
-    "generated": 155733,
-    "distinct": 107717,
-    "kept": 950,
-    "know": 298,
+    "generated": 76982,
+    "distinct": 123575,
+    "kept": 1031,
+    "know": 374,
     "byFamily": {
       "memory": 199,
-      "transform": 407,
+      "transform": 425,
       "aggregate": 7,
       "know": 174,
+      "iterate": 63,
       "sense": 163
     },
     "bySource": {
-      "parent": 950
+      "parent": 950,
+      "enum": 81
     },
     "maxHeight": 6,
     "devOk": 100,
     "devN": 100,
-    "ms": 82150,
-    "cellsPerSecond": 1896,
+    "ms": 86609,
+    "cellsPerSecond": 889,
     "capped": "ms",
     "packs": [
       "tld-types"
@@ -30,12 +32,12 @@
     "cursor": {
       "v": 1,
       "basis": "5ba1adb744257b75cb16dc7026be543d95b8b78aa271695a15faec9295396cb1",
-      "round": 1,
-      "at": 226495,
+      "round": 2,
+      "at": 262150,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "iterate.growth",
+      "prim": "transform.concat",
       "tpl": 511
     }
   },
@@ -3820,6 +3822,107 @@
       }
     },
     {
+      "id": "n-455d5648",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "body",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "title case"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "americanfamily"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "best"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blog"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "tld-types"
+                  },
+                  {
+                    "lit": "top-level domain"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "tld-types"
+              },
+              {
+                "lit": "top-level domain"
+              },
+              {
+                "lit": "sponsoring organization"
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-52ecbdc6",
       "task": "tld-sponsor",
       "gen": 10,
@@ -3881,6 +3984,208 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5cfd2e93",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "body",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "americanfamily"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "best"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blog"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "tld-types"
+                  },
+                  {
+                    "lit": "top-level domain"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "tld-types"
+              },
+              {
+                "lit": "top-level domain"
+              },
+              {
+                "lit": "sponsoring organization"
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8d41c0af",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "body",
+            "capital letters",
+            "capitals",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "americanfamily"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "best"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blog"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.upper",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "tld-types"
+                  },
+                  {
+                    "lit": "top-level domain"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "tld-types"
+              },
+              {
+                "lit": "top-level domain"
+              },
+              {
+                "lit": "sponsoring organization"
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 13,
       "fit": {
         "ok": 33,
@@ -3955,6 +4260,106 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e30d8238",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "body",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "americanfamily"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "best"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blog"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.lower",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "tld-types"
+                  },
+                  {
+                    "lit": "top-level domain"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "tld-types"
+              },
+              {
+                "lit": "top-level domain"
+              },
+              {
+                "lit": "sponsoring organization"
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 13,
       "fit": {
         "ok": 33,
@@ -5484,6 +5889,286 @@
       }
     },
     {
+      "id": "n-2bbff7ad",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arab",
+            "bar",
+            "ci",
+            "diet",
+            "element",
+            "estate",
+            "express",
+            "fire",
+            "forsale",
+            "forum",
+            "furniture",
+            "guru",
+            "hgtv",
+            "hockey",
+            "how many words",
+            "itau",
+            "item number",
+            "kred",
+            "lacaixa",
+            "lifeinsurance",
+            "marriott",
+            "mx",
+            "nth",
+            "number of words",
+            "plumbing",
+            "plus",
+            "poker",
+            "position",
+            "sale",
+            "tv",
+            "voyage",
+            "wanggou",
+            "word count",
+            "yt",
+            "za",
+            "إختبار"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "americanfamily"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "best"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blog"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 29,
+        "fired": 29,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-450b00ea",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arab",
+            "bar",
+            "ci",
+            "diet",
+            "element",
+            "estate",
+            "express",
+            "fire",
+            "forsale",
+            "forum",
+            "furniture",
+            "guru",
+            "hgtv",
+            "hockey",
+            "how many words",
+            "itau",
+            "item number",
+            "kred",
+            "lacaixa",
+            "lifeinsurance",
+            "marriott",
+            "mx",
+            "nth",
+            "number of words",
+            "plumbing",
+            "plus",
+            "poker",
+            "position",
+            "sale",
+            "tv",
+            "voyage",
+            "wanggou",
+            "word count",
+            "yt",
+            "za",
+            "إختبار"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "americanfamily"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "best"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blog"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 29,
+        "fired": 29,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-b89ddb75",
       "task": "tld-sponsor",
       "gen": 10,
@@ -5621,6 +6306,497 @@
       "fit": {
         "ok": 29,
         "fired": 29,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e1c5e106",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arab",
+            "bar",
+            "ci",
+            "diet",
+            "element",
+            "estate",
+            "express",
+            "fire",
+            "forsale",
+            "forum",
+            "furniture",
+            "guru",
+            "hgtv",
+            "hockey",
+            "how many words",
+            "itau",
+            "item number",
+            "kred",
+            "lacaixa",
+            "lifeinsurance",
+            "marriott",
+            "mx",
+            "nth",
+            "number of words",
+            "plumbing",
+            "plus",
+            "poker",
+            "position",
+            "sale",
+            "tv",
+            "voyage",
+            "wanggou",
+            "word count",
+            "yt",
+            "za",
+            "إختبار"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "americanfamily"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "best"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blog"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 29,
+        "fired": 29,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4d05282a",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "art",
+            "bar",
+            "cal",
+            "ci",
+            "element",
+            "how many vowels",
+            "hyatt",
+            "im",
+            "item number",
+            "iwc",
+            "kred",
+            "la",
+            "map",
+            "nth",
+            "number of vowels",
+            "plus",
+            "position",
+            "rip",
+            "rwe",
+            "sas",
+            "sharp",
+            "spa",
+            "sport",
+            "star",
+            "study",
+            "su",
+            "supply",
+            "surf",
+            "tab",
+            "us",
+            "vowel count",
+            "works",
+            "ye",
+            "za"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-77f5819b",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "art",
+            "bar",
+            "cal",
+            "ci",
+            "element",
+            "how many vowels",
+            "hyatt",
+            "im",
+            "item number",
+            "iwc",
+            "kred",
+            "la",
+            "map",
+            "nth",
+            "number of vowels",
+            "plus",
+            "position",
+            "rip",
+            "rwe",
+            "sas",
+            "sharp",
+            "spa",
+            "sport",
+            "star",
+            "study",
+            "su",
+            "supply",
+            "surf",
+            "tab",
+            "us",
+            "vowel count",
+            "works",
+            "ye",
+            "za"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-91ed1fe7",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "art",
+            "bar",
+            "cal",
+            "ci",
+            "element",
+            "how many vowels",
+            "hyatt",
+            "im",
+            "item number",
+            "iwc",
+            "kred",
+            "la",
+            "map",
+            "nth",
+            "number of vowels",
+            "plus",
+            "position",
+            "rip",
+            "rwe",
+            "sas",
+            "sharp",
+            "spa",
+            "sport",
+            "star",
+            "study",
+            "su",
+            "supply",
+            "surf",
+            "tab",
+            "us",
+            "vowel count",
+            "works",
+            "ye",
+            "za"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 27,
+        "fired": 27,
         "rows": 100
       }
     },
@@ -5854,6 +7030,131 @@
       }
     },
     {
+      "id": "n-107e7244",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "element",
+            "hgtv",
+            "how many vowels",
+            "item number",
+            "kg",
+            "ls",
+            "mk",
+            "mtr",
+            "mv",
+            "mx",
+            "nth",
+            "number of vowels",
+            "position",
+            "pt",
+            "rotate the letters",
+            "rs",
+            "shift by",
+            "shift each letter",
+            "sv",
+            "tv",
+            "tw",
+            "vowel count",
+            "xyz",
+            "yt",
+            "мон",
+            "рус",
+            "إختبار",
+            "الاردن",
+            "امارات",
+            "परकष",
+            "भरत"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "type"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-f3a0106d",
       "task": "tld-sponsor",
       "gen": 10,
@@ -5914,6 +7215,84 @@
       "mem": null,
       "height": 3,
       "size": 6,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-14e2bd1d",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "computer",
+            "education",
+            "element",
+            "estate",
+            "express",
+            "furniture",
+            "guru",
+            "hockey",
+            "hospital",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "photography",
+            "plumbing",
+            "plus",
+            "position",
+            "repair",
+            "supply",
+            "theater",
+            "voyage",
+            "word count",
+            "works"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Binky Moon, LLC"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
       "fit": {
         "ok": 16,
         "fired": 16,
@@ -5992,6 +7371,162 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c8de6e1d",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "computer",
+            "education",
+            "element",
+            "estate",
+            "express",
+            "furniture",
+            "guru",
+            "hockey",
+            "hospital",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "photography",
+            "plumbing",
+            "plus",
+            "position",
+            "repair",
+            "supply",
+            "theater",
+            "voyage",
+            "word count",
+            "works"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Binky Moon, LLC"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 16,
+        "fired": 16,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f8f0bb7f",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "computer",
+            "education",
+            "element",
+            "estate",
+            "express",
+            "furniture",
+            "guru",
+            "hockey",
+            "hospital",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "photography",
+            "plumbing",
+            "plus",
+            "position",
+            "repair",
+            "supply",
+            "theater",
+            "voyage",
+            "word count",
+            "works"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Binky Moon, LLC"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 16,
@@ -6471,6 +8006,77 @@
       }
     },
     {
+      "id": "n-33c14fb8",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avianca",
+            "boots",
+            "bugatti",
+            "element",
+            "fujixerox",
+            "hgtv",
+            "honeywell",
+            "how many words",
+            "item number",
+            "iwc",
+            "nth",
+            "number of words",
+            "pamperedchef",
+            "position",
+            "word count",
+            "إختبار"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Not assigned"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-46eee5b7",
       "task": "tld-sponsor",
       "gen": 10,
@@ -6536,6 +8142,445 @@
       "mem": null,
       "height": 4,
       "size": 9,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5055400e",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avianca",
+            "boots",
+            "bugatti",
+            "element",
+            "fujixerox",
+            "hgtv",
+            "honeywell",
+            "how many words",
+            "item number",
+            "iwc",
+            "nth",
+            "number of words",
+            "pamperedchef",
+            "position",
+            "word count",
+            "إختبار"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Not assigned"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8e1b7874",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "avianca",
+            "boots",
+            "bugatti",
+            "element",
+            "fujixerox",
+            "hgtv",
+            "honeywell",
+            "how many words",
+            "item number",
+            "iwc",
+            "nth",
+            "number of words",
+            "pamperedchef",
+            "position",
+            "word count",
+            "إختبار"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Not assigned"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d5c443cb",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ci",
+            "consonant count",
+            "element",
+            "how many consonants",
+            "im",
+            "itau",
+            "item number",
+            "la",
+            "nth",
+            "number of consonants",
+            "position",
+            "su",
+            "tiaa",
+            "us",
+            "ye",
+            "za"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-def010d0",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ci",
+            "consonant count",
+            "element",
+            "how many consonants",
+            "im",
+            "itau",
+            "item number",
+            "la",
+            "nth",
+            "number of consonants",
+            "position",
+            "su",
+            "tiaa",
+            "us",
+            "ye",
+            "za"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ec6b7389",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ci",
+            "consonant count",
+            "element",
+            "how many consonants",
+            "im",
+            "itau",
+            "item number",
+            "la",
+            "nth",
+            "number of consonants",
+            "position",
+            "su",
+            "tiaa",
+            "us",
+            "ye",
+            "za"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
       "fit": {
         "ok": 9,
         "fired": 9,
@@ -6627,6 +8672,108 @@
       "mem": null,
       "height": 4,
       "size": 14,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-79a4a3c6",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "consonant count",
+            "ee",
+            "element",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "мон",
+            "рус",
+            "إختبار",
+            "الاردن",
+            "امارات",
+            "परकष",
+            "भरत"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "not",
+          [
+            "has",
+            "type"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
       "fit": {
         "ok": 8,
         "fired": 8,
@@ -7166,6 +9313,189 @@
       "mem": null,
       "height": 3,
       "size": 6,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-12f9eefe",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "family",
+            "forsale",
+            "how many words",
+            "item number",
+            "juegos",
+            "nth",
+            "number of words",
+            "position",
+            "rip",
+            "sale",
+            "studio",
+            "word count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Dog Beach, LLC"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-455b9c62",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "family",
+            "forsale",
+            "how many words",
+            "item number",
+            "juegos",
+            "nth",
+            "number of words",
+            "position",
+            "rip",
+            "sale",
+            "studio",
+            "word count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Dog Beach, LLC"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6a24811d",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "family",
+            "forsale",
+            "how many words",
+            "item number",
+            "juegos",
+            "nth",
+            "number of words",
+            "position",
+            "rip",
+            "sale",
+            "studio",
+            "word count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Dog Beach, LLC"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
       "fit": {
         "ok": 6,
         "fired": 6,
@@ -8205,6 +10535,188 @@
       }
     },
     {
+      "id": "n-02fd2bc7",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cal",
+            "element",
+            "goog",
+            "how many words",
+            "item number",
+            "map",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Charleston Road Registry Inc."
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1018c2e2",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "study",
+            "surf",
+            "us",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "organization"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Registry Services, LLC"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-14350d5d",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "study",
+            "surf",
+            "us",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "organization"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Registry Services, LLC"
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-5c1b963f",
       "task": "tld-sponsor",
       "gen": 10,
@@ -8264,6 +10776,668 @@
       }
     },
     {
+      "id": "n-5f34b5fe",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "study",
+            "surf",
+            "us",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "organization"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Registry Services, LLC"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-629bb598",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "plus",
+            "position",
+            "supply",
+            "vowel count",
+            "works"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Binky Moon, LLC"
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-73c70539",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "study",
+            "surf",
+            "us",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "organization"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Registry Services, LLC"
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-79ea4ab3",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "study",
+            "surf",
+            "us",
+            "vowel count"
+          ]
+        ],
+        [
+          "has",
+          "organization"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Registry Services, LLC"
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9f121492",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cal",
+            "element",
+            "goog",
+            "how many words",
+            "item number",
+            "map",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Charleston Road Registry Inc."
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a507b979",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "book",
+            "element",
+            "fire",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "wanggou",
+            "word count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Amazon Registry Services, Inc."
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-adce2460",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "plus",
+            "position",
+            "supply",
+            "vowel count",
+            "works"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Binky Moon, LLC"
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ba46c31e",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "element",
+            "hgtv",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "vowel count",
+            "إختبار",
+            "परकष"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          {
+            "lit": "Not assigned"
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cd8dee66",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "study",
+            "surf",
+            "us",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "organization"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Registry Services, LLC"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d11984f6",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "book",
+            "element",
+            "fire",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "wanggou",
+            "word count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Amazon Registry Services, Inc."
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e0d5a928",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cal",
+            "element",
+            "goog",
+            "how many words",
+            "item number",
+            "map",
+            "nth",
+            "number of words",
+            "position",
+            "word count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Charleston Road Registry Inc."
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-e2954167",
       "task": "tld-sponsor",
       "gen": 10,
@@ -8315,6 +11489,122 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ec84da17",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "book",
+            "element",
+            "fire",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "wanggou",
+            "word count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Amazon Registry Services, Inc."
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f4adc864",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "plus",
+            "position",
+            "supply",
+            "vowel count",
+            "works"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Binky Moon, LLC"
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 3,
@@ -11840,6 +15130,324 @@
       }
     },
     {
+      "id": "n-1b650c2b",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "element",
+            "item number",
+            "lower camel case",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "simplify the text",
+            "sport",
+            "sv",
+            "ye"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.norm",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "tld-types"
+                  },
+                  {
+                    "lit": "top-level domain"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "tld-types"
+              },
+              {
+                "lit": "top-level domain"
+              },
+              {
+                "lit": "sponsoring organization"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5db14456",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "element",
+            "item number",
+            "lower camel case",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "simplify the text",
+            "sport",
+            "sv",
+            "ye"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.norm",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "tld-types"
+                  },
+                  {
+                    "lit": "top-level domain"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "tld-types"
+              },
+              {
+                "lit": "top-level domain"
+              },
+              {
+                "lit": "sponsoring organization"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5e6b2cd9",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "delete",
+            "element",
+            "item number",
+            "lower camel case",
+            "nth",
+            "position",
+            "remove",
+            "sport",
+            "strip out",
+            "sv",
+            "without",
+            "ye"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.remove",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "tld-types"
+                  },
+                  {
+                    "lit": "top-level domain"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "tld-types"
+              },
+              {
+                "lit": "top-level domain"
+              },
+              {
+                "lit": "sponsoring organization"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-62376660",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "sport",
+            "sv",
+            "words backwards",
+            "ye"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.reverseWords",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "tld-types"
+                  },
+                  {
+                    "lit": "top-level domain"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "tld-types"
+              },
+              {
+                "lit": "top-level domain"
+              },
+              {
+                "lit": "sponsoring organization"
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-62a16dc9",
       "task": "tld-sponsor",
       "gen": 10,
@@ -11910,6 +15518,86 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f1145eb4",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "element",
+            "item number",
+            "lower camel case",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "simplify the text",
+            "sport",
+            "sv",
+            "ye"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.norm",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "tld-types"
+                  },
+                  {
+                    "lit": "top-level domain"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "tld-types"
+              },
+              {
+                "lit": "top-level domain"
+              },
+              {
+                "lit": "sponsoring organization"
+              }
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 13,
       "fit": {
         "ok": 3,
@@ -13140,6 +16828,63 @@
       }
     },
     {
+      "id": "n-00833b8f",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "diet",
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count",
+            "xyz"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          {
+            "lit": "XYZ.COM LLC"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-13553df8",
       "task": "tld-sponsor",
       "gen": 10,
@@ -13257,6 +17002,356 @@
       }
     },
     {
+      "id": "n-408ceb19",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cal",
+            "element",
+            "how many vowels",
+            "item number",
+            "map",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Charleston Road Registry Inc."
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-50c3d04c",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cal",
+            "element",
+            "how many vowels",
+            "item number",
+            "map",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Charleston Road Registry Inc."
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-64e9a534",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "consonant count",
+            "element",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "إختبار",
+            "परकष"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          {
+            "lit": "Not assigned"
+          },
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b518f9cb",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "diet",
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count",
+            "xyz"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          {
+            "lit": "XYZ.COM LLC"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c5bf861a",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cal",
+            "element",
+            "how many vowels",
+            "item number",
+            "map",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Charleston Road Registry Inc."
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-fa80403a",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "diet",
+            "element",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "position",
+            "word count",
+            "xyz"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          {
+            "lit": "XYZ.COM LLC"
+          },
+          [
+            "aggregate.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-644b93fe",
       "task": "tld-sponsor",
       "gen": 10,
@@ -13318,6 +17413,237 @@
           },
           [
             "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9fdf9477",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "domain",
+            "element",
+            "how many vowels",
+            "item number",
+            "mx",
+            "nth",
+            "number of vowels",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "vowel count"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "sense.roman"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a8c0c126",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "consonant count",
+            "element",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "pamperedchef",
+            "photography",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-da405401",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bar",
+            "caesar cipher",
+            "element",
+            "how many letters",
+            "item number",
+            "letter count",
+            "nth",
+            "number of letters",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "भरत"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.letters",
+            [
+              "sense.text"
+            ]
           ]
         ]
       ],
@@ -17912,6 +22238,582 @@
       "mem": null,
       "height": 3,
       "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2ad3e700",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "rip",
+            "vowel count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Dog Beach, LLC"
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3f4367dc",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "element",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter",
+            "vowel count",
+            "xyz"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          {
+            "lit": "XYZ.COM LLC"
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-47346f2e",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "element",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "us"
+          ]
+        ],
+        [
+          "has",
+          "organization"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Registry Services, LLC"
+          },
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8cf16410",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "rip",
+            "vowel count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Dog Beach, LLC"
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b5fa3c58",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "element",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "us"
+          ]
+        ],
+        [
+          "has",
+          "organization"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Registry Services, LLC"
+          },
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bfd714f2",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "rip",
+            "vowel count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Dog Beach, LLC"
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c93d91d6",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many vowels",
+            "item number",
+            "iwc",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Not assigned"
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cb643f72",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many vowels",
+            "item number",
+            "iwc",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Not assigned"
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cbc09923",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "how many vowels",
+            "item number",
+            "iwc",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Not assigned"
+          },
+          [
+            "aggregate.vowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cc19fcdc",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "consonant count",
+            "element",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position",
+            "us"
+          ]
+        ],
+        [
+          "has",
+          "organization"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Registry Services, LLC"
+          },
+          [
+            "aggregate.consonants",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -25233,6 +30135,296 @@
       }
     },
     {
+      "id": "n-05a98ca3",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "element",
+            "how many characters",
+            "item number",
+            "length",
+            "nth",
+            "number of characters",
+            "position",
+            "परकष"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.chars",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0c1f3787",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "ee",
+            "element",
+            "item number",
+            "no vowels",
+            "nth",
+            "position",
+            "put together",
+            "remove vowels",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "who"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.concat",
+          [
+            "transform.noVowels",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-10651ff6",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "element",
+            "how many characters",
+            "item number",
+            "length",
+            "nth",
+            "number of characters",
+            "position",
+            "परकष"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.chars",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1907f086",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ci",
+            "consonant count",
+            "element",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "sense.roman"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-24605359",
       "task": "tld-sponsor",
       "gen": 10,
@@ -25306,6 +30498,447 @@
       }
     },
     {
+      "id": "n-69340a2f",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "ee",
+            "element",
+            "item number",
+            "no vowels",
+            "nth",
+            "position",
+            "put together",
+            "remove vowels",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "who"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.concat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "transform.noVowels",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-700c5193",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "element",
+            "how many characters",
+            "item number",
+            "length",
+            "nth",
+            "number of characters",
+            "position",
+            "परकष"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.chars",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-78244a4c",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "body",
+            "element",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "sense.roman"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b8566750",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ci",
+            "consonant count",
+            "element",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "sense.roman"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-fbececa9",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ci",
+            "consonant count",
+            "element",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "position"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "sense.roman"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6aae3974",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "ee",
+            "element",
+            "item number",
+            "no vowels",
+            "nth",
+            "position",
+            "put together",
+            "remove vowels",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "who"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.concat",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ],
+          [
+            "transform.noVowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-8a9356c1",
       "task": "tld-sponsor",
       "gen": 10,
@@ -25351,6 +30984,94 @@
           ],
           [
             "sense.unit"
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "tld-types"
+            },
+            {
+              "lit": "top-level domain"
+            },
+            {
+              "lit": "sponsoring organization"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e6dc8d02",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "append",
+            "combine",
+            "concatenate",
+            "ee",
+            "element",
+            "item number",
+            "no vowels",
+            "nth",
+            "position",
+            "put together",
+            "remove vowels",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "who"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.concat",
+          [
+            "transform.noVowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "tld-types"
+                },
+                {
+                  "lit": "top-level domain"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
           ],
           [
             "know.lookup",
@@ -34770,6 +40491,54 @@
       }
     },
     {
+      "id": "n-3c18e622",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "consonant count",
+            "how many consonants",
+            "number of consonants",
+            "photography",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          {
+            "lit": "Binky Moon, LLC"
+          },
+          [
+            "aggregate.consonants",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-3d34edb9",
       "task": "tld-sponsor",
       "gen": 6,
@@ -35796,6 +41565,50 @@
       }
     },
     {
+      "id": "n-6e459005",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "how many characters",
+            "number of characters",
+            "परकष"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Not assigned"
+          },
+          [
+            "aggregate.chars",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-70afce3f",
       "task": "tld-sponsor",
       "gen": 6,
@@ -36341,6 +42154,50 @@
       }
     },
     {
+      "id": "n-8e2a6708",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "how many characters",
+            "number of characters",
+            "परकष"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Not assigned"
+          },
+          [
+            "aggregate.chars",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-95b2bc8f",
       "task": "tld-sponsor",
       "gen": 6,
@@ -36705,6 +42562,50 @@
           "render.and",
           [
             "transform.words",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a87497d1",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "character count",
+            "how many characters",
+            "number of characters",
+            "परकष"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          {
+            "lit": "Not assigned"
+          },
+          [
+            "aggregate.chars",
             [
               "sense.lastWord"
             ]
@@ -37168,6 +43069,50 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c0bffe9b",
+      "task": "tld-sponsor",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "consonant count",
+            "how many consonants",
+            "number of consonants",
+            "pamperedchef",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          {
+            "lit": "Not assigned"
+          },
+          [
+            "aggregate.consonants",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -73606,6 +79551,7 @@
   ],
   "stages": [
     "a4da383da63ce4d2cb966dc7551bcf838ab2c0484add0c2f32070a933cc47fc1",
-    "3984a3c95938aefa7b2044d043ea3727addf74ccba385387092a1c0b598fb0b2"
+    "3984a3c95938aefa7b2044d043ea3727addf74ccba385387092a1c0b598fb0b2",
+    "af58b69ceb832efad7de0763d7d67e4b44acfb27d840884b7523ec2a719dcd01"
   ]
 }

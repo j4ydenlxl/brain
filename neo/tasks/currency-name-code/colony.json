@@ -2,24 +2,26 @@
   "task": "currency-name-code",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T13:08:30.577Z",
+  "at": "2026-10-21T14:44:18.652Z",
   "stats": {
     "generated": 160937,
-    "distinct": 135301,
-    "kept": 791,
-    "know": 15,
+    "distinct": 170841,
+    "kept": 839,
+    "know": 46,
     "byFamily": {
-      "transform": 19,
+      "transform": 67,
       "memory": 772
     },
     "bySource": {
-      "parent": 791
+      "parent": 791,
+      "enum": 47,
+      "open": 1
     },
-    "maxHeight": 5,
+    "maxHeight": 6,
     "devOk": 100,
     "devN": 100,
-    "ms": 125538,
-    "cellsPerSecond": 1282,
+    "ms": 146536,
+    "cellsPerSecond": 1098,
     "capped": null,
     "packs": [
       "datasets-currency-codes"
@@ -27,12 +29,12 @@
     "cursor": {
       "v": 1,
       "basis": "4040e773fae60a48d9fa0513b8b5f779ec5a3399d85f1a30355fcf9facf7933b",
-      "round": 1,
-      "at": 199682,
+      "round": 2,
+      "at": 293972,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "iterate.rangeFrom",
+      "cost": 7,
+      "prim": "aggregate.sum",
       "tpl": 2472
     }
   },
@@ -148,6 +150,500 @@
       "mem": null,
       "height": 5,
       "size": 11,
+      "fit": {
+        "ok": 44,
+        "fired": 44,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2d0dd5d3",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "algerian",
+            "bahamian",
+            "bahraini",
+            "bermudian",
+            "brunei",
+            "cedi",
+            "cfp",
+            "class name",
+            "comorian",
+            "congolese",
+            "dalasi",
+            "denar",
+            "djibouti",
+            "drawing",
+            "fomento",
+            "gourde",
+            "guinean",
+            "helena",
+            "islands",
+            "item number",
+            "kina",
+            "kuwaiti",
+            "lanka",
+            "lempira",
+            "libyan",
+            "lilangeni",
+            "lira",
+            "malaysian",
+            "metical",
+            "new",
+            "ngultrum",
+            "no vowels",
+            "nth",
+            "pakistan",
+            "pascal case",
+            "pascalcase",
+            "philippine",
+            "platinum",
+            "position",
+            "remove vowels",
+            "rwanda",
+            "singapore",
+            "sterling",
+            "sudanese",
+            "swiss",
+            "syrian",
+            "tanzanian",
+            "tugrik",
+            "tunisian",
+            "upper camel case",
+            "without vowels",
+            "zloty"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.pascal",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 44,
+        "fired": 44,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3f8939ce",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "algerian",
+            "bahamian",
+            "bahraini",
+            "bermudian",
+            "brunei",
+            "camel case",
+            "camelcase",
+            "cedi",
+            "cfp",
+            "comorian",
+            "congolese",
+            "dalasi",
+            "denar",
+            "djibouti",
+            "drawing",
+            "fomento",
+            "gourde",
+            "guinean",
+            "helena",
+            "islands",
+            "item number",
+            "kina",
+            "kuwaiti",
+            "lanka",
+            "lempira",
+            "libyan",
+            "lilangeni",
+            "lira",
+            "lower camel case",
+            "malaysian",
+            "metical",
+            "new",
+            "ngultrum",
+            "no vowels",
+            "nth",
+            "pakistan",
+            "philippine",
+            "platinum",
+            "position",
+            "remove vowels",
+            "rwanda",
+            "singapore",
+            "sterling",
+            "sudanese",
+            "swiss",
+            "syrian",
+            "tanzanian",
+            "tugrik",
+            "tunisian",
+            "without vowels",
+            "zloty"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.noVowels",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 44,
+        "fired": 44,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5572ac1d",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "algerian",
+            "bahamian",
+            "bahraini",
+            "bermudian",
+            "brunei",
+            "cedi",
+            "cfp",
+            "class name",
+            "comorian",
+            "congolese",
+            "dalasi",
+            "denar",
+            "djibouti",
+            "drawing",
+            "fomento",
+            "gourde",
+            "guinean",
+            "helena",
+            "islands",
+            "item number",
+            "kina",
+            "kuwaiti",
+            "lanka",
+            "lempira",
+            "libyan",
+            "lilangeni",
+            "lira",
+            "malaysian",
+            "metical",
+            "new",
+            "ngultrum",
+            "no vowels",
+            "nth",
+            "pakistan",
+            "pascal case",
+            "pascalcase",
+            "philippine",
+            "platinum",
+            "position",
+            "remove vowels",
+            "rwanda",
+            "singapore",
+            "sterling",
+            "sudanese",
+            "swiss",
+            "syrian",
+            "tanzanian",
+            "tugrik",
+            "tunisian",
+            "upper camel case",
+            "without vowels",
+            "zloty"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.noVowels",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 44,
+        "fired": 44,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8f601aab",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "algerian",
+            "bahamian",
+            "bahraini",
+            "bermudian",
+            "brunei",
+            "cedi",
+            "cfp",
+            "comorian",
+            "congolese",
+            "dalasi",
+            "denar",
+            "djibouti",
+            "drawing",
+            "each word",
+            "fomento",
+            "gourde",
+            "guinean",
+            "helena",
+            "islands",
+            "item number",
+            "kina",
+            "kuwaiti",
+            "lanka",
+            "lempira",
+            "libyan",
+            "lilangeni",
+            "lira",
+            "malaysian",
+            "metical",
+            "new",
+            "ngultrum",
+            "no vowels",
+            "nth",
+            "pakistan",
+            "philippine",
+            "platinum",
+            "position",
+            "remove vowels",
+            "rwanda",
+            "singapore",
+            "split into words",
+            "sterling",
+            "sudanese",
+            "swiss",
+            "syrian",
+            "tanzanian",
+            "tugrik",
+            "tunisian",
+            "without vowels",
+            "words",
+            "zloty"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.noVowels",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
       "fit": {
         "ok": 44,
         "fired": 44,
@@ -1038,6 +1534,520 @@
       }
     },
     {
+      "id": "n-21672236",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "code",
+            "delete",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "datasets-currency-codes"
+            },
+            {
+              "lit": "currency"
+            },
+            {
+              "lit": "currency code"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4428ad5a",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [
+        "n-21672236"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "alpha3",
+              "battles",
+              "category",
+              "country",
+              "crayola",
+              "currency",
+              "grams",
+              "increasing",
+              "ingersoll",
+              "kind",
+              "language",
+              "maryland",
+              "medal",
+              "number",
+              "price",
+              "proshares",
+              "rush",
+              "sable",
+              "sacrifice",
+              "secret",
+              "short",
+              "sierra",
+              "symbol",
+              "titles",
+              "wont"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "datasets-currency-codes"
+            },
+            {
+              "lit": "currency"
+            },
+            {
+              "lit": "currency code"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5be4772c",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alphabetize the letters",
+            "argentine",
+            "beac",
+            "cedi",
+            "class name",
+            "congolese",
+            "dirham",
+            "drawing",
+            "gibraltar",
+            "helena",
+            "hryvnia",
+            "islands",
+            "item number",
+            "kina",
+            "kip",
+            "lanka",
+            "lari",
+            "lek",
+            "letters in order",
+            "lira",
+            "nth",
+            "pakistan",
+            "pascal case",
+            "pascalcase",
+            "philippine",
+            "platinum",
+            "position",
+            "real",
+            "rial",
+            "sol",
+            "somali",
+            "sort the letters",
+            "sterling",
+            "sudanese",
+            "tugrik",
+            "turkmenistan",
+            "upper camel case",
+            "vatu",
+            "zambian",
+            "zloty"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "content"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "crayola"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.sortLetters",
+          [
+            "transform.pascal",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 31,
+        "fired": 31,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-12cb6123",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "boliviano",
+            "change to",
+            "dalasi",
+            "denar",
+            "gourde",
+            "hryvnia",
+            "item number",
+            "kina",
+            "kwanza",
+            "lari",
+            "lek",
+            "ngultrum",
+            "nth",
+            "platinum",
+            "position",
+            "pula",
+            "replace",
+            "rupiah",
+            "substitute",
+            "swap",
+            "tugrik"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "datasets-currency-codes"
+            },
+            {
+              "lit": "currency"
+            },
+            {
+              "lit": "currency code"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e8e9f3d0",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "boliviano",
+            "change to",
+            "dalasi",
+            "denar",
+            "gourde",
+            "hryvnia",
+            "item number",
+            "kina",
+            "kwanza",
+            "lari",
+            "lek",
+            "ngultrum",
+            "nth",
+            "platinum",
+            "position",
+            "pula",
+            "replace",
+            "rupiah",
+            "substitute",
+            "swap",
+            "tugrik"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "datasets-currency-codes"
+            },
+            {
+              "lit": "currency"
+            },
+            {
+              "lit": "currency code"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-37e86c9f",
       "task": "currency-name-code",
       "gen": 10,
@@ -1235,6 +2245,398 @@
       }
     },
     {
+      "id": "n-4e5e35ce",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alphabetize the letters",
+            "argentine",
+            "cedi",
+            "congolese",
+            "each word",
+            "gibraltar",
+            "iranian",
+            "item number",
+            "lek",
+            "letters in order",
+            "nth",
+            "position",
+            "real",
+            "renminbi",
+            "sort the letters",
+            "split into words",
+            "tugrik",
+            "won",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a79e2b69",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alphabetize the letters",
+            "argentine",
+            "camel case",
+            "camelcase",
+            "cedi",
+            "congolese",
+            "gibraltar",
+            "iranian",
+            "item number",
+            "lek",
+            "letters in order",
+            "lower camel case",
+            "nth",
+            "position",
+            "real",
+            "renminbi",
+            "sort the letters",
+            "tugrik",
+            "won"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c545f0ec",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alphabetize the letters",
+            "argentine",
+            "cedi",
+            "class name",
+            "congolese",
+            "gibraltar",
+            "iranian",
+            "item number",
+            "lek",
+            "letters in order",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "real",
+            "renminbi",
+            "sort the letters",
+            "tugrik",
+            "upper camel case",
+            "won"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a1760696",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "account",
+            "alphabetize the letters",
+            "backwards",
+            "cfp",
+            "day",
+            "denar",
+            "dong",
+            "item number",
+            "letters in order",
+            "mirror",
+            "nth",
+            "position",
+            "reverse",
+            "reversed",
+            "singapore",
+            "sort the letters",
+            "spell backwards",
+            "tobago",
+            "tunisian",
+            "us"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.reverse",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-2537da56",
       "task": "currency-name-code",
       "gen": 10,
@@ -1309,6 +2711,181 @@
       "mem": null,
       "height": 5,
       "size": 11,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-19a25692",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "algerian",
+            "backwards",
+            "boliviano",
+            "each word",
+            "item number",
+            "kwanza",
+            "mirror",
+            "nth",
+            "philippine",
+            "position",
+            "reverse",
+            "reversed",
+            "somali",
+            "spell backwards",
+            "split into words",
+            "turkmenistan",
+            "uruguayo",
+            "vatu",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.reverse",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2aa1a1c9",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "algerian",
+            "backwards",
+            "boliviano",
+            "class name",
+            "item number",
+            "kwanza",
+            "mirror",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "philippine",
+            "position",
+            "reverse",
+            "reversed",
+            "somali",
+            "spell backwards",
+            "turkmenistan",
+            "upper camel case",
+            "uruguayo",
+            "vatu"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.reverse",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
       "fit": {
         "ok": 8,
         "fired": 8,
@@ -1400,6 +2977,277 @@
       "fit": {
         "ok": 8,
         "fired": 8,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-92312fbb",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "algerian",
+            "backwards",
+            "boliviano",
+            "class name",
+            "item number",
+            "kwanza",
+            "mirror",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "philippine",
+            "position",
+            "reverse",
+            "reversed",
+            "somali",
+            "spell backwards",
+            "turkmenistan",
+            "upper camel case",
+            "uruguayo",
+            "vatu"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.reverse",
+          [
+            "transform.pascal",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b2f88bac",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "algerian",
+            "backwards",
+            "boliviano",
+            "camel case",
+            "camelcase",
+            "item number",
+            "kwanza",
+            "lower camel case",
+            "mirror",
+            "nth",
+            "philippine",
+            "position",
+            "reverse",
+            "reversed",
+            "somali",
+            "spell backwards",
+            "turkmenistan",
+            "uruguayo",
+            "vatu"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.reverse",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f16f5dbe",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alphabetize the letters",
+            "cedi",
+            "congolese",
+            "item number",
+            "letters in order",
+            "no vowels",
+            "nth",
+            "position",
+            "remove vowels",
+            "renminbi",
+            "sort the letters",
+            "tugrik",
+            "without vowels",
+            "won"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
         "rows": 100
       }
     },
@@ -1749,6 +3597,226 @@
       }
     },
     {
+      "id": "n-3995c54f",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "cabo",
+            "helena",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "short form",
+            "simplify the text",
+            "tobago",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "transform.norm",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-650036e1",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "append",
+            "cabo",
+            "combine",
+            "concatenate",
+            "helena",
+            "item number",
+            "nth",
+            "position",
+            "put together",
+            "short form",
+            "tobago",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-dd75e022",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "cabo",
+            "helena",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "short form",
+            "simplify the text",
+            "tobago",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-02f208e4",
       "task": "currency-name-code",
       "gen": 10,
@@ -1924,6 +3992,199 @@
       "mem": null,
       "height": 5,
       "size": 8,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2c762673",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cabo",
+            "first letters of the name",
+            "helena",
+            "initials",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "simplify the text",
+            "zealand"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.initials",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f5d8aef3",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cabo",
+            "first letters of the name",
+            "helena",
+            "initials",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "simplify the text",
+            "zealand"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.initials",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f13f75ed",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "algerian",
+            "backwards",
+            "item number",
+            "mirror",
+            "no vowels",
+            "nth",
+            "philippine",
+            "position",
+            "remove vowels",
+            "reverse",
+            "reversed",
+            "spell backwards",
+            "turkmenistan",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.reverse",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "datasets-currency-codes"
+                  },
+                  {
+                    "lit": "currency"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              },
+              {
+                "lit": "currency code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
       "fit": {
         "ok": 3,
         "fired": 3,
@@ -14962,6 +17223,68 @@
       }
     },
     {
+      "id": "n-a4e81825",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "cabo",
+            "delete",
+            "element",
+            "helena",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "short form",
+            "strip out",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "transform.remove",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-bdc3b769",
       "task": "currency-name-code",
       "gen": 10,
@@ -15005,6 +17328,63 @@
       "mem": null,
       "height": 3,
       "size": 4,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1a9edc18",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "short form",
+            "snake case",
+            "snakecase",
+            "tobago",
+            "underscores",
+            "variable name",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.snake",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
       "fit": {
         "ok": 2,
         "fired": 2,
@@ -15065,6 +17445,788 @@
       "fit": {
         "ok": 2,
         "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-59da1256",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "no vowels",
+            "remove vowels",
+            "short form",
+            "tobago",
+            "without vowels",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8c725bca",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "camel case",
+            "camelcase",
+            "lower camel case",
+            "short form",
+            "tobago",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-91fbfa38",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "each word",
+            "short form",
+            "split into words",
+            "tobago",
+            "words",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-99a24bf3",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "class name",
+            "pascal case",
+            "pascalcase",
+            "short form",
+            "tobago",
+            "upper camel case",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a80510ab",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "lower case",
+            "lowercase",
+            "short form",
+            "small letters",
+            "tobago",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b706b66e",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "short form",
+            "title case",
+            "tobago",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d762d911",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "dashes",
+            "hyphens",
+            "kebab case",
+            "kebabcase",
+            "short form",
+            "slug",
+            "tobago",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.kebab",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-49a1baf6",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "helena",
+            "join",
+            "joined with",
+            "separated by",
+            "short form"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "transform.join",
+            [
+              "know.find",
+              {
+                "lit": "datasets-currency-codes"
+              },
+              {
+                "lit": "currency"
+              }
+            ],
+            [
+              "sense.unit"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4b422037",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "delete",
+            "element",
+            "helena",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "short form",
+            "strip out",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "transform.remove",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.unit"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9e8f9b4f",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "append",
+            "combine",
+            "concatenate",
+            "element",
+            "helena",
+            "item number",
+            "nth",
+            "position",
+            "put together",
+            "short form"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.unit"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-60fa57e9",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "day",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.unit"
+          ],
+          [
+            "sense.lastWord"
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "datasets-currency-codes"
+            },
+            {
+              "lit": "currency"
+            },
+            {
+              "lit": "currency code"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7ba91fbc",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "append",
+            "combine",
+            "concatenate",
+            "iranian",
+            "item number",
+            "nth",
+            "position",
+            "put together",
+            "short form"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "transform.concat",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-df69b3d9",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "day",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "sense.unit"
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "datasets-currency-codes"
+                },
+                {
+                  "lit": "currency"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "datasets-currency-codes"
+            },
+            {
+              "lit": "currency"
+            },
+            {
+              "lit": "currency code"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
         "rows": 100
       }
     },
@@ -31208,6 +34370,406 @@
       }
     },
     {
+      "id": "n-2eb94eb6",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "class name",
+            "pascal case",
+            "pascalcase",
+            "upper camel case",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6a6fa2d2",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "no vowels",
+            "remove vowels",
+            "without vowels",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7de366eb",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "append",
+            "combine",
+            "concatenate",
+            "lebanese",
+            "put together",
+            "short form"
+          ]
+        ],
+        [
+          "has",
+          "iso"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.concat",
+          [
+            "sense.unit"
+          ],
+          [
+            "transform.acronym",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7e43fd41",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "camel case",
+            "camelcase",
+            "lower camel case",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-aca16f24",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "dashes",
+            "hyphens",
+            "kebab case",
+            "kebabcase",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.kebab",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c3def45d",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "lower case",
+            "lowercase",
+            "small letters",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cd922ad5",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "snake case",
+            "snakecase",
+            "underscores",
+            "variable name",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.snake",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-dc50d293",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "each word",
+            "split into words",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-e9dc0b48",
       "task": "currency-name-code",
       "gen": 10,
@@ -31251,6 +34813,56 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f46e5fb3",
+      "task": "currency-name-code",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "zealand"
+          ]
+        ],
+        [
+          "has",
+          "dollar"
+        ],
+        [
+          "has",
+          "code"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -50635,6 +54247,7 @@
   ],
   "stages": [
     "8440f74f1e163a9d6cc1230b96ce0aafaa563079f51953477f8ac08d27d64719",
-    "f83b299da8370141f401bf49afa5b6e1c9a52cbc0402818424c61a0b36847ecc"
+    "f83b299da8370141f401bf49afa5b6e1c9a52cbc0402818424c61a0b36847ecc",
+    "7838bab421099f9e238c357abac562b65bac41f27738d061247e1627dd227584"
   ]
 }

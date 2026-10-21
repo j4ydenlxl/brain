@@ -2,14 +2,14 @@
   "task": "corpora-us-city-population-city-st-6d34de",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T13:02:49.272Z",
+  "at": "2026-10-21T14:35:40.087Z",
   "stats": {
-    "generated": 160214,
-    "distinct": 134034,
-    "kept": 281,
-    "know": 161,
+    "generated": 160284,
+    "distinct": 130323,
+    "kept": 284,
+    "know": 164,
     "byFamily": {
-      "transform": 68,
+      "transform": 71,
       "compute": 27,
       "aggregate": 93,
       "memory": 80,
@@ -17,14 +17,14 @@
       "iterate": 12
     },
     "bySource": {
-      "enum": 70,
-      "parent": 211
+      "parent": 281,
+      "enum": 3
     },
     "maxHeight": 8,
     "devOk": 40,
     "devN": 40,
-    "ms": 91765,
-    "cellsPerSecond": 1746,
+    "ms": 59959,
+    "cellsPerSecond": 2673,
     "capped": null,
     "packs": [
       "corpora-us-cities",
@@ -34,12 +34,12 @@
     "cursor": {
       "v": 1,
       "basis": "61b249a583e966cd59cbd7a120271957d05f29ee32f37f2ef4b76dd212d370e8",
-      "round": 1,
-      "at": 216915,
+      "round": 2,
+      "at": 343234,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.split",
+      "cost": 7,
+      "prim": "aggregate.vowels",
       "tpl": 1781
     }
   },
@@ -272,6 +272,128 @@
       "fit": {
         "ok": 21,
         "fired": 21,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-098ed810",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "apex",
+            "characters from",
+            "club",
+            "cranston",
+            "creek",
+            "element",
+            "encinitas",
+            "franklin",
+            "gaithersburg",
+            "hanford",
+            "hawaii",
+            "item number",
+            "joplin",
+            "lancaster",
+            "lawton",
+            "letters from to",
+            "lombard",
+            "margarita",
+            "nth",
+            "position",
+            "riverview",
+            "slice of the text",
+            "substring",
+            "titusville",
+            "turlock",
+            "wheaton"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bellevue"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "clair"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "coconut"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "city, state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "corpora-us-city-population"
+            },
+            {
+              "lit": "city, state"
+            },
+            {
+              "lit": "population"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 18,
+        "fired": 18,
         "rows": 40
       }
     },
@@ -14356,6 +14478,80 @@
       }
     },
     {
+      "id": "n-b438b90a",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "distinct",
+            "element",
+            "factorise",
+            "factorize",
+            "item number",
+            "lancaster",
+            "nth",
+            "position",
+            "prime factorisation",
+            "prime factorization",
+            "prime factors",
+            "remove duplicates",
+            "unique",
+            "without repeats"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.listNums",
+        [
+          "transform.uniqueNums",
+          [
+            "compute.primeFactors",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "corpora-us-city-population"
+                    },
+                    {
+                      "lit": "city, state"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "corpora-us-city-population"
+                },
+                {
+                  "lit": "city, state"
+                },
+                {
+                  "lit": "population"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b4e0718f",
       "task": "corpora-us-city-population-city-st-6d34de",
       "gen": 7,
@@ -15697,6 +15893,86 @@
       "mem": null,
       "height": 4,
       "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-37131694",
+      "task": "corpora-us-city-population-city-st-6d34de",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as text",
+            "as words",
+            "distinct",
+            "element",
+            "factorise",
+            "factorize",
+            "item number",
+            "lancaster",
+            "nth",
+            "position",
+            "prime factorisation",
+            "prime factorization",
+            "prime factors",
+            "remove duplicates",
+            "unique",
+            "without repeats",
+            "written out"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.asText",
+          [
+            "transform.uniqueNums",
+            [
+              "compute.primeFactors",
+              [
+                "know.num",
+                [
+                  "know.lookup",
+                  [
+                    "transform.nthStr",
+                    [
+                      "know.find",
+                      {
+                        "lit": "corpora-us-city-population"
+                      },
+                      {
+                        "lit": "city, state"
+                      }
+                    ],
+                    {
+                      "lit": 1
+                    }
+                  ],
+                  {
+                    "lit": "corpora-us-city-population"
+                  },
+                  {
+                    "lit": "city, state"
+                  },
+                  {
+                    "lit": "population"
+                  }
+                ]
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 8,
+      "size": 14,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -21844,6 +22120,7 @@
   ],
   "stages": [
     "f75d68576016ae55393c156aad2f30e1c4c3c7334ec423aab898e976d4cb47fb",
-    "65936b068e7ea75b1bba81f3f490ce94659de3663afb6e9c24678a2febe9394e"
+    "65936b068e7ea75b1bba81f3f490ce94659de3663afb6e9c24678a2febe9394e",
+    "692a7e7e172a5e7f849cf4e655e996154c9e292a922e04ce7e46624a3c96e78e"
   ]
 }

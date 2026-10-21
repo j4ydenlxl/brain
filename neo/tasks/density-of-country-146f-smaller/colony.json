@@ -2,29 +2,29 @@
   "task": "density-of-country-146f-smaller",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T13:03:59.616Z",
+  "at": "2026-10-21T14:36:57.091Z",
   "stats": {
-    "generated": 66756,
-    "distinct": 71207,
-    "kept": 869,
-    "know": 551,
+    "generated": 99126,
+    "distinct": 86812,
+    "kept": 884,
+    "know": 554,
     "byFamily": {
       "memory": 200,
       "transform": 472,
-      "aggregate": 29,
+      "aggregate": 44,
       "route": 150,
       "iterate": 14,
       "sense": 4
     },
     "bySource": {
-      "parent": 868,
-      "open": 1
+      "parent": 869,
+      "enum": 15
     },
     "maxHeight": 8,
     "devOk": 99,
     "devN": 99,
-    "ms": 146750,
-    "cellsPerSecond": 455,
+    "ms": 150001,
+    "cellsPerSecond": 661,
     "capped": "ms",
     "packs": [
       "fr-country-json-country-by-population-density-91d8ee"
@@ -32,12 +32,12 @@
     "cursor": {
       "v": 1,
       "basis": "ba71638e734522fe1f3628463ef1ef030cafd940d81b1308c053a8787ce9d196",
-      "round": 1,
-      "at": 164700,
+      "round": 2,
+      "at": 235346,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "transform.sub",
+      "prim": "compute.divisorSum",
       "tpl": 1598
     }
   },
@@ -2149,6 +2149,135 @@
       "fit": {
         "ok": 25,
         "fired": 25,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-d207d545",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albania",
+            "antarctica",
+            "bangladesh",
+            "brunei",
+            "chad",
+            "each word",
+            "ecuador",
+            "egypt",
+            "eswatini",
+            "jamaica",
+            "longest",
+            "longest one",
+            "longest word",
+            "martinique",
+            "mongolia",
+            "montserrat",
+            "romania",
+            "russia",
+            "slovenia",
+            "split into words",
+            "syria",
+            "turkmenistan",
+            "venezuela",
+            "words",
+            "zimbabwe"
+          ]
+        ],
+        [
+          "has",
+          "density"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "smaller"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 23,
+        "fired": 23,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-1763e6f9",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albania",
+            "antarctica",
+            "bangladesh",
+            "brazil",
+            "brunei",
+            "each word",
+            "ecuador",
+            "estonia",
+            "eswatini",
+            "georgia",
+            "jamaica",
+            "korea",
+            "longest",
+            "longest one",
+            "longest word",
+            "mongolia",
+            "montserrat",
+            "nicaragua",
+            "slovenia",
+            "split into words",
+            "turkmenistan",
+            "venezuela",
+            "words",
+            "zimbabwe"
+          ]
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "density"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 22,
+        "fired": 22,
         "rows": 99
       }
     },
@@ -5765,6 +5894,166 @@
       }
     },
     {
+      "id": "n-1d5ff72c",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "african",
+            "albania",
+            "antarctica",
+            "belgium",
+            "chad",
+            "coast",
+            "element",
+            "ethiopia",
+            "georgia",
+            "greenland",
+            "heard",
+            "honduras",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nicaragua",
+            "nth",
+            "position",
+            "separate by",
+            "slovenia",
+            "split",
+            "split by",
+            "sweden"
+          ]
+        ],
+        [
+          "has",
+          "density"
+        ],
+        [
+          "has",
+          "lesser"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-population-density-91d8ee"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-74d64c08",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "african",
+            "albania",
+            "antarctica",
+            "belgium",
+            "chad",
+            "coast",
+            "element",
+            "ethiopia",
+            "georgia",
+            "greenland",
+            "heard",
+            "honduras",
+            "item number",
+            "nicaragua",
+            "nth",
+            "position",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "slovenia",
+            "split",
+            "split by",
+            "sweden"
+          ]
+        ],
+        [
+          "has",
+          "density"
+        ],
+        [
+          "has",
+          "lesser"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-population-density-91d8ee"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 99
+      }
+    },
+    {
       "id": "n-8df03d2f",
       "task": "density-of-country-146f-smaller",
       "gen": 10,
@@ -8100,6 +8389,65 @@
       }
     },
     {
+      "id": "n-c0cfd13a",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "austria",
+            "british",
+            "city",
+            "eswatini",
+            "first n",
+            "greenland",
+            "korea",
+            "marino",
+            "mongolia",
+            "myanmar",
+            "netherlands",
+            "palau",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "density"
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.list"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 99
+      }
+    },
+    {
       "id": "n-f783223b",
       "task": "density-of-country-146f-smaller",
       "gen": 10,
@@ -8837,6 +9185,64 @@
       "mem": null,
       "height": 4,
       "size": 4,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-109ebb51",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "austria",
+            "city",
+            "eswatini",
+            "first n",
+            "greenland",
+            "korea",
+            "marino",
+            "mongolia",
+            "myanmar",
+            "netherlands",
+            "palau",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "density"
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.list"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
       "fit": {
         "ok": 11,
         "fired": 11,
@@ -16307,6 +16713,111 @@
       }
     },
     {
+      "id": "n-76ae0e2e",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "chad",
+            "czech",
+            "element",
+            "germany",
+            "ghana",
+            "honduras",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nicaragua",
+            "nth",
+            "position",
+            "samoa",
+            "separate by",
+            "slovenia",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "density"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "afghanistan"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "benin"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bosnia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-population-density-91d8ee"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 99
+      }
+    },
+    {
       "id": "n-788d361d",
       "task": "density-of-country-146f-smaller",
       "gen": 10,
@@ -17050,6 +17561,65 @@
       "mem": null,
       "height": 4,
       "size": 4,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-6481f220",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "eswatini",
+            "ghana",
+            "kazakhstan",
+            "kyrgyzstan",
+            "lanka",
+            "longest",
+            "longest one",
+            "longest word",
+            "mongolia",
+            "myanmar",
+            "split into words",
+            "syria",
+            "venezuela",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "density"
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "has"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
       "fit": {
         "ok": 9,
         "fired": 9,
@@ -20579,6 +21149,68 @@
       }
     },
     {
+      "id": "n-016c91bb",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "eswatini",
+            "first n",
+            "longest one",
+            "longest word",
+            "mongolia",
+            "turkmenistan",
+            "zimbabwe"
+          ]
+        ],
+        [
+          "has",
+          "density"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 99
+      }
+    },
+    {
       "id": "n-137da46a",
       "task": "density-of-country-146f-smaller",
       "gen": 10,
@@ -20731,6 +21363,68 @@
       }
     },
     {
+      "id": "n-85e6cb7d",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "eswatini",
+            "first n",
+            "longest one",
+            "longest word",
+            "mongolia",
+            "turkmenistan",
+            "zimbabwe"
+          ]
+        ],
+        [
+          "has",
+          "density"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 99
+      }
+    },
+    {
       "id": "n-8c65fe72",
       "task": "density-of-country-146f-smaller",
       "gen": 10,
@@ -20773,6 +21467,62 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-c867f1ac",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "antarctica",
+            "brunei",
+            "each word",
+            "eswatini",
+            "jamaica",
+            "korea",
+            "longest one",
+            "longest word",
+            "mongolia",
+            "montserrat",
+            "morocco",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "density"
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 8,
@@ -27375,6 +28125,61 @@
       "mem": null,
       "height": 4,
       "size": 9,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-93e263a5",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "fiji",
+            "greenland",
+            "longest",
+            "longest one",
+            "longest word",
+            "montserrat",
+            "oman",
+            "split into words",
+            "uganda",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "density"
+        ],
+        [
+          "has",
+          "lesser"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "sense.before",
+              {
+                "lit": "has"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
       "fit": {
         "ok": 5,
         "fired": 5,
@@ -38770,6 +39575,66 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-e1ffe1f0",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "eswatini",
+            "first n",
+            "longest one",
+            "longest word",
+            "venezuela"
+          ]
+        ],
+        [
+          "has",
+          "density"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 4,
@@ -51461,6 +52326,65 @@
       }
     },
     {
+      "id": "n-431a8219",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "first n",
+            "greenland",
+            "longest one",
+            "longest word"
+          ]
+        ],
+        [
+          "has",
+          "density"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "greater"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 99
+      }
+    },
+    {
       "id": "n-655a37fe",
       "task": "density-of-country-146f-smaller",
       "gen": 10,
@@ -51651,6 +52575,65 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 99
+      }
+    },
+    {
+      "id": "n-eb1a7510",
+      "task": "density-of-country-146f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "first n",
+            "greenland",
+            "longest one",
+            "longest word"
+          ]
+        ],
+        [
+          "has",
+          "density"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "greater"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 2,
@@ -88596,6 +89579,7 @@
   ],
   "stages": [
     "0c40322496a102b6fdd8fc16e6a79d9e44049e58ce9cfb3a116f4a5a130699a8",
-    "76f6e1a39596fc121bd58766f8c1845e836e691fd4b12b8427f6d88f781c91fd"
+    "76f6e1a39596fc121bd58766f8c1845e836e691fd4b12b8427f6d88f781c91fd",
+    "d59ad986d31133715acfef8453e1ecf28a488c6358174baadf80ff956ca91c7b"
   ]
 }
