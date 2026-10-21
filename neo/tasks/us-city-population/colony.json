@@ -2,43 +2,42 @@
   "task": "us-city-population",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T18:50:32.326Z",
+  "at": "2026-10-21T20:00:12.882Z",
   "stats": {
-    "generated": 161274,
-    "distinct": 74345,
-    "kept": 1206,
-    "know": 180,
+    "generated": 26252,
+    "distinct": 60153,
+    "kept": 1208,
+    "know": 182,
     "byFamily": {
       "transform": 253,
-      "compute": 13,
+      "compute": 15,
       "memory": 200,
       "sense": 161,
       "aggregate": 578,
       "iterate": 1
     },
     "bySource": {
-      "enum": 8,
-      "parent": 1197,
-      "open": 1
+      "parent": 1206,
+      "enum": 2
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 94909,
-    "cellsPerSecond": 1699,
-    "capped": null,
+    "ms": 115641,
+    "cellsPerSecond": 227,
+    "capped": "ms",
     "packs": [
       "corpora-us-city-population"
     ],
     "cursor": {
       "v": 1,
       "basis": "b4931a366545b5a184d9bf4f1f8663aba25e28f0aea3186ee48899368a41c09d",
-      "round": 1,
-      "at": 185759,
+      "round": 2,
+      "at": 196759,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "compute.asPercent",
+      "prim": "compute.compound",
       "tpl": 731
     }
   },
@@ -8041,6 +8040,94 @@
       ],
       "mem": null,
       "height": 8,
+      "size": 14,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c0ee8b8b",
+      "task": "us-city-population",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "consonant count",
+            "element",
+            "how many consonants",
+            "iowa",
+            "item number",
+            "n choose k",
+            "nth",
+            "number of consonants",
+            "ohio",
+            "position",
+            "ways to choose"
+          ]
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "dayton"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "corpora-us-city-population"
+                  },
+                  {
+                    "lit": "city, state"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "city, state"
+              },
+              {
+                "lit": "population"
+              }
+            ]
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 14,
       "fit": {
         "ok": 6,
@@ -16827,6 +16914,86 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a3060ebf",
+      "task": "us-city-population",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "element",
+            "how many vowels",
+            "item number",
+            "levittown",
+            "n choose k",
+            "nth",
+            "number of vowels",
+            "position",
+            "vowel count",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "corpora-us-city-population"
+                  },
+                  {
+                    "lit": "city, state"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "corpora-us-city-population"
+              },
+              {
+                "lit": "city, state"
+              },
+              {
+                "lit": "population"
+              }
+            ]
+          ],
+          [
+            "aggregate.vowels",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 14,
       "fit": {
         "ok": 1,
@@ -75345,6 +75512,7 @@
   ],
   "stages": [
     "fa1c0fdcf3c437ab3ae5a6ff7edc5e90531b932dc56047eddd94106e91fd036f",
-    "43fcbb21a5ca5063a770fc3ff03a84a0203ea21ff6ab48d134c2a5cd775053b9"
+    "43fcbb21a5ca5063a770fc3ff03a84a0203ea21ff6ab48d134c2a5cd775053b9",
+    "aeb9cf2c2c0f2ea0adbb79827f6ebc2e1e9d9448ea23a4be7123e13d50f78d48"
   ]
 }
