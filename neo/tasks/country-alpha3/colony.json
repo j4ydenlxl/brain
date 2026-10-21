@@ -2,30 +2,28 @@
   "task": "country-alpha3",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T04:57:54.546Z",
+  "at": "2026-10-21T04:17:14.570Z",
   "stats": {
-    "generated": 172533,
-    "distinct": 72242,
-    "kept": 741,
-    "know": 23,
+    "generated": 161452,
+    "distinct": 112740,
+    "kept": 815,
+    "know": 65,
     "byFamily": {
-      "memory": 659,
-      "transform": 78,
-      "iterate": 2,
+      "memory": 657,
+      "transform": 151,
+      "iterate": 5,
       "compute": 2
     },
     "bySource": {
-      "parent": 678,
-      "enum": 29,
-      "open": 4,
-      "template": 4,
-      "memory": 26
+      "parent": 733,
+      "enum": 77,
+      "open": 5
     },
     "maxHeight": 6,
     "devOk": 100,
     "devN": 100,
-    "ms": 190459,
-    "cellsPerSecond": 906,
+    "ms": 231337,
+    "cellsPerSecond": 698,
     "capped": null,
     "packs": [
       "mledoze-countries"
@@ -33,12 +31,12 @@
     "cursor": {
       "v": 1,
       "basis": "8bccc280e61dc5e8f19ab7fd70163194a3f30d880be9020919d1ba413102969c",
-      "round": 0,
-      "at": 111137,
+      "round": 1,
+      "at": 214775,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "iterate.collatz",
+      "cost": 7,
+      "prim": "aggregate.lines",
       "tpl": 1667
     }
   },
@@ -1537,6 +1535,79 @@
       "fit": {
         "ok": 67,
         "fired": 67,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-267b8c04",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "code",
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "threeletter"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "mledoze-countries"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "alpha-3 code"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 34,
+        "fired": 34,
         "rows": 100
       }
     },
@@ -5970,6 +6041,468 @@
       }
     },
     {
+      "id": "n-a4651a0b",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "code",
+            "count",
+            "element",
+            "how many",
+            "how many items",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of items",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "threeletter"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "mledoze-countries"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "alpha-3 code"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 21,
+        "fired": 21,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a33299ce",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "andorra",
+            "australia",
+            "characters from",
+            "colombia",
+            "comoros",
+            "element",
+            "estonia",
+            "ethiopia",
+            "how many items",
+            "italy",
+            "item number",
+            "kazakhstan",
+            "kenya",
+            "letters from to",
+            "liechtenstein",
+            "namibia",
+            "nth",
+            "number of items",
+            "position",
+            "slice of the text",
+            "substring",
+            "uganda",
+            "yemen"
+          ]
+        ],
+        [
+          "has",
+          "threeletter"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 1
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-44a15771",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "azerbaijan",
+            "change to",
+            "dominica",
+            "element",
+            "estonia",
+            "eswatini",
+            "ethiopia",
+            "france",
+            "guernsey",
+            "haiti",
+            "item number",
+            "kosovo",
+            "madagascar",
+            "nth",
+            "position",
+            "replace",
+            "singapore",
+            "substitute",
+            "swap",
+            "togo",
+            "uganda"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "mledoze-countries"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "alpha-3 code"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-55d6e56d",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "azerbaijan",
+            "change to",
+            "dominica",
+            "element",
+            "estonia",
+            "eswatini",
+            "ethiopia",
+            "france",
+            "guernsey",
+            "haiti",
+            "item number",
+            "kosovo",
+            "madagascar",
+            "nth",
+            "position",
+            "replace",
+            "singapore",
+            "substitute",
+            "swap",
+            "togo",
+            "uganda"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          7
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "mledoze-countries"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "alpha-3 code"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2b752d06",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "andorra",
+            "australia",
+            "characters from",
+            "colombia",
+            "comoros",
+            "estonia",
+            "ethiopia",
+            "how many items",
+            "italy",
+            "kazakhstan",
+            "kenya",
+            "letters from to",
+            "liechtenstein",
+            "namibia",
+            "number of items",
+            "slice of the text",
+            "substring",
+            "uganda",
+            "yemen"
+          ]
+        ],
+        [
+          "has",
+          "threeletter"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": 1
+          },
+          [
+            "aggregate.countStrs",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-b64c86b2",
       "task": "country-alpha3",
       "gen": 10,
@@ -6263,6 +6796,235 @@
       }
     },
     {
+      "id": "n-8143c7cd",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "city",
+            "estonia",
+            "france",
+            "letters from to",
+            "rwanda",
+            "slice of the text",
+            "substring",
+            "uganda"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airport"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-308d98bf",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "element",
+            "gambia",
+            "item number",
+            "libya",
+            "malta",
+            "no vowels",
+            "nth",
+            "position",
+            "remove vowels",
+            "rotate the letters",
+            "serbia",
+            "shift by",
+            "shift each letter",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "threeletter"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "air"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.noVowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.howMany"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b38473b7",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "element",
+            "gambia",
+            "item number",
+            "libya",
+            "malta",
+            "no vowels",
+            "nth",
+            "position",
+            "remove vowels",
+            "rotate the letters",
+            "serbia",
+            "shift by",
+            "shift each letter",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "threeletter"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "air"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.caesar",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-58888a16",
       "task": "country-alpha3",
       "gen": 10,
@@ -6466,60 +7228,71 @@
       }
     },
     {
-      "id": "n-7abf20a2",
+      "id": "n-615c1ccf",
       "task": "country-alpha3",
       "gen": 10,
-      "parents": [
-        "n-7de8349a"
-      ],
+      "parents": [],
       "guard": [
+        [
+          "hasAny",
+          [
+            "alphabetize the letters",
+            "caribbean",
+            "class name",
+            "coast",
+            "element",
+            "indian",
+            "item number",
+            "letters in order",
+            "norway",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "sort the letters",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          10
+        ],
         [
           "not",
           [
-            "hasAny",
-            [
-              "add",
-              "alcohol",
-              "alpha2",
-              "calling",
-              "capita",
-              "capital",
-              "compare",
-              "continent",
-              "currency",
-              "density",
-              "dish",
-              "domain",
-              "expectancy",
-              "for",
-              "government",
-              "greater",
-              "iana",
-              "indianmaldives",
-              "larger",
-              "lesser",
-              "location",
-              "makes",
-              "maldives",
-              "name",
-              "population",
-              "region",
-              "south",
-              "subregion",
-              "sum",
-              "surface",
-              "threedigit",
-              "year"
-            ]
+            "has",
+            "calling"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "air"
           ]
         ]
       ],
       "pyramid": [
         "render.str",
         [
-          "compute.toRoman",
+          "transform.pascal",
           [
-            "compute.fromRoman",
+            "transform.sortLetters",
             [
               "know.lookup",
               [
@@ -6553,6 +7326,590 @@
       "mem": null,
       "height": 6,
       "size": 12,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-84ce0802",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alphabetize the letters",
+            "camel case",
+            "camelcase",
+            "caribbean",
+            "coast",
+            "element",
+            "indian",
+            "item number",
+            "letters in order",
+            "lower camel case",
+            "norway",
+            "nth",
+            "position",
+            "sort the letters"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "air"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "mledoze-countries"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "alpha-3 code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cabf1c4e",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alphabetize the letters",
+            "caribbean",
+            "coast",
+            "each word",
+            "element",
+            "indian",
+            "item number",
+            "letters in order",
+            "norway",
+            "nth",
+            "position",
+            "sort the letters",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "air"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "mledoze-countries"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "alpha-3 code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ce977e63",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "gambia",
+            "item number",
+            "libya",
+            "malta",
+            "no vowels",
+            "nth",
+            "position",
+            "remove",
+            "remove vowels",
+            "strip out",
+            "without",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "threeletter"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.remove",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9720f279",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alphabetize the letters",
+            "backwards",
+            "element",
+            "item number",
+            "kosovo",
+            "letters in order",
+            "minor",
+            "mirror",
+            "nth",
+            "position",
+            "reverse",
+            "reversed",
+            "sort the letters",
+            "spell backwards",
+            "uganda"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "africa"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.reverse",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "mledoze-countries"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "alpha-3 code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9d5c96c1",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [
+        "n-e6554d55"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "airline",
+              "capital",
+              "coastline",
+              "compare",
+              "currency",
+              "dialing",
+              "domain",
+              "expectancy",
+              "federated",
+              "for",
+              "government",
+              "greater",
+              "larger",
+              "makes",
+              "micronesia",
+              "money",
+              "north",
+              "numeric",
+              "population",
+              "south",
+              "subregion",
+              "sum",
+              "survivor"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "mledoze-countries"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "alpha-3 code"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "subregion"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 15,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e6554d55",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "code",
+            "count",
+            "element",
+            "how many",
+            "how many items",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "number of items",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "micronesia"
+          ]
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "words>=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "domain"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "mledoze-countries"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "alpha-3 code"
+            }
+          ],
+          [
+            "aggregate.countStrs",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "subregion"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 15,
       "fit": {
         "ok": 2,
         "fired": 2,
@@ -6658,6 +8015,273 @@
       "mem": null,
       "height": 6,
       "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ac749218",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [
+        "n-7de8349a"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "alcohol",
+              "alpha2",
+              "calling",
+              "capita",
+              "capital",
+              "compare",
+              "continent",
+              "currency",
+              "density",
+              "dish",
+              "domain",
+              "expectancy",
+              "for",
+              "government",
+              "greater",
+              "indianmaldives",
+              "larger",
+              "lesser",
+              "location",
+              "makes",
+              "maldives",
+              "name",
+              "population",
+              "region",
+              "religion",
+              "south",
+              "subregion",
+              "sum",
+              "surface",
+              "threedigit",
+              "time",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.toRoman",
+          [
+            "compute.fromRoman",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "mledoze-countries"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "alpha-3 code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9fcbd64d",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "australia",
+            "characters from",
+            "element",
+            "item number",
+            "letters from to",
+            "norway",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "threeletter"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "mledoze-countries"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "subregion"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-222b72b3",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [
+        "n-3ef207dd",
+        "n-f1f023d4"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "airline",
+              "capital",
+              "coastline",
+              "compare",
+              "currency",
+              "dialing",
+              "domain",
+              "expectancy",
+              "federated",
+              "for",
+              "government",
+              "greater",
+              "larger",
+              "makes",
+              "micronesia",
+              "money",
+              "north",
+              "numeric",
+              "population",
+              "south",
+              "subregion",
+              "sum",
+              "survivor"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "mledoze-countries"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "alpha-3 code"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "subregion"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
       "fit": {
         "ok": 2,
         "fired": 2,
@@ -7328,6 +8952,934 @@
       }
     },
     {
+      "id": "n-0d3f136e",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "niue",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-18d4512f",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "element",
+            "item number",
+            "no vowels",
+            "nth",
+            "position",
+            "remove vowels",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.noVowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.howMany"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2bc01761",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "niue",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "which letter appears most",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-66043ab1",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "first letters of the name",
+            "initials",
+            "item number",
+            "new",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.initials",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.howMany"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-675eeb2e",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "element",
+            "item number",
+            "new",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "transform.norm",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.howMany"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6cd0a033",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "first letters of the name",
+            "initials",
+            "item number",
+            "new",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.initials",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-75041a66",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "niue",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-971f789c",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "element",
+            "item number",
+            "new",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a2985263",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "first letters of the name",
+            "initials",
+            "item number",
+            "new",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.initials",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c18da5b3",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "niue",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-da6fbf45",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "element",
+            "guinea",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "short form",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.first"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e06c502b",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "element",
+            "item number",
+            "no vowels",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "remove vowels",
+            "simplify the text",
+            "without vowels"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.noVowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.first"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-eda616d2",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "element",
+            "guinea",
+            "item number",
+            "nth",
+            "position",
+            "short form"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.howMany"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f05b6f10",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "first letters of the name",
+            "guinea",
+            "initials",
+            "item number",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "transform.initials",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.first"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f1309100",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "element",
+            "item number",
+            "no vowels",
+            "normalise",
+            "normalize",
+            "nth",
+            "position",
+            "remove vowels",
+            "simplify the text",
+            "without vowels"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.norm",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.first"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-80adfad4",
       "task": "country-alpha3",
       "gen": 10,
@@ -7416,6 +9968,310 @@
       "mem": null,
       "height": 5,
       "size": 11,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-144719ed",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "element",
+            "guineabissau",
+            "item number",
+            "no vowels",
+            "nth",
+            "position",
+            "remove vowels",
+            "split into words",
+            "without vowels",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "air"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.noVowels",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "mledoze-countries"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "alpha-3 code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-66dcbbf4",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "element",
+            "guineabissau",
+            "item number",
+            "lower camel case",
+            "no vowels",
+            "nth",
+            "position",
+            "remove vowels",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "air"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.noVowels",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "mledoze-countries"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "alpha-3 code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-af14d3b7",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "element",
+            "guineabissau",
+            "item number",
+            "no vowels",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "remove vowels",
+            "upper camel case",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "air"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.noVowels",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "mledoze-countries"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "alpha-3 code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -7518,6 +10374,703 @@
       "mem": null,
       "height": 5,
       "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d7fa4b9d",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "element",
+            "guineabissau",
+            "item number",
+            "no vowels",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "remove vowels",
+            "upper camel case",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "air"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.pascal",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "mledoze-countries"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "alpha-3 code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-45d6c770",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "item number",
+            "malta",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "which letter appears most",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "threeletter"
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-26d50932",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alpha3",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "mledoze-countries"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "alpha-3 code"
+            }
+          ],
+          [
+            "sense.first"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "subregion"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2f1a3066",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alpha3",
+            "change to",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "subregion"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "mledoze-countries"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "alpha-3 code"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3905e6b1",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [
+        "n-8d8a74c6"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "airline",
+              "alpha",
+              "alpha2",
+              "bosnia",
+              "cb",
+              "compare",
+              "greater",
+              "heatwave",
+              "iana",
+              "lesser",
+              "numeric",
+              "politician",
+              "possibly",
+              "príncipe",
+              "sum",
+              "turks"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "mledoze-countries"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "alpha-3 code"
+            }
+          ],
+          [
+            "sense.first"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "alpha-3 code"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-480f7f13",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alpha3",
+            "change to",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "subregion"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "mledoze-countries"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "alpha-3 code"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8d8a74c6",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alpha3",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "mledoze-countries"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "alpha-3 code"
+            }
+          ],
+          [
+            "sense.first"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "alpha-3 code"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c23fe610",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [
+        "n-26d50932"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "airline",
+              "micronesia",
+              "money"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "mledoze-countries"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "mledoze-countries"
+            },
+            {
+              "lit": "country"
+            },
+            {
+              "lit": "alpha-3 code"
+            }
+          ],
+          [
+            "sense.first"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "subregion"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -27793,6 +31346,165 @@
       }
     },
     {
+      "id": "n-05de2ed2",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "lower case",
+            "lowercase",
+            "no vowels",
+            "remove vowels",
+            "serbia",
+            "small letters",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "transform.noVowels",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-05fa6ec9",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "no vowels",
+            "pascal case",
+            "pascalcase",
+            "remove vowels",
+            "serbia",
+            "upper camel case",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.pascal",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-06fe9fed",
       "task": "country-alpha3",
       "gen": 7,
@@ -28018,6 +31730,369 @@
       }
     },
     {
+      "id": "n-164e00c7",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "no vowels",
+            "pascal case",
+            "pascalcase",
+            "remove vowels",
+            "serbia",
+            "upper camel case",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.noVowels",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-16ceda5e",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "no vowels",
+            "remove vowels",
+            "reverse the words",
+            "reverse word order",
+            "serbia",
+            "without vowels",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.reverseWords",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1d196ae6",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "no vowels",
+            "remove vowels",
+            "serbia",
+            "snake case",
+            "snakecase",
+            "underscores",
+            "variable name",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.snake",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2360c914",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "china",
+            "no vowels",
+            "remove vowels",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "transform.noVowels",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "sense.howMany"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-24e2da21",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capital letters",
+            "capitals",
+            "no vowels",
+            "remove vowels",
+            "serbia",
+            "upper case",
+            "uppercase",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.upper",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-2b533530",
       "task": "country-alpha3",
       "gen": 6,
@@ -28068,7 +32143,7 @@
     {
       "id": "n-2f45cd9a",
       "task": "country-alpha3",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -28114,7 +32189,7 @@
     {
       "id": "n-314e9174",
       "task": "country-alpha3",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -28515,6 +32590,164 @@
       }
     },
     {
+      "id": "n-4f3b202c",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "no vowels",
+            "remove vowels",
+            "serbia",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.noVowels",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4f92786e",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "no vowels",
+            "remove vowels",
+            "serbia",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-4feaf107",
       "task": "country-alpha3",
       "gen": 6,
@@ -28576,6 +32809,210 @@
         [
           "nums>=",
           1
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-55579c18",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dashes",
+            "hyphens",
+            "kebab case",
+            "kebabcase",
+            "no vowels",
+            "remove vowels",
+            "serbia",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.kebab",
+          [
+            "transform.noVowels",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-55c04c99",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "each word",
+            "new",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5656bbf9",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "no vowels",
+            "remove vowels",
+            "serbia",
+            "swap case",
+            "toggle case",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
         ]
       ],
       "pyramid": [
@@ -28666,6 +33103,131 @@
           "transform.lower",
           [
             "transform.noVowels",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-59727cbe",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "no vowels",
+            "remove vowels",
+            "serbia",
+            "split into words",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.noVowels",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-61375ee9",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "class name",
+            "new",
+            "pascal case",
+            "pascalcase",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.acronym",
             [
               "sense.after",
               {
@@ -28948,6 +33510,84 @@
       }
     },
     {
+      "id": "n-77755bf5",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "no vowels",
+            "remove vowels",
+            "serbia",
+            "split into words",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.noVowels",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-7f74b7cd",
       "task": "country-alpha3",
       "gen": 6,
@@ -29040,7 +33680,7 @@
     {
       "id": "n-8055a489",
       "task": "country-alpha3",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -29177,9 +33817,150 @@
       }
     },
     {
+      "id": "n-865da3f9",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "no vowels",
+            "nth",
+            "remove vowels",
+            "serbia",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "threeletter"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-86c707e7",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "each word",
+            "new",
+            "short form",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-89e34db1",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alphabetize the letters",
+            "china",
+            "letters in order",
+            "no vowels",
+            "remove vowels",
+            "sort the letters",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.sortLetters",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-989d405f",
       "task": "country-alpha3",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -29209,6 +33990,100 @@
               {
                 "lit": "of"
               }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9e6db92f",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "most common letter",
+            "most frequent letter",
+            "niue",
+            "strip out",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a01d5e7c",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "no vowels",
+            "remove vowels",
+            "rotate the letters",
+            "serbia",
+            "shift by",
+            "shift each letter",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "threeletter"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.caesar",
+            [
+              "sense.lastWord"
+            ],
+            [
+              "sense.howMany"
             ]
           ]
         ]
@@ -29314,7 +34189,7 @@
     {
       "id": "n-a57856b4",
       "task": "country-alpha3",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -29532,6 +34407,99 @@
       }
     },
     {
+      "id": "n-b1d9174f",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "camel case",
+            "camelcase",
+            "lower camel case",
+            "new"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b3bfbd0e",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "first letters of the name",
+            "initials",
+            "new",
+            "pascal case",
+            "pascalcase",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.initials",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-bd113bca",
       "task": "country-alpha3",
       "gen": 6,
@@ -29567,6 +34535,52 @@
               {
                 "lit": "of"
               }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-be806ee7",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "most common letter",
+            "most frequent letter",
+            "niue",
+            "separate by",
+            "split by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "sense.text"
             ]
           ]
         ]
@@ -29859,6 +34873,52 @@
       }
     },
     {
+      "id": "n-ca533b5a",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "most common letter",
+            "most frequent letter",
+            "niue",
+            "separate by",
+            "split by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-cda89c61",
       "task": "country-alpha3",
       "gen": 6,
@@ -30083,6 +35143,84 @@
       }
     },
     {
+      "id": "n-dd49d384",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "no vowels",
+            "remove vowels",
+            "serbia",
+            "split into words",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.noVowels",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-e039b3f8",
       "task": "country-alpha3",
       "gen": 6,
@@ -30207,6 +35345,52 @@
             {
               "lit": 3
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e1b95853",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "most common letter",
+            "most frequent letter",
+            "niue",
+            "separate by",
+            "split by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.lastWord"
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "sense.text"
+            ]
           ]
         ]
       ],
@@ -30390,6 +35574,103 @@
       }
     },
     {
+      "id": "n-e887cc16",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "no vowels",
+            "remove vowels",
+            "rotate the letters",
+            "serbia",
+            "shift by",
+            "shift each letter",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "threeletter"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.noVowels",
+            [
+              "sense.lastWord"
+            ]
+          ],
+          [
+            "sense.howMany"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ea07ee86",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "class name",
+            "new",
+            "pascal case",
+            "pascalcase",
+            "short form",
+            "upper camel case"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.pascal",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-ea142e6e",
       "task": "country-alpha3",
       "gen": 6,
@@ -30464,6 +35745,54 @@
               "sense.after",
               {
                 "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f0a38f5d",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "camel case",
+            "camelcase",
+            "lower camel case",
+            "new",
+            "short form"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "code"
               }
             ]
           ]
@@ -30655,6 +35984,85 @@
       }
     },
     {
+      "id": "n-f25a98f9",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "lower camel case",
+            "no vowels",
+            "remove vowels",
+            "serbia",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.noVowels",
+          [
+            "transform.camel",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-f4401ef5",
       "task": "country-alpha3",
       "gen": 6,
@@ -30718,6 +36126,131 @@
           "transform.noVowels",
           [
             "transform.reverseWords",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f6a9063e",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "first letters of the name",
+            "initials",
+            "lower camel case",
+            "new"
+          ]
+        ],
+        [
+          "has",
+          "alpha3"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.initials",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-fb13f7ee",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "lower camel case",
+            "no vowels",
+            "remove vowels",
+            "serbia",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "code"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "country"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "alpha2"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "calling"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.noVowels",
             [
               "sense.after",
               {
@@ -35607,39 +41140,6 @@
       }
     },
     {
-      "id": "n-d46867dd",
-      "task": "country-alpha3",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "estonia"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.nearest",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "what is the three-letter code of Estonia": "EST"
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-d6662b8a",
       "task": "country-alpha3",
       "gen": 6,
@@ -35670,39 +41170,6 @@
       "mem": {
         "table": {
           "which three-letter country code does Nicaragua have": "NIC"
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-d900ed81",
-      "task": "country-alpha3",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "italy"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.nearest",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "what is the three-letter code of Italy": "ITA"
         }
       },
       "height": 3,
@@ -36543,6 +42010,166 @@
       "mem": {
         "table": {
           "give the ISO alpha-3 code of Vatican City": "VAT"
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7abf20a2",
+      "task": "country-alpha3",
+      "gen": 10,
+      "parents": [
+        "n-7de8349a"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "alcohol",
+              "alpha2",
+              "calling",
+              "capita",
+              "capital",
+              "compare",
+              "continent",
+              "currency",
+              "density",
+              "dish",
+              "domain",
+              "expectancy",
+              "for",
+              "government",
+              "greater",
+              "iana",
+              "indianmaldives",
+              "larger",
+              "lesser",
+              "location",
+              "makes",
+              "maldives",
+              "name",
+              "population",
+              "region",
+              "south",
+              "subregion",
+              "sum",
+              "surface",
+              "threedigit",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.toRoman",
+          [
+            "compute.fromRoman",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "mledoze-countries"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "mledoze-countries"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "alpha-3 code"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d46867dd",
+      "task": "country-alpha3",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "estonia"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the three-letter code of Estonia": "EST"
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d900ed81",
+      "task": "country-alpha3",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "italy"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "what is the three-letter code of Italy": "ITA"
         }
       },
       "height": 3,
@@ -128373,6 +134000,7 @@
     }
   ],
   "stages": [
-    "dca7d8c55cef60db11d40278d16461cff84b66d945ee9c7c60132440cb4085f6"
+    "dca7d8c55cef60db11d40278d16461cff84b66d945ee9c7c60132440cb4085f6",
+    "d5e489dd28a5f717ccd5d0c061bd564c6dc930424cd2eb946c1736be9c0d56bd"
   ]
 }

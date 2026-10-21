@@ -2,39 +2,38 @@
   "task": "price-of-date-8dcd-larger",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T07:14:51.954Z",
+  "at": "2026-10-21T04:51:36.206Z",
   "stats": {
-    "generated": 166008,
-    "distinct": 51995,
-    "kept": 107,
-    "know": 5,
+    "generated": 112613,
+    "distinct": 73170,
+    "kept": 110,
+    "know": 8,
     "byFamily": {
       "memory": 102,
-      "transform": 5
+      "transform": 8
     },
     "bySource": {
-      "parent": 102,
-      "open": 2,
-      "enum": 3
+      "parent": 106,
+      "open": 4
     },
     "maxHeight": 6,
     "devOk": 100,
     "devN": 100,
-    "ms": 87850,
-    "cellsPerSecond": 1890,
-    "capped": null,
+    "ms": 90266,
+    "cellsPerSecond": 1248,
+    "capped": "ms",
     "packs": [
       "fr-oil-prices-wti-weekly-b65fac"
     ],
     "cursor": {
       "v": 1,
       "basis": "62ee7b66851b828137cfa6f29dfd9de9ea97f183dee8bb22241b69ce3580c67f",
-      "round": 1,
-      "at": 205232,
+      "round": 2,
+      "at": 294683,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compare.between",
+      "prim": "iterate.rangeFrom",
       "tpl": 4369
     }
   },
@@ -314,7 +313,7 @@
       }
     },
     {
-      "id": "n-37e02677",
+      "id": "n-50926d69",
       "task": "price-of-date-8dcd-larger",
       "gen": 10,
       "parents": [],
@@ -335,7 +334,7 @@
               "19991001",
               "20000901",
               "20010601",
-              "20011101",
+              "20020901",
               "20021101",
               "20030801",
               "20041001",
@@ -345,7 +344,7 @@
               "20090501",
               "20101001",
               "20110401",
-              "20110701",
+              "20120601",
               "20130201",
               "20130301",
               "20131101",
@@ -371,6 +370,7 @@
               "compare",
               "confirmed",
               "cpi",
+              "date",
               "dividend",
               "greater",
               "high",
@@ -380,6 +380,7 @@
               "national",
               "open",
               "phoenix",
+              "proposal",
               "rate",
               "smaller",
               "sp500",
@@ -503,6 +504,167 @@
       }
     },
     {
+      "id": "n-98b77c7a",
+      "task": "price-of-date-8dcd-larger",
+      "gen": 10,
+      "parents": [
+        "n-18ba8d30"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "20121221",
+              "add",
+              "compare",
+              "greater",
+              "makes",
+              "smaller"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-wti-weekly-b65fac"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-oil-prices-wti-weekly-b65fac"
+                },
+                {
+                  "lit": "price"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "fr-oil-prices-wti-weekly-b65fac"
+            },
+            {
+              "lit": "price"
+            },
+            {
+              "lit": "date"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2363679b",
+      "task": "price-of-date-8dcd-larger",
+      "gen": 10,
+      "parents": [
+        "n-b383eb9f"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "close",
+              "compare",
+              "lesser",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-wti-weekly-b65fac"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-oil-prices-wti-weekly-b65fac"
+                  },
+                  {
+                    "lit": "date"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-oil-prices-wti-weekly-b65fac"
+              },
+              {
+                "lit": "date"
+              },
+              {
+                "lit": "price"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-b383eb9f",
       "task": "price-of-date-8dcd-larger",
       "gen": 10,
@@ -563,6 +725,87 @@
                 ],
                 {
                   "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-oil-prices-wti-weekly-b65fac"
+              },
+              {
+                "lit": "date"
+              },
+              {
+                "lit": "price"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b633929b",
+      "task": "price-of-date-8dcd-larger",
+      "gen": 10,
+      "parents": [
+        "n-ec1f6e82"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "close",
+              "compare",
+              "makes",
+              "smaller"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-oil-prices-wti-weekly-b65fac"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-oil-prices-wti-weekly-b65fac"
+                  },
+                  {
+                    "lit": "date"
+                  }
+                ],
+                {
+                  "lit": 2
                 }
               ],
               {
@@ -4371,10 +4614,118 @@
         "fired": 1,
         "rows": 100
       }
+    },
+    {
+      "id": "n-37e02677",
+      "task": "price-of-date-8dcd-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "19540401",
+              "19880101",
+              "19920501",
+              "19951201",
+              "19970801",
+              "19980501",
+              "19990101",
+              "19990801",
+              "19991001",
+              "20000901",
+              "20010601",
+              "20011101",
+              "20021101",
+              "20030801",
+              "20041001",
+              "20050701",
+              "20060901",
+              "20070601",
+              "20090501",
+              "20101001",
+              "20110401",
+              "20110701",
+              "20130201",
+              "20130301",
+              "20131101",
+              "20140801",
+              "20141017",
+              "20150501",
+              "20160101",
+              "20160429",
+              "20160701",
+              "20170901",
+              "20180601",
+              "20190201",
+              "20190301",
+              "20191101",
+              "20200501",
+              "20230901",
+              "20231201",
+              "20240801",
+              "20241101",
+              "20250801",
+              "add",
+              "angeles",
+              "compare",
+              "confirmed",
+              "cpi",
+              "dividend",
+              "greater",
+              "high",
+              "lesser",
+              "makes",
+              "name",
+              "national",
+              "open",
+              "phoenix",
+              "rate",
+              "smaller",
+              "sp500",
+              "sum",
+              "temp",
+              "version"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.sliceStrs",
+          [
+            "know.find",
+            {
+              "lit": "fr-oil-prices-wti-weekly-b65fac"
+            },
+            {
+              "lit": "date"
+            }
+          ],
+          [
+            "sense.last"
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
     }
   ],
   "stages": [
     "f336e9c86bc26aac63c61083cc196606282c3ce5572e3abc0822123e0179085e",
-    "d84525a98e855d702c100136ebd9e734dc866dea3458289868f32259c488c7fb"
+    "d84525a98e855d702c100136ebd9e734dc866dea3458289868f32259c488c7fb",
+    "d7f08a60a3409c4c3fd326d6fa62a0e4a6a1b72273ced2dee5600b6164a78d55"
   ]
 }

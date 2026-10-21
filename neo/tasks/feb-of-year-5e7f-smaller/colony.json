@@ -2,27 +2,29 @@
   "task": "feb-of-year-5e7f-smaller",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T16:27:30.289Z",
+  "at": "2026-10-21T04:37:23.534Z",
   "stats": {
-    "generated": 200180,
-    "distinct": 55722,
-    "kept": 121,
-    "know": 9,
+    "generated": 37732,
+    "distinct": 43542,
+    "kept": 130,
+    "know": 18,
     "byFamily": {
       "memory": 102,
-      "compute": 9,
+      "compute": 10,
+      "iterate": 4,
+      "transform": 4,
       "aggregate": 10
     },
     "bySource": {
-      "memory": 102,
-      "enum": 14,
-      "open": 5
+      "parent": 117,
+      "open": 10,
+      "enum": 3
     },
     "maxHeight": 6,
     "devOk": 100,
     "devN": 100,
-    "ms": 131238,
-    "cellsPerSecond": 1525,
+    "ms": 79061,
+    "cellsPerSecond": 477,
     "capped": "ms",
     "packs": [
       "fr-tidytuesday-nh-temps-8d37c8"
@@ -30,13 +32,13 @@
     "cursor": {
       "v": 1,
       "basis": "9d325defbddbecaffebd3f41fa85fa755c2b769895ea1f9da774600f0d9e1b19",
-      "round": 0,
-      "at": 76963,
+      "round": 1,
+      "at": 94454,
       "maxCost": 7,
       "done": false,
       "cost": 5,
-      "prim": "iterate.countdown",
-      "tpl": 3000
+      "prim": "transform.reciprocal",
+      "tpl": 3470
     }
   },
   "cells": [
@@ -311,11 +313,11 @@
       }
     },
     {
-      "id": "n-3fc76e52",
+      "id": "n-2a888861",
       "task": "feb-of-year-5e7f-smaller",
       "gen": 10,
       "parents": [
-        "n-5ca740f6"
+        "n-aaf8fe9c"
       ],
       "guard": [
         [
@@ -323,60 +325,62 @@
           [
             "hasAny",
             [
-              "1998",
               "add",
               "adjusted",
               "angeles",
-              "birth",
-              "bound",
               "close",
               "compare",
-              "country",
               "cpi",
-              "date",
               "death",
               "discards",
+              "dividend",
+              "drought",
+              "enrollment",
               "fatalities",
-              "give",
               "gmsl",
               "greater",
+              "has",
               "high",
+              "hospitalisations",
               "increase",
               "jan",
               "larger",
-              "loa",
+              "lesser",
+              "link",
               "makes",
+              "males",
               "mean",
-              "name",
               "national",
+              "nhem",
               "number",
               "open",
+              "opendate",
+              "overall",
               "phoenix",
               "price",
+              "prices",
               "rate",
               "recreational",
-              "smaller",
-              "solid",
-              "sp500",
-              "substitute",
-              "sugar",
               "sum",
               "temp",
-              "total",
-              "uncertainty"
+              "transfers",
+              "uncertainty",
+              "winner",
+              "wreck",
+              "year"
             ]
           ]
         ]
       ],
       "pyramid": [
-        "render.number",
+        "render.listNums",
         [
-          "compute.gcd",
+          "iterate.multiples",
           [
-            "sense.first"
+            "sense.second"
           ],
           [
-            "series.next",
+            "series.prev",
             [
               "transform.nthStr",
               [
@@ -445,6 +449,111 @@
         "render.number",
         [
           "compute.lcm",
+          [
+            "sense.second"
+          ],
+          [
+            "series.prev",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-nh-temps-8d37c8"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-nh-temps-8d37c8"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "feb"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5528a5d2",
+      "task": "feb-of-year-5e7f-smaller",
+      "gen": 10,
+      "parents": [
+        "n-1ee6e273"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "adjusted",
+              "angeles",
+              "close",
+              "compare",
+              "cpi",
+              "death",
+              "discards",
+              "dividend",
+              "drought",
+              "enrollment",
+              "fatalities",
+              "gmsl",
+              "greater",
+              "has",
+              "high",
+              "hospitalisations",
+              "increase",
+              "jan",
+              "larger",
+              "lesser",
+              "link",
+              "makes",
+              "males",
+              "mean",
+              "national",
+              "nhem",
+              "number",
+              "open",
+              "opendate",
+              "overall",
+              "phoenix",
+              "price",
+              "prices",
+              "rate",
+              "recreational",
+              "sum",
+              "temp",
+              "transfers",
+              "uncertainty",
+              "winner",
+              "wreck",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.fraction",
           [
             "sense.second"
           ],
@@ -640,11 +749,11 @@
       }
     },
     {
-      "id": "n-945ab2c5",
+      "id": "n-7ec6a6a8",
       "task": "feb-of-year-5e7f-smaller",
       "gen": 10,
       "parents": [
-        "n-1ee6e273"
+        "n-5ca740f6"
       ],
       "guard": [
         [
@@ -652,54 +761,127 @@
           [
             "hasAny",
             [
+              "1998",
               "add",
               "adjusted",
               "angeles",
+              "birth",
+              "bound",
               "close",
               "compare",
+              "country",
               "cpi",
+              "date",
               "death",
               "discards",
-              "dividend",
-              "drought",
-              "enrollment",
               "fatalities",
+              "give",
               "gmsl",
               "greater",
-              "has",
               "high",
-              "hospitalisations",
               "increase",
               "jan",
               "larger",
-              "lesser",
+              "loa",
               "makes",
-              "males",
               "mean",
+              "name",
               "national",
+              "nhem",
               "number",
               "open",
-              "opendate",
-              "overall",
+              "passenger",
               "phoenix",
+              "player",
               "price",
-              "prices",
               "rate",
+              "raw",
               "recreational",
+              "smaller",
+              "solid",
+              "sp500",
+              "substitute",
+              "sugar",
               "sum",
               "temp",
-              "transfers",
+              "total",
               "uncertainty",
-              "winner",
-              "year"
+              "wreck",
+              "yarn"
             ]
           ]
         ]
       ],
       "pyramid": [
-        "render.str",
+        "render.number",
         [
-          "compute.fraction",
+          "compute.gcd",
+          [
+            "sense.first"
+          ],
+          [
+            "series.next",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-nh-temps-8d37c8"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-nh-temps-8d37c8"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "feb"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-aaf8fe9c",
+      "task": "feb-of-year-5e7f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "feb",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "whose"
+        ]
+      ],
+      "pyramid": [
+        "render.listNums",
+        [
+          "iterate.multiples",
           [
             "sense.second"
           ],
@@ -817,7 +999,88 @@
       }
     },
     {
-      "id": "n-768d103e",
+      "id": "n-c49c5409",
+      "task": "feb-of-year-5e7f-smaller",
+      "gen": 10,
+      "parents": [
+        "n-79f2396c"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "1936",
+              "adjusted",
+              "bound",
+              "compare",
+              "dividend",
+              "glob",
+              "gmsl",
+              "gold",
+              "jan",
+              "larger",
+              "makes",
+              "of",
+              "price",
+              "smaller",
+              "solid",
+              "sp500",
+              "total",
+              "wreck",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.gcd",
+          [
+            "sense.first"
+          ],
+          [
+            "series.step",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-nh-temps-8d37c8"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-nh-temps-8d37c8"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "feb"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0946ac3b",
       "task": "feb-of-year-5e7f-smaller",
       "gen": 10,
       "parents": [],
@@ -844,6 +1107,7 @@
               "larger",
               "makes",
               "mean",
+              "nhem",
               "open",
               "phoenix",
               "price",
@@ -906,7 +1170,93 @@
       }
     },
     {
-      "id": "n-a887243e",
+      "id": "n-949a2ecc",
+      "task": "feb-of-year-5e7f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "2021",
+              "add",
+              "angeles",
+              "close",
+              "compare",
+              "discards",
+              "dividend",
+              "enrollment",
+              "gmsl",
+              "greater",
+              "high",
+              "larger",
+              "makes",
+              "mean",
+              "nhem",
+              "open",
+              "phoenix",
+              "price",
+              "smaller",
+              "sum",
+              "temp",
+              "uncertainty",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.listNums",
+        [
+          "iterate.multiples",
+          [
+            "sense.first"
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-nh-temps-8d37c8"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-nh-temps-8d37c8"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "feb"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c6b7d049",
       "task": "feb-of-year-5e7f-smaller",
       "gen": 10,
       "parents": [],
@@ -941,11 +1291,14 @@
               "mean",
               "name",
               "national",
+              "nhem",
               "open",
               "overall",
               "phoenix",
+              "player",
               "price",
               "rate",
+              "raw",
               "recreational",
               "sp500",
               "sum",
@@ -1000,6 +1353,492 @@
       "mem": null,
       "height": 6,
       "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-fa985af9",
+      "task": "feb-of-year-5e7f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "1992",
+              "add",
+              "angeles",
+              "close",
+              "compare",
+              "cpi",
+              "date",
+              "discards",
+              "dividend",
+              "enrollment",
+              "fatalities",
+              "gmsl",
+              "gold",
+              "greater",
+              "high",
+              "jan",
+              "larger",
+              "less",
+              "lesser",
+              "makes",
+              "mean",
+              "name",
+              "national",
+              "nhem",
+              "open",
+              "overall",
+              "phoenix",
+              "player",
+              "price",
+              "rate",
+              "raw",
+              "recreational",
+              "sp500",
+              "sum",
+              "temp",
+              "title",
+              "uncertainty",
+              "unusually",
+              "winner"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.listNums",
+        [
+          "iterate.multiples",
+          [
+            "sense.second"
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-nh-temps-8d37c8"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-nh-temps-8d37c8"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "feb"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-2c3ef8de",
+      "task": "feb-of-year-5e7f-smaller",
+      "gen": 10,
+      "parents": [
+        "n-dff7741b"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "1998",
+              "add",
+              "adjusted",
+              "angeles",
+              "birth",
+              "bound",
+              "close",
+              "compare",
+              "country",
+              "cpi",
+              "date",
+              "death",
+              "discards",
+              "fatalities",
+              "give",
+              "gmsl",
+              "greater",
+              "high",
+              "increase",
+              "jan",
+              "larger",
+              "loa",
+              "makes",
+              "mean",
+              "name",
+              "national",
+              "nhem",
+              "number",
+              "open",
+              "passenger",
+              "phoenix",
+              "player",
+              "price",
+              "rate",
+              "raw",
+              "recreational",
+              "smaller",
+              "solid",
+              "sp500",
+              "substitute",
+              "sugar",
+              "sum",
+              "temp",
+              "total",
+              "uncertainty",
+              "wreck",
+              "yarn"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-nh-temps-8d37c8"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "series.next",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-nh-temps-8d37c8"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-nh-temps-8d37c8"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "feb"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-79531918",
+      "task": "feb-of-year-5e7f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "element",
+            "is",
+            "item number",
+            "nth",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "feb"
+        ],
+        [
+          "has",
+          "smaller"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-nh-temps-8d37c8"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "series.prev",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-nh-temps-8d37c8"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-nh-temps-8d37c8"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "feb"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-85f6ef7e",
+      "task": "feb-of-year-5e7f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "1936",
+              "adjusted",
+              "bound",
+              "compare",
+              "dividend",
+              "glob",
+              "gmsl",
+              "gold",
+              "jan",
+              "larger",
+              "makes",
+              "of",
+              "price",
+              "smaller",
+              "solid",
+              "sp500",
+              "total",
+              "wreck",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-nh-temps-8d37c8"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "series.step",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-nh-temps-8d37c8"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-nh-temps-8d37c8"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "feb"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-dff7741b",
+      "task": "feb-of-year-5e7f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "between",
+            "caesar cipher",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "feb"
+        ],
+        [
+          "has",
+          "lesser"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-nh-temps-8d37c8"
+              },
+              {
+                "lit": "year"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "series.next",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-nh-temps-8d37c8"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-nh-temps-8d37c8"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "feb"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 16,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -5163,9 +6002,405 @@
         "fired": 1,
         "rows": 100
       }
+    },
+    {
+      "id": "n-3fc76e52",
+      "task": "feb-of-year-5e7f-smaller",
+      "gen": 10,
+      "parents": [
+        "n-5ca740f6"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "1998",
+              "add",
+              "adjusted",
+              "angeles",
+              "birth",
+              "bound",
+              "close",
+              "compare",
+              "country",
+              "cpi",
+              "date",
+              "death",
+              "discards",
+              "fatalities",
+              "give",
+              "gmsl",
+              "greater",
+              "high",
+              "increase",
+              "jan",
+              "larger",
+              "loa",
+              "makes",
+              "mean",
+              "name",
+              "national",
+              "number",
+              "open",
+              "phoenix",
+              "price",
+              "rate",
+              "recreational",
+              "smaller",
+              "solid",
+              "sp500",
+              "substitute",
+              "sugar",
+              "sum",
+              "temp",
+              "total",
+              "uncertainty"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.gcd",
+          [
+            "sense.first"
+          ],
+          [
+            "series.next",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-nh-temps-8d37c8"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-nh-temps-8d37c8"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "feb"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-945ab2c5",
+      "task": "feb-of-year-5e7f-smaller",
+      "gen": 10,
+      "parents": [
+        "n-1ee6e273"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "add",
+              "adjusted",
+              "angeles",
+              "close",
+              "compare",
+              "cpi",
+              "death",
+              "discards",
+              "dividend",
+              "drought",
+              "enrollment",
+              "fatalities",
+              "gmsl",
+              "greater",
+              "has",
+              "high",
+              "hospitalisations",
+              "increase",
+              "jan",
+              "larger",
+              "lesser",
+              "makes",
+              "males",
+              "mean",
+              "national",
+              "number",
+              "open",
+              "opendate",
+              "overall",
+              "phoenix",
+              "price",
+              "prices",
+              "rate",
+              "recreational",
+              "sum",
+              "temp",
+              "transfers",
+              "uncertainty",
+              "winner",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.fraction",
+          [
+            "sense.second"
+          ],
+          [
+            "series.prev",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-nh-temps-8d37c8"
+                },
+                {
+                  "lit": "year"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-nh-temps-8d37c8"
+            },
+            {
+              "lit": "year"
+            },
+            {
+              "lit": "feb"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-768d103e",
+      "task": "feb-of-year-5e7f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "1923",
+              "2021",
+              "add",
+              "adjusted",
+              "angeles",
+              "close",
+              "compare",
+              "discards",
+              "dividend",
+              "enrollment",
+              "gmsl",
+              "greater",
+              "high",
+              "jan",
+              "larger",
+              "makes",
+              "mean",
+              "open",
+              "phoenix",
+              "price",
+              "rate",
+              "smaller",
+              "sum",
+              "temp",
+              "uncertainty",
+              "year"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "sense.first"
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-nh-temps-8d37c8"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-nh-temps-8d37c8"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "feb"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a887243e",
+      "task": "feb-of-year-5e7f-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "1954",
+              "1992",
+              "add",
+              "adjusted",
+              "angeles",
+              "close",
+              "compare",
+              "cpi",
+              "date",
+              "discards",
+              "dividend",
+              "enrollment",
+              "fatalities",
+              "gmsl",
+              "gold",
+              "greater",
+              "high",
+              "jan",
+              "larger",
+              "less",
+              "lesser",
+              "makes",
+              "mean",
+              "name",
+              "national",
+              "open",
+              "overall",
+              "phoenix",
+              "price",
+              "rate",
+              "recreational",
+              "sp500",
+              "sum",
+              "temp",
+              "title",
+              "uncertainty",
+              "unusually",
+              "winner"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "sense.second"
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-nh-temps-8d37c8"
+                  },
+                  {
+                    "lit": "year"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-nh-temps-8d37c8"
+              },
+              {
+                "lit": "year"
+              },
+              {
+                "lit": "feb"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
     }
   ],
   "stages": [
-    "0d0f5659390593751e2a3b79cea186673717f711cf026386ca2b5b25a9b29217"
+    "0d0f5659390593751e2a3b79cea186673717f711cf026386ca2b5b25a9b29217",
+    "ba74a47b6c83070d0c6b2edbc8e1fcdba7ec089c13c24608ad113fdd411a59c1"
   ]
 }
