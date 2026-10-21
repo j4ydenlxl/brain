@@ -2,29 +2,29 @@
   "task": "nasdaq-company-symbol",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-21T16:15:52.172Z",
+  "at": "2026-10-21T17:29:49.316Z",
   "stats": {
-    "generated": 17681,
-    "distinct": 49926,
-    "kept": 743,
-    "know": 156,
+    "generated": 88425,
+    "distinct": 87030,
+    "kept": 815,
+    "know": 210,
     "byFamily": {
       "memory": 493,
-      "transform": 223,
+      "transform": 295,
       "aggregate": 16,
       "iterate": 9,
       "compute": 2
     },
     "bySource": {
-      "parent": 625,
-      "open": 5,
-      "enum": 113
+      "parent": 743,
+      "open": 4,
+      "enum": 68
     },
     "maxHeight": 6,
     "devOk": 100,
     "devN": 100,
-    "ms": 166369,
-    "cellsPerSecond": 106,
+    "ms": 172272,
+    "cellsPerSecond": 513,
     "capped": "ms",
     "packs": [
       "nasdaq-listed"
@@ -32,12 +32,12 @@
     "cursor": {
       "v": 1,
       "basis": "f213ae8ce31fda68f65ec8f9550281b9537b3ab941e7195957f99c2fa5c2a390",
-      "round": 1,
-      "at": 112516,
+      "round": 2,
+      "at": 176676,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.sortLetters",
+      "cost": 7,
+      "prim": "compute.power",
       "tpl": 1013
     }
   },
@@ -1443,6 +1443,106 @@
       "fit": {
         "ok": 100,
         "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-98dba0ae",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "acacia",
+              "addex",
+              "ascentage",
+              "atif",
+              "cantor",
+              "capital",
+              "case",
+              "chaince",
+              "class",
+              "clearsign",
+              "closed",
+              "commvault",
+              "corellium",
+              "domain",
+              "exploration",
+              "finwise",
+              "first",
+              "fort",
+              "jade",
+              "karat",
+              "megan",
+              "name",
+              "organigram",
+              "palomar",
+              "perfect",
+              "primis",
+              "proficient",
+              "quinstreet",
+              "rocket",
+              "sector",
+              "shares",
+              "silo",
+              "smartkem",
+              "stock",
+              "tesla",
+              "trustco",
+              "willscot"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 67,
+        "fired": 67,
         "rows": 100
       }
     },
@@ -5750,6 +5850,202 @@
       }
     },
     {
+      "id": "n-fbc5c363",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "agents",
+            "arcbest",
+            "characters from",
+            "element",
+            "item number",
+            "letters from to",
+            "list",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "common"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "apple"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "adarx"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "addex"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "allogene"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 35,
+        "fired": 35,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-36561f07",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "acacia",
+              "addex",
+              "atif",
+              "biosciences",
+              "cantor",
+              "capital",
+              "case",
+              "class",
+              "clearsign",
+              "corellium",
+              "domain",
+              "fort",
+              "megan",
+              "name",
+              "primis",
+              "proficient",
+              "rocket",
+              "sector",
+              "shares",
+              "silo",
+              "stock",
+              "ticker",
+              "trustco"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 34,
+        "fired": 34,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-aa09c14f",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -9022,6 +9318,131 @@
       }
     },
     {
+      "id": "n-80975207",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bancorp",
+            "baycom",
+            "biorestorative",
+            "blackline",
+            "brenx",
+            "cb",
+            "ceragon",
+            "cloud",
+            "collective",
+            "company",
+            "crowdstrike",
+            "cryoport",
+            "cytomed",
+            "dogwood",
+            "each word",
+            "element",
+            "foods",
+            "gbank",
+            "item number",
+            "lexinfintech",
+            "marten",
+            "meridian",
+            "mobility",
+            "no vowels",
+            "nth",
+            "paylocity",
+            "plc",
+            "pliant",
+            "position",
+            "prf",
+            "remove vowels",
+            "resorts",
+            "size",
+            "split into words",
+            "stewards",
+            "swk",
+            "viant",
+            "without vowels",
+            "words",
+            "zoominfo"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "shares"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "finwise"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.noVowels",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "nasdaq-listed"
+                  },
+                  {
+                    "lit": "company"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "company"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 31,
+        "fired": 31,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-a58dbbc1",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -9399,6 +9820,132 @@
       }
     },
     {
+      "id": "n-fc55fa8c",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bancorp",
+            "baycom",
+            "biorestorative",
+            "blackline",
+            "brenx",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "cb",
+            "ceragon",
+            "cloud",
+            "collective",
+            "company",
+            "crowdstrike",
+            "cryoport",
+            "cytomed",
+            "dogwood",
+            "element",
+            "foods",
+            "gbank",
+            "item number",
+            "lexinfintech",
+            "marten",
+            "meridian",
+            "mobility",
+            "no vowels",
+            "nth",
+            "paylocity",
+            "plc",
+            "pliant",
+            "position",
+            "prf",
+            "remove vowels",
+            "resorts",
+            "size",
+            "stewards",
+            "swk",
+            "title case",
+            "viant",
+            "without vowels",
+            "zoominfo"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "shares"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "finwise"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.noVowels",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "nasdaq-listed"
+                  },
+                  {
+                    "lit": "company"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "company"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 31,
+        "fired": 31,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-e7a887e4",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -9509,6 +10056,78 @@
       "fit": {
         "ok": 26,
         "fired": 26,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4df70d66",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "inc",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "list"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "inc"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
         "rows": 100
       }
     },
@@ -9659,6 +10278,79 @@
       }
     },
     {
+      "id": "n-ffd1defa",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [
+        "n-4df70d66"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "apple",
+              "case",
+              "class",
+              "corellium",
+              "name",
+              "perfect",
+              "shares",
+              "stock"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "inc"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-e31bf35e",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -9728,6 +10420,108 @@
       "fit": {
         "ok": 18,
         "fired": 18,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-be4fc526",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blackline",
+            "branchout",
+            "characters from",
+            "cloud",
+            "coffee",
+            "collective",
+            "company",
+            "element",
+            "innovative",
+            "innventure",
+            "intellicheck",
+            "item number",
+            "letters from to",
+            "lexinfintech",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring",
+            "technology",
+            "union",
+            "zoominfo"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "common"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "fort"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 15,
+        "fired": 15,
         "rows": 100
       }
     },
@@ -9982,6 +10776,91 @@
       }
     },
     {
+      "id": "n-e4f33190",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "aci",
+            "acm",
+            "alamar",
+            "alphabetize the letters",
+            "alps",
+            "beverage",
+            "biorestorative",
+            "blackline",
+            "bridgebio",
+            "each word",
+            "element",
+            "innventure",
+            "item number",
+            "letters in order",
+            "lexinfintech",
+            "nth",
+            "ostin",
+            "position",
+            "sort the letters",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "common"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.sortLetters",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "nasdaq-listed"
+                  },
+                  {
+                    "lit": "company"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "company"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-e6fdef7f",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -10155,6 +11034,102 @@
       }
     },
     {
+      "id": "n-ab55f82d",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [
+        "n-e92c09c2"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "abrogated",
+              "class",
+              "closed",
+              "evgo",
+              "name",
+              "rosen",
+              "sector",
+              "shares",
+              "silo",
+              "toplevel"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "Nasdaq symbol"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            },
+            {
+              "lit": "company"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-6473adfb",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -10278,6 +11253,72 @@
         "render.str",
         [
           "transform.nthStr",
+          [
+            "transform.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a40da5cf",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alps",
+            "arko",
+            "each word",
+            "element",
+            "first n",
+            "graphene",
+            "ibex",
+            "icon",
+            "item number",
+            "nth",
+            "position",
+            "resorts",
+            "split into words",
+            "take",
+            "top",
+            "vera",
+            "veru",
+            "words"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.takeStrs",
           [
             "transform.words",
             [
@@ -10914,6 +11955,92 @@
       }
     },
     {
+      "id": "n-6115629a",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alarum",
+            "arcbest",
+            "arko",
+            "baosheng",
+            "characters from",
+            "graphene",
+            "icon",
+            "letters from to",
+            "siebert",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "a"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "caper"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "core"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-97838859",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -11244,6 +12371,83 @@
       "mem": null,
       "height": 3,
       "size": 7,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9b432cc2",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alps",
+            "arko",
+            "characters from",
+            "ibex",
+            "icon",
+            "letters from to",
+            "resorts",
+            "slice of the text",
+            "substring",
+            "vera"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "drake"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
       "fit": {
         "ok": 6,
         "fired": 6,
@@ -11692,6 +12896,70 @@
       }
     },
     {
+      "id": "n-034a6579",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arko",
+            "graphene",
+            "ibex",
+            "icon",
+            "resorts",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "mgm"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "aggregate.shortest",
+            [
+              "sense.content"
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-41d8ef94",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -12014,6 +13282,81 @@
       "fit": {
         "ok": 5,
         "fired": 5,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9a8a1845",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "corp",
+            "exponent",
+            "first n",
+            "inc",
+            "limited",
+            "power",
+            "raised to",
+            "take",
+            "to the power of"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "domain"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "coco"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "ebay"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.takeStrs",
+          [
+            "know.find",
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            }
+          ],
+          [
+            "compute.power",
+            [
+              "sense.wordCount"
+            ],
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
         "rows": 100
       }
     },
@@ -12434,6 +13777,336 @@
       }
     },
     {
+      "id": "n-4c23131f",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ibex",
+            "item number",
+            "list",
+            "no vowels",
+            "nth",
+            "remove vowels",
+            "separate by",
+            "split",
+            "split by",
+            "therapeutics",
+            "without vowels"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "consumption"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "care"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "composition"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.noVowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "Nasdaq symbol"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-54bb8b59",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ibex",
+            "item number",
+            "list",
+            "no vowels",
+            "nth",
+            "remove vowels",
+            "separate by",
+            "split",
+            "split by",
+            "therapeutics",
+            "without vowels"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "consumption"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "care"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "composition"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.noVowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "Nasdaq symbol"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c3e8f3d7",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ibex",
+            "item number",
+            "list",
+            "no vowels",
+            "nth",
+            "remove vowels",
+            "separate by",
+            "split",
+            "split by",
+            "therapeutics",
+            "without vowels"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "consumption"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "care"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "composition"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.noVowels",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "Nasdaq symbol"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-c79955bb",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -12531,6 +14204,171 @@
               }
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ca7592d5",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "decode",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "symbol"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "company"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "corporation"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "dental"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.unbase64",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "Nasdaq symbol"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cba8a04f",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blackline",
+            "characters from",
+            "cloud",
+            "element",
+            "innovative",
+            "item number",
+            "letters from to",
+            "lexinfintech",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 2
+          }
         ]
       ],
       "mem": null,
@@ -12646,6 +14484,123 @@
       "mem": null,
       "height": 5,
       "size": 17,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e92c09c2",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "ticker"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "common"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "capital"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "jazz"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "company"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "Nasdaq symbol"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            },
+            {
+              "lit": "company"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
       "fit": {
         "ok": 4,
         "fired": 4,
@@ -13110,6 +15065,55 @@
       }
     },
     {
+      "id": "n-0f263bf9",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alps",
+            "graphene",
+            "ibex",
+            "invert case",
+            "item number",
+            "nth",
+            "swap case",
+            "toggle case",
+            "vera"
+          ]
+        ],
+        [
+          "has",
+          "nasdaq"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-24135132",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -13149,6 +15153,65 @@
           "aggregate.shortest",
           [
             "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-61484683",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arko",
+            "icon",
+            "invert case",
+            "item number",
+            "nth",
+            "resorts",
+            "swap case",
+            "toggle case",
+            "veru"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "host"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "mgm"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
             [
               "sense.content"
             ],
@@ -14069,6 +16132,77 @@
       }
     },
     {
+      "id": "n-9445ac58",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nasdaq",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-97b49a20",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -14139,6 +16273,107 @@
               }
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a6dabdb3",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alps",
+            "characters from",
+            "item number",
+            "letters from to",
+            "nth",
+            "slice of the text",
+            "substring",
+            "therapeutics",
+            "veru"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "by"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "acquisition"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "act"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "blue"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "Nasdaq symbol"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            },
+            {
+              "lit": "company"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 5
+          }
         ]
       ],
       "mem": null,
@@ -15221,6 +17456,60 @@
       }
     },
     {
+      "id": "n-26eeda32",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "alps",
+            "arko",
+            "first n",
+            "ibex"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.takeStrs",
+          [
+            "transform.sortStrs",
+            [
+              "sense.content"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-2da85bd3",
       "task": "nasdaq-company-symbol",
       "gen": 6,
@@ -15319,6 +17608,108 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3360caa4",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "alps",
+            "arko",
+            "first n",
+            "ibex"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.takeStrs",
+          [
+            "transform.sortStrs",
+            [
+              "sense.words"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3529c8bd",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arko",
+            "icon",
+            "invert case",
+            "item number",
+            "nth",
+            "resorts",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 3,
@@ -16261,6 +18652,61 @@
       }
     },
     {
+      "id": "n-309148c3",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arko",
+            "first n",
+            "half",
+            "half of",
+            "halve",
+            "ibex"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "airline"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.takeStrs",
+          [
+            "know.find",
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            }
+          ],
+          [
+            "transform.half",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 7,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-bdfd9947",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -16658,6 +19104,67 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-38007334",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arko",
+            "delete",
+            "each word",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "split into words",
+            "strip out",
+            "without",
+            "words"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.remove",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 2,
@@ -17289,6 +19796,66 @@
       }
     },
     {
+      "id": "n-98d54a24",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arko",
+            "camel case",
+            "camelcase",
+            "element",
+            "ibex",
+            "item number",
+            "lower camel case",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.camel",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-a1414254",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -17496,6 +20063,67 @@
       }
     },
     {
+      "id": "n-a6d5e583",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arko",
+            "class name",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "upper camel case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.pascal",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-a7fe399d",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -17641,6 +20269,193 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d8dff68a",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "limited",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separate by",
+            "split",
+            "split by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "words<=",
+          8
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e6039083",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arko",
+            "delete",
+            "each word",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "split into words",
+            "strip out",
+            "without",
+            "words"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.remove",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f4e42d14",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arko",
+            "delete",
+            "each word",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "split into words",
+            "strip out",
+            "without",
+            "words"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.words",
+          [
+            "transform.remove",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 2,
@@ -18345,6 +21160,91 @@
         "render.str",
         [
           "transform.camel",
+          [
+            "transform.reverse",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "nasdaq-listed"
+                  },
+                  {
+                    "lit": "company"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "company"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-d1e8e193",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "backwards",
+            "biogen",
+            "company",
+            "each word",
+            "element",
+            "item number",
+            "mirror",
+            "nth",
+            "position",
+            "reverse",
+            "reversed",
+            "spell backwards",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "name"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "common"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
           [
             "transform.reverse",
             [
@@ -20445,6 +23345,152 @@
       }
     },
     {
+      "id": "n-2c646e1c",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "consumer",
+            "letters from to",
+            "medicines",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "symbol"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cba4720a",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "graphene",
+            "letters from to",
+            "ostin",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-86070745",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arko",
+            "exponent",
+            "first n",
+            "power",
+            "raised to",
+            "take",
+            "to the power of"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.takeStrs",
+          [
+            "know.find",
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            }
+          ],
+          [
+            "compute.power",
+            {
+              "lit": 12
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-07ee8fd5",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -21332,6 +24378,215 @@
       }
     },
     {
+      "id": "n-00b0d299",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "separate by",
+            "split",
+            "split by",
+            "words backwards"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0e0622a8",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "corp",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "separate by",
+            "split",
+            "split by",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "act"
+          ]
+        ],
+        [
+          "nums==",
+          0
+        ],
+        [
+          "words>=",
+          7
+        ],
+        [
+          "not",
+          [
+            "has",
+            "a"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "acquisition"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-0e34c160",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-11007e05",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -21450,6 +24705,66 @@
       }
     },
     {
+      "id": "n-1fe78ab8",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "sort",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.sortStrs",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-21cfef8a",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -21495,6 +24810,99 @@
           {
             "lit": 2
           }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-25152ba8",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "graphene",
+            "item number",
+            "nth",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "acquisition"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "act"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "brittanica"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "aggregate.shortest",
+            [
+              "sense.content"
+            ]
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
         ]
       ],
       "mem": null,
@@ -21874,6 +25282,125 @@
       }
     },
     {
+      "id": "n-3ee806d4",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "separate by",
+            "split",
+            "split by",
+            "words backwards"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-46c5e14a",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "upper camel case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.pascal",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-51303b03",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -21999,6 +25526,66 @@
       }
     },
     {
+      "id": "n-54c55adb",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-628df8ae",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -22090,6 +25677,225 @@
       }
     },
     {
+      "id": "n-682913c6",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "sort",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.sortStrs",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6d0c1a35",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "arko",
+            "item number",
+            "nth",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "as"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "author"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "benitez"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "act"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.acronym",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-6d249563",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "element",
+            "global",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "short form",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.acronym",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-7509e114",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -22143,6 +25949,315 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-76345784",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "a to z",
+            "alphabetical",
+            "alphabetize",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "sort",
+            "split",
+            "split by"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.sortStrs",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-76a60be5",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "arko",
+            "item number",
+            "nth",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "as"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "author"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "benitez"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "act"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.acronym",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-88dce4a8",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "reverse the words",
+            "reverse word order",
+            "separate by",
+            "split",
+            "split by",
+            "words backwards"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.reverseWords",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-91361f26",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "arko",
+            "item number",
+            "nth",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "as"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "author"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "benitez"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "act"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.acronym",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -22271,6 +26386,126 @@
       }
     },
     {
+      "id": "n-a1253c26",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "ibex",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "swap case",
+            "toggle case",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.remove",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a2139ea6",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "clean up",
+            "delete",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "strip spaces",
+            "trim",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.trim",
+          [
+            "transform.remove",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-a41d5458",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -22354,6 +26589,67 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a6fd1389",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "delete",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "title case",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "transform.remove",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -22537,6 +26833,66 @@
       }
     },
     {
+      "id": "n-bb51353e",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "transform.title",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-be142a35",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -22616,6 +26972,66 @@
             {
               "lit": 1
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c15e2d6d",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "upper camel case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.pascal",
+            [
+              "sense.lastWord"
+            ]
           ]
         ]
       ],
@@ -22748,6 +27164,68 @@
       }
     },
     {
+      "id": "n-d0b6e534",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "delete",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "upper case",
+            "uppercase",
+            "without"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "transform.remove",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-d93fe61f",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -22802,6 +27280,66 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-db2adcdf",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "element",
+            "ibex",
+            "item number",
+            "nth",
+            "pascal case",
+            "pascalcase",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "upper camel case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.pascal",
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -23682,6 +28220,76 @@
       }
     },
     {
+      "id": "n-5536f852",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "limited",
+            "most common letter",
+            "most frequent letter",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "nasdaq-listed"
+              },
+              {
+                "lit": "Nasdaq symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "aggregate.commonLetter",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "Nasdaq symbol"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-6498735b",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -23740,6 +28348,179 @@
           [
             "sense.roman"
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7892d0e6",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "item number",
+            "letters from to",
+            "nth",
+            "slice of the text",
+            "substring",
+            "veru"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ],
+        [
+          "not",
+          [
+            "has",
+            "as"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "acquisition"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "act"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "accountant"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "administration"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "Nasdaq symbol"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            },
+            {
+              "lit": "company"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8b506f96",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "graphene",
+            "item number",
+            "letters from to",
+            "nth",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "nasdaq-listed"
+                },
+                {
+                  "lit": "Nasdaq symbol"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "nasdaq-listed"
+            },
+            {
+              "lit": "Nasdaq symbol"
+            },
+            {
+              "lit": "company"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 3
+          }
         ]
       ],
       "mem": null,
@@ -33061,6 +37842,52 @@
       }
     },
     {
+      "id": "n-0067803a",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "j",
+            "nth",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "mays"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-096a43b5",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -33377,6 +38204,48 @@
       }
     },
     {
+      "id": "n-3c695c7c",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "nth",
+            "swap case",
+            "toggle case",
+            "veru"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.nthStr",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-537046df",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -33599,6 +38468,51 @@
       }
     },
     {
+      "id": "n-7edf2be9",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "each word",
+            "global",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "kolibri"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.acronym",
+            [
+              "sense.after",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-82567d0f",
       "task": "nasdaq-company-symbol",
       "gen": 10,
@@ -33717,6 +38631,51 @@
             ],
             {
               "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a1d5a0a8",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "item number",
+            "j",
+            "nth",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "mays"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
             }
           ]
         ]
@@ -33988,6 +38947,182 @@
       "mem": null,
       "height": 4,
       "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9fd68bb8",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "ibex",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "symbol"
+            }
+          ],
+          {
+            "lit": 4
+          },
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e432cf97",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "letters from to",
+            "slice of the text",
+            "substring",
+            "veru"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "symbol"
+            }
+          ],
+          {
+            "lit": 5
+          },
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e9438b29",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "blackline",
+            "characters from",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f051d1b0",
+      "task": "nasdaq-company-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "ibex",
+            "letters from to",
+            "slice of the text",
+            "substring"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "sense.after",
+            {
+              "lit": "symbol"
+            }
+          ],
+          {
+            "lit": 3
+          },
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -55355,6 +60490,7 @@
   ],
   "stages": [
     "d22b5b7e8a0c2a4da52a074bebc2d86ddeccbc9fae6e82f0767cfea859050769",
-    "07a82118522c859b4802c15a23964a5b0de5bdc965af26a7256c34edd398ebf6"
+    "07a82118522c859b4802c15a23964a5b0de5bdc965af26a7256c34edd398ebf6",
+    "686e1edced0ef01761b4fa91179c9f61475f3096793f77a0999e2acd4ae49035"
   ]
 }

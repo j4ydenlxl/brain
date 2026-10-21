@@ -2,30 +2,29 @@
   "task": "largest-city-of-state-5ead",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T18:09:10.747Z",
+  "at": "2026-10-21T17:31:14.432Z",
   "stats": {
-    "generated": 200156,
-    "distinct": 85255,
-    "kept": 473,
+    "generated": 160473,
+    "distinct": 65872,
+    "kept": 472,
     "know": 382,
     "byFamily": {
-      "memory": 82,
-      "transform": 269,
-      "aggregate": 89,
+      "memory": 81,
+      "transform": 268,
+      "aggregate": 90,
       "sense": 31,
       "know": 2
     },
     "bySource": {
-      "memory": 82,
-      "enum": 188,
-      "template": 202,
+      "parent": 468,
+      "enum": 3,
       "open": 1
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 48392,
-    "cellsPerSecond": 4136,
+    "ms": 28944,
+    "cellsPerSecond": 5544,
     "capped": null,
     "packs": [
       "fr-tidytuesday-states-2d2e88"
@@ -33,12 +32,12 @@
     "cursor": {
       "v": 1,
       "basis": "d8baee0cc6217ed99a1a01ce9459532f3d5e235fab21a486d4ef640cc2c87ad3",
-      "round": 0,
-      "at": 107196,
+      "round": 1,
+      "at": 250307,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "aggregate.countIn",
+      "prim": "compute.asPercent",
       "tpl": 1003
     }
   },
@@ -1254,6 +1253,113 @@
       }
     },
     {
+      "id": "n-9d2a5204",
+      "task": "largest-city-of-state-5ead",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alabama",
+            "alaska",
+            "arizona",
+            "arkansas",
+            "california",
+            "carolina",
+            "connecticut",
+            "dakota",
+            "delaware",
+            "element",
+            "florida",
+            "georgia",
+            "hampshire",
+            "hawaii",
+            "idaho",
+            "illinois",
+            "item number",
+            "kentucky",
+            "louisiana",
+            "maine",
+            "maryland",
+            "massachusetts",
+            "mexico",
+            "michigan",
+            "minnesota",
+            "missouri",
+            "montana",
+            "nebraska",
+            "nevada",
+            "nth",
+            "oregon",
+            "pennsylvania",
+            "position",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split",
+            "split by",
+            "tennessee",
+            "texas",
+            "west",
+            "wisconsin"
+          ]
+        ],
+        [
+          "has",
+          "largest"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-states-2d2e88"
+                  },
+                  {
+                    "lit": "state"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-states-2d2e88"
+              },
+              {
+                "lit": "state"
+              },
+              {
+                "lit": "largest city"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 35,
+        "fired": 35,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b08c70b4",
       "task": "largest-city-of-state-5ead",
       "gen": 10,
@@ -1474,6 +1580,125 @@
       "mem": null,
       "height": 5,
       "size": 16,
+      "fit": {
+        "ok": 35,
+        "fired": 35,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-93fb3cb5",
+      "task": "largest-city-of-state-5ead",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "alabama",
+            "alaska",
+            "arizona",
+            "arkansas",
+            "california",
+            "carolina",
+            "connecticut",
+            "dakota",
+            "delaware",
+            "element",
+            "florida",
+            "georgia",
+            "hampshire",
+            "hawaii",
+            "idaho",
+            "illinois",
+            "item number",
+            "kentucky",
+            "longest",
+            "longest one",
+            "longest word",
+            "louisiana",
+            "maine",
+            "maryland",
+            "massachusetts",
+            "mexico",
+            "michigan",
+            "minnesota",
+            "missouri",
+            "montana",
+            "nebraska",
+            "nevada",
+            "nth",
+            "oregon",
+            "pennsylvania",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "tennessee",
+            "texas",
+            "west",
+            "wisconsin"
+          ]
+        ],
+        [
+          "has",
+          "largest"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-states-2d2e88"
+                  },
+                  {
+                    "lit": "state"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-states-2d2e88"
+              },
+              {
+                "lit": "state"
+              },
+              {
+                "lit": "largest city"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-states-2d2e88"
+                },
+                {
+                  "lit": "state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
       "fit": {
         "ok": 35,
         "fired": 35,
@@ -6531,7 +6756,7 @@
       }
     },
     {
-      "id": "n-d04cb5b1",
+      "id": "n-a770af05",
       "task": "largest-city-of-state-5ead",
       "gen": 10,
       "parents": [],
@@ -6544,8 +6769,8 @@
               "act",
               "affiliation",
               "airline",
+              "author",
               "beach",
-              "bridge",
               "category",
               "central",
               "chain",
@@ -6561,7 +6786,7 @@
               "em",
               "episode",
               "gender",
-              "gets",
+              "george",
               "girl",
               "harbor",
               "has",
@@ -6571,6 +6796,7 @@
               "karen",
               "lies",
               "location",
+              "maineiac",
               "men",
               "mines",
               "monster",
@@ -6592,6 +6818,7 @@
               "type",
               "unit",
               "university",
+              "warren",
               "welcome",
               "which",
               "women",
@@ -23786,6 +24013,100 @@
       }
     },
     {
+      "id": "n-e198fb98",
+      "task": "largest-city-of-state-5ead",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arizona",
+            "arkansas",
+            "element",
+            "georgia",
+            "hawaii",
+            "idaho",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "massachusetts",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "tennessee",
+            "west"
+          ]
+        ],
+        [
+          "has",
+          "largest"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-states-2d2e88"
+                  },
+                  {
+                    "lit": "state"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-states-2d2e88"
+              },
+              {
+                "lit": "state"
+              },
+              {
+                "lit": "capital city"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-states-2d2e88"
+                },
+                {
+                  "lit": "state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 17,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-15fbbe51",
       "task": "largest-city-of-state-5ead",
       "gen": 10,
@@ -33428,82 +33749,6 @@
       }
     },
     {
-      "id": "n-f2d1775c",
-      "task": "largest-city-of-state-5ead",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "idaho",
-            "longest",
-            "longest one",
-            "longest word",
-            "shortest",
-            "shortest one",
-            "shortest word"
-          ]
-        ],
-        [
-          "has",
-          "what"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " of ",
-            {
-              "slot": 2
-            },
-            " is Boise."
-          ]
-        },
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "render.list",
-          [
-            "know.find",
-            {
-              "lit": "fr-tidytuesday-states-2d2e88"
-            },
-            {
-              "lit": "state"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 10,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-f52fddb4",
       "task": "largest-city-of-state-5ead",
       "gen": 10,
@@ -35278,79 +35523,6 @@
       }
     },
     {
-      "id": "n-684ccda2",
-      "task": "largest-city-of-state-5ead",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "characters from",
-            "element",
-            "idaho",
-            "item number",
-            "letters from to",
-            "nth",
-            "position",
-            "slice of the text",
-            "substring"
-          ]
-        ],
-        [
-          "has",
-          "what"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.substr",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "fr-tidytuesday-states-2d2e88"
-                },
-                {
-                  "lit": "state"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ],
-            {
-              "lit": "fr-tidytuesday-states-2d2e88"
-            },
-            {
-              "lit": "state"
-            },
-            {
-              "lit": "capital city"
-            }
-          ],
-          {
-            "lit": 1
-          },
-          {
-            "lit": 5
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 13,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-0dab14e9",
       "task": "largest-city-of-state-5ead",
       "gen": 10,
@@ -35865,101 +36037,6 @@
               "slot": 1
             },
             " of Hawaii is ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "aggregate.longest",
-          [
-            "sense.words"
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-states-2d2e88"
-              },
-              {
-                "lit": "state"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "fr-tidytuesday-states-2d2e88"
-          },
-          {
-            "lit": "state"
-          },
-          {
-            "lit": "largest city"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 15,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-5e111240",
-      "task": "largest-city-of-state-5ead",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "element",
-            "idaho",
-            "item number",
-            "longest",
-            "longest one",
-            "longest word",
-            "nth",
-            "position",
-            "shortest",
-            "shortest one",
-            "shortest word"
-          ]
-        ],
-        [
-          "has",
-          "what"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " of Idaho is ",
             {
               "slot": 2
             },
@@ -41849,39 +41926,6 @@
       }
     },
     {
-      "id": "n-d2e9b133",
-      "task": "largest-city-of-state-5ead",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "york"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.nearest",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "tell me the largest city of the state New York": "The largest city of New York is New York City."
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-df9ea59b",
       "task": "largest-city-of-state-5ead",
       "gen": 10,
@@ -42082,9 +42126,426 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-d04cb5b1",
+      "task": "largest-city-of-state-5ead",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "act",
+              "affiliation",
+              "airline",
+              "beach",
+              "bridge",
+              "category",
+              "central",
+              "chain",
+              "cincinnati",
+              "clean",
+              "code",
+              "college",
+              "compare",
+              "coon",
+              "country",
+              "date",
+              "dc",
+              "em",
+              "episode",
+              "gender",
+              "gets",
+              "girl",
+              "harbor",
+              "has",
+              "international",
+              "iso2",
+              "iso3",
+              "karen",
+              "lies",
+              "location",
+              "men",
+              "mines",
+              "monster",
+              "n3",
+              "population",
+              "postal",
+              "province",
+              "published",
+              "randy",
+              "reagan",
+              "region",
+              "sponsorship",
+              "strcity",
+              "strstate",
+              "sucountry",
+              "sutype",
+              "title",
+              "trade",
+              "type",
+              "unit",
+              "university",
+              "welcome",
+              "which",
+              "women",
+              "zone"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-states-2d2e88"
+                },
+                {
+                  "lit": "state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-states-2d2e88"
+            },
+            {
+              "lit": "state"
+            },
+            {
+              "lit": "largest city"
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-states-2d2e88"
+                },
+                {
+                  "lit": "state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-states-2d2e88"
+            },
+            {
+              "lit": "state"
+            },
+            {
+              "lit": "capital city"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 30,
+        "fired": 30,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f2d1775c",
+      "task": "largest-city-of-state-5ead",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "idaho",
+            "longest",
+            "longest one",
+            "longest word",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " of ",
+            {
+              "slot": 2
+            },
+            " is Boise."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-states-2d2e88"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-684ccda2",
+      "task": "largest-city-of-state-5ead",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "characters from",
+            "element",
+            "idaho",
+            "item number",
+            "letters from to",
+            "nth",
+            "position",
+            "slice of the text",
+            "substring"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.substr",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-tidytuesday-states-2d2e88"
+                },
+                {
+                  "lit": "state"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-tidytuesday-states-2d2e88"
+            },
+            {
+              "lit": "state"
+            },
+            {
+              "lit": "capital city"
+            }
+          ],
+          {
+            "lit": 1
+          },
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5e111240",
+      "task": "largest-city-of-state-5ead",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "element",
+            "idaho",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "position",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " of Idaho is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.longest",
+          [
+            "sense.words"
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-states-2d2e88"
+              },
+              {
+                "lit": "state"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-tidytuesday-states-2d2e88"
+          },
+          {
+            "lit": "state"
+          },
+          {
+            "lit": "largest city"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 15,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d2e9b133",
+      "task": "largest-city-of-state-5ead",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "york"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "tell me the largest city of the state New York": "The largest city of New York is New York City."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
     }
   ],
   "stages": [
-    "300076d28f54aeb56777142be28e40c725bf502bbb54f9090b2396c9a07bcfb5"
+    "300076d28f54aeb56777142be28e40c725bf502bbb54f9090b2396c9a07bcfb5",
+    "0badfb0a1ec8282ea42c8e1f78cb02d9e3ff8c5084b0aa78fb7ff4eba34fd772"
   ]
 }
