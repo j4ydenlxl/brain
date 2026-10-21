@@ -2,31 +2,27 @@
   "task": "element-symbol",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T03:23:31.871Z",
+  "at": "2026-10-21T16:14:23.030Z",
   "stats": {
-    "generated": 171351,
-    "distinct": 64390,
-    "kept": 784,
-    "know": 155,
+    "generated": 161078,
+    "distinct": 100860,
+    "kept": 774,
+    "know": 156,
     "byFamily": {
-      "transform": 260,
+      "transform": 253,
       "memory": 387,
-      "aggregate": 115,
-      "compute": 22
+      "aggregate": 113,
+      "compute": 21
     },
     "bySource": {
-      "enum": 364,
-      "open": 1,
-      "parent": 366,
-      "template": 3,
-      "memory": 49,
-      "mutant": 1
+      "parent": 772,
+      "open": 2
     },
     "maxHeight": 6,
     "devOk": 96,
     "devN": 96,
-    "ms": 168068,
-    "cellsPerSecond": 1020,
+    "ms": 55315,
+    "cellsPerSecond": 2912,
     "capped": null,
     "packs": [
       "periodic-table"
@@ -34,12 +30,12 @@
     "cursor": {
       "v": 1,
       "basis": "1c85db45f094a0e3198e7fc5fc5e30a86ddbb4dc3c522a04e72054789f874b6c",
-      "round": 0,
-      "at": 119028,
+      "round": 1,
+      "at": 228502,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "compare.equal",
+      "prim": "compute.interest",
       "tpl": 717
     }
   },
@@ -114,7 +110,7 @@
       }
     },
     {
-      "id": "n-c553074c",
+      "id": "n-ea8a776b",
       "task": "element-symbol",
       "gen": 10,
       "parents": [
@@ -128,10 +124,12 @@
             [
               "adult",
               "album",
-              "category",
               "cgac",
+              "creators",
               "date",
               "digger",
+              "digs",
+              "dragon",
               "further",
               "hex",
               "intensity",
@@ -142,6 +140,8 @@
               "pkname",
               "scoobys",
               "season",
+              "surfer",
+              "test",
               "title"
             ]
           ]
@@ -8472,6 +8472,84 @@
       }
     },
     {
+      "id": "n-f06e8701",
+      "task": "element-symbol",
+      "gen": 10,
+      "parents": [
+        "n-94432b0a"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "atomic",
+              "category",
+              "creators",
+              "description",
+              "intensity",
+              "ipath",
+              "iso3",
+              "kind",
+              "lowcarbon",
+              "majors",
+              "name",
+              "of",
+              "protons",
+              "streetaddr",
+              "title",
+              "unit"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.toRoman",
+          [
+            "compute.fromRoman",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "periodic-table"
+                  },
+                  {
+                    "lit": "element"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "periodic-table"
+              },
+              {
+                "lit": "element"
+              },
+              {
+                "lit": "symbol"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 96
+      }
+    },
+    {
       "id": "n-7dcb209b",
       "task": "element-symbol",
       "gen": 10,
@@ -8566,62 +8644,6 @@
             ],
             {
               "lit": 3
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 8,
-        "fired": 8,
-        "rows": 96
-      }
-    },
-    {
-      "id": "n-ccf51ea7",
-      "task": "element-symbol",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "abbreviate",
-            "acronym",
-            "boron",
-            "carbon",
-            "fluorine",
-            "hydrogen",
-            "iodine",
-            "item number",
-            "nitrogen",
-            "nth",
-            "oxygen",
-            "sulfur"
-          ]
-        ],
-        [
-          "words<=",
-          5
-        ],
-        [
-          "has",
-          "for"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.acronym",
-          [
-            "transform.nthStr",
-            [
-              "sense.words"
-            ],
-            {
-              "lit": 5
             }
           ]
         ]
@@ -12656,50 +12678,6 @@
       }
     },
     {
-      "id": "n-49095333",
-      "task": "element-symbol",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "abbreviate",
-            "acronym",
-            "boron",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "sulfur"
-          ]
-        ],
-        [
-          "has",
-          "for"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.acronym",
-          [
-            "aggregate.shortest",
-            [
-              "sense.content"
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 4,
-      "fit": {
-        "ok": 2,
-        "fired": 2,
-        "rows": 96
-      }
-    },
-    {
       "id": "n-80724936",
       "task": "element-symbol",
       "gen": 6,
@@ -13342,99 +13320,6 @@
       }
     },
     {
-      "id": "n-586ca4d1",
-      "task": "element-symbol",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "abbreviate",
-            "acronym",
-            "boron",
-            "character at",
-            "letter at",
-            "nth letter",
-            "sulfur",
-            "which letter"
-          ]
-        ],
-        [
-          "has",
-          "for"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.acronym",
-          [
-            "transform.charAt",
-            [
-              "sense.text"
-            ],
-            {
-              "lit": 10
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 2,
-        "fired": 2,
-        "rows": 96
-      }
-    },
-    {
-      "id": "n-63a86820",
-      "task": "element-symbol",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "abbreviate",
-            "abbreviation",
-            "acronym",
-            "iodine",
-            "most common letter",
-            "most frequent letter",
-            "nitrogen",
-            "short form",
-            "which letter appears most"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.acronym",
-          [
-            "aggregate.commonLetter",
-            [
-              "sense.after",
-              {
-                "lit": "for"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 2,
-        "fired": 2,
-        "rows": 96
-      }
-    },
-    {
       "id": "n-715e91c1",
       "task": "element-symbol",
       "gen": 10,
@@ -13861,54 +13746,6 @@
       }
     },
     {
-      "id": "n-cbd1420a",
-      "task": "element-symbol",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "iodine",
-            "item number",
-            "most common letter",
-            "most frequent letter",
-            "nitrogen",
-            "nth",
-            "position",
-            "which letter appears most"
-          ]
-        ],
-        [
-          "has",
-          "which"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "aggregate.commonLetter",
-          [
-            "transform.nthStr",
-            [
-              "sense.content"
-            ],
-            {
-              "lit": 3
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 2,
-        "fired": 2,
-        "rows": 96
-      }
-    },
-    {
       "id": "n-ccfc0fc2",
       "task": "element-symbol",
       "gen": 10,
@@ -14209,53 +14046,6 @@
                 "lit": "of"
               }
             ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 2,
-        "fired": 2,
-        "rows": 96
-      }
-    },
-    {
-      "id": "n-f0c1ae2c",
-      "task": "element-symbol",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "abbreviate",
-            "acronym",
-            "darmstadtium",
-            "normalise",
-            "normalize",
-            "osmium",
-            "simplify the text"
-          ]
-        ],
-        [
-          "has",
-          "for"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.acronym",
-          [
-            "transform.norm",
-            [
-              "sense.text"
-            ],
-            {
-              "lit": 3
-            }
           ]
         ]
       ],
@@ -26782,45 +26572,6 @@
       }
     },
     {
-      "id": "n-2f36d44e",
-      "task": "element-symbol",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "abbreviate",
-            "acronym",
-            "most common letter",
-            "most frequent letter",
-            "sulfur",
-            "which letter appears most"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "aggregate.commonLetter",
-          [
-            "transform.acronym",
-            [
-              "sense.text"
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 4,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 96
-      }
-    },
-    {
       "id": "n-38cd7a97",
       "task": "element-symbol",
       "gen": 10,
@@ -28467,50 +28218,6 @@
       }
     },
     {
-      "id": "n-2d09fa1f",
-      "task": "element-symbol",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "abbreviate",
-            "abbreviation",
-            "acronym",
-            "nitrogen",
-            "reverse",
-            "reversed",
-            "short form",
-            "spell backwards"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.acronym",
-          [
-            "transform.reverse",
-            [
-              "sense.after",
-              {
-                "lit": "for"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 96
-      }
-    },
-    {
       "id": "n-2ef2aefd",
       "task": "element-symbol",
       "gen": 10,
@@ -29590,56 +29297,6 @@
       }
     },
     {
-      "id": "n-549f8860",
-      "task": "element-symbol",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "carbon",
-            "character count",
-            "convert to base",
-            "how many characters",
-            "in base",
-            "in binary",
-            "in octal",
-            "number of characters",
-            "to binary",
-            "to hex"
-          ]
-        ],
-        [
-          "has",
-          "give"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "compute.toBase",
-          {
-            "lit": 12
-          },
-          [
-            "aggregate.chars",
-            [
-              "sense.text"
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 96
-      }
-    },
-    {
       "id": "n-5b113125",
       "task": "element-symbol",
       "gen": 10,
@@ -29917,50 +29574,6 @@
       ],
       "mem": null,
       "height": 5,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 96
-      }
-    },
-    {
-      "id": "n-5faf0acc",
-      "task": "element-symbol",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "abbreviate",
-            "abbreviation",
-            "acronym",
-            "reverse the words",
-            "reverse word order",
-            "seaborgium",
-            "short form",
-            "words backwards"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.acronym",
-          [
-            "transform.reverseWords",
-            [
-              "sense.before",
-              {
-                "lit": "for"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -31306,55 +30919,6 @@
       ],
       "mem": null,
       "height": 3,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 96
-      }
-    },
-    {
-      "id": "n-a2edd39e",
-      "task": "element-symbol",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "carbon",
-            "convert to base",
-            "in base",
-            "in binary",
-            "in octal",
-            "square",
-            "to binary",
-            "to hex",
-            "to the second power"
-          ]
-        ],
-        [
-          "has",
-          "give"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "compute.toBase",
-          {
-            "lit": 12
-          },
-          [
-            "transform.square",
-            [
-              "sense.wordCount"
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -40076,6 +39640,602 @@
       },
       "height": 3,
       "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-c553074c",
+      "task": "element-symbol",
+      "gen": 10,
+      "parents": [
+        "n-8bf01e9d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "adult",
+              "album",
+              "category",
+              "cgac",
+              "date",
+              "digger",
+              "further",
+              "hex",
+              "intensity",
+              "iso3",
+              "lowcarbon",
+              "number",
+              "paw",
+              "pkname",
+              "scoobys",
+              "season",
+              "title"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "periodic-table"
+                },
+                {
+                  "lit": "element"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "periodic-table"
+            },
+            {
+              "lit": "element"
+            },
+            {
+              "lit": "symbol"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "for"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 64,
+        "fired": 64,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-ccf51ea7",
+      "task": "element-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "boron",
+            "carbon",
+            "fluorine",
+            "hydrogen",
+            "iodine",
+            "item number",
+            "nitrogen",
+            "nth",
+            "oxygen",
+            "sulfur"
+          ]
+        ],
+        [
+          "words<=",
+          5
+        ],
+        [
+          "has",
+          "for"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "transform.nthStr",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 8,
+        "fired": 8,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-49095333",
+      "task": "element-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "boron",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "sulfur"
+          ]
+        ],
+        [
+          "has",
+          "for"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "aggregate.shortest",
+            [
+              "sense.content"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-586ca4d1",
+      "task": "element-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "boron",
+            "character at",
+            "letter at",
+            "nth letter",
+            "sulfur",
+            "which letter"
+          ]
+        ],
+        [
+          "has",
+          "for"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "transform.charAt",
+            [
+              "sense.text"
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-63a86820",
+      "task": "element-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "iodine",
+            "most common letter",
+            "most frequent letter",
+            "nitrogen",
+            "short form",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "aggregate.commonLetter",
+            [
+              "sense.after",
+              {
+                "lit": "for"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-cbd1420a",
+      "task": "element-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "iodine",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "nitrogen",
+            "nth",
+            "position",
+            "which letter appears most"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.nthStr",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-f0c1ae2c",
+      "task": "element-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "darmstadtium",
+            "normalise",
+            "normalize",
+            "osmium",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "for"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "transform.norm",
+            [
+              "sense.text"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-2f36d44e",
+      "task": "element-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "acronym",
+            "most common letter",
+            "most frequent letter",
+            "sulfur",
+            "which letter appears most"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.acronym",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-2d09fa1f",
+      "task": "element-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "nitrogen",
+            "reverse",
+            "reversed",
+            "short form",
+            "spell backwards"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "transform.reverse",
+            [
+              "sense.after",
+              {
+                "lit": "for"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-549f8860",
+      "task": "element-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "carbon",
+            "character count",
+            "convert to base",
+            "how many characters",
+            "in base",
+            "in binary",
+            "in octal",
+            "number of characters",
+            "to binary",
+            "to hex"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.toBase",
+          {
+            "lit": 12
+          },
+          [
+            "aggregate.chars",
+            [
+              "sense.text"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-5faf0acc",
+      "task": "element-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abbreviate",
+            "abbreviation",
+            "acronym",
+            "reverse the words",
+            "reverse word order",
+            "seaborgium",
+            "short form",
+            "words backwards"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.acronym",
+          [
+            "transform.reverseWords",
+            [
+              "sense.before",
+              {
+                "lit": "for"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 96
+      }
+    },
+    {
+      "id": "n-a2edd39e",
+      "task": "element-symbol",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "carbon",
+            "convert to base",
+            "in base",
+            "in binary",
+            "in octal",
+            "square",
+            "to binary",
+            "to hex",
+            "to the second power"
+          ]
+        ],
+        [
+          "has",
+          "give"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.toBase",
+          {
+            "lit": 12
+          },
+          [
+            "transform.square",
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -58196,6 +58356,7 @@
     }
   ],
   "stages": [
-    "e24fa0738344323b16519c5f4bf22d0794f13d67d9b2af913ebec2f18dc0cc31"
+    "e24fa0738344323b16519c5f4bf22d0794f13d67d9b2af913ebec2f18dc0cc31",
+    "4b8d4823296fb4b6fe45655cbe3eef48d90ec2c9b2c6b65f9077f37f7554b440"
   ]
 }

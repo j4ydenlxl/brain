@@ -2,42 +2,40 @@
   "task": "national-dish",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-17T23:57:46.103Z",
+  "at": "2026-10-21T15:58:57.395Z",
   "stats": {
-    "generated": 200162,
-    "distinct": 93234,
+    "generated": 146392,
+    "distinct": 82366,
     "kept": 1335,
-    "know": 270,
+    "know": 271,
     "byFamily": {
       "transform": 540,
-      "aggregate": 498,
+      "aggregate": 499,
       "sense": 99,
-      "memory": 198
+      "memory": 197
     },
     "bySource": {
-      "enum": 134,
-      "template": 161,
-      "parent": 1010,
-      "memory": 30
+      "parent": 1334,
+      "enum": 1
     },
     "maxHeight": 6,
     "devOk": 100,
     "devN": 100,
-    "ms": 169139,
-    "cellsPerSecond": 1183,
-    "capped": null,
+    "ms": 140881,
+    "cellsPerSecond": 1039,
+    "capped": "ms",
     "packs": [
       "samayo-dish"
     ],
     "cursor": {
       "v": 1,
       "basis": "7d8e38a6b94c4c3e283b689355483871b32cf3f30452180f7c9b3a8f42dc4802",
-      "round": 0,
-      "at": 95157,
+      "round": 1,
+      "at": 203971,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "aggregate.product",
+      "prim": "compute.compound",
       "tpl": 789
     }
   },
@@ -6240,6 +6238,172 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 53,
+        "fired": 53,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8af9c27f",
+      "task": "national-dish",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "albania",
+            "angola",
+            "arabia",
+            "austria",
+            "bangladesh",
+            "botswana",
+            "brunei",
+            "bulgaria",
+            "china",
+            "costa",
+            "cuba",
+            "denmark",
+            "el",
+            "element",
+            "estonia",
+            "finland",
+            "georgia",
+            "ghana",
+            "greenland",
+            "guyana",
+            "hong",
+            "iran",
+            "iraq",
+            "italy",
+            "item number",
+            "kenya",
+            "korea",
+            "kyrgyzstan",
+            "laos",
+            "latvia",
+            "madagascar",
+            "moldova",
+            "nicaragua",
+            "nigeria",
+            "north",
+            "nth",
+            "peru",
+            "poland",
+            "portugal",
+            "position",
+            "romania",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "somalia",
+            "south",
+            "spain",
+            "split",
+            "split by",
+            "sudan",
+            "sweden",
+            "switzerland",
+            "syria",
+            "tanzania",
+            "tunisia",
+            "turkmenistan",
+            "uganda",
+            "uruguay",
+            "uzbekistan",
+            "wales",
+            "yemen"
+          ]
+        ],
+        [
+          "has",
+          "national"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "aruba"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belarus"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "belgium"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cape"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "samayo-dish"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "samayo-dish"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "national dish"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "samayo-dish"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 17,
       "fit": {
         "ok": 53,
@@ -83489,42 +83653,6 @@
       }
     },
     {
-      "id": "n-db1e0725",
-      "task": "national-dish",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "coast",
-            "ivory"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.nearest",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "name the national dish of Ivory Coast": "The national dish of Ivory Coast is Fufu, Kedjenou."
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-e01cff8d",
       "task": "national-dish",
       "gen": 6,
@@ -83993,6 +84121,42 @@
       "mem": {
         "table": {
           "which dish is the national dish of Tunisia": "The national dish of Tunisia is Couscous, Kabkabou."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-db1e0725",
+      "task": "national-dish",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "coast",
+            "ivory"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "name the national dish of Ivory Coast": "The national dish of Ivory Coast is Fufu, Kedjenou."
         }
       },
       "height": 3,
@@ -100802,6 +100966,7 @@
     }
   ],
   "stages": [
-    "5697aef7ad9daa01ed459669470fb3c8c5bac9443e71c509b48a8d58716eb714"
+    "5697aef7ad9daa01ed459669470fb3c8c5bac9443e71c509b48a8d58716eb714",
+    "a85a7b26f49963fad0370175e92a124ed82353dee81c23c183101eb4933e2b63"
   ]
 }

@@ -2,44 +2,42 @@
   "task": "country-area-larger",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T19:48:45.462Z",
+  "at": "2026-10-21T16:06:20.626Z",
   "stats": {
-    "generated": 200365,
-    "distinct": 57424,
-    "kept": 1116,
-    "know": 546,
+    "generated": 86107,
+    "distinct": 60816,
+    "kept": 1124,
+    "know": 548,
     "byFamily": {
       "memory": 203,
       "transform": 530,
-      "aggregate": 114,
+      "aggregate": 122,
       "route": 193,
       "sense": 64,
       "iterate": 12
     },
     "bySource": {
-      "parent": 465,
-      "enum": 365,
-      "template": 274,
-      "memory": 12
+      "parent": 1113,
+      "enum": 11
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 164045,
-    "cellsPerSecond": 1221,
-    "capped": null,
+    "ms": 92271,
+    "cellsPerSecond": 933,
+    "capped": "ms",
     "packs": [
       "samayo-area"
     ],
     "cursor": {
       "v": 1,
       "basis": "0d7261e083cea756b1d439c83cdab3cde686a76a4d9243fe4c3f78ef5df4dc7f",
-      "round": 0,
-      "at": 122372,
+      "round": 1,
+      "at": 180829,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "iterate.rangeFrom",
+      "prim": "compute.choose",
       "tpl": 1680
     }
   },
@@ -1998,7 +1996,7 @@
     {
       "id": "n-0d3a7e5f",
       "task": "country-area-larger",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -2814,6 +2812,75 @@
         [
           "has",
           "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.list"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 25,
+        "fired": 25,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ea1454f2",
+      "task": "country-area-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "afghanistan",
+            "antarctica",
+            "austria",
+            "bermuda",
+            "bouvet",
+            "bulgaria",
+            "chad",
+            "costa",
+            "czech",
+            "east",
+            "first n",
+            "guinea",
+            "islands",
+            "kenya",
+            "lebanon",
+            "lithuania",
+            "malawi",
+            "namibia",
+            "netherlands",
+            "reunion",
+            "sahara",
+            "saint",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "larger"
         ]
       ],
       "pyramid": [
@@ -4038,7 +4105,7 @@
     {
       "id": "n-1b447105",
       "task": "country-area-larger",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -5240,7 +5307,7 @@
     {
       "id": "n-112e87fe",
       "task": "country-area-larger",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -6125,6 +6192,86 @@
       }
     },
     {
+      "id": "n-6c8c1783",
+      "task": "country-area-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "anguilla",
+            "arabia",
+            "austria",
+            "bangladesh",
+            "belarus",
+            "bulgaria",
+            "cuba",
+            "element",
+            "guam",
+            "guatemala",
+            "item number",
+            "jan",
+            "longest",
+            "longest one",
+            "longest word",
+            "madagascar",
+            "namibia",
+            "nth",
+            "position",
+            "sahara",
+            "separate by",
+            "split",
+            "split by",
+            "uruguay"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "greater"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-06f1e856",
       "task": "country-area-larger",
       "gen": 7,
@@ -6152,6 +6299,67 @@
             "serbia",
             "split into words",
             "words"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-69d9a2d5",
+      "task": "country-area-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "afghanistan",
+            "antarctica",
+            "armenia",
+            "bermuda",
+            "cook",
+            "czech",
+            "each word",
+            "east",
+            "longest one",
+            "longest word",
+            "namibia",
+            "panama",
+            "reunion",
+            "sahara",
+            "saint",
+            "serbia",
+            "split into words"
           ]
         ],
         [
@@ -9388,6 +9596,109 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f33d664b",
+      "task": "country-area-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "algeria",
+            "antarctica",
+            "armenia",
+            "element",
+            "guam",
+            "guatemala",
+            "israel",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "madagascar",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by",
+            "taiwan",
+            "thailand"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "words<=",
+          12
+        ],
+        [
+          "not",
+          [
+            "has",
+            "african"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "argentina"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cayman"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "samayo-area"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 9,
@@ -20489,6 +20800,63 @@
       }
     },
     {
+      "id": "n-1d49b356",
+      "task": "country-area-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bangladesh",
+            "bulgaria",
+            "cook",
+            "each word",
+            "helena",
+            "kingdom",
+            "longest",
+            "longest one",
+            "longest word",
+            "split into words",
+            "suriname",
+            "uzbekistan",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "greater"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "sense.before",
+              {
+                "lit": "has"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-507cecf3",
       "task": "country-area-larger",
       "gen": 7,
@@ -20554,6 +20922,63 @@
             {
               "lit": 10
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 7,
+        "fired": 7,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5a559aa7",
+      "task": "country-area-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "afghanistan",
+            "antarctica",
+            "each word",
+            "indonesia",
+            "jamaica",
+            "longest",
+            "longest one",
+            "longest word",
+            "philippines",
+            "serbia",
+            "split into words",
+            "words",
+            "zimbabwe"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "has"
+              }
+            ]
           ]
         ]
       ],
@@ -45278,6 +45703,80 @@
       }
     },
     {
+      "id": "n-095cd6a9",
+      "task": "country-area-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cook",
+            "first n",
+            "greenland",
+            "longest one",
+            "longest word"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words>=",
+          8
+        ],
+        [
+          "words<=",
+          12
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bangladesh"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-573bc9bb",
       "task": "country-area-larger",
       "gen": 10,
@@ -45369,6 +45868,80 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bd4d3f31",
+      "task": "country-area-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bulgaria",
+            "first n",
+            "longest one",
+            "longest word",
+            "suriname"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "words<=",
+          12
+        ],
+        [
+          "words>=",
+          8
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bermuda"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cameroon"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 4,
@@ -131610,6 +132183,7 @@
     }
   ],
   "stages": [
-    "eb5170cadb1378f9f9d2a11e22adf8598a3d457aef06dbff1e70d7966d738c4d"
+    "eb5170cadb1378f9f9d2a11e22adf8598a3d457aef06dbff1e70d7966d738c4d",
+    "8f27f4f4bbb91e6671ed64e2ba82736a648ebfe3d6fdd71f9bc754ef77d06a18"
   ]
 }
