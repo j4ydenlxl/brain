@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "fb25b61873a6a9b3257d9a92d934c5ec590b9a331693992b43c9e6ba52b83bde";
+const VERSION = "eeca3ccfe511c8bbe8dde706c0f7a3c6ef5d66b181a4fb7bbcc52728b36e31a1";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"fa431546293af52f6d4eaaed4b9963f016476714e6378bc9686587f3a9762cd3"},
+  {"url":"/organism/cells.json","sha256":"8ff2deeef2ffe8591448790d8ca979a8c57fc1b95b62de5063ce4e4ab45fc29e"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -444,10 +444,11 @@ const PRECACHE = [
   {"url":"/organism/cells/male-of-county-ebb0-sum-neo-g10.mjs","sha256":"e0ab02e6655584cea21334787b9ed7696d8bf6179dbf97b86998972058a76644"},
   {"url":"/organism/cells/fr-tidytuesday-dead-sea-scrolls-0e-df5fd6-neo-g10.mjs","sha256":"cc509a7f9ee54060f641ee2eaf68debc2bddcad53240c35b8159eaf51c4629a6"},
   {"url":"/organism/cells/imdb-of-title-2e97-neo-g10.mjs","sha256":"4267789d0cf7249b247c4af56a75c7998eb3cd1c424d4bd1c615e738aedf54c5"},
+  {"url":"/organism/cells/song-count-of-produce-67a0-larger-neo-g10.mjs","sha256":"ee27ac4953ba40ca1d01cfdbc2bdf6d112b26014d8aad54b6482edadbbadc78b"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"c376b1d778da9abc6311c1d943abc267b89f953b0c76376b37816ad88419f4cb"}
+  {"url":"/organism/era/tasks.json","sha256":"bf69cae8a451e24d5ed8a066b19e917f5fdce09c410d59f9930d31f57a4fa96d"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
