@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "bf0991a930d1fc85e0c6fd9b613384efa2f6be9f11548801090070529cbcb316";
+const VERSION = "2cc4af4baa9ebab109d20ea1798cb0e9a91b57540a684bc33b216d013155bf66";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -16,7 +16,7 @@ const PRECACHE = [
   {"url":"/organism/act/converse.mjs","sha256":"4389c43af457157a5c0e593a27c7e63756f285017b8f66b3046210194099c717"},
   {"url":"/organism/act/thread.mjs","sha256":"431a1f2461147b15f471c9c47a6d232b2c874a4f09defa9d55bfb7ea20f7fe62"},
   {"url":"/organism/act/cells-tab.mjs","sha256":"677518a29deb43883caa786ca74a79a39aec2ea33166ee004b20d49121be7ea6"},
-  {"url":"/organism/cells.json","sha256":"b9d8f625e87b9f789f3b9751f15e4227d66dfb89c0706e9981d326691617afd4"},
+  {"url":"/organism/cells.json","sha256":"443c1e32165352a65d83e4169d1255d69f2400faf8e9df4e31aa4843ec13c9a2"},
   {"url":"/organism/cells/capital-of-direct-g1.mjs","sha256":"7e94693a8f38cf517b2f70dda3ec46c214683d2915f500cb7021de43b7470c47"},
   {"url":"/organism/cells/essay-ocean-salt-direct-g1.mjs","sha256":"f989dd5934c04cf552761fd096512962b0569fd6a7d5703e18c06825211b6407"},
   {"url":"/organism/cells/fragment-direct-g1.mjs","sha256":"d4506f7361b4a45a1ba70a9919b3f92b9864e8f37af4efc1156aa15d8c2578b1"},
@@ -446,10 +446,13 @@ const PRECACHE = [
   {"url":"/organism/cells/imdb-of-title-2e97-neo-g10.mjs","sha256":"4267789d0cf7249b247c4af56a75c7998eb3cd1c424d4bd1c615e738aedf54c5"},
   {"url":"/organism/cells/song-count-of-produce-67a0-larger-neo-g10.mjs","sha256":"ee27ac4953ba40ca1d01cfdbc2bdf6d112b26014d8aad54b6482edadbbadc78b"},
   {"url":"/organism/cells/country-area-sum-neo-g10.mjs","sha256":"bce5916d0b4e9094d6a329c3de545af9b453e230ee4932cdc5d4d234e45ec516"},
+  {"url":"/organism/cells/author-of-name-a229-rev-neo-g10.mjs","sha256":"261c414a2ab051ee68d5fd42eb4d9ffcb3f02ab650696fd4b54cd9eb72762a10"},
+  {"url":"/organism/cells/date-published-of-name-75e3-rev-neo-g10.mjs","sha256":"eef84abe2d285d4828a274e82fe8834d5a50686ccdc53376d46e647870b92b75"},
+  {"url":"/organism/cells/fr-tidytuesday-science-e92e9e-occu-0b302a-neo-g10.mjs","sha256":"a0326cfa559ae2f40b9861d7079efbd052b4352259c7b56d869b15732cbacae3"},
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"87c8ee66b6f8eb44d9161bf12663678732231176d6429469d8fb1fdf4a4e8bc3"}
+  {"url":"/organism/era/tasks.json","sha256":"27040ef92a299290b17f205da84ae56e8b5ba45c7cbaec6caadff236aac31f45"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -506,7 +509,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/author-name-of-title-e6b3.json","sha256":"320db7e27f8b47571edd5aeb7130f6f5426543a133808cce8508fe4efe122fae"},
   {"url":"/organism/era/tasks/author-of-name-8025-rev.json","sha256":"3822e33313d6bbb4e8e3a02d537f2509a3030cdb1e51a55c185f2b8a6378fb41"},
   {"url":"/organism/era/tasks/author-of-name-a229.json","sha256":"0c50a88ea58b7366ca134b20cbf9f26eea8cec7a3297d88fdd940269afd31c71"},
-  {"url":"/organism/era/tasks/author-of-name-a229-rev.json","sha256":"786fbf41a1f89854a4abe38753ab1bfb7a9aa227b7e2f745adfc080498af7f4a"},
   {"url":"/organism/era/tasks/author-of-title-30cf.json","sha256":"0a43b0378bae4eaad4462cd6e6c165e08532ddec7e8badc635a2438650ee7867"},
   {"url":"/organism/era/tasks/author-of-title-7954.json","sha256":"4b1219d50f923be54b3a5c18b1da232cc208004b2e2995f4dad665af60987d68"},
   {"url":"/organism/era/tasks/author-of-title-7954-rev.json","sha256":"7e8f7a790ce4ebb64c1db2f2ba3a7204b0d29a591b60ba15061cde0773abebd2"},
@@ -636,7 +638,6 @@ const LAZY = [
   {"url":"/organism/era/tasks/date-of-publication-b331.json","sha256":"abee29274ebd29bdf770f452b8cd33cf70133eb0c7f6816187c172a5f38670be"},
   {"url":"/organism/era/tasks/date-of-song-dc79.json","sha256":"572b6cbecbba557b6346d6ab9c22b02514d296479b92000461a0116bf06217f0"},
   {"url":"/organism/era/tasks/date-of-title-200e.json","sha256":"14f34fe8616fc6935957ab68b6fc822cdcd980f965764bd4ae3303bc1870c6e4"},
-  {"url":"/organism/era/tasks/date-published-of-name-75e3-rev.json","sha256":"455f6480f57a1f121e80f7b838b4e511c4a96ce3b256bd502ea3d6b826b89a74"},
   {"url":"/organism/era/tasks/density-of-country-146f.json","sha256":"29f143b95537436a398cee5c736f5017e536b84c9954a22b97c5c2020fa1752c"},
   {"url":"/organism/era/tasks/density-of-country-146f-compare.json","sha256":"fa359bdd0f7f6845cf67d54a9a36607e75b0ebbc304ec3708e016a1a422418de"},
   {"url":"/organism/era/tasks/density-of-country-146f-larger.json","sha256":"c6edc9a8f347259be55d552fc13a3445b881a49215a563ab8b4285e3374126d3"},
@@ -694,8 +695,9 @@ const LAZY = [
   {"url":"/organism/era/tasks/female-of-county-de5d-compare.json","sha256":"166b3d28c37b14a67c741c3ae251cf760f73984b3534315912ec75d9afe2bfb1"},
   {"url":"/organism/era/tasks/file-of-lang-edee.json","sha256":"a3277d714a9a7e4c6950d0d8b2ccd595478c32de3f6d86b52dc3bd9345d14c88"},
   {"url":"/organism/era/tasks/file-of-lang-edee-rev.json","sha256":"a16830dc4ca6d9d7a18da5a9a9a596a11d9ea7a89a818d75a3284193e454a974"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db.json","sha256":"1c25acc7346151f4aa36844b20533b8e91a9dc08e451a8460143939984870f85"},
-  {"url":"/organism/era/tasks/fiscal-sponsorship-model-74bf-rev.json","sha256":"2f19b4adf89988b768be087e8a231c1a532979f500d720d1942b4fe737214c58"}
+  {"url":"/organism/era/tasks/final-description-of-date-d707-rev.json","sha256":"2d39279009a1e4bb06d50927b2a9a1a0078e2ccc09b851e9558ffa8759f96fc6"},
+  {"url":"/organism/era/tasks/final-four-appearance-a3c0-sum.json","sha256":"8666b3230c18bc997becdf567182b6c3f88da674852efe53b89995daf4e62a3f"},
+  {"url":"/organism/era/tasks/fr-bond-yields-us-10y-monthly-5a63-38e101.json","sha256":"a7f7e919b1fbab8cd8888ec725eca9d955f0b7e49745b1beb196c9f627d1244f"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
