@@ -2,44 +2,42 @@
   "task": "country-population-larger",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T03:51:06.853Z",
+  "at": "2026-10-21T13:20:09.809Z",
   "stats": {
-    "generated": 201139,
-    "distinct": 48981,
-    "kept": 1063,
-    "know": 585,
+    "generated": 101385,
+    "distinct": 67594,
+    "kept": 1071,
+    "know": 586,
     "byFamily": {
-      "memory": 202,
-      "transform": 555,
-      "aggregate": 81,
+      "memory": 201,
+      "transform": 554,
+      "aggregate": 91,
       "iterate": 18,
       "route": 205,
       "sense": 2
     },
     "bySource": {
-      "parent": 352,
-      "enum": 349,
-      "template": 324,
-      "memory": 38
+      "parent": 1058,
+      "enum": 13
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 228801,
-    "cellsPerSecond": 879,
-    "capped": null,
+    "ms": 118976,
+    "cellsPerSecond": 852,
+    "capped": "ms",
     "packs": [
       "samayo-population"
     ],
     "cursor": {
       "v": 1,
       "basis": "b81f551b32aef0c85942794f60b7ef49ff6dfe881539476a200aa056d4d265f0",
-      "round": 0,
-      "at": 129814,
+      "round": 1,
+      "at": 201343,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "aggregate.indexOf",
+      "prim": "compute.nthPrime",
       "tpl": 1479
     }
   },
@@ -2326,7 +2324,7 @@
     {
       "id": "n-8957c254",
       "task": "country-population-larger",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -4750,6 +4748,71 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 17,
+        "fired": 17,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ff98159b",
+      "task": "country-population-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "african",
+            "andorra",
+            "arab",
+            "aruba",
+            "brazil",
+            "cocos",
+            "el",
+            "equatorial",
+            "finland",
+            "first n",
+            "grenadines",
+            "iceland",
+            "liechtenstein",
+            "malaysia",
+            "marino",
+            "mauritania",
+            "myanmar",
+            "nauru",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.list"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 17,
@@ -9988,6 +10051,87 @@
       "mem": null,
       "height": 5,
       "size": 8,
+      "fit": {
+        "ok": 15,
+        "fired": 15,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a65c76b2",
+      "task": "country-population-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "anguilla",
+            "arab",
+            "arabia",
+            "aruba",
+            "brazil",
+            "djibouti",
+            "element",
+            "eswatini",
+            "grenada",
+            "iraq",
+            "item number",
+            "korea",
+            "lesotho",
+            "liechtenstein",
+            "longest",
+            "longest one",
+            "longest word",
+            "martinique",
+            "nth",
+            "position",
+            "separate by",
+            "serbia",
+            "seychelles",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "has",
+          "greater"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "samayo-population"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 9,
       "fit": {
         "ok": 15,
         "fired": 15,
@@ -15479,6 +15623,111 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9dff0246",
+      "task": "country-population-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "anguilla",
+            "arab",
+            "canada",
+            "element",
+            "eswatini",
+            "ghana",
+            "item number",
+            "lesotho",
+            "liechtenstein",
+            "longest",
+            "longest one",
+            "longest word",
+            "mexico",
+            "nth",
+            "portugal",
+            "position",
+            "separate by",
+            "serbia",
+            "slovakia",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "add"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "bouvet"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cambodia"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "samayo-population"
+                },
+                {
+                  "lit": "country"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "sense.subject"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 9,
       "fit": {
         "ok": 14,
@@ -21908,6 +22157,66 @@
       }
     },
     {
+      "id": "n-7c46a198",
+      "task": "country-population-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "afghanistan",
+            "arabia",
+            "bangladesh",
+            "bermuda",
+            "burkina",
+            "cambodia",
+            "coast",
+            "first n",
+            "germany",
+            "guyana",
+            "ireland",
+            "longest",
+            "longest one",
+            "longest word",
+            "myanmar",
+            "nauru"
+          ]
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.list"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 12,
+        "fired": 12,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-7f417732",
       "task": "country-population-larger",
       "gen": 6,
@@ -24616,7 +24925,7 @@
     {
       "id": "n-61ecbd0d",
       "task": "country-population-larger",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -36054,6 +36363,63 @@
       "mem": null,
       "height": 3,
       "size": 4,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-26fd83bd",
+      "task": "country-population-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "afghanistan",
+            "bangladesh",
+            "bermuda",
+            "cocos",
+            "each word",
+            "futuna",
+            "germany",
+            "ireland",
+            "longest one",
+            "longest word",
+            "marino",
+            "myanmar",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "has",
+          "larger"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
       "fit": {
         "ok": 9,
         "fired": 9,
@@ -61446,6 +61812,61 @@
       }
     },
     {
+      "id": "n-947c5699",
+      "task": "country-population-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "andorra",
+            "each word",
+            "futuna",
+            "kitts",
+            "liechtenstein",
+            "longest",
+            "longest one",
+            "longest word",
+            "mauritania",
+            "split into words",
+            "words"
+          ]
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "has",
+          "greater"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.words",
+            [
+              "sense.before",
+              {
+                "lit": "has"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-ba1894df",
       "task": "country-population-larger",
       "gen": 7,
@@ -75500,6 +75921,65 @@
       }
     },
     {
+      "id": "n-06ac5255",
+      "task": "country-population-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "afghanistan",
+            "first n",
+            "longest one",
+            "longest word"
+          ]
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "aruba"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-33539b3c",
       "task": "country-population-larger",
       "gen": 10,
@@ -75679,6 +76159,124 @@
       }
     },
     {
+      "id": "n-c00428d6",
+      "task": "country-population-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "afghanistan",
+            "first n",
+            "longest one",
+            "longest word"
+          ]
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "aruba"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.content"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c02a6bf5",
+      "task": "country-population-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "afghanistan",
+            "first n",
+            "longest one",
+            "longest word"
+          ]
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "aruba"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-c51c222a",
       "task": "country-population-larger",
       "gen": 7,
@@ -75843,6 +76441,65 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f5ca3cb7",
+      "task": "country-population-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "afghanistan",
+            "first n",
+            "longest one",
+            "longest word"
+          ]
+        ],
+        [
+          "has",
+          "population"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "aruba"
+          ]
+        ],
+        [
+          "words>=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.takeStrs",
+            [
+              "sense.words"
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 5,
       "fit": {
         "ok": 2,
@@ -76635,64 +77292,6 @@
           "transform.remove",
           {
             "lit": "Cuba"
-          },
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "samayo-population"
-              },
-              {
-                "lit": "country"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 8,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-c05cc570",
-      "task": "country-population-larger",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "delete",
-            "element",
-            "germany",
-            "item number",
-            "nth",
-            "position",
-            "remove",
-            "strip out",
-            "without"
-          ]
-        ],
-        [
-          "has",
-          "spain"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          {
-            "lit": "Germany"
           },
           [
             "transform.nthStr",
@@ -109588,7 +110187,7 @@
     {
       "id": "n-82ccdf57",
       "task": "country-population-larger",
-      "gen": 7,
+      "gen": 10,
       "parents": [],
       "guard": [
         [
@@ -115599,166 +116198,6 @@
       }
     },
     {
-      "id": "n-8bc13c29",
-      "task": "country-population-larger",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "population"
-        ],
-        [
-          "not",
-          [
-            "has",
-            "of"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "lesser"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "smaller"
-          ]
-        ],
-        [
-          "not",
-          [
-            "has",
-            "compare"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "memory.nearest",
-          [
-            "sense.text"
-          ]
-        ]
-      ],
-      "mem": {
-        "table": {
-          "which has the larger population, British Indian Ocean Territory or Eswatini": "Eswatini has the larger population (1136191 against 0).",
-          "between Chile and Turks and Caicos Islands, which has the greater population": "Chile has the larger population (18729160 against 37665).",
-          "whose population is larger: Reunion or Saint Vincent and the Grenadines": "Reunion has the larger population (859959 against 110210).",
-          "between Honduras and Wallis and Futuna, which has the greater population": "Honduras has the larger population (9587522 against 15289).",
-          "between New Caledonia and Djibouti, which has the greater population": "Djibouti has the larger population (958920 against 284060).",
-          "whose population is larger: Lesotho or Afghanistan": "Afghanistan has the larger population (37172386 against 2108132).",
-          "whose population is larger: Angola or Central African Republic": "Angola has the larger population (30809762 against 4666377).",
-          "between Armenia and United Arab Emirates, which has the greater population": "United Arab Emirates has the larger population (9630959 against 2951776).",
-          "whose population is larger: Paraguay or Equatorial Guinea": "Paraguay has the larger population (6956071 against 1308974).",
-          "which has the larger population, Ivory Coast or Armenia": "Ivory Coast has the larger population (25069229 against 2951776).",
-          "which has the larger population, Ghana or Turkey": "Turkey has the larger population (82319724 against 29767108).",
-          "between Serbia and Sudan, which has the greater population": "Sudan has the larger population (41801533 against 6963764).",
-          "between Greece and Guyana, which has the greater population": "Greece has the larger population (10731726 against 779004).",
-          "which has the larger population, Rwanda or Tunisia": "Rwanda has the larger population (12301939 against 11565204).",
-          "between Eswatini and Myanmar, which has the greater population": "Myanmar has the larger population (53708395 against 1136191).",
-          "which has the larger population, Portugal or Cuba": "Cuba has the larger population (11338138 against 10283822).",
-          "between Svalbard and Jan Mayen and Guinea, which has the greater population": "Guinea has the larger population (12414318 against 2572).",
-          "whose population is larger: United Arab Emirates or Bolivia": "Bolivia has the larger population (11353142 against 9630959).",
-          "which has the larger population, Malaysia or Seychelles": "Malaysia has the larger population (31528585 against 96762).",
-          "between United States Minor Outlying Islands and Lesotho, which has the greater population": "Lesotho has the larger population (2108132 against 300).",
-          "between Tokelau and Aruba, which has the greater population": "Aruba has the larger population (105845 against 1411).",
-          "whose population is larger: Antigua and Barbuda or Canada": "Canada has the larger population (37057765 against 96286).",
-          "between Russia and Angola, which has the greater population": "Russia has the larger population (144478050 against 30809762).",
-          "whose population is larger: Saint Kitts and Nevis or French Guiana": "French Guiana has the larger population (290691 against 52441).",
-          "between Cuba and Paraguay, which has the greater population": "Cuba has the larger population (11338138 against 6956071).",
-          "whose population is larger: Macao or Bangladesh": "Bangladesh has the larger population (161356039 against 631636).",
-          "which has the larger population, Bermuda or Faroe Islands": "Bermuda has the larger population (63973 against 48497).",
-          "which has the larger population, Ireland or Serbia": "Serbia has the larger population (6963764 against 4867309).",
-          "which has the larger population, Senegal or Martinique": "Senegal has the larger population (15854360 against 376480).",
-          "whose population is larger: Guinea or Mexico": "Mexico has the larger population (126190788 against 12414318).",
-          "between Martinique and Spain, which has the greater population": "Spain has the larger population (46796540 against 376480).",
-          "whose population is larger: Burkina Faso or Rwanda": "Burkina Faso has the larger population (19751535 against 12301939).",
-          "between Sierra Leone and Iceland, which has the greater population": "Sierra Leone has the larger population (7650154 against 352721).",
-          "between Benin and Reunion, which has the greater population": "Benin has the larger population (11485048 against 859959).",
-          "which has the larger population, Saint Vincent and the Grenadines or Algeria": "Algeria has the larger population (42228429 against 110210).",
-          "which has the larger population, Bangladesh or Tokelau": "Bangladesh has the larger population (161356039 against 1411).",
-          "whose population is larger: Kuwait or Ivory Coast": "Ivory Coast has the larger population (25069229 against 4137309).",
-          "which has the larger population, Nauru or Russia": "Russia has the larger population (144478050 against 12704).",
-          "which has the larger population, Sri Lanka or Anguilla": "Sri Lanka has the larger population (21670000 against 15094).",
-          "whose population is larger: Djibouti or Bermuda": "Djibouti has the larger population (958920 against 63973).",
-          "between Algeria and Kuwait, which has the greater population": "Algeria has the larger population (42228429 against 4137309).",
-          "between India and Macao, which has the greater population": "India has the larger population (1352617328 against 631636).",
-          "which has the larger population, Northern Mariana Islands or Chile": "Chile has the larger population (18729160 against 56882).",
-          "whose population is larger: Guyana or Sri Lanka": "Sri Lanka has the larger population (21670000 against 779004).",
-          "whose population is larger: San Marino or Portugal": "Portugal has the larger population (10283822 against 33785).",
-          "which has the larger population, East Timor or Honduras": "Honduras has the larger population (9587522 against 1267972).",
-          "whose population is larger: Uganda or Malaysia": "Uganda has the larger population (42723139 against 31528585).",
-          "whose population is larger: Spain or Germany": "Germany has the larger population (82905782 against 46796540).",
-          "whose population is larger: Mauritania or Senegal": "Senegal has the larger population (15854360 against 4403319).",
-          "between Guatemala and Andorra, which has the greater population": "Guatemala has the larger population (17247807 against 77006).",
-          "which has the larger population, Pitcairn or Lithuania": "Lithuania has the larger population (2801543 against 67).",
-          "which has the larger population, Germany or New Caledonia": "Germany has the larger population (82905782 against 284060).",
-          "whose population is larger: Iraq or Finland": "Iraq has the larger population (38433600 against 5515525).",
-          "which has the larger population, Bahamas or Sierra Leone": "Sierra Leone has the larger population (7650154 against 385640).",
-          "which has the larger population, Afghanistan or Grenada": "Afghanistan has the larger population (37172386 against 111454).",
-          "whose population is larger: Saudi Arabia or Latvia": "Saudi Arabia has the larger population (33699947 against 1927174).",
-          "whose population is larger: Venezuela or Cocos (Keeling) Islands": "Venezuela has the larger population (28870195 against 596).",
-          "whose population is larger: Liechtenstein or Suriname": "Suriname has the larger population (575991 against 37910).",
-          "between Nepal and El Salvador, which has the greater population": "Nepal has the larger population (28087871 against 6420744).",
-          "between North Macedonia and South Korea, which has the greater population": "South Korea has the larger population (51606633 against 2084367).",
-          "which has the larger population, Ethiopia or Benin": "Ethiopia has the larger population (109224559 against 11485048).",
-          "which has the larger population, Suriname or Italy": "Italy has the larger population (60421760 against 575991).",
-          "which has the larger population, Canada or Greece": "Canada has the larger population (37057765 against 10731726).",
-          "between Poland and Brazil, which has the greater population": "Brazil has the larger population (209469333 against 37974750).",
-          "whose population is larger: Pakistan or Ireland": "Pakistan has the larger population (212215030 against 4867309).",
-          "whose population is larger: Turks and Caicos Islands or Lebanon": "Lebanon has the larger population (6848925 against 37665).",
-          "which has the larger population, Latvia or Saint Helena": "Latvia has the larger population (1927174 against 6600).",
-          "whose population is larger: Aruba or Pitcairn": "Aruba has the larger population (105845 against 67).",
-          "which has the larger population, Lebanon or Cabo Verde": "Lebanon has the larger population (6848925 against 555987).",
-          "which has the larger population, French Guiana or Guatemala": "Guatemala has the larger population (17247807 against 290691).",
-          "whose population is larger: El Salvador or Ghana": "Ghana has the larger population (29767108 against 6420744).",
-          "which has the larger population, Bolivia or Japan": "Japan has the larger population (126529100 against 11353142).",
-          "between Anguilla and Pakistan, which has the greater population": "Pakistan has the larger population (212215030 against 15094).",
-          "whose population is larger: Antarctica or East Timor": "East Timor has the larger population (1267972 against 1106).",
-          "between Lithuania and Saint Kitts and Nevis, which has the greater population": "Lithuania has the larger population (2801543 against 52441).",
-          "which has the larger population, Finland or Nepal": "Nepal has the larger population (28087871 against 5515525).",
-          "which has the larger population, Cocos (Keeling) Islands or Poland": "Poland has the larger population (37974750 against 596).",
-          "between Nigeria and Uganda, which has the greater population": "Nigeria has the larger population (195874740 against 42723139).",
-          "whose population is larger: Andorra or British Indian Ocean Territory": "Andorra has the larger population (77006 against 0).",
-          "which has the larger population, Cambodia or United States Minor Outlying Islands": "Cambodia has the larger population (16249798 against 300).",
-          "which has the larger population, Slovakia or Nigeria": "Nigeria has the larger population (195874740 against 5446771).",
-          "between Tunisia and Antarctica, which has the greater population": "Tunisia has the larger population (11565204 against 1106).",
-          "which has the larger population, Central African Republic or India": "India has the larger population (1352617328 against 4666377).",
-          "whose population is larger: Myanmar or Romania": "Myanmar has the larger population (53708395 against 19466145).",
-          "between Faroe Islands and Iraq, which has the greater population": "Iraq has the larger population (38433600 against 48497).",
-          "between Saint Helena and Liechtenstein, which has the greater population": "Liechtenstein has the larger population (37910 against 6600).",
-          "whose population is larger: Wallis and Futuna or Slovakia": "Slovakia has the larger population (5446771 against 15289).",
-          "between Cabo Verde and Saudi Arabia, which has the greater population": "Saudi Arabia has the larger population (33699947 against 555987).",
-          "between Japan and San Marino, which has the greater population": "Japan has the larger population (126529100 against 33785).",
-          "between Grenada and Mauritania, which has the greater population": "Mauritania has the larger population (4403319 against 111454).",
-          "whose population is larger: Sudan or Nauru": "Sudan has the larger population (41801533 against 12704).",
-          "between Seychelles and Venezuela, which has the greater population": "Venezuela has the larger population (28870195 against 96762).",
-          "whose population is larger: South Korea or Cambodia": "South Korea has the larger population (51606633 against 16249798).",
-          "which has the larger population, Romania or Svalbard and Jan Mayen": "Romania has the larger population (19466145 against 2572).",
-          "which has the larger population, Equatorial Guinea or North Macedonia": "North Macedonia has the larger population (2084367 against 1308974).",
-          "between Italy and Burkina Faso, which has the greater population": "Italy has the larger population (60421760 against 19751535).",
-          "whose population is larger: Iceland or Northern Mariana Islands": "Iceland has the larger population (352721 against 56882).",
-          "which has the larger population, Mexico or Bhutan": "Mexico has the larger population (126190788 against 754394).",
-          "whose population is larger: Brazil or Ethiopia": "Brazil has the larger population (209469333 against 109224559).",
-          "between Turkey and Antigua and Barbuda, which has the greater population": "Turkey has the larger population (82319724 against 96286)."
-        }
-      },
-      "height": 3,
-      "size": 3,
-      "fit": {
-        "ok": 100,
-        "fired": 100,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-05df3d18",
       "task": "country-population-larger",
       "gen": 6,
@@ -119662,6 +120101,224 @@
       "fit": {
         "ok": 1,
         "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-c05cc570",
+      "task": "country-population-larger",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "element",
+            "germany",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "spain"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Germany"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "samayo-population"
+              },
+              {
+                "lit": "country"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8bc13c29",
+      "task": "country-population-larger",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "population"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "of"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "lesser"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "smaller"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "which has the larger population, British Indian Ocean Territory or Eswatini": "Eswatini has the larger population (1136191 against 0).",
+          "between Chile and Turks and Caicos Islands, which has the greater population": "Chile has the larger population (18729160 against 37665).",
+          "whose population is larger: Reunion or Saint Vincent and the Grenadines": "Reunion has the larger population (859959 against 110210).",
+          "between Honduras and Wallis and Futuna, which has the greater population": "Honduras has the larger population (9587522 against 15289).",
+          "between New Caledonia and Djibouti, which has the greater population": "Djibouti has the larger population (958920 against 284060).",
+          "whose population is larger: Lesotho or Afghanistan": "Afghanistan has the larger population (37172386 against 2108132).",
+          "whose population is larger: Angola or Central African Republic": "Angola has the larger population (30809762 against 4666377).",
+          "between Armenia and United Arab Emirates, which has the greater population": "United Arab Emirates has the larger population (9630959 against 2951776).",
+          "whose population is larger: Paraguay or Equatorial Guinea": "Paraguay has the larger population (6956071 against 1308974).",
+          "which has the larger population, Ivory Coast or Armenia": "Ivory Coast has the larger population (25069229 against 2951776).",
+          "which has the larger population, Ghana or Turkey": "Turkey has the larger population (82319724 against 29767108).",
+          "between Serbia and Sudan, which has the greater population": "Sudan has the larger population (41801533 against 6963764).",
+          "between Greece and Guyana, which has the greater population": "Greece has the larger population (10731726 against 779004).",
+          "which has the larger population, Rwanda or Tunisia": "Rwanda has the larger population (12301939 against 11565204).",
+          "between Eswatini and Myanmar, which has the greater population": "Myanmar has the larger population (53708395 against 1136191).",
+          "which has the larger population, Portugal or Cuba": "Cuba has the larger population (11338138 against 10283822).",
+          "between Svalbard and Jan Mayen and Guinea, which has the greater population": "Guinea has the larger population (12414318 against 2572).",
+          "whose population is larger: United Arab Emirates or Bolivia": "Bolivia has the larger population (11353142 against 9630959).",
+          "which has the larger population, Malaysia or Seychelles": "Malaysia has the larger population (31528585 against 96762).",
+          "between United States Minor Outlying Islands and Lesotho, which has the greater population": "Lesotho has the larger population (2108132 against 300).",
+          "between Tokelau and Aruba, which has the greater population": "Aruba has the larger population (105845 against 1411).",
+          "whose population is larger: Antigua and Barbuda or Canada": "Canada has the larger population (37057765 against 96286).",
+          "between Russia and Angola, which has the greater population": "Russia has the larger population (144478050 against 30809762).",
+          "whose population is larger: Saint Kitts and Nevis or French Guiana": "French Guiana has the larger population (290691 against 52441).",
+          "between Cuba and Paraguay, which has the greater population": "Cuba has the larger population (11338138 against 6956071).",
+          "whose population is larger: Macao or Bangladesh": "Bangladesh has the larger population (161356039 against 631636).",
+          "which has the larger population, Bermuda or Faroe Islands": "Bermuda has the larger population (63973 against 48497).",
+          "which has the larger population, Ireland or Serbia": "Serbia has the larger population (6963764 against 4867309).",
+          "which has the larger population, Senegal or Martinique": "Senegal has the larger population (15854360 against 376480).",
+          "whose population is larger: Guinea or Mexico": "Mexico has the larger population (126190788 against 12414318).",
+          "between Martinique and Spain, which has the greater population": "Spain has the larger population (46796540 against 376480).",
+          "whose population is larger: Burkina Faso or Rwanda": "Burkina Faso has the larger population (19751535 against 12301939).",
+          "between Sierra Leone and Iceland, which has the greater population": "Sierra Leone has the larger population (7650154 against 352721).",
+          "between Benin and Reunion, which has the greater population": "Benin has the larger population (11485048 against 859959).",
+          "which has the larger population, Saint Vincent and the Grenadines or Algeria": "Algeria has the larger population (42228429 against 110210).",
+          "which has the larger population, Bangladesh or Tokelau": "Bangladesh has the larger population (161356039 against 1411).",
+          "whose population is larger: Kuwait or Ivory Coast": "Ivory Coast has the larger population (25069229 against 4137309).",
+          "which has the larger population, Nauru or Russia": "Russia has the larger population (144478050 against 12704).",
+          "which has the larger population, Sri Lanka or Anguilla": "Sri Lanka has the larger population (21670000 against 15094).",
+          "whose population is larger: Djibouti or Bermuda": "Djibouti has the larger population (958920 against 63973).",
+          "between Algeria and Kuwait, which has the greater population": "Algeria has the larger population (42228429 against 4137309).",
+          "between India and Macao, which has the greater population": "India has the larger population (1352617328 against 631636).",
+          "which has the larger population, Northern Mariana Islands or Chile": "Chile has the larger population (18729160 against 56882).",
+          "whose population is larger: Guyana or Sri Lanka": "Sri Lanka has the larger population (21670000 against 779004).",
+          "whose population is larger: San Marino or Portugal": "Portugal has the larger population (10283822 against 33785).",
+          "which has the larger population, East Timor or Honduras": "Honduras has the larger population (9587522 against 1267972).",
+          "whose population is larger: Uganda or Malaysia": "Uganda has the larger population (42723139 against 31528585).",
+          "whose population is larger: Spain or Germany": "Germany has the larger population (82905782 against 46796540).",
+          "whose population is larger: Mauritania or Senegal": "Senegal has the larger population (15854360 against 4403319).",
+          "between Guatemala and Andorra, which has the greater population": "Guatemala has the larger population (17247807 against 77006).",
+          "which has the larger population, Pitcairn or Lithuania": "Lithuania has the larger population (2801543 against 67).",
+          "which has the larger population, Germany or New Caledonia": "Germany has the larger population (82905782 against 284060).",
+          "whose population is larger: Iraq or Finland": "Iraq has the larger population (38433600 against 5515525).",
+          "which has the larger population, Bahamas or Sierra Leone": "Sierra Leone has the larger population (7650154 against 385640).",
+          "which has the larger population, Afghanistan or Grenada": "Afghanistan has the larger population (37172386 against 111454).",
+          "whose population is larger: Saudi Arabia or Latvia": "Saudi Arabia has the larger population (33699947 against 1927174).",
+          "whose population is larger: Venezuela or Cocos (Keeling) Islands": "Venezuela has the larger population (28870195 against 596).",
+          "whose population is larger: Liechtenstein or Suriname": "Suriname has the larger population (575991 against 37910).",
+          "between Nepal and El Salvador, which has the greater population": "Nepal has the larger population (28087871 against 6420744).",
+          "between North Macedonia and South Korea, which has the greater population": "South Korea has the larger population (51606633 against 2084367).",
+          "which has the larger population, Ethiopia or Benin": "Ethiopia has the larger population (109224559 against 11485048).",
+          "which has the larger population, Suriname or Italy": "Italy has the larger population (60421760 against 575991).",
+          "which has the larger population, Canada or Greece": "Canada has the larger population (37057765 against 10731726).",
+          "between Poland and Brazil, which has the greater population": "Brazil has the larger population (209469333 against 37974750).",
+          "whose population is larger: Pakistan or Ireland": "Pakistan has the larger population (212215030 against 4867309).",
+          "whose population is larger: Turks and Caicos Islands or Lebanon": "Lebanon has the larger population (6848925 against 37665).",
+          "which has the larger population, Latvia or Saint Helena": "Latvia has the larger population (1927174 against 6600).",
+          "whose population is larger: Aruba or Pitcairn": "Aruba has the larger population (105845 against 67).",
+          "which has the larger population, Lebanon or Cabo Verde": "Lebanon has the larger population (6848925 against 555987).",
+          "which has the larger population, French Guiana or Guatemala": "Guatemala has the larger population (17247807 against 290691).",
+          "whose population is larger: El Salvador or Ghana": "Ghana has the larger population (29767108 against 6420744).",
+          "which has the larger population, Bolivia or Japan": "Japan has the larger population (126529100 against 11353142).",
+          "between Anguilla and Pakistan, which has the greater population": "Pakistan has the larger population (212215030 against 15094).",
+          "whose population is larger: Antarctica or East Timor": "East Timor has the larger population (1267972 against 1106).",
+          "between Lithuania and Saint Kitts and Nevis, which has the greater population": "Lithuania has the larger population (2801543 against 52441).",
+          "which has the larger population, Finland or Nepal": "Nepal has the larger population (28087871 against 5515525).",
+          "which has the larger population, Cocos (Keeling) Islands or Poland": "Poland has the larger population (37974750 against 596).",
+          "between Nigeria and Uganda, which has the greater population": "Nigeria has the larger population (195874740 against 42723139).",
+          "whose population is larger: Andorra or British Indian Ocean Territory": "Andorra has the larger population (77006 against 0).",
+          "which has the larger population, Cambodia or United States Minor Outlying Islands": "Cambodia has the larger population (16249798 against 300).",
+          "which has the larger population, Slovakia or Nigeria": "Nigeria has the larger population (195874740 against 5446771).",
+          "between Tunisia and Antarctica, which has the greater population": "Tunisia has the larger population (11565204 against 1106).",
+          "which has the larger population, Central African Republic or India": "India has the larger population (1352617328 against 4666377).",
+          "whose population is larger: Myanmar or Romania": "Myanmar has the larger population (53708395 against 19466145).",
+          "between Faroe Islands and Iraq, which has the greater population": "Iraq has the larger population (38433600 against 48497).",
+          "between Saint Helena and Liechtenstein, which has the greater population": "Liechtenstein has the larger population (37910 against 6600).",
+          "whose population is larger: Wallis and Futuna or Slovakia": "Slovakia has the larger population (5446771 against 15289).",
+          "between Cabo Verde and Saudi Arabia, which has the greater population": "Saudi Arabia has the larger population (33699947 against 555987).",
+          "between Japan and San Marino, which has the greater population": "Japan has the larger population (126529100 against 33785).",
+          "between Grenada and Mauritania, which has the greater population": "Mauritania has the larger population (4403319 against 111454).",
+          "whose population is larger: Sudan or Nauru": "Sudan has the larger population (41801533 against 12704).",
+          "between Seychelles and Venezuela, which has the greater population": "Venezuela has the larger population (28870195 against 96762).",
+          "whose population is larger: South Korea or Cambodia": "South Korea has the larger population (51606633 against 16249798).",
+          "which has the larger population, Romania or Svalbard and Jan Mayen": "Romania has the larger population (19466145 against 2572).",
+          "which has the larger population, Equatorial Guinea or North Macedonia": "North Macedonia has the larger population (2084367 against 1308974).",
+          "between Italy and Burkina Faso, which has the greater population": "Italy has the larger population (60421760 against 19751535).",
+          "whose population is larger: Iceland or Northern Mariana Islands": "Iceland has the larger population (352721 against 56882).",
+          "which has the larger population, Mexico or Bhutan": "Mexico has the larger population (126190788 against 754394).",
+          "whose population is larger: Brazil or Ethiopia": "Brazil has the larger population (209469333 against 109224559).",
+          "between Turkey and Antigua and Barbuda, which has the greater population": "Turkey has the larger population (82319724 against 96286)."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
         "rows": 100
       }
     },
@@ -134475,6 +135132,7 @@
     }
   ],
   "stages": [
-    "d45e188a438bce406c2165dae1bf6b6a4d39c7e2511aeb1cebe76614e77b7e42"
+    "d45e188a438bce406c2165dae1bf6b6a4d39c7e2511aeb1cebe76614e77b7e42",
+    "025f775f2d926d714de6b056fafbc8abf54751e9f6463a532cf7fb6bdaa86f87"
   ]
 }

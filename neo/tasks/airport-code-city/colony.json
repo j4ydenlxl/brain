@@ -2,42 +2,40 @@
   "task": "airport-code-city",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T00:12:04.500Z",
+  "at": "2026-10-21T13:21:57.592Z",
   "stats": {
-    "generated": 200207,
-    "distinct": 79642,
-    "kept": 920,
-    "know": 423,
+    "generated": 137993,
+    "distinct": 45870,
+    "kept": 888,
+    "know": 425,
     "byFamily": {
       "memory": 206,
-      "transform": 468,
-      "aggregate": 95,
-      "sense": 151
+      "transform": 434,
+      "aggregate": 98,
+      "sense": 150
     },
     "bySource": {
-      "parent": 495,
-      "enum": 163,
-      "template": 260,
-      "memory": 2
+      "parent": 884,
+      "enum": 4
     },
     "maxHeight": 6,
     "devOk": 100,
     "devN": 100,
-    "ms": 124866,
-    "cellsPerSecond": 1603,
-    "capped": null,
+    "ms": 100773,
+    "cellsPerSecond": 1369,
+    "capped": "ms",
     "packs": [
       "openflights-airports"
     ],
     "cursor": {
       "v": 1,
       "basis": "ac8faad744c1a2a018fd8caa307d444fc024f1fe3a3d9a2d00e5488b4b2d59d9",
-      "round": 0,
-      "at": 105591,
+      "round": 1,
+      "at": 232640,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "aggregate.indexOf",
+      "prim": "compute.asPercent",
       "tpl": 995
     }
   },
@@ -17061,6 +17059,114 @@
       }
     },
     {
+      "id": "n-59c17a7b",
+      "task": "airport-code-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ajy",
+            "bba",
+            "cts",
+            "elt",
+            "fma",
+            "gdo",
+            "ggg",
+            "hds",
+            "hsn",
+            "item number",
+            "iwj",
+            "jas",
+            "jib",
+            "khw",
+            "kkh",
+            "longest",
+            "longest one",
+            "longest word",
+            "mdu",
+            "mtm",
+            "mwk",
+            "name",
+            "nth",
+            "paq",
+            "qig",
+            "rkh",
+            "rkv",
+            "separate by",
+            "split by",
+            "tcs",
+            "toi",
+            "ura",
+            "vvc",
+            "wae",
+            "yce",
+            "ymw"
+          ]
+        ],
+        [
+          "has",
+          "city"
+        ],
+        [
+          "has",
+          "airport"
+        ],
+        [
+          "words<=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "openflights-airports"
+                  },
+                  {
+                    "lit": "airport code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "openflights-airports"
+              },
+              {
+                "lit": "airport code"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 61,
+        "fired": 61,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-6600531f",
       "task": "airport-code-city",
       "gen": 10,
@@ -17160,6 +17266,330 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 61,
+        "fired": 61,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-79d79aed",
+      "task": "airport-code-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ajy",
+            "bba",
+            "cts",
+            "elt",
+            "fma",
+            "gdo",
+            "ggg",
+            "hds",
+            "hsn",
+            "item number",
+            "iwj",
+            "jas",
+            "jib",
+            "khw",
+            "kkh",
+            "mdu",
+            "mtm",
+            "mwk",
+            "name",
+            "nth",
+            "paq",
+            "qig",
+            "rkh",
+            "rkv",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by",
+            "tcs",
+            "toi",
+            "ura",
+            "vvc",
+            "wae",
+            "yce",
+            "ymw"
+          ]
+        ],
+        [
+          "has",
+          "city"
+        ],
+        [
+          "has",
+          "airport"
+        ],
+        [
+          "words<=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.code",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "openflights-airports"
+                  },
+                  {
+                    "lit": "airport code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "openflights-airports"
+              },
+              {
+                "lit": "airport code"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 61,
+        "fired": 61,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9f675033",
+      "task": "airport-code-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ajy",
+            "bba",
+            "cts",
+            "elt",
+            "fma",
+            "gdo",
+            "ggg",
+            "hds",
+            "hsn",
+            "item number",
+            "iwj",
+            "jas",
+            "jib",
+            "khw",
+            "kkh",
+            "longest",
+            "longest one",
+            "longest word",
+            "mdu",
+            "mtm",
+            "mwk",
+            "name",
+            "nth",
+            "paq",
+            "qig",
+            "rkh",
+            "rkv",
+            "separate by",
+            "split by",
+            "tcs",
+            "toi",
+            "ura",
+            "vvc",
+            "wae",
+            "yce",
+            "ymw"
+          ]
+        ],
+        [
+          "has",
+          "city"
+        ],
+        [
+          "has",
+          "airport"
+        ],
+        [
+          "words<=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "openflights-airports"
+                  },
+                  {
+                    "lit": "airport code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "openflights-airports"
+              },
+              {
+                "lit": "airport code"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 61,
+        "fired": 61,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9f8e9b5c",
+      "task": "airport-code-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ajy",
+            "bba",
+            "cts",
+            "elt",
+            "fma",
+            "gdo",
+            "ggg",
+            "hds",
+            "hsn",
+            "item number",
+            "iwj",
+            "jas",
+            "jib",
+            "khw",
+            "kkh",
+            "mdu",
+            "mtm",
+            "mwk",
+            "name",
+            "nth",
+            "paq",
+            "qig",
+            "rkh",
+            "rkv",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by",
+            "tcs",
+            "toi",
+            "ura",
+            "vvc",
+            "wae",
+            "yce",
+            "ymw"
+          ]
+        ],
+        [
+          "has",
+          "city"
+        ],
+        [
+          "has",
+          "airport"
+        ],
+        [
+          "words<=",
+          7
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "openflights-airports"
+                  },
+                  {
+                    "lit": "airport code"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "openflights-airports"
+              },
+              {
+                "lit": "airport code"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 13,
       "fit": {
         "ok": 61,
@@ -30486,67 +30916,6 @@
       }
     },
     {
-      "id": "n-5d4f147b",
-      "task": "airport-code-city",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "nth",
-            "toi"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Troy."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 5
-          }
-        ],
-        [
-          "render.list",
-          [
-            "know.find",
-            {
-              "lit": "openflights-airports"
-            },
-            {
-              "lit": "airport code"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 9,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-5ef58701",
       "task": "airport-code-city",
       "gen": 10,
@@ -37835,82 +38204,6 @@
               "slot": 0
             },
             " HDS is in ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 5
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "openflights-airports"
-              },
-              {
-                "lit": "airport code"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "openflights-airports"
-          },
-          {
-            "lit": "airport code"
-          },
-          {
-            "lit": "city"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 14,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-57f1ef3b",
-      "task": "airport-code-city",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "nth",
-            "toi"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " TOI is in ",
             {
               "slot": 1
             },
@@ -48263,49 +48556,6 @@
       }
     },
     {
-      "id": "n-9b50774b",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "toi"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The airport ",
-            {
-              "slot": 0
-            },
-            " is in Troy."
-          ]
-        },
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 4,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-9c70023a",
       "task": "airport-code-city",
       "gen": 6,
@@ -50216,106 +50466,6 @@
       }
     },
     {
-      "id": "n-837c8fab",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "nth",
-            "position",
-            "qig"
-          ]
-        ],
-        [
-          "has",
-          "which"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " QIG is in Iguatu."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 5
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-f56fc7aa",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "nth",
-            "position",
-            "vvc"
-          ]
-        ],
-        [
-          "has",
-          "which"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " VVC is in Villavicencio."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 5
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-f8cf4074",
       "task": "airport-code-city",
       "gen": 6,
@@ -51866,66 +52016,6 @@
       }
     },
     {
-      "id": "n-011b6a73",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "ful",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Fullerton."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-0159289c",
       "task": "airport-code-city",
       "gen": 6,
@@ -52083,66 +52173,6 @@
         },
         [
           "transform.swapCase",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-07cc56e5",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "pdk",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Atlanta."
-          ]
-        },
-        [
-          "transform.title",
           [
             "sense.wordAt",
             {
@@ -52402,189 +52432,6 @@
           {
             "lit": 5
           }
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-1b926d84",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "nth",
-            "position",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "vvc"
-          ]
-        ],
-        [
-          "has",
-          "which"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Villavicencio."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 2
-          }
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-1bf2c8cc",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "dzn",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Zhezkazgan."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-1c9df47c",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case",
-            "yko"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Hakkari."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
         ],
         [
           "aggregate.shortest",
@@ -53091,126 +52938,6 @@
       }
     },
     {
-      "id": "n-3d3b2f70",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "fgi",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Apia."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-3f143bba",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "lkp",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Lake Placid."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-3f37ef47",
       "task": "airport-code-city",
       "gen": 6,
@@ -53318,66 +53045,6 @@
           {
             "lit": 4
           }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-47534a51",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "cyb",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Cayman Brac."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
         ]
       ],
       "mem": null,
@@ -53569,66 +53236,6 @@
       }
     },
     {
-      "id": "n-4c190b45",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case",
-            "whf"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Wadi Halfa."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-4f1cdf53",
       "task": "airport-code-city",
       "gen": 6,
@@ -53664,66 +53271,6 @@
         },
         [
           "transform.swapCase",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-5ddec8dc",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "bnm",
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Bodinumu."
-          ]
-        },
-        [
-          "transform.title",
           [
             "sense.wordAt",
             {
@@ -54051,66 +53598,6 @@
       }
     },
     {
-      "id": "n-73b0dbe9",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "swx",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Shakawe."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-75aebcac",
       "task": "airport-code-city",
       "gen": 6,
@@ -54170,129 +53657,6 @@
       }
     },
     {
-      "id": "n-7ac75fd3",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "nth",
-            "position",
-            "qig",
-            "shortest",
-            "shortest one",
-            "shortest word"
-          ]
-        ],
-        [
-          "has",
-          "which"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Iguatu."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 2
-          }
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-7dc34e8d",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "abf",
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Abaiang Atoll."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-8e574e77",
       "task": "airport-code-city",
       "gen": 6,
@@ -54328,369 +53692,6 @@
         },
         [
           "transform.swapCase",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-8ee083e2",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "gjl",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Jijel."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-8f64eb34",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "epl",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Epinal."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-8f696362",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "nrk",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Norrkoeping."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-917061c5",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "nth",
-            "position",
-            "qig",
-            "shortest",
-            "shortest one",
-            "shortest word"
-          ]
-        ],
-        [
-          "has",
-          "which"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Iguatu."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 5
-          }
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-97622ae7",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "mbi",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Mbeya."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-98d05434",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "igb",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Ingeniero Jacobacci."
-          ]
-        },
-        [
-          "transform.title",
           [
             "sense.wordAt",
             {
@@ -54896,66 +53897,6 @@
       }
     },
     {
-      "id": "n-a83ca6fa",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "env",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Wendover."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-adae5510",
       "task": "airport-code-city",
       "gen": 6,
@@ -54995,186 +53936,6 @@
         },
         [
           "transform.swapCase",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-ae0387fc",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "isw",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Wisconsin Rapids."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-b17adb34",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "scc",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Deadhorse."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-b48e078a",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "csv",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Crossville."
-          ]
-        },
-        [
-          "transform.title",
           [
             "sense.wordAt",
             {
@@ -55352,66 +54113,6 @@
         },
         [
           "transform.swapCase",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-bbc64cea",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "dkv",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Docker River."
-          ]
-        },
-        [
-          "transform.title",
           [
             "sense.wordAt",
             {
@@ -55620,129 +54321,6 @@
       }
     },
     {
-      "id": "n-debc672f",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case",
-            "yht"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Haines Junction."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-e8f1f364",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "nth",
-            "position",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "vvc"
-          ]
-        ],
-        [
-          "has",
-          "which"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Villavicencio."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 5
-          }
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-ea010a77",
       "task": "airport-code-city",
       "gen": 6,
@@ -55900,66 +54478,6 @@
         },
         [
           "transform.swapCase",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-f5e18358",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case",
-            "ypx"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Puvirnituq."
-          ]
-        },
-        [
-          "transform.title",
           [
             "sense.wordAt",
             {
@@ -57024,73 +55542,6 @@
       ],
       "mem": null,
       "height": 4,
-      "size": 8,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-251048f3",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "mci",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Kansas ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "sense.wordAt",
-          {
-            "lit": 2
-          }
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "transform.title",
-          [
-            "sense.lastWord"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
       "size": 8,
       "fit": {
         "ok": 1,
@@ -59473,69 +57924,6 @@
       }
     },
     {
-      "id": "n-b660ddc5",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "nth",
-            "position",
-            "vvc"
-          ]
-        ],
-        [
-          "has",
-          "which"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Villavicencio."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 5
-          }
-        ],
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 3
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 8,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
       "id": "n-b9a8d4bd",
       "task": "airport-code-city",
       "gen": 6,
@@ -59711,69 +58099,6 @@
       ],
       "mem": null,
       "height": 4,
-      "size": 8,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-cafe5191",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "nth",
-            "position",
-            "qig"
-          ]
-        ],
-        [
-          "has",
-          "which"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Iguatu."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "sense.words"
-          ],
-          {
-            "lit": 5
-          }
-        ],
-        [
-          "transform.nthStr",
-          [
-            "sense.content"
-          ],
-          {
-            "lit": 3
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
       "size": 8,
       "fit": {
         "ok": 1,
@@ -60079,73 +58404,6 @@
       ],
       "mem": null,
       "height": 4,
-      "size": 8,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 100
-      }
-    },
-    {
-      "id": "n-dedb7558",
-      "task": "airport-code-city",
-      "gen": 6,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "mci",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "title case"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " ",
-            {
-              "slot": 1
-            },
-            " is in Kansas ",
-            {
-              "slot": 2
-            },
-            "."
-          ]
-        },
-        [
-          "transform.title",
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ],
-        [
-          "aggregate.shortest",
-          [
-            "sense.content"
-          ]
-        ],
-        [
-          "sense.lastWord"
-        ]
-      ],
-      "mem": null,
-      "height": 3,
       "size": 8,
       "fit": {
         "ok": 1,
@@ -64178,6 +62436,2178 @@
       },
       "height": 3,
       "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5d4f147b",
+      "task": "airport-code-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "toi"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Troy."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 5
+          }
+        ],
+        [
+          "render.list",
+          [
+            "know.find",
+            {
+              "lit": "openflights-airports"
+            },
+            {
+              "lit": "airport code"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-57f1ef3b",
+      "task": "airport-code-city",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "toi"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " TOI is in ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 5
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "openflights-airports"
+              },
+              {
+                "lit": "airport code"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "openflights-airports"
+          },
+          {
+            "lit": "airport code"
+          },
+          {
+            "lit": "city"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-9b50774b",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "toi"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The airport ",
+            {
+              "slot": 0
+            },
+            " is in Troy."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-837c8fab",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "position",
+            "qig"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " QIG is in Iguatu."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f56fc7aa",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "position",
+            "vvc"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " VVC is in Villavicencio."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-011b6a73",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "ful",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Fullerton."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-07cc56e5",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "pdk",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Atlanta."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1b926d84",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "position",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "vvc"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Villavicencio."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1bf2c8cc",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "dzn",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Zhezkazgan."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1c9df47c",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case",
+            "yko"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Hakkari."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3d3b2f70",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "fgi",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Apia."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-3f143bba",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "lkp",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Lake Placid."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-47534a51",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "cyb",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Cayman Brac."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-4c190b45",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case",
+            "whf"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Wadi Halfa."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-5ddec8dc",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bnm",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Bodinumu."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-73b0dbe9",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "swx",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Shakawe."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7ac75fd3",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "position",
+            "qig",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Iguatu."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-7dc34e8d",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "abf",
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Abaiang Atoll."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8ee083e2",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "gjl",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Jijel."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8f64eb34",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "epl",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Epinal."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-8f696362",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "nrk",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Norrkoeping."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-917061c5",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "position",
+            "qig",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Iguatu."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 5
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-97622ae7",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "mbi",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Mbeya."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-98d05434",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "igb",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Ingeniero Jacobacci."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a83ca6fa",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "env",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Wendover."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ae0387fc",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "isw",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Wisconsin Rapids."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b17adb34",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "scc",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Deadhorse."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b48e078a",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "csv",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Crossville."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-bbc64cea",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "dkv",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Docker River."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-debc672f",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case",
+            "yht"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Haines Junction."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-e8f1f364",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "position",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "vvc"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Villavicencio."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 5
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f5e18358",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case",
+            "ypx"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Puvirnituq."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-251048f3",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "mci",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Kansas ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "sense.wordAt",
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.title",
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-b660ddc5",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "position",
+            "vvc"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Villavicencio."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 5
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-cafe5191",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "position",
+            "qig"
+          ]
+        ],
+        [
+          "has",
+          "which"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Iguatu."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 5
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "sense.content"
+          ],
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-dedb7558",
+      "task": "airport-code-city",
+      "gen": 6,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "mci",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "title case"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " ",
+            {
+              "slot": 1
+            },
+            " is in Kansas ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.title",
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "sense.lastWord"
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 8,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -104382,6 +104812,7 @@
     }
   ],
   "stages": [
-    "c98b418a71f953f4140fa363c7231ef279402d079b7228ce2f3a71f7135d445c"
+    "c98b418a71f953f4140fa363c7231ef279402d079b7228ce2f3a71f7135d445c",
+    "31363c9ef1c7fc289fe9289cfdf7cd88a7705bdb9ee82bf6c1057b82baacf692"
   ]
 }
