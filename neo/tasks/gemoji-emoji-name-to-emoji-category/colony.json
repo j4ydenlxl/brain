@@ -2,27 +2,28 @@
   "task": "gemoji-emoji-name-to-emoji-category",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T13:27:41.908Z",
+  "at": "2026-10-22T08:40:24.475Z",
   "stats": {
     "generated": 160297,
-    "distinct": 77294,
-    "kept": 297,
-    "know": 202,
+    "distinct": 154536,
+    "kept": 298,
+    "know": 203,
     "byFamily": {
       "memory": 81,
       "aggregate": 30,
-      "transform": 183,
-      "know": 2,
+      "transform": 185,
+      "know": 1,
       "iterate": 1
     },
     "bySource": {
-      "parent": 297
+      "parent": 288,
+      "enum": 10
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 114439,
-    "cellsPerSecond": 1401,
+    "ms": 131350,
+    "cellsPerSecond": 1220,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -32,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "9545d927cc0446afb39565e0c7be5c3445448dc956cafcb6b9ffb709abb5beb6",
-      "round": 1,
-      "at": 232291,
+      "round": 2,
+      "at": 314489,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compute.log",
+      "prim": "transform.join",
       "tpl": 2793
     }
   },
@@ -11561,6 +11562,110 @@
       }
     },
     {
+      "id": "n-ac761630",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "1st",
+            "camel case",
+            "camelcase",
+            "cross",
+            "dagger",
+            "facing",
+            "hat",
+            "item number",
+            "lower camel case",
+            "nth",
+            "reverse the words",
+            "reverse word order",
+            "toilet",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "albania"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "austria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "canary"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.reverseWords",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "gemoji"
+                  },
+                  {
+                    "lit": "emoji name"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              },
+              {
+                "lit": "emoji category"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b3d3784e",
       "task": "gemoji-emoji-name-to-emoji-category",
       "gen": 10,
@@ -11725,6 +11830,110 @@
           "aggregate.shortest",
           [
             "transform.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "gemoji"
+                  },
+                  {
+                    "lit": "emoji name"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              },
+              {
+                "lit": "emoji category"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ff448060",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "1st",
+            "camel case",
+            "camelcase",
+            "cross",
+            "dagger",
+            "facing",
+            "hat",
+            "invert case",
+            "item number",
+            "lower camel case",
+            "nth",
+            "swap case",
+            "toggle case",
+            "toilet"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "albania"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "austria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "canary"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.swapCase",
             [
               "know.lookup",
               [
@@ -13453,6 +13662,108 @@
       }
     },
     {
+      "id": "n-6afb9e45",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "1st",
+            "camel case",
+            "camelcase",
+            "dagger",
+            "facing",
+            "item number",
+            "lower camel case",
+            "nth",
+            "reverse the words",
+            "reverse word order",
+            "toilet",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "albania"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "austria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "canary"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.reverseWords",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "gemoji"
+                  },
+                  {
+                    "lit": "emoji shortcode"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji shortcode"
+              },
+              {
+                "lit": "emoji category"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a09bd098",
       "task": "gemoji-emoji-name-to-emoji-category",
       "gen": 10,
@@ -13544,6 +13855,108 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d80a31b0",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "1st",
+            "camel case",
+            "camelcase",
+            "dagger",
+            "facing",
+            "invert case",
+            "item number",
+            "lower camel case",
+            "nth",
+            "swap case",
+            "toggle case",
+            "toilet"
+          ]
+        ],
+        [
+          "has",
+          "category"
+        ],
+        [
+          "has",
+          "the"
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "albania"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "austria"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "canary"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.camel",
+          [
+            "transform.swapCase",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "gemoji"
+                  },
+                  {
+                    "lit": "emoji shortcode"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji shortcode"
+              },
+              {
+                "lit": "emoji category"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 12,
       "fit": {
         "ok": 4,
@@ -16449,58 +16862,6 @@
       }
     },
     {
-      "id": "n-c34adbab",
-      "task": "gemoji-emoji-name-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "custard",
-            "delete",
-            "item number",
-            "nth",
-            "position",
-            "remove",
-            "strip out"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          {
-            "lit": "Food & Drink"
-          },
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "fr-tidytuesday-internal-calls-10b0d2"
-              },
-              {
-                "lit": "package"
-              }
-            ],
-            {
-              "lit": 2
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 8,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-c89a029b",
       "task": "gemoji-emoji-name-to-emoji-category",
       "gen": 10,
@@ -16864,266 +17225,6 @@
       }
     },
     {
-      "id": "n-757b827d",
-      "task": "gemoji-emoji-name-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "category",
-            "element",
-            "item number",
-            "nth",
-            "position"
-          ]
-        ],
-        [
-          "has",
-          "man"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "gemoji"
-              },
-              {
-                "lit": "emoji shortcode"
-              }
-            ],
-            {
-              "lit": 2
-            }
-          ],
-          {
-            "lit": "gemoji"
-          },
-          {
-            "lit": "emoji shortcode"
-          },
-          {
-            "lit": "emoji category"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 10,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-370fdcc0",
-      "task": "gemoji-emoji-name-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "category",
-            "element",
-            "invert case",
-            "item number",
-            "nth",
-            "position",
-            "swap case",
-            "toggle case"
-          ]
-        ],
-        [
-          "has",
-          "man"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.swapCase",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "gemoji"
-                },
-                {
-                  "lit": "emoji shortcode"
-                }
-              ],
-              {
-                "lit": 2
-              }
-            ],
-            {
-              "lit": "gemoji"
-            },
-            {
-              "lit": "emoji shortcode"
-            },
-            {
-              "lit": "emoji category"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 11,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-51d4c661",
-      "task": "gemoji-emoji-name-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "all caps",
-            "capital letters",
-            "capitals",
-            "category",
-            "element",
-            "item number",
-            "nth",
-            "position",
-            "upper case",
-            "uppercase"
-          ]
-        ],
-        [
-          "has",
-          "man"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.upper",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "gemoji"
-                },
-                {
-                  "lit": "emoji shortcode"
-                }
-              ],
-              {
-                "lit": 2
-              }
-            ],
-            {
-              "lit": "gemoji"
-            },
-            {
-              "lit": "emoji shortcode"
-            },
-            {
-              "lit": "emoji category"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 11,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-b603f8a6",
-      "task": "gemoji-emoji-name-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "category",
-            "element",
-            "item number",
-            "lower case",
-            "lowercase",
-            "nth",
-            "position",
-            "small letters"
-          ]
-        ],
-        [
-          "has",
-          "man"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.lower",
-          [
-            "know.lookup",
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "gemoji"
-                },
-                {
-                  "lit": "emoji shortcode"
-                }
-              ],
-              {
-                "lit": 2
-              }
-            ],
-            {
-              "lit": "gemoji"
-            },
-            {
-              "lit": "emoji shortcode"
-            },
-            {
-              "lit": "emoji category"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 11,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-cfeb4a4c",
       "task": "gemoji-emoji-name-to-emoji-category",
       "gen": 10,
@@ -17252,6 +17353,148 @@
       "mem": null,
       "height": 5,
       "size": 12,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c0ed3def",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "car",
+            "item number",
+            "nth",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "railway"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          {
+            "lit": "Travel & Places"
+          },
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-internal-calls-10b0d2"
+                  },
+                  {
+                    "lit": "package"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              },
+              {
+                "lit": "n unique"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e07456c9",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "car",
+            "item number",
+            "nth",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "railway"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          {
+            "lit": "Travel & Places"
+          },
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-internal-calls-10b0d2"
+                  },
+                  {
+                    "lit": "package"
+                  }
+                ],
+                {
+                  "lit": -1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              },
+              {
+                "lit": "n unique"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -18633,88 +18876,6 @@
       }
     },
     {
-      "id": "n-3e465b7b",
-      "task": "gemoji-emoji-name-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "derelict",
-            "item number",
-            "nth"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " category of derelict house is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "know.find",
-            {
-              "lit": "fr-tidytuesday-internal-calls-10b0d2"
-            },
-            {
-              "lit": "package"
-            }
-          ],
-          {
-            "lit": -1
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "gemoji"
-              },
-              {
-                "lit": "emoji name"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "gemoji"
-          },
-          {
-            "lit": "emoji name"
-          },
-          {
-            "lit": "emoji category"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 16,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-400e295e",
       "task": "gemoji-emoji-name-to-emoji-category",
       "gen": 10,
@@ -18757,92 +18918,6 @@
             },
             {
               "lit": "crypto ticker"
-            }
-          ],
-          {
-            "lit": -1
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "gemoji"
-              },
-              {
-                "lit": "emoji name"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "gemoji"
-          },
-          {
-            "lit": "emoji name"
-          },
-          {
-            "lit": "emoji category"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 16,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-40f79f7a",
-      "task": "gemoji-emoji-name-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "heart",
-            "item number",
-            "nth"
-          ]
-        ],
-        [
-          "has",
-          "tell"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " category of heart suit is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "know.find",
-            {
-              "lit": "fr-tidytuesday-internal-calls-10b0d2"
-            },
-            {
-              "lit": "package"
             }
           ],
           {
@@ -18996,92 +19071,6 @@
               "slot": 0
             },
             " category of tropical fish is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "know.find",
-            {
-              "lit": "fr-tidytuesday-internal-calls-10b0d2"
-            },
-            {
-              "lit": "package"
-            }
-          ],
-          {
-            "lit": -1
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "gemoji"
-              },
-              {
-                "lit": "emoji name"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "gemoji"
-          },
-          {
-            "lit": "emoji name"
-          },
-          {
-            "lit": "emoji category"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 16,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-5a8521ff",
-      "task": "gemoji-emoji-name-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "bird",
-            "item number",
-            "nth"
-          ]
-        ],
-        [
-          "has",
-          "what"
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " category of bird is ",
             {
               "slot": 1
             },
@@ -19414,88 +19403,6 @@
               "slot": 0
             },
             " category of tractor is ",
-            {
-              "slot": 1
-            },
-            "."
-          ]
-        },
-        [
-          "transform.nthStr",
-          [
-            "know.find",
-            {
-              "lit": "crypto-tickers"
-            },
-            {
-              "lit": "crypto ticker"
-            }
-          ],
-          {
-            "lit": -1
-          }
-        ],
-        [
-          "know.lookup",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "gemoji"
-              },
-              {
-                "lit": "emoji name"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": "gemoji"
-          },
-          {
-            "lit": "emoji name"
-          },
-          {
-            "lit": "emoji category"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 16,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-7a8952b9",
-      "task": "gemoji-emoji-name-to-emoji-category",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "item number",
-            "nth",
-            "toilet"
-          ]
-        ]
-      ],
-      "pyramid": [
-        "render.template",
-        {
-          "lit": [
-            "The ",
-            {
-              "slot": 0
-            },
-            " category of toilet is ",
             {
               "slot": 1
             },
@@ -20650,6 +20557,386 @@
       "mem": null,
       "height": 4,
       "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3306c340",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "car",
+            "item number",
+            "nth",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "railway"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gemoji"
+                },
+                {
+                  "lit": "emoji shortcode"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gemoji"
+            },
+            {
+              "lit": "emoji shortcode"
+            },
+            {
+              "lit": "emoji category"
+            }
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-internal-calls-10b0d2"
+                  },
+                  {
+                    "lit": "package"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              },
+              {
+                "lit": "n unique"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 21,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-497aadce",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "car",
+            "item number",
+            "nth",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "railway"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gemoji"
+                },
+                {
+                  "lit": "emoji shortcode"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gemoji"
+            },
+            {
+              "lit": "emoji shortcode"
+            },
+            {
+              "lit": "emoji category"
+            }
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-internal-calls-10b0d2"
+                  },
+                  {
+                    "lit": "package"
+                  }
+                ],
+                {
+                  "lit": -1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              },
+              {
+                "lit": "n unique"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 21,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bee3a364",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "car",
+            "item number",
+            "nth",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "railway"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gemoji"
+                },
+                {
+                  "lit": "emoji name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gemoji"
+            },
+            {
+              "lit": "emoji name"
+            },
+            {
+              "lit": "emoji category"
+            }
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-internal-calls-10b0d2"
+                  },
+                  {
+                    "lit": "package"
+                  }
+                ],
+                {
+                  "lit": -1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              },
+              {
+                "lit": "n unique"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 21,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c5943911",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "caesar cipher",
+            "car",
+            "item number",
+            "nth",
+            "rotate the letters",
+            "shift by",
+            "shift each letter"
+          ]
+        ],
+        [
+          "has",
+          "railway"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.caesar",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gemoji"
+                },
+                {
+                  "lit": "emoji name"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "gemoji"
+            },
+            {
+              "lit": "emoji name"
+            },
+            {
+              "lit": "emoji category"
+            }
+          ],
+          [
+            "know.num",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-internal-calls-10b0d2"
+                  },
+                  {
+                    "lit": "package"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              },
+              {
+                "lit": "n unique"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 21,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -23744,10 +24031,659 @@
         "fired": 1,
         "rows": 40
       }
+    },
+    {
+      "id": "n-c34adbab",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "custard",
+            "delete",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "Food & Drink"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-tidytuesday-internal-calls-10b0d2"
+              },
+              {
+                "lit": "package"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-757b827d",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "category",
+            "element",
+            "item number",
+            "nth",
+            "position"
+          ]
+        ],
+        [
+          "has",
+          "man"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji shortcode"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji shortcode"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-370fdcc0",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "category",
+            "element",
+            "invert case",
+            "item number",
+            "nth",
+            "position",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "man"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gemoji"
+                },
+                {
+                  "lit": "emoji shortcode"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "gemoji"
+            },
+            {
+              "lit": "emoji shortcode"
+            },
+            {
+              "lit": "emoji category"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-51d4c661",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "category",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "man"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gemoji"
+                },
+                {
+                  "lit": "emoji shortcode"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "gemoji"
+            },
+            {
+              "lit": "emoji shortcode"
+            },
+            {
+              "lit": "emoji category"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b603f8a6",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "category",
+            "element",
+            "item number",
+            "lower case",
+            "lowercase",
+            "nth",
+            "position",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "man"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "gemoji"
+                },
+                {
+                  "lit": "emoji shortcode"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            {
+              "lit": "gemoji"
+            },
+            {
+              "lit": "emoji shortcode"
+            },
+            {
+              "lit": "emoji category"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 11,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3e465b7b",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "derelict",
+            "item number",
+            "nth"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " category of derelict house is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-internal-calls-10b0d2"
+            },
+            {
+              "lit": "package"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-40f79f7a",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "heart",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " category of heart suit is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-internal-calls-10b0d2"
+            },
+            {
+              "lit": "package"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5a8521ff",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "bird",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " category of bird is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-tidytuesday-internal-calls-10b0d2"
+            },
+            {
+              "lit": "package"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7a8952b9",
+      "task": "gemoji-emoji-name-to-emoji-category",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "toilet"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " category of toilet is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "gemoji"
+              },
+              {
+                "lit": "emoji name"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "gemoji"
+          },
+          {
+            "lit": "emoji name"
+          },
+          {
+            "lit": "emoji category"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
     }
   ],
   "stages": [
     "71058942f4d485dc9b6c0990d9cd52c1b0a10de50fc336c55abd9cf7a3d31656",
-    "097408a324b8336bf9cb2d9ac6f2ea723853c951f140a4ee386966ddf30ab7ef"
+    "097408a324b8336bf9cb2d9ac6f2ea723853c951f140a4ee386966ddf30ab7ef",
+    "585d2fec9a96065aecf5c4187dd6976bfe084325d9725cb796163a65ccfd963f"
   ]
 }
