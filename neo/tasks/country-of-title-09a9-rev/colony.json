@@ -2,42 +2,42 @@
   "task": "country-of-title-09a9-rev",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-22T04:56:23.706Z",
+  "at": "2026-10-22T13:51:14.385Z",
   "stats": {
-    "generated": 160527,
-    "distinct": 102434,
-    "kept": 742,
-    "know": 589,
+    "generated": 120274,
+    "distinct": 84487,
+    "kept": 744,
+    "know": 591,
     "byFamily": {
       "memory": 153,
       "know": 3,
       "transform": 398,
+      "aggregate": 7,
       "iterate": 9,
-      "sense": 174,
-      "aggregate": 5
+      "sense": 174
     },
     "bySource": {
-      "parent": 527,
-      "enum": 215
+      "parent": 742,
+      "enum": 2
     },
     "maxHeight": 6,
     "devOk": 100,
     "devN": 100,
-    "ms": 189264,
-    "cellsPerSecond": 848,
-    "capped": null,
+    "ms": 235082,
+    "cellsPerSecond": 512,
+    "capped": "ms",
     "packs": [
       "fr-tidytuesday-netflix-titles-dd14f1"
     ],
     "cursor": {
       "v": 1,
       "basis": "a39a3239c09fd42f0f1f25e30eb0ae3a4142dfa98386f4ce894c2a72488ec676",
-      "round": 2,
-      "at": 271170,
+      "round": 3,
+      "at": 383469,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "compare.contains",
+      "prim": "aggregate.max",
       "tpl": 1734
     }
   },
@@ -1248,6 +1248,99 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 98,
+        "fired": 98,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-f51e5680",
+      "task": "country-of-title-09a9-rev",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "canada",
+            "china",
+            "colombia",
+            "denmark",
+            "element",
+            "france",
+            "georgia",
+            "germany",
+            "has",
+            "iceland",
+            "india",
+            "item number",
+            "kingdom",
+            "lebanon",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "philippines",
+            "position",
+            "senegal",
+            "separate by",
+            "south",
+            "spain",
+            "split",
+            "split by",
+            "switzerland",
+            "uruguay",
+            "venezuela"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": -1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 13,
       "fit": {
         "ok": 98,
@@ -3003,6 +3096,109 @@
       "mem": null,
       "height": 5,
       "size": 12,
+      "fit": {
+        "ok": 94,
+        "fired": 94,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1d1fc55d",
+      "task": "country-of-title-09a9-rev",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "africa",
+            "brazil",
+            "cayman",
+            "colombia",
+            "denmark",
+            "element",
+            "france",
+            "georgia",
+            "germany",
+            "has",
+            "iceland",
+            "ireland",
+            "israel",
+            "item number",
+            "jordan",
+            "lebanon",
+            "longest",
+            "longest one",
+            "longest word",
+            "luxembourg",
+            "malaysia",
+            "morocco",
+            "netherlands",
+            "new",
+            "nth",
+            "pakistan",
+            "panama",
+            "philippines",
+            "position",
+            "senegal",
+            "separate by",
+            "spain",
+            "split",
+            "split by",
+            "switzerland",
+            "ukraine",
+            "uruguay",
+            "venezuela",
+            "which"
+          ]
+        ],
+        [
+          "has",
+          "title"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-tidytuesday-netflix-titles-dd14f1"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "title"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
       "fit": {
         "ok": 94,
         "fired": 94,
@@ -64877,6 +65073,7 @@
   "stages": [
     "15aea25ac60e77b2507ccd936cb1f4753c73f508c66db4bd47ff3c9a1601006c",
     "fb083380a134386cadb32b80b7483e2e63be3dbadc508656d9d13f45729599ea",
-    "056243b986cd05aca44ebf804c903040c03c8cfa6a0baafa3fcf251754bb04da"
+    "056243b986cd05aca44ebf804c903040c03c8cfa6a0baafa3fcf251754bb04da",
+    "d38b8472772bc092084d644d9bf02249707826cf78a9c23ec8d13211067ffc77"
   ]
 }
