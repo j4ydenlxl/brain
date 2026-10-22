@@ -2,28 +2,28 @@
   "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-20T09:53:32.225Z",
+  "at": "2026-10-22T22:39:48.668Z",
   "stats": {
-    "generated": 160354,
-    "distinct": 130800,
-    "kept": 364,
-    "know": 296,
+    "generated": 160374,
+    "distinct": 160314,
+    "kept": 452,
+    "know": 365,
     "byFamily": {
       "memory": 48,
       "aggregate": 53,
-      "transform": 228,
+      "transform": 316,
       "sense": 35
     },
     "bySource": {
-      "parent": 344,
-      "enum": 18,
-      "open": 2
+      "parent": 364,
+      "enum": 79,
+      "open": 9
     },
     "maxHeight": 5,
     "devOk": 40,
     "devN": 40,
-    "ms": 164752,
-    "cellsPerSecond": 973,
+    "ms": 207356,
+    "cellsPerSecond": 773,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -33,12 +33,12 @@
     "cursor": {
       "v": 1,
       "basis": "8e0da49ce95e46612b5f6e5b728988399630813f924059571e41725c09a0da54",
-      "round": 1,
-      "at": 212651,
+      "round": 2,
+      "at": 312294,
       "maxCost": 7,
       "done": false,
-      "cost": 6,
-      "prim": "transform.norm",
+      "cost": 7,
+      "prim": "transform.div",
       "tpl": 2042
     }
   },
@@ -1201,6 +1201,168 @@
       }
     },
     {
+      "id": "n-7ddc38c7",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "capita"
+        ],
+        [
+          "has",
+          "co₂"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "change"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "tonnes per person (t/person)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b73aa2f4",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "capita"
+        ],
+        [
+          "has",
+          "co₂"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "change"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "me"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "tonnes per person (t/person)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-55b09481",
       "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
       "gen": 10,
@@ -1700,6 +1862,124 @@
       }
     },
     {
+      "id": "n-22c655e9",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "share"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "global"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 5
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-444b734f",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "share"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "global"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "%"
+          },
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-bd9f534b",
       "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
       "gen": 10,
@@ -1778,6 +2058,154 @@
       "mem": null,
       "height": 3,
       "size": 12,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-44400d69",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "capita"
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "co₂"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "change"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "tonnes per person (t/person)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 4,
+        "fired": 4,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6cb97652",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "capita"
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "co₂"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "change"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "tonnes per person (t/person)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
       "fit": {
         "ok": 4,
         "fired": 4,
@@ -3266,6 +3694,3383 @@
       }
     },
     {
+      "id": "n-a6e19522",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [
+        "n-81801a98",
+        "n-9db9ebaf"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "2x",
+              "3x",
+              "acei",
+              "acquisition",
+              "acsg",
+              "act",
+              "active",
+              "advantage",
+              "aesg",
+              "aesthetics",
+              "aexa",
+              "affiliation",
+              "afl",
+              "agency",
+              "agility",
+              "agriculture",
+              "also",
+              "among",
+              "analysing",
+              "anglogold",
+              "applicationvndoasisopendocumentbase",
+              "arrived",
+              "artist",
+              "ashford",
+              "asiahongkong",
+              "asic",
+              "author",
+              "azurecommapsmapsmanagement",
+              "azz",
+              "backend",
+              "bancroft",
+              "barrier",
+              "bbva",
+              "bbwi",
+              "bcatv",
+              "beaumont",
+              "bepi",
+              "bessw",
+              "bgsf",
+              "bhk",
+              "bk",
+              "blackrock",
+              "blest",
+              "blonde",
+              "blw",
+              "bndd",
+              "bnl",
+              "bny",
+              "bolt",
+              "bore",
+              "brol",
+              "bti",
+              "buffer",
+              "bullbear",
+              "burned",
+              "cango",
+              "capri",
+              "captions",
+              "capture",
+              "carmax",
+              "castellan",
+              "category",
+              "cboe",
+              "cbox",
+              "cd",
+              "character",
+              "characters",
+              "chemical",
+              "chmi",
+              "cig",
+              "cigc",
+              "cldt",
+              "clean",
+              "cn",
+              "cof",
+              "coix",
+              "color",
+              "colors",
+              "column",
+              "combined",
+              "comes",
+              "comments",
+              "common",
+              "compare",
+              "consecutive",
+              "consumption",
+              "copl",
+              "corporat",
+              "corporate",
+              "corporation",
+              "count",
+              "country",
+              "cowboys",
+              "crayola",
+              "crk",
+              "cu",
+              "cultivation",
+              "cvm",
+              "date",
+              "dead",
+              "deepmind",
+              "depositary",
+              "description",
+              "developed",
+              "dfem",
+              "dialogue",
+              "dimensional",
+              "director",
+              "disgrace",
+              "dlrk",
+              "drab",
+              "drinks",
+              "drivers",
+              "dsx",
+              "due",
+              "dy",
+              "each",
+              "eafe",
+              "ebf",
+              "emf",
+              "equity",
+              "ese",
+              "esgv",
+              "eslv",
+              "essentials",
+              "expectancy",
+              "extension",
+              "fe",
+              "featuring",
+              "febm",
+              "ffox",
+              "fhi",
+              "firstlevel",
+              "fjan",
+              "flgv",
+              "floating",
+              "fmtl",
+              "fool",
+              "foolish",
+              "for",
+              "fpi",
+              "freeport",
+              "fseg",
+              "fuchsia",
+              "fvr",
+              "fxed",
+              "gasconschangepct",
+              "gasprodchangepct",
+              "gd",
+              "gdvk",
+              "geniepoo",
+              "globaltemps",
+              "glw",
+              "goblet",
+              "govm",
+              "gug",
+              "gutenberg",
+              "gvi",
+              "h",
+              "harbor",
+              "harrat",
+              "has",
+              "heatwaves",
+              "hedgeye",
+              "hence",
+              "hex",
+              "hfxi",
+              "his",
+              "housing",
+              "hql",
+              "hs",
+              "hsbc",
+              "hydroconschangepct",
+              "ill",
+              "imdb",
+              "including",
+              "innf",
+              "innovatum",
+              "iqv",
+              "ir",
+              "islands",
+              "israel",
+              "ivov",
+              "ivrc",
+              "iyc",
+              "iyj",
+              "janw",
+              "jennison",
+              "jhac",
+              "jpmorgan",
+              "julp",
+              "junc",
+              "k",
+              "kcsh",
+              "kos",
+              "krefa",
+              "kurv",
+              "lady",
+              "large",
+              "larger",
+              "last",
+              "latr",
+              "leopold",
+              "li",
+              "location",
+              "lowcarbon",
+              "lowcarbonconschangetwh",
+              "lr",
+              "lrgc",
+              "lu",
+              "lvln",
+              "manu",
+              "manufacturer",
+              "maps",
+              "massy",
+              "matv",
+              "md",
+              "mete",
+              "mgy",
+              "mivl",
+              "mktn",
+              "mlp",
+              "morningstar",
+              "mpa",
+              "mpwx",
+              "mufg",
+              "multifactor",
+              "municipal",
+              "musical",
+              "mux",
+              "mye",
+              "n",
+              "na",
+              "nasdaq",
+              "nbce",
+              "ne",
+              "nightmare",
+              "no",
+              "nomura",
+              "npo",
+              "number",
+              "nuveen",
+              "o",
+              "oec",
+              "onez",
+              "osg",
+              "ossl",
+              "pa",
+              "pacer",
+              "partners",
+              "pcor",
+              "pdcc",
+              "percentage",
+              "pffa",
+              "pfs",
+              "phelps",
+              "phg",
+              "pjun",
+              "pm",
+              "pmtb",
+              "polen",
+              "porter",
+              "portfolio",
+              "pqnt",
+              "pqv",
+              "pr",
+              "priv",
+              "pu",
+              "pvex",
+              "qqqu",
+              "qspt",
+              "r",
+              "ramsey",
+              "rblx",
+              "re",
+              "redeemable",
+              "redress",
+              "representing",
+              "requiem",
+              "reserves",
+              "residential",
+              "return",
+              "rh",
+              "rivernorthdoubleline",
+              "rjvi",
+              "rowe",
+              "rvi",
+              "s0",
+              "s0aspindle",
+              "saba",
+              "sbcspindle",
+              "sbon",
+              "scene",
+              "select",
+              "shareglobalcumulativegasco2",
+              "shareglobalgasco2",
+              "short",
+              "simplify",
+              "sixd",
+              "ske",
+              "sm",
+              "smith",
+              "solarconschangetwh",
+              "speak",
+              "spinal",
+              "spxx",
+              "sr",
+              "ssl",
+              "stevanato",
+              "stew",
+              "strive",
+              "structured",
+              "stxe",
+              "sunb",
+              "sunlight",
+              "sustainable",
+              "sweden",
+              "switch",
+              "symbol",
+              "taupe",
+              "tc",
+              "tcbx",
+              "tdaq",
+              "tdw",
+              "te",
+              "test",
+              "thou",
+              "title",
+              "tlys",
+              "tomatoes",
+              "tont",
+              "toplevel",
+              "tpr",
+              "travelling",
+              "tsakos",
+              "tslw",
+              "uan",
+              "uavs",
+              "ule",
+              "usa",
+              "usbp",
+              "usrt",
+              "uue",
+              "uvv",
+              "valtoro",
+              "vel",
+              "vtec",
+              "vwo",
+              "wat",
+              "week",
+              "weeklypay",
+              "weight",
+              "wes",
+              "wfcy",
+              "what",
+              "wisdomtree",
+              "wnc",
+              "writers",
+              "xe",
+              "xflhr",
+              "xjun",
+              "xlii",
+              "xlui",
+              "yieldmax",
+              "zinc",
+              "zr",
+              "zvia"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.concat",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-eab98024",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [
+        "n-180d87f9",
+        "n-80ed69aa"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "2x",
+              "3x",
+              "acei",
+              "acquisition",
+              "acsg",
+              "act",
+              "active",
+              "advantage",
+              "aesg",
+              "aesthetics",
+              "aexa",
+              "affiliation",
+              "afl",
+              "agency",
+              "agility",
+              "agriculture",
+              "also",
+              "among",
+              "analysing",
+              "anglogold",
+              "applicationvndoasisopendocumentbase",
+              "arrived",
+              "artist",
+              "ashford",
+              "asiahongkong",
+              "asic",
+              "author",
+              "azurecommapsmapsmanagement",
+              "azz",
+              "backend",
+              "bancroft",
+              "barrier",
+              "bbva",
+              "bbwi",
+              "bcatv",
+              "beaumont",
+              "bepi",
+              "bessw",
+              "bgsf",
+              "bhk",
+              "bk",
+              "blackrock",
+              "blest",
+              "blonde",
+              "blw",
+              "bndd",
+              "bnl",
+              "bny",
+              "bolt",
+              "bore",
+              "brol",
+              "bti",
+              "buffer",
+              "bullbear",
+              "burned",
+              "cango",
+              "capri",
+              "captions",
+              "capture",
+              "carmax",
+              "castellan",
+              "category",
+              "cboe",
+              "cbox",
+              "cd",
+              "character",
+              "characters",
+              "chemical",
+              "chmi",
+              "cig",
+              "cigc",
+              "cldt",
+              "clean",
+              "cn",
+              "cof",
+              "coix",
+              "color",
+              "colors",
+              "column",
+              "combined",
+              "comes",
+              "comments",
+              "common",
+              "compare",
+              "consecutive",
+              "consumption",
+              "copl",
+              "corporat",
+              "corporate",
+              "corporation",
+              "count",
+              "country",
+              "cowboys",
+              "crayola",
+              "crk",
+              "cu",
+              "cultivation",
+              "cvm",
+              "date",
+              "dead",
+              "deepmind",
+              "depositary",
+              "description",
+              "developed",
+              "dfem",
+              "dialogue",
+              "dimensional",
+              "director",
+              "disgrace",
+              "dlrk",
+              "drab",
+              "drinks",
+              "drivers",
+              "dsx",
+              "due",
+              "dy",
+              "each",
+              "eafe",
+              "ebf",
+              "emf",
+              "equity",
+              "ese",
+              "esgv",
+              "eslv",
+              "essentials",
+              "expectancy",
+              "extension",
+              "fe",
+              "featuring",
+              "febm",
+              "ffox",
+              "fhi",
+              "firstlevel",
+              "fjan",
+              "flgv",
+              "floating",
+              "fmtl",
+              "fool",
+              "foolish",
+              "for",
+              "fpi",
+              "freeport",
+              "fseg",
+              "fuchsia",
+              "fvr",
+              "fxed",
+              "gasconschangepct",
+              "gasprodchangepct",
+              "gd",
+              "gdvk",
+              "geniepoo",
+              "globaltemps",
+              "glw",
+              "goblet",
+              "govm",
+              "gug",
+              "gutenberg",
+              "gvi",
+              "h",
+              "harbor",
+              "harrat",
+              "has",
+              "heatwaves",
+              "hedgeye",
+              "hence",
+              "hex",
+              "hfxi",
+              "his",
+              "housing",
+              "hql",
+              "hs",
+              "hsbc",
+              "hydroconschangepct",
+              "ill",
+              "imdb",
+              "including",
+              "innf",
+              "innovatum",
+              "iqv",
+              "ir",
+              "islands",
+              "israel",
+              "ivov",
+              "ivrc",
+              "iyc",
+              "iyj",
+              "janw",
+              "jennison",
+              "jhac",
+              "jpmorgan",
+              "julp",
+              "junc",
+              "k",
+              "kcsh",
+              "kos",
+              "krefa",
+              "kurv",
+              "lady",
+              "large",
+              "larger",
+              "last",
+              "latr",
+              "leopold",
+              "li",
+              "location",
+              "lowcarbon",
+              "lowcarbonconschangetwh",
+              "lr",
+              "lrgc",
+              "lu",
+              "lvln",
+              "manu",
+              "manufacturer",
+              "maps",
+              "massy",
+              "matv",
+              "md",
+              "mete",
+              "mgy",
+              "mivl",
+              "mktn",
+              "mlp",
+              "morningstar",
+              "mpa",
+              "mpwx",
+              "mufg",
+              "multifactor",
+              "municipal",
+              "musical",
+              "mux",
+              "mye",
+              "n",
+              "na",
+              "nasdaq",
+              "nbce",
+              "ne",
+              "nightmare",
+              "no",
+              "nomura",
+              "npo",
+              "number",
+              "nuveen",
+              "o",
+              "oec",
+              "onez",
+              "osg",
+              "ossl",
+              "pa",
+              "pacer",
+              "partners",
+              "pcor",
+              "pdcc",
+              "percentage",
+              "pffa",
+              "pfs",
+              "phelps",
+              "phg",
+              "pjun",
+              "pm",
+              "pmtb",
+              "polen",
+              "porter",
+              "portfolio",
+              "pqnt",
+              "pqv",
+              "pr",
+              "priv",
+              "pu",
+              "pvex",
+              "qqqu",
+              "qspt",
+              "r",
+              "ramsey",
+              "rblx",
+              "re",
+              "redeemable",
+              "redress",
+              "representing",
+              "requiem",
+              "reserves",
+              "residential",
+              "return",
+              "rh",
+              "rivernorthdoubleline",
+              "rjvi",
+              "rowe",
+              "rvi",
+              "s0",
+              "s0aspindle",
+              "saba",
+              "sbcspindle",
+              "sbon",
+              "scene",
+              "select",
+              "shareglobalcumulativegasco2",
+              "shareglobalgasco2",
+              "short",
+              "simplify",
+              "sixd",
+              "ske",
+              "sm",
+              "smith",
+              "solarconschangetwh",
+              "speak",
+              "spinal",
+              "spxx",
+              "sr",
+              "ssl",
+              "stevanato",
+              "stew",
+              "strive",
+              "structured",
+              "stxe",
+              "sunb",
+              "sunlight",
+              "sustainable",
+              "sweden",
+              "switch",
+              "symbol",
+              "taupe",
+              "tc",
+              "tcbx",
+              "tdaq",
+              "tdw",
+              "te",
+              "test",
+              "thou",
+              "title",
+              "tlys",
+              "tomatoes",
+              "tont",
+              "toplevel",
+              "tpr",
+              "travelling",
+              "tsakos",
+              "tslw",
+              "uan",
+              "uavs",
+              "ule",
+              "usa",
+              "usbp",
+              "usrt",
+              "uue",
+              "uvv",
+              "valtoro",
+              "vel",
+              "vtec",
+              "vwo",
+              "wat",
+              "week",
+              "weeklypay",
+              "weight",
+              "wes",
+              "wfcy",
+              "what",
+              "wisdomtree",
+              "wnc",
+              "writers",
+              "xe",
+              "xflhr",
+              "xjun",
+              "xlii",
+              "xlui",
+              "yieldmax",
+              "zinc",
+              "zr",
+              "zvia"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.concat",
+          {
+            "lit": "%"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 8,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-050775f5",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "co₂",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "for"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2363f534",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "co₂",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "for"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 1000
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4170f703",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "co₂",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "for"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 100
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-46208f2b",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "share"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cement"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "global"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": 5
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5a343602",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [
+        "n-4170f703"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "2x",
+              "3x",
+              "acei",
+              "acquisition",
+              "acsg",
+              "act",
+              "active",
+              "advantage",
+              "aesg",
+              "aesthetics",
+              "aexa",
+              "affiliation",
+              "afl",
+              "agency",
+              "agility",
+              "agriculture",
+              "also",
+              "among",
+              "analysing",
+              "anglogold",
+              "applicationvndoasisopendocumentbase",
+              "arrived",
+              "artist",
+              "ashford",
+              "asiahongkong",
+              "asic",
+              "author",
+              "azurecommapsmapsmanagement",
+              "azz",
+              "backend",
+              "bancroft",
+              "barrier",
+              "bbva",
+              "bbwi",
+              "bcatv",
+              "beaumont",
+              "bepi",
+              "bessw",
+              "bgsf",
+              "bhk",
+              "bk",
+              "blackrock",
+              "blest",
+              "blonde",
+              "blw",
+              "bndd",
+              "bnl",
+              "bny",
+              "bolt",
+              "bore",
+              "brol",
+              "bti",
+              "buffer",
+              "bullbear",
+              "burned",
+              "cango",
+              "capri",
+              "captions",
+              "capture",
+              "carmax",
+              "castellan",
+              "category",
+              "cboe",
+              "cbox",
+              "cd",
+              "character",
+              "characters",
+              "chemical",
+              "chmi",
+              "cig",
+              "cigc",
+              "cldt",
+              "clean",
+              "cn",
+              "cof",
+              "coix",
+              "color",
+              "colors",
+              "column",
+              "combined",
+              "comes",
+              "comments",
+              "common",
+              "compare",
+              "consecutive",
+              "consumption",
+              "copl",
+              "corporat",
+              "corporate",
+              "corporation",
+              "count",
+              "country",
+              "cowboys",
+              "crayola",
+              "crk",
+              "cu",
+              "cultivation",
+              "cvm",
+              "date",
+              "dead",
+              "deepmind",
+              "depositary",
+              "description",
+              "developed",
+              "dfem",
+              "dialogue",
+              "dimensional",
+              "director",
+              "disgrace",
+              "dlrk",
+              "drab",
+              "drinks",
+              "drivers",
+              "dsx",
+              "due",
+              "dy",
+              "each",
+              "eafe",
+              "ebf",
+              "emf",
+              "equity",
+              "ese",
+              "esgv",
+              "eslv",
+              "essentials",
+              "expectancy",
+              "extension",
+              "fe",
+              "featuring",
+              "febm",
+              "ffox",
+              "fhi",
+              "firstlevel",
+              "fjan",
+              "flgv",
+              "floating",
+              "fmtl",
+              "fool",
+              "foolish",
+              "for",
+              "fpi",
+              "freeport",
+              "fseg",
+              "fuchsia",
+              "fvr",
+              "fxed",
+              "gasconschangepct",
+              "gasprodchangepct",
+              "gd",
+              "gdvk",
+              "geniepoo",
+              "globaltemps",
+              "glw",
+              "goblet",
+              "govm",
+              "gug",
+              "gutenberg",
+              "gvi",
+              "h",
+              "harbor",
+              "harrat",
+              "has",
+              "heatwaves",
+              "hedgeye",
+              "hence",
+              "hex",
+              "hfxi",
+              "his",
+              "housing",
+              "hql",
+              "hs",
+              "hsbc",
+              "hydroconschangepct",
+              "ill",
+              "imdb",
+              "including",
+              "innf",
+              "innovatum",
+              "iqv",
+              "ir",
+              "islands",
+              "israel",
+              "ivov",
+              "ivrc",
+              "iyc",
+              "iyj",
+              "janw",
+              "jennison",
+              "jhac",
+              "jpmorgan",
+              "julp",
+              "junc",
+              "k",
+              "kcsh",
+              "kos",
+              "krefa",
+              "kurv",
+              "lady",
+              "large",
+              "larger",
+              "last",
+              "latr",
+              "leopold",
+              "li",
+              "location",
+              "lowcarbon",
+              "lowcarbonconschangetwh",
+              "lr",
+              "lrgc",
+              "lu",
+              "lvln",
+              "manu",
+              "manufacturer",
+              "maps",
+              "massy",
+              "matv",
+              "md",
+              "mete",
+              "mgy",
+              "mivl",
+              "mktn",
+              "mlp",
+              "morningstar",
+              "mpa",
+              "mpwx",
+              "mufg",
+              "multifactor",
+              "municipal",
+              "musical",
+              "mux",
+              "mye",
+              "n",
+              "na",
+              "nasdaq",
+              "nbce",
+              "ne",
+              "nightmare",
+              "no",
+              "nomura",
+              "npo",
+              "number",
+              "nuveen",
+              "o",
+              "oec",
+              "onez",
+              "osg",
+              "ossl",
+              "pa",
+              "pacer",
+              "partners",
+              "pcor",
+              "pdcc",
+              "percentage",
+              "pffa",
+              "pfs",
+              "phelps",
+              "phg",
+              "pjun",
+              "pm",
+              "pmtb",
+              "polen",
+              "porter",
+              "portfolio",
+              "pqnt",
+              "pqv",
+              "pr",
+              "priv",
+              "pu",
+              "pvex",
+              "qqqu",
+              "qspt",
+              "r",
+              "ramsey",
+              "rblx",
+              "re",
+              "redeemable",
+              "redress",
+              "representing",
+              "requiem",
+              "reserves",
+              "residential",
+              "return",
+              "rh",
+              "rivernorthdoubleline",
+              "rjvi",
+              "rowe",
+              "rvi",
+              "s0",
+              "s0aspindle",
+              "saba",
+              "sbcspindle",
+              "sbon",
+              "scene",
+              "select",
+              "shareglobalcumulativegasco2",
+              "shareglobalgasco2",
+              "short",
+              "simplify",
+              "sixd",
+              "ske",
+              "sm",
+              "smith",
+              "solarconschangetwh",
+              "speak",
+              "spinal",
+              "spxx",
+              "sr",
+              "ssl",
+              "stevanato",
+              "stew",
+              "strive",
+              "structured",
+              "stxe",
+              "sunb",
+              "sunlight",
+              "sustainable",
+              "sweden",
+              "switch",
+              "symbol",
+              "taupe",
+              "tc",
+              "tcbx",
+              "tdaq",
+              "tdw",
+              "te",
+              "test",
+              "thou",
+              "title",
+              "tlys",
+              "tomatoes",
+              "tont",
+              "toplevel",
+              "tpr",
+              "travelling",
+              "tsakos",
+              "tslw",
+              "uan",
+              "uavs",
+              "ule",
+              "usa",
+              "usbp",
+              "usrt",
+              "uue",
+              "uvv",
+              "valtoro",
+              "vel",
+              "vtec",
+              "vwo",
+              "wat",
+              "week",
+              "weeklypay",
+              "weight",
+              "wes",
+              "wfcy",
+              "what",
+              "wisdomtree",
+              "wnc",
+              "writers",
+              "xe",
+              "xflhr",
+              "xjun",
+              "xlii",
+              "xlui",
+              "yieldmax",
+              "zinc",
+              "zr",
+              "zvia"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 100
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-70fd786f",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [
+        "n-050775f5"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "2x",
+              "3x",
+              "acei",
+              "acquisition",
+              "acsg",
+              "act",
+              "active",
+              "advantage",
+              "aesg",
+              "aesthetics",
+              "aexa",
+              "affiliation",
+              "afl",
+              "agency",
+              "agility",
+              "agriculture",
+              "also",
+              "among",
+              "analysing",
+              "anglogold",
+              "applicationvndoasisopendocumentbase",
+              "arrived",
+              "artist",
+              "ashford",
+              "asiahongkong",
+              "asic",
+              "author",
+              "azurecommapsmapsmanagement",
+              "azz",
+              "backend",
+              "bancroft",
+              "barrier",
+              "bbva",
+              "bbwi",
+              "bcatv",
+              "beaumont",
+              "bepi",
+              "bessw",
+              "bgsf",
+              "bhk",
+              "bk",
+              "blackrock",
+              "blest",
+              "blonde",
+              "blw",
+              "bndd",
+              "bnl",
+              "bny",
+              "bolt",
+              "bore",
+              "brol",
+              "bti",
+              "buffer",
+              "bullbear",
+              "burned",
+              "cango",
+              "capri",
+              "captions",
+              "capture",
+              "carmax",
+              "castellan",
+              "category",
+              "cboe",
+              "cbox",
+              "cd",
+              "character",
+              "characters",
+              "chemical",
+              "chmi",
+              "cig",
+              "cigc",
+              "cldt",
+              "clean",
+              "cn",
+              "cof",
+              "coix",
+              "color",
+              "colors",
+              "column",
+              "combined",
+              "comes",
+              "comments",
+              "common",
+              "compare",
+              "consecutive",
+              "consumption",
+              "copl",
+              "corporat",
+              "corporate",
+              "corporation",
+              "count",
+              "country",
+              "cowboys",
+              "crayola",
+              "crk",
+              "cu",
+              "cultivation",
+              "cvm",
+              "date",
+              "dead",
+              "deepmind",
+              "depositary",
+              "description",
+              "developed",
+              "dfem",
+              "dialogue",
+              "dimensional",
+              "director",
+              "disgrace",
+              "dlrk",
+              "drab",
+              "drinks",
+              "drivers",
+              "dsx",
+              "due",
+              "dy",
+              "each",
+              "eafe",
+              "ebf",
+              "emf",
+              "equity",
+              "ese",
+              "esgv",
+              "eslv",
+              "essentials",
+              "expectancy",
+              "extension",
+              "fe",
+              "featuring",
+              "febm",
+              "ffox",
+              "fhi",
+              "firstlevel",
+              "fjan",
+              "flgv",
+              "floating",
+              "fmtl",
+              "fool",
+              "foolish",
+              "for",
+              "fpi",
+              "freeport",
+              "fseg",
+              "fuchsia",
+              "fvr",
+              "fxed",
+              "gasconschangepct",
+              "gasprodchangepct",
+              "gd",
+              "gdvk",
+              "geniepoo",
+              "globaltemps",
+              "glw",
+              "goblet",
+              "govm",
+              "gug",
+              "gutenberg",
+              "gvi",
+              "h",
+              "harbor",
+              "harrat",
+              "has",
+              "heatwaves",
+              "hedgeye",
+              "hence",
+              "hex",
+              "hfxi",
+              "his",
+              "housing",
+              "hql",
+              "hs",
+              "hsbc",
+              "hydroconschangepct",
+              "ill",
+              "imdb",
+              "including",
+              "innf",
+              "innovatum",
+              "iqv",
+              "ir",
+              "islands",
+              "israel",
+              "ivov",
+              "ivrc",
+              "iyc",
+              "iyj",
+              "janw",
+              "jennison",
+              "jhac",
+              "jpmorgan",
+              "julp",
+              "junc",
+              "k",
+              "kcsh",
+              "kos",
+              "krefa",
+              "kurv",
+              "lady",
+              "large",
+              "larger",
+              "last",
+              "latr",
+              "leopold",
+              "li",
+              "location",
+              "lowcarbon",
+              "lowcarbonconschangetwh",
+              "lr",
+              "lrgc",
+              "lu",
+              "lvln",
+              "manu",
+              "manufacturer",
+              "maps",
+              "massy",
+              "matv",
+              "md",
+              "mete",
+              "mgy",
+              "mivl",
+              "mktn",
+              "mlp",
+              "morningstar",
+              "mpa",
+              "mpwx",
+              "mufg",
+              "multifactor",
+              "municipal",
+              "musical",
+              "mux",
+              "mye",
+              "n",
+              "na",
+              "nasdaq",
+              "nbce",
+              "ne",
+              "nightmare",
+              "no",
+              "nomura",
+              "npo",
+              "number",
+              "nuveen",
+              "o",
+              "oec",
+              "onez",
+              "osg",
+              "ossl",
+              "pa",
+              "pacer",
+              "partners",
+              "pcor",
+              "pdcc",
+              "percentage",
+              "pffa",
+              "pfs",
+              "phelps",
+              "phg",
+              "pjun",
+              "pm",
+              "pmtb",
+              "polen",
+              "porter",
+              "portfolio",
+              "pqnt",
+              "pqv",
+              "pr",
+              "priv",
+              "pu",
+              "pvex",
+              "qqqu",
+              "qspt",
+              "r",
+              "ramsey",
+              "rblx",
+              "re",
+              "redeemable",
+              "redress",
+              "representing",
+              "requiem",
+              "reserves",
+              "residential",
+              "return",
+              "rh",
+              "rivernorthdoubleline",
+              "rjvi",
+              "rowe",
+              "rvi",
+              "s0",
+              "s0aspindle",
+              "saba",
+              "sbcspindle",
+              "sbon",
+              "scene",
+              "select",
+              "shareglobalcumulativegasco2",
+              "shareglobalgasco2",
+              "short",
+              "simplify",
+              "sixd",
+              "ske",
+              "sm",
+              "smith",
+              "solarconschangetwh",
+              "speak",
+              "spinal",
+              "spxx",
+              "sr",
+              "ssl",
+              "stevanato",
+              "stew",
+              "strive",
+              "structured",
+              "stxe",
+              "sunb",
+              "sunlight",
+              "sustainable",
+              "sweden",
+              "switch",
+              "symbol",
+              "taupe",
+              "tc",
+              "tcbx",
+              "tdaq",
+              "tdw",
+              "te",
+              "test",
+              "thou",
+              "title",
+              "tlys",
+              "tomatoes",
+              "tont",
+              "toplevel",
+              "tpr",
+              "travelling",
+              "tsakos",
+              "tslw",
+              "uan",
+              "uavs",
+              "ule",
+              "usa",
+              "usbp",
+              "usrt",
+              "uue",
+              "uvv",
+              "valtoro",
+              "vel",
+              "vtec",
+              "vwo",
+              "wat",
+              "week",
+              "weeklypay",
+              "weight",
+              "wes",
+              "wfcy",
+              "what",
+              "wisdomtree",
+              "wnc",
+              "writers",
+              "xe",
+              "xflhr",
+              "xjun",
+              "xlii",
+              "xlui",
+              "yieldmax",
+              "zinc",
+              "zr",
+              "zvia"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-79d9d093",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "co₂",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "for"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 10
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7d3c0d9a",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "co₂",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "for"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 12
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a3781180",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [
+        "n-7d3c0d9a"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "2x",
+              "3x",
+              "acei",
+              "acquisition",
+              "acsg",
+              "act",
+              "active",
+              "advantage",
+              "aesg",
+              "aesthetics",
+              "aexa",
+              "affiliation",
+              "afl",
+              "agency",
+              "agility",
+              "agriculture",
+              "also",
+              "among",
+              "analysing",
+              "anglogold",
+              "applicationvndoasisopendocumentbase",
+              "arrived",
+              "artist",
+              "ashford",
+              "asiahongkong",
+              "asic",
+              "author",
+              "azurecommapsmapsmanagement",
+              "azz",
+              "backend",
+              "bancroft",
+              "barrier",
+              "bbva",
+              "bbwi",
+              "bcatv",
+              "beaumont",
+              "bepi",
+              "bessw",
+              "bgsf",
+              "bhk",
+              "bk",
+              "blackrock",
+              "blest",
+              "blonde",
+              "blw",
+              "bndd",
+              "bnl",
+              "bny",
+              "bolt",
+              "bore",
+              "brol",
+              "bti",
+              "buffer",
+              "bullbear",
+              "burned",
+              "cango",
+              "capri",
+              "captions",
+              "capture",
+              "carmax",
+              "castellan",
+              "category",
+              "cboe",
+              "cbox",
+              "cd",
+              "character",
+              "characters",
+              "chemical",
+              "chmi",
+              "cig",
+              "cigc",
+              "cldt",
+              "clean",
+              "cn",
+              "cof",
+              "coix",
+              "color",
+              "colors",
+              "column",
+              "combined",
+              "comes",
+              "comments",
+              "common",
+              "compare",
+              "consecutive",
+              "consumption",
+              "copl",
+              "corporat",
+              "corporate",
+              "corporation",
+              "count",
+              "country",
+              "cowboys",
+              "crayola",
+              "crk",
+              "cu",
+              "cultivation",
+              "cvm",
+              "date",
+              "dead",
+              "deepmind",
+              "depositary",
+              "description",
+              "developed",
+              "dfem",
+              "dialogue",
+              "dimensional",
+              "director",
+              "disgrace",
+              "dlrk",
+              "drab",
+              "drinks",
+              "drivers",
+              "dsx",
+              "due",
+              "dy",
+              "each",
+              "eafe",
+              "ebf",
+              "emf",
+              "equity",
+              "ese",
+              "esgv",
+              "eslv",
+              "essentials",
+              "expectancy",
+              "extension",
+              "fe",
+              "featuring",
+              "febm",
+              "ffox",
+              "fhi",
+              "firstlevel",
+              "fjan",
+              "flgv",
+              "floating",
+              "fmtl",
+              "fool",
+              "foolish",
+              "for",
+              "fpi",
+              "freeport",
+              "fseg",
+              "fuchsia",
+              "fvr",
+              "fxed",
+              "gasconschangepct",
+              "gasprodchangepct",
+              "gd",
+              "gdvk",
+              "geniepoo",
+              "globaltemps",
+              "glw",
+              "goblet",
+              "govm",
+              "gug",
+              "gutenberg",
+              "gvi",
+              "h",
+              "harbor",
+              "harrat",
+              "has",
+              "heatwaves",
+              "hedgeye",
+              "hence",
+              "hex",
+              "hfxi",
+              "his",
+              "housing",
+              "hql",
+              "hs",
+              "hsbc",
+              "hydroconschangepct",
+              "ill",
+              "imdb",
+              "including",
+              "innf",
+              "innovatum",
+              "iqv",
+              "ir",
+              "islands",
+              "israel",
+              "ivov",
+              "ivrc",
+              "iyc",
+              "iyj",
+              "janw",
+              "jennison",
+              "jhac",
+              "jpmorgan",
+              "julp",
+              "junc",
+              "k",
+              "kcsh",
+              "kos",
+              "krefa",
+              "kurv",
+              "lady",
+              "large",
+              "larger",
+              "last",
+              "latr",
+              "leopold",
+              "li",
+              "location",
+              "lowcarbon",
+              "lowcarbonconschangetwh",
+              "lr",
+              "lrgc",
+              "lu",
+              "lvln",
+              "manu",
+              "manufacturer",
+              "maps",
+              "massy",
+              "matv",
+              "md",
+              "mete",
+              "mgy",
+              "mivl",
+              "mktn",
+              "mlp",
+              "morningstar",
+              "mpa",
+              "mpwx",
+              "mufg",
+              "multifactor",
+              "municipal",
+              "musical",
+              "mux",
+              "mye",
+              "n",
+              "na",
+              "nasdaq",
+              "nbce",
+              "ne",
+              "nightmare",
+              "no",
+              "nomura",
+              "npo",
+              "number",
+              "nuveen",
+              "o",
+              "oec",
+              "onez",
+              "osg",
+              "ossl",
+              "pa",
+              "pacer",
+              "partners",
+              "pcor",
+              "pdcc",
+              "percentage",
+              "pffa",
+              "pfs",
+              "phelps",
+              "phg",
+              "pjun",
+              "pm",
+              "pmtb",
+              "polen",
+              "porter",
+              "portfolio",
+              "pqnt",
+              "pqv",
+              "pr",
+              "priv",
+              "pu",
+              "pvex",
+              "qqqu",
+              "qspt",
+              "r",
+              "ramsey",
+              "rblx",
+              "re",
+              "redeemable",
+              "redress",
+              "representing",
+              "requiem",
+              "reserves",
+              "residential",
+              "return",
+              "rh",
+              "rivernorthdoubleline",
+              "rjvi",
+              "rowe",
+              "rvi",
+              "s0",
+              "s0aspindle",
+              "saba",
+              "sbcspindle",
+              "sbon",
+              "scene",
+              "select",
+              "shareglobalcumulativegasco2",
+              "shareglobalgasco2",
+              "short",
+              "simplify",
+              "sixd",
+              "ske",
+              "sm",
+              "smith",
+              "solarconschangetwh",
+              "speak",
+              "spinal",
+              "spxx",
+              "sr",
+              "ssl",
+              "stevanato",
+              "stew",
+              "strive",
+              "structured",
+              "stxe",
+              "sunb",
+              "sunlight",
+              "sustainable",
+              "sweden",
+              "switch",
+              "symbol",
+              "taupe",
+              "tc",
+              "tcbx",
+              "tdaq",
+              "tdw",
+              "te",
+              "test",
+              "thou",
+              "title",
+              "tlys",
+              "tomatoes",
+              "tont",
+              "toplevel",
+              "tpr",
+              "travelling",
+              "tsakos",
+              "tslw",
+              "uan",
+              "uavs",
+              "ule",
+              "usa",
+              "usbp",
+              "usrt",
+              "uue",
+              "uvv",
+              "valtoro",
+              "vel",
+              "vtec",
+              "vwo",
+              "wat",
+              "week",
+              "weeklypay",
+              "weight",
+              "wes",
+              "wfcy",
+              "what",
+              "wisdomtree",
+              "wnc",
+              "writers",
+              "xe",
+              "xflhr",
+              "xjun",
+              "xlii",
+              "xlui",
+              "yieldmax",
+              "zinc",
+              "zr",
+              "zvia"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 12
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b9ec5687",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [
+        "n-2363f534"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "2x",
+              "3x",
+              "acei",
+              "acquisition",
+              "acsg",
+              "act",
+              "active",
+              "advantage",
+              "aesg",
+              "aesthetics",
+              "aexa",
+              "affiliation",
+              "afl",
+              "agency",
+              "agility",
+              "agriculture",
+              "also",
+              "among",
+              "analysing",
+              "anglogold",
+              "applicationvndoasisopendocumentbase",
+              "arrived",
+              "artist",
+              "ashford",
+              "asiahongkong",
+              "asic",
+              "author",
+              "azurecommapsmapsmanagement",
+              "azz",
+              "backend",
+              "bancroft",
+              "barrier",
+              "bbva",
+              "bbwi",
+              "bcatv",
+              "beaumont",
+              "bepi",
+              "bessw",
+              "bgsf",
+              "bhk",
+              "bk",
+              "blackrock",
+              "blest",
+              "blonde",
+              "blw",
+              "bndd",
+              "bnl",
+              "bny",
+              "bolt",
+              "bore",
+              "brol",
+              "bti",
+              "buffer",
+              "bullbear",
+              "burned",
+              "cango",
+              "capri",
+              "captions",
+              "capture",
+              "carmax",
+              "castellan",
+              "category",
+              "cboe",
+              "cbox",
+              "cd",
+              "character",
+              "characters",
+              "chemical",
+              "chmi",
+              "cig",
+              "cigc",
+              "cldt",
+              "clean",
+              "cn",
+              "cof",
+              "coix",
+              "color",
+              "colors",
+              "column",
+              "combined",
+              "comes",
+              "comments",
+              "common",
+              "compare",
+              "consecutive",
+              "consumption",
+              "copl",
+              "corporat",
+              "corporate",
+              "corporation",
+              "count",
+              "country",
+              "cowboys",
+              "crayola",
+              "crk",
+              "cu",
+              "cultivation",
+              "cvm",
+              "date",
+              "dead",
+              "deepmind",
+              "depositary",
+              "description",
+              "developed",
+              "dfem",
+              "dialogue",
+              "dimensional",
+              "director",
+              "disgrace",
+              "dlrk",
+              "drab",
+              "drinks",
+              "drivers",
+              "dsx",
+              "due",
+              "dy",
+              "each",
+              "eafe",
+              "ebf",
+              "emf",
+              "equity",
+              "ese",
+              "esgv",
+              "eslv",
+              "essentials",
+              "expectancy",
+              "extension",
+              "fe",
+              "featuring",
+              "febm",
+              "ffox",
+              "fhi",
+              "firstlevel",
+              "fjan",
+              "flgv",
+              "floating",
+              "fmtl",
+              "fool",
+              "foolish",
+              "for",
+              "fpi",
+              "freeport",
+              "fseg",
+              "fuchsia",
+              "fvr",
+              "fxed",
+              "gasconschangepct",
+              "gasprodchangepct",
+              "gd",
+              "gdvk",
+              "geniepoo",
+              "globaltemps",
+              "glw",
+              "goblet",
+              "govm",
+              "gug",
+              "gutenberg",
+              "gvi",
+              "h",
+              "harbor",
+              "harrat",
+              "has",
+              "heatwaves",
+              "hedgeye",
+              "hence",
+              "hex",
+              "hfxi",
+              "his",
+              "housing",
+              "hql",
+              "hs",
+              "hsbc",
+              "hydroconschangepct",
+              "ill",
+              "imdb",
+              "including",
+              "innf",
+              "innovatum",
+              "iqv",
+              "ir",
+              "islands",
+              "israel",
+              "ivov",
+              "ivrc",
+              "iyc",
+              "iyj",
+              "janw",
+              "jennison",
+              "jhac",
+              "jpmorgan",
+              "julp",
+              "junc",
+              "k",
+              "kcsh",
+              "kos",
+              "krefa",
+              "kurv",
+              "lady",
+              "large",
+              "larger",
+              "last",
+              "latr",
+              "leopold",
+              "li",
+              "location",
+              "lowcarbon",
+              "lowcarbonconschangetwh",
+              "lr",
+              "lrgc",
+              "lu",
+              "lvln",
+              "manu",
+              "manufacturer",
+              "maps",
+              "massy",
+              "matv",
+              "md",
+              "mete",
+              "mgy",
+              "mivl",
+              "mktn",
+              "mlp",
+              "morningstar",
+              "mpa",
+              "mpwx",
+              "mufg",
+              "multifactor",
+              "municipal",
+              "musical",
+              "mux",
+              "mye",
+              "n",
+              "na",
+              "nasdaq",
+              "nbce",
+              "ne",
+              "nightmare",
+              "no",
+              "nomura",
+              "npo",
+              "number",
+              "nuveen",
+              "o",
+              "oec",
+              "onez",
+              "osg",
+              "ossl",
+              "pa",
+              "pacer",
+              "partners",
+              "pcor",
+              "pdcc",
+              "percentage",
+              "pffa",
+              "pfs",
+              "phelps",
+              "phg",
+              "pjun",
+              "pm",
+              "pmtb",
+              "polen",
+              "porter",
+              "portfolio",
+              "pqnt",
+              "pqv",
+              "pr",
+              "priv",
+              "pu",
+              "pvex",
+              "qqqu",
+              "qspt",
+              "r",
+              "ramsey",
+              "rblx",
+              "re",
+              "redeemable",
+              "redress",
+              "representing",
+              "requiem",
+              "reserves",
+              "residential",
+              "return",
+              "rh",
+              "rivernorthdoubleline",
+              "rjvi",
+              "rowe",
+              "rvi",
+              "s0",
+              "s0aspindle",
+              "saba",
+              "sbcspindle",
+              "sbon",
+              "scene",
+              "select",
+              "shareglobalcumulativegasco2",
+              "shareglobalgasco2",
+              "short",
+              "simplify",
+              "sixd",
+              "ske",
+              "sm",
+              "smith",
+              "solarconschangetwh",
+              "speak",
+              "spinal",
+              "spxx",
+              "sr",
+              "ssl",
+              "stevanato",
+              "stew",
+              "strive",
+              "structured",
+              "stxe",
+              "sunb",
+              "sunlight",
+              "sustainable",
+              "sweden",
+              "switch",
+              "symbol",
+              "taupe",
+              "tc",
+              "tcbx",
+              "tdaq",
+              "tdw",
+              "te",
+              "test",
+              "thou",
+              "title",
+              "tlys",
+              "tomatoes",
+              "tont",
+              "toplevel",
+              "tpr",
+              "travelling",
+              "tsakos",
+              "tslw",
+              "uan",
+              "uavs",
+              "ule",
+              "usa",
+              "usbp",
+              "usrt",
+              "uue",
+              "uvv",
+              "valtoro",
+              "vel",
+              "vtec",
+              "vwo",
+              "wat",
+              "week",
+              "weeklypay",
+              "weight",
+              "wes",
+              "wfcy",
+              "what",
+              "wisdomtree",
+              "wnc",
+              "writers",
+              "xe",
+              "xflhr",
+              "xjun",
+              "xlii",
+              "xlui",
+              "yieldmax",
+              "zinc",
+              "zr",
+              "zvia"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 1000
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d4fe05bb",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [
+        "n-79d9d093"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "2x",
+              "3x",
+              "acei",
+              "acquisition",
+              "acsg",
+              "act",
+              "active",
+              "advantage",
+              "aesg",
+              "aesthetics",
+              "aexa",
+              "affiliation",
+              "afl",
+              "agency",
+              "agility",
+              "agriculture",
+              "also",
+              "among",
+              "analysing",
+              "anglogold",
+              "applicationvndoasisopendocumentbase",
+              "arrived",
+              "artist",
+              "ashford",
+              "asiahongkong",
+              "asic",
+              "author",
+              "azurecommapsmapsmanagement",
+              "azz",
+              "backend",
+              "bancroft",
+              "barrier",
+              "bbva",
+              "bbwi",
+              "bcatv",
+              "beaumont",
+              "bepi",
+              "bessw",
+              "bgsf",
+              "bhk",
+              "bk",
+              "blackrock",
+              "blest",
+              "blonde",
+              "blw",
+              "bndd",
+              "bnl",
+              "bny",
+              "bolt",
+              "bore",
+              "brol",
+              "bti",
+              "buffer",
+              "bullbear",
+              "burned",
+              "cango",
+              "capri",
+              "captions",
+              "capture",
+              "carmax",
+              "castellan",
+              "category",
+              "cboe",
+              "cbox",
+              "cd",
+              "character",
+              "characters",
+              "chemical",
+              "chmi",
+              "cig",
+              "cigc",
+              "cldt",
+              "clean",
+              "cn",
+              "cof",
+              "coix",
+              "color",
+              "colors",
+              "column",
+              "combined",
+              "comes",
+              "comments",
+              "common",
+              "compare",
+              "consecutive",
+              "consumption",
+              "copl",
+              "corporat",
+              "corporate",
+              "corporation",
+              "count",
+              "country",
+              "cowboys",
+              "crayola",
+              "crk",
+              "cu",
+              "cultivation",
+              "cvm",
+              "date",
+              "dead",
+              "deepmind",
+              "depositary",
+              "description",
+              "developed",
+              "dfem",
+              "dialogue",
+              "dimensional",
+              "director",
+              "disgrace",
+              "dlrk",
+              "drab",
+              "drinks",
+              "drivers",
+              "dsx",
+              "due",
+              "dy",
+              "each",
+              "eafe",
+              "ebf",
+              "emf",
+              "equity",
+              "ese",
+              "esgv",
+              "eslv",
+              "essentials",
+              "expectancy",
+              "extension",
+              "fe",
+              "featuring",
+              "febm",
+              "ffox",
+              "fhi",
+              "firstlevel",
+              "fjan",
+              "flgv",
+              "floating",
+              "fmtl",
+              "fool",
+              "foolish",
+              "for",
+              "fpi",
+              "freeport",
+              "fseg",
+              "fuchsia",
+              "fvr",
+              "fxed",
+              "gasconschangepct",
+              "gasprodchangepct",
+              "gd",
+              "gdvk",
+              "geniepoo",
+              "globaltemps",
+              "glw",
+              "goblet",
+              "govm",
+              "gug",
+              "gutenberg",
+              "gvi",
+              "h",
+              "harbor",
+              "harrat",
+              "has",
+              "heatwaves",
+              "hedgeye",
+              "hence",
+              "hex",
+              "hfxi",
+              "his",
+              "housing",
+              "hql",
+              "hs",
+              "hsbc",
+              "hydroconschangepct",
+              "ill",
+              "imdb",
+              "including",
+              "innf",
+              "innovatum",
+              "iqv",
+              "ir",
+              "islands",
+              "israel",
+              "ivov",
+              "ivrc",
+              "iyc",
+              "iyj",
+              "janw",
+              "jennison",
+              "jhac",
+              "jpmorgan",
+              "julp",
+              "junc",
+              "k",
+              "kcsh",
+              "kos",
+              "krefa",
+              "kurv",
+              "lady",
+              "large",
+              "larger",
+              "last",
+              "latr",
+              "leopold",
+              "li",
+              "location",
+              "lowcarbon",
+              "lowcarbonconschangetwh",
+              "lr",
+              "lrgc",
+              "lu",
+              "lvln",
+              "manu",
+              "manufacturer",
+              "maps",
+              "massy",
+              "matv",
+              "md",
+              "mete",
+              "mgy",
+              "mivl",
+              "mktn",
+              "mlp",
+              "morningstar",
+              "mpa",
+              "mpwx",
+              "mufg",
+              "multifactor",
+              "municipal",
+              "musical",
+              "mux",
+              "mye",
+              "n",
+              "na",
+              "nasdaq",
+              "nbce",
+              "ne",
+              "nightmare",
+              "no",
+              "nomura",
+              "npo",
+              "number",
+              "nuveen",
+              "o",
+              "oec",
+              "onez",
+              "osg",
+              "ossl",
+              "pa",
+              "pacer",
+              "partners",
+              "pcor",
+              "pdcc",
+              "percentage",
+              "pffa",
+              "pfs",
+              "phelps",
+              "phg",
+              "pjun",
+              "pm",
+              "pmtb",
+              "polen",
+              "porter",
+              "portfolio",
+              "pqnt",
+              "pqv",
+              "pr",
+              "priv",
+              "pu",
+              "pvex",
+              "qqqu",
+              "qspt",
+              "r",
+              "ramsey",
+              "rblx",
+              "re",
+              "redeemable",
+              "redress",
+              "representing",
+              "requiem",
+              "reserves",
+              "residential",
+              "return",
+              "rh",
+              "rivernorthdoubleline",
+              "rjvi",
+              "rowe",
+              "rvi",
+              "s0",
+              "s0aspindle",
+              "saba",
+              "sbcspindle",
+              "sbon",
+              "scene",
+              "select",
+              "shareglobalcumulativegasco2",
+              "shareglobalgasco2",
+              "short",
+              "simplify",
+              "sixd",
+              "ske",
+              "sm",
+              "smith",
+              "solarconschangetwh",
+              "speak",
+              "spinal",
+              "spxx",
+              "sr",
+              "ssl",
+              "stevanato",
+              "stew",
+              "strive",
+              "structured",
+              "stxe",
+              "sunb",
+              "sunlight",
+              "sustainable",
+              "sweden",
+              "switch",
+              "symbol",
+              "taupe",
+              "tc",
+              "tcbx",
+              "tdaq",
+              "tdw",
+              "te",
+              "test",
+              "thou",
+              "title",
+              "tlys",
+              "tomatoes",
+              "tont",
+              "toplevel",
+              "tpr",
+              "travelling",
+              "tsakos",
+              "tslw",
+              "uan",
+              "uavs",
+              "ule",
+              "usa",
+              "usbp",
+              "usrt",
+              "uue",
+              "uvv",
+              "valtoro",
+              "vel",
+              "vtec",
+              "vwo",
+              "wat",
+              "week",
+              "weeklypay",
+              "weight",
+              "wes",
+              "wfcy",
+              "what",
+              "wisdomtree",
+              "wnc",
+              "writers",
+              "xe",
+              "xflhr",
+              "xjun",
+              "xlii",
+              "xlui",
+              "yieldmax",
+              "zinc",
+              "zr",
+              "zvia"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 10
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-07c4a23e",
       "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
       "gen": 10,
@@ -3434,6 +7239,225 @@
       "mem": null,
       "height": 3,
       "size": 11,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-15966542",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "co₂"
+          ]
+        ],
+        [
+          "has",
+          "per"
+        ],
+        [
+          "has",
+          "emissions"
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "words>=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "title"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "tonnes of CO₂ equivalents per person (t/person)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5776214d",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "capita"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "annual"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "tonnes per person (t/person)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-71606ba5",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "capita"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "annual"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "tonnes per person (t/person)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
       "fit": {
         "ok": 3,
         "fired": 3,
@@ -3631,6 +7655,91 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 13,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b2c15a78",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "co₂"
+          ]
+        ],
+        [
+          "has",
+          "per"
+        ],
+        [
+          "has",
+          "emissions"
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "words>=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "title"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "tonnes of CO₂ equivalents per person (t/person)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 13,
       "fit": {
         "ok": 3,
@@ -7797,6 +11906,370 @@
       }
     },
     {
+      "id": "n-053530d3",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "co₂"
+          ]
+        ],
+        [
+          "has",
+          "per"
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "words>=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "title"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "tonnes of CO₂ equivalents per person (t/person)"
+          },
+          [
+            "sense.before",
+            {
+              "lit": "emissions"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-258cb6d6",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "share"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cement"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "global"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": 5
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-47409c9a",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "has",
+            "co₂"
+          ]
+        ],
+        [
+          "has",
+          "per"
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "words>=",
+          13
+        ],
+        [
+          "not",
+          [
+            "has",
+            "title"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "tonnes of CO₂ equivalents per person (t/person)"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "emissions"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-673f3686",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "gdp",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "annual"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ad835342",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "gdp",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          },
+          [
+            "sense.before",
+            {
+              "lit": "emissions"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c09cc4e8",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "gdp",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "co₂"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cd0550c9",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "gdp",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "emissions"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 3,
+        "fired": 3,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7d16caf7",
       "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
       "gen": 10,
@@ -8061,6 +12534,630 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-17519001",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "gas",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "global"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 5
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-236b68af",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "gas",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "global"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "%"
+          },
+          {
+            "lit": 4
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2a635c7a",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "gas",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "global"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 4
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-704bb8f4",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "gas"
+        ],
+        [
+          "has",
+          "share"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "global"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "%"
+          },
+          {
+            "lit": 4
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-98a6cd1c",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "gas"
+        ],
+        [
+          "has",
+          "share"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "global"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": 5
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ab5068a2",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "gas"
+        ],
+        [
+          "has",
+          "share"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "global"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": 4
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-adbf337c",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "gas"
+        ],
+        [
+          "has",
+          "share"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "global"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": 4
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c2b930e0",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "annual",
+            "change to",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          },
+          [
+            "sense.unit"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e5c9c8c7",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [
+        "n-c2b930e0"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "artist",
+              "case",
+              "day",
+              "doi",
+              "fin",
+              "for",
+              "greater",
+              "id",
+              "lain",
+              "landusevsyieldchangeincerealproduction",
+              "larger",
+              "lesser",
+              "makes",
+              "regularitemensuelletgvaqst",
+              "release",
+              "scene",
+              "session",
+              "smaller",
+              "sponsors",
+              "symbol",
+              "week"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          },
+          [
+            "sense.unit"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f4f16b7a",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "gas"
+        ],
+        [
+          "has",
+          "share"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "global"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "%"
+          },
+          {
+            "lit": 4
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 2,
@@ -8889,6 +13986,444 @@
       }
     },
     {
+      "id": "n-2efbcd5f",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "from"
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "annual"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "million tonnes (Mt)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-44df517f",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "from"
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "annual"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "million tonnes (Mt)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5e1f92bf",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "gdp"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "unit"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-855a2a10",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "gdp",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute"
+          ]
+        ],
+        [
+          "has",
+          "annual"
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-85e90122",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "capita"
+        ],
+        [
+          "has",
+          "annual"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "is"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          {
+            "lit": "tonnes per person (t/person)"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-985258a9",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "gdp",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-bf28c954",
       "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
       "gen": 10,
@@ -8966,6 +14501,152 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cc9d3e81",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "gdp"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "unit"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fea9542a",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "gdp",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute"
+          ]
+        ],
+        [
+          "has",
+          "annual"
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 13,
       "fit": {
         "ok": 2,
@@ -17560,6 +23241,389 @@
       }
     },
     {
+      "id": "n-1c763aa0",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "gas"
+        ],
+        [
+          "has",
+          "share"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "global"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "%"
+          },
+          {
+            "lit": 4
+          },
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-25d1bbe3",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "gas"
+        ],
+        [
+          "has",
+          "share"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "global"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "sense.lastWord"
+          ],
+          {
+            "lit": 4
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2bca7ecc",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "gas",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "greenhouse"
+        ],
+        [
+          "has",
+          "per"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "tonnes of CO₂ equivalents per person (t/person)"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-345e436a",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "flaring",
+            "fossil",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "title"
+          ]
+        ],
+        [
+          "has",
+          "emissions"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "for"
+          ]
+        ],
+        [
+          "words<=",
+          13
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "million tonnes (Mt)"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "annual"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-34ee56ac",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "cement",
+            "delete",
+            "other",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "capita"
+        ],
+        [
+          "has",
+          "unit"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "tonnes per person (t/person)"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-440ac9f1",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "coal",
+            "delete",
+            "oil",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "co₂"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "global"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "cement"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "gas"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "industry"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "million tonnes (Mt)"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f072365a",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "annual",
+            "leading zeros",
+            "pad",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          },
+          [
+            "sense.howMany"
+          ],
+          [
+            "sense.unit"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-05a1b47c",
       "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
       "gen": 10,
@@ -18567,6 +24631,344 @@
       }
     },
     {
+      "id": "n-0cf3de35",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "contribution",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          {
+            "lit": "%"
+          },
+          {
+            "lit": 5
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-125178dd",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [
+        "n-f06d832d"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "160k",
+              "165km",
+              "3day",
+              "5day",
+              "720s",
+              "80meter",
+              "album",
+              "artist",
+              "asbed",
+              "become",
+              "benitez",
+              "boondock",
+              "buffer",
+              "burkett",
+              "chaininvestment",
+              "characters",
+              "child39s",
+              "clean",
+              "color",
+              "column",
+              "combined",
+              "comments",
+              "common",
+              "compare",
+              "corporat",
+              "crangraphedges",
+              "cubic",
+              "day",
+              "days",
+              "dialogue",
+              "dias",
+              "domain",
+              "don39t",
+              "drought",
+              "e3s0",
+              "e3s013",
+              "e7s017",
+              "eclipsepartial2023",
+              "eclipsepartial2024",
+              "eruption",
+              "fathers",
+              "feet",
+              "flagstaff",
+              "for",
+              "gender",
+              "greater",
+              "gutenberg",
+              "gwint",
+              "holidayepisodegenres",
+              "hour",
+              "i39m",
+              "jarakabande",
+              "jennifer39s",
+              "kass",
+              "kiva",
+              "larger",
+              "lemurdata",
+              "lesser",
+              "madeira",
+              "makes",
+              "many",
+              "mcgovern",
+              "meilen",
+              "mile",
+              "n3",
+              "nhlrosters",
+              "offline",
+              "offset",
+              "outerspaceobjects",
+              "pfwcountsitedatapublic2021",
+              "psychstats",
+              "pululahua",
+              "rated",
+              "region",
+              "s1",
+              "s2004",
+              "s2007",
+              "seconds",
+              "smaller",
+              "stagedata",
+              "stuck",
+              "t",
+              "that39s",
+              "thuringen",
+              "title",
+              "tour",
+              "trapped",
+              "traveler39s",
+              "ultras",
+              "ultratrail",
+              "vodafone",
+              "week",
+              "week13alcoholglobal",
+              "wendell",
+              "whw",
+              "winemagdata130kv2",
+              "world39s",
+              "year",
+              "years"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.unit"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1523e9c6",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "contribution",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 12
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-18fab7bd",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "contribution",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 1000
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1d42caa8",
       "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
       "gen": 10,
@@ -18634,6 +25036,66 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-21842b32",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "contribution",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": 5
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -18784,6 +25246,189 @@
       }
     },
     {
+      "id": "n-4d9868a2",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "contribution",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-57e6f492",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "contribution",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "sense.wordCount"
+          ],
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-684834bc",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "contribution",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": 100
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-6892641e",
       "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
       "gen": 10,
@@ -18843,6 +25488,66 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7278da2d",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "contribution",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": 10
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -19052,6 +25757,129 @@
       }
     },
     {
+      "id": "n-8a4e1228",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "contribution",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 100
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9424f8e1",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "contribution",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": 1000
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-a427062b",
       "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
       "gen": 10,
@@ -19115,6 +25943,129 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b124681c",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "contribution",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "unit"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 10
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-beeff2c0",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "contribution",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": 12
+          },
+          {
+            "lit": "%"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -19387,6 +26338,66 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f06d832d",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "annual",
+            "change to",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.unit"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -23093,6 +30104,298 @@
       }
     },
     {
+      "id": "n-0463481c",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "embedded",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "million tonnes (Mt)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0566c3d3",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "embedded",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "million tonnes (Mt)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-14c926b7",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "cumulative",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "is"
+        ],
+        [
+          "has",
+          "from"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          {
+            "lit": "million tonnes (Mt)"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4398e650",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "embedded",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "million tonnes (Mt)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-542b87ff",
       "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
       "gen": 10,
@@ -23179,6 +30482,580 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-74dd6047",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "gas",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          {
+            "lit": "tonnes of CO₂ equivalents per person (t/person)"
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-765b68f0",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "embedded",
+            "item number",
+            "nth",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "million tonnes (Mt)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8c3021f9",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "land",
+            "nth",
+            "position",
+            "replace",
+            "substitute"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "tonnes of CO₂ equivalents per person (t/person)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8d822032",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "nth",
+            "other",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "capita"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "tonnes per person (t/person)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-907a6a1e",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "embedded",
+            "item number",
+            "nth",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "million tonnes (Mt)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9e2141c5",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "nth",
+            "other",
+            "replace"
+          ]
+        ],
+        [
+          "has",
+          "capita"
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "tonnes per person (t/person)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a20f0d9c",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "embedded",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "million tonnes (Mt)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-adbaf996",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "item number",
+            "land",
+            "nth",
+            "position",
+            "replace",
+            "substitute"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": "tonnes of CO₂ equivalents per person (t/person)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -23367,6 +31244,158 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f8ad2a43",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "cumulative",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "is"
+        ],
+        [
+          "has",
+          "from"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "million tonnes (Mt)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f8fd1466",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "cumulative",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "is"
+        ],
+        [
+          "has",
+          "from"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-nasdaq-listings-nasdaq-listed-84e8f6"
+              },
+              {
+                "lit": "symbol"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": "million tonnes (Mt)"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -32567,6 +40596,248 @@
       }
     },
     {
+      "id": "n-753f5b16",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "embedded",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "unit"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "million tonnes (Mt)"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "emissions"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-81dfd23b",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "annual",
+            "delete",
+            "remove",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "co₂"
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "unit"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "million tonnes (Mt)"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "in"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-92c9bb44",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "embedded",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "unit"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "million tonnes (Mt)"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "co₂"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a49ac603",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "embedded",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "words<=",
+          10
+        ],
+        [
+          "has",
+          "unit"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "million tonnes (Mt)"
+          },
+          [
+            "sense.before",
+            {
+              "lit": "emissions"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e9954b18",
+      "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "gdp",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "consumptionbased"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          {
+            "lit": "kilograms per international-$ (kg/$)"
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7daea9fa",
       "task": "fr-co2-data-owid-co2-codebook-4bc0-ed7594",
       "gen": 10,
@@ -34473,6 +42744,7 @@
   ],
   "stages": [
     "1d180112f8dd7c051e9ee481abaa5115659ab1f04aa6f5da3e31babdf397c9bc",
-    "018e62ac3d31c62a063e745f52e6499f7047e77070e8bfc96ca36c01d775bc22"
+    "018e62ac3d31c62a063e745f52e6499f7047e77070e8bfc96ca36c01d775bc22",
+    "53e709a96736572de1d6bfe769eb6132a829a0e9c209d2561842118b3bccf51b"
   ]
 }
