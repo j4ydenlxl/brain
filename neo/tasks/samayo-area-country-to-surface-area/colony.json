@@ -2,29 +2,29 @@
   "task": "samayo-area-country-to-surface-area",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-19T03:48:26.770Z",
+  "at": "2026-10-22T04:35:08.605Z",
   "stats": {
-    "generated": 160952,
-    "distinct": 101047,
-    "kept": 1433,
-    "know": 405,
+    "generated": 161433,
+    "distinct": 88085,
+    "kept": 1560,
+    "know": 439,
     "byFamily": {
       "memory": 81,
       "transform": 480,
-      "compute": 248,
+      "compute": 375,
       "aggregate": 565,
       "iterate": 6,
       "sense": 53
     },
     "bySource": {
-      "parent": 952,
-      "enum": 481
+      "parent": 1433,
+      "enum": 127
     },
     "maxHeight": 8,
     "devOk": 40,
     "devN": 40,
-    "ms": 234944,
-    "cellsPerSecond": 685,
+    "ms": 201752,
+    "cellsPerSecond": 800,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -34,12 +34,12 @@
     "cursor": {
       "v": 1,
       "basis": "f1da9d8cf4a666e8da67d25937d2df780f285d219dbbc6e0715716f3b29abdf4",
-      "round": 1,
-      "at": 208213,
+      "round": 2,
+      "at": 346461,
       "maxCost": 7,
       "done": false,
       "cost": 7,
-      "prim": "compare.between",
+      "prim": "compute.circleArea",
       "tpl": 1236
     }
   },
@@ -12703,6 +12703,76 @@
       }
     },
     {
+      "id": "n-023da37b",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "changes to turn",
+            "city",
+            "edit distance",
+            "how many edits",
+            "item number",
+            "levenshtein",
+            "nth",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.editDistance",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-03ce3a0d",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -12977,6 +13047,76 @@
               {
                 "lit": 1
               }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1675bca2",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "changes to turn",
+            "edit distance",
+            "futuna",
+            "how many edits",
+            "item number",
+            "levenshtein",
+            "nth",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 12
+          },
+          [
+            "compute.editDistance",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
             ]
           ]
         ]
@@ -14061,6 +14201,75 @@
       }
     },
     {
+      "id": "n-4df59967",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "at which position",
+            "futuna",
+            "index of",
+            "item number",
+            "nth",
+            "percent is",
+            "position of",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 2
+          },
+          [
+            "aggregate.indexOf",
+            [
+              "sense.text"
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-4ff4c817",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -14341,6 +14550,76 @@
       }
     },
     {
+      "id": "n-5f4c8419",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "changes to turn",
+            "edit distance",
+            "futuna",
+            "how many edits",
+            "item number",
+            "levenshtein",
+            "nth",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.editDistance",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-62c09e3f",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -14537,6 +14816,76 @@
             {
               "lit": 12
             },
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-87e00cc6",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "changes to turn",
+            "edit distance",
+            "futuna",
+            "how many edits",
+            "item number",
+            "levenshtein",
+            "nth",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 12
+          },
+          [
+            "compute.editDistance",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
             [
               "sense.lastWord"
             ]
@@ -15170,6 +15519,72 @@
       }
     },
     {
+      "id": "n-c3d86aef",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "changes to turn",
+            "edit distance",
+            "futuna",
+            "how many edits",
+            "item number",
+            "levenshtein",
+            "nth",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.editDistance",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-c4aff148",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -15370,6 +15785,72 @@
               "lit": 10
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cb10ccf8",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "city",
+            "hamming distance",
+            "how many positions differ",
+            "item number",
+            "nth",
+            "percent is",
+            "position",
+            "positions that differ",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.hamming",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          {
+            "lit": 1000
+          }
         ]
       ],
       "mem": null,
@@ -15868,6 +16349,76 @@
       }
     },
     {
+      "id": "n-e649f9c0",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "changes to turn",
+            "edit distance",
+            "futuna",
+            "how many edits",
+            "item number",
+            "levenshtein",
+            "nth",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.editDistance",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ],
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ed5d4870",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -15926,6 +16477,72 @@
             {
               "lit": 12
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f6e1af61",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "changes to turn",
+            "edit distance",
+            "futuna",
+            "how many edits",
+            "item number",
+            "levenshtein",
+            "nth",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 12
+          },
+          [
+            "compute.editDistance",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
           ]
         ]
       ],
@@ -18303,6 +18920,164 @@
       }
     },
     {
+      "id": "n-09e39739",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "combinations",
+            "gibraltar",
+            "how many vowels",
+            "item number",
+            "n choose k",
+            "nth",
+            "number of vowels",
+            "vowel count",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "aggregate.vowels",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0f02d8bd",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "element",
+            "futuna",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "percent is",
+            "position",
+            "what percent",
+            "what percentage",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 2
+          },
+          [
+            "aggregate.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-coastline-5656a1"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-coastline-5656a1"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "coastline"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-0f46709d",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -18934,6 +19709,84 @@
       }
     },
     {
+      "id": "n-278a6235",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "aggregate.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": -1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-27edef8b",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -19005,6 +19858,82 @@
       ],
       "mem": null,
       "height": 7,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-282a6b33",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "consonant count",
+            "gibraltar",
+            "how many consonants",
+            "item number",
+            "n choose k",
+            "nth",
+            "number of consonants",
+            "position",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "aggregate.consonants",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ],
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -19478,6 +20407,88 @@
       ],
       "mem": null,
       "height": 7,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-415e4fb3",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "character count",
+            "choose",
+            "combinations",
+            "element",
+            "gibraltar",
+            "how many characters",
+            "item number",
+            "length",
+            "n choose k",
+            "nth",
+            "number of characters",
+            "position",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 4
+          },
+          [
+            "aggregate.chars",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-coastline-5656a1"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-coastline-5656a1"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "coastline"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -20109,6 +21120,86 @@
       }
     },
     {
+      "id": "n-5f9e1890",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "consonant count",
+            "element",
+            "futuna",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "percent is",
+            "position",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "aggregate.consonants",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "abbreviation"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-613ecc8e",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -20177,6 +21268,168 @@
               }
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-64deb129",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "element",
+            "futuna",
+            "how many lines",
+            "item number",
+            "line count",
+            "lines of code",
+            "nth",
+            "number of lines",
+            "percent is",
+            "position",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 2
+          },
+          [
+            "aggregate.lines",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-coastline-5656a1"
+                  },
+                  {
+                    "lit": "country"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-coastline-5656a1"
+              },
+              {
+                "lit": "country"
+              },
+              {
+                "lit": "coastline"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-65186617",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "city",
+            "consonant count",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "aggregate.consonants",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                  },
+                  {
+                    "lit": "abbreviation"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+              },
+              {
+                "lit": "abbreviation"
+              },
+              {
+                "lit": "country"
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
         ]
       ],
       "mem": null,
@@ -20745,6 +21998,80 @@
       }
     },
     {
+      "id": "n-89227947",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "how many vowels",
+            "item number",
+            "nth",
+            "number of vowels",
+            "percent is",
+            "vowel count",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 10
+          },
+          [
+            "aggregate.vowels",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": 2
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-8c45812e",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -21204,6 +22531,84 @@
       }
     },
     {
+      "id": "n-9d6f98db",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "consonant count",
+            "futuna",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "aggregate.consonants",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ],
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-9ec8c598",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -21354,6 +22759,84 @@
       ],
       "mem": null,
       "height": 7,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a749aa11",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "how many words",
+            "item number",
+            "nth",
+            "number of words",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "aggregate.words",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": -1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
       "size": 13,
       "fit": {
         "ok": 1,
@@ -22700,6 +24183,84 @@
       }
     },
     {
+      "id": "n-eb564f02",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "consonant count",
+            "futuna",
+            "how many consonants",
+            "item number",
+            "nth",
+            "number of consonants",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 12
+          },
+          [
+            "aggregate.consonants",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "crypto-tickers"
+                  },
+                  {
+                    "lit": "crypto ticker"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              },
+              {
+                "lit": "cryptocurrency"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ed6607ce",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -23739,6 +25300,87 @@
       }
     },
     {
+      "id": "n-1e5847c7",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "hamming distance",
+            "how many positions differ",
+            "item number",
+            "nth",
+            "percent is",
+            "positions that differ",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.hamming",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1e966e49",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -23980,6 +25622,83 @@
       ],
       "mem": null,
       "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-25b5e40f",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "hamming distance",
+            "how many positions differ",
+            "item number",
+            "nth",
+            "percent is",
+            "positions that differ",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "compute.hamming",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 14,
       "fit": {
         "ok": 1,
@@ -24232,6 +25951,90 @@
       ],
       "mem": null,
       "height": 6,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2d994f75",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "element",
+            "gibraltar",
+            "half",
+            "half of",
+            "halve",
+            "item number",
+            "n choose k",
+            "nth",
+            "position",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "transform.half",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-country-json-country-by-coastline-5656a1"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-country-json-country-by-coastline-5656a1"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "coastline"
+                }
+              ]
+            ]
+          ],
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
       "size": 14,
       "fit": {
         "ok": 1,
@@ -24737,6 +26540,172 @@
       }
     },
     {
+      "id": "n-50d54a67",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "changes to turn",
+            "city",
+            "edit distance",
+            "how many edits",
+            "item number",
+            "levenshtein",
+            "nth",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.editDistance",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-53380e0a",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "divisor count",
+            "element",
+            "futuna",
+            "how many divisors",
+            "how many factors",
+            "item number",
+            "nth",
+            "number of divisors",
+            "percent is",
+            "position",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.divisorCount",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-country-json-country-by-coastline-5656a1"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-country-json-country-by-coastline-5656a1"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "coastline"
+                }
+              ]
+            ]
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-58246f4a",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -25050,6 +27019,168 @@
               "sense.text"
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6922658f",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "at which position",
+            "futuna",
+            "index of",
+            "item number",
+            "nth",
+            "percent is",
+            "position of",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 2
+          },
+          [
+            "aggregate.indexOf",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7393804d",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "area",
+            "as a percentage",
+            "changes to turn",
+            "edit distance",
+            "how many edits",
+            "item number",
+            "levenshtein",
+            "nth",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "holy"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.editDistance",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 2
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                },
+                {
+                  "lit": "abbreviation"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
         ]
       ],
       "mem": null,
@@ -25386,6 +27517,91 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-82e12bd5",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "divisor count",
+            "element",
+            "gibraltar",
+            "how many divisors",
+            "how many factors",
+            "item number",
+            "n choose k",
+            "nth",
+            "number of divisors",
+            "position",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "compute.divisorCount",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-country-json-country-by-coastline-5656a1"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-country-json-country-by-coastline-5656a1"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "coastline"
+                }
+              ]
+            ]
+          ],
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
       "size": 14,
       "fit": {
         "ok": 1,
@@ -25738,6 +27954,90 @@
       }
     },
     {
+      "id": "n-925991d7",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "divisor count",
+            "element",
+            "futuna",
+            "how many divisors",
+            "how many factors",
+            "item number",
+            "nth",
+            "number of divisors",
+            "percent is",
+            "position",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "compute.divisorCount",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-country-json-country-by-coastline-5656a1"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-country-json-country-by-coastline-5656a1"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "coastline"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-9431d0c4",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -26068,6 +28368,91 @@
       }
     },
     {
+      "id": "n-b54480cb",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "changes to turn",
+            "city",
+            "edit distance",
+            "how many edits",
+            "item number",
+            "levenshtein",
+            "nth",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.editDistance",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-country-json-country-by-abbreviation-ee1a32"
+                },
+                {
+                  "lit": "abbreviation"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-b70202d3",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -26312,6 +28697,90 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c3732f22",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "digit count",
+            "element",
+            "gibraltar",
+            "how many digits",
+            "item number",
+            "n choose k",
+            "nth",
+            "number of digits",
+            "position",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 4
+          },
+          [
+            "aggregate.digitCount",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-country-json-country-by-coastline-5656a1"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-country-json-country-by-coastline-5656a1"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "coastline"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
       "size": 14,
       "fit": {
         "ok": 1,
@@ -26566,6 +29035,90 @@
       }
     },
     {
+      "id": "n-da8eb54a",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "element",
+            "gibraltar",
+            "half",
+            "half of",
+            "halve",
+            "item number",
+            "n choose k",
+            "nth",
+            "position",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "transform.half",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-country-json-country-by-coastline-5656a1"
+                    },
+                    {
+                      "lit": "country"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-country-json-country-by-coastline-5656a1"
+                },
+                {
+                  "lit": "country"
+                },
+                {
+                  "lit": "coastline"
+                }
+              ]
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-dd9b5496",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -26805,6 +29358,88 @@
       ],
       "mem": null,
       "height": 7,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f7c25fd2",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "changes to turn",
+            "city",
+            "edit distance",
+            "how many edits",
+            "item number",
+            "levenshtein",
+            "nth",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.editDistance",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 14,
       "fit": {
         "ok": 1,
@@ -57139,6 +59774,164 @@
       }
     },
     {
+      "id": "n-01e44f79",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-01eed4a5",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "combinations",
+            "n choose k",
+            "seychelles",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "compute.choose",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-03fb5dd0",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "added to",
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.add",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ],
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-070b91fc",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -57230,6 +60023,113 @@
             ],
             {
               "lit": 100
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-08c5f0aa",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "log base",
+            "logarithm",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 3
+          },
+          [
+            "compute.log",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-09127e1c",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "transform.sub",
+            {
+              "lit": 10
             },
             [
               "sense.wordCount"
@@ -57404,6 +60304,113 @@
       }
     },
     {
+      "id": "n-0e903212",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "city",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "compute.asPercent",
+            {
+              "lit": 100
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1115551e",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "as a percentage",
+            "city",
+            "percent is",
+            "reduced by",
+            "sale price",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.discount",
+            {
+              "lit": 5
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-113dd32d",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -57443,6 +60450,62 @@
               "lit": 3
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-121f5aca",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "left over",
+            "mod",
+            "modulo",
+            "percent is",
+            "remainder",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.mod",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
+          ],
+          {
+            "lit": 1
+          }
         ]
       ],
       "mem": null,
@@ -57561,6 +60624,54 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-177aaa66",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "combinations",
+            "n choose k",
+            "seychelles",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "compute.choose",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 4
+            }
+          ],
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -57688,6 +60799,62 @@
       }
     },
     {
+      "id": "n-19320c9c",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "growth rate",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.percentChange",
+            {
+              "lit": 10
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 10
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-1b17afb5",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -57731,6 +60898,58 @@
               "sense.wordCount"
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1b8f2329",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "character count",
+            "futuna",
+            "how many characters",
+            "length",
+            "number of characters",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "aggregate.chars",
+            [
+              "sense.before",
+              {
+                "lit": "surface"
+              }
+            ]
+          ],
+          {
+            "lit": 4
+          }
         ]
       ],
       "mem": null,
@@ -57896,6 +61115,171 @@
       }
     },
     {
+      "id": "n-206a6a00",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "left over",
+            "mod",
+            "modulo",
+            "percent is",
+            "remainder",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.mod",
+            {
+              "lit": 10
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-20717d67",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "left over",
+            "mod",
+            "modulo",
+            "percent is",
+            "remainder",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.mod",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 10
+            }
+          ],
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-20b5345a",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "city",
+            "percent is",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "transform.sub",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1000
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-231ee288",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -57940,6 +61324,59 @@
       ],
       "mem": null,
       "height": 2,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-23d3771c",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.sub",
+            {
+              "lit": 10
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -58432,6 +61869,59 @@
       }
     },
     {
+      "id": "n-30cc3108",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 12
+          },
+          [
+            "transform.sub",
+            {
+              "lit": 2
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-355af8f4",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -58481,6 +61971,113 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-35cff3c2",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "binomial coefficient",
+            "city",
+            "combinations",
+            "n choose k",
+            "percent is",
+            "ways to choose",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 2
+          },
+          [
+            "compute.choose",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-37a7cc74",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "consonant count",
+            "futuna",
+            "how many consonants",
+            "number of consonants",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "aggregate.consonants",
+            [
+              "sense.before",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -58596,6 +62193,113 @@
       }
     },
     {
+      "id": "n-38d541ff",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "transform.idiv",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-38e361ca",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "city",
+            "how many words",
+            "number of words",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "word count"
+          ]
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "aggregate.words",
+            [
+              "sense.before",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-3abf3f40",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -58633,6 +62337,63 @@
               "sense.wordCount"
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3afa9a9f",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 1
+          }
         ]
       ],
       "mem": null,
@@ -58745,6 +62506,227 @@
               "lit": 5
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-48759eba",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "left over",
+            "mod",
+            "modulo",
+            "percent is",
+            "remainder",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.mod",
+            {
+              "lit": 12
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4879b80b",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "left over",
+            "mod",
+            "modulo",
+            "percent is",
+            "remainder",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "transform.mod",
+            {
+              "lit": 10
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4a561d70",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "transform.sub",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 10
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4bebce55",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.idiv",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
+          ],
+          {
+            "lit": 1
+          }
         ]
       ],
       "mem": null,
@@ -59034,6 +63016,59 @@
       }
     },
     {
+      "id": "n-4ee766c7",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.sub",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-4f7434f7",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -59193,6 +63228,62 @@
       }
     },
     {
+      "id": "n-51ec4daa",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 2
+          },
+          [
+            "transform.idiv",
+            {
+              "lit": 12
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-529bfb91",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -59230,6 +63321,109 @@
             {
               "lit": 2
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-53d41375",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "how many words",
+            "number of words",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-573bdd2c",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "character count",
+            "futuna",
+            "how many characters",
+            "length",
+            "number of characters",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "aggregate.chars",
+            [
+              "sense.before",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          [
+            "sense.wordCount"
           ]
         ]
       ],
@@ -59296,6 +63490,170 @@
       }
     },
     {
+      "id": "n-5815350f",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "left over",
+            "mod",
+            "modulo",
+            "percent is",
+            "remainder",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "transform.mod",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-59e557ed",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "combinations",
+            "gibraltar",
+            "left over",
+            "mod",
+            "modulo",
+            "n choose k",
+            "remainder",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 4
+          },
+          [
+            "transform.mod",
+            {
+              "lit": 100
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5a546286",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "left over",
+            "mod",
+            "modulo",
+            "percent is",
+            "remainder",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.mod",
+            {
+              "lit": 12
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-5b2c99b6",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -59334,6 +63692,63 @@
               "lit": 3
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5c9661c9",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1000
+            }
+          ],
+          {
+            "lit": 4
+          }
         ]
       ],
       "mem": null,
@@ -59398,6 +63813,167 @@
       }
     },
     {
+      "id": "n-61fe2acf",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "gibraltar",
+            "log base",
+            "logarithm",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.log",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 100
+            }
+          ],
+          [
+            "sense.wordCount"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-651695b6",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "how many vowels",
+            "number of vowels",
+            "percent is",
+            "vowel count",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "aggregate.vowels",
+            [
+              "sense.after",
+              {
+                "lit": "surface"
+              }
+            ]
+          ],
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-655a7077",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "transform.idiv",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-679d5960",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -59432,6 +64008,62 @@
             },
             {
               "lit": 5
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6861f3e7",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "city",
+            "growth rate",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 2
+          },
+          [
+            "compute.percentChange",
+            {
+              "lit": 2
             },
             [
               "sense.wordCount"
@@ -59492,6 +64124,62 @@
               "lit": 4
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-69ec504e",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.idiv",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 2
+          }
         ]
       ],
       "mem": null,
@@ -59774,6 +64462,54 @@
       }
     },
     {
+      "id": "n-6ef8e3d6",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "gibraltar",
+            "how many words",
+            "n choose k",
+            "number of words",
+            "ways to choose",
+            "word count"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 4
+          },
+          [
+            "aggregate.words",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-733a8cd7",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -59818,6 +64554,168 @@
       ],
       "mem": null,
       "height": 2,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7352cd05",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "left over",
+            "mod",
+            "modulo",
+            "percent is",
+            "remainder",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.mod",
+            {
+              "lit": 100
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-739f92fe",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "character count",
+            "city",
+            "how many characters",
+            "number of characters",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "aggregate.chars",
+            [
+              "sense.before",
+              {
+                "lit": "is"
+              }
+            ]
+          ],
+          {
+            "lit": 1000
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-74ae9260",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "combinations",
+            "n choose k",
+            "seychelles",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "compute.choose",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 4
+            }
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -59881,6 +64779,59 @@
       }
     },
     {
+      "id": "n-784f9099",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 10
+          },
+          [
+            "transform.sub",
+            {
+              "lit": 3
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-78d747ff",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -59917,6 +64868,57 @@
             {
               "lit": 2
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-79955866",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "consonant count",
+            "futuna",
+            "how many consonants",
+            "number of consonants",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "sense.before",
+              {
+                "lit": "surface"
+              }
+            ]
           ]
         ]
       ],
@@ -60096,6 +65098,114 @@
       }
     },
     {
+      "id": "n-7c334f6c",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "cube root",
+            "futuna",
+            "nth root",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.root",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7cd13a77",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "subtract",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.sub",
+            {
+              "lit": 4
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7dadc8b5",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -60196,6 +65306,222 @@
       }
     },
     {
+      "id": "n-801f63cd",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-82e0119b",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.sub",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8319af62",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 12
+          },
+          [
+            "transform.sub",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-837f9869",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.sub",
+            {
+              "lit": 12
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-8587b00e",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -60240,6 +65566,113 @@
       ],
       "mem": null,
       "height": 2,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-85cfb35c",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "how many words",
+            "number of words",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "aggregate.words",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-86351f46",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "city",
+            "growth rate",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 1
+          },
+          [
+            "compute.percentChange",
+            {
+              "lit": 3
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -60403,6 +65836,172 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8cba919b",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "cube root",
+            "futuna",
+            "nth root",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "compute.root",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8d9226a7",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "left over",
+            "mod",
+            "modulo",
+            "percent is",
+            "remainder",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.mod",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ],
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8e8a2120",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "left over",
+            "mod",
+            "modulo",
+            "percent is",
+            "remainder",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.mod",
+            {
+              "lit": 100
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -60691,6 +66290,222 @@
       }
     },
     {
+      "id": "n-93d4e973",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "cocos",
+            "cube root",
+            "nth root",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.root",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 4
+            }
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-94fa88f1",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "city",
+            "growth rate",
+            "percent change",
+            "percent decrease",
+            "percent increase",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 3
+          },
+          [
+            "compute.percentChange",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 100
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-951e95b2",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "quotient",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "transform.div",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-971a8ffa",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 10
+          },
+          [
+            "transform.sub",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-977f404d",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -60777,6 +66592,116 @@
             },
             [
               "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9aa3fae1",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "percent is",
+            "pitcairn",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "is"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "compute.asPercent",
+            {
+              "lit": 1
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9b3c97e8",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "how many words",
+            "number of words",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 10
+          },
+          [
+            "aggregate.words",
+            [
+              "sense.after",
+              {
+                "lit": "surface"
+              }
             ]
           ]
         ]
@@ -60891,6 +66816,167 @@
               "lit": 100
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9ff377fc",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.sub",
+            {
+              "lit": 12
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a07c8d52",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "consonant count",
+            "futuna",
+            "how many consonants",
+            "number of consonants",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "aggregate.consonants",
+            [
+              "sense.after",
+              {
+                "lit": "area"
+              }
+            ]
+          ],
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a1188057",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 4
+            }
+          ],
+          {
+            "lit": 2
+          }
         ]
       ],
       "mem": null,
@@ -61327,6 +67413,124 @@
       }
     },
     {
+      "id": "n-a87114a2",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "area of a triangle",
+            "as a percentage",
+            "half base times height",
+            "percent is",
+            "pitcairn",
+            "triangle area",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "is"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "and"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 12
+          },
+          [
+            "compute.triangleArea",
+            [
+              "sense.wordCount"
+            ],
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-aa644d70",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.idiv",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 4
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ac687695",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -61553,6 +67757,169 @@
       }
     },
     {
+      "id": "n-b5ab8b19",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "city",
+            "least common multiple",
+            "lowest common multiple",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "compute.lcm",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 100
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b9c905af",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "gibraltar",
+            "n choose k",
+            "subtract",
+            "take away",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 4
+          },
+          [
+            "transform.sub",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bac21593",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "least common multiple",
+            "lowest common multiple",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.lcm",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-bbac4914",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -61595,6 +67962,62 @@
             {
               "lit": 12
             }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-beb49c63",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 2
+          },
+          [
+            "transform.idiv",
+            {
+              "lit": 10
+            },
+            [
+              "sense.wordCount"
+            ]
           ]
         ]
       ],
@@ -61696,6 +68119,54 @@
               "lit": 4
             }
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c20c1ad9",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "combinations",
+            "n choose k",
+            "seychelles",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "compute.choose",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 12
+          }
         ]
       ],
       "mem": null,
@@ -61925,6 +68396,224 @@
       }
     },
     {
+      "id": "n-c51ac6d2",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "gibraltar",
+            "multiplied by",
+            "percent is",
+            "product of",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 5
+          },
+          [
+            "transform.mul",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c5e037cf",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.sub",
+            {
+              "lit": 4
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 2
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c75c24e1",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c92a6445",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "least common multiple",
+            "lowest common multiple",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "compute.lcm",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 4
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-cccd2b69",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -62091,6 +68780,113 @@
       }
     },
     {
+      "id": "n-cd095993",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "combinations",
+            "gibraltar",
+            "left over",
+            "mod",
+            "modulo",
+            "n choose k",
+            "remainder",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "transform.mod",
+            {
+              "lit": 1000
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cd41fa12",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "area of a triangle",
+            "binomial coefficient",
+            "combinations",
+            "half base times height",
+            "n choose k",
+            "seychelles",
+            "triangle area",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "compute.triangleArea",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 5
+            }
+          ],
+          {
+            "lit": 12
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-ce1c69b1",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -62144,6 +68940,114 @@
       }
     },
     {
+      "id": "n-ceb43d3e",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "consonant count",
+            "futuna",
+            "how many consonants",
+            "number of consonants",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "aggregate.consonants",
+            [
+              "sense.wordAt",
+              {
+                "lit": 3
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d02c48fc",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "added to",
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.add",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d0bcaa72",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -62182,6 +69086,62 @@
                 "lit": "surface"
               }
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d14c2073",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arrangements",
+            "as a percentage",
+            "city",
+            "ordered selections",
+            "percent is",
+            "permutations",
+            "ways to arrange",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "compute.permutations",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
           ]
         ]
       ],
@@ -62311,6 +69271,61 @@
       }
     },
     {
+      "id": "n-d3905779",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "after a discount",
+            "as a percentage",
+            "city",
+            "percent is",
+            "reduced by",
+            "sale price",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "compute.discount",
+            {
+              "lit": 1000
+            },
+            [
+              "sense.wordCount"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d5dd1e9d",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -62418,6 +69433,60 @@
       }
     },
     {
+      "id": "n-d93779eb",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "subtract",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.sub",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 4
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-dc8c0e78",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -62467,6 +69536,62 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-dd80bcb8",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "combinations",
+            "gibraltar",
+            "left over",
+            "mod",
+            "modulo",
+            "n choose k",
+            "remainder",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 4
+          },
+          [
+            "transform.mod",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 5
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -62572,6 +69697,172 @@
       ],
       "mem": null,
       "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e1e8382b",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "gibraltar",
+            "least common multiple",
+            "lowest common multiple",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 5
+          },
+          [
+            "compute.lcm",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 12
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e45fbc79",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "choose",
+            "combinations",
+            "gibraltar",
+            "left over",
+            "mod",
+            "modulo",
+            "n choose k",
+            "remainder",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "transform.mod",
+            {
+              "lit": 1000
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 5
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e4f5206f",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "city",
+            "hypotenuse",
+            "percent is",
+            "pythagoras",
+            "pythagorean",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 4
+          },
+          [
+            "compute.hypot",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 1000
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -62743,6 +70034,59 @@
       }
     },
     {
+      "id": "n-e7f0dc4f",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "percent is",
+            "take away",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.sub",
+            {
+              "lit": 2
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 3
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-e889914f",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -62836,6 +70180,119 @@
       ],
       "mem": null,
       "height": 2,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ed934c74",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "transform.idiv",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ede99955",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "gcf",
+            "greatest common divisor",
+            "greatest common factor",
+            "hcf",
+            "highest common factor",
+            "percent is",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          {
+            "lit": 2
+          },
+          [
+            "compute.gcd",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -63119,6 +70576,62 @@
       }
     },
     {
+      "id": "n-f0826f87",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "binomial coefficient",
+            "combinations",
+            "gibraltar",
+            "goes into",
+            "how many whole times",
+            "integer division",
+            "n choose k",
+            "ways to choose",
+            "whole division"
+          ]
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          {
+            "lit": 4
+          },
+          [
+            "transform.idiv",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-f37c2e98",
       "task": "samayo-area-country-to-surface-area",
       "gen": 10,
@@ -63158,6 +70671,165 @@
               "sense.lastWord"
             ]
           ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f815c6f5",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "city",
+            "percent is",
+            "quotient",
+            "what percent",
+            "what percentage"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ],
+        [
+          "words<=",
+          11
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "transform.div",
+            {
+              "lit": 4
+            },
+            [
+              "sense.wordCount"
+            ]
+          ],
+          {
+            "lit": 100
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-fa25a20b",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "as a percentage",
+            "futuna",
+            "how many words",
+            "number of words",
+            "percent is",
+            "what percent",
+            "what percentage",
+            "word count"
+          ]
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.asPercent",
+          [
+            "sense.wordCount"
+          ],
+          [
+            "aggregate.words",
+            [
+              "sense.before",
+              {
+                "lit": "of"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-faf56555",
+      "task": "samayo-area-country-to-surface-area",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "area of a triangle",
+            "binomial coefficient",
+            "combinations",
+            "half base times height",
+            "n choose k",
+            "seychelles",
+            "triangle area",
+            "ways to choose"
+          ]
+        ],
+        [
+          "has",
+          "surface"
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "compute.triangleArea",
+            [
+              "sense.wordCount"
+            ],
+            {
+              "lit": 5
+            }
+          ],
+          {
+            "lit": 3
+          }
         ]
       ],
       "mem": null,
@@ -85249,6 +92921,7 @@
   ],
   "stages": [
     "9ed16bb86edc423cad8ad3758b38dd2c579a00ddf0a4880f36d6e2b98605dc9b",
-    "766b966eb48041b8f2d3501993627172c38183f7db1645a3658fb8cc79e88300"
+    "766b966eb48041b8f2d3501993627172c38183f7db1645a3658fb8cc79e88300",
+    "02b66fe4eb8e5ce60431b523a7d34d3bc6c5a43610b85f9bf6787366f94d0d20"
   ]
 }
