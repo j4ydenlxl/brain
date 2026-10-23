@@ -2,23 +2,25 @@
   "task": "price-of-date-b0fc-sum",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-22T23:03:27.643Z",
+  "at": "2026-10-23T02:56:01.501Z",
   "stats": {
-    "generated": 200203,
-    "distinct": 69820,
-    "kept": 104,
-    "know": 0,
+    "generated": 84248,
+    "distinct": 98898,
+    "kept": 105,
+    "know": 1,
     "byFamily": {
-      "memory": 104
+      "memory": 104,
+      "compute": 1
     },
     "bySource": {
-      "parent": 104
+      "parent": 104,
+      "open": 1
     },
-    "maxHeight": 3,
+    "maxHeight": 7,
     "devOk": 100,
     "devN": 100,
-    "ms": 105373,
-    "cellsPerSecond": 1900,
+    "ms": 59723,
+    "cellsPerSecond": 1411,
     "capped": "ms",
     "packs": [
       "fr-oil-prices-brent-monthly-37eb4a"
@@ -26,12 +28,12 @@
     "cursor": {
       "v": 1,
       "basis": "e4bb48f6c39c99db495f2a3607322b049d20424fcee93095c1920ac5061f01f6",
-      "round": 0,
-      "at": 48763,
+      "round": 1,
+      "at": 75005,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "aggregate.sum",
+      "prim": "transform.add",
       "tpl": 2706
     }
   },
@@ -504,6 +506,110 @@
       "fit": {
         "ok": 34,
         "fired": 34,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-a1696066",
+      "task": "price-of-date-b0fc-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "20040715",
+              "20040815",
+              "20230915",
+              "greater",
+              "larger",
+              "lesser",
+              "makes",
+              "smaller"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "compute.choose",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-oil-prices-brent-monthly-37eb4a"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-oil-prices-brent-monthly-37eb4a"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-oil-prices-brent-monthly-37eb4a"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-oil-prices-brent-monthly-37eb4a"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "price"
+                }
+              ]
+            ]
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 24,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
         "rows": 100
       }
     },
@@ -4250,6 +4356,7 @@
     "4a45229b02f2db0228695ce2d83a29782bf41845cb7fc89a4aa24ac90b44174a",
     "2a500a554d09e5b8a8e8db0f8e1386cf1755a8306103aa23ba178fc3ab7a6c74",
     "2143c8d80ba88be666f69dff5168ced2e5aef80508fa6c91b869218752bb02bf",
-    "fe0be05bfe3e4bc3eda0e4a9ddebdc1cf8b18d7210ef77731bc0b31b1414aa2d"
+    "fe0be05bfe3e4bc3eda0e4a9ddebdc1cf8b18d7210ef77731bc0b31b1414aa2d",
+    "8f16b0a69d206fb906544b080a269f4f4e87b06f360db55bf18bf1dd5b8dfd72"
   ]
 }
