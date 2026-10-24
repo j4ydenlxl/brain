@@ -2,24 +2,26 @@
   "task": "sp500-of-date-6a9e-sum",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-22T23:08:31.278Z",
+  "at": "2026-10-24T01:07:58.674Z",
   "stats": {
-    "generated": 23870,
-    "distinct": 87326,
-    "kept": 106,
-    "know": 2,
+    "generated": 120187,
+    "distinct": 143364,
+    "kept": 108,
+    "know": 4,
     "byFamily": {
       "memory": 104,
-      "compute": 2
+      "compute": 4
     },
     "bySource": {
-      "parent": 106
+      "parent": 105,
+      "open": 2,
+      "enum": 1
     },
     "maxHeight": 7,
     "devOk": 100,
     "devN": 100,
-    "ms": 48005,
-    "cellsPerSecond": 497,
+    "ms": 45211,
+    "cellsPerSecond": 2658,
     "capped": "ms",
     "packs": [
       "fr-s-and-p-500-data-97f0ea"
@@ -27,12 +29,12 @@
     "cursor": {
       "v": 1,
       "basis": "eea6476cc127dccac91a5291a9e7df240baa421952ce0262d9adcc624bed3752",
-      "round": 4,
-      "at": 228378,
+      "round": 5,
+      "at": 301001,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "compute.compound",
+      "prim": "compute.log",
       "tpl": 2970
     }
   },
@@ -509,6 +511,110 @@
       }
     },
     {
+      "id": "n-1efe34ad",
+      "task": "sp500-of-date-6a9e-sum",
+      "gen": 10,
+      "parents": [
+        "n-63974c0f"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "19790601",
+              "angeles",
+              "compare",
+              "greater",
+              "larger",
+              "lesser",
+              "national",
+              "smaller",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.listNums",
+        [
+          "compute.primeFactors",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-s-and-p-500-data-97f0ea"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-s-and-p-500-data-97f0ea"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "sp500"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-s-and-p-500-data-97f0ea"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-s-and-p-500-data-97f0ea"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "sp500"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 23,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-63974c0f",
       "task": "sp500-of-date-6a9e-sum",
       "gen": 10,
@@ -615,11 +721,11 @@
       }
     },
     {
-      "id": "n-f7195234",
+      "id": "n-3324204b",
       "task": "sp500-of-date-6a9e-sum",
       "gen": 10,
       "parents": [
-        "n-63974c0f"
+        "n-456b02d2"
       ],
       "guard": [
         [
@@ -630,7 +736,7 @@
               "19790601",
               "angeles",
               "compare",
-              "cpi",
+              "greater",
               "larger",
               "lesser",
               "national",
@@ -641,9 +747,9 @@
         ]
       ],
       "pyramid": [
-        "render.listNums",
+        "render.str",
         [
-          "compute.primeFactors",
+          "compute.fraction",
           [
             "transform.add",
             [
@@ -706,12 +812,123 @@
                 }
               ]
             ]
+          ],
+          [
+            "sense.last"
           ]
         ]
       ],
       "mem": null,
       "height": 7,
-      "size": 23,
+      "size": 24,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-456b02d2",
+      "task": "sp500-of-date-6a9e-sum",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "added to",
+            "element",
+            "item number",
+            "lowest terms",
+            "more than",
+            "nth",
+            "plus",
+            "position",
+            "reduce the fraction",
+            "simplest form",
+            "simplify the fraction"
+          ]
+        ],
+        [
+          "has",
+          "sp500"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "compute.fraction",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-s-and-p-500-data-97f0ea"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-s-and-p-500-data-97f0ea"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "sp500"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-s-and-p-500-data-97f0ea"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-s-and-p-500-data-97f0ea"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "sp500"
+                }
+              ]
+            ]
+          ],
+          [
+            "sense.last"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 24,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -4352,6 +4569,110 @@
       }
     },
     {
+      "id": "n-f7195234",
+      "task": "sp500-of-date-6a9e-sum",
+      "gen": 10,
+      "parents": [
+        "n-63974c0f"
+      ],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "19790601",
+              "angeles",
+              "compare",
+              "cpi",
+              "larger",
+              "lesser",
+              "national",
+              "smaller",
+              "sum"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.listNums",
+        [
+          "compute.primeFactors",
+          [
+            "transform.add",
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-s-and-p-500-data-97f0ea"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 1
+                  }
+                ],
+                {
+                  "lit": "fr-s-and-p-500-data-97f0ea"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "sp500"
+                }
+              ]
+            ],
+            [
+              "know.num",
+              [
+                "know.lookup",
+                [
+                  "transform.nthStr",
+                  [
+                    "know.find",
+                    {
+                      "lit": "fr-s-and-p-500-data-97f0ea"
+                    },
+                    {
+                      "lit": "date"
+                    }
+                  ],
+                  {
+                    "lit": 2
+                  }
+                ],
+                {
+                  "lit": "fr-s-and-p-500-data-97f0ea"
+                },
+                {
+                  "lit": "date"
+                },
+                {
+                  "lit": "sp500"
+                }
+              ]
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 7,
+      "size": 23,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-30cdb0aa",
       "task": "sp500-of-date-6a9e-sum",
       "gen": 7,
@@ -4464,6 +4785,7 @@
     "d7dec50357e6fa6b2590f78d119c2973c6e749716a0f0e22f1e1b6e1dffe8248",
     "0862cf03c1acced8d3abe9bdf382e8d47afe77c713409fde36706b9a8cf39d98",
     "99c31ad5bfcf34f78f88f56c76731ce361075694167e497b8fb58d64286e12e4",
-    "a21d6cb90e3152bcb06590bdca328fcc4d8a1b3ca7eec7f2a4a9b62c1e3e0bec"
+    "a21d6cb90e3152bcb06590bdca328fcc4d8a1b3ca7eec7f2a4a9b62c1e3e0bec",
+    "2ac3dab4bd52696bdb8537848e5658f94a8f812be93d0cde01286937850fb857"
   ]
 }
