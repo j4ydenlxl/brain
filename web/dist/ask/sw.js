@@ -3,7 +3,7 @@
 // fetched at install, LAZY on its first fetch. A POST, anything under /api/ and any URL not listed are never
 // intercepted and never cached; activate deletes every older version's cache.
 'use strict';
-const VERSION = "ec3f5657aa2aa4d25a514161504d8a2fbcd6cb9f8ed8382d73c4445ff0842e8f";
+const VERSION = "64cfaef331bd3c1babc295cfadfb37317faf4233543157ed07ad0e5adf6e2ed6";
 const PREFIX = "dilation-pocket-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
@@ -478,7 +478,7 @@ const PRECACHE = [
   {"url":"/organism/grow/neo-core.mjs","sha256":"6031729fbbe9ae4c3560e6546bd4b193b8a40168142001003ad3e4ed14e092c3"},
   {"url":"/organism/grow/neo-kernel.mjs","sha256":"cf3f50ec7d64d0e159b9738cfca595edde21cd5c71aff3eea9815eb3aad8411e"},
   {"url":"/organism/web/pocket-era.mjs","sha256":"6c7638fd9116fd17e7b11ed6aa5282b30ec1d743f78153f8585ce2b555ef0caa"},
-  {"url":"/organism/era/tasks.json","sha256":"862e6674c7565ada497ca06c951abf3c5d7645bd53ceed1ca099c2ea8b7f2d4e"}
+  {"url":"/organism/era/tasks.json","sha256":"5c8319a77fe33e661476eecbe9d6a752f7a694ded8de48f36b6b11b55f4b6be4"}
 ];
 const LAZY = [
   {"url":"/organism/era/tasks/10-min-sampled-avg-of-352a-compare.json","sha256":"90514b722f0cff0034559e453c8121e2ad6ecd87be7d82c91e3ccb913288da1e"},
@@ -599,11 +599,15 @@ const LAZY = [
   {"url":"/organism/era/tasks/column-of-title-6d3f-rev.json","sha256":"0133c1fa8e9acad00d8260f4dd61bc82f1f94b97e98c0f9757a75f031ea91962"},
   {"url":"/organism/era/tasks/common-name-of-medicine-n-6dd2-rev.json","sha256":"7482f92b72bcfed24d3ac11e86a9824ce5b5734cb194c678038e161c351a774c"},
   {"url":"/organism/era/tasks/company-name-of-act-symbo-82d7.json","sha256":"11484fbb0204b2f07c91a5bc9c3756df75721133717958bc9051a5aeb033f983"},
+  {"url":"/organism/era/tasks/company-name-of-act-symbo-82d7-961bbc.json","sha256":"ea7c2476244f33a34948ee9a635f942f0ab4b0b22780bb5673a78af8cfcbba46"},
   {"url":"/organism/era/tasks/company-name-of-act-symbo-82d7-e82e0e.json","sha256":"3b5ac7400f33baa28f01dde62c4cf7a5119c9357281d787afb82f08a436e4840"},
   {"url":"/organism/era/tasks/company-name-of-act-symbo-82d7-rev.json","sha256":"64210f3958be42f2beba2daa8b97ec3438b15a3fb4df84c189aaa16dec95c18f"},
+  {"url":"/organism/era/tasks/company-name-of-act-symbo-82d7-rev-961bbc.json","sha256":"37cfe58ea8c8f85cf211c0b6a37f99956b63056e35312e37aef1cd1e94389413"},
   {"url":"/organism/era/tasks/company-name-of-act-symbo-a948.json","sha256":"c4c8e79d7ac8d4478ed0de650d89a95f6b03d951c699c62ed0370eec89e93e27"},
+  {"url":"/organism/era/tasks/company-name-of-act-symbo-a948-5551cf.json","sha256":"3f0d9933bf2e3855c8daf370f37dbc38480f8fe85cf315eb2bd1da61d63fb109"},
   {"url":"/organism/era/tasks/company-name-of-act-symbo-a948-5f1e77.json","sha256":"54bc1953b8b1e50c33dad867dcbe19f51643a11cbd19f886d9b02647eee5e84c"},
   {"url":"/organism/era/tasks/company-name-of-act-symbo-a948-rev.json","sha256":"d0926112c4239659d0b8960b31a35141fd3c7133e77e299b816b6d2340f6bb8c"},
+  {"url":"/organism/era/tasks/company-name-of-act-symbo-a948-rev-5551cf.json","sha256":"d41fe6de7973df28de64d4e189019e5f8e0c156084685c9a7282251041fa8ab6"},
   {"url":"/organism/era/tasks/company-name-of-act-symbo-a948-rev-5f1e77.json","sha256":"de0413bcd00df30751917cc601b65ff80ab83f1b09570826821b1bb176ffd661"},
   {"url":"/organism/era/tasks/composition-of-manuscript-045a-rev.json","sha256":"cece8624ad37c0e703fabcea82fd265659cd926b01dc463336bdfb28b3fc0a12"},
   {"url":"/organism/era/tasks/corpora-crayola-crayola-color-to-hex-code.json","sha256":"d74da44ca4927b71c22e1be3e4e7f41310b4d3f4f0ecf11049a1d092b429c549"},
@@ -719,12 +723,8 @@ const LAZY = [
   {"url":"/organism/era/tasks/feb-of-year-d181-sum.json","sha256":"65145803c2e7d82f440dc133b73b9bddfce0330a77169f85fb685459ec3cff12"},
   {"url":"/organism/era/tasks/female-of-county-de5d-compare.json","sha256":"166b3d28c37b14a67c741c3ae251cf760f73984b3534315912ec75d9afe2bfb1"},
   {"url":"/organism/era/tasks/file-of-lang-edee.json","sha256":"a3277d714a9a7e4c6950d0d8b2ccd595478c32de3f6d86b52dc3bd9345d14c88"},
-  {"url":"/organism/era/tasks/file-of-lang-edee-rev.json","sha256":"a16830dc4ca6d9d7a18da5a9a9a596a11d9ea7a89a818d75a3284193e454a974"},
-  {"url":"/organism/era/tasks/final-description-of-date-d707-rev.json","sha256":"2d39279009a1e4bb06d50927b2a9a1a0078e2ccc09b851e9558ffa8759f96fc6"},
-  {"url":"/organism/era/tasks/final-four-appearance-a3c0-sum.json","sha256":"8666b3230c18bc997becdf567182b6c3f88da674852efe53b89995daf4e62a3f"},
-  {"url":"/organism/era/tasks/firefox-of-date-e7db.json","sha256":"1c25acc7346151f4aa36844b20533b8e91a9dc08e451a8460143939984870f85"},
-  {"url":"/organism/era/tasks/firefox-of-date-f7f2.json","sha256":"1dfa733d4dc4319ab0a550331f18dd3caa5cb8e998c3c7ce9c0c9477e2c04ac3"},
-  {"url":"/organism/era/tasks/fr-bond-yields-us-10y-monthly-5a63-38e101.json","sha256":"a7f7e919b1fbab8cd8888ec725eca9d955f0b7e49745b1beb196c9f627d1244f"}
+  {"url":"/organism/era/tasks/fiscal-sponsorship-model-74bf-rev.json","sha256":"2f19b4adf89988b768be087e8a231c1a532979f500d720d1942b4fe737214c58"},
+  {"url":"/organism/era/tasks/fr-oil-prices-brent-year-31e1cd-da-c488a8.json","sha256":"51f22a97aecc3151050bd0bdb429f62fedf3947a7c3dbb89809b1931c6001981"}
 ];
 const BY_URL = new Map(PRECACHE.concat(LAZY).map((f) => [f.url, f]));
 
