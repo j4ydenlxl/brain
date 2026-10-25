@@ -2,27 +2,29 @@
   "task": "fr-datasets-2014-usa-states-00336c-2cb515",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-20T11:21:22.066Z",
+  "at": "2026-10-25T07:50:42.088Z",
   "stats": {
-    "generated": 160269,
-    "distinct": 52601,
-    "kept": 292,
-    "know": 210,
+    "generated": 200052,
+    "distinct": 72813,
+    "kept": 337,
+    "know": 253,
     "byFamily": {
-      "transform": 209,
-      "aggregate": 13,
-      "memory": 67,
+      "transform": 252,
+      "aggregate": 14,
+      "memory": 68,
       "know": 3
     },
     "bySource": {
-      "enum": 27,
-      "parent": 265
+      "parent": 241,
+      "template": 35,
+      "enum": 60,
+      "memory": 1
     },
     "maxHeight": 6,
     "devOk": 34,
     "devN": 34,
-    "ms": 132633,
-    "cellsPerSecond": 1208,
+    "ms": 190385,
+    "cellsPerSecond": 1051,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -31,13 +33,13 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "3e56475b2a4bdc9388779bacfa1b83aaf67827e4b3acaf3c68223d536e371f33",
-      "round": 1,
-      "at": 259790,
+      "basis": "c901efa69627e17c0883c2a488bbdd2e6ed7311fb089825fe6d957df1b2c8efd",
+      "round": 0,
+      "at": 113690,
       "maxCost": 7,
       "done": false,
-      "cost": 7,
-      "prim": "compare.isSquare",
+      "cost": 6,
+      "prim": "transform.split",
       "tpl": 1060
     }
   },
@@ -609,6 +611,130 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 17,
+      "fit": {
+        "ok": 14,
+        "fired": 14,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-82069a0d",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "ct",
+            "dc",
+            "fl",
+            "ia",
+            "item number",
+            "mn",
+            "ms",
+            "nd",
+            "nth",
+            "ny",
+            "pa",
+            "sd",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "tn",
+            "va",
+            "wi",
+            "wv"
+          ]
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words>=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.title",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 17,
       "fit": {
         "ok": 14,
@@ -2631,6 +2757,120 @@
       }
     },
     {
+      "id": "n-80370ef5",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "ct",
+            "dc",
+            "fl",
+            "item number",
+            "mn",
+            "ms",
+            "nd",
+            "nth",
+            "ny",
+            "pa",
+            "replace",
+            "sc",
+            "sd",
+            "swap",
+            "tn",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-89173dbc",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -2769,6 +3009,120 @@
             "sc",
             "sd",
             "substitute",
+            "swap",
+            "tn",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 13,
+        "fired": 13,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-f70448fc",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "ct",
+            "dc",
+            "fl",
+            "item number",
+            "mn",
+            "ms",
+            "nd",
+            "nth",
+            "ny",
+            "pa",
+            "replace",
+            "sc",
+            "sd",
             "swap",
             "tn",
             "va",
@@ -6479,6 +6833,94 @@
       }
     },
     {
+      "id": "n-cd00ffb1",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "ct",
+            "fl",
+            "in",
+            "item number",
+            "ma",
+            "mn",
+            "ms",
+            "nth",
+            "nv",
+            "pa",
+            "reverse the words",
+            "reverse word order",
+            "tn",
+            "va",
+            "wi",
+            "words backwards"
+          ]
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.reverseWords",
+          [
+            "transform.title",
+            [
+              "know.lookup",
+              [
+                "transform.nthStr",
+                [
+                  "know.find",
+                  {
+                    "lit": "fr-datasets-2014-usa-states-00336c"
+                  },
+                  {
+                    "lit": "postal"
+                  }
+                ],
+                {
+                  "lit": 1
+                }
+              ],
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              },
+              {
+                "lit": "state"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 6,
+      "size": 12,
+      "fit": {
+        "ok": 11,
+        "fired": 11,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-d1fd1760",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -7443,6 +7885,106 @@
       }
     },
     {
+      "id": "n-3f6baaba",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ct",
+            "dc",
+            "item number",
+            "leading zeros",
+            "ma",
+            "ms",
+            "nd",
+            "nh",
+            "nth",
+            "pa",
+            "pad with",
+            "padded to",
+            "pr",
+            "sc",
+            "sd",
+            "zero pad"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-4be958e6",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -7734,6 +8276,106 @@
               },
               {
                 "lit": "type"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 17,
+      "fit": {
+        "ok": 10,
+        "fired": 10,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-d12ed051",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "ct",
+            "dc",
+            "item number",
+            "leading zeros",
+            "ma",
+            "ms",
+            "nd",
+            "nh",
+            "nth",
+            "pa",
+            "pad with",
+            "padded to",
+            "pr",
+            "sc",
+            "sd",
+            "zero pad"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
               }
             ],
             {
@@ -8789,6 +9431,121 @@
       }
     },
     {
+      "id": "n-fc0a1473",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 18,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-2f2805c4",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -8850,6 +9607,128 @@
         },
         [
           "transform.camel",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 19,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-399e5d12",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pascal case",
+            "pascalcase",
+            "pr",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "upper camel case",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.pascal",
           [
             "transform.nthStr",
             [
@@ -8993,6 +9872,127 @@
         ],
         [
           "transform.upper",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 19,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-473d5bf6",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "invert case",
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "swap case",
+            "toggle case",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.swapCase",
           [
             "know.lookup",
             [
@@ -9276,6 +10276,248 @@
       }
     },
     {
+      "id": "n-600f9dc2",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.title",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 19,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-8d5f3eb1",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "item number",
+            "lower camel case",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.camel",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 19,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-ad9cf402",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -9358,6 +10600,249 @@
         ],
         [
           "transform.swapCase",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 19,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-eb2e3e1e",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "lower case",
+            "lowercase",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "small letters",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.lower",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 19,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-f2cba55c",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capital letters",
+            "capitals",
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "upper case",
+            "uppercase",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.upper",
           [
             "know.lookup",
             [
@@ -9511,6 +10996,130 @@
       "mem": null,
       "height": 5,
       "size": 19,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-06cecc9a",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "normalise",
+            "normalize",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "simplify the text",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.norm",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 20,
       "fit": {
         "ok": 9,
         "fired": 9,
@@ -9711,6 +11320,488 @@
         ],
         [
           "render.and",
+          [
+            "know.find",
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 20,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-260bb62a",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split into words",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.and",
+          [
+            "transform.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-57e4431f",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "render.and",
+          [
+            "know.find",
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 20,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-5b6f92db",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "each word",
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split into words",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.list",
+          [
+            "transform.words",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ]
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 20,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-66f4f525",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "render.list",
           [
             "know.find",
             {
@@ -10346,6 +12437,116 @@
       }
     },
     {
+      "id": "n-4dc9d7b3",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "ct",
+            "dc",
+            "fl",
+            "in",
+            "item number",
+            "mn",
+            "nd",
+            "nth",
+            "replace",
+            "sc",
+            "sd",
+            "swap",
+            "tn"
+          ]
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-621dac3d",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -10578,6 +12779,347 @@
       }
     },
     {
+      "id": "n-c4925ed0",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "ct",
+            "dc",
+            "fl",
+            "in",
+            "item number",
+            "mn",
+            "nd",
+            "nth",
+            "replace",
+            "sc",
+            "sd",
+            "swap",
+            "tn"
+          ]
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-c7f98224",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "ct",
+            "dc",
+            "fl",
+            "in",
+            "item number",
+            "mn",
+            "nd",
+            "nth",
+            "replace",
+            "sc",
+            "sd",
+            "swap",
+            "tn"
+          ]
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 21,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-f4e7a46b",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 21,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-4e4eaf7b",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -10652,6 +13194,261 @@
         ],
         [
           "transform.pascal",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 22,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-53ac00fd",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pascal case",
+            "pascalcase",
+            "pr",
+            "upper camel case",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "transform.pascal",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 22,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-7e380e0f",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "item number",
+            "lower camel case",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "transform.camel",
           [
             "transform.nthStr",
             [
@@ -10963,6 +13760,272 @@
       }
     },
     {
+      "id": "n-f460047b",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "normalise",
+            "normalize",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "simplify the text",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "transform.norm",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 2
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 23,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-b3ba7574",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "remove",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "strip out",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 24,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-e58618e4",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -11092,6 +14155,144 @@
       "mem": null,
       "height": 4,
       "size": 24,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-cd3d5183",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split by",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "render.list",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": -1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 25,
       "fit": {
         "ok": 9,
         "fired": 9,
@@ -11380,6 +14581,148 @@
       }
     },
     {
+      "id": "n-75c64502",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "delete",
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "remove",
+            "strip out",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 27,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-e3c023b4",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -11411,6 +14754,150 @@
         [
           "words<=",
           6
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "render.list",
+          [
+            "transform.split",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "crypto-tickers"
+                },
+                {
+                  "lit": "crypto ticker"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 28,
+      "fit": {
+        "ok": 9,
+        "fired": 9,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-f10fa395",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "ma",
+            "ms",
+            "nh",
+            "nth",
+            "nv",
+            "ny",
+            "pa",
+            "pr",
+            "separate by",
+            "split by",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
         ],
         [
           "has",
@@ -13348,6 +16835,242 @@
       }
     },
     {
+      "id": "n-0cb6aad6",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "camel case",
+            "camelcase",
+            "item number",
+            "lower camel case",
+            "ma",
+            "ms",
+            "nth",
+            "nv",
+            "pa",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.camel",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 19,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-309945c8",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "ma",
+            "ms",
+            "nth",
+            "nv",
+            "pa",
+            "reverse the words",
+            "reverse word order",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "va",
+            "wi",
+            "words backwards"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.reverseWords",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 19,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-4004ff29",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -13704,6 +17427,125 @@
       }
     },
     {
+      "id": "n-7bbbae3d",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "class name",
+            "item number",
+            "ma",
+            "ms",
+            "nth",
+            "nv",
+            "pa",
+            "pascal case",
+            "pascalcase",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "upper camel case",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.pascal",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 19,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-9425be6a",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -13818,6 +17660,248 @@
       "fit": {
         "ok": 6,
         "fired": 6,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-f713f0ae",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "dashes",
+            "hyphens",
+            "item number",
+            "kebab case",
+            "kebabcase",
+            "ma",
+            "ms",
+            "nth",
+            "nv",
+            "pa",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "va",
+            "wi"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.kebab",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 19,
+      "fit": {
+        "ok": 6,
+        "fired": 6,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-13ce9ba8",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "ms",
+            "nh",
+            "no vowels",
+            "nth",
+            "nv",
+            "ny",
+            "pr",
+            "remove vowels",
+            "without vowels"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is ",
+            {
+              "slot": 2
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "transform.noVowels",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 22,
+      "fit": {
+        "ok": 5,
+        "fired": 5,
         "rows": 34
       }
     },
@@ -14657,6 +18741,78 @@
       }
     },
     {
+      "id": "n-329c718c",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "il",
+            "item number",
+            "nth",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is Illinois."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-3518dbd1",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -15293,6 +19449,78 @@
       }
     },
     {
+      "id": "n-c2d1df9c",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "ms",
+            "nth",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is Mississippi."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-c35fe082",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -15615,6 +19843,74 @@
               "slot": 1
             },
             " is Wisconsin."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-eb43dea6",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "nv",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "words<=",
+          5
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is Nevada."
           ]
         },
         [
@@ -16239,6 +20535,83 @@
           {
             "lit": 5
           }
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-97499d91",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "leading zeros",
+            "ms",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ],
+          {
+            "lit": 10
+          },
+          [
+            "sense.unit"
+          ]
         ]
       ],
       "mem": null,
@@ -17985,6 +22358,90 @@
       }
     },
     {
+      "id": "n-d15d5bcb",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "sd"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "state"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of SD is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-e2c64260",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -18400,6 +22857,100 @@
       ],
       "mem": null,
       "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-f95e050c",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "in",
+            "item number",
+            "nth",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "state"
+        ],
+        [
+          "has",
+          "tell"
+        ],
+        [
+          "words<=",
+          6
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of IN is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ],
+        [
+          "transform.title",
+          [
+            "know.lookup",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-datasets-2014-usa-states-00336c"
+                },
+                {
+                  "lit": "postal"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-datasets-2014-usa-states-00336c"
+            },
+            {
+              "lit": "postal"
+            },
+            {
+              "lit": "state"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
       "size": 14,
       "fit": {
         "ok": 1,
@@ -19469,6 +24020,96 @@
       }
     },
     {
+      "id": "n-662523bf",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "il",
+            "item number",
+            "nth"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "tell"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of IL is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-6b95157d",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -19500,6 +24141,96 @@
               "slot": 0
             },
             " of MS is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-7483d0d4",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "ny"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "state"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of NY is ",
             {
               "slot": 1
             },
@@ -20036,6 +24767,96 @@
               "slot": 0
             },
             " of NH is ",
+            {
+              "slot": 1
+            },
+            "."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          {
+            "lit": -1
+          }
+        ],
+        [
+          "know.lookup",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-datasets-2014-usa-states-00336c"
+              },
+              {
+                "lit": "postal"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": "fr-datasets-2014-usa-states-00336c"
+          },
+          {
+            "lit": "postal"
+          },
+          {
+            "lit": "state"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 16,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
+      "id": "n-e16ab66c",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "ms",
+            "nth"
+          ]
+        ],
+        [
+          "words<=",
+          6
+        ],
+        [
+          "has",
+          "what"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of MS is ",
             {
               "slot": 1
             },
@@ -22447,6 +27268,72 @@
       }
     },
     {
+      "id": "n-d3b6dfda",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "item number",
+            "nth",
+            "sd",
+            "shortest",
+            "shortest one",
+            "shortest word"
+          ]
+        ],
+        [
+          "has",
+          "what"
+        ],
+        [
+          "has",
+          "state"
+        ]
+      ],
+      "pyramid": [
+        "render.template",
+        {
+          "lit": [
+            "The ",
+            {
+              "slot": 0
+            },
+            " of ",
+            {
+              "slot": 1
+            },
+            " is South Dakota."
+          ]
+        },
+        [
+          "transform.nthStr",
+          [
+            "sense.words"
+          ],
+          {
+            "lit": 4
+          }
+        ],
+        [
+          "aggregate.shortest",
+          [
+            "sense.content"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-f2c5d8ec",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -23563,6 +28450,47 @@
       }
     },
     {
+      "id": "n-d1d35bb9",
+      "task": "fr-datasets-2014-usa-states-00336c-2cb515",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "sc"
+        ],
+        [
+          "has",
+          "name"
+        ],
+        [
+          "has",
+          "of"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "memory.nearest",
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": {
+        "table": {
+          "name the state of SC": "The state of SC is South Carolina."
+        }
+      },
+      "height": 3,
+      "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 34
+      }
+    },
+    {
       "id": "n-d8c6c333",
       "task": "fr-datasets-2014-usa-states-00336c-2cb515",
       "gen": 10,
@@ -23964,6 +28892,7 @@
   ],
   "stages": [
     "141e7021d8773b42f4da4bafdc01f5815880948f9c03a62f1d581ca4e977c6d2",
-    "af43dcf6d166b8ec7f1d26ac2223d997568e86ff51a34643d08c618b46db11c5"
+    "af43dcf6d166b8ec7f1d26ac2223d997568e86ff51a34643d08c618b46db11c5",
+    "e40fe1f50a1ade3a066b154b0452c8e2e2b9196d702a562c1b2d98bf18eaa825"
   ]
 }

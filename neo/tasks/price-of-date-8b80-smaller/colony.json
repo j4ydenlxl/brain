@@ -2,10 +2,10 @@
   "task": "price-of-date-8b80-smaller",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-18T11:55:57.780Z",
+  "at": "2026-10-25T08:24:05.546Z",
   "stats": {
-    "generated": 162238,
-    "distinct": 38609,
+    "generated": 200756,
+    "distinct": 85435,
     "kept": 104,
     "know": 2,
     "byFamily": {
@@ -13,27 +13,28 @@
       "transform": 2
     },
     "bySource": {
-      "parent": 104
+      "parent": 102,
+      "open": 2
     },
     "maxHeight": 5,
     "devOk": 100,
     "devN": 100,
-    "ms": 59146,
-    "cellsPerSecond": 2743,
+    "ms": 127887,
+    "cellsPerSecond": 1570,
     "capped": null,
     "packs": [
       "fr-gold-prices-monthly-processed-29ea8c"
     ],
     "cursor": {
       "v": 1,
-      "basis": "cf455bbac192778db5db30fa4b1ccf8845ca552d7261c208558e190113c098d6",
-      "round": 1,
-      "at": 256564,
+      "basis": "c6606d7074a178ed66b4a0f5654836c86f34a90424bb44f32de30af5ece7e100",
+      "round": 0,
+      "at": 101383,
       "maxCost": 7,
       "done": false,
       "cost": 6,
-      "prim": "iterate.rangeFrom",
-      "tpl": 3214
+      "prim": "compare.between",
+      "tpl": 3000
     }
   },
   "cells": [
@@ -238,7 +239,7 @@
       }
     },
     {
-      "id": "n-079645de",
+      "id": "n-9984ba20",
       "task": "price-of-date-8b80-smaller",
       "gen": 10,
       "parents": [],
@@ -249,17 +250,19 @@
             "hasAny",
             [
               "19981101",
-              "20000804",
+              "19990301",
+              "20020301",
               "20021101",
+              "20030201",
               "20190501",
               "angeles",
+              "az",
               "compare",
               "cpi",
               "dividend",
               "larger",
               "national",
               "open",
-              "phoenix",
               "rate",
               "sp500"
             ]
@@ -312,7 +315,7 @@
       }
     },
     {
-      "id": "n-1a47ea63",
+      "id": "n-7c3f5173",
       "task": "price-of-date-8b80-smaller",
       "gen": 10,
       "parents": [],
@@ -323,14 +326,15 @@
             "hasAny",
             [
               "20001101",
+              "20230801",
               "20260401",
               "angeles",
+              "az",
               "compare",
               "dividend",
               "lesser",
               "makes",
               "national",
-              "phoenix",
               "sp500"
             ]
           ]
@@ -4085,6 +4089,153 @@
       }
     },
     {
+      "id": "n-079645de",
+      "task": "price-of-date-8b80-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "19981101",
+              "20000804",
+              "20021101",
+              "20190501",
+              "angeles",
+              "compare",
+              "cpi",
+              "dividend",
+              "larger",
+              "national",
+              "open",
+              "phoenix",
+              "rate",
+              "sp500"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.nthStr",
+          [
+            "sense.list"
+          ],
+          [
+            "series.step",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "fr-gold-prices-monthly-processed-29ea8c"
+                },
+                {
+                  "lit": "date"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ],
+            {
+              "lit": "fr-gold-prices-monthly-processed-29ea8c"
+            },
+            {
+              "lit": "date"
+            },
+            {
+              "lit": "price"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 12,
+      "fit": {
+        "ok": 2,
+        "fired": 2,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-1a47ea63",
+      "task": "price-of-date-8b80-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "not",
+          [
+            "hasAny",
+            [
+              "20001101",
+              "20260401",
+              "angeles",
+              "compare",
+              "dividend",
+              "lesser",
+              "makes",
+              "national",
+              "phoenix",
+              "sp500"
+            ]
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-gold-prices-monthly-processed-29ea8c"
+              },
+              {
+                "lit": "date"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ],
+          [
+            "sense.second"
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "fr-gold-prices-monthly-processed-29ea8c"
+              },
+              {
+                "lit": "price"
+              }
+            ],
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 13,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-ab56b781",
       "task": "price-of-date-8b80-smaller",
       "gen": 7,
@@ -4236,6 +4387,7 @@
   "stages": [
     "fda13198f1c92b77f8a9ebfe4c1e2431fd10a02eb9a5a0736561813065885525",
     "47b82390d49bfee1fa92ef743f1358228a9fa6616d59868d1850f062573d375a",
-    "15a8d7de3767b73b0a36321ae3384fc4f29ef9387d667ec89eb0b10f922c3215"
+    "15a8d7de3767b73b0a36321ae3384fc4f29ef9387d667ec89eb0b10f922c3215",
+    "528de07c78f905d976e2f8b2a41ce858d0ea19eac9d340c3ac15d68a76d8f260"
   ]
 }

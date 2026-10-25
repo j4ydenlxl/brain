@@ -2,31 +2,29 @@
   "task": "sp500-company-2-to-ticker",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-22T06:44:07.048Z",
+  "at": "2026-10-25T07:37:53.213Z",
   "stats": {
-    "generated": 200023,
-    "distinct": 71460,
-    "kept": 1689,
-    "know": 1415,
+    "generated": 200112,
+    "distinct": 70480,
+    "kept": 1650,
+    "know": 1401,
     "byFamily": {
-      "transform": 1378,
-      "aggregate": 164,
+      "transform": 1342,
+      "aggregate": 161,
       "memory": 81,
       "iterate": 64,
       "know": 1,
       "compute": 1
     },
     "bySource": {
-      "template": 148,
-      "enum": 540,
-      "parent": 920,
-      "memory": 81
+      "parent": 1110,
+      "enum": 540
     },
     "maxHeight": 6,
     "devOk": 40,
     "devN": 40,
-    "ms": 189117,
-    "cellsPerSecond": 1058,
+    "ms": 224585,
+    "cellsPerSecond": 891,
     "capped": null,
     "packs": [
       "crypto-tickers",
@@ -35,9 +33,9 @@
     ],
     "cursor": {
       "v": 1,
-      "basis": "6db8acd95b1f125604e707df86825303a0f6fb8f5ef3e10fa8afa2c3bd8bb07d",
+      "basis": "13add8300100d93b9b639a27af3820835e3b16fd5c31f7614c75af2da69bfef1",
       "round": 0,
-      "at": 116313,
+      "at": 116986,
       "maxCost": 7,
       "done": false,
       "cost": 6,
@@ -64597,6 +64595,60 @@
       }
     },
     {
+      "id": "n-02e9231a",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "join",
+            "joined with",
+            "separated by"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.join",
+          [
+            "know.find",
+            {
+              "lit": "sp500"
+            },
+            {
+              "lit": "company"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-065b3c0f",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -64953,7 +65005,7 @@
       }
     },
     {
-      "id": "n-3eb39f41",
+      "id": "n-55781d84",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
       "parents": [],
@@ -64965,6 +65017,10 @@
             "joined with",
             "separated by"
           ]
+        ],
+        [
+          "has",
+          "ticker"
         ],
         [
           "has",
@@ -65159,56 +65215,6 @@
       }
     },
     {
-      "id": "n-89ee3498",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "join",
-            "joined with",
-            "separated by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.join",
-          [
-            "know.find",
-            {
-              "lit": "sp500"
-            },
-            {
-              "lit": "company"
-            }
-          ],
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-9086e740",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -65365,7 +65371,7 @@
       }
     },
     {
-      "id": "n-a4bae542",
+      "id": "n-a09f1e14",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
       "parents": [],
@@ -65377,6 +65383,10 @@
             "joined with",
             "separated by"
           ]
+        ],
+        [
+          "has",
+          "ticker"
         ],
         [
           "has",
@@ -65394,6 +65404,59 @@
             },
             {
               "lit": "city"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a46a7f81",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "joined with",
+            "separated by"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.join",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
             }
           ],
           [
@@ -66070,55 +66133,6 @@
       ],
       "mem": null,
       "height": 4,
-      "size": 7,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-e9ca512c",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "joined with",
-            "separated by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.join",
-          [
-            "know.find",
-            {
-              "lit": "crypto-tickers"
-            },
-            {
-              "lit": "crypto ticker"
-            }
-          ],
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
       "size": 7,
       "fit": {
         "ok": 1,
@@ -67281,6 +67295,69 @@
           "transform.snake",
           [
             "transform.swapCase",
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 8,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2e94d237",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "item number",
+            "most common letter",
+            "most frequent letter",
+            "no vowels",
+            "nth",
+            "position",
+            "remove vowels",
+            "which letter appears most",
+            "without vowels"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.commonLetter",
+          [
+            "transform.noVowels",
             [
               "transform.nthStr",
               [
@@ -71248,64 +71325,6 @@
       }
     },
     {
-      "id": "n-0ac403af",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "item number",
-            "nth",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.and",
-        [
-          "transform.split",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "world-cities"
-              },
-              {
-                "lit": "city"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 9,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-0b4aadea",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -71896,64 +71915,6 @@
           {
             "lit": "corporation"
           }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 9,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-1c56153f",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "item number",
-            "nth",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.split",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "world-cities"
-              },
-              {
-                "lit": "city"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
         ]
       ],
       "mem": null,
@@ -72637,64 +72598,6 @@
       }
     },
     {
-      "id": "n-37f8d9f4",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "item number",
-            "nth",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.lines",
-        [
-          "transform.split",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "world-cities"
-              },
-              {
-                "lit": "city"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 9,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-392a2bb0",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -73245,63 +73148,6 @@
       }
     },
     {
-      "id": "n-4a6f08ba",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "delete",
-            "item number",
-            "nth",
-            "strip out"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "crypto ticker"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 9,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-4c6c0128",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -73421,6 +73267,68 @@
       }
     },
     {
+      "id": "n-4fc8442e",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "item number",
+            "nth",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-58c58446",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -73527,63 +73435,6 @@
           {
             "lit": 10
           }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 9,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-5b842773",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "delete",
-            "item number",
-            "nth",
-            "strip out"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "world-cities"
-              },
-              {
-                "lit": "city"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
         ]
       ],
       "mem": null,
@@ -74318,6 +74169,67 @@
       }
     },
     {
+      "id": "n-785673ad",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "item number",
+            "nth",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-7c494fe1",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -74440,66 +74352,6 @@
       ],
       "mem": null,
       "height": 5,
-      "size": 9,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-7da727b7",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "element",
-            "item number",
-            "nth",
-            "position",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.split",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "sp500"
-              },
-              {
-                "lit": "company"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -74748,6 +74600,133 @@
       }
     },
     {
+      "id": "n-80f72a15",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "item number",
+            "nth",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-81710559",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-82560e73",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -74795,6 +74774,67 @@
             [
               "sense.lastWord"
             ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-883fe58b",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "item number",
+            "nth",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
           ]
         ]
       ],
@@ -76324,63 +76364,6 @@
       }
     },
     {
-      "id": "n-b16fab7b",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "delete",
-            "item number",
-            "nth",
-            "strip out"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "crypto ticker"
-              }
-            ],
-            {
-              "lit": -1
-            }
-          ],
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 9,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-b199050a",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -77042,67 +77025,6 @@
       }
     },
     {
-      "id": "n-c3eefc9c",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "delete",
-            "element",
-            "item number",
-            "nth",
-            "position",
-            "remove",
-            "strip out",
-            "without"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "sp500"
-              },
-              {
-                "lit": "company"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 9,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-c6e74105",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -77588,6 +77510,68 @@
       }
     },
     {
+      "id": "n-d30daab5",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "item number",
+            "nth",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-d353118f",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -77937,6 +77921,67 @@
       }
     },
     {
+      "id": "n-d7bccd23",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "item number",
+            "nth",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-dbd78414",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -78053,6 +78098,70 @@
       ],
       "mem": null,
       "height": 6,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e0b68f7a",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 9,
       "fit": {
         "ok": 1,
@@ -78991,71 +79100,6 @@
       }
     },
     {
-      "id": "n-2e845c1a",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "element",
-            "item number",
-            "leading zeros",
-            "nth",
-            "pad",
-            "pad with",
-            "padded to",
-            "position",
-            "zero pad"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.padStart",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "sp500"
-              },
-              {
-                "lit": "company"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": 10
-          },
-          [
-            "sense.before",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 10,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-30cb65d1",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -79230,71 +79274,6 @@
             ],
             {
               "lit": 1
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 10,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-3c71d6fb",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "element",
-            "item number",
-            "leading zeros",
-            "nth",
-            "pad",
-            "pad with",
-            "padded to",
-            "position",
-            "zero pad"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.padStart",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "sp500"
-              },
-              {
-                "lit": "company"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": 12
-          },
-          [
-            "sense.before",
-            {
-              "lit": "is"
             }
           ]
         ]
@@ -79698,72 +79677,6 @@
       }
     },
     {
-      "id": "n-7744de12",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "element",
-            "item number",
-            "longest",
-            "longest one",
-            "longest word",
-            "nth",
-            "position",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "aggregate.longest",
-          [
-            "transform.split",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
-            ],
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "sp500"
-                },
-                {
-                  "lit": "company"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 10,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-7d1df8d4",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -80142,71 +80055,6 @@
       }
     },
     {
-      "id": "n-a01970a7",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "element",
-            "item number",
-            "leading zeros",
-            "nth",
-            "pad",
-            "pad with",
-            "padded to",
-            "position",
-            "zero pad"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.padStart",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "sp500"
-              },
-              {
-                "lit": "company"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": 12
-          },
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 10,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-a26eaf9e",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -80268,260 +80116,6 @@
       }
     },
     {
-      "id": "n-a3601de5",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "item number",
-            "longest",
-            "longest one",
-            "longest word",
-            "nth",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "aggregate.longest",
-          [
-            "transform.split",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
-            ],
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "world-cities"
-                },
-                {
-                  "lit": "city"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 10,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-a3a1740b",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "change to",
-            "company",
-            "item number",
-            "nth",
-            "replace",
-            "substitute"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.replace",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "world-cities"
-              },
-              {
-                "lit": "city"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "sense.lastWord"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 10,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-af6e2416",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "element",
-            "item number",
-            "leading zeros",
-            "nth",
-            "pad",
-            "pad with",
-            "padded to",
-            "position",
-            "zero pad"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.padStart",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "sp500"
-              },
-              {
-                "lit": "company"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          {
-            "lit": 10
-          },
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 10,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-baf20ce2",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "item number",
-            "nth",
-            "separate by",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "aggregate.shortest",
-          [
-            "transform.split",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
-            ],
-            [
-              "transform.nthStr",
-              [
-                "know.find",
-                {
-                  "lit": "world-cities"
-                },
-                {
-                  "lit": "city"
-                }
-              ],
-              {
-                "lit": 1
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 5,
-      "size": 10,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-bf61bfdf",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -80569,67 +80163,6 @@
             {
               "lit": "ticker"
             }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 10,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-c915f952",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "change to",
-            "company",
-            "item number",
-            "nth",
-            "replace",
-            "substitute"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.replace",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "world-cities"
-              },
-              {
-                "lit": "city"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "sense.text"
           ]
         ]
       ],
@@ -99424,82 +98957,6 @@
       }
     },
     {
-      "id": "n-23b3cb89",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "change to",
-            "company",
-            "element",
-            "item number",
-            "nth",
-            "position",
-            "replace",
-            "substitute",
-            "swap"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.replace",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "sp500"
-              },
-              {
-                "lit": "company"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "world-cities"
-              },
-              {
-                "lit": "city"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "sense.before",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 14,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-25b2f46f",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -100290,79 +99747,6 @@
       }
     },
     {
-      "id": "n-88211d4d",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "change to",
-            "company",
-            "item number",
-            "nth",
-            "replace",
-            "substitute"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.replace",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "world-cities"
-              },
-              {
-                "lit": "city"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "crypto ticker"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 14,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-8f23e8b2",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -100918,79 +100302,6 @@
       }
     },
     {
-      "id": "n-b1fe92f8",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "change to",
-            "company",
-            "item number",
-            "nth",
-            "replace",
-            "substitute"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.replace",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "crypto ticker"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "crypto ticker"
-              }
-            ],
-            {
-              "lit": -1
-            }
-          ],
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 14,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-bc7f3534",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -101061,79 +100372,6 @@
           {
             "lit": "ticker"
           }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 14,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-bd549703",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "change to",
-            "company",
-            "item number",
-            "nth",
-            "replace",
-            "substitute"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.replace",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "crypto ticker"
-              }
-            ],
-            {
-              "lit": -1
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "crypto-tickers"
-              },
-              {
-                "lit": "crypto ticker"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
         ]
       ],
       "mem": null,
@@ -101539,82 +100777,6 @@
       }
     },
     {
-      "id": "n-dd72073e",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "change to",
-            "company",
-            "element",
-            "item number",
-            "nth",
-            "position",
-            "replace",
-            "substitute",
-            "swap"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.replace",
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "sp500"
-              },
-              {
-                "lit": "company"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "world-cities"
-              },
-              {
-                "lit": "city"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 14,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-ddb36078",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -101917,82 +101079,6 @@
           {
             "lit": "ticker"
           }
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 14,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-edecdaaf",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "change to",
-            "company",
-            "element",
-            "item number",
-            "nth",
-            "position",
-            "replace",
-            "substitute",
-            "swap"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.replace",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "world-cities"
-              },
-              {
-                "lit": "city"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ],
-          [
-            "transform.nthStr",
-            [
-              "know.find",
-              {
-                "lit": "sp500"
-              },
-              {
-                "lit": "company"
-              }
-            ],
-            {
-              "lit": 1
-            }
-          ]
         ]
       ],
       "mem": null,
@@ -110237,6 +109323,51 @@
       }
     },
     {
+      "id": "n-17a0e516",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "lower case",
+            "lowercase",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-2eab69c2",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -110272,89 +109403,6 @@
       ],
       "mem": null,
       "height": 4,
-      "size": 4,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-32b0b98a",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "company",
-            "title case"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.title",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 4,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-3bed1420",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "lower case",
-            "lowercase",
-            "small letters"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.lower",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
       "size": 4,
       "fit": {
         "ok": 1,
@@ -110449,6 +109497,96 @@
       }
     },
     {
+      "id": "n-78ea06ca",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "each word",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7a80fc78",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "company",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-865743bd",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -110534,7 +109672,7 @@
       }
     },
     {
-      "id": "n-9f71ed00",
+      "id": "n-90106406",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
       "parents": [],
@@ -110543,9 +109681,14 @@
           "hasAny",
           [
             "company",
-            "each word",
-            "split into words"
+            "invert case",
+            "swap case",
+            "toggle case"
           ]
+        ],
+        [
+          "has",
+          "ticker"
         ],
         [
           "has",
@@ -110553,9 +109696,9 @@
         ]
       ],
       "pyramid": [
-        "render.lines",
+        "render.str",
         [
-          "transform.words",
+          "transform.swapCase",
           [
             "sense.after",
             {
@@ -110574,7 +109717,7 @@
       }
     },
     {
-      "id": "n-aa0d214b",
+      "id": "n-a4f6284a",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
       "parents": [],
@@ -110586,6 +109729,10 @@
             "each word",
             "split into words"
           ]
+        ],
+        [
+          "has",
+          "ticker"
         ],
         [
           "has",
@@ -110614,7 +109761,7 @@
       }
     },
     {
-      "id": "n-c0311791",
+      "id": "n-c411f63c",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
       "parents": [],
@@ -110622,11 +109769,17 @@
         [
           "hasAny",
           [
+            "all caps",
+            "capital letters",
+            "capitals",
             "company",
-            "invert case",
-            "swap case",
-            "toggle case"
+            "upper case",
+            "uppercase"
           ]
+        ],
+        [
+          "has",
+          "ticker"
         ],
         [
           "has",
@@ -110636,7 +109789,7 @@
       "pyramid": [
         "render.str",
         [
-          "transform.swapCase",
+          "transform.upper",
           [
             "sense.after",
             {
@@ -110691,49 +109844,6 @@
       ],
       "mem": null,
       "height": 4,
-      "size": 4,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-cc0e4743",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "all caps",
-            "capital letters",
-            "capitals",
-            "company",
-            "upper case",
-            "uppercase"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.upper",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
       "size": 4,
       "fit": {
         "ok": 1,
@@ -110828,142 +109938,6 @@
       }
     },
     {
-      "id": "n-19ba8481",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "each word",
-            "invert case",
-            "split into words",
-            "swap case",
-            "toggle case"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.words",
-          [
-            "transform.swapCase",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-213daf31",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "each word",
-            "lower case",
-            "lowercase",
-            "small letters",
-            "split into words"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.lines",
-        [
-          "transform.words",
-          [
-            "transform.lower",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-289d09cd",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.split",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          {
-            "lit": "inc"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-2cdc7966",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -111005,6 +109979,101 @@
       ],
       "mem": null,
       "height": 5,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2e76ab82",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "normalise",
+            "normalize",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3562d27f",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -111104,6 +110173,54 @@
       }
     },
     {
+      "id": "n-484f5f1e",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
       "id": "n-497e2af7",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -111176,230 +110293,6 @@
             "compute.fibonacci",
             [
               "sense.wordCount"
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-5a7e08a9",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "normalise",
-            "normalize",
-            "simplify the text"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.norm",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          {
-            "lit": 1
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-640b2d0d",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "delete",
-            "strip out"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          {
-            "lit": "inc"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-6af2858e",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.lines",
-        [
-          "transform.split",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          {
-            "lit": "inc"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-6daa8cb7",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "company",
-            "each word",
-            "split into words",
-            "title case"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.lines",
-        [
-          "transform.words",
-          [
-            "transform.title",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-6e2f6a3c",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "each word",
-            "lower case",
-            "lowercase",
-            "small letters",
-            "split into words"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.words",
-          [
-            "transform.lower",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
             ]
           ]
         ]
@@ -111539,53 +110432,6 @@
             {
               "lit": 5
             }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-8966944a",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "company",
-            "each word",
-            "split into words",
-            "title case"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.words",
-          [
-            "transform.title",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
-            ]
           ]
         ]
       ],
@@ -111784,54 +110630,6 @@
       }
     },
     {
-      "id": "n-a7b96658",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "capitalise",
-            "capitalize",
-            "capitalize each word",
-            "company",
-            "invert case",
-            "swap case",
-            "title case",
-            "toggle case"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.swapCase",
-          [
-            "transform.title",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-a9c4ad45",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -111869,93 +110667,6 @@
       ],
       "mem": null,
       "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-b4fda0b7",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "all caps",
-            "capital letters",
-            "capitals",
-            "company",
-            "each word",
-            "split into words",
-            "upper case",
-            "uppercase"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.words",
-          [
-            "transform.upper",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-be3b0c75",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "has",
-          "company"
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "iterate.repeat",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          {
-            "lit": 1
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
       "size": 5,
       "fit": {
         "ok": 1,
@@ -112056,100 +110767,6 @@
       }
     },
     {
-      "id": "n-cf64bced",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "all caps",
-            "capital letters",
-            "capitals",
-            "company",
-            "each word",
-            "split into words",
-            "upper case",
-            "uppercase"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.lines",
-        [
-          "transform.words",
-          [
-            "transform.upper",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-d653fc4c",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "each word",
-            "invert case",
-            "split into words",
-            "swap case",
-            "toggle case"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.lines",
-        [
-          "transform.words",
-          [
-            "transform.swapCase",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-d9fb712f",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -112179,141 +110796,6 @@
               "sense.after",
               {
                 "lit": "ticker"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-dcb085b5",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.split",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "sense.lastWord"
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-dcf346b5",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.and",
-        [
-          "transform.split",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          {
-            "lit": "inc"
-          }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-e3d419a0",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "dashes",
-            "each word",
-            "hyphens",
-            "kebab case",
-            "kebabcase",
-            "split into words"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.lines",
-        [
-          "transform.words",
-          [
-            "transform.kebab",
-            [
-              "sense.after",
-              {
-                "lit": "is"
               }
             ]
           ]
@@ -112381,7 +110863,7 @@
       }
     },
     {
-      "id": "n-e9a5f77c",
+      "id": "n-e5fc7a2b",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
       "parents": [],
@@ -112390,9 +110872,16 @@
           "hasAny",
           [
             "company",
-            "delete",
-            "strip out"
+            "each word",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split into words"
           ]
+        ],
+        [
+          "has",
+          "ticker"
         ],
         [
           "has",
@@ -112402,16 +110891,59 @@
       "pyramid": [
         "render.str",
         [
-          "transform.remove",
+          "aggregate.shortest",
+          [
+            "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e83ead36",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "company"
+        ],
+        [
+          "has",
+          "ticker"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
           [
             "sense.after",
             {
               "lit": "is"
             }
           ],
-          [
-            "sense.lastWord"
-          ]
+          {
+            "lit": 1
+          }
         ]
       ],
       "mem": null,
@@ -112456,53 +110988,6 @@
             "aggregate.vowels",
             [
               "sense.lastWord"
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-eee18b5c",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "dashes",
-            "each word",
-            "hyphens",
-            "kebab case",
-            "kebabcase",
-            "split into words"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.words",
-          [
-            "transform.kebab",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
             ]
           ]
         ]
@@ -112613,52 +111098,6 @@
       }
     },
     {
-      "id": "n-f8bcd432",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "each word",
-            "shortest",
-            "shortest one",
-            "shortest word",
-            "split into words"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "aggregate.shortest",
-          [
-            "transform.words",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 5,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-08e9024e",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -112700,53 +111139,6 @@
           {
             "lit": "ticker"
           }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 6,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-1218c2fe",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.split",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "sense.wordAt",
-            {
-              "lit": 3
-            }
-          ]
         ]
       ],
       "mem": null,
@@ -112853,53 +111245,6 @@
           {
             "lit": "ticker"
           }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 6,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-1b8832d6",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.lines",
-        [
-          "transform.split",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
         ]
       ],
       "mem": null,
@@ -113103,52 +111448,6 @@
           {
             "lit": "ticker"
           }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 6,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-40bf4a18",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "delete",
-            "strip out"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "sense.after",
-            {
-              "lit": "of"
-            }
-          ]
         ]
       ],
       "mem": null,
@@ -113483,55 +111782,6 @@
       }
     },
     {
-      "id": "n-64740b0b",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "longest one",
-            "longest word",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "aggregate.longest",
-          [
-            "transform.split",
-            [
-              "sense.after",
-              {
-                "lit": "is"
-              }
-            ],
-            [
-              "sense.lastWord"
-            ]
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 4,
-      "size": 6,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-6691e672",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -113575,53 +111825,6 @@
       ],
       "mem": null,
       "height": 4,
-      "size": 6,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-6991a2f4",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.split",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
       "size": 6,
       "fit": {
         "ok": 1,
@@ -114197,52 +112400,6 @@
       }
     },
     {
-      "id": "n-8c31b3f6",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "delete",
-            "strip out"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "sense.after",
-            {
-              "lit": "of"
-            }
-          ],
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 6,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-a48908ee",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -114284,53 +112441,6 @@
           {
             "lit": "ticker"
           }
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 6,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-abc9d651",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.and",
-        [
-          "transform.split",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
         ]
       ],
       "mem": null,
@@ -114396,52 +112506,6 @@
       }
     },
     {
-      "id": "n-ba592253",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "delete",
-            "strip out"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "sense.wordAt",
-            {
-              "lit": 2
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 6,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
       "id": "n-d2e3670c",
       "task": "sp500-company-2-to-ticker",
       "gen": 10,
@@ -114476,99 +112540,6 @@
             "sense.after",
             {
               "lit": "is"
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 6,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-d3724422",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "delete",
-            "strip out"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.str",
-        [
-          "transform.remove",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "sense.wordAt",
-            {
-              "lit": 3
-            }
-          ]
-        ]
-      ],
-      "mem": null,
-      "height": 3,
-      "size": 6,
-      "fit": {
-        "ok": 1,
-        "fired": 1,
-        "rows": 40
-      }
-    },
-    {
-      "id": "n-d761e04a",
-      "task": "sp500-company-2-to-ticker",
-      "gen": 10,
-      "parents": [],
-      "guard": [
-        [
-          "hasAny",
-          [
-            "company",
-            "separate by",
-            "split",
-            "split by"
-          ]
-        ],
-        [
-          "has",
-          "ford"
-        ]
-      ],
-      "pyramid": [
-        "render.list",
-        [
-          "transform.split",
-          [
-            "sense.after",
-            {
-              "lit": "is"
-            }
-          ],
-          [
-            "sense.after",
-            {
-              "lit": "of"
             }
           ]
         ]
@@ -117253,6 +115224,3314 @@
       },
       "height": 3,
       "size": 3,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3eb39f41",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "joined with",
+            "separated by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.join",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          [
+            "sense.before",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-89ee3498",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "join",
+            "joined with",
+            "separated by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.join",
+          [
+            "know.find",
+            {
+              "lit": "sp500"
+            },
+            {
+              "lit": "company"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a4bae542",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "joined with",
+            "separated by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.join",
+          [
+            "know.find",
+            {
+              "lit": "world-cities"
+            },
+            {
+              "lit": "city"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e9ca512c",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "joined with",
+            "separated by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.join",
+          [
+            "know.find",
+            {
+              "lit": "crypto-tickers"
+            },
+            {
+              "lit": "crypto ticker"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 7,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-0ac403af",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "item number",
+            "nth",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1c56153f",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "item number",
+            "nth",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-37f8d9f4",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "item number",
+            "nth",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-4a6f08ba",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "item number",
+            "nth",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5b842773",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "item number",
+            "nth",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7da727b7",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b16fab7b",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "item number",
+            "nth",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c3eefc9c",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "remove",
+            "strip out",
+            "without"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 9,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-2e845c1a",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 10
+          },
+          [
+            "sense.before",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3c71d6fb",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 12
+          },
+          [
+            "sense.before",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-7744de12",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "element",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "position",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "sp500"
+                },
+                {
+                  "lit": "company"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a01970a7",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 12
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a3601de5",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "item number",
+            "longest",
+            "longest one",
+            "longest word",
+            "nth",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a3a1740b",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "company",
+            "item number",
+            "nth",
+            "replace",
+            "substitute"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-af6e2416",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "element",
+            "item number",
+            "leading zeros",
+            "nth",
+            "pad",
+            "pad with",
+            "padded to",
+            "position",
+            "zero pad"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.padStart",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          {
+            "lit": 10
+          },
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-baf20ce2",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "item number",
+            "nth",
+            "separate by",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.split",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ],
+            [
+              "transform.nthStr",
+              [
+                "know.find",
+                {
+                  "lit": "world-cities"
+                },
+                {
+                  "lit": "city"
+                }
+              ],
+              {
+                "lit": 1
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 5,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c915f952",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "company",
+            "item number",
+            "nth",
+            "replace",
+            "substitute"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.text"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 10,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-23b3cb89",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "company",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.before",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-88211d4d",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "company",
+            "item number",
+            "nth",
+            "replace",
+            "substitute"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b1fe92f8",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "company",
+            "item number",
+            "nth",
+            "replace",
+            "substitute"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-bd549703",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "company",
+            "item number",
+            "nth",
+            "replace",
+            "substitute"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": -1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "crypto-tickers"
+              },
+              {
+                "lit": "crypto ticker"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-dd72073e",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "company",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-edecdaaf",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "change to",
+            "company",
+            "element",
+            "item number",
+            "nth",
+            "position",
+            "replace",
+            "substitute",
+            "swap"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.replace",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "world-cities"
+              },
+              {
+                "lit": "city"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ],
+          [
+            "transform.nthStr",
+            [
+              "know.find",
+              {
+                "lit": "sp500"
+              },
+              {
+                "lit": "company"
+              }
+            ],
+            {
+              "lit": 1
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 14,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-32b0b98a",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "company",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.title",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-3bed1420",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "lower case",
+            "lowercase",
+            "small letters"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.lower",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-9f71ed00",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "each word",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-aa0d214b",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "each word",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-c0311791",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "invert case",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cc0e4743",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "company",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.upper",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-19ba8481",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "each word",
+            "invert case",
+            "split into words",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-213daf31",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "each word",
+            "lower case",
+            "lowercase",
+            "small letters",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.lower",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-289d09cd",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          {
+            "lit": "inc"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-5a7e08a9",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "normalise",
+            "normalize",
+            "simplify the text"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.norm",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-640b2d0d",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          {
+            "lit": "inc"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6af2858e",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          {
+            "lit": "inc"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6daa8cb7",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "company",
+            "each word",
+            "split into words",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6e2f6a3c",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "each word",
+            "lower case",
+            "lowercase",
+            "small letters",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.lower",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8966944a",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "company",
+            "each word",
+            "split into words",
+            "title case"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-a7b96658",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "capitalise",
+            "capitalize",
+            "capitalize each word",
+            "company",
+            "invert case",
+            "swap case",
+            "title case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.swapCase",
+          [
+            "transform.title",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-b4fda0b7",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "company",
+            "each word",
+            "split into words",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-be3b0c75",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "has",
+          "company"
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "iterate.repeat",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          {
+            "lit": 1
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-cf64bced",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "all caps",
+            "capital letters",
+            "capitals",
+            "company",
+            "each word",
+            "split into words",
+            "upper case",
+            "uppercase"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.upper",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d653fc4c",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "each word",
+            "invert case",
+            "split into words",
+            "swap case",
+            "toggle case"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.swapCase",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-dcb085b5",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-dcf346b5",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          {
+            "lit": "inc"
+          }
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e3d419a0",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "dashes",
+            "each word",
+            "hyphens",
+            "kebab case",
+            "kebabcase",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-e9a5f77c",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "sense.lastWord"
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-eee18b5c",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "dashes",
+            "each word",
+            "hyphens",
+            "kebab case",
+            "kebabcase",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.words",
+          [
+            "transform.kebab",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-f8bcd432",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "each word",
+            "shortest",
+            "shortest one",
+            "shortest word",
+            "split into words"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.shortest",
+          [
+            "transform.words",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1218c2fe",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-1b8832d6",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.lines",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-40bf4a18",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-64740b0b",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "longest one",
+            "longest word",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "aggregate.longest",
+          [
+            "transform.split",
+            [
+              "sense.after",
+              {
+                "lit": "is"
+              }
+            ],
+            [
+              "sense.lastWord"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-6991a2f4",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-8c31b3f6",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-abc9d651",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.and",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-ba592253",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 2
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d3724422",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "delete",
+            "strip out"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.str",
+        [
+          "transform.remove",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "sense.wordAt",
+            {
+              "lit": 3
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
+      "fit": {
+        "ok": 1,
+        "fired": 1,
+        "rows": 40
+      }
+    },
+    {
+      "id": "n-d761e04a",
+      "task": "sp500-company-2-to-ticker",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "company",
+            "separate by",
+            "split",
+            "split by"
+          ]
+        ],
+        [
+          "has",
+          "ford"
+        ]
+      ],
+      "pyramid": [
+        "render.list",
+        [
+          "transform.split",
+          [
+            "sense.after",
+            {
+              "lit": "is"
+            }
+          ],
+          [
+            "sense.after",
+            {
+              "lit": "of"
+            }
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 3,
+      "size": 6,
       "fit": {
         "ok": 1,
         "fired": 1,
@@ -172033,6 +173312,7 @@
   "stages": [
     "1da4ae3825edbb512dc01e1f69cbadf073f785c4e7b91c8005c3c6e6fcf9537c",
     "d405b386723b2b6b2bd8fdcec1b6a4d192e25497c772891bf2377d26d2e2945c",
-    "ec1ac8e708615008519ddcc998db998dc51aa322699a755a7685fbe6fa6cfa7a"
+    "ec1ac8e708615008519ddcc998db998dc51aa322699a755a7685fbe6fa6cfa7a",
+    "527ebf4d0bff1fb327838172fbe054a84c7957a4aa297bd750e4632b2d6253d3"
   ]
 }
