@@ -2,43 +2,42 @@
   "task": "mean-of-year-414b-smaller",
   "generation": 10,
   "kernel": 2,
-  "at": "2026-10-25T08:23:15.444Z",
+  "at": "2026-10-25T10:20:18.259Z",
   "stats": {
-    "generated": 200272,
-    "distinct": 63810,
-    "kept": 166,
+    "generated": 164434,
+    "distinct": 57464,
+    "kept": 170,
     "know": 6,
     "byFamily": {
       "route": 2,
       "compare": 4,
+      "transform": 32,
       "memory": 102,
-      "transform": 28,
       "aggregate": 30
     },
     "bySource": {
-      "open": 3,
-      "enum": 59,
-      "parent": 104
+      "parent": 166,
+      "enum": 4
     },
     "maxHeight": 8,
     "devOk": 100,
     "devN": 100,
-    "ms": 143876,
-    "cellsPerSecond": 1392,
-    "capped": "ms",
+    "ms": 85388,
+    "cellsPerSecond": 1926,
+    "capped": null,
     "packs": [
       "fr-co2-ppm-co2-annmean-gl-eec28d"
     ],
     "cursor": {
       "v": 1,
       "basis": "23ebd379dafd834da4b05f978405937c5af673d7cfa137d8248c328cf5efd9a6",
-      "round": 0,
-      "at": 92665,
+      "round": 1,
+      "at": 232459,
       "maxCost": 7,
       "done": false,
-      "cost": 5,
-      "prim": "iterate.range",
-      "tpl": 3000
+      "cost": 6,
+      "prim": "compare.between",
+      "tpl": 3702
     }
   },
   "cells": [
@@ -1389,6 +1388,79 @@
       }
     },
     {
+      "id": "n-82ced060",
+      "task": "mean-of-year-414b-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arithmetic mean",
+            "below",
+            "less than",
+            "mean",
+            "smaller than"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "larger"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "of"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "greater"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.listNums",
+        [
+          "transform.below",
+          [
+            "sense.numbers"
+          ],
+          [
+            "aggregate.mean",
+            [
+              "sense.numbers"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-112bdd67",
       "task": "mean-of-year-414b-smaller",
       "gen": 10,
@@ -1514,6 +1586,86 @@
       },
       "height": 3,
       "size": 3,
+      "fit": {
+        "ok": 100,
+        "fired": 100,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-ff010a46",
+      "task": "mean-of-year-414b-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "least",
+            "lowest",
+            "mean",
+            "minimum",
+            "negate",
+            "negative",
+            "opposite",
+            "smallest"
+          ]
+        ],
+        [
+          "words<=",
+          9
+        ],
+        [
+          "not",
+          [
+            "has",
+            "of"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "larger"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "compare"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "greater"
+          ]
+        ],
+        [
+          "not",
+          [
+            "has",
+            "does"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.neg",
+          [
+            "aggregate.min",
+            [
+              "sense.numbers"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 4,
       "fit": {
         "ok": 100,
         "fired": 100,
@@ -2503,6 +2655,60 @@
       }
     },
     {
+      "id": "n-dc345254",
+      "task": "mean-of-year-414b-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "arithmetic mean",
+            "average",
+            "below",
+            "less than",
+            "mean",
+            "smaller than",
+            "under"
+          ]
+        ],
+        [
+          "has",
+          "smaller"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "balance"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.listNums",
+        [
+          "transform.below",
+          [
+            "sense.numbers"
+          ],
+          [
+            "aggregate.mean",
+            [
+              "sense.listNums"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
+      "size": 5,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
       "id": "n-4335fc1c",
       "task": "mean-of-year-414b-smaller",
       "gen": 10,
@@ -2609,6 +2815,58 @@
         }
       },
       "height": 3,
+      "size": 4,
+      "fit": {
+        "ok": 33,
+        "fired": 33,
+        "rows": 100
+      }
+    },
+    {
+      "id": "n-67256d43",
+      "task": "mean-of-year-414b-smaller",
+      "gen": 10,
+      "parents": [],
+      "guard": [
+        [
+          "hasAny",
+          [
+            "least",
+            "lowest",
+            "mean",
+            "minimum",
+            "negate",
+            "negative",
+            "opposite",
+            "smallest"
+          ]
+        ],
+        [
+          "has",
+          "smaller"
+        ],
+        [
+          "not",
+          [
+            "has",
+            "balance"
+          ]
+        ]
+      ],
+      "pyramid": [
+        "render.number",
+        [
+          "transform.neg",
+          [
+            "aggregate.min",
+            [
+              "sense.listNums"
+            ]
+          ]
+        ]
+      ],
+      "mem": null,
+      "height": 4,
       "size": 4,
       "fit": {
         "ok": 33,
@@ -10576,6 +10834,7 @@
   "stages": [
     "c37640e510426e6faf4396ff259f392eb3c2a6d8ad65687224b45d4a39105f34",
     "0238d06dc311917c921d0b2a1b2ee80165b04d27d8428f0190f2a5943e66b2c2",
-    "bdaf48c5dec0be8e97aeec95f7b6605031beec95305eaceef9b72ba33cfe15e9"
+    "bdaf48c5dec0be8e97aeec95f7b6605031beec95305eaceef9b72ba33cfe15e9",
+    "58cf3f93bcebc5c851c17c42e71b35a3d67f1a9eedae7b4e4cb9c8a54a42bf18"
   ]
 }
